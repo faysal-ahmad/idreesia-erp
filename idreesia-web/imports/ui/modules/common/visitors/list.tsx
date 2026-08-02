@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, type CSSProperties } from 'react';
 import { AuditOutlined, DeleteOutlined, HistoryOutlined, PlusCircleOutlined, WalletOutlined, WarningTwoTone } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
@@ -12,57 +11,54 @@ import {
 } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-const StatusStyle = {
+const StatusStyle: CSSProperties = {
   fontSize: 20,
 };
 
-const AntAuditOutlined = AuditOutlined as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntHistoryOutlined = HistoryOutlined as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-const AntWalletOutlined = WalletOutlined as any;
-const AntWarningTwoTone = WarningTwoTone as any;
-const AntPagination = Pagination as any;
-const AntPopconfirm = Popconfirm as any;
-const AntRow = Row as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const PersonNameControl = PersonName as any;
-type AnyRecord = Record<string, any>;
-interface PagedData { totalResults: number; data: AnyRecord[]; }
-interface Props extends Record<string, any> { listHeader?: () => React.ReactNode; setPageParams(params: { pageIndex: string; pageSize: string; }): void; pageIndex?: number; pageSize?: number; pagedData?: PagedData; }
-interface State { selectedRows: AnyRecord[]; }
+export interface VisitorListItem {
+  _id: string;
+  name?: string | null;
+  cnicNumber?: string | null;
+  contactNumber1?: string | null;
+  contactNumber2?: string | null;
+  city?: string | null;
+  country?: string | null;
+  imageId?: string | null;
+  image?: { data?: string | null } | null;
+  criminalRecord?: string | null;
+  otherNotes?: string | null;
+  isKarkun?: boolean | null;
+}
+
+interface PagedData { totalResults: number; data: VisitorListItem[]; }
+
+interface Props {
+  showSelectionColumn?: boolean;
+  showStatusColumn?: boolean;
+  showCnicColumn?: boolean;
+  showPhoneNumbersColumn?: boolean;
+  showCityCountryColumn?: boolean;
+  showDeleteAction?: boolean;
+  showStayHistoryAction?: boolean;
+  showImdadRequestsAction?: boolean;
+  showAuditLogsAction?: boolean;
+  showKarkunCreateAction?: boolean;
+  listHeader?: () => React.ReactNode;
+  handleSelectItem?(record: VisitorListItem): void;
+  handleDeleteItem?(record: VisitorListItem): void;
+  handleStayHistoryAction?(record: VisitorListItem): void;
+  handleImdadRequestsAction?(record: VisitorListItem): void;
+  handleAuditLogsAction?(record: VisitorListItem): void;
+  handleKarkunCreateAction?(record: VisitorListItem): void;
+  setPageParams(params: { pageIndex: string; pageSize: string; }): void;
+  pageIndex?: number;
+  pageSize?: number;
+  pagedData?: PagedData;
+}
+
+interface State { selectedRows: VisitorListItem[]; }
 
 export default class VisitorsList extends Component<Props, State> {
-  static propTypes = {
-    showSelectionColumn: PropTypes.bool,
-    showStatusColumn: PropTypes.bool,
-    showCnicColumn: PropTypes.bool,
-    showPhoneNumbersColumn: PropTypes.bool,
-    showCityCountryColumn: PropTypes.bool,
-    showDeleteAction: PropTypes.bool,
-    showStayHistoryAction: PropTypes.bool,
-    showImdadRequestsAction: PropTypes.bool,
-    showAuditLogsAction: PropTypes.bool,
-    showKarkunCreateAction: PropTypes.bool,
-
-    listHeader: PropTypes.func,
-    handleSelectItem: PropTypes.func,
-    handleDeleteItem: PropTypes.func,
-    handleStayHistoryAction: PropTypes.func,
-    handleImdadRequestsAction: PropTypes.func,
-    handleAuditLogsAction: PropTypes.func,
-    handleKarkunCreateAction: PropTypes.func,
-    setPageParams: PropTypes.func,
-
-    pageIndex: PropTypes.number,
-    pageSize: PropTypes.number,
-    pagedData: PropTypes.shape({
-      totalResults: PropTypes.number,
-      data: PropTypes.array,
-    }),
-  };
-
   static defaultProps = {
     showDeleteAction: false,
     showStayHistoryAction: false,
@@ -86,18 +82,18 @@ export default class VisitorsList extends Component<Props, State> {
   statusColumn = {
     title: '',
     key: 'status',
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: VisitorListItem) => {
       if (record.criminalRecord) {
         return (
-          <AntWarningTwoTone
-            style={StatusStyle as any}
+          <WarningTwoTone
+            style={StatusStyle}
             twoToneColor="red"
           />
         );
       } else if (record.otherNotes) {
         return (
-          <AntWarningTwoTone
-            style={StatusStyle as any}
+          <WarningTwoTone
+            style={StatusStyle}
             twoToneColor="orange"
           />
         );
@@ -111,9 +107,16 @@ export default class VisitorsList extends Component<Props, State> {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (_text: unknown, record: AnyRecord) => (
-      <PersonNameControl
-        person={record}
+    render: (_text: unknown, record: VisitorListItem) => (
+      <PersonName
+        person={{
+          _id: record._id,
+          name: record.name ?? '',
+          imageId: record.imageId ?? undefined,
+          image: record.image
+            ? { data: record.image.data ?? undefined }
+            : undefined,
+        }}
         onPersonNameClicked={this.props.handleSelectItem}
       />
     ),
@@ -128,12 +131,12 @@ export default class VisitorsList extends Component<Props, State> {
   phoneNumberColumn = {
     title: 'Contact Number',
     key: 'contactNumber',
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: VisitorListItem) => {
       const numbers: React.ReactNode[] = [];
       if (record.contactNumber1)
-        numbers.push(<AntRow key="1">{record.contactNumber1}</AntRow>);
+        numbers.push(<Row key="1">{record.contactNumber1}</Row>);
       if (record.contactNumber2)
-        numbers.push(<AntRow key="2">{record.contactNumber2}</AntRow>);
+        numbers.push(<Row key="2">{record.contactNumber2}</Row>);
 
       if (numbers.length === 0) return '';
       return <>{numbers}</>;
@@ -143,7 +146,7 @@ export default class VisitorsList extends Component<Props, State> {
   cityCountryColumn = {
     title: 'City / Country',
     key: 'cityCountry',
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: VisitorListItem) => {
       if (record.city) {
         return `${record.city}, ${record.country}`;
       }
@@ -154,7 +157,7 @@ export default class VisitorsList extends Component<Props, State> {
   actionsColumn = {
     key: 'action',
     width: 80,
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: VisitorListItem) => {
       const {
         showDeleteAction,
         showStayHistoryAction,
@@ -169,41 +172,41 @@ export default class VisitorsList extends Component<Props, State> {
       } = this.props;
 
       const stayHistoryAction = showStayHistoryAction ? (
-        <AntTooltip title="Stay History">
-          <AntHistoryOutlined
+        <Tooltip title="Stay History">
+          <HistoryOutlined
             className="list-actions-icon"
             onClick={() => {
               handleStayHistoryAction?.(record);
             }}
           />
-        </AntTooltip>
+        </Tooltip>
       ) : null;
 
       const imdadRequestsAction = showImdadRequestsAction ? (
-        <AntTooltip title="Imdad Requests">
-          <AntWalletOutlined
+        <Tooltip title="Imdad Requests">
+          <WalletOutlined
             className="list-actions-icon"
             onClick={() => {
               handleImdadRequestsAction?.(record);
             }}
           />
-        </AntTooltip>
+        </Tooltip>
       ) : null;
 
       const auditLogsAction = showAuditLogsAction ? (
-        <AntTooltip title="Audit Logs">
-          <AntAuditOutlined
+        <Tooltip title="Audit Logs">
+          <AuditOutlined
             className="list-actions-icon"
             onClick={() => {
               handleAuditLogsAction?.(record);
             }}
           />
-        </AntTooltip>
+        </Tooltip>
       ) : null;
 
       const createAction =
         showKarkunCreateAction && !record.isKarkun ? (
-          <AntPopconfirm
+          <Popconfirm
             title="Are you sure you want to add this person to karkuns?"
             onConfirm={() => {
               handleKarkunCreateAction?.(record);
@@ -211,14 +214,14 @@ export default class VisitorsList extends Component<Props, State> {
             okText="Yes"
             cancelText="No"
           >
-          <AntTooltip title="Add to karkuns">
-            <AntPlusCircleOutlined className="list-actions-icon" />
-          </AntTooltip>
-        </AntPopconfirm>
+          <Tooltip title="Add to karkuns">
+            <PlusCircleOutlined className="list-actions-icon" />
+          </Tooltip>
+        </Popconfirm>
         ) : null;
 
       const deleteAction = showDeleteAction ? (
-        <AntPopconfirm
+        <Popconfirm
           title="Are you sure you want to delete the data for this person?"
           onConfirm={() => {
             handleDeleteItem?.(record);
@@ -226,10 +229,10 @@ export default class VisitorsList extends Component<Props, State> {
           okText="Yes"
           cancelText="No"
         >
-          <AntTooltip title="Delete">
-            <AntDeleteOutlined className="list-actions-icon" />
-          </AntTooltip>
-        </AntPopconfirm>
+          <Tooltip title="Delete">
+            <DeleteOutlined className="list-actions-icon" />
+          </Tooltip>
+        </Popconfirm>
       ) : null;
 
       return (
@@ -288,7 +291,7 @@ export default class VisitorsList extends Component<Props, State> {
   };
 
   rowSelection = {
-    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: VisitorListItem[]) => {
       this.setState({
         selectedRows,
       });
@@ -320,17 +323,17 @@ export default class VisitorsList extends Component<Props, State> {
     const numPageSize = pageSize || 20;
 
     return (
-      <AntTable
+      <Table
         rowKey="_id"
         dataSource={data}
         columns={this.getColumns() as any}
         title={listHeader}
-        rowSelection={showSelectionColumn ? this.rowSelection : null}
+        rowSelection={showSelectionColumn ? this.rowSelection : undefined}
         bordered
         size="small"
         pagination={false}
         footer={() => (
-          <AntPagination
+          <Pagination
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger

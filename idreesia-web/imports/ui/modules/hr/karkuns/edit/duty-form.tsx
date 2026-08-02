@@ -1,6 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Form } from 'antd';
+import type { FormInstance } from 'antd/es/form';
 
 import {
   CascaderField,
@@ -9,24 +9,43 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 import allDutyRoles from '../../all-duty_roles';
+import type {
+  ComposerAllDutyLocationsQuery,
+  ComposerAllMsDutiesQuery,
+  AllDutyShiftsQuery,
+  KarkunDutiesByKarkunIdQuery,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const AntForm = Form as any;
-const CascaderInputField = CascaderField as any;
-const SelectInputField = SelectField as any;
-const WeekDaysInputField = WeekDaysField as any;
-type AnyRecord = Record<string, any>;
-interface Props { form?: unknown; defaultValues?: AnyRecord; allMSDuties?: AnyRecord[]; allDutyShifts?: AnyRecord[]; allDutyLocations?: AnyRecord[]; }
+type MSDuty = NonNullable<NonNullable<ComposerAllMsDutiesQuery['allMSDuties']>[number]>;
+type DutyShift = NonNullable<NonNullable<AllDutyShiftsQuery['allDutyShifts']>[number]>;
+type DutyLocation = NonNullable<NonNullable<ComposerAllDutyLocationsQuery['allDutyLocations']>[number]>;
+type KarkunDuty = NonNullable<NonNullable<KarkunDutiesByKarkunIdQuery['karkunDutiesByKarkunId']>[number]>;
+type DutyDefaults = Partial<KarkunDuty> & { locationId?: string | null };
+
+interface Props {
+  form?: FormInstance;
+  defaultValues?: DutyDefaults;
+  allMSDuties?: Array<MSDuty | null> | null;
+  allDutyShifts?: Array<DutyShift | null> | null;
+  allDutyLocations?: Array<DutyLocation | null> | null;
+}
 
 const DutyForm = (props: Props) => {
-  const { form, defaultValues = {}, allMSDuties = [], allDutyShifts = [], allDutyLocations = [] } = props;
-  const dutyShiftCascaderData = getDutyShiftCascaderData(
-    allMSDuties as any,
-    allDutyShifts as any
-  );
+  const {
+    form,
+    defaultValues = {},
+    allMSDuties = [],
+    allDutyShifts = [],
+    allDutyLocations = [],
+  } = props;
+  const duties = (allMSDuties ?? []).filter((duty): duty is MSDuty => duty != null);
+  const shifts = (allDutyShifts ?? []).filter((shift): shift is DutyShift => shift != null);
+  const locations = (allDutyLocations ?? []).filter((location): location is DutyLocation => location != null);
+  const dutyShiftCascaderData = getDutyShiftCascaderData(duties, shifts);
 
   return (
-    <AntForm form={form} layout="horizontal">
-      <CascaderInputField
+    <Form form={form} layout="horizontal">
+      <CascaderField
         data={dutyShiftCascaderData}
         fieldName="dutyIdShiftId"
         fieldLabel="Duty/Shift"
@@ -35,10 +54,8 @@ const DutyForm = (props: Props) => {
         requiredMessage="Please select a duty/shift from the list."
       />
 
-      <SelectInputField
+      <SelectField
         data={allDutyRoles}
-        getDataValue={({ _id }: AnyRecord) => _id}
-        getDataText={({ name }: AnyRecord) => name}
         fieldName="role"
         fieldLabel="Role"
         allowClear={false}
@@ -46,32 +63,26 @@ const DutyForm = (props: Props) => {
         initialValue={defaultValues.role || 'Member'}
       />
 
-      <SelectInputField
-        data={allDutyLocations}
-        getDataValue={({ _id }: AnyRecord) => _id}
-        getDataText={({ name }: AnyRecord) => name}
+      <SelectField<DutyLocation>
+        data={locations}
         fieldName="locationId"
         fieldLabel="Location Name"
         required={false}
         initialValue={defaultValues.locationId}
       />
 
-      <WeekDaysInputField
+      <WeekDaysField
         fieldName="weekDays"
         fieldLabel="Week Days"
         required={false}
-        initialValue={defaultValues.daysOfWeek ? defaultValues.daysOfWeek : []}
+        initialValue={
+          defaultValues.daysOfWeek
+            ? defaultValues.daysOfWeek.filter((day): day is string => day != null)
+            : []
+        }
       />
-    </AntForm>
+    </Form>
   );
-};
-
-DutyForm.propTypes = {
-  form: PropTypes.object,
-  defaultValues: PropTypes.object,
-  allMSDuties: PropTypes.array,
-  allDutyShifts: PropTypes.array,
-  allDutyLocations: PropTypes.array,
 };
 
 export default DutyForm;

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { type match } from 'react-router';
+import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
-import dayjs from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import { Form, message } from 'antd';
 
 import {
@@ -12,30 +13,29 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import { useAllJobs } from '/imports/ui/modules/hr/common/composers';
+import type { AllJobsQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import { HR_KARKUN_BY_ID, SET_HR_KARKUN_EMPLOYMENT_INFO } from '../gql';
 
-const AntForm = Form as any;
-const DateInputField = DateField as any;
-const TextAreaField = typeof InputTextAreaField !== 'undefined' ? (InputTextAreaField as any) : undefined;
-const SelectInputField = SelectField as any;
-const SwitchInputField = SwitchField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-type AnyRecord = Record<string, any>;
-interface HistoryLike { goBack(): void; }
-interface MatchLike { params: { karkunId: string; }; }
-interface QueryData { hrKarkunById?: AnyRecord | null; }
-interface Props { match: MatchLike; history: HistoryLike; karkunId?: string | null; }
-interface FormValues extends AnyRecord { isEmployee?: boolean; jobId?: string | null; employmentStartDate?: unknown; employmentEndDate?: unknown; bankAccountDetails?: string; }
+type Job = NonNullable<NonNullable<AllJobsQuery['allJobs']>[number]>;
+interface Props { match: match<{ karkunId: string }>; history: History; karkunId: string; }
+interface FormValues {
+  isEmployee?: boolean;
+  jobId?: string | null;
+  employmentStartDate?: Dayjs | null;
+  employmentEndDate?: Dayjs | null;
+  bankAccountDetails?: string;
+}
 
 const EmploymentInfo = ({ history, karkunId, match }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { allJobs, allJobsLoading } = useAllJobs();
-  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID as any, {
+  const { allJobs: rawAllJobs, allJobsLoading } = useAllJobs();
+  const allJobs = (rawAllJobs ?? []).filter((job): job is Job => job != null);
+  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID, {
     variables: { _id: match.params.karkunId },
   });
   const [setHrKarkunEmploymentInfo] = useMutation(
-    SET_HR_KARKUN_EMPLOYMENT_INFO as any,
+    SET_HR_KARKUN_EMPLOYMENT_INFO,
     {
       refetchQueries: ['pagedHrKarkuns', 'allJobs'],
     }
@@ -59,10 +59,10 @@ const EmploymentInfo = ({ history, karkunId, match }: Props) => {
     setHrKarkunEmploymentInfo({
       variables: {
         _id: karkunId,
-        isEmployee,
+        isEmployee: isEmployee ?? false,
         jobId: jobId || null,
-        employmentStartDate,
-        employmentEndDate,
+        employmentStartDate: employmentStartDate as unknown as string | null | undefined,
+        employmentEndDate: employmentEndDate as unknown as string | null | undefined,
         bankAccountDetails,
       },
     })
@@ -74,33 +74,31 @@ const EmploymentInfo = ({ history, karkunId, match }: Props) => {
       });
   };
 
-  const { hrKarkunById } = (data ?? {}) as QueryData;
+  const hrKarkunById = data?.hrKarkunById;
 
   if (formDataLoading || allJobsLoading || !hrKarkunById) return null;
 
   return (
-    <AntForm
+    <Form
       layout="horizontal"
       onFinish={handleFinish}
       onFieldsChange={handleFieldsChange}
     >
-      <SwitchInputField
+      <SwitchField
         fieldName="isEmployee"
         fieldLabel="Is Employee"
         initialValue={hrKarkunById.isEmployee || false}
       />
 
-      <SelectInputField
+      <SelectField<Job>
         fieldName="jobId"
         fieldLabel="Current Job"
         required={false}
         data={allJobs}
-        getDataValue={({ _id }: AnyRecord) => _id}
-        getDataText={({ name }: AnyRecord) => name}
         initialValue={hrKarkunById.jobId}
       />
 
-      <DateInputField
+      <DateField
         fieldName="employmentStartDate"
         fieldLabel="Start Date"
         initialValue={
@@ -110,7 +108,7 @@ const EmploymentInfo = ({ history, karkunId, match }: Props) => {
         }
       />
 
-      <DateInputField
+      <DateField
         fieldName="employmentEndDate"
         fieldLabel="End Date"
         initialValue={
@@ -120,27 +118,19 @@ const EmploymentInfo = ({ history, karkunId, match }: Props) => {
         }
       />
 
-      <TextAreaField
+      <InputTextAreaField
         fieldName="bankAccountDetails"
         fieldLabel="Bank Account Details"
         initialValue={hrKarkunById.bankAccountDetails}
         required={false}
       />
 
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
-};
-
-EmploymentInfo.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  karkunId: PropTypes.string,
 };
 
 export default EmploymentInfo;

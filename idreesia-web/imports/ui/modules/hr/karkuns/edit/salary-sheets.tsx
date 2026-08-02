@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -9,15 +8,14 @@ import {
   DEFAULT_PAGE_INDEX_INT,
   DEFAULT_PAGE_SIZE_INT,
 } from 'meteor/idreesia-common/constants/list-options';
+import type { PagedSalariesByKarkunQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import { PAGED_SALARIES_BY_KARKUN } from '../gql';
 
-const AntTable = Table as any;
-const AntPagination = Pagination as any;
-type AnyRecord = Record<string, any>;
-interface PagedData { totalResults: number; salaries: AnyRecord[]; }
-interface QueryData { pagedSalariesByKarkun?: PagedData | null; }
-interface Props { karkunId?: string | null; }
+type SalaryRow = NonNullable<
+  NonNullable<NonNullable<PagedSalariesByKarkunQuery['pagedSalariesByKarkun']>['salaries']>[number]
+>;
+interface Props { karkunId: string; }
 
 const columns: any[] = [
   {
@@ -80,12 +78,12 @@ const columns: any[] = [
     key: 'netPayment',
   },
 ];
-const getQueryString = (karkunId: string | null | undefined, pageIndex: number, pageSize: number) =>
+const getQueryString = (karkunId: string, pageIndex: number, pageSize: number) =>
   `?karkunId=${karkunId}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
 const SalarySheets = ({ karkunId }: Props) => {
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX_INT);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_INT);
-  const { data, loading } = useQuery(PAGED_SALARIES_BY_KARKUN as any, {
+  const { data, loading } = useQuery(PAGED_SALARIES_BY_KARKUN, {
     variables: {
       queryString: getQueryString(karkunId, pageIndex, pageSize),
     },
@@ -101,16 +99,19 @@ const SalarySheets = ({ karkunId }: Props) => {
   };
   if (loading) return null;
 
+  const paged = data?.pagedSalariesByKarkun;
+  const salaries = (paged?.salaries ?? []).filter((row): row is SalaryRow => row != null);
+
   return (
-    <AntTable
+    <Table
       rowKey="_id"
       size="small"
       columns={columns as any}
-      dataSource={((data ?? {}) as QueryData).pagedSalariesByKarkun?.salaries ?? []}
+      dataSource={salaries}
       pagination={false}
       bordered
       footer={() => (
-        <AntPagination
+        <Pagination
           current={pageIndex + 1}
           pageSize={pageSize}
           showSizeChanger
@@ -119,7 +120,7 @@ const SalarySheets = ({ karkunId }: Props) => {
           }
           onChange={onChange}
           onShowSizeChange={onShowSizeChange}
-          total={((data ?? {}) as QueryData).pagedSalariesByKarkun?.totalResults ?? 0}
+          total={paged?.totalResults ?? 0}
         />
       )}
     />
@@ -127,16 +128,3 @@ const SalarySheets = ({ karkunId }: Props) => {
 };
 
 export default SalarySheets;
-
-SalarySheets.propTypes = {
-  karkunId: PropTypes.string,
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  loading: PropTypes.bool,
-  pagedSalariesByKarkun: PropTypes.shape({
-    totalResults: PropTypes.number,
-    salaries: PropTypes.array,
-  }),
-};

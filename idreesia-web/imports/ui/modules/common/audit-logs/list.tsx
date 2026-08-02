@@ -1,45 +1,51 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import { Pagination, Table } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { OperationType } from 'meteor/idreesia-common/constants/audit';
+import type { PagedHrAuditLogsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import getFormattedValue from './get-formatted-value';
 
-const AntPagination = Pagination as any;
-const AntTable = Table as any;
-const PersonNameControl = PersonName as any;
-type AnyRecord = Record<string, any>;
-interface PagedData { totalResults: number; data: AnyRecord[]; }
-interface Props { entityRenderer?(record: AnyRecord): React.ReactNode; listHeader?: () => React.ReactNode; handleSelectItem?(record: AnyRecord): void; handleDeleteItem?(record: AnyRecord): void; setPageParams(params: { pageIndex: number; pageSize?: number; }): void; pageIndex?: number; pageSize?: number; pagedData?: PagedData; allPhysicalStoresLoading?: boolean; allPhysicalStores?: AnyRecord[]; }
+type AuditLogRow = NonNullable<
+  NonNullable<NonNullable<PagedHrAuditLogsQuery['pagedHrAuditLogs']>['data']>[number]
+>;
+
+interface PagedData {
+  totalResults?: number | null;
+  data?: Array<AuditLogRow | null> | null;
+}
+
+interface PageParams {
+  pageIndex: number;
+  pageSize?: number;
+}
+
+interface Props {
+  entityRenderer?(record: AuditLogRow): React.ReactNode;
+  listHeader?: () => React.ReactNode;
+  handleSelectItem?(record: AuditLogRow): void;
+  handleDeleteItem?(record: AuditLogRow): void;
+  setPageParams(params: PageParams): void;
+  pageIndex?: number;
+  pageSize?: number;
+  pagedData?: PagedData;
+  allPhysicalStoresLoading?: boolean;
+  allPhysicalStores?: unknown[];
+}
+
 export default class AuditLogsList extends Component<Props> {
-  static propTypes = {
-    entityRenderer: PropTypes.func,
-    listHeader: PropTypes.func,
-    handleSelectItem: PropTypes.func,
-    handleDeleteItem: PropTypes.func,
-    setPageParams: PropTypes.func,
-
-    pageIndex: PropTypes.number,
-    pageSize: PropTypes.number,
-    pagedData: PropTypes.shape({
-      totalResults: PropTypes.number,
-      data: PropTypes.array,
-    }),
-  };
-
   static defaultProps = {
-    entityRenderer: (record: AnyRecord) => record.entityId,
+    entityRenderer: (record: AuditLogRow) => record.entityId,
   };
 
   columns = [
     {
       title: 'Entity',
       key: 'entityId',
-      render: (_text: unknown, record: AnyRecord) => this.props.entityRenderer?.(record),
+      render: (_text: unknown, record: AuditLogRow) => this.props.entityRenderer?.(record),
     },
     {
       title: 'Operation Time',
@@ -60,12 +66,13 @@ export default class AuditLogsList extends Component<Props> {
     {
       title: 'Operation By',
       key: 'operationBy',
-      render: (_text: unknown, record: AnyRecord) => (
-        <PersonNameControl
+      render: (_text: unknown, record: AuditLogRow) => (
+        <PersonName
           person={{
+            _id: record.operationBy,
             name: record.operationByName,
             imageId: record.operationByImageId,
-          }}
+          } as Parameters<typeof PersonName>[0]['person']}
         />
       ),
     },
@@ -73,7 +80,7 @@ export default class AuditLogsList extends Component<Props> {
       title: 'Audit Values',
       dataIndex: 'auditValues',
       key: 'auditValues',
-      render: (values: string[] | undefined, record: AnyRecord) => {
+      render: (values: string[] | undefined, record: AuditLogRow) => {
         const { operationType } = record;
         const fieldNodes = values?.map((value: string, index: number) => {
           const parsedValue = JSON.parse(value);
@@ -119,16 +126,18 @@ export default class AuditLogsList extends Component<Props> {
     const numPageSize = pageSize || 20;
 
     return (
-      <AntTable
+      <Table
         rowKey="_id"
-        dataSource={data}
+        dataSource={(data ?? []).filter(
+          (log): log is AuditLogRow => log != null
+        )}
         columns={this.columns as any}
         bordered
         title={listHeader}
         size="small"
         pagination={false}
         footer={() => (
-          <AntPagination
+          <Pagination
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger
@@ -137,7 +146,7 @@ export default class AuditLogsList extends Component<Props> {
             }
             onChange={this.onPaginationChange}
             onShowSizeChange={this.onPaginationChange}
-            total={totalResults}
+            total={totalResults ?? 0}
           />
         )}
       />

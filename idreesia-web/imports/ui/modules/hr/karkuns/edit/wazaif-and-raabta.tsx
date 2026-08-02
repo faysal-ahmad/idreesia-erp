@@ -1,40 +1,36 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
 
 import { message } from 'antd';
 import { KarkunsWazaifAndRaabta } from '/imports/ui/modules/common';
+import type { KarkunWazaifFormValues } from '/imports/ui/modules/common/karkuns/wazaif-and-raabta';
 
 import { HR_KARKUN_BY_ID, SET_HR_KARKUN_WAZAIF_AND_RAABTA } from '../gql';
 
-const KarkunsWazaifAndRaabtaForm = KarkunsWazaifAndRaabta as any;
-type AnyRecord = Record<string, any>;
-interface HistoryLike { goBack(): void; }
-interface QueryData { hrKarkunById?: AnyRecord | null; }
-interface Props { history: HistoryLike; karkunId?: string | null; }
+interface Props { history: History; karkunId: string; }
 
 const WazaifAndRaabta = ({ history, karkunId }: Props) => {
-  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID as any, {
+  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID, {
     variables: { _id: karkunId },
   });
   const [setHrKarkunWazaifAndRaabta] = useMutation(
-    SET_HR_KARKUN_WAZAIF_AND_RAABTA as any,
+    SET_HR_KARKUN_WAZAIF_AND_RAABTA,
     {
       refetchQueries: ['pagedHrKarkuns'],
     }
   );
-  const { hrKarkunById } = (data ?? {}) as QueryData;
 
   const handleCancel = () => {
     history.goBack();
   };
 
-  const handleFinish = ({ lastTarteebDate, mehfilRaabta, msRaabta }: AnyRecord) => {
+  const handleFinish = ({ lastTarteebDate, mehfilRaabta, msRaabta }: KarkunWazaifFormValues) => {
     setHrKarkunWazaifAndRaabta({
       variables: {
         _id: karkunId,
         lastTarteebDate: lastTarteebDate
-          ? lastTarteebDate.startOf('day')
+          ? (lastTarteebDate.startOf('day') as unknown as string)
           : null,
         mehfilRaabta,
         msRaabta,
@@ -51,20 +47,12 @@ const WazaifAndRaabta = ({ history, karkunId }: Props) => {
   if (formDataLoading) return null;
 
   return (
-    <KarkunsWazaifAndRaabtaForm
-      karkun={hrKarkunById}
+    <KarkunsWazaifAndRaabta
+      karkun={data?.hrKarkunById ?? {}}
       handleFinish={handleFinish}
       handleCancel={handleCancel}
     />
   );
-};
-
-WazaifAndRaabta.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  karkunId: PropTypes.string,
 };
 
 export default WazaifAndRaabta;

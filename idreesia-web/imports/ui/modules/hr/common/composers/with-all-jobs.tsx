@@ -1,12 +1,19 @@
 import React, { ComponentType } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
+import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
+import type {
+  AllJobsQuery,
+  AllJobsQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
 type AnyProps = Record<string, any>;
-interface QueryData { allJobs?: unknown[] | null; }
 
-const ALL_JOBS_QUERY = gql`
+const ALL_JOBS_QUERY: TypedDocumentNode<
+  AllJobsQuery,
+  AllJobsQueryVariables
+> = gql`
   query allJobs {
     allJobs {
       _id
@@ -18,13 +25,13 @@ const ALL_JOBS_QUERY = gql`
 `;
 
 export const useAllJobs = () => {
-  const { data, loading, ...queryResult } = useQuery(ALL_JOBS_QUERY as any);
+  const { data, loading, ...queryResult } = useQuery(ALL_JOBS_QUERY);
 
   return {
     ...queryResult,
     loading,
     allJobsLoading: loading,
-    allJobs: data ? (data as QueryData).allJobs : null,
+    allJobs: data?.allJobs ?? null,
   };
 };
 

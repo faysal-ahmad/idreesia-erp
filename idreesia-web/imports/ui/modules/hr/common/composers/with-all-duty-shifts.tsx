@@ -1,12 +1,19 @@
 import React, { ComponentType } from "react";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
+import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
+import type {
+  AllDutyShiftsQuery,
+  AllDutyShiftsQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
 type AnyProps = Record<string, any>;
-interface QueryData { allDutyShifts?: unknown[] | null; }
 
-const ALL_DUTY_SHIFTS_QUERY = gql`
+const ALL_DUTY_SHIFTS_QUERY: TypedDocumentNode<
+  AllDutyShiftsQuery,
+  AllDutyShiftsQueryVariables
+> = gql`
   query allDutyShifts {
     allDutyShifts {
       _id
@@ -19,13 +26,13 @@ const ALL_DUTY_SHIFTS_QUERY = gql`
 `;
 
 export const useAllDutyShifts = () => {
-  const { data, loading, ...queryResult } = useQuery(ALL_DUTY_SHIFTS_QUERY as any);
+  const { data, loading, ...queryResult } = useQuery(ALL_DUTY_SHIFTS_QUERY);
 
   return {
     ...queryResult,
     loading,
     allDutyShiftsLoading: loading,
-    allDutyShifts: data ? (data as QueryData).allDutyShifts : null,
+    allDutyShifts: data?.allDutyShifts ?? null,
   };
 };
 

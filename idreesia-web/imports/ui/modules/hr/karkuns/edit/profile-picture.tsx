@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import PropTypes from 'prop-types';
+import { type match } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client/react';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
@@ -11,21 +11,13 @@ import {
 
 import { HR_KARKUN_BY_ID, SET_HR_KARKUN_PROFILE_IMAGE } from '../gql';
 
-const ReactFragment = Fragment as any;
-const AntRow = Row as any;
-const AntCol = Col as any;
-const TakePictureControl = TakePicture as any;
-const UploadAttachmentControl = UploadAttachment as any;
-type AnyRecord = Record<string, any>;
-interface MatchLike { params: { karkunId: string; }; }
-interface QueryData { hrKarkunById?: AnyRecord | null; }
-interface Props { match: MatchLike; karkunId?: string | null; }
+interface Props { match: match<{ karkunId: string }>; karkunId: string; }
 
 const ProfilePicture = ({ karkunId, match }: Props) => {
-  const { data, loading } = useQuery(HR_KARKUN_BY_ID as any, {
+  const { data, loading } = useQuery(HR_KARKUN_BY_ID, {
     variables: { _id: match.params.karkunId },
   });
-  const [setHrKarkunProfileImage] = useMutation(SET_HR_KARKUN_PROFILE_IMAGE as any, {
+  const [setHrKarkunProfileImage] = useMutation(SET_HR_KARKUN_PROFILE_IMAGE, {
     refetchQueries: ['pagedHrKarkuns'],
   });
 
@@ -41,29 +33,24 @@ const ProfilePicture = ({ karkunId, match }: Props) => {
   };
 
   if (loading) return null;
-  const url = getDownloadUrl((data as QueryData)?.hrKarkunById?.imageId);
+  const url = getDownloadUrl(data?.hrKarkunById?.imageId);
 
   return (
-    <ReactFragment>
-      <AntRow>
-        <AntCol span={16}>
+    <Fragment>
+      <Row>
+        <Col span={16}>
           {url ? <img style={{ maxWidth: '400px' }} src={url} alt="Profile" /> : null}
-        </AntCol>
-      </AntRow>
+        </Col>
+      </Row>
       <br />
-      <AntRow>
-        <AntCol span={16}>
-          <UploadAttachmentControl onUploadFinish={updateImageId} />
-          <TakePictureControl onPictureTaken={updateImageId} />
-        </AntCol>
-      </AntRow>
-    </ReactFragment>
+      <Row>
+        <Col span={16}>
+          <UploadAttachment onUploadFinish={updateImageId} />
+          <TakePicture onPictureTaken={updateImageId} />
+        </Col>
+      </Row>
+    </Fragment>
   );
-};
-
-ProfilePicture.propTypes = {
-  karkunId: PropTypes.string,
-  match: PropTypes.object,
 };
 
 export default ProfilePicture;

@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@apollo/client/react';
 
-import PropTypes from 'prop-types';
-
 import { Formats } from 'meteor/idreesia-common/constants';
 import { formatDate, parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 
@@ -11,18 +9,17 @@ import {
   DEFAULT_PAGE_INDEX_INT,
   DEFAULT_PAGE_SIZE_INT,
 } from 'meteor/idreesia-common/constants/list-options';
+import type { PagedAttendanceByHrKarkunQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import { PAGED_ATTENDANCE_BY_KARKUN } from '../gql';
 
-const getQueryString = (karkunId: string | null | undefined, pageIndex: number, pageSize: number) =>
+const getQueryString = (karkunId: string, pageIndex: number, pageSize: number) =>
   `?karkunId=${karkunId}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
 
-const AntTable = Table as any;
-const AntPagination = Pagination as any;
-type AnyRecord = Record<string, any>;
-interface PagedData { totalResults: number; data: AnyRecord[]; }
-interface QueryData { pagedAttendanceByKarkun?: PagedData | null; }
-interface Props { karkunId?: string | null; }
+type AttendanceRow = NonNullable<
+  NonNullable<NonNullable<PagedAttendanceByHrKarkunQuery['pagedAttendanceByKarkun']>['data']>[number]
+>;
+interface Props { karkunId: string; }
 
 const columns: any[] = [
   {
@@ -37,7 +34,7 @@ const columns: any[] = [
   {
     title: 'Job / Duty / Shift',
     key: 'shift.name',
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: AttendanceRow) => {
       let name;
       if (record.job) {
         name = record.job.name;
@@ -72,7 +69,7 @@ const columns: any[] = [
 const AttendanceSheets = ({ karkunId }: Props) => {
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX_INT);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_INT);
-  const { data, loading } = useQuery(PAGED_ATTENDANCE_BY_KARKUN as any, {
+  const { data, loading } = useQuery(PAGED_ATTENDANCE_BY_KARKUN, {
     variables: {
       queryString: getQueryString(karkunId, pageIndex, pageSize),
     },
@@ -90,16 +87,19 @@ const AttendanceSheets = ({ karkunId }: Props) => {
 
   if (loading) return null;
 
+  const paged = data?.pagedAttendanceByKarkun;
+  const rows = (paged?.data ?? []).filter((row): row is AttendanceRow => row != null);
+
   return (
-    <AntTable
+    <Table
       rowKey="_id"
       size="small"
       columns={columns as any}
-      dataSource={((data ?? {}) as QueryData).pagedAttendanceByKarkun?.data ?? []}
+      dataSource={rows}
       pagination={false}
       bordered
       footer={() => (
-        <AntPagination
+        <Pagination
           current={pageIndex + 1}
           pageSize={pageSize}
           showSizeChanger
@@ -108,18 +108,11 @@ const AttendanceSheets = ({ karkunId }: Props) => {
           }
           onChange={onChange}
           onShowSizeChange={onShowSizeChange}
-          total={((data ?? {}) as QueryData).pagedAttendanceByKarkun?.totalResults ?? 0}
+          total={paged?.totalResults ?? 0}
         />
       )}
     />
   );
-};
-
-AttendanceSheets.propTypes = {
-  karkunId: PropTypes.string,
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default AttendanceSheets;

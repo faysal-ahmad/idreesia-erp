@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import dayjs from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import { Form } from 'antd';
 
 import {
@@ -8,15 +7,25 @@ import {
   InputTextField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { AuditInfo } from '/imports/ui/modules/common';
+import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
+import type { HrKarkunByIdForKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 
-const AntForm = Form as any;
-const DateInputField = DateField as any;
-const TextField = InputTextField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-const AuditInfoComponent = AuditInfo as any;
-type AnyRecord = Record<string, any>;
-interface Props { karkun: AnyRecord; handleFinish(values: AnyRecord): void; handleCancel?(): void; }
+type KarkunRecord = Partial<NonNullable<HrKarkunByIdForKarkunsQuery['hrKarkunById']>> & {
+  msLastVisitDate?: string | null;
+};
+
+export interface KarkunWazaifFormValues {
+  lastTarteebDate?: Dayjs | null;
+  mehfilRaabta?: string;
+  msRaabta?: string;
+  msLastVisitDate?: Dayjs | null;
+}
+
+interface Props {
+  karkun: KarkunRecord;
+  handleFinish(values: KarkunWazaifFormValues): void;
+  handleCancel?(): void;
+}
 
 const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
@@ -27,8 +36,8 @@ const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }: Props) => {
 
   return (
     <>
-      <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <DateInputField
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <DateField
           fieldName="lastTarteebDate"
           fieldLabel="Last Tarteeb"
           initialValue={
@@ -38,21 +47,21 @@ const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }: Props) => {
           }
         />
 
-        <TextField
+        <InputTextField
           fieldName="mehfilRaabta"
           fieldLabel="Mehfil Visits"
           placeholder="e.g. 3 days a week"
           initialValue={karkun.mehfilRaabta}
         />
 
-        <TextField
+        <InputTextField
           fieldName="msRaabta"
           fieldLabel="Multan Shareef Visits"
           placeholder="e.g. Once every month"
           initialValue={karkun.msRaabta}
         />
 
-        <DateInputField
+        <DateField
           fieldName="msLastVisitDate"
           fieldLabel="Last MS Visit"
           initialValue={
@@ -62,20 +71,14 @@ const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }: Props) => {
           }
         />
 
-        <SaveCancelButtons
+        <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </AntForm>
-      <AuditInfoComponent record={karkun} />
+      </Form>
+      <AuditInfo record={karkun} />
     </>
   );
-};
-
-WazaifAndRaabta.propTypes = {
-  karkun: PropTypes.object,
-  handleFinish: PropTypes.func,
-  handleCancel: PropTypes.func,
 };
 
 export default WazaifAndRaabta;

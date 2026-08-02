@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import dayjs from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import { Divider, Form } from 'antd';
 
 import {
@@ -16,44 +15,63 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { AuditInfo } from '/imports/ui/modules/common';
+import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
+import type { HrKarkunByIdForKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 
-const AntDivider = Divider as any;
-const AntForm = Form as any;
-const AgeInputField = AgeField as any;
-const CascaderInputField = CascaderField as any;
-const DateInputField = DateField as any;
-const EhadDurationInputField = EhadDurationField as any;
-const CnicField = InputCnicField as any;
-const MobileField = InputMobileField as any;
-const TextField = InputTextField as any;
-const SelectInputField = SelectField as any;
-const SwitchInputField = SwitchField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-const AuditInfoComponent = AuditInfo as any;
-type AnyRecord = Record<string, any>;
-interface Props { karkun: AnyRecord; handleFinish(values: AnyRecord): void; handleCancel?(): void; cities?: AnyRecord[]; cityMehfils?: AnyRecord[]; showCityMehfilField?: boolean; allowEhadInfoUpdation?: boolean; }
+type KarkunRecord = Partial<NonNullable<HrKarkunByIdForKarkunsQuery['hrKarkunById']>>;
+interface CityRecord { _id?: string | null; name?: string | null; }
+interface MehfilRecord { _id?: string | null; name?: string | null; cityId?: string | null; }
+
+export interface KarkunGeneralInfoFormValues {
+  name?: string;
+  parentName?: string;
+  cnicNumber?: string;
+  contactNumber1?: string;
+  contactNumber2?: string;
+  emailAddress?: string;
+  currentAddress?: string;
+  permanentAddress?: string;
+  cityIdMehfilId?: Array<string | undefined>;
+  bloodGroup?: string;
+  educationalQualification?: string;
+  meansOfEarning?: string;
+  ehadDate?: Dayjs;
+  birthDate?: Dayjs | null;
+  deathDate?: Dayjs | null;
+  referenceName?: string;
+  ehadKarkun?: boolean;
+  ehadPermissionDate?: Dayjs | null;
+}
+
+interface Props {
+  karkun: KarkunRecord;
+  handleFinish(values: KarkunGeneralInfoFormValues): void;
+  handleCancel?(): void;
+  cities?: CityRecord[];
+  cityMehfils?: MehfilRecord[];
+  showCityMehfilField?: boolean;
+  allowEhadInfoUpdation?: boolean;
+}
 interface LabelValue { label: string; value: string; }
 
 const GeneralInfo = ({
   karkun,
   handleFinish,
   handleCancel,
-  cities,
-  cityMehfils,
-  showCityMehfilField,
-  allowEhadInfoUpdation,
+  cities = [],
+  cityMehfils = [],
+  showCityMehfilField = false,
+  allowEhadInfoUpdation = false,
 }: Props) => {
-  const [form] = AntForm.useForm();
+  const [form] = Form.useForm();
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
 
   const handleFieldsChange = () => {
     setIsFieldsTouched(true);
   }
 
-  const _handleFinish = (values: AnyRecord) => {
+  const _handleFinish = (values: KarkunGeneralInfoFormValues) => {
     const { cnicNumber, contactNumber1 } = values;
     if (!cnicNumber && !contactNumber1) {
       form.setFields([
@@ -73,8 +91,8 @@ const GeneralInfo = ({
 
   return (
     <>
-      <AntForm form={form} layout="horizontal" onFinish={_handleFinish} onFieldsChange={handleFieldsChange}>
-        <TextField
+      <Form form={form} layout="horizontal" onFinish={_handleFinish} onFieldsChange={handleFieldsChange}>
+        <InputTextField
           fieldName="name"
           fieldLabel="Name"
           initialValue={karkun.name}
@@ -82,7 +100,7 @@ const GeneralInfo = ({
           requiredMessage="Please input the name for the karkun."
         />
 
-        <TextField
+        <InputTextField
           fieldName="parentName"
           fieldLabel="S/O"
           initialValue={karkun.parentName}
@@ -90,7 +108,7 @@ const GeneralInfo = ({
           requiredMessage="Please input the parent name for the karkun."
         />
 
-        <AgeInputField
+        <AgeField
           fieldName="birthDate"
           fieldLabel="Age (years)"
           initialValue={
@@ -98,7 +116,7 @@ const GeneralInfo = ({
           }
         />
 
-        <EhadDurationInputField
+        <EhadDurationField
           fieldName="ehadDate"
           fieldLabel="Ehad Duration"
           initialValue={
@@ -108,7 +126,7 @@ const GeneralInfo = ({
           requiredMessage="Please specify the Ehad duration for the karkun."
         />
 
-        <DateInputField
+        <DateField
           fieldName="deathDate"
           fieldLabel="Date of Death"
           initialValue={
@@ -116,7 +134,7 @@ const GeneralInfo = ({
           }
         />
 
-        <TextField
+        <InputTextField
           fieldName="referenceName"
           fieldLabel="R/O"
           initialValue={karkun.referenceName}
@@ -124,21 +142,21 @@ const GeneralInfo = ({
           requiredMessage="Please input the reference name for the karkun."
         />
 
-        <CnicField
+        <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
           initialValue={karkun.cnicNumber || ''}
         />
 
-        <MobileField
+        <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
           initialValue={karkun.contactNumber1 || ''}
         />
 
         {showCityMehfilField ? (
-          <CascaderInputField
-            data={getCityMehfilCascaderData(cities as any, cityMehfils as any)}
+          <CascaderField
+            data={getCityMehfilCascaderData(cities, cityMehfils) ?? []}
             fieldName="cityIdMehfilId"
             fieldLabel="City/Mehfil"
             initialValue={[karkun.cityId, karkun.cityMehfilId]}
@@ -147,16 +165,16 @@ const GeneralInfo = ({
           />
         ) : null}
 
-        <AntDivider />
+        <Divider />
 
-        <SwitchInputField
+        <SwitchField
           fieldName="ehadKarkun"
           fieldLabel="Ehad Karkun"
           disabled={!allowEhadInfoUpdation}
-          initialValue={karkun.ehadKarkun}
+          initialValue={karkun.ehadKarkun ?? undefined}
         />
 
-        <DateInputField
+        <DateField
           fieldName="ehadPermissionDate"
           fieldLabel="Ehad Permission Date"
           disabled={!allowEhadInfoUpdation}
@@ -167,16 +185,16 @@ const GeneralInfo = ({
           }
         />
 
-        <AntDivider />
+        <Divider />
 
-        <TextField
+        <InputTextField
           fieldName="contactNumber2"
           fieldLabel="Home Number"
           initialValue={karkun.contactNumber2}
           required={false}
         />
 
-        <SelectInputField
+        <SelectField<LabelValue>
           fieldName="bloodGroup"
           fieldLabel="Blood Group"
           required={false}
@@ -190,72 +208,54 @@ const GeneralInfo = ({
             { label: 'O-', value: 'O-' },
             { label: 'O+', value: 'O+' },
           ]}
-          getDataValue={({ value }: LabelValue) => value}
-          getDataText={({ label }: LabelValue) => label}
+          getDataValue={({ value }) => value}
+          getDataText={({ label }) => label}
           initialValue={karkun.bloodGroup}
         />
 
-        <TextField
+        <InputTextField
           fieldName="emailAddress"
           fieldLabel="Email"
           initialValue={karkun.emailAddress}
           required={false}
         />
 
-        <TextAreaField
+        <InputTextAreaField
           fieldName="currentAddress"
           fieldLabel="Current Address"
           initialValue={karkun.currentAddress}
           required={false}
         />
 
-        <TextAreaField
+        <InputTextAreaField
           fieldName="permanentAddress"
           fieldLabel="Permanent Address"
           initialValue={karkun.permanentAddress}
           required={false}
         />
 
-        <TextField
+        <InputTextField
           fieldName="educationalQualification"
           fieldLabel="Education"
           initialValue={karkun.educationalQualification}
           required={false}
         />
 
-        <TextAreaField
+        <InputTextAreaField
           fieldName="meansOfEarning"
           fieldLabel="Means of Earning"
           initialValue={karkun.meansOfEarning}
           required={false}
         />
 
-        <SaveCancelButtons
+        <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </AntForm>
-      <AuditInfoComponent record={karkun} />
+      </Form>
+      <AuditInfo record={karkun} />
     </>
   );
-};
-
-GeneralInfo.propTypes = {
-  karkun: PropTypes.object,
-  handleFinish: PropTypes.func,
-  handleCancel: PropTypes.func,
-
-  cities: PropTypes.array,
-  cityMehfils: PropTypes.array,
-  showCityMehfilField: PropTypes.bool,
-  allowEhadInfoUpdation: PropTypes.bool,
-};
-
-GeneralInfo.defaultProps = {
-  cities: [],
-  cityMehfils: [],
-  showCityMehfilField: false,
-  allowEhadInfoUpdation: false,
 };
 
 export default GeneralInfo;

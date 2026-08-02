@@ -1,37 +1,31 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { type match } from 'react-router';
+import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { message } from 'antd';
 import { KarkunsGeneralInfo } from '/imports/ui/modules/common';
+import type { KarkunGeneralInfoFormValues } from '/imports/ui/modules/common/karkuns/general-info';
 import {
-  WithAllCities,
-  WithAllCityMehfils,
-} from 'meteor/idreesia-common/composers/common';
+  useAllCities,
+  useAllCityMehfils,
+} from 'meteor/idreesia-common/hooks/common';
 
 import { HR_KARKUN_BY_ID, UPDATE_HR_KARKUN } from '../gql';
 
-const KarkunsGeneralInfoForm = KarkunsGeneralInfo as any;
-type AnyRecord = Record<string, any>;
-interface HistoryLike { goBack(): void; }
-interface MatchLike { params: { karkunId: string; }; }
-interface QueryData { hrKarkunById?: AnyRecord | null; }
-interface Props { allCities?: AnyRecord[]; allCitiesLoading?: boolean; allCityMehfils?: AnyRecord[]; allCityMehfilsLoading?: boolean; history: HistoryLike; karkunId?: string | null; match: MatchLike; }
+interface Props { history: History; karkunId: string; match: match<{ karkunId: string }>; }
 
 const GeneralInfo = ({
-  allCities,
-  allCitiesLoading,
-  allCityMehfils,
-  allCityMehfilsLoading,
   history,
   karkunId,
   match,
 }: Props) => {
-  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID as any, {
+  const { allCities, allCitiesLoading } = useAllCities();
+  const { allCityMehfils, allCityMehfilsLoading } = useAllCityMehfils();
+  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID, {
     variables: { _id: match.params.karkunId },
   });
-  const [updateHrKarkun] = useMutation(UPDATE_HR_KARKUN as any, {
+  const [updateHrKarkun] = useMutation(UPDATE_HR_KARKUN, {
     refetchQueries: ['pagedHrKarkuns'],
   });
 
@@ -56,11 +50,11 @@ const GeneralInfo = ({
     birthDate,
     deathDate,
     referenceName,
-  }: AnyRecord) => {
+  }: KarkunGeneralInfoFormValues) => {
     updateHrKarkun({
       variables: {
         _id: karkunId,
-        name,
+        name: name ?? '',
         parentName,
         cnicNumber,
         contactNumber1,
@@ -73,9 +67,9 @@ const GeneralInfo = ({
         bloodGroup: bloodGroup || null,
         educationalQualification,
         meansOfEarning,
-        ehadDate,
-        birthDate,
-        deathDate,
+        ehadDate: ehadDate as unknown as string | null | undefined,
+        birthDate: birthDate as unknown as string | null | undefined,
+        deathDate: deathDate as unknown as string | null | undefined,
         referenceName,
       },
     })
@@ -91,8 +85,8 @@ const GeneralInfo = ({
     return null;
 
   return (
-    <KarkunsGeneralInfoForm
-      karkun={(data as QueryData)?.hrKarkunById}
+    <KarkunsGeneralInfo
+      karkun={data?.hrKarkunById ?? {}}
       handleFinish={handleFinish}
       handleCancel={handleCancel}
       showCityMehfilField
@@ -102,19 +96,4 @@ const GeneralInfo = ({
   );
 };
 
-GeneralInfo.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  karkunId: PropTypes.string,
-  allCities: PropTypes.array,
-  allCitiesLoading: PropTypes.bool,
-  allCityMehfils: PropTypes.array,
-  allCityMehfilsLoading: PropTypes.bool,
-};
-
-export default flowRight(
-  WithAllCities(),
-  WithAllCityMehfils()
-)(GeneralInfo as any);
+export default GeneralInfo;

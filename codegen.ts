@@ -1,26 +1,50 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
-  schema: ['types/generated/schema.graphql'],
+  schema: ['idreesia-common/types/schema.graphql'],
   documents: [
     'idreesia-web/{client,imports}/**/*.{ts,tsx}',
     'idreesia-mobile/{client,imports}/**/*.{ts,tsx}',
   ],
   generates: {
-    'types/generated/graphql.ts': {
-      plugins: ['typescript', 'typescript-resolvers'],
+    'idreesia-common/types/graphql.ts': {
+      plugins: ['typescript'],
+      config: {
+        avoidOptionals: false,
+        maybeValue: 'T | null',
+      },
+    },
+    'idreesia-common/types/resolvers.ts': {
+      plugins: [
+        {
+          add: {
+            content: "import type * as Types from './graphql';\n",
+          },
+        },
+        'typescript-resolvers',
+      ],
       config: {
         avoidOptionals: false,
         maybeValue: 'T | null',
         useIndexSignature: true,
+        useTypeImports: true,
+        namespacedImportName: 'Types',
       },
     },
-    'types/generated/client-operations.ts': {
-      plugins: ['typescript-operations'],
+    'idreesia-common/types/client-operations.ts': {
+      plugins: [
+        {
+          add: {
+            content: "import type * as Types from './graphql';\n",
+          },
+        },
+        'typescript-operations',
+      ],
       config: {
         avoidOptionals: false,
-        importSchemaTypesFrom: 'types/generated/graphql',
         maybeValue: 'T | null',
+        onlyOperationTypes: true,
+        namespacedImportName: 'Types',
       },
     },
   },

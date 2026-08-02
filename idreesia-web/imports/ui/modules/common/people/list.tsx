@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { AuditOutlined, DeleteOutlined, DollarOutlined, StarOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
+import type { PagedPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   Pagination,
   Popconfirm,
@@ -12,45 +12,43 @@ import {
 } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-const AntAuditOutlined = AuditOutlined as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntDollarOutlined = DollarOutlined as any;
-const AntStarOutlined = StarOutlined as any;
-const AntPagination = Pagination as any;
-const AntPopconfirm = Popconfirm as any;
-const AntRow = Row as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const PersonNameControl = PersonName as any;
-type AnyRecord = Record<string, any>;
-interface PagedData { totalResults: number; data: AnyRecord[]; }
-interface Props { showSelectionColumn?: boolean; showCategoryColumn?: boolean; showCnicColumn?: boolean; showPhoneNumbersColumn?: boolean; showCityCountryColumn?: boolean; showDeleteAction?: boolean; showAuditLogsAction?: boolean; listHeader?: () => React.ReactNode; handleSelectItem?(record: AnyRecord): void; handleDeleteItem?(record: AnyRecord): void; handleAuditLogsAction?(record: AnyRecord): void; setPageParams(params: { pageIndex: string; pageSize: string; }): void; pageIndex?: number; pageSize?: number; pagedData?: PagedData; }
-interface State { selectedRows: AnyRecord[]; }
+type PersonRow = NonNullable<
+  NonNullable<NonNullable<PagedPeopleQuery['pagedPeople']>['data']>[number]
+>;
+
+interface PagedData {
+  totalResults?: number | null;
+  data?: Array<PersonRow | null> | null;
+}
+
+interface PageParams {
+  pageIndex: string;
+  pageSize: string;
+}
+
+interface Props {
+  showSelectionColumn?: boolean;
+  showCategoryColumn?: boolean;
+  showCnicColumn?: boolean;
+  showPhoneNumbersColumn?: boolean;
+  showCityCountryColumn?: boolean;
+  showDeleteAction?: boolean;
+  showAuditLogsAction?: boolean;
+  listHeader?: () => React.ReactNode;
+  handleSelectItem?(record: PersonRow): void;
+  handleDeleteItem?(record: PersonRow): void;
+  handleAuditLogsAction?(record: PersonRow): void;
+  setPageParams(params: PageParams): void;
+  pageIndex?: number;
+  pageSize?: number;
+  pagedData?: PagedData;
+}
+
+interface State {
+  selectedRows: PersonRow[];
+}
 
 export default class PeopleList extends Component<Props, State> {
-  static propTypes = {
-    showSelectionColumn: PropTypes.bool,
-    showCategoryColumn: PropTypes.bool,
-    showCnicColumn: PropTypes.bool,
-    showPhoneNumbersColumn: PropTypes.bool,
-    showCityCountryColumn: PropTypes.bool,
-    showDeleteAction: PropTypes.bool,
-    showAuditLogsAction: PropTypes.bool,
-
-    listHeader: PropTypes.func,
-    handleSelectItem: PropTypes.func,
-    handleDeleteItem: PropTypes.func,
-    handleAuditLogsAction: PropTypes.func,
-    setPageParams: PropTypes.func,
-
-    pageIndex: PropTypes.number,
-    pageSize: PropTypes.number,
-    pagedData: PropTypes.shape({
-      totalResults: PropTypes.number,
-      data: PropTypes.array,
-    }),
-  };
-
   static defaultProps = {
     showSelectionColumn: false,
     showCategoryColumn: false,
@@ -73,13 +71,13 @@ export default class PeopleList extends Component<Props, State> {
   categoryColumn = {
     title: '',
     key: 'status',
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: PersonRow) => {
       const icons: React.ReactNode[] = [];
       if (record.isKarkun) {
-        icons.push(<AntStarOutlined key="1" className="list-actions-icon" />);
+        icons.push(<StarOutlined key="1" className="list-actions-icon" />);
       }
       if (record.isEmployee) {
-        icons.push(<AntDollarOutlined key="2" className="list-actions-icon" />);
+        icons.push(<DollarOutlined key="2" className="list-actions-icon" />);
       }
 
       if (icons.length === 0) return '';
@@ -90,18 +88,18 @@ export default class PeopleList extends Component<Props, State> {
   nameColumn = {
     title: 'Name',
     key: 'name',
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: PersonRow) => {
       const personNameData = {
         _id: record._id,
-        name: record.sharedData.name,
-        imageId: record.sharedData.imageId,
-        image: record.sharedData.image,
+        name: record.sharedData?.name,
+        imageId: record.sharedData?.imageId,
+        image: record.sharedData?.image,
       };
 
       return (
-        <PersonNameControl
-          person={personNameData}
-          onPersonNameClicked={this.props.handleSelectItem}
+        <PersonName
+          person={personNameData as Parameters<typeof PersonName>[0]['person']}
+          onPersonNameClicked={this.props.handleSelectItem as Parameters<typeof PersonName>[0]['onPersonNameClicked']}
         />
       );
     },
@@ -110,18 +108,18 @@ export default class PeopleList extends Component<Props, State> {
   cnicColumn = {
     title: 'CNIC Number',
     key: 'cnicNumber',
-    render: (_text: unknown, record: AnyRecord) => record.sharedData.cnicNumber,
+    render: (_text: unknown, record: PersonRow) => record.sharedData?.cnicNumber,
   };
 
   phoneNumberColumn = {
     title: 'Contact Number',
     key: 'contactNumber',
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: PersonRow) => {
       const numbers: React.ReactNode[] = [];
       if (record.sharedData?.contactNumber1)
-        numbers.push(<AntRow key="1">{record.sharedData?.contactNumber1}</AntRow>);
-      if (record.sharedData.contactNumber2)
-        numbers.push(<AntRow key="2">{record.sharedData?.contactNumber2}</AntRow>);
+        numbers.push(<Row key="1">{record.sharedData?.contactNumber1}</Row>);
+      if (record.sharedData?.contactNumber2)
+        numbers.push(<Row key="2">{record.sharedData?.contactNumber2}</Row>);
 
       if (numbers.length === 0) return '';
       return <>{numbers}</>;
@@ -131,19 +129,19 @@ export default class PeopleList extends Component<Props, State> {
   cityCountryColumn = {
     title: 'City / Country',
     key: 'cityCountry',
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: PersonRow) => {
       const cityCountry: React.ReactNode[] = [];
       if (record.isKarkun) {
         if (record.karkunData?.city) {
-          cityCountry.push(<AntRow key="1">{record.karkunData.city.name}</AntRow>);
-          cityCountry.push(<AntRow key="2">{record.visitorData.city.country}</AntRow>);
+          cityCountry.push(<Row key="1">{record.karkunData.city.name}</Row>);
+          cityCountry.push(<Row key="2">{(record.visitorData?.city as { country?: string | null } | null)?.country}</Row>);
         }
       } else {
         if (record.visitorData?.city) {
-          cityCountry.push(<AntRow key="1">{record.visitorData?.city}</AntRow>);
+          cityCountry.push(<Row key="1">{record.visitorData?.city}</Row>);
         }
         if (record.visitorData?.country) {
-          cityCountry.push(<AntRow key="2">{record.visitorData?.country}</AntRow>);
+          cityCountry.push(<Row key="2">{record.visitorData?.country}</Row>);
         }
       }
       return <>{cityCountry}</>;
@@ -153,7 +151,7 @@ export default class PeopleList extends Component<Props, State> {
   actionsColumn = {
     key: 'action',
     width: 80,
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: PersonRow) => {
       const {
         showDeleteAction,
         showAuditLogsAction,
@@ -162,18 +160,18 @@ export default class PeopleList extends Component<Props, State> {
       } = this.props;
 
       const auditLogsAction = showAuditLogsAction ? (
-        <AntTooltip title="Audit Logs">
-          <AntAuditOutlined
+        <Tooltip title="Audit Logs">
+          <AuditOutlined
             className="list-actions-icon"
             onClick={() => {
               handleAuditLogsAction?.(record);
             }}
           />
-        </AntTooltip>
+        </Tooltip>
       ) : null;
 
       const deleteAction = showDeleteAction ? (
-        <AntPopconfirm
+        <Popconfirm
           title="Are you sure you want to delete the data for this person?"
           onConfirm={() => {
             handleDeleteItem?.(record);
@@ -181,10 +179,10 @@ export default class PeopleList extends Component<Props, State> {
           okText="Yes"
           cancelText="No"
         >
-          <AntTooltip title="Delete">
-            <AntDeleteOutlined className="list-actions-icon" />
-          </AntTooltip>
-        </AntPopconfirm>
+          <Tooltip title="Delete">
+            <DeleteOutlined className="list-actions-icon" />
+          </Tooltip>
+        </Popconfirm>
       ) : null;
 
       return (
@@ -233,7 +231,7 @@ export default class PeopleList extends Component<Props, State> {
   };
 
   rowSelection = {
-    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: PersonRow[]) => {
       this.setState({
         selectedRows,
       });
@@ -265,17 +263,19 @@ export default class PeopleList extends Component<Props, State> {
     const numPageSize = pageSize || 20;
 
     return (
-      <AntTable
+      <Table
         rowKey="_id"
-        dataSource={data}
+        dataSource={(data ?? []).filter(
+          (person): person is PersonRow => person != null
+        )}
         columns={this.getColumns() as any}
         title={listHeader}
-        rowSelection={showSelectionColumn ? this.rowSelection : null}
+        rowSelection={showSelectionColumn ? this.rowSelection : undefined}
         bordered
         size="small"
         pagination={false}
         footer={() => (
-          <AntPagination
+          <Pagination
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger
@@ -284,7 +284,7 @@ export default class PeopleList extends Component<Props, State> {
             }
             onChange={this.onPaginationChange}
             onShowSizeChange={this.onPaginationChange}
-            total={totalResults}
+            total={totalResults ?? 0}
           />
         )}
       />

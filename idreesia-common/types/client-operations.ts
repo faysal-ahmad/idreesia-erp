@@ -4,6 +4,91 @@ type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 import type * as Types from './graphql';
 
+export type AuditLogFilter = {
+  entityId?: string | null | undefined;
+  operationBy?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+};
+
+export type CityFilter = {
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+  peripheryOf?: string | null | undefined;
+  region?: string | null | undefined;
+};
+
+export type ItemWithQuantityAndPriceInput = {
+  isInflow?: boolean | null | undefined;
+  price?: number | null | undefined;
+  quantity?: number | null | undefined;
+  stockItemId?: string | null | undefined;
+};
+
+export type ItemWithQuantityInput = {
+  isInflow?: boolean | null | undefined;
+  quantity?: number | null | undefined;
+  stockItemId?: string | null | undefined;
+};
+
+export type KarkunFilter = {
+  attendance?: string | null | undefined;
+  bloodGroup?: string | null | undefined;
+  cityId?: string | null | undefined;
+  cityMehfilId?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  dutyId?: string | null | undefined;
+  dutyShiftId?: string | null | undefined;
+  ehadKarkun?: string | null | undefined;
+  isEmployee?: boolean | null | undefined;
+  jobId?: string | null | undefined;
+  lastTarteeb?: string | null | undefined;
+  name?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  predefinedFilterName?: string | null | undefined;
+  predefinedFilterStoreId?: string | null | undefined;
+  region?: string | null | undefined;
+  showEmployees?: string | null | undefined;
+  showVolunteers?: string | null | undefined;
+  updatedBetween?: string | null | undefined;
+  userAccount?: string | null | undefined;
+};
+
+export type PersonFilter = {
+  city?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  name?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+};
+
+export type UserFilter = {
+  moduleAccess?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+  showActive?: string | null | undefined;
+  showInactive?: string | null | undefined;
+  showLocked?: string | null | undefined;
+  showUnlocked?: string | null | undefined;
+};
+
+export type VisitorFilter = {
+  additionalInfo?: string | null | undefined;
+  city?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  dataSource?: string | null | undefined;
+  ehadDate?: string | null | undefined;
+  ehadDuration?: string | null | undefined;
+  name?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  updatedBetween?: string | null | undefined;
+};
+
 export type RegisterUserMutationVariables = Exact<{
   displayName: string;
   email: string;

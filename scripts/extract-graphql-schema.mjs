@@ -5,7 +5,8 @@ import { glob } from 'glob';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const sourceRoot = join(root, 'idreesia-common/server/graphql-api');
-const outputPath = join(root, 'types/generated/schema.graphql');
+const outputDir = join(root, 'idreesia-common/types');
+const outputPath = join(outputDir, 'schema.graphql');
 const graphqlFilePattern = join(sourceRoot, '**/*.{js,jsx,ts,tsx}');
 const gqlTemplatePattern = /gql`([\s\S]*?)`/g;
 
@@ -33,7 +34,7 @@ for (const file of files.sort()) {
   }
 }
 
-await mkdir(join(root, 'types/generated'), { recursive: true });
+await mkdir(outputDir, { recursive: true });
 await writeFile(outputPath, `${schemaParts.filter(Boolean).join('\n\n')}\n`, 'utf8');
 
 console.log(`Extracted ${schemaParts.length - 4} GraphQL SDL blocks to ${outputPath}`);

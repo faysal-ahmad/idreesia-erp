@@ -1,12 +1,19 @@
 import React, { ComponentType } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
+import type {
+  ComposerAllDutyLocationsQuery,
+  ComposerAllDutyLocationsQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
 type AnyProps = Record<string, any>;
-interface QueryData { allDutyLocations?: unknown[] | null; }
 
-const ALL_DUTY_LOCATIONS_QUERY = gql`
+const ALL_DUTY_LOCATIONS_QUERY: TypedDocumentNode<
+  ComposerAllDutyLocationsQuery,
+  ComposerAllDutyLocationsQueryVariables
+> = gql`
   query composerAllDutyLocations {
     allDutyLocations {
       _id
@@ -16,13 +23,13 @@ const ALL_DUTY_LOCATIONS_QUERY = gql`
 `;
 
 export const useAllDutyLocations = () => {
-  const { data, loading, ...queryResult } = useQuery(ALL_DUTY_LOCATIONS_QUERY as any);
+  const { data, loading, ...queryResult } = useQuery(ALL_DUTY_LOCATIONS_QUERY);
 
   return {
     ...queryResult,
     loading,
     allDutyLocationsLoading: loading,
-    allDutyLocations: data ? (data as QueryData).allDutyLocations : null,
+    allDutyLocations: data?.allDutyLocations ?? null,
   };
 };
 

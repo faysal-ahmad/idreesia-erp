@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import type {
   ComposerAllSecurityMehfilDutiesQuery,
   ComposerAllSecurityMehfilDutiesQueryVariables,
-} from '../../../../../../../types/generated/client-operations';
+} from 'meteor/idreesia-common/types/client-operations';
 
 type AnyProps = Record<string, any>;
 

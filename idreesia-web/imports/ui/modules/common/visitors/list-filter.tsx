@@ -1,6 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import dayjs from 'dayjs';
+import React, { type CSSProperties } from 'react';
+import dayjs, { type Dayjs } from 'dayjs';
 import { Button, Collapse, Form, Row } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -16,23 +15,48 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
-const AntButton = Button as any;
-const AntCollapse = Collapse as any;
-const AntForm = Form as any;
-const AntFormItem = (Form as any).Item;
-const AntRow = Row as any;
-const DateRangeInputField = DateRangeField as any;
-const CnicField = InputCnicField as any;
-const MobileField = InputMobileField as any;
-const TextField = InputTextField as any;
-const SelectInputField = SelectField as any;
-const EhadDurationFilterInputField = EhadDurationFilterField as any;
-const RefreshControl = RefreshButton as any;
-type AnyRecord = Record<string, any>;
-interface Props extends AnyRecord { setPageParams(params: AnyRecord): void; refreshData?: () => void; distinctCities?: string[]; }
+interface PageParams {
+  pageIndex: string | number;
+  name?: string;
+  cnicNumber?: string;
+  phoneNumber?: string;
+  city?: string;
+  ehadDuration?: string;
+  additionalInfo?: string;
+  dataSource?: string;
+  updatedBetween?: string;
+}
+
+export interface VisitorListFilterFormValues {
+  name?: string;
+  cnicNumber?: string;
+  phoneNumber?: string;
+  city?: string;
+  ehadDuration?: string;
+  additionalInfo?: string;
+  dataSource?: string;
+  updatedBetween?: [Dayjs | null, Dayjs | null];
+}
+
+interface Props {
+  setPageParams(params: PageParams): void;
+  refreshData?: () => Promise<unknown>;
+  name?: string;
+  cnicNumber?: string;
+  phoneNumber?: string;
+  city?: string;
+  ehadDuration?: string | null;
+  additionalInfo?: string | null;
+  dataSource?: string;
+  updatedBetween?: string;
+  showAdditionalInfoFilter?: boolean;
+  showDataSourceFilter?: boolean;
+  distinctCities?: string[];
+}
+
 interface LabelValue { label: string; value: string; }
 
-const ContainerStyle = {
+const ContainerStyle: CSSProperties = {
   width: '500px',
 };
 
@@ -49,18 +73,18 @@ const ListFilter = ({
   setPageParams,
   refreshData,
   name,
-  cnicNumber,
-  phoneNumber,
-  city,
-  ehadDuration,
-  additionalInfo,
+  cnicNumber = '',
+  phoneNumber = '',
+  city = '',
+  ehadDuration = null,
+  additionalInfo = null,
   dataSource,
   updatedBetween,
-  showAdditionalInfoFilter,
-  showDataSourceFilter,
-  distinctCities,
+  showAdditionalInfoFilter = false,
+  showDataSourceFilter = false,
+  distinctCities = [],
 }: Props) => {
-  const [form] = AntForm.useForm();
+  const [form] = Form.useForm();
 
   const handleReset = () => {
     form.resetFields();
@@ -77,7 +101,7 @@ const ListFilter = ({
     });
   };
 
-  const handleFinish = (values: AnyRecord) => {
+  const handleFinish = (values: VisitorListFilterFormValues) => {
     setPageParams({
       pageIndex: 0,
       name: values.name,
@@ -98,10 +122,10 @@ const ListFilter = ({
     });
   };
 
-  const refreshButton = () => <RefreshControl refreshData={refreshData} />;
+  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   const additionalInfoFilter = showAdditionalInfoFilter ? (
-    <SelectInputField
+    <SelectField
       fieldName="additionalInfo"
       fieldLabel="Additional Info"
       required={false}
@@ -127,7 +151,7 @@ const ListFilter = ({
   ) : null;
 
   const dataSourceFilter = showDataSourceFilter ? (
-    <SelectInputField
+    <SelectField
       fieldName="dataSource"
       fieldLabel="Data Source"
       required={false}
@@ -168,7 +192,7 @@ const ListFilter = ({
   }
 
   const updatedBetweenField = (
-    <DateRangeInputField
+    <DateRangeField
       fieldName="updatedBetween"
       fieldLabel="Updated"
       required={false}
@@ -178,23 +202,23 @@ const ListFilter = ({
   );
 
   return (
-    <AntCollapse
-      style={ContainerStyle as any}
+    <Collapse
+      style={ContainerStyle}
       items={[
         {
           key: '1',
           label: 'Filter',
           extra: refreshButton(),
           children: (
-            <AntForm form={form} layout="horizontal" onFinish={handleFinish}>
-              <TextField
+            <Form form={form} layout="horizontal" onFinish={handleFinish}>
+              <InputTextField
                 fieldName="name"
                 fieldLabel="Name"
                 required={false}
                 fieldLayout={formItemLayout}
                 initialValue={name}
               />
-              <CnicField
+              <InputCnicField
                 fieldName="cnicNumber"
                 fieldLabel="CNIC Number"
                 required={false}
@@ -202,23 +226,23 @@ const ListFilter = ({
                 fieldLayout={formItemLayout}
                 initialValue={cnicNumber}
               />
-              <MobileField
+              <InputMobileField
                 fieldName="phoneNumber"
                 fieldLabel="Phone Number"
                 required={false}
                 fieldLayout={formItemLayout}
                 initialValue={phoneNumber}
               />
-              <SelectInputField
-                data={distinctCities}
-                getDataValue={(cityName: string) => cityName}
-                getDataText={(cityName: string) => cityName}
+              <SelectField
+                data={distinctCities as any}
+                getDataValue={((cityName: string) => cityName) as any}
+                getDataText={((cityName: string) => cityName) as any}
                 initialValue={city}
                 fieldName="city"
                 fieldLabel="City"
                 fieldLayout={formItemLayout}
               />
-              <EhadDurationFilterInputField
+              <EhadDurationFilterField
                 fieldName="ehadDuration"
                 fieldLabel="Ehad Duration"
                 required={false}
@@ -228,51 +252,23 @@ const ListFilter = ({
               {additionalInfoFilter}
               {dataSourceFilter}
               {updatedBetweenField}
-              <AntFormItem {...buttonItemLayout}>
-                <AntRow type="flex" justify="end">
-                  <AntButton type="default" onClick={handleReset}>
+              <Form.Item {...buttonItemLayout}>
+                <Row justify="end">
+                  <Button type="default" onClick={handleReset}>
                     Reset
-                  </AntButton>
+                  </Button>
                   &nbsp;
-                  <AntButton type="primary" htmlType="submit">
+                  <Button type="primary" htmlType="submit">
                     Search
-                  </AntButton>
-                </AntRow>
-              </AntFormItem>
-            </AntForm>
+                  </Button>
+                </Row>
+              </Form.Item>
+            </Form>
           ),
         },
       ]}
     />
   );
-};
-
-ListFilter.propTypes = {
-  showAdditionalInfoFilter: PropTypes.bool,
-  showDataSourceFilter: PropTypes.bool,
-
-  name: PropTypes.string,
-  cnicNumber: PropTypes.string,
-  phoneNumber: PropTypes.string,
-  city: PropTypes.string,
-  ehadDuration: PropTypes.string,
-  additionalInfo: PropTypes.string,
-  updatedBetween: PropTypes.string,
-  dataSource: PropTypes.string,
-  distinctCities: PropTypes.array,
-  setPageParams: PropTypes.func,
-  refreshData: PropTypes.func,
-};
-
-ListFilter.defaultProps = {
-  showAdditionalInfoFilter: false,
-  showDataSourceFilter: false,
-  cnicNumber: '',
-  phoneNumber: '',
-  city: '',
-  additionalInfo: null,
-  ehadDuration: null,
-  distinctCities: [],
 };
 
 export default ListFilter;

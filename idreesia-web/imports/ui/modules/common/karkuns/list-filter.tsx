@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties } from 'react';
+import type { Dayjs } from 'dayjs';
 import { Collapse, Form } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -19,15 +19,83 @@ import {
   getRegionFilterField,
   getUpdatedBetweenFilterField,
   getFormButtons,
+  type CityLookupItem,
+  type FieldValue,
+  type LookupItem,
+  type MehfilLookupItem,
 } from '../field-helpers';
 
-const AntCollapse = Collapse as any;
-const AntForm = Form as any;
-type AnyRecord = Record<string, any>;
-interface PageParams extends AnyRecord { pageIndex: string; }
-interface Props extends AnyRecord { setPageParams(params: PageParams): void; refreshData?: () => Promise<unknown>; mehfilDuties?: AnyRecord[]; cities?: AnyRecord[]; cityMehfils?: AnyRecord[]; regions?: string[]; }
+export interface PageParams {
+  pageIndex: string;
+  name?: string | null;
+  cnicNumber?: string | null;
+  phoneNumber?: string | null;
+  bloodGroup?: string | null;
+  lastTarteeb?: string | null;
+  attendance?: string | null;
+  jobId?: string | null;
+  dutyId?: string | null;
+  dutyShiftId?: string | null;
+  userAccount?: string | null;
+  ehadKarkun?: string | null;
+  cityId?: string | null;
+  cityMehfilId?: string | null;
+  region?: string | null;
+  updatedBetween?: string | null;
+}
 
-const ContainerStyle = {
+interface FilterFormValues {
+  name?: string;
+  cnicNumber?: string;
+  phoneNumber?: string;
+  bloodGroup?: string;
+  lastTarteeb?: string;
+  attendance?: string;
+  jobId?: string;
+  dutyId?: string;
+  dutyShiftId?: string;
+  userAccount?: string;
+  ehadKarkun?: string;
+  cityIdMehfilId?: [string, string] | null;
+  region?: string;
+  updatedBetween?: [Dayjs | null, Dayjs | null] | null;
+}
+
+interface Props {
+  setPageParams(params: PageParams): void;
+  refreshData?: () => Promise<unknown>;
+  mehfilDuties?: LookupItem[];
+  cities?: CityLookupItem[];
+  cityMehfils?: MehfilLookupItem[];
+  regions?: string[];
+  name?: string | null;
+  cnicNumber?: string;
+  phoneNumber?: string | null;
+  bloodGroup?: string | null;
+  lastTarteeb?: string | null;
+  attendance?: string | null;
+  dutyId?: string | null;
+  userAccount?: string | null;
+  ehadKarkun?: string | null;
+  cityId?: string | null;
+  cityMehfilId?: string | null;
+  region?: string | null;
+  updatedBetween?: string | null;
+  showNameFilter?: boolean;
+  showCnicFilter?: boolean;
+  showPhoneNumberFilter?: boolean;
+  showBloodGroupFilter?: boolean;
+  showLastTarteebFilter?: boolean;
+  showAttendanceFilter?: boolean;
+  showMehfilDutyFilter?: boolean;
+  showUserAccountFilter?: boolean;
+  showEhadKarkunFilter?: boolean;
+  showCityMehfilFilter?: boolean;
+  showRegionFilter?: boolean;
+  showUpdatedBetweenFilter?: boolean;
+}
+
+const ContainerStyle: CSSProperties = {
   width: '500px',
 };
 
@@ -36,7 +104,7 @@ const ListFilter = ({
   refreshData,
 
   name,
-  cnicNumber,
+  cnicNumber = '',
   phoneNumber,
   bloodGroup,
   lastTarteeb,
@@ -49,23 +117,23 @@ const ListFilter = ({
   region,
   updatedBetween,
 
-  showNameFilter,
-  showCnicFilter,
-  showPhoneNumberFilter,
-  showBloodGroupFilter,
-  showLastTarteebFilter,
-  showAttendanceFilter,
-  showMehfilDutyFilter,
-  showUserAccountFilter,
-  showEhadKarkunFilter,
-  showCityMehfilFilter,
-  showRegionFilter,
-  showUpdatedBetweenFilter,
+  showNameFilter = true,
+  showCnicFilter = true,
+  showPhoneNumberFilter = true,
+  showBloodGroupFilter = true,
+  showLastTarteebFilter = true,
+  showAttendanceFilter = false,
+  showMehfilDutyFilter = false,
+  showUserAccountFilter = false,
+  showEhadKarkunFilter = false,
+  showCityMehfilFilter = false,
+  showRegionFilter = false,
+  showUpdatedBetweenFilter = true,
 
-  mehfilDuties,
-  cities,
-  cityMehfils,
-  regions,
+  mehfilDuties = [],
+  cities = [],
+  cityMehfils = [],
+  regions = [],
 }: Props) => {
   const handleReset = () => {
     setPageParams({
@@ -88,7 +156,7 @@ const ListFilter = ({
     });
   };
 
-  const handleFinish = (values: AnyRecord) => {
+  const handleFinish = (values: FilterFormValues) => {
     setPageParams({
       pageIndex: '0',
       name: values.name,
@@ -119,15 +187,15 @@ const ListFilter = ({
   const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   return (
-    <AntCollapse
-      style={ContainerStyle as any}
+    <Collapse
+      style={ContainerStyle}
       items={[
         {
           key: '1',
           label: 'Filter',
           extra: refreshButton(),
           children: (
-            <AntForm layout="horizontal" onFinish={handleFinish}>
+            <Form layout="horizontal" onFinish={handleFinish}>
               {showNameFilter ? getNameFilterField(name) : null}
               {showCnicFilter
                 ? getCnicNumberFilterField(cnicNumber)
@@ -148,92 +216,32 @@ const ListFilter = ({
                 ? getUserAccountFilterField(userAccount)
                 : null}
               {showMehfilDutyFilter
-                ? getMehfilDutyFilterField(dutyId, mehfilDuties ?? [])
+                ? getMehfilDutyFilterField(dutyId, mehfilDuties)
                 : null}
               {showEhadKarkunFilter
                 ? getEhadKarkunFilterField(ehadKarkun)
                 : null}
               {showCityMehfilFilter
                 ? getCityMehfilFilterField(
-                    [cityId, cityMehfilId],
-                    cities ?? [],
-                    cityMehfils ?? []
+                    [cityId, cityMehfilId] as FieldValue,
+                    cities,
+                    cityMehfils
                   )
                 : null}
               {showRegionFilter
-                ? getRegionFilterField(region, regions ?? [])
+                ? getRegionFilterField(region, regions)
                 : null}
 
               {showUpdatedBetweenFilter
                 ? getUpdatedBetweenFilterField(updatedBetween)
                 : null}
               {getFormButtons(handleReset)}
-            </AntForm>
+            </Form>
           ),
         },
       ]}
     />
   );
-};
-
-ListFilter.propTypes = {
-  name: PropTypes.string,
-  cnicNumber: PropTypes.string,
-  phoneNumber: PropTypes.string,
-  bloodGroup: PropTypes.string,
-  lastTarteeb: PropTypes.string,
-  attendance: PropTypes.string,
-  jobId: PropTypes.string,
-  dutyId: PropTypes.string,
-  dutyShiftId: PropTypes.string,
-  ehadKarkun: PropTypes.string,
-  cityId: PropTypes.string,
-  cityMehfilId: PropTypes.string,
-  region: PropTypes.string,
-  updatedBetween: PropTypes.string,
-  setPageParams: PropTypes.func,
-  refreshData: PropTypes.func,
-
-  showNameFilter: PropTypes.bool,
-  showCnicFilter: PropTypes.bool,
-  showPhoneNumberFilter: PropTypes.bool,
-  showBloodGroupFilter: PropTypes.bool,
-  showLastTarteebFilter: PropTypes.bool,
-  showAttendanceFilter: PropTypes.bool,
-  showMehfilDutyFilter: PropTypes.bool,
-  showDutyShiftFilter: PropTypes.bool,
-  showUserAccountFilter: PropTypes.bool,
-  showEhadKarkunFilter: PropTypes.bool,
-  showCityMehfilFilter: PropTypes.bool,
-  showRegionFilter: PropTypes.bool,
-  showUpdatedBetweenFilter: PropTypes.bool,
-
-  mehfilDuties: PropTypes.array,
-  cities: PropTypes.array,
-  cityMehfils: PropTypes.array,
-  regions: PropTypes.array,
-};
-
-ListFilter.defaultProps = {
-  cnicNumber: '',
-  showNameFilter: true,
-  showCnicFilter: true,
-  showPhoneNumberFilter: true,
-  showBloodGroupFilter: true,
-  showLastTarteebFilter: true,
-  showAttendanceFilter: false,
-  showMehfilDutyFilter: false,
-  showDutyShiftFilter: false,
-  showUserAccountFilter: false,
-  showEhadKarkunFilter: false,
-  showCityMehfilFilter: false,
-  showRegionFilter: false,
-  showUpdatedBetweenFilter: true,
-
-  mehfilDuties: [],
-  cities: [],
-  cityMehfils: [],
-  regions: [],
 };
 
 export default ListFilter;

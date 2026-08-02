@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { Divider, Form } from 'antd';
+import { type Dayjs } from 'dayjs';
 
 import {
   useDistinctCities,
@@ -17,21 +17,30 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const AntDivider = Divider as any;
-const AntForm = Form as any;
-const AgeInputField = AgeField as any;
-const AutoCompleteInputField = AutoCompleteField as any;
-const EhadDurationInputField = EhadDurationField as any;
-const CnicField = InputCnicField as any;
-const MobileField = InputMobileField as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-type AnyRecord = Record<string, any>;
-interface Props { visitor?: AnyRecord; handleFinish(values: AnyRecord): void; handleCancel?(): void; }
+export interface VisitorNewFormValues {
+  name?: string;
+  parentName?: string;
+  cnicNumber?: string;
+  contactNumber1?: string;
+  contactNumber2?: string;
+  city?: string;
+  country?: string;
+  currentAddress?: string;
+  permanentAddress?: string;
+  ehadDate?: Dayjs;
+  birthDate?: Dayjs | null;
+  referenceName?: string;
+  educationalQualification?: string;
+  meansOfEarning?: string;
+}
+
+interface Props {
+  handleFinish(values: VisitorNewFormValues): void;
+  handleCancel?(): void;
+}
 
 const NewForm = ({ handleFinish, handleCancel }: Props) => {
-  const [form] = AntForm.useForm();
+  const [form] = Form.useForm();
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { distinctCities, distinctCitiesLoading } = useDistinctCities();
   const {
@@ -43,25 +52,13 @@ const NewForm = ({ handleFinish, handleCancel }: Props) => {
     setIsFieldsTouched(true);
   }
 
-  const _handleFinish = (values: AnyRecord) => {
+  const _handleFinish = (values: VisitorNewFormValues) => {
       const { cnicNumber, contactNumber1 } = values;
       if (!cnicNumber && !contactNumber1) {
-        form.setFields({
-          cnicNumber: {
-            errors: [
-              new Error(
-                'Please input the CNIC or Mobile Number for the person'
-              ),
-            ],
-          },
-          contactNumber1: {
-            errors: [
-              new Error(
-                'Please input the CNIC or Mobile Number for the person'
-              ),
-            ],
-          },
-        });
+        form.setFields([
+          { name: 'cnicNumber', errors: ['Please input the CNIC or Mobile Number for the person'] },
+          { name: 'contactNumber1', errors: ['Please input the CNIC or Mobile Number for the person'] },
+        ]);
       } else {
         handleFinish(values);
       }
@@ -70,114 +67,107 @@ const NewForm = ({ handleFinish, handleCancel }: Props) => {
   if (distinctCitiesLoading || distinctCountriesLoading) return null;
 
   return (
-    <AntForm form={form} layout="horizontal" onFinish={_handleFinish}  onFieldsChange={handleFieldsChange}>
-      <TextField
+    <Form form={form} layout="horizontal" onFinish={_handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input the name for the person."
       />
 
-      <TextField
+      <InputTextField
         fieldName="parentName"
         fieldLabel="S/O"
         required
         requiredMessage="Please input the parent name for the person."
       />
 
-      <AgeInputField
+      <AgeField
         fieldName="birthDate"
         fieldLabel="Age (years)"
       />
 
-      <AutoCompleteInputField
+      <AutoCompleteField
         fieldName="city"
         fieldLabel="City"
-        dataSource={distinctCities}
+        dataSource={distinctCities ?? []}
         required
         requiredMessage="Please input the city for the person."
       />
 
-      <AutoCompleteInputField
+      <AutoCompleteField
         fieldName="country"
         fieldLabel="Country"
-        dataSource={distinctCountries}
+        dataSource={distinctCountries ?? []}
         initialValue="Pakistan"
         required
         requiredMessage="Please input the country for the person."
       />
 
-      <TextAreaField
+      <InputTextAreaField
         fieldName="currentAddress"
         fieldLabel="Current Address"
         required={false}
       />
 
-      <TextAreaField
+      <InputTextAreaField
         fieldName="permanentAddress"
         fieldLabel="Permanent Address"
         required={false}
       />
 
-      <AntDivider />
+      <Divider />
 
-      <EhadDurationInputField
+      <EhadDurationField
         fieldName="ehadDate"
         fieldLabel="Ehad Duration"
         required
         requiredMessage="Please specify the Ehad duration for the person."
       />
 
-      <TextField
+      <InputTextField
         fieldName="referenceName"
         fieldLabel="R/O"
         required
         requiredMessage="Please input the reference name for the person."
       />
 
-      <CnicField
+      <InputCnicField
         fieldName="cnicNumber"
         fieldLabel="CNIC Number"
       />
 
-      <MobileField
+      <InputMobileField
         fieldName="contactNumber1"
         fieldLabel="Mobile Number"
       />
 
-      <TextField
+      <InputTextField
         fieldName="contactNumber2"
         fieldLabel="Home Number"
         required={false}
       />
 
-      <AntDivider />
+      <Divider />
 
-      <TextField
+      <InputTextField
         fieldName="educationalQualification"
         fieldLabel="Education"
         required={false}
       />
 
-      <TextAreaField
+      <InputTextAreaField
         fieldName="meansOfEarning"
         fieldLabel="Means of Earning"
         required={false}
       />
 
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
-};
-
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-  handleFinish: PropTypes.func,
-  handleCancel: PropTypes.func,
 };
 
 export default NewForm;

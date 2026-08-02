@@ -1,13 +1,26 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { Select, Form } from 'antd';
 
-const AntFormItem = (Form as any).Item;
-const AntSelect = Select as any;
 type OptionValue = string | number;
-type DataRecord = Record<string, any>;
-interface FieldProps { allowClear?: boolean; dropdownMatchSelectWidth?: boolean; mode?: string; data?: DataRecord[]; getDataValue?(data: DataRecord): OptionValue; getDataText?(data: DataRecord): React.ReactNode; initialValue?: string | string[] | null; fieldLayout?: Record<string, unknown>; fieldName: string; fieldLabel?: string; placeholder?: string; required?: boolean; requiredMessage?: string; onChange?(value: unknown): void; }
+type DefaultRecord = { _id?: string | null; name?: string | null };
+
+interface FieldProps<T> {
+  allowClear?: boolean;
+  dropdownMatchSelectWidth?: boolean;
+  mode?: string;
+  data?: T[];
+  getDataValue?(data: T): OptionValue;
+  getDataText?(data: T): React.ReactNode;
+  initialValue?: string | string[] | null;
+  fieldLayout?: Record<string, unknown>;
+  fieldName: string;
+  fieldLabel?: string;
+  placeholder?: string;
+  required?: boolean;
+  requiredMessage?: string;
+  onChange?(value: unknown): void;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -27,13 +40,13 @@ const formItemLayout = {
  * initialValue: Initial values to set in the form field.
  * handleValueChanged: Callback for whenever the selected value changes.
  */
-const SelectField = ({
+function SelectField<T = DefaultRecord>({
   allowClear = true,
   dropdownMatchSelectWidth = true,
   mode = 'default',
   data = [],
-  getDataValue = ({ _id }) => _id,
-  getDataText = ({ name }) => name,
+  getDataValue,
+  getDataText,
   initialValue = null,
   fieldLayout = formItemLayout,
   fieldName,
@@ -42,15 +55,20 @@ const SelectField = ({
   required,
   requiredMessage,
   onChange,
-}: FieldProps) => {
+}: FieldProps<T>) {
+  const resolveValue =
+    getDataValue ?? ((item: T) => (item as DefaultRecord)._id as OptionValue);
+  const resolveText =
+    getDataText ?? ((item: T) => (item as DefaultRecord).name);
+
   const options: React.ReactNode[] = [];
-  data.forEach((dataObj: DataRecord) => {
-    const value = getDataValue(dataObj);
-    const text = getDataText(dataObj);
+  data.forEach((dataObj) => {
+    const value = resolveValue(dataObj);
+    const text = resolveText(dataObj);
     options.push(
-      <AntSelect.Option key={value} value={value}>
+      <Select.Option key={value} value={value}>
         {text}
-      </AntSelect.Option>
+      </Select.Option>
     );
   });
 
@@ -61,38 +79,21 @@ const SelectField = ({
           message: requiredMessage,
         },
       ]
-    : null;
+    : undefined;
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <AntSelect
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <Select
         placeholder={placeholder}
         onChange={onChange}
         allowClear={allowClear}
-        mode={mode}
+        mode={mode as any}
         dropdownMatchSelectWidth={dropdownMatchSelectWidth}
       >
         {options}
-      </AntSelect>
-    </AntFormItem>
+      </Select>
+    </Form.Item>
   );
 }
-
-SelectField.propTypes = {
-  allowClear: PropTypes.bool,
-  dropdownMatchSelectWidth: PropTypes.bool,
-  mode: PropTypes.string,
-  data: PropTypes.array,
-  getDataValue: PropTypes.func,
-  getDataText: PropTypes.func,
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  placeholder: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
-  initialValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
-  onChange: PropTypes.func,
-};
 
 export default SelectField;

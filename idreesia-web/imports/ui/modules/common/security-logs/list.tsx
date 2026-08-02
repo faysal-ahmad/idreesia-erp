@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
   SecurityOperationType,
   SecurityOperationTypeDisplayName,
@@ -14,44 +12,73 @@ import { PersonName } from '/imports/ui/modules/helpers/controls';
 import PermissionsChangedRenderer from './permissions-changed-renderer';
 import InstanceAccessChangedRenderer from './instance-access-changed-renderer';
 
-const AntPagination = Pagination as any;
-const AntTable = Table as any;
-const PersonNameControl = PersonName as any;
-type AnyRecord = Record<string, any>;
-interface PagedData { totalResults: number; data: AnyRecord[]; }
-interface Props { entityRenderer?(record: AnyRecord): React.ReactNode; listHeader?: () => React.ReactNode; handleSelectItem?(record: AnyRecord): void; handleDeleteItem?(record: AnyRecord): void; setPageParams(params: { pageIndex: number; pageSize?: number; }): void; pageIndex?: number; pageSize?: number; pagedData?: PagedData; allPhysicalStoresLoading?: boolean; allPhysicalStores?: AnyRecord[]; }
-class AuditLogsList extends Component<Props> {
-  static propTypes = {
-    entityRenderer: PropTypes.func,
-    listHeader: PropTypes.func,
-    handleSelectItem: PropTypes.func,
-    handleDeleteItem: PropTypes.func,
-    setPageParams: PropTypes.func,
-
-    allPhysicalStoresLoading: PropTypes.bool,
-    allPhysicalStores: PropTypes.array,
-    pageIndex: PropTypes.number,
-    pageSize: PropTypes.number,
-    pagedData: PropTypes.shape({
-      totalResults: PropTypes.number,
-      data: PropTypes.array,
-    }),
+interface SecurityLogRecord {
+  _id: string;
+  entityId?: string | null;
+  userId?: string | null;
+  userName?: string | null;
+  userImageId?: string | null;
+  operationById?: string | null;
+  operationByName?: string | null;
+  operationByImageId?: string | null;
+  operationType: string;
+  operationTime?: string | null;
+  auditValues?: Array<string | null> | null;
+  operationDetails?: {
+    permissionsAdded?: string[];
+    permissionsRemoved?: string[];
+    instancesAdded?: string[];
+    instancesRemoved?: string[];
   };
+}
 
+interface PagedData {
+  totalResults?: number | null;
+  data?: Array<SecurityLogRecord | null> | null;
+}
+
+interface PageParams {
+  pageIndex: number;
+  pageSize?: number;
+}
+
+interface Props {
+  entityRenderer?(record: SecurityLogRecord): React.ReactNode;
+  listHeader?: () => React.ReactNode;
+  handleSelectItem?(record: SecurityLogRecord): void;
+  handleDeleteItem?(record: SecurityLogRecord): void;
+  setPageParams(params: PageParams): void;
+  pageIndex?: number;
+  pageSize?: number;
+  pagedData?: PagedData;
+  allPhysicalStoresLoading?: boolean;
+  allPhysicalStores?: unknown[];
+}
+
+type PermissionsChangedRecord = React.ComponentProps<
+  typeof PermissionsChangedRenderer
+>['record'];
+
+type InstanceAccessChangedRecord = React.ComponentProps<
+  typeof InstanceAccessChangedRenderer
+>['record'];
+
+class SecurityLogsList extends Component<Props> {
   static defaultProps = {
-    entityRenderer: (record: AnyRecord) => record.entityId,
+    entityRenderer: (record: SecurityLogRecord) => record.entityId,
   };
 
   columns = [
     {
       title: 'User',
       key: 'userId',
-      render: (_text: unknown, record: AnyRecord) => (
-        <PersonNameControl
+      render: (_text: unknown, record: SecurityLogRecord) => (
+        <PersonName
           person={{
+            _id: record.userId ?? record._id,
             name: record.userName,
             imageId: record.userImageId,
-          }}
+          } as Parameters<typeof PersonName>[0]['person']}
         />
       ),
     },
@@ -74,12 +101,13 @@ class AuditLogsList extends Component<Props> {
     {
       title: 'Operation By',
       key: 'operationBy',
-      render: (_text: unknown, record: AnyRecord) => (
-        <PersonNameControl
+      render: (_text: unknown, record: SecurityLogRecord) => (
+        <PersonName
           person={{
+            _id: record.operationById ?? record._id,
             name: record.operationByName,
             imageId: record.operationByImageId,
-          }}
+          } as Parameters<typeof PersonName>[0]['person']}
         />
       ),
     },
@@ -87,14 +115,22 @@ class AuditLogsList extends Component<Props> {
       title: 'Operation Details',
       dataIndex: 'auditValues',
       key: 'auditValues',
-      render: (values: string[] | undefined, record: AnyRecord) => {
+      render: (_values: string[] | undefined, record: SecurityLogRecord) => {
         const { operationType } = record;
         if (operationType === SecurityOperationType.PERMISSIONS_CHANGED) {
-          return <PermissionsChangedRenderer record={record as any} />;
+          return (
+            <PermissionsChangedRenderer
+              record={record as PermissionsChangedRecord}
+            />
+          );
         } else if (
           operationType === SecurityOperationType.INSTANCE_ACCESS_CHANGED
         ) {
-          return <InstanceAccessChangedRenderer record={record as any} />;
+          return (
+            <InstanceAccessChangedRenderer
+              record={record as InstanceAccessChangedRecord}
+            />
+          );
         }
 
         return SecurityOperationTypeDisplayName[operationType];
@@ -124,16 +160,18 @@ class AuditLogsList extends Component<Props> {
     const numPageSize = pageSize || 20;
 
     return (
-      <AntTable
+      <Table
         rowKey="_id"
-        dataSource={data}
+        dataSource={(data ?? []).filter(
+          (log): log is SecurityLogRecord => log != null
+        )}
         columns={this.columns as any}
         bordered
         title={listHeader}
         size="small"
         pagination={false}
         footer={() => (
-          <AntPagination
+          <Pagination
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger
@@ -142,7 +180,7 @@ class AuditLogsList extends Component<Props> {
             }
             onChange={this.onPaginationChange}
             onShowSizeChange={this.onPaginationChange}
-            total={totalResults}
+            total={totalResults ?? 0}
           />
         )}
       />
@@ -150,4 +188,4 @@ class AuditLogsList extends Component<Props> {
   }
 }
 
-export default flowRight()(AuditLogsList as any);
+export default SecurityLogsList;

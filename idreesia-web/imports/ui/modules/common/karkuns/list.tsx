@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import {
   Pagination,
   Popconfirm,
@@ -14,48 +13,55 @@ import {
 } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
+import type { HelperPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-const AntPagination = Pagination as any;
-const AntPopconfirm = Popconfirm as any;
-const AntRow = Row as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const AntAuditOutlined = AuditOutlined as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntMinusCircleOutlined = MinusCircleOutlined as any;
-const PersonNameControl = PersonName as any;
-type AnyRecord = Record<string, any>;
-interface PagedData { totalResults: number; karkuns: AnyRecord[]; }
-interface Props { showSelectionColumn?: boolean; showCnicColumn?: boolean; showPhoneNumbersColumn?: boolean; showDutiesColumn?: boolean; showMehfilCityColumn?: boolean; showDeleteAction?: boolean; showAuditLogsAction?: boolean; showRemoveAction?: boolean; listHeader?: () => React.ReactNode; handleSelectItem?(record: AnyRecord): void; handleDeleteItem?(record: AnyRecord): void; handleRemoveItem?(record: AnyRecord): void; handleAuditLogsAction?(record: AnyRecord): void; setPageParams(params: { pageIndex: string; pageSize: string; }): void; pageIndex?: number; pageSize?: number; pagedData?: PagedData; }
-interface State { selectedRows: AnyRecord[]; }
+type HrKarkunRow = NonNullable<
+  NonNullable<
+    NonNullable<HelperPagedHrKarkunsQuery['pagedHrKarkuns']>['karkuns']
+  >[number]
+>;
+
+interface KarkunListItem extends HrKarkunRow {
+  city?: { name?: string | null; country?: string | null } | null;
+  cityMehfil?: { name?: string | null } | null;
+}
+
+interface PagedData {
+  totalResults?: number | null;
+  karkuns?: Array<KarkunListItem | null> | null;
+}
+
+interface PageParams {
+  pageIndex: string;
+  pageSize: string;
+}
+
+interface Props {
+  showSelectionColumn?: boolean;
+  showCnicColumn?: boolean;
+  showPhoneNumbersColumn?: boolean;
+  showDutiesColumn?: boolean;
+  showMehfilCityColumn?: boolean;
+  showDeleteAction?: boolean;
+  showAuditLogsAction?: boolean;
+  showRemoveAction?: boolean;
+  listHeader?: () => React.ReactNode;
+  handleSelectItem?(record: KarkunListItem): void;
+  handleDeleteItem?(record: KarkunListItem): void;
+  handleRemoveItem?(record: KarkunListItem): void;
+  handleAuditLogsAction?(record: KarkunListItem): void;
+  setPageParams(params: PageParams): void;
+  pageIndex?: number;
+  pageSize?: number;
+  pagedData?: PagedData;
+}
+
+interface State {
+  selectedRows: KarkunListItem[];
+}
 
 export default class KarkunsList extends Component<Props, State> {
-  static propTypes = {
-    showSelectionColumn: PropTypes.bool,
-    showCnicColumn: PropTypes.bool,
-    showPhoneNumbersColumn: PropTypes.bool,
-    showDutiesColumn: PropTypes.bool,
-    showMehfilCityColumn: PropTypes.bool,
-    showDeleteAction: PropTypes.bool,
-    showAuditLogsAction: PropTypes.bool,
-    showRemoveAction: PropTypes.bool,
-
-    listHeader: PropTypes.func,
-    handleSelectItem: PropTypes.func,
-    handleDeleteItem: PropTypes.func,
-    handleRemoveItem: PropTypes.func,
-    handleAuditLogsAction: PropTypes.func,
-    setPageParams: PropTypes.func,
-
-    pageIndex: PropTypes.number,
-    pageSize: PropTypes.number,
-    pagedData: PropTypes.shape({
-      totalResults: PropTypes.number,
-      karkuns: PropTypes.array,
-    }),
-  };
-
   static defaultProps = {
     showRemoveAction: false,
     showDeleteAction: false,
@@ -80,10 +86,10 @@ export default class KarkunsList extends Component<Props, State> {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (_text: unknown, record: AnyRecord) => (
-      <PersonNameControl
-        person={record}
-        onPersonNameClicked={this.props.handleSelectItem}
+    render: (_text: unknown, record: KarkunListItem) => (
+      <PersonName
+        person={record as Parameters<typeof PersonName>[0]['person']}
+        onPersonNameClicked={this.props.handleSelectItem as Parameters<typeof PersonName>[0]['onPersonNameClicked']}
       />
     ),
   };
@@ -97,21 +103,21 @@ export default class KarkunsList extends Component<Props, State> {
   phoneNumberColumn = {
     title: 'Contact Number',
     key: 'contactNumber',
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: KarkunListItem) => {
       const numbers: React.ReactNode[] = [];
       if (record.contactNumber1) {
         numbers.push(
-          <AntRow key="1">
+          <Row key="1">
             <span>{record.contactNumber1}</span>
-          </AntRow>
+          </Row>
         );
       }
 
       if (record.contactNumber2) {
         numbers.push(
-          <AntRow key="2">
+          <Row key="2">
             <span>{record.contactNumber2}</span>
-          </AntRow>
+          </Row>
         );
       }
 
@@ -123,16 +129,16 @@ export default class KarkunsList extends Component<Props, State> {
   mehfilCityColumn = {
     title: 'City / Mehfil',
     key: 'cityMehfil',
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: KarkunListItem) => {
       const { city, cityMehfil } = record;
       const cityMehfilInfo: React.ReactNode[] = [];
 
       if (cityMehfil) {
-        cityMehfilInfo.push(<AntRow key="1">{cityMehfil.name}</AntRow>);
+        cityMehfilInfo.push(<Row key="1">{cityMehfil.name}</Row>);
       }
       if (city) {
         cityMehfilInfo.push(
-          <AntRow key="2">{`${city.name}, ${city.country}`}</AntRow>
+          <Row key="2">{`${city.name}, ${city.country}`}</Row>
         );
       }
 
@@ -145,11 +151,11 @@ export default class KarkunsList extends Component<Props, State> {
     title: 'Duties',
     dataIndex: 'duties',
     key: 'duties',
-    render: (duties: AnyRecord[] = []) => {
+    render: (duties: KarkunListItem['duties'] = []) => {
       let dutyNames: React.ReactNode[] = [];
-      if (duties.length > 0) {
-        dutyNames = duties.map((duty: AnyRecord) => {
-          const dutyName = duty.dutyName;
+      if (duties && duties.length > 0) {
+        dutyNames = duties.map((duty) => {
+          const dutyName = duty?.dutyName;
           return <span>{dutyName}</span>;
         });
       }
@@ -162,7 +168,7 @@ export default class KarkunsList extends Component<Props, State> {
       return (
         <>
           {dutyNames.map((dutyName, index) => (
-            <AntRow key={index}>{dutyName}</AntRow>
+            <Row key={index}>{dutyName}</Row>
           ))}
         </>
       );
@@ -171,7 +177,7 @@ export default class KarkunsList extends Component<Props, State> {
 
   actionsColumn = {
     key: 'action',
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: KarkunListItem) => {
       const {
         showAuditLogsAction,
         showDeleteAction,
@@ -183,18 +189,18 @@ export default class KarkunsList extends Component<Props, State> {
       } = this.props;
 
       const auditLogsAction = showAuditLogsAction ? (
-        <AntTooltip title="Audit Logs">
-          <AntAuditOutlined
+        <Tooltip title="Audit Logs">
+          <AuditOutlined
             className="list-actions-icon"
             onClick={() => {
               handleAuditLogsAction?.(record);
             }}
           />
-        </AntTooltip>
+        </Tooltip>
       ) : null;
 
       const deleteAction = showDeleteAction ? (
-        <AntPopconfirm
+        <Popconfirm
           title="Are you sure you want to delete the data for this karkun?"
           onConfirm={() => {
             handleDeleteItem?.(record);
@@ -202,14 +208,14 @@ export default class KarkunsList extends Component<Props, State> {
           okText="Yes"
           cancelText="No"
         >
-          <AntTooltip title="Delete">
-            <AntDeleteOutlined className="list-actions-icon" />
-          </AntTooltip>
-        </AntPopconfirm>
+          <Tooltip title="Delete">
+            <DeleteOutlined className="list-actions-icon" />
+          </Tooltip>
+        </Popconfirm>
       ) : null;
 
       const removeAction = showRemoveAction ? (
-        <AntPopconfirm
+        <Popconfirm
           title="Are you sure you want to remove this person from karkuns?"
           onConfirm={() => {
             handleRemoveItem?.(record);
@@ -217,10 +223,10 @@ export default class KarkunsList extends Component<Props, State> {
           okText="Yes"
           cancelText="No"
         >
-          <AntTooltip title="Remove from karkuns">
-            <AntMinusCircleOutlined className="list-actions-icon" />
-          </AntTooltip>
-        </AntPopconfirm>
+          <Tooltip title="Remove from karkuns">
+            <MinusCircleOutlined className="list-actions-icon" />
+          </Tooltip>
+        </Popconfirm>
       ) : null;
 
       return (
@@ -268,7 +274,7 @@ export default class KarkunsList extends Component<Props, State> {
   };
 
   rowSelection = {
-    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: KarkunListItem[]) => {
       this.setState({
         selectedRows,
       });
@@ -300,17 +306,19 @@ export default class KarkunsList extends Component<Props, State> {
     const numPageSize = pageSize || 20;
 
     return (
-      <AntTable
+      <Table
         rowKey="_id"
-        dataSource={karkuns}
+        dataSource={(karkuns ?? []).filter(
+          (karkun): karkun is KarkunListItem => karkun != null
+        )}
         columns={this.getColumns() as any}
         title={listHeader}
-        rowSelection={showSelectionColumn ? this.rowSelection : null}
+        rowSelection={showSelectionColumn ? this.rowSelection : undefined}
         bordered
         size="small"
         pagination={false}
         footer={() => (
-          <AntPagination
+          <Pagination
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger
@@ -319,7 +327,7 @@ export default class KarkunsList extends Component<Props, State> {
             }
             onChange={this.onPaginationChange}
             onShowSizeChange={this.onPaginationChange}
-            total={totalResults}
+            total={totalResults ?? 0}
           />
         )}
       />

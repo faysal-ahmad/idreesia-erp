@@ -1,19 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties } from 'react';
 
 import { SecurityOperationTypeDisplayName } from 'meteor/idreesia-common/constants/audit';
 
 import { Row } from 'antd';
 
-const AntRow = Row as any;
 interface SecurityLogRecord { _id: string; operationType: string; operationDetails?: { permissionsAdded?: string[]; permissionsRemoved?: string[]; }; }
 interface Props { record: SecurityLogRecord; }
 
-const PermissionAdded = {
+const PermissionAdded: CSSProperties = {
   color: 'green',
 };
 
-const PermissionRemoved = {
+const PermissionRemoved: CSSProperties = {
   color: 'red',
 };
 
@@ -22,31 +20,27 @@ const PermissionsChangedRenderer = ({ record }: Props) => {
   const { permissionsAdded = [], permissionsRemoved = [] } = operationDetails ?? {};
 
   const permissions: React.ReactNode[] = [
-    <AntRow key={`permission-changed-${record._id}`}>
+    <Row key={`permission-changed-${record._id}`}>
       <span>{SecurityOperationTypeDisplayName[operationType]}</span>
-    </AntRow>,
+    </Row>,
   ];
 
   permissionsAdded.forEach((permission: string, index: number) => {
     permissions.push(
-      <AntRow key={`permission-added-${index}`}>
-        <span style={PermissionAdded as any}>{permission}</span>
-      </AntRow>
+      <Row key={`permission-added-${index}`}>
+        <span style={PermissionAdded}>{permission}</span>
+      </Row>
     );
   });
   permissionsRemoved.forEach((permission: string, index: number) => {
     permissions.push(
-      <AntRow key={`permission-removed-${index}`}>
-        <span style={PermissionRemoved as any}>{permission}</span>
-      </AntRow>
+      <Row key={`permission-removed-${index}`}>
+        <span style={PermissionRemoved}>{permission}</span>
+      </Row>
     );
   });
 
   return <>{permissions}</>;
-};
-
-PermissionsChangedRenderer.propTypes = {
-  record: PropTypes.object,
 };
 
 export default PermissionsChangedRenderer;

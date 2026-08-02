@@ -1,21 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties } from 'react';
 import { Button, Collapse, Form, Row } from 'antd';
 
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 import { InputTextField } from '/imports/ui/modules/helpers/fields';
 
-const AntButton = Button as any;
-const AntCollapse = Collapse as any;
-const AntForm = Form as any;
-const AntFormItem = (Form as any).Item;
-const AntRow = Row as any;
-const RefreshControl = RefreshButton as any;
-const TextField = InputTextField as any;
 interface PageParams { pageIndex: number; entityId?: string | null; dataSource?: string | null; }
-interface Props { entityId?: string | null; dataSource?: string | null; setPageParams(params: PageParams): void; refreshData?: () => void; }
+interface Props { entityId?: string | null; dataSource?: string | null; setPageParams(params: PageParams): void; refreshData?(): Promise<unknown>; }
 
-const ContainerStyle = {
+const ContainerStyle: CSSProperties = {
   width: '500px',
 };
 
@@ -47,51 +39,45 @@ const ListFilter = (props: Props) => {
     });
   };
 
-  const refreshButton = () => <RefreshControl refreshData={refreshData} />;
+  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   const {
     entityId,
   } = props;
 
   return (
-    <AntCollapse
-      style={ContainerStyle as any}
+    <Collapse
+      style={ContainerStyle}
       items={[
         {
           key: '1',
           label: 'Filter',
           extra: refreshButton(),
           children: (
-            <AntForm layout="horizontal" onFinish={handleFinish}>
-              <TextField
+            <Form layout="horizontal" onFinish={handleFinish}>
+              <InputTextField
                 fieldName="entityId"
                 fieldLabel="Entity ID"
                 fieldLayout={formItemLayout}
                 initialValue={entityId}
               />
-              <AntFormItem {...buttonItemLayout}>
-                <AntRow type="flex" justify="end">
-                  <AntButton type="default" onClick={handleReset}>
+              <Form.Item {...buttonItemLayout}>
+                <Row justify="end">
+                  <Button type="default" onClick={handleReset}>
                     Reset
-                  </AntButton>
+                  </Button>
                   &nbsp;
-                  <AntButton type="primary" htmlType="submit">
+                  <Button type="primary" htmlType="submit">
                     Search
-                  </AntButton>
-                </AntRow>
-              </AntFormItem>
-            </AntForm>
+                  </Button>
+                </Row>
+              </Form.Item>
+            </Form>
           ),
         },
       ]}
     />
   );
-};
-
-ListFilter.propTypes = {
-  entityId: PropTypes.string,
-  setPageParams: PropTypes.func,
-  refreshData: PropTypes.func,
 };
 
 export default ListFilter;

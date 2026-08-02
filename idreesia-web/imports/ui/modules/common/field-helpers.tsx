@@ -15,19 +15,16 @@ import {
 
 import { getCityMehfilCascaderData } from './utilities';
 
-const AntButton = Button as any;
-const AntFormItem = (Form as any).Item;
-const AntRow = Row as any;
-const TextField = InputTextField as any;
-const CnicField = InputCnicField as any;
-const SelectInputField = SelectField as any;
-const CascaderInputField = CascaderField as any;
-const DateRangeInputField = DateRangeField as any;
-const AttendanceInputField = AttendanceFilterField as any;
-const LastTarteebInputField = LastTarteebFilterField as any;
-type FieldValue = unknown;
-type AnyRecord = Record<string, any>;
+export type FieldValue = string | string[] | null | undefined;
 interface LabelValue { label: string; value: string; }
+export interface LookupItem {
+  _id?: string | null;
+  name?: string | null;
+}
+export interface CityLookupItem extends LookupItem {}
+export interface MehfilLookupItem extends LookupItem {
+  cityId?: string | null;
+}
 
 const formItemLayout = {
   labelCol: { span: 4 },
@@ -40,7 +37,7 @@ const buttonItemLayout = {
 
 export function getNameFilterField(fieldValue: FieldValue) {
   return (
-    <TextField
+    <InputTextField
       fieldName="name"
       fieldLabel="Name"
       required={false}
@@ -52,7 +49,7 @@ export function getNameFilterField(fieldValue: FieldValue) {
 
 export function getCnicNumberFilterField(fieldValue: FieldValue) {
   return (
-    <CnicField
+    <InputCnicField
       fieldName="cnicNumber"
       fieldLabel="CNIC Number"
       required={false}
@@ -65,7 +62,7 @@ export function getCnicNumberFilterField(fieldValue: FieldValue) {
 
 export function getPhoneNumberFilterField(fieldValue: FieldValue) {
   return (
-    <TextField
+    <InputTextField
       fieldName="phoneNumber"
       fieldLabel="Phone Number"
       required={false}
@@ -77,7 +74,7 @@ export function getPhoneNumberFilterField(fieldValue: FieldValue) {
 
 export function getBloodGroupFilterField(fieldValue: FieldValue) {
   return (
-    <SelectInputField
+    <SelectField
       fieldName="bloodGroup"
       fieldLabel="Blood Group"
       required={false}
@@ -101,7 +98,7 @@ export function getBloodGroupFilterField(fieldValue: FieldValue) {
 
 export function getUserAccountFilterField(fieldValue: FieldValue) {
   return (
-    <SelectInputField
+    <SelectField
       fieldName="userAccount"
       fieldLabel="User Account"
       required={false}
@@ -119,7 +116,7 @@ export function getUserAccountFilterField(fieldValue: FieldValue) {
 
 export function getEhadKarkunFilterField(fieldValue: FieldValue) {
   return (
-    <SelectInputField
+    <SelectField
       fieldName="ehadKarkun"
       fieldLabel="Ehad Karkun"
       required={false}
@@ -137,49 +134,53 @@ export function getEhadKarkunFilterField(fieldValue: FieldValue) {
 
 export function getAttendanceFilterField(fieldValue: FieldValue) {
   return (
-    <AttendanceInputField
+    <AttendanceFilterField
       fieldName="attendance"
       fieldLabel="Attendance"
       required={false}
       fieldLayout={formItemLayout}
-      initialValue={fieldValue}
+      initialValue={fieldValue as string | null | undefined}
     />
   );
 }
 
 export function getLastTarteebFilterField(fieldValue: FieldValue) {
   return (
-    <LastTarteebInputField
+    <LastTarteebFilterField
       fieldName="lastTarteeb"
       fieldLabel="Last Tarteeb"
       required={false}
       fieldLayout={formItemLayout}
-      initialValue={fieldValue}
+      initialValue={fieldValue as string | null | undefined}
     />
   );
 }
 
-export function getMehfilDutyFilterField(fieldValue: FieldValue, duties: AnyRecord[]) {
+export function getMehfilDutyFilterField(fieldValue: FieldValue, duties: LookupItem[]) {
   return (
-    <SelectInputField
+    <SelectField<LookupItem>
       fieldName="dutyId"
       fieldLabel="Duty"
       required={false}
       data={duties}
-      getDataValue={({ _id }: AnyRecord) => _id}
-      getDataText={({ name: _name }: AnyRecord) => _name}
+      getDataValue={({ _id }) => _id as string}
+      getDataText={({ name }) => name}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
     />
   );
 }
 
-export function getCityMehfilFilterField(fieldValue: FieldValue, cities: AnyRecord[], cityMehfils: AnyRecord[]) {
-  const cityMehfilCascaderData = getCityMehfilCascaderData(cities as any, cityMehfils as any);
+export function getCityMehfilFilterField(
+  fieldValue: FieldValue,
+  cities: CityLookupItem[],
+  cityMehfils: MehfilLookupItem[]
+) {
+  const cityMehfilCascaderData = getCityMehfilCascaderData(cities, cityMehfils);
 
   return (
-    <CascaderInputField
-      data={cityMehfilCascaderData}
+    <CascaderField
+      data={cityMehfilCascaderData ?? undefined}
       fieldName="cityIdMehfilId"
       fieldLabel="City/Mehfil"
       fieldLayout={formItemLayout}
@@ -190,13 +191,13 @@ export function getCityMehfilFilterField(fieldValue: FieldValue, cities: AnyReco
 
 export function getRegionFilterField(fieldValue: FieldValue, regions: string[]) {
   return (
-    <SelectInputField
+    <SelectField
       fieldName="region"
       fieldLabel="Region"
       required={false}
-      data={regions}
-      getDataValue={(item: string) => item}
-      getDataText={(item: string) => item}
+      data={regions as any}
+      getDataValue={((item: string) => item) as any}
+      getDataText={((item: string) => item) as any}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
     />
@@ -216,7 +217,7 @@ export function getUpdatedBetweenFilterField(fieldValue: FieldValue) {
   }
 
   return (
-    <DateRangeInputField
+    <DateRangeField
       fieldName="updatedBetween"
       fieldLabel="Updated"
       fieldLayout={formItemLayout}
@@ -227,16 +228,16 @@ export function getUpdatedBetweenFilterField(fieldValue: FieldValue) {
 
 export function getFormButtons(handleReset: () => void) {
   return (
-    <AntFormItem {...buttonItemLayout}>
-      <AntRow type="flex" justify="end">
-        <AntButton type="default" onClick={handleReset}>
+    <Form.Item {...buttonItemLayout}>
+      <Row justify="end">
+        <Button type="default" onClick={handleReset}>
           Reset
-        </AntButton>
+        </Button>
         &nbsp;
-        <AntButton type="primary" htmlType="submit">
+        <Button type="primary" htmlType="submit">
           Search
-        </AntButton>
-      </AntRow>
-    </AntFormItem>
+        </Button>
+      </Row>
+    </Form.Item>
   );
 }

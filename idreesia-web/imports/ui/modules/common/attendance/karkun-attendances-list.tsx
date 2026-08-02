@@ -1,18 +1,33 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties } from 'react';
 import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { Table, Pagination } from 'antd';
 
-const AntPagination = Pagination as any;
-const AntTable = Table as any;
 type AttendanceValue = 'pr' | 'ab' | 'none' | null | undefined;
-type AnyRecord = Record<string, any>;
-interface PagedAttendances { totalResults: number; data: AnyRecord[]; }
-interface Props { pagedAttendances?: PagedAttendances; pageIndex?: number; pageSize?: number; onPageParamsChange?(pageIndex: number, pageSize?: number): void; }
 
-const AttendanceContainer = {
+interface AttendanceRecord {
+  _id?: string | null;
+  month?: string | null;
+  attendanceDetails?: string | null;
+  presentCount?: number | null;
+  absentCount?: number | null;
+  percentage?: number | null;
+}
+
+interface PagedAttendances {
+  totalResults?: number | null;
+  data?: Array<AttendanceRecord | null> | null;
+}
+
+interface Props {
+  pagedAttendances?: PagedAttendances;
+  pageIndex?: number;
+  pageSize?: number;
+  onPageParamsChange?(pageIndex: number, pageSize?: number): void;
+}
+
+const AttendanceContainer: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   alignItems: 'center',
@@ -46,7 +61,7 @@ const columns: any[] = [
     dataIndex: 'attendanceDetails',
     key: 'attendanceDetails',
     width: 1100,
-    render: (text: string | undefined, record: AnyRecord) => {
+    render: (text: string | undefined, record: AttendanceRecord) => {
       const attendanceDetails = text ? JSON.parse(text) : {};
 
       const month = dayjs(`01-${record.month}`, Formats.DATE_FORMAT);
@@ -61,7 +76,7 @@ const columns: any[] = [
         );
       }
 
-      return <div style={AttendanceContainer as any}>{days}</div>;
+      return <div style={AttendanceContainer}>{days}</div>;
     },
   },
   {
@@ -97,16 +112,18 @@ const KarkunAttendancesList = ({
   const { data, totalResults } = pagedAttendances ?? { data: [], totalResults: 0 };
 
   return (
-    <AntTable
+    <Table
       rowKey="_id"
       size="small"
       columns={columns as any}
-      dataSource={data}
+      dataSource={(data ?? []).filter(
+        (record): record is AttendanceRecord => record != null
+      )}
       pagination={false}
       bordered
       scroll={{ x: 1000 }}
       footer={() => (
-        <AntPagination
+        <Pagination
           current={(pageIndex ?? 0) + 1}
           pageSize={pageSize ?? 20}
           showSizeChanger
@@ -115,22 +132,11 @@ const KarkunAttendancesList = ({
           }
           onChange={onPageParamsChange}
           onShowSizeChange={onPageParamsChange}
-          total={totalResults}
+          total={totalResults ?? 0}
         />
       )}
     />
   );
-};
-
-KarkunAttendancesList.propTypes = {
-  pageIndex: PropTypes.number,
-  pageSize: PropTypes.number,
-  onPageParamsChange: PropTypes.func,
-
-  pagedAttendances: PropTypes.shape({
-    totalResults: PropTypes.number,
-    data: PropTypes.array,
-  }),
 };
 
 export default KarkunAttendancesList;

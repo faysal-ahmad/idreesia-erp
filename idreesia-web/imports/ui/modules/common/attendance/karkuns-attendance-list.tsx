@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import dayjs from 'dayjs';
+import React, { Component, type CSSProperties } from 'react';
+import dayjs, { type Dayjs } from 'dayjs';
 import {
   Button,
   Cascader,
@@ -22,49 +21,72 @@ import { Formats } from 'meteor/idreesia-common/constants';
 import { filter, noop, sortBy } from 'meteor/idreesia-common/utilities/lodash';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-const AttendanceContainer = {
+const AttendanceContainer: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   alignItems: 'center',
 };
 
-const AntButton = Button as any;
-const AntCascader = Cascader as any;
-const MonthPicker = (DatePicker as any).MonthPicker;
-const AntDropdown = Dropdown as any;
-const AntModal = Modal as any;
-const AntTable = Table as any;
-const AntCloseCircleOutlined = CloseCircleOutlined as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntLeftOutlined = LeftOutlined as any;
-const AntRightOutlined = RightOutlined as any;
-const AntSaveOutlined = SaveOutlined as any;
-const AntSettingOutlined = SettingOutlined as any;
-const PersonNameControl = PersonName as any;
 type AttendanceValue = 'pr' | 'ab' | null | undefined;
 type AttendanceDetails = Record<string, AttendanceValue>;
-type AnyRecord = Record<string, any>;
-interface Props extends Record<string, any> { readOnly?: boolean; setPageParams(params: AnyRecord): void; handleKarkunSelected?(record: AnyRecord): void; handleCreateMissingAttendances?(): void; handleDeleteSelectedAttendances?(records: AnyRecord[]): void; handleDeleteAllAttendances?(): void; handleUpdateAttendanceDetails?(attendances: Record<string, AttendanceDetails>): void; cities?: AnyRecord[]; cityMehfils?: AnyRecord[]; month?: string; cityId?: string; cityMehfilId?: string; attendance?: AnyRecord[]; }
-interface State { isEditing: boolean; selectedRows: AnyRecord[]; updatedAttendances: Record<string, AttendanceDetails>; }
+
+interface CityRef {
+  _id?: string | null;
+  name?: string | null;
+}
+
+interface CityMehfilRef {
+  _id?: string | null;
+  name?: string | null;
+  cityId?: string | null;
+}
+
+interface KarkunPerson {
+  _id?: string | null;
+  name?: string | null;
+  imageId?: string | null;
+  image?: { data?: string | null } | null;
+}
+
+interface AttendanceRecord {
+  _id: string;
+  month?: string | null;
+  attendanceDetails?: string | null;
+  presentCount?: number | null;
+  absentCount?: number | null;
+  percentage?: number | null;
+  karkun?: KarkunPerson | null;
+}
+
+interface AttendancePageParams {
+  cityId?: string;
+  cityMehfilId?: string;
+  month?: string;
+}
+
+interface Props {
+  readOnly?: boolean;
+  setPageParams(params: AttendancePageParams): void;
+  handleKarkunSelected?(record: AttendanceRecord): void;
+  handleCreateMissingAttendances?(): void;
+  handleDeleteSelectedAttendances?(records: AttendanceRecord[]): void;
+  handleDeleteAllAttendances?(): void;
+  handleUpdateAttendanceDetails?(attendances: Record<string, AttendanceDetails>): void;
+  cities?: CityRef[];
+  cityMehfils?: CityMehfilRef[];
+  month?: string;
+  cityId?: string;
+  cityMehfilId?: string;
+  attendance?: AttendanceRecord[];
+}
+
+interface State {
+  isEditing: boolean;
+  selectedRows: AttendanceRecord[];
+  updatedAttendances: Record<string, AttendanceDetails>;
+}
 
 export default class KarkunsAttendanceList extends Component<Props, State> {
-  static propTypes = {
-    readOnly: PropTypes.bool,
-    setPageParams: PropTypes.func,
-    handleKarkunSelected: PropTypes.func,
-    handleCreateMissingAttendances: PropTypes.func,
-    handleDeleteSelectedAttendances: PropTypes.func,
-    handleDeleteAllAttendances: PropTypes.func,
-    handleUpdateAttendanceDetails: PropTypes.func,
-
-    cities: PropTypes.array,
-    cityMehfils: PropTypes.array,
-    month: PropTypes.string,
-    cityId: PropTypes.string,
-    cityMehfilId: PropTypes.string,
-    attendance: PropTypes.array,
-  };
-
   static defaultProps = {
     readOnly: false,
     setPageParams: noop,
@@ -106,11 +128,11 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
         key: 'karkun.name',
         fixed: 'left',
         width: 220,
-        render: (text: string | undefined, record: AnyRecord) => {
+        render: (_text: string | undefined, record: AttendanceRecord) => {
           const { handleKarkunSelected } = this.props;
           return (
-            <PersonNameControl
-              person={record.karkun}
+            <PersonName
+              person={record.karkun as Parameters<typeof PersonName>[0]['person']}
               onPersonNameClicked={() => {
                 handleKarkunSelected?.(record);
               }}
@@ -123,7 +145,7 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
         dataIndex: 'attendanceDetails',
         key: 'attendanceDetails',
         width: 1100,
-        render: (text: string | undefined, record: AnyRecord) => {
+        render: (text: string | undefined, record: AttendanceRecord) => {
           const { readOnly } = this.props;
           const { updatedAttendances } = this.state;
           let attendanceDetails = updatedAttendances[record._id];
@@ -156,7 +178,7 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
             );
           }
 
-          return <div style={AttendanceContainer as any}>{days}</div>;
+          return <div style={AttendanceContainer}>{days}</div>;
         },
       },
       {
@@ -207,7 +229,7 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
   };
 
   rowSelection = {
-    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: AttendanceRecord[]) => {
       this.setState({
         selectedRows,
       });
@@ -215,7 +237,7 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
   };
 
   handleAttendanceDetailClicked = (
-    record: AnyRecord,
+    record: AttendanceRecord,
     attendanceDetails: AttendanceDetails,
     day: string,
     curentVal: AttendanceValue
@@ -237,22 +259,22 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
     });
   };
 
-  handleSelectionChange = (value: string[]) => {
+  handleSelectionChange = (value: (string | number | null)[]) => {
     const { setPageParams } = this.props;
     setPageParams({
-      cityId: value[0],
-      cityMehfilId: value[1],
+      cityId: value[0] as string | undefined,
+      cityMehfilId: value[1] as string | undefined,
     });
   };
 
-  handleMonthChange = (value: any) => {
+  handleMonthChange = (value: Dayjs | null) => {
     const { setPageParams } = this.props;
     setPageParams({
-      month: value.format(Formats.MONTH_FORMAT),
+      month: value?.format(Formats.MONTH_FORMAT),
     });
   };
 
-  handleMonthGoBack = (value: any) => {
+  handleMonthGoBack = (value: Dayjs) => {
     const { setPageParams } = this.props;
     setPageParams({
       month: value
@@ -262,7 +284,7 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
     });
   };
 
-  handleMonthGoForward = (value: any) => {
+  handleMonthGoForward = (value: Dayjs) => {
     const { setPageParams } = this.props;
     setPageParams({
       month: value
@@ -291,15 +313,15 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
 
   getCityMehfilSelector = () => {
     const { cityId, cityMehfilId, cities, cityMehfils } = this.props;
-    const citiesData = (cities ?? []).map((city: AnyRecord) => {
+    const citiesData = (cities ?? []).map((city) => {
       const mehfils = filter(
         cityMehfils,
-        (cityMehfil: AnyRecord) => cityMehfil.cityId === city._id
+        (cityMehfil) => cityMehfil.cityId === city._id
       );
       const dataItem = {
         label: city.name,
         value: city._id,
-        children: mehfils.map((mehfil: AnyRecord) => ({
+        children: mehfils.map((mehfil) => ({
           value: mehfil._id,
           label: mehfil.name,
         })),
@@ -309,9 +331,9 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
     });
 
     return (
-      <AntCascader
+      <Cascader
         style={{ width: '300px' }}
-        onChange={this.handleSelectionChange}
+        onChange={this.handleSelectionChange as any}
         defaultValue={[cityId, cityMehfilId]}
         options={citiesData}
         expandTrigger="hover"
@@ -329,7 +351,7 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
     if (key === 'delete-selected') {
       const { selectedRows } = this.state;
       if (selectedRows.length === 0) return;
-      AntModal.confirm({
+      Modal.confirm({
         title: 'Delete Selected Attendances',
         content:
           'Are you sure you want to delete the selected attendances?',
@@ -338,7 +360,7 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
         },
       });
     } else if (key === 'delete-all') {
-      AntModal.confirm({
+      Modal.confirm({
         title: 'Delete All Attendances',
         content:
           'Are you sure you want to delete all attendances for this month?',
@@ -357,17 +379,17 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
     if (isEditing) {
       return (
         <div>
-          <AntButton icon={<AntCloseCircleOutlined />} onClick={this.handleCancelAttendances}>
+          <Button icon={<CloseCircleOutlined />} onClick={this.handleCancelAttendances}>
             Cancel
-          </AntButton>
+          </Button>
           &nbsp;
-          <AntButton
+          <Button
             type="primary"
-            icon={<AntSaveOutlined />}
+            icon={<SaveOutlined />}
             onClick={this.handleSaveAttendances}
           >
             Save
-          </AntButton>
+          </Button>
         </div>
       );
     }
@@ -376,19 +398,19 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
       {
         key: 'delete-selected',
         label: 'Delete Selected Attendances',
-        icon: <AntDeleteOutlined />,
+        icon: <DeleteOutlined />,
       },
       {
         key: 'delete-all',
         label: 'Delete All Attendances',
-        icon: <AntDeleteOutlined />,
+        icon: <DeleteOutlined />,
       },
     ];
 
     return (
-      <AntDropdown menu={{ items, onClick: this.handleAction }}>
-        <AntButton icon={<AntSettingOutlined />}>Actions</AntButton>
-      </AntDropdown>
+      <Dropdown menu={{ items, onClick: this.handleAction }}>
+        <Button icon={<SettingOutlined />}>Actions</Button>
+      </Dropdown>
     );
   };
 
@@ -400,26 +422,27 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
         <div className="list-table-header-section">
           {this.getCityMehfilSelector()}
           &nbsp;&nbsp;
-          <AntButton
+          <Button
             type="primary"
             shape="circle"
-            icon={<AntLeftOutlined />}
+            icon={<LeftOutlined />}
             onClick={() => {
               this.handleMonthGoBack(_month);
             }}
           />
           &nbsp;&nbsp;
-          <MonthPicker
+          <DatePicker
+            picker="month"
             allowClear={false}
             format="MMM, YYYY"
             onChange={this.handleMonthChange}
             value={_month}
           />
           &nbsp;&nbsp;
-          <AntButton
+          <Button
             type="primary"
             shape="circle"
-            icon={<AntRightOutlined />}
+            icon={<RightOutlined />}
             onClick={() => {
               this.handleMonthGoForward(_month);
             }}
@@ -430,18 +453,19 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
     );
   };
 
-  sortedAttendance = (attendance: AnyRecord[] = []) => sortBy(attendance, 'karkun.name');
+  sortedAttendance = (attendance: AttendanceRecord[] = []) =>
+    sortBy(attendance, 'karkun.name');
 
   render() {
     const { attendance, readOnly } = this.props;
 
     return (
-      <AntTable
+      <Table
         rowKey="_id"
         size="small"
         title={this.getTableHeader}
         columns={this.getColumns() as any}
-        rowSelection={readOnly ? null : this.rowSelection}
+        rowSelection={readOnly ? undefined : this.rowSelection}
         dataSource={this.sortedAttendance(attendance ?? [])}
         pagination={false}
         scroll={{ x: 1000 }}

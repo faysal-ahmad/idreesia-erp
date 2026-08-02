@@ -1,0 +1,20 @@
+/*
+ * Security visitors list — page-specific row tinting only.
+ * Shared list/filter/table chrome lives in main.css (.list-*).
+ */
+
+.list-table .ant-table-tbody > tr.visitors-list-row-warning > td {
+  background: #fff7e6 !important;
+}
+
+.list-table .ant-table-tbody > tr.visitors-list-row-alert > td {
+  background: #fff1f0 !important;
+}
+
+.list-table .ant-table-tbody > tr.visitors-list-row-warning:hover > td {
+  background: #ffe7ba !important;
+}
+
+.list-table .ant-table-tbody > tr.visitors-list-row-alert:hover > td {
+  background: #ffccc7 !important;
+}

@@ -1,5 +1,5 @@
-import React, { Component, type CSSProperties } from 'react';
-import { AuditOutlined, DeleteOutlined, HistoryOutlined, PlusCircleOutlined, WalletOutlined, WarningTwoTone } from '@ant-design/icons';
+import React, { Component } from 'react';
+import { AuditOutlined, DeleteOutlined, HistoryOutlined, PlusCircleOutlined, WalletOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -10,10 +10,6 @@ import {
   Tooltip,
 } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
-
-const StatusStyle: CSSProperties = {
-  fontSize: 20,
-};
 
 export interface VisitorListItem {
   _id: string;
@@ -34,7 +30,6 @@ interface PagedData { totalResults: number; data: VisitorListItem[]; }
 
 interface Props {
   showSelectionColumn?: boolean;
-  showStatusColumn?: boolean;
   showCnicColumn?: boolean;
   showPhoneNumbersColumn?: boolean;
   showCityCountryColumn?: boolean;
@@ -56,7 +51,13 @@ interface Props {
   pagedData?: PagedData;
 }
 
-interface State { selectedRows: VisitorListItem[]; }
+interface State {
+  selectedRows: VisitorListItem[];
+  scrollY: number;
+}
+
+const TABLE_HEADER_ROW_HEIGHT = 55;
+const VIEWPORT_BOTTOM_GAP = 16;
 
 export default class VisitorsList extends Component<Props, State> {
   static defaultProps = {
@@ -75,32 +76,55 @@ export default class VisitorsList extends Component<Props, State> {
     listHeader: () => null,
   };
 
-  state = {
+  containerRef = React.createRef<HTMLDivElement>();
+
+  state: State = {
     selectedRows: [],
+    scrollY: 360,
   };
 
-  statusColumn = {
-    title: '',
-    key: 'status',
-    render: (_text: unknown, record: VisitorListItem) => {
-      if (record.criminalRecord) {
-        return (
-          <WarningTwoTone
-            style={StatusStyle}
-            twoToneColor="red"
-          />
-        );
-      } else if (record.otherNotes) {
-        return (
-          <WarningTwoTone
-            style={StatusStyle}
-            twoToneColor="orange"
-          />
-        );
-      }
+  componentDidMount() {
+    this.updateScrollY();
+    window.addEventListener('resize', this.updateScrollY);
+  }
 
-      return null;
-    },
+  componentDidUpdate() {
+    this.updateScrollY();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateScrollY);
+  }
+
+  updateScrollY = () => {
+    const container = this.containerRef.current;
+    if (!container) return;
+
+    const table = container.querySelector('.list-table');
+    if (!table) return;
+
+    const title = table.querySelector('.ant-table-title');
+    const footer = table.querySelector('.ant-table-footer');
+    const titleBottom = title
+      ? title.getBoundingClientRect().bottom
+      : table.getBoundingClientRect().top;
+    const footerHeight = footer
+      ? (footer as HTMLElement).offsetHeight
+      : 64;
+    const nextScrollY = Math.max(
+      240,
+      Math.floor(
+        window.innerHeight -
+          titleBottom -
+          TABLE_HEADER_ROW_HEIGHT -
+          footerHeight -
+          VIEWPORT_BOTTOM_GAP
+      )
+    );
+
+    if (Math.abs(nextScrollY - this.state.scrollY) > 2) {
+      this.setState({ scrollY: nextScrollY });
+    }
   };
 
   nameColumn = {
@@ -126,11 +150,13 @@ export default class VisitorsList extends Component<Props, State> {
     title: 'CNIC Number',
     dataIndex: 'cnicNumber',
     key: 'cnicNumber',
+    width: 170,
   };
 
   phoneNumberColumn = {
     title: 'Contact Number',
     key: 'contactNumber',
+    width: 160,
     render: (_text: unknown, record: VisitorListItem) => {
       const numbers: React.ReactNode[] = [];
       if (record.contactNumber1)
@@ -146,6 +172,7 @@ export default class VisitorsList extends Component<Props, State> {
   cityCountryColumn = {
     title: 'City / Country',
     key: 'cityCountry',
+    width: 200,
     render: (_text: unknown, record: VisitorListItem) => {
       if (record.city) {
         return `${record.city}, ${record.country}`;
@@ -156,7 +183,7 @@ export default class VisitorsList extends Component<Props, State> {
 
   actionsColumn = {
     key: 'action',
-    width: 80,
+    width: 100,
     render: (_text: unknown, record: VisitorListItem) => {
       const {
         showDeleteAction,
@@ -249,7 +276,6 @@ export default class VisitorsList extends Component<Props, State> {
 
   getColumns = () => {
     const {
-      showStatusColumn,
       showCnicColumn,
       showPhoneNumbersColumn,
       showCityCountryColumn,
@@ -260,10 +286,6 @@ export default class VisitorsList extends Component<Props, State> {
     } = this.props;
 
     const columns: any[] = [];
-    if (showStatusColumn) {
-      columns.push(this.statusColumn);
-    }
-
     columns.push(this.nameColumn);
 
     if (showCnicColumn) {
@@ -291,6 +313,7 @@ export default class VisitorsList extends Component<Props, State> {
   };
 
   rowSelection = {
+    columnWidth: 48,
     onChange: (_selectedRowKeys: React.Key[], selectedRows: VisitorListItem[]) => {
       this.setState({
         selectedRows,
@@ -308,6 +331,12 @@ export default class VisitorsList extends Component<Props, State> {
 
   getSelectedRows = () => this.state.selectedRows;
 
+  getRowClassName = (record: VisitorListItem) => {
+    if (record.criminalRecord) return 'visitors-list-row-alert';
+    if (record.otherNotes) return 'visitors-list-row-warning';
+    return '';
+  };
+
   render() {
     const {
       pageIndex,
@@ -322,30 +351,38 @@ export default class VisitorsList extends Component<Props, State> {
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;
 
+    const { scrollY } = this.state;
+
     return (
-      <Table
-        rowKey="_id"
-        dataSource={data}
-        columns={this.getColumns() as any}
-        title={listHeader}
-        rowSelection={showSelectionColumn ? this.rowSelection : undefined}
-        bordered
-        size="small"
-        pagination={false}
-        footer={() => (
-          <Pagination
-            current={numPageIndex}
-            pageSize={numPageSize}
-            showSizeChanger
-            showTotal={(total: number, range: [number, number]) =>
-              `${range[0]}-${range[1]} of ${total} items`
-            }
-            onChange={this.onPaginationChange}
-            onShowSizeChange={this.onPaginationChange}
-            total={totalResults}
-          />
-        )}
-      />
+      <div className="list-container" ref={this.containerRef}>
+        <Table
+          className="list-table"
+          rowKey="_id"
+          dataSource={data}
+          columns={this.getColumns() as any}
+          title={listHeader}
+          rowSelection={showSelectionColumn ? this.rowSelection : undefined}
+          rowClassName={this.getRowClassName}
+          size="middle"
+          bordered
+          tableLayout="fixed"
+          pagination={false}
+          scroll={{ y: scrollY }}
+          footer={() => (
+            <Pagination
+              current={numPageIndex}
+              pageSize={numPageSize}
+              showSizeChanger
+              showTotal={(total: number, range: [number, number]) =>
+                `${range[0]}-${range[1]} of ${total} visitors`
+              }
+              onChange={this.onPaginationChange}
+              onShowSizeChange={this.onPaginationChange}
+              total={totalResults}
+            />
+          )}
+        />
+      </div>
     );
   }
 }

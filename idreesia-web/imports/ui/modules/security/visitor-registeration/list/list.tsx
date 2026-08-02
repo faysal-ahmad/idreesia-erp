@@ -1,10 +1,11 @@
-import React, { useRef, useState, type CSSProperties } from 'react';
+import React, { useRef, useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client/react';
 import {
   Button,
   Drawer,
   Dropdown,
+  Space,
   message,
 } from 'antd';
 import {
@@ -22,18 +23,16 @@ import {
 import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
-import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
+import {
+  VisitorsList,
+  VisitorsListFilter,
+  VisitorFilterChips,
+} from '/imports/ui/modules/common';
 import type { VisitorListItem } from '/imports/ui/modules/common/visitors/list';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { PAGED_SECURITY_VISITORS, DELETE_SECURITY_VISITOR } from '../gql';
-
-const ButtonGroupStyle: CSSProperties = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  alignItems: 'center',
-};
 
 type VisitorRecord = VisitorListItem;
 
@@ -55,7 +54,6 @@ const List = ({ history, location }: Props) => {
       'city',
       'ehadDuration',
       'additionalInfo',
-      'dataSource',
       'updatedBetween',
       'pageIndex',
       'pageSize',
@@ -77,7 +75,6 @@ const List = ({ history, location }: Props) => {
     city,
     ehadDuration,
     additionalInfo,
-    dataSource,
     updatedBetween,
     pageIndex,
     pageSize,
@@ -96,7 +93,6 @@ const List = ({ history, location }: Props) => {
     city?: string;
     ehadDuration?: string;
     additionalInfo?: string;
-    dataSource?: string;
     updatedBetween?: string;
   }) => {
     setPageParams(params);
@@ -203,45 +199,45 @@ const List = ({ history, location }: Props) => {
 
     return (
       <Dropdown menu={{ items: menuItems }}>
-        <Button icon={<SettingOutlined />} size="large" />
+        <Button icon={<SettingOutlined />} />
       </Dropdown>
     );
   };
 
+  const filterProps = {
+    name: name as string | undefined,
+    cnicNumber: cnicNumber as string | undefined,
+    phoneNumber: phoneNumber as string | undefined,
+    city: city as string | undefined,
+    ehadDuration: ehadDuration as string | undefined,
+    additionalInfo: additionalInfo as string | undefined,
+    updatedBetween: updatedBetween as string | undefined,
+    showAdditionalInfoFilter: true,
+    distinctCities: distinctCities ?? [],
+    setPageParams: handleFilterSetPageParams,
+    refreshData,
+  };
+
   const getTableHeader = () => (
     <div className="list-table-header">
-      <div style={ButtonGroupStyle}>
+      <Space size={12}>
         <Button
           type="primary"
           icon={<PlusCircleOutlined />}
-          size="large"
           onClick={handleNewClicked}
         >
           New Visitor
         </Button>
-        &nbsp;&nbsp;
-        <Button icon={<ScanOutlined />} size="large" onClick={handleScanClicked}>
+        <Button icon={<ScanOutlined />} onClick={handleScanClicked}>
           Scan CNIC
         </Button>
-      </div>
-      <div className="list-table-header-section">
-        <VisitorsListFilter
-          name={name as string | undefined}
-          cnicNumber={cnicNumber as string | undefined}
-          phoneNumber={phoneNumber as string | undefined}
-          city={city as string | undefined}
-          ehadDuration={ehadDuration as string | undefined}
-          additionalInfo={additionalInfo as string | undefined}
-          dataSource={dataSource as string | undefined}
-          updatedBetween={updatedBetween as string | undefined}
-          showAdditionalInfoFilter
-          showDataSourceFilter
-          distinctCities={distinctCities ?? []}
-          setPageParams={handleFilterSetPageParams}
-          refreshData={refreshData}
-        />
-        &nbsp;&nbsp;
-        {getActionsMenu()}
+      </Space>
+      <div className="list-table-header-utilities">
+        <Space size={8}>
+          <VisitorsListFilter {...filterProps} />
+          {getActionsMenu()}
+        </Space>
+        <VisitorFilterChips {...filterProps} />
       </div>
     </div>
   );
@@ -261,7 +257,6 @@ const List = ({ history, location }: Props) => {
       <VisitorsList
         ref={visitorsList}
         showSelectionColumn
-        showStatusColumn
         showCnicColumn
         showPhoneNumbersColumn
         showCityCountryColumn

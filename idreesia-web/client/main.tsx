@@ -20,6 +20,7 @@ import './attendance.css';
 import './karkun-cards.css';
 import './mehfil-cards.css';
 import './stay-cards.css';
+import './security-visitors-list.css';
 
 import App from '../imports/ui/app';
 import combinedReducer from '../imports/ui/reducers/combined-reducer';

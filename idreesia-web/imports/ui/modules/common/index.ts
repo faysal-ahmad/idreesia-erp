@@ -10,7 +10,10 @@ export { default as KarkunsGeneralInfo } from './karkuns/general-info';
 export { default as KarkunsWazaifAndRaabta } from './karkuns/wazaif-and-raabta';
 
 export { default as VisitorsList } from './visitors/list';
-export { default as VisitorsListFilter } from './visitors/list-filter';
+export {
+  default as VisitorsListFilter,
+  VisitorFilterChips,
+} from './visitors/list-filter';
 export { default as VisitorsNewForm } from './visitors/new-form';
 export { default as VisitorsGeneralInfo } from './visitors/general-info';
 

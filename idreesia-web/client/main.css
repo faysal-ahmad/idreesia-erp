@@ -66,12 +66,25 @@ form {
   width: 600px;
 }
 
+/*
+ * Shared list chrome used across modules.
+ * Page-specific overrides belong in dedicated client/*.css files
+ * (e.g. security-visitors-list.css for visitor row tinting).
+ */
+.list-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
 .list-table-header {
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
+  gap: 12px;
 }
 
 .list-table-header-section {
@@ -79,6 +92,16 @@ form {
   flex-flow: row nowrap;
   justify-content: left;
   align-items: center;
+  gap: 8px;
+}
+
+.list-table-header-utilities {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: 0;
+  max-width: 65%;
 }
 
 .list-actions-column {
@@ -93,6 +116,85 @@ form {
   cursor: pointer;
   font-size: 20px;
   padding-right: 7px;
+}
+
+.list-filter-chips {
+  width: 100%;
+}
+
+.list-filter-panel,
+.list-filter-panel form {
+  width: 640px !important;
+  max-width: 640px;
+  overflow: visible;
+}
+
+.list-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.list-table .ant-table-container {
+  border: 1px solid #d0d5dd !important;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.list-table .ant-table-thead > tr > th {
+  background: #f3f4f6 !important;
+  border-bottom: 1px solid #d0d5dd !important;
+  color: #344054;
+  font-weight: 600;
+}
+
+.list-table .ant-table-thead > tr > th:not(:last-child),
+.list-table .ant-table-tbody > tr > td:not(:last-child) {
+  border-inline-end: 1px solid #cfd4dc !important;
+}
+
+.list-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #cfd4dc !important;
+}
+
+.list-table .ant-table-tbody > tr:hover > td {
+  background: #f5f9ff !important;
+}
+
+.list-table .ant-table-footer {
+  border-top: 1px solid #d0d5dd;
+  background: #fafafa;
+}
+
+/*
+ * With scroll.y, antd splits header/body tables and often ignores
+ * rowSelection.columnWidth; also vertical scrollbar can trigger a
+ * horizontal scrollbar. Lock selection width and allow only Y scroll.
+ */
+.list-table .ant-table-header,
+.list-table .ant-table-body,
+.list-table .ant-table-content {
+  overflow-x: hidden !important;
+}
+
+.list-table .ant-table-body {
+  overflow-y: auto !important;
+}
+
+.list-table .ant-table-header table,
+.list-table .ant-table-body table {
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.list-table .ant-table-header colgroup col.ant-table-selection-col,
+.list-table .ant-table-body colgroup col.ant-table-selection-col,
+.list-table .ant-table-header colgroup col:first-child,
+.list-table .ant-table-body colgroup col:first-child,
+.list-table th.ant-table-selection-column,
+.list-table td.ant-table-selection-column {
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
 }
 
 @media print {

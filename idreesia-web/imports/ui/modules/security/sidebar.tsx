@@ -1,4 +1,4 @@
-import React, { type CSSProperties } from 'react';
+import React, { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { type History } from 'history';
 import {
   AuditOutlined,
@@ -118,63 +118,164 @@ interface MenuClickInfo {
   key: string;
 }
 
+interface MenuRouteMatch {
+  key: string;
+  openKey: string;
+  subModuleName: string;
+  matches: (pathname: string) => boolean;
+}
+
+const isPath = (pathname: string, basePath: string) =>
+  pathname === basePath || pathname.startsWith(`${basePath}/`);
+
+const menuRouteMatches: MenuRouteMatch[] = [
+  {
+    key: 'mehfils',
+    openKey: 'mehfil-management',
+    subModuleName: SubModuleNames.mehfils,
+    matches: (pathname) => isPath(pathname, paths.mehfilsPath),
+  },
+  {
+    key: 'mehfil-card-verification',
+    openKey: 'mehfil-management',
+    subModuleName: SubModuleNames.mehfilCardVerification,
+    matches: (pathname) => isPath(pathname, paths.mehfilCardVerificationPath),
+  },
+  {
+    key: 'visitor-list',
+    openKey: 'visitors',
+    subModuleName: SubModuleNames.visitorList,
+    matches: (pathname) =>
+      isPath(pathname, paths.visitorRegistrationListPath) ||
+      pathname === paths.visitorRegistrationNewFormPath ||
+      pathname === paths.visitorRegistrationUploadFormPath ||
+      (pathname.startsWith(`${paths.visitorRegistrationPath}/`) &&
+        !isPath(pathname, paths.visitorRegistrationListPath)),
+  },
+  {
+    key: 'visitor-registration',
+    openKey: 'visitors',
+    subModuleName: SubModuleNames.visitorRegistration,
+    matches: (pathname) => pathname === paths.visitorRegistrationPath,
+  },
+  {
+    key: 'visitor-card-verification',
+    openKey: 'visitors',
+    subModuleName: SubModuleNames.visitorCardVerification,
+    matches: (pathname) => isPath(pathname, paths.visitorCardVerificationPath),
+  },
+  {
+    key: 'visitor-stay-report',
+    openKey: 'visitors',
+    subModuleName: SubModuleNames.visitorStayReport,
+    matches: (pathname) => isPath(pathname, paths.visitorStayReportPath),
+  },
+  {
+    key: 'mehfil-duties',
+    openKey: 'setup',
+    subModuleName: SubModuleNames.mehfilDuties,
+    matches: (pathname) => isPath(pathname, paths.mehfilDutiesPath),
+  },
+  {
+    key: 'mehfil-langar-dishes',
+    openKey: 'setup',
+    subModuleName: SubModuleNames.mehfilLangarDishes,
+    matches: (pathname) => isPath(pathname, paths.mehfilLangarDishesPath),
+  },
+  {
+    key: 'mehfil-langar-locations',
+    openKey: 'setup',
+    subModuleName: SubModuleNames.mehfilLangarLocations,
+    matches: (pathname) => isPath(pathname, paths.mehfilLangarLocationsPath),
+  },
+  {
+    key: 'security-user-accounts',
+    openKey: 'administration',
+    subModuleName: SubModuleNames.securityUsers,
+    matches: (pathname) => isPath(pathname, paths.securityUsersPath),
+  },
+  {
+    key: 'audit-logs',
+    openKey: 'administration',
+    subModuleName: SubModuleNames.auditLogs,
+    matches: (pathname) => isPath(pathname, paths.auditLogsPath),
+  },
+];
+
+const resolveMenuFromPath = (pathname: string): MenuRouteMatch | null =>
+  menuRouteMatches.find((entry) => entry.matches(pathname)) ?? null;
+
 const Sidebar = ({ history }: SidebarProps) => {
   const { setActiveSubModuleName } = useActiveModule();
+  const [pathname, setPathname] = useState(history.location.pathname);
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+
+  useEffect(() => {
+    const unlisten = history.listen((location) => {
+      setPathname(location.pathname);
+    });
+    return unlisten;
+  }, [history]);
+
+  const activeMenu = useMemo(
+    () => resolveMenuFromPath(pathname),
+    [pathname]
+  );
+
+  useEffect(() => {
+    if (!activeMenu) return;
+
+    setActiveSubModuleName(activeMenu.subModuleName);
+    setOpenKeys((prev) =>
+      prev.includes(activeMenu.openKey)
+        ? prev
+        : [...prev, activeMenu.openKey]
+    );
+  }, [activeMenu, setActiveSubModuleName]);
 
   const handleMenuItemSelected = ({ key }: MenuClickInfo) => {
     switch (key) {
       case 'mehfils':
-        setActiveSubModuleName(SubModuleNames.mehfils);
         history.push(paths.mehfilsPath);
         break;
 
       case 'mehfil-duties':
-        setActiveSubModuleName(SubModuleNames.mehfilDuties);
         history.push(paths.mehfilDutiesPath);
         break;
 
       case 'mehfil-langar-dishes':
-        setActiveSubModuleName(SubModuleNames.mehfilLangarDishes);
         history.push(paths.mehfilLangarDishesPath);
         break;
 
       case 'mehfil-langar-locations':
-        setActiveSubModuleName(SubModuleNames.mehfilLangarLocations);
         history.push(paths.mehfilLangarLocationsPath);
         break;
 
       case 'mehfil-card-verification':
-        setActiveSubModuleName(SubModuleNames.mehfilCardVerification);
         history.push(paths.mehfilCardVerificationPath);
         break;
 
       case 'visitor-registration':
-        setActiveSubModuleName(SubModuleNames.visitorRegistration);
         history.push(paths.visitorRegistrationPath);
         break;
 
       case 'visitor-list':
-        setActiveSubModuleName(SubModuleNames.visitorList);
         history.push(paths.visitorRegistrationListPath);
         break;
 
       case 'visitor-card-verification':
-        setActiveSubModuleName(SubModuleNames.visitorCardVerification);
         history.push(paths.visitorCardVerificationPath);
         break;
 
       case 'security-user-accounts':
-        setActiveSubModuleName(SubModuleNames.securityUsers);
         history.push(paths.securityUsersPath);
         break;
 
       case 'audit-logs':
-        setActiveSubModuleName(SubModuleNames.auditLogs);
         history.push(paths.auditLogsPath);
         break;
 
       case 'visitor-stay-report':
-        setActiveSubModuleName(SubModuleNames.visitorStayReport);
         history.push(paths.visitorStayReportPath);
         break;
 
@@ -187,6 +288,11 @@ const Sidebar = ({ history }: SidebarProps) => {
     <Menu
       mode="inline"
       style={{ height: '100%', borderRight: 0 }}
+      selectedKeys={activeMenu ? [activeMenu.key] : []}
+      openKeys={openKeys}
+      onOpenChange={(keys) => {
+        setOpenKeys(keys as string[]);
+      }}
       onClick={handleMenuItemSelected}
       items={menuItems}
     />

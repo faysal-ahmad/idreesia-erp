@@ -1,8 +1,9 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { useMutation } from '@apollo/client/react';
+import { Space, message } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Row, Col, message } from 'antd';
 import type { SecurityRegistrationVisitorByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   TakePicture,
@@ -22,7 +23,7 @@ interface Props {
 
 const Picture = ({ visitorId, securityVisitorById }: Props) => {
   const [setSecurityVisitorImage] = useMutation(SET_SECURITY_VISITOR_IMAGE, {
-    refetchQueries: ['pagedSecurityVisitors'],
+    refetchQueries: ['pagedSecurityVisitors', 'securityRegistrationVisitorById'],
   });
 
   const updateImageId = (imageId: string) => {
@@ -39,24 +40,28 @@ const Picture = ({ visitorId, securityVisitorById }: Props) => {
   const url = getDownloadUrl(securityVisitorById.imageId);
 
   return (
-    <Fragment>
-      <Row>
-        <Col span={16}>
+    <div className="security-visitor-picture">
+      <div className="security-visitor-picture-preview">
+        {url ? (
           <img
-            style={{ maxWidth: '400px' }}
-            src={url ?? undefined}
+            src={url}
             alt={securityVisitorById.name ?? 'Visitor'}
           />
-        </Col>
-      </Row>
-      <br />
-      <Row>
-        <Col span={16}>
-          <UploadAttachment onUploadFinish={updateImageId} />
-          <TakePicture onPictureTaken={updateImageId} />
-        </Col>
-      </Row>
-    </Fragment>
+        ) : (
+          <div className="security-visitor-picture-empty">
+            <UserOutlined />
+            <span>No picture uploaded</span>
+          </div>
+        )}
+      </div>
+      <Space size={12} wrap className="security-visitor-picture-actions">
+        <UploadAttachment
+          buttonText="Upload"
+          onUploadFinish={updateImageId}
+        />
+        <TakePicture onPictureTaken={updateImageId} />
+      </Space>
+    </div>
   );
 };
 

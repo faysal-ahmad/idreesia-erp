@@ -20,7 +20,7 @@ const NewForm = ({ history }: Props) => {
   });
 
   const handleCancel = () => {
-    history.goBack();
+    history.push(paths.visitorRegistrationListPath);
   };
 
   const handleFinish = ({
@@ -38,7 +38,7 @@ const NewForm = ({ history }: Props) => {
     permanentAddress,
     educationalQualification,
     meansOfEarning,
-  }: VisitorNewFormValues) => {
+  }: VisitorNewFormValues) =>
     createSecurityVisitor({
       variables: {
         name: name ?? '',
@@ -59,15 +59,16 @@ const NewForm = ({ history }: Props) => {
     })
       .then((response) => {
         const newVisitor = response.data?.createSecurityVisitor;
-        if (!newVisitor?._id) return;
-        history.push(
-          `${paths.visitorRegistrationEditFormPath(newVisitor._id)}`
-        );
+        if (!newVisitor?._id) {
+          throw new Error('Visitor was created but no id was returned');
+        }
+        message.success('Visitor created', 2);
+        history.push(paths.visitorRegistrationEditFormPath(newVisitor._id));
       })
       .catch((error: Error) => {
         message.error(error.message, 5);
+        throw error;
       });
-  };
 
   return (
     <VisitorsNewForm

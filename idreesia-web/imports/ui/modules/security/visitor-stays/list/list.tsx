@@ -6,6 +6,7 @@ import {
   Button,
   Pagination,
   Popconfirm,
+  Spin,
   Table,
   Tooltip,
   Modal,
@@ -257,24 +258,32 @@ class List extends Component<ListProps, ListState> {
 
   getTableHeader = () => {
     const { showNewButton } = this.props;
-    if (showNewButton) {
-      return (
-        <Button
-          type="primary"
-          icon={<PlusCircleOutlined />}
-          onClick={this.handleNewClicked}
-        >
-          Add New Stay
-        </Button>
-      );
-    }
+    if (!showNewButton) return null;
 
-    return null;
+    return (
+      <div className="list-table-header">
+        <div className="list-table-header-section">
+          <Button
+            type="primary"
+            icon={<PlusCircleOutlined />}
+            onClick={this.handleNewClicked}
+          >
+            Add New Stay
+          </Button>
+        </div>
+      </div>
+    );
   };
 
   render() {
     const { loading } = this.props;
-    if (loading) return null;
+    if (loading) {
+      return (
+        <div style={{ textAlign: 'center', padding: '48px 0' }}>
+          <Spin />
+        </div>
+      );
+    }
 
     const {
       pageIndex,
@@ -344,28 +353,32 @@ class List extends Component<ListProps, ListState> {
 
     return (
       <Fragment>
-        <Table
-          rowKey="_id"
-          dataSource={data}
-          columns={this.getColumns()}
-          title={this.getTableHeader}
-          bordered
-          size="small"
-          pagination={false}
-          footer={() => (
-            <Pagination
-              current={numPageIndex}
-              pageSize={numPageSize}
-              showSizeChanger
-              showTotal={(total, range) =>
-                `${range[0]}-${range[1]} of ${total} items`
-              }
-              onChange={this.onPaginationChange}
-              onShowSizeChange={this.onPaginationChange}
-              total={totalResults}
-            />
-          )}
-        />
+        <div className="list-container">
+          <Table
+            className="list-table"
+            rowKey="_id"
+            dataSource={data}
+            columns={this.getColumns()}
+            title={this.getTableHeader}
+            bordered
+            size="middle"
+            tableLayout="fixed"
+            pagination={false}
+            footer={() => (
+              <Pagination
+                current={numPageIndex}
+                pageSize={numPageSize}
+                showSizeChanger
+                showTotal={(total, range) =>
+                  `${range[0]}-${range[1]} of ${total} items`
+                }
+                onChange={this.onPaginationChange}
+                onShowSizeChange={this.onPaginationChange}
+                total={totalResults}
+              />
+            )}
+          />
+        </div>
         {newForm}
         {editForm}
         {card}

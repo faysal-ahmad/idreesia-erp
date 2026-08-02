@@ -118,6 +118,49 @@ form {
   padding-right: 7px;
 }
 
+/*
+ * Audit footer — quiet metadata under edit forms.
+ */
+.audit-info {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.audit-info-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #667085;
+}
+
+.audit-info-label {
+  flex: 0 0 96px;
+  color: #98a2b3;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 11px;
+}
+
+.audit-info-value strong {
+  color: #344054;
+  font-weight: 600;
+}
+
+.audit-info-sep {
+  margin: 0 6px;
+  color: #d0d5dd;
+}
+
 .list-filter-chips {
   width: 100%;
 }

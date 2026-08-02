@@ -1,20 +1,29 @@
-import React, { type CSSProperties } from 'react';
+import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { List, Typography } from 'antd';
 
-interface AuditRecord { createdAt?: string | number | null; createdBy?: string | null; updatedAt?: string | number | null; updatedBy?: string | null; approvedOn?: string | number | null; approvedBy?: string | null; }
-interface Props { record: AuditRecord; }
-interface QueryData { userNames?: string[] | null; }
+interface AuditRecord {
+  createdAt?: string | number | null;
+  createdBy?: string | null;
+  updatedAt?: string | number | null;
+  updatedBy?: string | null;
+  approvedOn?: string | number | null;
+  approvedBy?: string | null;
+}
 
-const ListStyle: CSSProperties = {
-  backgroundColor: '#F0F2F5',
-};
+interface Props {
+  record: AuditRecord;
+  className?: string;
+}
 
-const AuditInfo = ({ record }: Props) => {
+interface QueryData {
+  userNames?: string[] | null;
+}
+
+const AuditInfo = ({ record, className }: Props) => {
   const { data, loading } = useQuery<QueryData>(userNamesQuery, {
     variables: {
       ids: [record.createdBy, record.updatedBy, record.approvedBy],
@@ -36,31 +45,35 @@ const AuditInfo = ({ record }: Props) => {
     ? dayjs(Number(approvedOn)).format(Formats.DATE_TIME_FORMAT)
     : null;
 
-  let approvalNode = null;
-  if (strApprovedOn) {
-    approvalNode = (
-      <List.Item>
-        <Typography.Text type="secondary">
-          {`Approved by ${userNames[2]} on ${strApprovedOn}`}
-        </Typography.Text>
-      </List.Item>
-    );
-  }
-
   return (
-    <List size="small" bordered style={ListStyle}>
-      {approvalNode}
-      <List.Item>
-        <Typography.Text type="secondary">
-          {`Last Updated by ${userNames[1]} on ${strUpdatedAt}`}
-        </Typography.Text>
-      </List.Item>
-      <List.Item>
-        <Typography.Text type="secondary">
-          {`Created by ${userNames[0]} on ${strCreatedAt}`}
-        </Typography.Text>
-      </List.Item>
-    </List>
+    <div className={['audit-info', className].filter(Boolean).join(' ')}>
+      {strApprovedOn ? (
+        <div className="audit-info-line">
+          <span className="audit-info-label">Approved</span>
+          <span className="audit-info-value">
+            <strong>{userNames[2]}</strong>
+            <span className="audit-info-sep">·</span>
+            {strApprovedOn}
+          </span>
+        </div>
+      ) : null}
+      <div className="audit-info-line">
+        <span className="audit-info-label">Last updated</span>
+        <span className="audit-info-value">
+          <strong>{userNames[1]}</strong>
+          <span className="audit-info-sep">·</span>
+          {strUpdatedAt}
+        </span>
+      </div>
+      <div className="audit-info-line">
+        <span className="audit-info-label">Created</span>
+        <span className="audit-info-value">
+          <strong>{userNames[0]}</strong>
+          <span className="audit-info-sep">·</span>
+          {strCreatedAt}
+        </span>
+      </div>
+    </div>
   );
 };
 

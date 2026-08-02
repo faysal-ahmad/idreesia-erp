@@ -46,7 +46,11 @@ interface Props {
 
 interface State {
   selectedRows: PersonRow[];
+  scrollY: number;
 }
+
+const TABLE_HEADER_ROW_HEIGHT = 55;
+const VIEWPORT_BOTTOM_GAP = 16;
 
 export default class PeopleList extends Component<Props, State> {
   static defaultProps = {
@@ -64,8 +68,73 @@ export default class PeopleList extends Component<Props, State> {
     listHeader: () => null,
   };
 
-  state = {
+  containerRef = React.createRef<HTMLDivElement>();
+
+  state: State = {
     selectedRows: [],
+    scrollY: 360,
+  };
+
+  componentDidMount() {
+    this.updateScrollY();
+    window.addEventListener('resize', this.updateScrollY);
+  }
+
+  componentDidUpdate() {
+    this.updateScrollY();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateScrollY);
+  }
+
+  updateScrollY = () => {
+    requestAnimationFrame(() => {
+      const container = this.containerRef.current;
+      if (!container) return;
+
+      const table = container.querySelector('.list-table');
+      if (!table) return;
+
+      const title = table.querySelector('.ant-table-title');
+      const footer = table.querySelector('.ant-table-footer');
+      const thead = table.querySelector('.ant-table-thead');
+      const titleBottom = title
+        ? title.getBoundingClientRect().bottom
+        : table.getBoundingClientRect().top;
+      const theadHeight = thead
+        ? Math.ceil((thead as HTMLElement).getBoundingClientRect().height)
+        : TABLE_HEADER_ROW_HEIGHT;
+      const footerHeight = footer
+        ? Math.ceil((footer as HTMLElement).getBoundingClientRect().height)
+        : 64;
+
+      // Bound by the nearest scroll container: a Drawer body when embedded
+      // in one (e.g. karkun selection), otherwise Layout.Content's padding box.
+      const boundEl = (container.closest('.ant-drawer-body') ??
+        container.closest('.ant-layout-content')) as HTMLElement | null;
+      let bottomLimit = window.innerHeight;
+      if (boundEl) {
+        const paddingBottom =
+          Number.parseFloat(getComputedStyle(boundEl).paddingBottom) || 0;
+        bottomLimit = boundEl.getBoundingClientRect().bottom - paddingBottom;
+      }
+
+      const nextScrollY = Math.max(
+        200,
+        Math.floor(
+          bottomLimit -
+            titleBottom -
+            theadHeight -
+            footerHeight -
+            VIEWPORT_BOTTOM_GAP
+        )
+      );
+
+      if (Math.abs(nextScrollY - this.state.scrollY) > 2) {
+        this.setState({ scrollY: nextScrollY });
+      }
+    });
   };
 
   categoryColumn = {
@@ -261,33 +330,39 @@ export default class PeopleList extends Component<Props, State> {
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;
+    const { scrollY } = this.state;
 
     return (
-      <Table
-        rowKey="_id"
-        dataSource={(data ?? []).filter(
-          (person): person is PersonRow => person != null
-        )}
-        columns={this.getColumns() as any}
-        title={listHeader}
-        rowSelection={showSelectionColumn ? this.rowSelection : undefined}
-        bordered
-        size="small"
-        pagination={false}
-        footer={() => (
-          <Pagination
-            current={numPageIndex}
-            pageSize={numPageSize}
-            showSizeChanger
-            showTotal={(total: number, range: [number, number]) =>
-              `${range[0]}-${range[1]} of ${total} items`
-            }
-            onChange={this.onPaginationChange}
-            onShowSizeChange={this.onPaginationChange}
-            total={totalResults ?? 0}
-          />
-        )}
-      />
+      <div className="list-container" ref={this.containerRef}>
+        <Table
+          className="list-table"
+          rowKey="_id"
+          dataSource={(data ?? []).filter(
+            (person): person is PersonRow => person != null
+          )}
+          columns={this.getColumns() as any}
+          title={listHeader}
+          rowSelection={showSelectionColumn ? this.rowSelection : undefined}
+          bordered
+          size="middle"
+          tableLayout="fixed"
+          pagination={false}
+          scroll={{ y: scrollY }}
+          footer={() => (
+            <Pagination
+              current={numPageIndex}
+              pageSize={numPageSize}
+              showSizeChanger
+              showTotal={(total: number, range: [number, number]) =>
+                `${range[0]}-${range[1]} of ${total} items`
+              }
+              onChange={this.onPaginationChange}
+              onShowSizeChange={this.onPaginationChange}
+              total={totalResults ?? 0}
+            />
+          )}
+        />
+      </div>
     );
   }
 }

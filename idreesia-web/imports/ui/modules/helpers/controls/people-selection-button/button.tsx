@@ -70,7 +70,6 @@ export default class SelectionButton extends Component<Props, State> {
         </Drawer>
         <div style={ContainerStyle}>
           <Button
-            size="large"
             onClick={this.handleClick}
             disabled={disabled}
             icon={icon}

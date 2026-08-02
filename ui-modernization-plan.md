@@ -105,6 +105,7 @@ Always include **Refresh** (`SyncOutlined`) in utilities, even when the list has
 - Measure after layout (`requestAnimationFrame`); re-run on resize and after content changes that alter title/footer height
 - Height = content padding-box bottom − title bottom − thead − footer − small gap (see `common/visitors/list.tsx` / `mehfils/list.tsx`)
 - Use `Layout.Content`’s padding box as the bottom limit (not `window.innerHeight` alone), or pagination clips when the title grows
+- Inside a `Drawer` (e.g. the Karkuns selection list), bound by the nearest `.ant-drawer-body` instead of `.ant-layout-content` — same formula, different ancestor (see `common/people/list.tsx`)
 - Minimum body height ~200px; only update state when the delta is > ~2px to avoid thrash
 - Do not override `.ant-table-header` overflow; antd syncs the scrollbar gutter
 
@@ -113,6 +114,8 @@ Always include **Refresh** (`SyncOutlined`) in utilities, even when the list has
 - Server-paged lists: footer drives query `pageIndex` / `pageSize`
 - All-at-once lists (e.g. mehfils, mehfil-karkuns): client-slice the array for the footer; still use footer `Pagination`, not Table’s built-in pager
 - With `rowSelection` + client paging: merge selections across pages (keep other pages’ keys; replace only the current page’s selection)
+
+**Selection column** (when a list uses `rowSelection` + `scroll.y`): Ant Design often ignores `rowSelection.columnWidth`; lock it via CSS instead — shared `list.styles.css` fixes `.ant-table-selection-col` / `.ant-table-selection-column` to `48px` (`width` / `min-width` / `max-width`). Prefer this over sticky columns for this layout.
 
 **Shared table palette** (`.list-table` in `main.css`):
 
@@ -301,10 +304,42 @@ Module sidebars should derive selection from the current pathname (not only from
 
 - `selectedKeys` from a path → menu-key map (most specific routes first)
 - Keep all ancestor groups in `openKeys` when a nested child is active (e.g. Mehfil Management → Setup → Mehfil Duties); still allow manual expand/collapse
-- Sync `activeSubModuleName` from the URL so refresh / deep links keep the sidebar highlight
-- Nested routes (edit/new/upload) should highlight the parent list item, not a blank selection
+- When updating `openKeys`, only call `setOpenKeys` if the key **set** actually changed (avoid Menu “Maximum update depth” loops from always returning a new array)
+- Sync `activeSubModuleName` from the URL so refresh / deep links keep the sidebar highlight; stabilize that setter with `useCallback` if it is a `setState` dependency
+- Nested routes (edit/new/upload/karkuns) should highlight the parent list item, not a blank selection
 
 Reference: `idreesia-web/imports/ui/modules/security/sidebar.tsx`
+
+---
+
+## App shell notes
+
+- Shell should fill the viewport (`min-height: 100vh` / flex stretch on logged-in layout) so short pages still look full-height
+- Prefer `scrollbar-gutter: stable` on `body` so table `scroll.y` recalculation is not thrashed by scrollbar appearance
+- Error boundaries: show the error UI; do **not** call `resetErrorBoundary()` during render (that freezes the app)
+
+---
+
+## GraphQL / schema pitfalls (when modernizing creates)
+
+- GraphQL `String` date inputs that map to SimpleSchema `Date` fields must be converted with `new Date(...)` in the **resolver** before `insertAsync` / `updateAsync` (e.g. mehfils `mehfilDate`)
+- Prefer returning timestamp strings from Date fields when the UI already does `dayjs(Number(value))`
+
+---
+
+## Security progress (lists)
+
+| Page | Status |
+|------|--------|
+| Visitor Registration list / edit / new | Done (reference) |
+| Visitor Stay Report | Done (list chrome) |
+| Setup — Mehfil Duties | Done (modal create; no `scroll.y`) |
+| Setup — Langar Dishes | Done (modal create; no `scroll.y`) |
+| Setup — Langar Locations | Done (modal create; no `scroll.y`) |
+| Mehfils list | Done (modal create + `scroll.y`) |
+| Mehfil karkuns list | Done (`scroll.y`, selection, duty Select) |
+| Mehfils / mehfil-karkuns **edit** shells | Not yet (Part B) |
+| Other Security lists (stays, audit logs, …) | Not yet |
 
 ---
 
@@ -318,3 +353,8 @@ Reference: `idreesia-web/imports/ui/modules/security/sidebar.tsx`
 - Numeric tab keys that fight legacy URL remapping
 - Full-bleed audit/footer blocks wider than the form cards
 - Purple/glow/dashboard clutter — stay aligned with Ant Design + shared chrome above
+- Forcing a Filter popover when a single Select (or no filters) is enough
+- Leaving `/new` routes after moving create into a list Modal
+- Blank `null` loading states on list/edit shells
+- Calling `resetErrorBoundary()` inside render
+- Inserting GraphQL date strings into SimpleSchema `Date` fields without resolver conversion

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { type RouteComponentProps } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import {
@@ -19,7 +18,6 @@ import {
   DeleteOutlined,
   PlusCircleOutlined,
   SyncOutlined,
-  TeamOutlined,
 } from '@ant-design/icons';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
@@ -37,7 +35,7 @@ const VIEWPORT_BOTTOM_GAP = 16;
 
 type Mehfil = NonNullable<NonNullable<AllMehfilsQuery['allMehfils']>[number]>;
 
-const List = ({ history }: RouteComponentProps) => {
+const List = () => {
   useBreadcrumbs(['Security', 'Mehfils']);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -155,10 +153,6 @@ const List = ({ history }: RouteComponentProps) => {
     });
   };
 
-  const handleKarkunsClicked = (record: Mehfil) => {
-    history.push(paths.mehfilsKarkunListPath(record._id ?? ''));
-  };
-
   const handleRefresh = () => {
     refetch().then(() => {
       message.success('Data Reloaded', 2);
@@ -217,17 +211,6 @@ const List = ({ history }: RouteComponentProps) => {
       key: 'action',
       width: 90,
       render: (_text: unknown, record: Mehfil) => {
-        const karkunsAction = (
-          <Tooltip key="karkuns" title="Karkuns">
-            <TeamOutlined
-              className="list-actions-icon"
-              onClick={() => {
-                handleKarkunsClicked(record);
-              }}
-            />
-          </Tooltip>
-        );
-
         const deleteAction =
           record.karkunCount === 0 ? (
             <Popconfirm
@@ -247,7 +230,6 @@ const List = ({ history }: RouteComponentProps) => {
 
         return (
           <div className="list-actions-column">
-            {karkunsAction}
             {deleteAction}
           </div>
         );

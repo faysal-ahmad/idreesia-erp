@@ -3,7 +3,11 @@ import { useQuery } from '@apollo/client/react';
 
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import type { PagedPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
-import { PeopleList, PeopleListFilter } from '/imports/ui/modules/common';
+import {
+  PeopleList,
+  PeopleListFilter,
+  PeopleFilterChips,
+} from '/imports/ui/modules/common';
 
 import { PAGED_PEOPLE } from './gql';
 
@@ -60,24 +64,26 @@ const List = ({ handleSelectItem }: Props) => {
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
-  const getListFilter = () => (
-    <PeopleListFilter
-      name={name}
-      cnicNumber={cnicNumber}
-      phoneNumber={phoneNumber}
-      city={city}
-      setPageParams={setPageParams}
-      refreshData={refetch}
-    />
-  );
+  const filterProps = {
+    name,
+    cnicNumber,
+    phoneNumber,
+    city,
+    setPageParams,
+    refreshData: refetch,
+  };
 
   const getTableHeader = () => (
-    <div className="list-table-header">{getListFilter()}</div>
+    <div className="list-table-header" style={{ justifyContent: 'flex-end' }}>
+      <div className="list-table-header-utilities">
+        <PeopleListFilter {...filterProps} />
+        <PeopleFilterChips {...filterProps} />
+      </div>
+    </div>
   );
 
   return (
     <PeopleList
-      showCategoryColumn
       showCnicColumn
       showPhoneNumbersColumn
       showCityCountryColumn

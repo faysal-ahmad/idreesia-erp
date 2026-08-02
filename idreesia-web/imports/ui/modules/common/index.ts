@@ -18,7 +18,10 @@ export { default as VisitorsNewForm } from './visitors/new-form';
 export { default as VisitorsGeneralInfo } from './visitors/general-info';
 
 export { default as PeopleList } from './people/list';
-export { default as PeopleListFilter } from './people/list-filter';
+export {
+  default as PeopleListFilter,
+  PeopleFilterChips,
+} from './people/list-filter';
 
 export { default as KarkunAttendancesList } from './attendance/karkun-attendances-list';
 export { default as KarkunsAttendanceList } from './attendance/karkuns-attendance-list';

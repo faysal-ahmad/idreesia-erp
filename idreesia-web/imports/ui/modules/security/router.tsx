@@ -17,7 +17,6 @@ import {
   MehfilLangarLocationsList,
 } from './setup/mehfil-langar-locations';
 import {
-  MehfilKarkunsList,
   MehfilKarkunsPrintCards,
   MehfilKarkunsPrintList,
 } from './mehfil-karkuns';
@@ -38,7 +37,6 @@ const RouterRoute = Route as any;
 
 const Router = () => (
   <RouterSwitch>
-    <RouterRoute path={paths.mehfilsKarkunListPath()} component={MehfilKarkunsList} />
     <RouterRoute path={paths.mehfilsKarkunPrintCardsPath()} component={MehfilKarkunsPrintCards} />
     <RouterRoute path={paths.mehfilsKarkunPrintListPath()} component={MehfilKarkunsPrintList} />
     <RouterRoute path={paths.mehfilsEditFormPath()} component={MehfilsEditForm} />

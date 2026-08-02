@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
 import { useMutation } from '@apollo/client/react';
-import { useParams } from 'react-router-dom';
-import { type RouteComponentProps } from 'react-router';
-import { type History } from 'history';
+import { type History, type Location } from 'history';
 
 import { Modal, Spin, message } from 'antd';
-import {
-  useDynamicBreadcrumbs,
-  useQueryParams,
-} from 'meteor/idreesia-common/hooks/common';
+import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import type {
   MehfilByIdQuery,
   MehfilKarkunsByMehfilIdQuery,
@@ -47,7 +42,7 @@ interface ListContainerProps {
   refetchAllSecurityMehfilDuties(): void;
   mehfilId: string;
   history: History;
-  location: RouteComponentProps['location'];
+  location: Location;
   queryParams: PageParams;
 }
 
@@ -70,8 +65,9 @@ class ListContainer extends Component<ListContainerProps, ListContainerState> {
     if (Object.prototype.hasOwnProperty.call(newParams, 'dutyId')) dutyIdVal = dutyId || '';
     else dutyIdVal = queryParams.dutyId || '';
 
-    const path = `${location.pathname}?dutyId=${dutyIdVal}`;
-    history.push(path);
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('dutyId', dutyIdVal);
+    history.push(`${location.pathname}?${searchParams.toString()}`);
   };
 
   handleAddMehfilKarkun = (karkunId: string, refetchQuery: () => void) => {
@@ -234,8 +230,13 @@ class ListContainer extends Component<ListContainerProps, ListContainerState> {
   }
 }
 
-const ListContainerPage = ({ history, location }: RouteComponentProps) => {
-  const { mehfilId = '' } = useParams<{ mehfilId: string }>();
+interface MehfilKarkunsProps {
+  mehfilId: string;
+  history: History;
+  location: Location;
+}
+
+const MehfilKarkuns = ({ mehfilId, history, location }: MehfilKarkunsProps) => {
   const { queryParams } = useQueryParams({ history, location });
   const { mehfilLoading, mehfilById } = useMehfil(mehfilId);
   const {
@@ -243,12 +244,6 @@ const ListContainerPage = ({ history, location }: RouteComponentProps) => {
     allSecurityMehfilDuties,
     refetchAllSecurityMehfilDuties,
   } = useAllSecurityMehfilDuties(mehfilId);
-
-  useDynamicBreadcrumbs(
-    mehfilById?.name
-      ? ['Security', 'Mehfils', mehfilById.name, 'Karkun Duties']
-      : ['Security', 'Mehfils', 'Karkun Duties']
-  );
 
   const [addMehfilKarkun] = useMutation(ADD_MEHFIL_KARKUN);
   const [setDutyDetail] = useMutation(SET_DUTY_DETAIL);
@@ -272,4 +267,4 @@ const ListContainerPage = ({ history, location }: RouteComponentProps) => {
   );
 };
 
-export default ListContainerPage;
+export default MehfilKarkuns;

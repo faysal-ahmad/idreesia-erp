@@ -1,88 +1,37 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { type RouteComponentProps } from 'react-router';
-import { useMutation, useQuery } from '@apollo/client/react';
-import { Form, message } from 'antd';
-import dayjs from 'dayjs';
+import { Tabs } from 'antd';
 
-import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
-  InputTextField,
-  DateField,
-  FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
-import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
+  useBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
 
-import { MEHFIL_BY_ID, UPDATE_MEHFIL, ALL_MEHFILS } from './gql';
+import { MehfilKarkuns } from '../mehfil-karkuns';
+import GeneralInfo from './edit/general-info';
 
+const TabPane = Tabs.TabPane;
 type Props = RouteComponentProps<{ mehfilId: string }>;
 
-interface MehfilFormValues {
-  name: string;
-  mehfilDate: string | number | Date;
-}
-
-const EditForm = ({ match, history }: Props) => {
-  useBreadcrumbs(['Security', 'Mehfils', 'Edit']);
-
-  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+const EditForm = ({ match, location, history }: Props) => {
   const { mehfilId } = match.params;
-  const { loading, data } = useQuery(MEHFIL_BY_ID, {
-    variables: { _id: mehfilId },
-  });
-  const [updateMehfil] = useMutation(UPDATE_MEHFIL, {
-    refetchQueries: [{ query: ALL_MEHFILS }],
-  });
-  const mehfilById = data?.mehfilById;
-
-  const handleCancel = () => {
-    history.goBack();
-  };
-
-  const handleFieldsChange = () => {
-    setIsFieldsTouched(true);
-  };
-
-  const handleFinish = ({ name, mehfilDate }: MehfilFormValues) => {
-    if (!mehfilById?._id) return;
-    updateMehfil({
-      variables: {
-        _id: mehfilById._id,
-        name,
-        mehfilDate: String(mehfilDate),
-      },
-    })
-      .catch((error: Error) => {
-        message.error(error.message, 5);
-      })
-      .finally(() => {
-        history.goBack();
-      });
-  };
-
-  if (loading || !mehfilById) return null;
+  const { queryParams } = useQueryParams({ history, location });
+  useBreadcrumbs(['Security', 'Mehfils', 'Edit']);
+  const activeKey = (queryParams['default-active-tab'] as string) || '1';
 
   return (
-    <>
-      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Mehfil Name"
-          initialValue={mehfilById.name}
-          required
-          requiredMessage="Please input a name for the Mehfil."
+    <Tabs defaultActiveKey={activeKey}>
+      <TabPane tab="General Info" key="1">
+        <GeneralInfo mehfilId={mehfilId} history={history} />
+      </TabPane>
+      <TabPane tab="Karkuns" key="2">
+        <MehfilKarkuns
+          mehfilId={mehfilId}
+          history={history}
+          location={location}
         />
-        <DateField
-          fieldName="mehfilDate"
-          fieldLabel="Mehfil Date"
-          initialValue={dayjs(Number(mehfilById.mehfilDate))}
-        />
-        <FormButtonsSaveCancel
-          handleCancel={handleCancel}
-          isFieldsTouched={isFieldsTouched}
-        />
-      </Form>
-      <AuditInfo record={mehfilById} />
-    </>
+      </TabPane>
+    </Tabs>
   );
 };
 

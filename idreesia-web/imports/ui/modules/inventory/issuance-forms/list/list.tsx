@@ -293,7 +293,7 @@ class List extends Component<ListProps, ListState> {
     }
 
     let locationIdVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'locationId')) locationIdVal = locationId;
+    if (Object.prototype.hasOwnProperty.call(newParams, 'locationId')) locationIdVal = locationId ?? '';
     else locationIdVal = queryParams.locationId || '';
 
     let startDateVal;

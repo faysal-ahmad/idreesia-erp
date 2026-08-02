@@ -20,7 +20,7 @@ const getQueryString = (karkunId: string | null | undefined, pageIndex: number, 
 const AntTable = Table as any;
 const AntPagination = Pagination as any;
 type AnyRecord = Record<string, any>;
-interface PagedData { totalResults: number; attendance: AnyRecord[]; }
+interface PagedData { totalResults: number; data: AnyRecord[]; }
 interface QueryData { pagedAttendanceByKarkun?: PagedData | null; }
 interface Props { karkunId?: string | null; }
 
@@ -95,7 +95,7 @@ const AttendanceSheets = ({ karkunId }: Props) => {
       rowKey="_id"
       size="small"
       columns={columns as any}
-      dataSource={((data ?? {}) as QueryData).pagedAttendanceByKarkun?.attendance ?? []}
+      dataSource={((data ?? {}) as QueryData).pagedAttendanceByKarkun?.data ?? []}
       pagination={false}
       bordered
       footer={() => (

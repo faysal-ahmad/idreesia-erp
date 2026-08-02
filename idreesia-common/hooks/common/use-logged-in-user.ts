@@ -1,29 +1,22 @@
 import { useEffect } from 'react';
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import { useSelector } from 'react-redux';
+import type {
+  CommonCurrentUserQuery,
+  CommonCurrentUserQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
 interface LoggedInUserState {
   loggedInUserId?: string | null;
 }
 
-interface CurrentUserData {
-  currentUser: {
-    _id: string;
-    username?: string | null;
-    displayName?: string | null;
-    permissions?: string[] | null;
-    instances?: string[] | null;
-    karkun?: {
-      _id: string;
-      name?: string | null;
-      imageId?: string | null;
-    } | null;
-  } | null;
-}
-
-const formQuery = gql`
-  query currentUser {
+const formQuery: TypedDocumentNode<
+  CommonCurrentUserQuery,
+  CommonCurrentUserQueryVariables
+> = gql`
+  query commonCurrentUser {
     currentUser {
       _id
       username
@@ -43,13 +36,13 @@ const useLoggedInUser = () => {
   const loggedInUserId = useSelector(
     (state: LoggedInUserState) => state.loggedInUserId
   );
-  const { data, loading, refetch } = useQuery<CurrentUserData>(formQuery);
+  const { data, loading, refetch } = useQuery(formQuery);
   useEffect(() => {
     refetch();
   }, [loggedInUserId]);
 
   return {
-    user: data ? data.currentUser : null,
+    user: data?.currentUser ?? null,
     userLoading: loading,
   };
 };

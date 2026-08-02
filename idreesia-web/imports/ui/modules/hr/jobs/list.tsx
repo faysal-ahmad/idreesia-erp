@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-
-const RouterLink = Link as any;
+import React from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { type History } from 'history';
+import { Link } from 'react-router-dom';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import type {
   RemoveJobMutation,
   RemoveJobMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
+
+const RouterLink = Link as any;
 import { Button, Table, Tooltip, message } from 'antd';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { useAllJobs } from '/imports/ui/modules/hr/common/hooks';

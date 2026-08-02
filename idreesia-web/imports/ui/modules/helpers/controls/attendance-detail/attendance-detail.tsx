@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -7,19 +6,17 @@ import AttendanceDay from './attendance-day';
 
 const weekdayShorts = dayjs.weekdaysShort();
 
-const AttendanceDayInput = AttendanceDay as any;
 type AttendanceValue = 'pr' | 'la' | 'ab' | 'ms' | null | undefined;
 type AttendanceMap = Record<string, AttendanceValue>;
-interface Props { forMonth?: string; value?: AttendanceMap; initialValue?: AttendanceMap; onChange?(value: AttendanceMap): void; }
+
+interface Props {
+  forMonth?: string;
+  value?: AttendanceMap;
+  initialValue?: AttendanceMap;
+  onChange?(value: AttendanceMap): void;
+}
 
 export default class AttendanceDetail extends Component<Props> {
-  static propTypes = {
-    forMonth: PropTypes.string,
-    value: PropTypes.object,
-    initialValue: PropTypes.object,
-    onChange: PropTypes.func,
-  };
-
   handleAttendanceChange = (day: string, updatedVal: AttendanceValue) => {
     const { onChange, value } = this.props;
     const updateAttendances = Object.assign({}, value || {});
@@ -42,7 +39,7 @@ export default class AttendanceDetail extends Component<Props> {
     for (let d = 1; d <= month.daysInMonth(); d++) {
       const day = d.toString();
       daysInMonth.push(
-        <AttendanceDayInput
+        <AttendanceDay
           key={day}
           day={day}
           attendanceValue={attendances[day]}

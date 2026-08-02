@@ -1,12 +1,18 @@
 import React from "react";
-import PropTypes from "prop-types";
 import dayjs from "dayjs";
 
 import { DatePicker, Form } from "antd";
 
-const AntFormItem = (Form as any).Item;
-const DateInput = DatePicker as any;
-interface FieldProps { allowClear?: boolean; fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: unknown; format?: string; required?: boolean; requiredMessage?: string; }
+interface FieldProps {
+  allowClear?: boolean;
+  fieldName: string;
+  fieldLabel?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: unknown;
+  format?: string;
+  required?: boolean;
+  requiredMessage?: string;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -40,21 +46,10 @@ const MonthField = ({
   ];
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <DateInput.MonthPicker allowClear={allowClear} format={format} />
-    </AntFormItem>
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <DatePicker picker="month" allowClear={allowClear} format={format} />
+    </Form.Item>
   );
-}
-
-MonthField.propTypes = {
-  allowClear: PropTypes.bool,
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.object,
-  format: PropTypes.string,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
 };
 
 export default MonthField;

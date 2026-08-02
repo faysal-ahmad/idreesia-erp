@@ -1,53 +1,59 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Accounts } from "meteor/accounts-base";
-import { Button, Card, Divider, Flex, Form, Input, Typography, message } from 'antd';
+import React, { type CSSProperties } from 'react';
+import { Accounts } from 'meteor/accounts-base';
+import {
+  Button,
+  Card,
+  Divider,
+  Flex,
+  Form,
+  Input,
+  Typography,
+  message,
+} from 'antd';
 
-const AntButton = Button as any;
-const AntCard = Card as any;
-const AntDivider = Divider as any;
-const AntFlex = Flex as any;
-const AntForm = Form as any;
-const AntFormItem = (Form as any).Item;
-const TextInput = Input as any;
-const AntTypography = Typography as any;
-const { Link } = AntTypography;
 type ShowForm = 'login' | 'register' | 'forgot';
-interface HistoryLike { push(path: string): void; }
-interface LocationLike { pathname: string; }
-interface BaseProps { history?: HistoryLike; location?: LocationLike; setShowForm(form: ShowForm): void; }
 
-const FormStyle = {
+interface Props {
+  setShowForm(form: ShowForm): void;
+}
+
+interface ForgotPasswordFormValues {
+  email: string;
+}
+
+const FormStyle: CSSProperties = {
   maxWidth: '300px',
 };
 
-const LoginFormButtonStyle = {
+const LoginFormButtonStyle: CSSProperties = {
   marginBottom: '10px',
 };
 
-export const ForgotPasswordForm = ({ setShowForm }: BaseProps) => {
-  const [form] = Form.useForm();
+const { Link } = Typography;
 
-  const handleFinish = (values: Record<string, string>) => {
+export const ForgotPasswordForm = ({ setShowForm }: Props) => {
+  const [form] = Form.useForm<ForgotPasswordFormValues>();
+
+  const handleFinish = (values: ForgotPasswordFormValues) => {
     const { email } = values;
-    (Accounts as any).forgotPassword({
-      email,
-    }, (error?: Error) => {
+    (Accounts as any).forgotPassword({ email }, (error?: Error) => {
       form.resetFields();
       if (error) {
         message.error(error.message, 5);
       } else {
-        message.success('An email has been sent to the specified email address with further instructions.', 5);
+        message.success(
+          'An email has been sent to the specified email address with further instructions.',
+          5
+        );
       }
     });
-
   };
 
   return (
-    <AntCard title="Reset Your Password" style={{ minWidth: 400 }}>
-      <AntFlex justify='center'>
-        <AntForm form={form} style={FormStyle as any} onFinish={handleFinish}>
-          <AntFormItem
+    <Card title="Reset Your Password" style={{ minWidth: 400 }}>
+      <Flex justify="center">
+        <Form form={form} style={FormStyle} onFinish={handleFinish}>
+          <Form.Item
             name="email"
             rules={[
               {
@@ -56,26 +62,37 @@ export const ForgotPasswordForm = ({ setShowForm }: BaseProps) => {
               },
             ]}
           >
-            <TextInput placeholder="Email" />
-          </AntFormItem>
-          <AntFormItem>
-            <AntButton type="primary" htmlType="submit" style={LoginFormButtonStyle as any} block>
+            <Input placeholder="Email" />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={LoginFormButtonStyle}
+              block
+            >
               Reset Password
-            </AntButton>
-          </AntFormItem>
-        </AntForm>
-      </AntFlex>
-      <AntDivider style={{ marginTop: 0 }} />
-      <AntFlex justify='flex-end' gap='large'>
-        <Link onClick={() => { setShowForm('login')}}>Login</Link>
-        <Link onClick={() => { setShowForm('register')}}>Register</Link>
-      </AntFlex>
-    </AntCard>
+            </Button>
+          </Form.Item>
+        </Form>
+      </Flex>
+      <Divider style={{ marginTop: 0 }} />
+      <Flex justify="flex-end" gap="large">
+        <Link
+          onClick={() => {
+            setShowForm('login');
+          }}
+        >
+          Login
+        </Link>
+        <Link
+          onClick={() => {
+            setShowForm('register');
+          }}
+        >
+          Register
+        </Link>
+      </Flex>
+    </Card>
   );
-};
-
-ForgotPasswordForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-  setShowForm: PropTypes.func,
 };

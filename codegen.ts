@@ -5,6 +5,7 @@ const config: CodegenConfig = {
   documents: [
     'idreesia-web/{client,imports}/**/*.{ts,tsx}',
     'idreesia-mobile/{client,imports}/**/*.{ts,tsx}',
+    'idreesia-common/hooks/**/*.{ts,tsx}',
   ],
   generates: {
     'idreesia-common/types/graphql.ts': {

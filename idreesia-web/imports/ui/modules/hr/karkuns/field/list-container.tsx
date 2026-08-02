@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
+import type { HrKarkunsPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import List from '../list/list';
 import type { PageParams } from '../list/list-filter';
-import type { HrKarkunsPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 
 type KarkunRow = NonNullable<
   NonNullable<

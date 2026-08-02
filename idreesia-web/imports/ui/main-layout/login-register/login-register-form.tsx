@@ -1,46 +1,44 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties, useState } from 'react';
+import { type History, type Location } from 'history';
 
 import { LoginForm } from './login-form';
 import { RegisterForm } from './register-form';
 import { ForgotPasswordForm } from './forgot-password-form';
 
-const FormWrapperStyle = {
-  width: "300px",
-  height: "200px",
-  position: "absolute",
-  top: "40%",
-  left: "45%",
-  marginTop: "-100px",
-  marginLeft: "-150px",
+const FormWrapperStyle: CSSProperties = {
+  width: '300px',
+  height: '200px',
+  position: 'absolute',
+  top: '40%',
+  left: '45%',
+  marginTop: '-100px',
+  marginLeft: '-150px',
 };
 
 type ShowForm = 'login' | 'register' | 'forgot';
-type AnyProps = Record<string, any>;
-const Login = LoginForm as any;
-const Register = RegisterForm as any;
-const ForgotPassword = ForgotPasswordForm as any;
 
-export const LoginRegisterForm = (props: AnyProps) => {
+interface Props {
+  history?: History;
+  location?: Location;
+}
+
+export const LoginRegisterForm = ({ history, location }: Props) => {
   const [showForm, setShowForm] = useState<ShowForm>('login');
   let form = <div />;
 
   if (showForm === 'login') {
-    form = <Login setShowForm={setShowForm} {...props} />;  
+    form = (
+      <LoginForm
+        setShowForm={setShowForm}
+        history={history}
+        location={location}
+      />
+    );
   } else if (showForm === 'register') {
-    form = <Register setShowForm={setShowForm} {...props} />; 
-  } else if (showForm === 'forgot'){
-    form = <ForgotPassword setShowForm={setShowForm} {...props} />; 
+    form = <RegisterForm setShowForm={setShowForm} />;
+  } else if (showForm === 'forgot') {
+    form = <ForgotPasswordForm setShowForm={setShowForm} />;
   }
 
-  return (
-    <div style={FormWrapperStyle as any}>
-      {form}
-    </div>
-  );
-};
-
-LoginRegisterForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
+  return <div style={FormWrapperStyle}>{form}</div>;
 };

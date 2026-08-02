@@ -1,16 +1,36 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { TreeSelect, Form } from 'antd';
 
-const AntFormItem = (Form as any).Item;
-const AntTreeSelect = TreeSelect as any;
-interface FieldProps { data?: unknown[]; fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; required?: boolean; requiredMessage?: string; initialValue?: unknown[] | null; onChange?(value: unknown): void; }
+interface TreeNode {
+  title?: React.ReactNode;
+  value?: string | number;
+  children?: TreeNode[];
+}
+
+interface FieldProps {
+  data?: TreeNode[];
+  fieldName: string;
+  fieldLabel?: string;
+  placeholder?: string;
+  fieldLayout?: Record<string, unknown>;
+  required?: boolean;
+  requiredMessage?: string;
+  initialValue?: unknown[] | null;
+  onChange?(value: unknown): void;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 14 },
 };
+
+interface FilterTreeNode {
+  title?: React.ReactNode;
+  props?: {
+    title?: React.ReactNode;
+  };
+}
 
 /**
  * data: Array of objects (containing text and value)
@@ -34,7 +54,7 @@ const TreeMultiSelectField = ({
   initialValue = null,
   onChange,
 }: FieldProps) => {
-  const filterTreeNode = (inputValue: string, treeNode: any) => {
+  const filterTreeNode = (inputValue: string, treeNode: FilterTreeNode) => {
     const title = String(treeNode?.title ?? treeNode?.props?.title ?? '').toLowerCase();
     return title.includes(inputValue.toLowerCase());
   };
@@ -46,34 +66,22 @@ const TreeMultiSelectField = ({
         message: requiredMessage,
       },
     ]
-  : null;
+  : undefined;
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <AntTreeSelect
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <TreeSelect
         treeData={data}
         placeholder={placeholder}
         onChange={onChange}
         allowClear
         treeCheckable
         treeDefaultExpandAll
-        showCheckedStrategy={AntTreeSelect.SHOW_PARENT}
+        showCheckedStrategy={TreeSelect.SHOW_PARENT}
         filterTreeNode={filterTreeNode}
       />
-    </AntFormItem>
+    </Form.Item>
   );
-}
-
-TreeMultiSelectField.propTypes = {
-  data: PropTypes.array,
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  placeholder: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
-  initialValue: PropTypes.array,
-  onChange: PropTypes.func,
 };
 
 export default TreeMultiSelectField;

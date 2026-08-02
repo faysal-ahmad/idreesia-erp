@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useMutation } from '@apollo/client/react';
 import { type History } from 'history';
 import { type CSSProperties } from 'react';

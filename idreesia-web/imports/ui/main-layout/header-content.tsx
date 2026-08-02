@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties, useEffect } from 'react';
 import { Layout, Menu } from 'antd';
+import type { MenuProps } from 'antd';
+import { type History, type Location } from 'history';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/client/react';
 
@@ -11,19 +12,23 @@ import {
 } from 'meteor/idreesia-common/utilities/lodash';
 import { ModuleNames, ModulePaths } from 'meteor/idreesia-common/constants';
 import { setActiveModuleName } from 'meteor/idreesia-common/action-creators';
+import type { CommonCurrentUserQuery } from 'meteor/idreesia-common/types/client-operations';
 import UserMenu from './user-menu';
 import { UPDATE_LAST_ACTIVE_TIME } from './gql';
 
-const AntLayout = Layout as any;
-const AntMenu = Menu as any;
-const UserMenuControl = UserMenu as any;
-interface HistoryLike { push(path: string): void; }
-interface LocationLike { pathname: string; }
-interface UserLike { permissions?: string[]; }
-interface Props { history: HistoryLike; location: LocationLike; user?: UserLike | null; }
-interface MenuSelectInfo { key: string; }
+type User = NonNullable<CommonCurrentUserQuery['currentUser']>;
 
-const ContainerStyle = {
+interface Props {
+  history: History;
+  location: Location;
+  user?: User | null;
+}
+
+interface MenuSelectInfo {
+  key: string;
+}
+
+const ContainerStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'space-between',
@@ -31,7 +36,7 @@ const ContainerStyle = {
   width: '100%',
 };
 
-const modulePathsMapping = {
+const modulePathsMapping: Record<string, string> = {
   [ModuleNames.admin]: ModulePaths.admin,
   // ***********************************************
   // Items within this section would be grouped under
@@ -42,14 +47,14 @@ const modulePathsMapping = {
   // ***********************************************
 };
 
-const isModuleAccessible = (user: UserLike, moduleName: string) => {
+const isModuleAccessible = (user: User, moduleName: string) => {
   // For a module to be accessible to the user, the user needs to have at least
   // one permission for that module.
   const { permissions = [] } = user;
   const lcModuleName = kebabCase(moduleName);
   let isAccessible = false;
-  forEach(permissions, (permission: string) => {
-    if (permission.startsWith(lcModuleName)) {
+  forEach(permissions, (permission) => {
+    if (permission?.startsWith(lcModuleName)) {
       isAccessible = true;
     }
   });
@@ -58,8 +63,8 @@ const isModuleAccessible = (user: UserLike, moduleName: string) => {
 };
 
 const HeaderContent = ({ history, location, user }: Props) => {
-  const dispatch = useDispatch<any>();
-  const [updateLastActiveTime] = useMutation(UPDATE_LAST_ACTIVE_TIME as any);
+  const dispatch = useDispatch();
+  const [updateLastActiveTime] = useMutation(UPDATE_LAST_ACTIVE_TIME);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -79,7 +84,7 @@ const HeaderContent = ({ history, location, user }: Props) => {
         }
       });
     }
-  }, [ user ]);
+  }, [user]);
 
   const handleMenuItemSelected = ({ key }: MenuSelectInfo) => {
     const modulePath = modulePathsMapping[key];
@@ -87,8 +92,8 @@ const HeaderContent = ({ history, location, user }: Props) => {
     dispatch(setActiveModuleName(key));
   };
 
-  const menuItems: any[] = [];
-  const childMenuItems: any[] = [];
+  const menuItems: MenuProps['items'] = [];
+  const childMenuItems: MenuProps['items'] = [];
   const selectedMenuItemKey: string[] = [];
 
   if (user) {
@@ -105,10 +110,10 @@ const HeaderContent = ({ history, location, user }: Props) => {
     }
 
     // Add the 381-a operations node if any child of it are
-    // accessible to the user 
+    // accessible to the user
     const moduleNames = keys(modulePathsMapping);
     moduleNames.forEach((moduleName: string) => {
-      if(moduleName !== ModuleNames.admin) {
+      if (moduleName !== ModuleNames.admin) {
         if (isModuleAccessible(user, moduleName)) {
           childMenuItems.push({ key: moduleName, label: moduleName });
           const modulePath = modulePathsMapping[moduleName];
@@ -129,26 +134,20 @@ const HeaderContent = ({ history, location, user }: Props) => {
   }
 
   return (
-    <AntLayout.Header>
-      <div style={ContainerStyle as any}>
-        <AntMenu
+    <Layout.Header>
+      <div style={ContainerStyle}>
+        <Menu
           theme="dark"
           mode="horizontal"
           defaultSelectedKeys={selectedMenuItemKey}
           onSelect={handleMenuItemSelected}
           items={menuItems}
-          style={{ width: "50%" }}
+          style={{ width: '50%' }}
         />
-        <UserMenuControl history={history} location={location} />
+        <UserMenu history={history} location={location} />
       </div>
-    </AntLayout.Header>
+    </Layout.Header>
   );
-};
-
-HeaderContent.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-  user: PropTypes.object,
 };
 
 export default HeaderContent;

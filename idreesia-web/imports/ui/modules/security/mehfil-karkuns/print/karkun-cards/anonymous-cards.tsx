@@ -1,4 +1,4 @@
-import React, { Component, type CSSProperties } from 'react';
+import React, { type CSSProperties } from 'react';
 import Barcode from 'react-barcode';
 import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { UserOutlined } from '@ant-design/icons';
@@ -65,16 +65,16 @@ export const Card = ({ dutyName }: CardProps) => {
   );
 };
 
-export class AnonymousCards extends Component<AnonymousCardsProps> {
-  render() {
-    const { mehfilDuty, showDutyNameInUrdu } = this.props;
-    const dutyName = showDutyNameInUrdu ? mehfilDuty?.urduName : mehfilDuty?.name;
+export const AnonymousCards = ({
+  mehfilDuty,
+  showDutyNameInUrdu,
+}: AnonymousCardsProps) => {
+  const dutyName = showDutyNameInUrdu ? mehfilDuty?.urduName : mehfilDuty?.name;
 
-    const cards: React.ReactNode[] = [];
-    for (let i = 0; i < 9; i++) {
-      cards.push(<Card key={i.toString()} dutyName={dutyName ?? undefined} />);
-    }
-
-    return <div style={ContainerStyle}>{cards}</div>;
+  const cards: React.ReactNode[] = [];
+  for (let i = 0; i < 9; i++) {
+    cards.push(<Card key={i.toString()} dutyName={dutyName ?? undefined} />);
   }
-}
+
+  return <div style={ContainerStyle}>{cards}</div>;
+};

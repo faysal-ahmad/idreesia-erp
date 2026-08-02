@@ -8,13 +8,13 @@ import {
   WeekDaysField,
 } from '/imports/ui/modules/helpers/fields';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
-import allDutyRoles from '../../all-duty_roles';
 import type {
   ComposerAllDutyLocationsQuery,
   ComposerAllMsDutiesQuery,
   AllDutyShiftsQuery,
   KarkunDutiesByKarkunIdQuery,
 } from 'meteor/idreesia-common/types/client-operations';
+import allDutyRoles from '../../all-duty_roles';
 
 type MSDuty = NonNullable<NonNullable<ComposerAllMsDutiesQuery['allMSDuties']>[number]>;
 type DutyShift = NonNullable<NonNullable<AllDutyShiftsQuery['allDutyShifts']>[number]>;

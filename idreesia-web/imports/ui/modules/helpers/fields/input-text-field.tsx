@@ -1,11 +1,18 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 import { Input, Form } from "antd";
 
-const AntFormItem = (Form as any).Item;
-const TextInput = Input as any;
-interface FieldProps { fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; initialValue?: unknown; required?: boolean; requiredMessage?: string; disabled?: boolean; type?: string; }
+interface FieldProps {
+  fieldName: string;
+  fieldLabel?: string;
+  placeholder?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: unknown;
+  required?: boolean;
+  requiredMessage?: string;
+  disabled?: boolean;
+  type?: string;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -40,28 +47,16 @@ const InputTextField = ({
   ];
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
       {
         disabled ? (
-          <TextInput disabled />
+          <Input disabled />
         ) : (
-          <TextInput type={type} placeholder={placeholder} />
+          <Input type={type} placeholder={placeholder} />
         )
       }
-    </AntFormItem>
+    </Form.Item>
   );
-}
-
-InputTextField.propTypes = {
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  placeholder: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.any,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
-  disabled: PropTypes.bool,
-  type: PropTypes.string,
 };
 
 export default InputTextField;

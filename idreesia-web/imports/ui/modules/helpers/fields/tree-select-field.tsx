@@ -1,19 +1,38 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
 import { TreeSelect, Form } from 'antd';
+import type { DataNode } from 'rc-tree-select/lib/interface';
 
-const AntFormItem = (Form as any).Item;
-const AntTreeSelect = TreeSelect as any;
-type DataRecord = Record<string, any>;
+type DefaultRecord = {
+  _id?: string | number | null;
+  parentId?: string | number | null;
+  name?: React.ReactNode | null;
+};
 type FieldValue = string | number;
-interface FieldProps { data?: DataRecord[]; getDataValue?(data: DataRecord): FieldValue; getParentValue?(data: DataRecord): FieldValue | null; getDataText?(data: DataRecord): React.ReactNode; fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; required?: boolean; showSearch?: boolean; requiredMessage?: string; initialValue?: string | null; skipValue?: FieldValue; onChange?(value: unknown): void; }
+
+interface FieldProps<T> {
+  data?: T[];
+  getDataValue?(data: T): FieldValue;
+  getParentValue?(data: T): FieldValue | null;
+  getDataText?(data: T): React.ReactNode;
+  fieldName: string;
+  fieldLabel?: string;
+  placeholder?: string;
+  fieldLayout?: Record<string, unknown>;
+  required?: boolean;
+  showSearch?: boolean;
+  requiredMessage?: string;
+  initialValue?: string | null;
+  skipValue?: FieldValue;
+  onChange?(value: unknown): void;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 14 },
 };
+
 
 /**
  * data: Array of objects (containing text and value)
@@ -28,11 +47,11 @@ const formItemLayout = {
  * initialValue: Initial values to set in the form field.
  * handleValueChanged: Callback for whenever the selected value changes.
  */
-const TreeSelectField = ({
+function TreeSelectField<T = DefaultRecord>({
   data = [],
-  getDataValue = ({ _id }) => _id,
-  getParentValue = ({ parentId }) => parentId,
-  getDataText = ({ name }) => name,
+  getDataValue = (item: T) => (item as DefaultRecord)._id as FieldValue,
+  getParentValue = (item: T) => (item as DefaultRecord).parentId ?? null,
+  getDataText = (item: T) => (item as DefaultRecord).name,
   fieldName,
   fieldLabel,
   placeholder,
@@ -43,34 +62,33 @@ const TreeSelectField = ({
   initialValue = null,
   skipValue,
   onChange,
-}: FieldProps) => {
-  const getTreeNodes = (_data: DataRecord[], parent: FieldValue | null): React.ReactNode[] => {
-    const filteredData = filter(_data, (node: DataRecord) => {
+}: FieldProps<T>) {
+  const getTreeNodes = (_data: T[], parent: FieldValue | null): React.ReactNode[] => {
+    const filteredData = filter(_data, (node: T) => {
       const parentId = getParentValue(node);
       return parentId === parent;
     });
 
     const treeNodes: React.ReactNode[] = [];
-    filteredData.forEach((node: DataRecord) => {
+    filteredData.forEach((node: T) => {
       const id = getDataValue(node);
       if (!skipValue || id !== skipValue) {
         const text = getDataText(node);
         const children = getTreeNodes(_data, id);
         treeNodes.push(
-          <AntTreeSelect.TreeNode value={id} title={text} key={id}>
+          <TreeSelect.TreeNode value={id} title={text} key={id}>
             {children}
-          </AntTreeSelect.TreeNode>
+          </TreeSelect.TreeNode>
         );
       }
     });
     return treeNodes;
   };
 
-  const filterTreeNode = (_inputValue: string, treeNode: any) => {
-    const title = treeNode.props.title.toLowerCase();
-    const inputValue = _inputValue.toLowerCase();
-    if (title.indexOf(inputValue) !== -1) return true;
-    return false;
+  const filterTreeNode = (inputValue: string, treeNode: DataNode) => {
+    const node = treeNode as DataNode & { props?: { title?: React.ReactNode } };
+    const title = String(node.props?.title ?? node.title ?? '').toLowerCase();
+    return title.includes(inputValue.toLowerCase());
   };
 
   const treeNodes = getTreeNodes(data, null);
@@ -81,11 +99,11 @@ const TreeSelectField = ({
           message: requiredMessage,
         },
       ]
-    : null;
+    : undefined;
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <AntTreeSelect
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <TreeSelect
         placeholder={placeholder}
         onChange={onChange}
         allowClear
@@ -94,26 +112,9 @@ const TreeSelectField = ({
         filterTreeNode={filterTreeNode}
       >
         {treeNodes}
-      </AntTreeSelect>
-    </AntFormItem>
+      </TreeSelect>
+    </Form.Item>
   );
 }
-
-TreeSelectField.propTypes = {
-  data: PropTypes.array,
-  getDataValue: PropTypes.func,
-  getParentValue: PropTypes.func,
-  getDataText: PropTypes.func,
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  placeholder: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  required: PropTypes.bool,
-  showSearch: PropTypes.bool,
-  requiredMessage: PropTypes.string,
-  initialValue: PropTypes.string,
-  skipValue: PropTypes.string,
-  onChange: PropTypes.func,
-};
 
 export default TreeSelectField;

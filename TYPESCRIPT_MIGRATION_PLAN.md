@@ -314,20 +314,43 @@ Applied patterns #1–#13 across all of `idreesia-web/imports/ui/modules/admin/`
 
 **Verified:** `cd idreesia-web && npx tsc --noEmit -p tsconfig.json` — **zero errors** project-wide (including all of `modules/admin/`).
 
-### Other use-cases (not started)
+### `ui/modules/helpers` (entire helpers tree — done)
 
-Apply the same treatment (patterns #1–#13) when we get to these:
+Applied patterns #1–#13 across `idreesia-web/imports/ui/modules/helpers/{fields,controls}`.
 
-- Remaining cleanup outside cleaned modules: `PropTypes` / `as any` gql casts in helpers or other packages if any remain
+- [x] Removed all `PropTypes`, `AnyRecord` / `Record<string, any>`, and broad antd/icon `as any` aliases
+- [x] Typed helper GraphQL docs as `TypedDocumentNode` (`helperPagedHrKarkuns`, `pagedPeople`, `updateAttachment`)
+- [x] `InstanceSelection` / `PermissionSelection` use `forwardRef` + exported handles; people selection callback narrows to `{ _id: string }`
+- [x] Legitimate remaining `as any`: Select `mode`, router `Link`, `Barcode`, antd `columns`
 
-**RESUME POINT:** `ui/modules/{common,hr,inventory,security,admin}` done; `idreesia-common/composers` removed in favor of `idreesia-common/hooks`.
+**Verified:** `cd idreesia-web && npx tsc --noEmit -p tsconfig.json` — **zero errors** project-wide (including all of `modules/helpers/`).
+
+### Shared hooks + composers cleanup (done)
+
+- [x] `codegen.ts` documents now include `idreesia-common/hooks/**/*.{ts,tsx}`
+- [x] GraphQL hooks under `idreesia-common/hooks/{common,admin,security}` use `TypedDocumentNode` + generated ops (`commonAllCities`, `commonAllCityMehfils`, `commonCurrentUser`, `securityDistinct*`, `adminAllPhysicalStores`); nulls normalized at the hook boundary
+- [x] Deleted unused `idreesia-common/composers` (no remaining imports)
+
+### `ui/main-layout` (app shell — done)
+
+Applied patterns #1–#13 across `idreesia-web/imports/ui/main-layout/`.
+
+- [x] Removed all `PropTypes`, `AnyRecord` / `Record<string, any>`, and broad antd/icon `as any` aliases
+- [x] Typed GraphQL docs as `TypedDocumentNode` (`registerUser`, `updateLoginTime`, `updateLastActiveTime`)
+- [x] Lazy module sidebars typed without `as any`; Redux slices use focused `LayoutRootState`
+- [x] Legitimate remaining `as any`: react-router `Link`, Meteor/Accounts password & logout APIs (typings gaps)
+
+**Verified:** `cd idreesia-web && npx tsc --noEmit -p tsconfig.json` — **zero errors** project-wide (including `ui/main-layout/`).
+
+**RESUME POINT:** Module UI trees + helpers + shared hooks + main-layout shell done.
 
 ### Codebase-wide follow-ups
 
-- [ ] Sweep for other `X as any` casts on `useQuery`/`useMutation` document arguments outside cleaned modules now that the `graphql` dedupe fix applies repo-wide
+- [x] Sweep for other `X as any` casts on `useQuery`/`useMutation` document arguments outside cleaned modules now that the `graphql` dedupe fix applies repo-wide — none left under `ui/modules/` or `ui/main-layout/`
 - [x] Create a `useDynamicBreadcrumbs` hook (mirroring `useBreadcrumbs`) — done; reused in inventory + security
 - [x] Create `useAllPhysicalStores` hook — done for admin
 - [x] Remove `idreesia-common/composers` after all call sites migrated to hooks
+- [x] Harden `ui/main-layout` (PropTypes / antd aliases / gql TypedDocumentNode)
 
 ## How to verify a fix
 

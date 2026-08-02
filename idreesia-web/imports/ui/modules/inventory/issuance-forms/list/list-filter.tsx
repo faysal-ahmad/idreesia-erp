@@ -38,14 +38,6 @@ export interface IssuanceListFilterParams {
   pageSize?: number;
 }
 
-interface QueryParams {
-  startDate?: string;
-  endDate?: string;
-  locationId?: string;
-  showApproved?: string;
-  showUnapproved?: string;
-}
-
 interface ListFilterProps {
   allLocations?: LocationRecord[];
   refreshPage(params: IssuanceListFilterParams): void;

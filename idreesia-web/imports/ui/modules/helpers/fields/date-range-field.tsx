@@ -1,14 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 
 import { DatePicker, Form } from 'antd';
 
-const { RangePicker } = DatePicker as any;
-
-const AntFormItem = (Form as any).Item;
-const RangeInput = RangePicker as any;
-interface FieldProps { allowClear?: boolean; fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: unknown[]; required?: boolean; requiredMessage?: string; }
+interface FieldProps {
+  allowClear?: boolean;
+  fieldName: string;
+  fieldLabel?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: unknown[];
+  required?: boolean;
+  requiredMessage?: string;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -41,20 +44,10 @@ const DateRangeField = ({
   ];
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <RangeInput format="DD MMM, YYYY" allowClear={allowClear} />
-    </AntFormItem>
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <DatePicker.RangePicker format="DD MMM, YYYY" allowClear={allowClear} />
+    </Form.Item>
   );
-}
-
-DateRangeField.propTypes = {
-  allowClear: PropTypes.bool,
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.array,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
 };
 
 export default DateRangeField;

@@ -1,17 +1,28 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
 
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
+import type { PagedPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
 import { PeopleList, PeopleListFilter } from '/imports/ui/modules/common';
 
 import { PAGED_PEOPLE } from './gql';
 
-const DataList = PeopleList as any;
-const DataListFilter = PeopleListFilter as any;
-type AnyRecord = Record<string, any>;
-interface Props { handleSelectItem?(item: AnyRecord): void; }
-interface QueryData { pagedPeople?: unknown; }
+type PersonRow = NonNullable<
+  NonNullable<NonNullable<PagedPeopleQuery['pagedPeople']>['data']>[number]
+>;
+
+interface PageParams {
+  pageIndex: string;
+  pageSize: string;
+  name?: string;
+  cnicNumber?: string;
+  phoneNumber?: string;
+  city?: string;
+}
+
+interface Props {
+  handleSelectItem?(item: PersonRow): void;
+}
 
 const List = ({ handleSelectItem }: Props) => {
   const [name, setName] = useState('');
@@ -21,17 +32,17 @@ const List = ({ handleSelectItem }: Props) => {
   const [pageIndex, setPageIndex] = useState('0');
   const [pageSize, setPageSize] = useState('20');
 
-  const setPageParams = (values: AnyRecord) => {
-    if (Object.prototype.hasOwnProperty.call(values, 'name')) setName(values.name);
-    if (Object.prototype.hasOwnProperty.call(values, 'cnicNumber')) setCnicNumber(values.cnicNumber);
+  const setPageParams = (values: Partial<PageParams>) => {
+    if (Object.prototype.hasOwnProperty.call(values, 'name')) setName(values.name ?? '');
+    if (Object.prototype.hasOwnProperty.call(values, 'cnicNumber')) setCnicNumber(values.cnicNumber ?? '');
     if (Object.prototype.hasOwnProperty.call(values, 'phoneNumber'))
-      setPhoneNumber(values.phoneNumber);
-    if (Object.prototype.hasOwnProperty.call(values, 'city')) setCity(values.city);
-    if (Object.prototype.hasOwnProperty.call(values, 'pageIndex')) setPageIndex(values.pageIndex);
-    if (Object.prototype.hasOwnProperty.call(values, 'pageSize')) setPageSize(values.pageSize);
+      setPhoneNumber(values.phoneNumber ?? '');
+    if (Object.prototype.hasOwnProperty.call(values, 'city')) setCity(values.city ?? '');
+    if (Object.prototype.hasOwnProperty.call(values, 'pageIndex')) setPageIndex(values.pageIndex ?? '0');
+    if (Object.prototype.hasOwnProperty.call(values, 'pageSize')) setPageSize(values.pageSize ?? '20');
   };
 
-  const { data, loading, refetch } = useQuery(PAGED_PEOPLE as any, {
+  const { data, loading, refetch } = useQuery(PAGED_PEOPLE, {
     variables: {
       filter: {
         name,
@@ -45,12 +56,12 @@ const List = ({ handleSelectItem }: Props) => {
   });
 
   if (loading) return null;
-  const { pagedPeople } = (data ?? {}) as QueryData;
+  const { pagedPeople } = data ?? {};
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
   const getListFilter = () => (
-    <DataListFilter
+    <PeopleListFilter
       name={name}
       cnicNumber={cnicNumber}
       phoneNumber={phoneNumber}
@@ -65,7 +76,7 @@ const List = ({ handleSelectItem }: Props) => {
   );
 
   return (
-    <DataList
+    <PeopleList
       showCategoryColumn
       showCnicColumn
       showPhoneNumbersColumn
@@ -75,13 +86,9 @@ const List = ({ handleSelectItem }: Props) => {
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}
-      pagedData={pagedPeople}
+      pagedData={pagedPeople ?? undefined}
     />
   );
-};
-
-List.propTypes = {
-  handleSelectItem: PropTypes.func,
 };
 
 export default List;

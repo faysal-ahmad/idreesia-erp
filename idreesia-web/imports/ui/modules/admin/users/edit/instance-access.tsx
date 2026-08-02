@@ -7,12 +7,9 @@ import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 import { useAllPhysicalStores } from 'meteor/idreesia-common/hooks/admin';
 
 import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
+import type { InstanceSelectionHandle } from '/imports/ui/modules/helpers/controls/access-management/instance-selection';
 
 import { USER_BY_ID, SET_INSTANCE_ACCESS } from '../gql';
-
-interface InstanceSelectionRef {
-  getSelectedInstances(): string[];
-}
 
 interface PhysicalStoreOption {
   _id: string;
@@ -25,7 +22,7 @@ interface Props {
 }
 
 const InstanceAccess = ({ userId, history }: Props) => {
-  const instanceSelection = useRef<InstanceSelectionRef>(null);
+  const instanceSelection = useRef<InstanceSelectionHandle>(null);
   const { allPhysicalStoresLoading, allPhysicalStores } = useAllPhysicalStores();
   const { data, loading: userLoading } = useQuery(USER_BY_ID, {
     variables: { _id: userId },

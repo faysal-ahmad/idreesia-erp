@@ -1,19 +1,27 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 import { AutoComplete, Form } from "antd";
+import type { AutoCompleteProps } from "antd";
 
-const AntFormItem = (Form as any).Item;
-const AutoCompleteInput = AutoComplete as any;
-interface FieldProps { dataSource?: string[]; fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; required?: boolean; requiredMessage?: string; initialValue?: string | null; filterOption?(inputValue: string, option: any): boolean; }
+interface FieldProps {
+  dataSource?: string[];
+  fieldName: string;
+  fieldLabel?: string;
+  placeholder?: string;
+  fieldLayout?: Record<string, unknown>;
+  required?: boolean;
+  requiredMessage?: string;
+  initialValue?: string | null;
+  filterOption?: AutoCompleteProps['filterOption'];
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 14 },
 };
 
-const filterOptionFunc = (_inputValue: string, option: any) => {
-  const key = option.key.toLowerCase();
+const filterOptionFunc: NonNullable<AutoCompleteProps['filterOption']> = (_inputValue, option) => {
+  const key = String(option?.value ?? option?.key ?? '').toLowerCase();
   const inputValue = _inputValue.toLowerCase();
   if (key.startsWith(inputValue)) return true;
   return false;
@@ -45,30 +53,18 @@ const AutoCompleteField = ({
           message: requiredMessage,
         },
       ]
-    : null;
+    : undefined;
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <AutoCompleteInput
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <AutoComplete
         placeholder={placeholder}
         dataSource={dataSource}
         backfill
         filterOption={filterOption}
       />
-    </AntFormItem>
+    </Form.Item>
   );
-}
-
-AutoCompleteField.propTypes = {
-  dataSource: PropTypes.array,
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  placeholder: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
-  initialValue: PropTypes.string,
-  filterOption: PropTypes.func,
 };
 
 export default AutoCompleteField;

@@ -1,47 +1,58 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Form, Input, Modal, message } from 'antd';
 
 const itemLayout = {
   wrapperCol: { span: 14 },
 };
 
-const AntForm = Form as any;
-const AntFormItem = (Form as any).Item;
-const TextInput = Input as any;
-const AntModal = Modal as any;
-interface Props { showForm?: boolean; handlePasswordChanged(): void; handlePasswordChangeCancelled(): void; }
-interface FormValues { oldPassword: string; newPassword: string; }
+interface Props {
+  showForm?: boolean;
+  handlePasswordChanged(): void;
+  handlePasswordChangeCancelled(): void;
+}
 
-const ChangePasswordForm = ({ showForm, handlePasswordChanged, handlePasswordChangeCancelled }: Props) => {
-  const [form] = AntForm.useForm();
+interface FormValues {
+  oldPassword: string;
+  newPassword: string;
+}
+
+const ChangePasswordForm = ({
+  showForm,
+  handlePasswordChanged,
+  handlePasswordChangeCancelled,
+}: Props) => {
+  const [form] = Form.useForm<FormValues>();
 
   const handleSubmit = () => {
-    form.validateFields().then((values: FormValues) => {
+    form.validateFields().then((values) => {
       const { oldPassword, newPassword } = values;
-      (Accounts as any).changePassword(oldPassword, newPassword, (error?: Error) => {
-        if (!error) {
-          (Meteor as any).logoutOtherClients();
-          message.success('Your password has been changed.', 5);
-          handlePasswordChanged();
-        } else {
-          message.error(error.message, 5);
+      (Accounts as any).changePassword(
+        oldPassword,
+        newPassword,
+        (error?: Error) => {
+          if (!error) {
+            (Meteor as any).logoutOtherClients();
+            message.success('Your password has been changed.', 5);
+            handlePasswordChanged();
+          } else {
+            message.error(error.message, 5);
+          }
         }
-      })
+      );
     });
   };
 
   return (
-    <AntModal
+    <Modal
       title="Change Password"
       open={showForm}
       onOk={handleSubmit}
       onCancel={handlePasswordChangeCancelled}
     >
-      <AntForm form={form}>
-        <AntFormItem
+      <Form form={form}>
+        <Form.Item
           {...itemLayout}
           name="oldPassword"
           rules={[
@@ -51,9 +62,9 @@ const ChangePasswordForm = ({ showForm, handlePasswordChanged, handlePasswordCha
             },
           ]}
         >
-          <TextInput type="password" placeholder="Old Password" />
-        </AntFormItem>
-        <AntFormItem
+          <Input type="password" placeholder="Old Password" />
+        </Form.Item>
+        <Form.Item
           {...itemLayout}
           name="newPassword"
           rules={[
@@ -63,17 +74,11 @@ const ChangePasswordForm = ({ showForm, handlePasswordChanged, handlePasswordCha
             },
           ]}
         >
-          <TextInput type="password" placeholder="New Password" />
-        </AntFormItem>
-      </AntForm>
-    </AntModal>
+          <Input type="password" placeholder="New Password" />
+        </Form.Item>
+      </Form>
+    </Modal>
   );
-}
-
-ChangePasswordForm.propTypes = {
-  showForm: PropTypes.bool,
-  handlePasswordChanged: PropTypes.func,
-  handlePasswordChangeCancelled: PropTypes.func,
 };
 
 export default ChangePasswordForm;

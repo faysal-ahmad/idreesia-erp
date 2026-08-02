@@ -12,7 +12,6 @@ import {
 import type {
   AllJobsQuery,
   CreateSalariesMutation,
-  CurrentMonthSalariesQuery,
   UpdateSalaryMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 import { Modal, message } from 'antd';

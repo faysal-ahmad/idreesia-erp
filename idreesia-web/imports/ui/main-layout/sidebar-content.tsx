@@ -1,47 +1,56 @@
 import React, { Suspense, useState } from 'react';
-import PropTypes from 'prop-types';
+import { type History } from 'history';
 import { useSelector } from 'react-redux';
 import { Button, Flex, Layout, Typography } from 'antd';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
 
-const ReactSuspense = Suspense as any;
-const AntButton = Button as any;
-const AntFlex = Flex as any;
-const AntLayout = Layout as any;
-const AntTypography = Typography as any;
-const AntMenuUnfoldOutlined = MenuUnfoldOutlined as any;
-const AntMenuFoldOutlined = MenuFoldOutlined as any;
-type AnyRecord = Record<string, any>;
+interface LayoutRootState {
+  activeModuleName?: string | null;
+}
 
-const sidebarsMap: Record<string, any> = {
-  [ModuleNames.admin]: React.lazy(() =>
-    import('/imports/ui/modules/admin/sidebar').then(module => ({ default: module.default as any }))
+interface ModuleSidebarProps {
+  history: History;
+}
+
+type ModuleSidebarComponent = React.ComponentType<ModuleSidebarProps>;
+
+interface Props {
+  history: History;
+}
+
+const sidebarsMap: Record<
+  string,
+  React.LazyExoticComponent<ModuleSidebarComponent>
+> = {
+  [ModuleNames.admin]: React.lazy(
+    () => import('/imports/ui/modules/admin/sidebar')
   ),
-  [ModuleNames.inventory]: React.lazy(() =>
-    import('/imports/ui/modules/inventory/sidebar').then(module => ({ default: module.default as any }))
+  [ModuleNames.inventory]: React.lazy(
+    () => import('/imports/ui/modules/inventory/sidebar')
   ),
-  [ModuleNames.hr]: React.lazy(() =>
-    import('/imports/ui/modules/hr/sidebar').then(module => ({ default: module.default as any }))
-  ),
-  [ModuleNames.security]: React.lazy(() =>
-    import('/imports/ui/modules/security/sidebar').then(module => ({ default: module.default as any }))
+  [ModuleNames.hr]: React.lazy(() => import('/imports/ui/modules/hr/sidebar')),
+  [ModuleNames.security]: React.lazy(
+    () => import('/imports/ui/modules/security/sidebar')
   ),
 };
 
-const SidebarContent = (props: AnyRecord) => {
+const SidebarContent = ({ history }: Props) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const activeModuleName = useSelector((state: AnyRecord) => state.activeModuleName);
-  const { history } = props;
-  const ModuleSidebar = sidebarsMap[activeModuleName];
+  const activeModuleName = useSelector(
+    (state: LayoutRootState) => state.activeModuleName
+  );
+  const ModuleSidebar = activeModuleName
+    ? sidebarsMap[activeModuleName]
+    : undefined;
 
   let sidebar = <div />;
   if (ModuleSidebar) {
     sidebar = (
-      <ReactSuspense fallback={<div />}>
-        {React.createElement(ModuleSidebar as any, { history, collapsed: sidebarCollapsed })}
-      </ReactSuspense>
+      <Suspense fallback={<div />}>
+        <ModuleSidebar history={history} />
+      </Suspense>
     );
   }
 
@@ -50,15 +59,17 @@ const SidebarContent = (props: AnyRecord) => {
   };
 
   return (
-    <AntFlex vertical>
-      <AntFlex justify='center'>
-        {
-          sidebarCollapsed ? <div>&nbsp;</div> : (
-            <AntTypography.Title ellipsis level={4}>{activeModuleName}</AntTypography.Title>
-          )
-        }
-      </AntFlex>
-      <AntLayout.Sider
+    <Flex vertical>
+      <Flex justify="center">
+        {sidebarCollapsed ? (
+          <div>&nbsp;</div>
+        ) : (
+          <Typography.Title ellipsis level={4}>
+            {activeModuleName}
+          </Typography.Title>
+        )}
+      </Flex>
+      <Layout.Sider
         width={220}
         style={{ background: '#fff' }}
         collapsible
@@ -67,20 +78,17 @@ const SidebarContent = (props: AnyRecord) => {
         onCollapse={handleCollapse}
       >
         {sidebar}
-      </AntLayout.Sider>
-      <AntButton
+      </Layout.Sider>
+      <Button
         type="link"
-        icon={sidebarCollapsed ? <AntMenuUnfoldOutlined /> : <AntMenuFoldOutlined />}
+        icon={
+          sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
+        }
         onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
         style={{ fontSize: '16px', width: 64, height: 64 }}
       />
-    </AntFlex>
+    </Flex>
   );
-};
-
-SidebarContent.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default SidebarContent;

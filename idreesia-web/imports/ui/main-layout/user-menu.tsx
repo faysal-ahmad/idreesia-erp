@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties, useState } from 'react';
 import { Avatar, Dropdown } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import { type History, type Location } from 'history';
 import { useDispatch } from 'react-redux';
 
 import { useLoggedInUser } from 'meteor/idreesia-common/hooks/common';
@@ -14,22 +14,20 @@ import {
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import ChangePasswordForm from './change-password-form';
 
-const ContainerStyle = {
+const ContainerStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'space-between',
   alignItems: 'center',
 };
 
-const AntAvatar = Avatar as any;
-const AntDropdown = Dropdown as any;
-const AntUserOutlined = UserOutlined as any;
-const ChangePassword = ChangePasswordForm as any;
-interface HistoryLike { push(path: string): void; }
-interface Props { history: HistoryLike; }
+interface Props {
+  history: History;
+  location?: Location;
+}
 
 const UserMenu = ({ history }: Props) => {
-  const dispatch = useDispatch<any>();
+  const dispatch = useDispatch();
   const [showChangePasswordForm, setShowChangePasswordForm] = useState(false);
   const { user, userLoading } = useLoggedInUser();
 
@@ -70,42 +68,37 @@ const UserMenu = ({ history }: Props) => {
 
   const userName = user.karkun ? user.karkun.name : user.displayName;
 
-  let avatar = <AntAvatar size="large" icon={<AntUserOutlined />} />;
+  let avatar = <Avatar size="large" icon={<UserOutlined />} />;
   if (user.karkun && user.karkun.imageId) {
     const url = getDownloadUrl(user.karkun.imageId);
-    avatar = <AntAvatar size="large" src={url} />;
+    avatar = <Avatar size="large" src={url} />;
   }
 
   const menuItems = [
     { key: 'change-password', label: 'Change Password' },
-    { type: 'divider' },
+    { type: 'divider' as const },
     { key: 'logout', label: 'Logout' },
   ];
 
   return (
     <>
-      <AntDropdown
+      <Dropdown
         menu={{ items: menuItems, onClick: handleMenuItemClicked }}
         placement="bottomLeft"
       >
-        <div style={ContainerStyle as any}>
+        <div style={ContainerStyle}>
           <div style={{ color: '#FFFFFF' }}>{userName}</div>
           &nbsp; &nbsp;
           {avatar}
         </div>
-      </AntDropdown>
-      <ChangePassword 
+      </Dropdown>
+      <ChangePasswordForm
         showForm={showChangePasswordForm}
         handlePasswordChanged={handleChangePasswordSuccess}
         handlePasswordChangeCancelled={handleChangePasswordCancelled}
       />
     </>
   );
-};
-
-UserMenu.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default UserMenu;

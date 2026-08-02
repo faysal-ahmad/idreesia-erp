@@ -1,11 +1,20 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Checkbox, Form } from 'antd';
 
-const AntFormItem = (Form as any).Item;
-const CheckboxInput = Checkbox as any;
-interface Option { label: string; value: string; }
-interface FieldProps { fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: string[]; options?: Option[]; required?: boolean; requiredMessage?: string; }
+interface Option {
+  label: string;
+  value: string;
+}
+
+interface FieldProps {
+  fieldName: string;
+  fieldLabel?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: string[];
+  options?: Option[];
+  required?: boolean;
+  requiredMessage?: string;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -37,25 +46,10 @@ const CheckboxGroupField = ({
   ];
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <CheckboxInput.Group options={options} />
-    </AntFormItem>
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <Checkbox.Group options={options} />
+    </Form.Item>
   );
-}
-
-CheckboxGroupField.propTypes = {
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.array,
-  options: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string,
-      value: PropTypes.string,
-    })
-  ),
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
 };
 
 export default CheckboxGroupField;

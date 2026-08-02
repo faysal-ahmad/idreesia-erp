@@ -1,4 +1,4 @@
-import React, { type CSSProperties, Component } from 'react';
+import React, { Component } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';

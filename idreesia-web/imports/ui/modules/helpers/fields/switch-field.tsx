@@ -1,11 +1,14 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-
 import { Switch, Form } from 'antd';
 
-const AntFormItem = (Form as any).Item;
-const SwitchInput = Switch as any;
-interface FieldProps { fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: boolean; disabled?: boolean; handleChange?(checked: boolean): void; }
+interface FieldProps {
+  fieldName: string;
+  fieldLabel?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: boolean;
+  disabled?: boolean;
+  handleChange?(checked: boolean): void;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -26,8 +29,8 @@ const SwitchField = ({
   disabled = false,
   handleChange,
 }: FieldProps) => (
-    <AntFormItem name={fieldName} label={fieldLabel} valuePropName="checked" initialValue={initialValue} {...fieldLayout}>
-      <SwitchInput
+    <Form.Item name={fieldName} label={fieldLabel} valuePropName="checked" initialValue={initialValue} {...fieldLayout}>
+      <Switch
         disabled={disabled}
         onChange={(checked: boolean) => {
           if (handleChange) {
@@ -35,16 +38,7 @@ const SwitchField = ({
           }
         }}
       />
-    </AntFormItem>
+    </Form.Item>
   );
-
-SwitchField.propTypes = {
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.bool,
-  disabled: PropTypes.bool,
-  handleChange: PropTypes.func,
-};
 
 export default SwitchField;

@@ -1,15 +1,12 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { noop } from "lodash";
 import { CloseCircleOutlined } from '@ant-design/icons';
 
 import { Button, Form, Row } from "antd";
 
-const AntButton = Button as any;
-const AntFormItem = (Form as any).Item;
-const AntRow = Row as any;
-const AntCloseCircleOutlined = typeof CloseCircleOutlined !== 'undefined' ? (CloseCircleOutlined as any) : undefined;
-interface Props { handleClose?(): void; }
+interface Props {
+  handleClose?(): void;
+}
 
 const buttonItemLayout = {
   wrapperCol: { span: 16, offset: 4 },
@@ -18,27 +15,19 @@ const buttonItemLayout = {
 /**
  * handleClose: Function to run when close button is pressed.
  */
-const FormButtonsClose = ({ handleClose }: Props) => (
-  <AntFormItem {...buttonItemLayout}>
-    <AntRow type="flex" justify="end">
-      <AntButton
+const FormButtonsClose = ({ handleClose = noop }: Props) => (
+  <Form.Item {...buttonItemLayout}>
+    <Row justify="end">
+      <Button
         size="large"
         type="default"
-        icon={<AntCloseCircleOutlined />}
+        icon={<CloseCircleOutlined />}
         onClick={handleClose}
       >
         Close
-      </AntButton>
-    </AntRow>
-  </AntFormItem>
+      </Button>
+    </Row>
+  </Form.Item>
 );
-
-FormButtonsClose.propTypes = {
-  handleClose: PropTypes.func,
-};
-
-FormButtonsClose.defaultProps = {
-  handleClose: noop,
-};
 
 export default FormButtonsClose;

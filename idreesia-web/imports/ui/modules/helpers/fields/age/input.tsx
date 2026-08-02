@@ -1,19 +1,16 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 
 import { InputNumber } from 'antd';
 
-const NumberInput = InputNumber as any;
-interface CustomInputProps { value?: any; disabled?: boolean; onChange?(value: any): void; }
+interface CustomInputProps {
+  value?: Dayjs | null;
+  disabled?: boolean;
+  onChange?(value: Dayjs): void;
+}
 
 export default class CustomInput extends Component<CustomInputProps> {
-  static propTypes = {
-    value: PropTypes.object,
-    disabled: PropTypes.bool,
-    onChange: PropTypes.func,
-  };
-
   handleChange = (years: number | null) => {
     const { onChange } = this.props;
     let newValue = dayjs().startOf('day');
@@ -27,6 +24,6 @@ export default class CustomInput extends Component<CustomInputProps> {
     const diffInYears =
       value && value.isValid() ? currentDate.diff(value, 'years') : 0;
 
-    return <NumberInput value={diffInYears} onChange={this.handleChange} />;
+    return <InputNumber value={diffInYears} onChange={this.handleChange} />;
   }
 }

@@ -1,19 +1,23 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
+import type {
+  CommonAllCitiesQuery,
+  CommonAllCitiesQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-interface CityOption {
+export interface CityOption {
   _id: string;
   name: string;
   peripheryOf?: string | null;
   country?: string | null;
 }
 
-interface AllCitiesData {
-  allCities: CityOption[];
-}
-
-const QUERY = gql`
-  query allCities {
+const QUERY: TypedDocumentNode<
+  CommonAllCitiesQuery,
+  CommonAllCitiesQueryVariables
+> = gql`
+  query commonAllCities {
     allCities {
       _id
       name
@@ -23,10 +27,27 @@ const QUERY = gql`
   }
 `;
 
+const normalizeCities = (
+  cities: CommonAllCitiesQuery['allCities']
+): CityOption[] | null => {
+  if (!cities) return null;
+  return cities.flatMap((city) => {
+    if (!city?._id || city.name == null) return [];
+    return [
+      {
+        _id: city._id,
+        name: city.name,
+        peripheryOf: city.peripheryOf,
+        country: city.country,
+      },
+    ];
+  });
+};
+
 const useAllCities = () => {
-  const { data, loading } = useQuery<AllCitiesData>(QUERY);
+  const { data, loading } = useQuery(QUERY);
   return {
-    allCities: data ? data.allCities : null,
+    allCities: normalizeCities(data?.allCities ?? null),
     allCitiesLoading: loading,
   };
 };

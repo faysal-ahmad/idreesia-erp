@@ -1,12 +1,20 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { Form } from 'antd';
 import { AttendanceDetail } from '../controls';
 
-const AntFormItem = (Form as any).Item;
-const AttendanceDetailInput = AttendanceDetail as any;
-interface FieldProps { forMonth?: string; initialValue?: Record<string, unknown>; fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; required?: boolean; requiredMessage?: string; }
+type AttendanceValue = 'pr' | 'la' | 'ab' | 'ms' | null | undefined;
+type AttendanceMap = Record<string, AttendanceValue>;
+
+interface FieldProps {
+  forMonth?: string;
+  initialValue?: AttendanceMap;
+  fieldName: string;
+  fieldLabel?: string;
+  fieldLayout?: Record<string, unknown>;
+  required?: boolean;
+  requiredMessage?: string;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -37,25 +45,15 @@ const AttendanceDetailField = ({
   ];
 
   return (
-    <AntFormItem
+    <Form.Item
       name={fieldName}
       label={fieldLabel}
       {...fieldLayout}
       rules={rules}
     >
-      <AttendanceDetailInput forMonth={forMonth} initialValue={initialValue} />
-    </AntFormItem>
+      <AttendanceDetail forMonth={forMonth} initialValue={initialValue} />
+    </Form.Item>
   );
-}
-
-AttendanceDetailField.propTypes = {
-  forMonth: PropTypes.string,
-  initialValue: PropTypes.object,
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
 };
 
 export default AttendanceDetailField;

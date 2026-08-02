@@ -1,10 +1,24 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Cascader, Form } from 'antd';
 
-const AntFormItem = (Form as any).Item;
-const CascaderInput = Cascader as any;
-interface FieldProps { data?: unknown[]; changeOnSelect?: boolean; fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; initialValue?: unknown; required?: boolean; requiredMessage?: string; disabled?: boolean; }
+interface CascaderOption {
+  value?: string | number | null;
+  label?: React.ReactNode;
+  children?: CascaderOption[];
+}
+
+interface FieldProps {
+  data?: CascaderOption[];
+  changeOnSelect?: boolean;
+  fieldName: string;
+  fieldLabel?: string;
+  placeholder?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: unknown;
+  required?: boolean;
+  requiredMessage?: string;
+  disabled?: boolean;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -40,29 +54,16 @@ const CascaderField = ({
   ];
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-        <CascaderInput
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+        <Cascader
           disabled={disabled}
           options={data}
           placeholder={placeholder}
           expandTrigger="hover"
           changeOnSelect={changeOnSelect}
         />
-    </AntFormItem>
+    </Form.Item>
   );
-}
-
-CascaderField.propTypes = {
-  data: PropTypes.array,
-  changeOnSelect: PropTypes.bool,
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  placeholder: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.any,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
-  disabled: PropTypes.bool,
 };
 
 export default CascaderField;

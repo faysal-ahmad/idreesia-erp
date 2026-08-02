@@ -1,40 +1,36 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Form } from 'antd';
+import type { FormInstance } from 'antd/es/form';
 
 import {
   InputTextField,
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-interface AttachmentValues { name?: string; description?: string; }
-interface Props { form?: unknown; defaultValues?: AttachmentValues; }
+interface AttachmentValues {
+  name?: string;
+  description?: string;
+}
 
-const AttachmentForm = ({ form, defaultValues = {} }: Props) => {
+interface Props {
+  form?: FormInstance;
+  defaultValues?: AttachmentValues;
+}
 
-  return (
-    <AntForm form={form} layout="horizontal">
-      <TextField
-        fieldName="name"
-        fieldLabel="Name"
-        initialValue={defaultValues.name}
-      />
+const AttachmentForm = ({ form, defaultValues = {} }: Props) => (
+  <Form form={form} layout="horizontal">
+    <InputTextField
+      fieldName="name"
+      fieldLabel="Name"
+      initialValue={defaultValues.name}
+    />
 
-      <TextAreaField
-        fieldName="description"
-        fieldLabel="Description"
-        initialValue={defaultValues.description}
-      />
-    </AntForm>
-  );
-};
-
-AttachmentForm.propTypes = {
-  form: PropTypes.object,
-  defaultValues: PropTypes.object,
-};
+    <InputTextAreaField
+      fieldName="description"
+      fieldLabel="Description"
+      initialValue={defaultValues.description}
+    />
+  </Form>
+);
 
 export default AttachmentForm;

@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import { debounce } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Input, Row } from 'antd';
 
-const AntCol = Col as any;
-const TextInput = Input as any;
-const AntRow = Row as any;
-interface Props { onBarcodeCaptured?(code: string): void; }
-interface State { code: string; }
+interface Props {
+  onBarcodeCaptured?(code: string): void;
+}
+
+interface State {
+  code: string;
+}
 
 export default class ScanBarcode extends Component<Props, State> {
-  static propTypes = {
-    onBarcodeCaptured: PropTypes.func,
-  };
-
   state = {
     code: '',
   };
@@ -39,9 +36,7 @@ export default class ScanBarcode extends Component<Props, State> {
 
       this.setState({ code: scannedCode });
       const { onBarcodeCaptured } = this.props;
-      if (onBarcodeCaptured) {
-        onBarcodeCaptured(scannedCode);
-      }
+      onBarcodeCaptured?.(scannedCode);
     },
     50,
     { trailing: true, maxWait: 1000 }
@@ -54,12 +49,12 @@ export default class ScanBarcode extends Component<Props, State> {
 
   render() {
     return (
-      <AntRow type="flex" justify="start" align="middle" gutter={16}>
-        <AntCol order={1}>Scan Barcode</AntCol>
-        <AntCol order={2}>
-          <TextInput readOnly value={this.state.code} />
-        </AntCol>
-      </AntRow>
+      <Row justify="start" align="middle" gutter={16}>
+        <Col order={1}>Scan Barcode</Col>
+        <Col order={2}>
+          <Input readOnly value={this.state.code} />
+        </Col>
+      </Row>
     );
   }
 }

@@ -1,21 +1,21 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
-interface Props { showCrop?: boolean; cropTop?: number; cropLeft?: number; cropWidth?: number; cropHeight?: number; width?: number; height?: number; }
-interface State { mediaStream?: MediaStream; }
+interface Props {
+  showCrop?: boolean;
+  cropTop?: number;
+  cropLeft?: number;
+  cropWidth?: number;
+  cropHeight?: number;
+  width?: number;
+  height?: number;
+}
+
+interface State {
+  mediaStream?: MediaStream;
+}
 
 export default class Camera extends Component<Props, State> {
-  static propTypes = {
-    showCrop: PropTypes.bool,
-    cropTop: PropTypes.number,
-    cropLeft: PropTypes.number,
-    cropWidth: PropTypes.number,
-    cropHeight: PropTypes.number,
-    width: PropTypes.number,
-    height: PropTypes.number,
-  };
-
   state: State = {};
   video: HTMLVideoElement | null = null;
   canvas?: HTMLCanvasElement;

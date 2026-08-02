@@ -1,12 +1,20 @@
 import React from "react";
-import PropTypes from "prop-types";
-
 import { Radio, Form } from "antd";
 
-const AntFormItem = (Form as any).Item;
-const RadioInput = Radio as any;
-interface Option { label: string; value: string; }
-interface FieldProps { fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: string | null; options?: Option[]; required?: boolean; requiredMessage?: string; }
+interface Option {
+  label: string;
+  value: string;
+}
+
+interface FieldProps {
+  fieldName: string;
+  fieldLabel?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: string | null;
+  options?: Option[];
+  required?: boolean;
+  requiredMessage?: string;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -32,9 +40,9 @@ const RadioGroupField = ({
   requiredMessage,
 }: FieldProps) => {
   const radioOptions = (options ?? []).map(option => (
-    <RadioInput key={option.value} value={option.value}>
+    <Radio key={option.value} value={option.value}>
       {option.label}
-    </RadioInput>
+    </Radio>
   ));
 
   const rules = [
@@ -45,25 +53,10 @@ const RadioGroupField = ({
   ];
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <RadioInput.Group options={options}>{radioOptions}</RadioInput.Group>
-    </AntFormItem>
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <Radio.Group options={options}>{radioOptions}</Radio.Group>
+    </Form.Item>
   );
-}
-
-RadioGroupField.propTypes = {
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.string,
-  options: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string,
-      value: PropTypes.string,
-    })
-  ),
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
 };
 
 export default RadioGroupField;

@@ -89,6 +89,41 @@ export type VisitorFilter = {
   updatedBetween?: string | null | undefined;
 };
 
+export type AdminAllPhysicalStoresQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AdminAllPhysicalStoresQuery = { allPhysicalStores: Array<{ _id: string | null, name: string | null, address: string | null } | null> | null };
+
+export type CommonAllCitiesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CommonAllCitiesQuery = { allCities: Array<{ _id: string | null, name: string | null, peripheryOf: string | null, country: string | null } | null> | null };
+
+export type CommonAllCityMehfilsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CommonAllCityMehfilsQuery = { allCityMehfils: Array<{ _id: string | null, cityId: string | null, name: string | null, address: string | null } | null> | null };
+
+export type CommonCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CommonCurrentUserQuery = { currentUser: { _id: string | null, username: string | null, displayName: string | null, permissions: Array<string | null> | null, instances: Array<string | null> | null, karkun: { _id: string | null, name: string | null, imageId: string | null } | null } | null };
+
+export type SecurityDistinctCitiesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SecurityDistinctCitiesQuery = { distinctCities: Array<string | null> | null };
+
+export type SecurityDistinctCountriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SecurityDistinctCountriesQuery = { distinctCountries: Array<string | null> | null };
+
+export type SecurityDistinctStayAllowedByQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SecurityDistinctStayAllowedByQuery = { distinctStayAllowedBy: Array<string | null> | null };
+
 export type RegisterUserMutationVariables = Exact<{
   displayName: string;
   email: string;
@@ -204,20 +239,6 @@ export type AdminPhysicalStoreByIdQueryVariables = Exact<{
 
 export type AdminPhysicalStoreByIdQuery = { physicalStoreById: { _id: string | null, name: string | null, address: string | null } | null };
 
-export type UpdatePhysicalStoreMutationVariables = Exact<{
-  id: string;
-  name: string;
-  address: string;
-}>;
-
-
-export type UpdatePhysicalStoreMutation = { updatePhysicalStore: { _id: string | null, name: string | null, address: string | null } | null };
-
-export type AdminAllPhysicalStoresQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AdminAllPhysicalStoresQuery = { allPhysicalStores: Array<{ _id: string | null, name: string | null, address: string | null } | null> | null };
-
 export type CreatePhysicalStoreMutationVariables = Exact<{
   name: string;
   address?: string | null | undefined;
@@ -226,56 +247,14 @@ export type CreatePhysicalStoreMutationVariables = Exact<{
 
 export type CreatePhysicalStoreMutation = { createPhysicalStore: { _id: string | null, name: string | null, address: string | null } | null };
 
-export type UserGroupGeneralInfoByIdQueryVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type UserGroupGeneralInfoByIdQuery = { userGroupById: { _id: string | null, name: string | null, description: string | null } | null };
-
-export type UpdateUserGroupMutationVariables = Exact<{
-  _id: string;
+export type UpdatePhysicalStoreMutationVariables = Exact<{
+  id: string;
   name: string;
-  description?: string | null | undefined;
+  address: string;
 }>;
 
 
-export type UpdateUserGroupMutation = { updateUserGroup: { _id: string | null, name: string | null, description: string | null } | null };
-
-export type SetUserGroupInstanceAccessMutationVariables = Exact<{
-  _id: string;
-  instances: Array<string | null | undefined> | string;
-}>;
-
-
-export type SetUserGroupInstanceAccessMutation = { setUserGroupInstanceAccess: { _id: string | null, instances: Array<string | null> | null } | null };
-
-export type UserGroupInstanceAccessByIdQueryVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type UserGroupInstanceAccessByIdQuery = { userGroupById: { _id: string | null, instances: Array<string | null> | null } | null };
-
-export type UserGroupInstanceAllPhysicalStoresQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type UserGroupInstanceAllPhysicalStoresQuery = { allPhysicalStores: Array<{ _id: string | null, name: string | null } | null> | null };
-
-export type UserGroupPermissionsByIdQueryVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type UserGroupPermissionsByIdQuery = { userGroupById: { _id: string | null, permissions: Array<string | null> | null } | null };
-
-export type SetUserGroupPermissionsMutationVariables = Exact<{
-  _id: string;
-  permissions: Array<string | null | undefined> | string;
-}>;
-
-
-export type SetUserGroupPermissionsMutation = { setUserGroupPermissions: { _id: string | null, permissions: Array<string | null> | null } | null };
+export type UpdatePhysicalStoreMutation = { updatePhysicalStore: { _id: string | null, name: string | null, address: string | null } | null };
 
 export type CreateUserGroupMutationVariables = Exact<{
   name: string;
@@ -286,6 +265,13 @@ export type CreateUserGroupMutationVariables = Exact<{
 
 export type CreateUserGroupMutation = { createUserGroup: { _id: string | null, name: string | null, moduleName: string | null, description: string | null } | null };
 
+export type DeleteUserGroupMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type DeleteUserGroupMutation = { deleteUserGroup: number | null };
+
 export type PagedUserGroupsQueryVariables = Exact<{
   queryString?: string | null | undefined;
 }>;
@@ -293,12 +279,51 @@ export type PagedUserGroupsQueryVariables = Exact<{
 
 export type PagedUserGroupsQuery = { pagedUserGroups: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, description: string | null } | null> | null } | null };
 
-export type DeleteUserGroupMutationVariables = Exact<{
+export type SetUserGroupInstanceAccessMutationVariables = Exact<{
+  _id: string;
+  instances: Array<string | null | undefined> | string;
+}>;
+
+
+export type SetUserGroupInstanceAccessMutation = { setUserGroupInstanceAccess: { _id: string | null, instances: Array<string | null> | null } | null };
+
+export type SetUserGroupPermissionsMutationVariables = Exact<{
+  _id: string;
+  permissions: Array<string | null | undefined> | string;
+}>;
+
+
+export type SetUserGroupPermissionsMutation = { setUserGroupPermissions: { _id: string | null, permissions: Array<string | null> | null } | null };
+
+export type UpdateUserGroupMutationVariables = Exact<{
+  _id: string;
+  name: string;
+  description?: string | null | undefined;
+}>;
+
+
+export type UpdateUserGroupMutation = { updateUserGroup: { _id: string | null, name: string | null, description: string | null } | null };
+
+export type UserGroupGeneralInfoByIdQueryVariables = Exact<{
   _id: string;
 }>;
 
 
-export type DeleteUserGroupMutation = { deleteUserGroup: number | null };
+export type UserGroupGeneralInfoByIdQuery = { userGroupById: { _id: string | null, name: string | null, description: string | null } | null };
+
+export type UserGroupInstanceAccessByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type UserGroupInstanceAccessByIdQuery = { userGroupById: { _id: string | null, instances: Array<string | null> | null } | null };
+
+export type UserGroupPermissionsByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type UserGroupPermissionsByIdQuery = { userGroupById: { _id: string | null, permissions: Array<string | null> | null } | null };
 
 export type CreateUserMutationVariables = Exact<{
   userName?: string | null | undefined;
@@ -922,13 +947,6 @@ export type LocationsByPhysicalStoreIdQueryVariables = Exact<{
 
 export type LocationsByPhysicalStoreIdQuery = { locationsByPhysicalStoreId: Array<{ _id: string | null, name: string | null, physicalStoreId: string | null, parentId: string | null, description: string | null, isInUse: boolean | null, refParent: { _id: string | null, name: string | null } | null } | null> | null };
 
-export type InventoryPhysicalStoreByIdQueryVariables = Exact<{
-  id: string;
-}>;
-
-
-export type InventoryPhysicalStoreByIdQuery = { physicalStoreById: { _id: string | null, name: string | null } | null };
-
 export type VendorsByPhysicalStoreIdQueryVariables = Exact<{
   physicalStoreId: string;
 }>;
@@ -1125,6 +1143,20 @@ export type ApprovePurchaseFormsMutationVariables = Exact<{
 
 export type ApprovePurchaseFormsMutation = { approvePurchaseForms: Array<{ _id: string | null, purchaseDate: string | null, receivedBy: string | null, purchasedBy: string | null, physicalStoreId: string | null, approvedOn: string | null, items: Array<{ stockItemId: string | null, quantity: number | null, isInflow: boolean | null } | null> | null } | null> | null };
 
+export type CreatePurchaseFormMutationVariables = Exact<{
+  purchaseDate: string;
+  receivedBy: string;
+  purchasedBy: string;
+  physicalStoreId: string;
+  locationId?: string | null | undefined;
+  vendorId?: string | null | undefined;
+  items?: Array<Types.ItemWithQuantityAndPriceInput | null | undefined> | Types.ItemWithQuantityAndPriceInput | null | undefined;
+  notes?: string | null | undefined;
+}>;
+
+
+export type CreatePurchaseFormMutation = { createPurchaseForm: { _id: string | null, purchaseDate: string | null, physicalStoreId: string | null, locationId: string | null, vendorId: string | null, notes: string | null, items: Array<{ stockItemId: string | null, quantity: number | null, isInflow: boolean | null, price: number | null } | null> | null, refReceivedBy: { _id: string | null, name: string | null } | null, refPurchasedBy: { _id: string | null, name: string | null } | null } | null };
+
 export type PagedPurchaseFormsQueryVariables = Exact<{
   physicalStoreId: string;
   queryString?: string | null | undefined;
@@ -1173,36 +1205,6 @@ export type UpdatePurchaseFormMutationVariables = Exact<{
 
 export type UpdatePurchaseFormMutation = { updatePurchaseForm: { _id: string | null, purchaseDate: string | null, physicalStoreId: string | null, locationId: string | null, vendorId: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, notes: string | null, items: Array<{ stockItemId: string | null, quantity: number | null, isInflow: boolean | null, price: number | null } | null> | null, refReceivedBy: { _id: string | null, name: string | null } | null, refPurchasedBy: { _id: string | null, name: string | null } | null } | null };
 
-export type CreatePurchaseFormMutationVariables = Exact<{
-  purchaseDate: string;
-  receivedBy: string;
-  purchasedBy: string;
-  physicalStoreId: string;
-  locationId?: string | null | undefined;
-  vendorId?: string | null | undefined;
-  items?: Array<Types.ItemWithQuantityAndPriceInput | null | undefined> | Types.ItemWithQuantityAndPriceInput | null | undefined;
-  notes?: string | null | undefined;
-}>;
-
-
-export type CreatePurchaseFormMutation = { createPurchaseForm: { _id: string | null, purchaseDate: string | null, physicalStoreId: string | null, locationId: string | null, vendorId: string | null, notes: string | null, items: Array<{ stockItemId: string | null, quantity: number | null, isInflow: boolean | null, price: number | null } | null> | null, refReceivedBy: { _id: string | null, name: string | null } | null, refPurchasedBy: { _id: string | null, name: string | null } | null } | null };
-
-export type PurchaseFormAttachmentsByIdQueryVariables = Exact<{
-  _id: string;
-  physicalStoreId: string;
-}>;
-
-
-export type PurchaseFormAttachmentsByIdQuery = { purchaseFormById: { _id: string | null, attachments: Array<{ _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null> | null } | null };
-
-export type PurchaseFormDetailsByIdQueryVariables = Exact<{
-  _id: string;
-  physicalStoreId: string;
-}>;
-
-
-export type PurchaseFormDetailsByIdQuery = { purchaseFormById: { _id: string | null, purchaseDate: string | null, receivedBy: string | null, purchasedBy: string | null, physicalStoreId: string | null, vendorId: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, approvedOn: string | null, approvedBy: string | null, notes: string | null, items: Array<{ stockItemId: string | null, quantity: number | null, isInflow: boolean | null, price: number | null } | null> | null, refReceivedBy: { _id: string | null, name: string | null } | null, refPurchasedBy: { _id: string | null, name: string | null } | null, refVendor: { _id: string | null, name: string | null } | null } | null };
-
 export type PurchaseFormsByMonthQueryVariables = Exact<{
   physicalStoreId: string;
   month: string;
@@ -1223,35 +1225,6 @@ export type InventoryStatisticsQueryVariables = Exact<{
 
 export type InventoryStatisticsQuery = { inventoryStatistics: { physicalStoreId: string | null, itemsWithImages: number | null, itemsWithoutImages: number | null, itemsWithPositiveStockLevel: number | null, itemsWithLessThanMinStockLevel: number | null, itemsWithNegativeStockLevel: number | null, itemsVerifiedLessThanThreeMonthsAgo: number | null, itemsVerifiedThreeToSixMonthsAgo: number | null, itemsVerifiedMoreThanSixMonthsAgo: number | null } | null };
 
-export type EditStockAdjustmentByIdQueryVariables = Exact<{
-  _id: string;
-  physicalStoreId: string;
-}>;
-
-
-export type EditStockAdjustmentByIdQuery = { stockAdjustmentById: { _id: string | null, physicalStoreId: string | null, stockItemId: string | null, adjustmentDate: string | null, adjustedBy: string | null, quantity: number | null, isInflow: boolean | null, adjustmentReason: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, refStockItem: { _id: string | null, name: string | null, formattedName: string | null } | null, refAdjustedBy: { _id: string | null, name: string | null } | null } | null };
-
-export type UpdateStockAdjustmentMutationVariables = Exact<{
-  _id: string;
-  physicalStoreId: string;
-  adjustmentDate: string;
-  adjustedBy: string;
-  quantity: number;
-  isInflow: boolean;
-  adjustmentReason?: string | null | undefined;
-}>;
-
-
-export type UpdateStockAdjustmentMutation = { updateStockAdjustment: { _id: string | null, physicalStoreId: string | null, stockItemId: string | null, adjustmentDate: string | null, adjustedBy: string | null, quantity: number | null, isInflow: boolean | null, adjustmentReason: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, refStockItem: { _id: string | null, name: string | null, formattedName: string | null } | null, refAdjustedBy: { _id: string | null, name: string | null } | null } | null };
-
-export type RemoveStockAdjustmentsMutationVariables = Exact<{
-  physicalStoreId: string;
-  _ids: Array<string | null | undefined> | string;
-}>;
-
-
-export type RemoveStockAdjustmentsMutation = { removeStockAdjustments: number | null };
-
 export type ApproveStockAdjustmentsMutationVariables = Exact<{
   physicalStoreId: string;
   _ids: Array<string | null | undefined> | string;
@@ -1259,14 +1232,6 @@ export type ApproveStockAdjustmentsMutationVariables = Exact<{
 
 
 export type ApproveStockAdjustmentsMutation = { approveStockAdjustments: Array<{ _id: string | null, physicalStoreId: string | null, stockItemId: string | null, adjustmentDate: string | null, adjustedBy: string | null, quantity: number | null, isInflow: boolean | null, adjustmentReason: string | null, approvedOn: string | null, approvedBy: string | null } | null> | null };
-
-export type PagedStockAdjustmentsQueryVariables = Exact<{
-  physicalStoreId: string;
-  queryString?: string | null | undefined;
-}>;
-
-
-export type PagedStockAdjustmentsQuery = { pagedStockAdjustments: { totalResults: number | null, data: Array<{ _id: string | null, physicalStoreId: string | null, stockItemId: string | null, adjustmentDate: string | null, adjustedBy: string | null, quantity: number | null, isInflow: boolean | null, adjustmentReason: string | null, approvedOn: string | null, refStockItem: { _id: string | null, formattedName: string | null, imageId: string | null } | null, refAdjustedBy: { _id: string | null, name: string | null } | null } | null> | null } | null };
 
 export type CreateStockAdjustmentMutationVariables = Exact<{
   physicalStoreId: string;
@@ -1280,6 +1245,43 @@ export type CreateStockAdjustmentMutationVariables = Exact<{
 
 
 export type CreateStockAdjustmentMutation = { createStockAdjustment: { _id: string | null, physicalStoreId: string | null, stockItemId: string | null, adjustmentDate: string | null, adjustedBy: string | null, quantity: number | null, isInflow: boolean | null, adjustmentReason: string | null } | null };
+
+export type EditStockAdjustmentByIdQueryVariables = Exact<{
+  _id: string;
+  physicalStoreId: string;
+}>;
+
+
+export type EditStockAdjustmentByIdQuery = { stockAdjustmentById: { _id: string | null, physicalStoreId: string | null, stockItemId: string | null, adjustmentDate: string | null, adjustedBy: string | null, quantity: number | null, isInflow: boolean | null, adjustmentReason: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, refStockItem: { _id: string | null, name: string | null, formattedName: string | null } | null, refAdjustedBy: { _id: string | null, name: string | null } | null } | null };
+
+export type PagedStockAdjustmentsQueryVariables = Exact<{
+  physicalStoreId: string;
+  queryString?: string | null | undefined;
+}>;
+
+
+export type PagedStockAdjustmentsQuery = { pagedStockAdjustments: { totalResults: number | null, data: Array<{ _id: string | null, physicalStoreId: string | null, stockItemId: string | null, adjustmentDate: string | null, adjustedBy: string | null, quantity: number | null, isInflow: boolean | null, adjustmentReason: string | null, approvedOn: string | null, refStockItem: { _id: string | null, formattedName: string | null, imageId: string | null } | null, refAdjustedBy: { _id: string | null, name: string | null } | null } | null> | null } | null };
+
+export type RemoveStockAdjustmentsMutationVariables = Exact<{
+  physicalStoreId: string;
+  _ids: Array<string | null | undefined> | string;
+}>;
+
+
+export type RemoveStockAdjustmentsMutation = { removeStockAdjustments: number | null };
+
+export type UpdateStockAdjustmentMutationVariables = Exact<{
+  _id: string;
+  physicalStoreId: string;
+  adjustmentDate: string;
+  adjustedBy: string;
+  quantity: number;
+  isInflow: boolean;
+  adjustmentReason?: string | null | undefined;
+}>;
+
+
+export type UpdateStockAdjustmentMutation = { updateStockAdjustment: { _id: string | null, physicalStoreId: string | null, stockItemId: string | null, adjustmentDate: string | null, adjustedBy: string | null, quantity: number | null, isInflow: boolean | null, adjustmentReason: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, refStockItem: { _id: string | null, name: string | null, formattedName: string | null } | null, refAdjustedBy: { _id: string | null, name: string | null } | null } | null };
 
 export type ViewStockAdjustmentByIdQueryVariables = Exact<{
   _id: string;
@@ -1565,6 +1567,26 @@ export type SecurityUserByIdQueryVariables = Exact<{
 
 export type SecurityUserByIdQuery = { userById: { _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, instances: Array<string | null> | null, permissions: Array<string | null> | null, personId: string | null, person: { _id: string | null, sharedData: { name: string | null } | null } | null } | null };
 
+export type CreateSecurityMehfilDutyMutationVariables = Exact<{
+  name: string;
+  urduName: string;
+}>;
+
+
+export type CreateSecurityMehfilDutyMutation = { createSecurityMehfilDuty: { _id: string | null, name: string | null, urduName: string | null } | null };
+
+export type RemoveSecurityMehfilDutyMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type RemoveSecurityMehfilDutyMutation = { removeSecurityMehfilDuty: number | null };
+
+export type SetupAllSecurityMehfilDutiesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SetupAllSecurityMehfilDutiesQuery = { allSecurityMehfilDuties: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null } | null> | null };
+
 export type SetupSecurityMehfilDutyByIdQueryVariables = Exact<{
   id: string;
 }>;
@@ -1581,25 +1603,25 @@ export type UpdateSecurityMehfilDutyMutationVariables = Exact<{
 
 export type UpdateSecurityMehfilDutyMutation = { updateSecurityMehfilDuty: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
-export type SetupAllSecurityMehfilDutiesQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllSecurityMehfilLangarDishesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SetupAllSecurityMehfilDutiesQuery = { allSecurityMehfilDuties: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null } | null> | null };
+export type AllSecurityMehfilLangarDishesQuery = { allSecurityMehfilLangarDishes: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null } | null> | null };
 
-export type RemoveSecurityMehfilDutyMutationVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type RemoveSecurityMehfilDutyMutation = { removeSecurityMehfilDuty: number | null };
-
-export type CreateSecurityMehfilDutyMutationVariables = Exact<{
+export type CreateSecurityMehfilLangarDishMutationVariables = Exact<{
   name: string;
   urduName: string;
 }>;
 
 
-export type CreateSecurityMehfilDutyMutation = { createSecurityMehfilDuty: { _id: string | null, name: string | null, urduName: string | null } | null };
+export type CreateSecurityMehfilLangarDishMutation = { createSecurityMehfilLangarDish: { _id: string | null, name: string | null, urduName: string | null } | null };
+
+export type RemoveSecurityMehfilLangarDishMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type RemoveSecurityMehfilLangarDishMutation = { removeSecurityMehfilLangarDish: number | null };
 
 export type SecurityMehfilLangarDishByIdQueryVariables = Exact<{
   id: string;
@@ -1617,25 +1639,25 @@ export type UpdateSecurityMehfilLangarDishMutationVariables = Exact<{
 
 export type UpdateSecurityMehfilLangarDishMutation = { updateSecurityMehfilLangarDish: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
-export type AllSecurityMehfilLangarDishesQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllSecurityMehfilLangarLocationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllSecurityMehfilLangarDishesQuery = { allSecurityMehfilLangarDishes: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null } | null> | null };
+export type AllSecurityMehfilLangarLocationsQuery = { allSecurityMehfilLangarLocations: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null } | null> | null };
 
-export type RemoveSecurityMehfilLangarDishMutationVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type RemoveSecurityMehfilLangarDishMutation = { removeSecurityMehfilLangarDish: number | null };
-
-export type CreateSecurityMehfilLangarDishMutationVariables = Exact<{
+export type CreateSecurityMehfilLangarLocationMutationVariables = Exact<{
   name: string;
   urduName: string;
 }>;
 
 
-export type CreateSecurityMehfilLangarDishMutation = { createSecurityMehfilLangarDish: { _id: string | null, name: string | null, urduName: string | null } | null };
+export type CreateSecurityMehfilLangarLocationMutation = { createSecurityMehfilLangarLocation: { _id: string | null, name: string | null, urduName: string | null } | null };
+
+export type RemoveSecurityMehfilLangarLocationMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type RemoveSecurityMehfilLangarLocationMutation = { removeSecurityMehfilLangarLocation: number | null };
 
 export type SecurityMehfilLangarLocationByIdQueryVariables = Exact<{
   id: string;
@@ -1652,26 +1674,6 @@ export type UpdateSecurityMehfilLangarLocationMutationVariables = Exact<{
 
 
 export type UpdateSecurityMehfilLangarLocationMutation = { updateSecurityMehfilLangarLocation: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
-
-export type AllSecurityMehfilLangarLocationsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AllSecurityMehfilLangarLocationsQuery = { allSecurityMehfilLangarLocations: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null } | null> | null };
-
-export type RemoveSecurityMehfilLangarLocationMutationVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type RemoveSecurityMehfilLangarLocationMutation = { removeSecurityMehfilLangarLocation: number | null };
-
-export type CreateSecurityMehfilLangarLocationMutationVariables = Exact<{
-  name: string;
-  urduName: string;
-}>;
-
-
-export type CreateSecurityMehfilLangarLocationMutation = { createSecurityMehfilLangarLocation: { _id: string | null, name: string | null, urduName: string | null } | null };
 
 export type CreateSecurityVisitorMutationVariables = Exact<{
   name: string;
@@ -1789,47 +1791,6 @@ export type ReportPagedVisitorStaysQueryVariables = Exact<{
 
 export type ReportPagedVisitorStaysQuery = { pagedVisitorStays: { totalResults: number | null, data: Array<{ _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, refVisitor: { _id: string | null, name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, city: string | null, country: string | null, imageId: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
 
-export type VisitorStayCardSecurityVisitorByIdQueryVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type VisitorStayCardSecurityVisitorByIdQuery = { securityVisitorById: { _id: string | null, name: string | null, parentName: string | null, cnicNumber: string | null, referenceName: string | null, contactNumber1: string | null, city: string | null, country: string | null, criminalRecord: string | null, image: { _id: string | null, data: string | null } | null } | null };
-
-export type VisitorStayCardByIdQueryVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type VisitorStayCardByIdQuery = { visitorStayById: { _id: string | null, fromDate: string | null, toDate: string | null, stayReason: string | null, stayAllowedBy: string | null, dutyName: string | null, shiftName: string | null } | null };
-
-export type EditVisitorStayByIdQueryVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type EditVisitorStayByIdQuery = { visitorStayById: { _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, dutyId: string | null, shiftId: string | null } | null };
-
-export type UpdateVisitorStayMutationVariables = Exact<{
-  _id: string;
-  fromDate: string;
-  toDate: string;
-  stayReason?: string | null | undefined;
-  stayAllowedBy?: string | null | undefined;
-  dutyId?: string | null | undefined;
-  shiftId?: string | null | undefined;
-}>;
-
-
-export type UpdateVisitorStayMutation = { updateVisitorStay: { _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, dutyId: string | null, shiftId: string | null } | null };
-
-export type VisitorStaysPagedVisitorStaysQueryVariables = Exact<{
-  queryString: string;
-}>;
-
-
-export type VisitorStaysPagedVisitorStaysQuery = { pagedVisitorStays: { totalResults: number | null, data: Array<{ _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, dutyShiftName: string | null, cancelledDate: string | null } | null> | null } | null };
-
 export type CancelVisitorStayMutationVariables = Exact<{
   _id: string;
 }>;
@@ -1849,6 +1810,33 @@ export type CreateVisitorStayMutationVariables = Exact<{
 
 export type CreateVisitorStayMutation = { createVisitorStay: { _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, stayReason: string | null, stayAllowedBy: string | null, dutyId: string | null, shiftId: string | null } | null };
 
+export type EditVisitorStayByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type EditVisitorStayByIdQuery = { visitorStayById: { _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, dutyId: string | null, shiftId: string | null } | null };
+
+export type VisitorStaysPagedVisitorStaysQueryVariables = Exact<{
+  queryString: string;
+}>;
+
+
+export type VisitorStaysPagedVisitorStaysQuery = { pagedVisitorStays: { totalResults: number | null, data: Array<{ _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, dutyShiftName: string | null, cancelledDate: string | null } | null> | null } | null };
+
+export type UpdateVisitorStayMutationVariables = Exact<{
+  _id: string;
+  fromDate: string;
+  toDate: string;
+  stayReason?: string | null | undefined;
+  stayAllowedBy?: string | null | undefined;
+  dutyId?: string | null | undefined;
+  shiftId?: string | null | undefined;
+}>;
+
+
+export type UpdateVisitorStayMutation = { updateVisitorStay: { _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, dutyId: string | null, shiftId: string | null } | null };
+
 export type VerificationVisitorStayByIdQueryVariables = Exact<{
   _id: string;
 }>;
@@ -1862,3 +1850,17 @@ export type ViewVisitorStayByIdQueryVariables = Exact<{
 
 
 export type ViewVisitorStayByIdQuery = { visitorStayById: { _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, dutyShiftName: string | null } | null };
+
+export type VisitorStayCardByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type VisitorStayCardByIdQuery = { visitorStayById: { _id: string | null, fromDate: string | null, toDate: string | null, stayReason: string | null, stayAllowedBy: string | null, dutyName: string | null, shiftName: string | null } | null };
+
+export type VisitorStayCardSecurityVisitorByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type VisitorStayCardSecurityVisitorByIdQuery = { securityVisitorById: { _id: string | null, name: string | null, parentName: string | null, cnicNumber: string | null, referenceName: string | null, contactNumber1: string | null, city: string | null, country: string | null, criminalRecord: string | null, image: { _id: string | null, data: string | null } | null } | null };

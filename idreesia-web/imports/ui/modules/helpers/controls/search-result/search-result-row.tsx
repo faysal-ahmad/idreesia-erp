@@ -1,40 +1,31 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties } from 'react';
 
 import { Col, Row } from 'antd';
 
-const AntCol = Col as any;
-const AntRow = Row as any;
-interface Props { label: string; text?: React.ReactNode; dataStyle?: React.CSSProperties; }
+interface Props {
+  label: string;
+  text?: React.ReactNode;
+  dataStyle?: CSSProperties;
+}
 
-const LabelStyle = {
+const LabelStyle: CSSProperties = {
   fontWeight: 'bold',
   fontSize: 20,
 };
 
-const DataStyle = {
+const DataStyle: CSSProperties = {
   fontSize: 20,
 };
 
-const SearchResultRow = ({ label, text, dataStyle }: Props) => (
-  <AntRow type="flex" gutter={16}>
-    <AntCol order={1}>
-      <span style={LabelStyle as any}>{label}:</span>
-    </AntCol>
-    <AntCol order={2}>
-      <span style={dataStyle as any}>{text}</span>
-    </AntCol>
-  </AntRow>
+const SearchResultRow = ({ label, text, dataStyle = DataStyle }: Props) => (
+  <Row gutter={16}>
+    <Col order={1}>
+      <span style={LabelStyle}>{label}:</span>
+    </Col>
+    <Col order={2}>
+      <span style={dataStyle}>{text}</span>
+    </Col>
+  </Row>
 );
-
-SearchResultRow.propTypes = {
-  label: PropTypes.string,
-  text: PropTypes.string,
-  dataStyle: PropTypes.object,
-};
-
-SearchResultRow.defaultProps = {
-  dataStyle: DataStyle,
-};
 
 export default SearchResultRow;

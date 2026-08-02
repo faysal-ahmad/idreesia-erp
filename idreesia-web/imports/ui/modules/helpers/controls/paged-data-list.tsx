@@ -1,48 +1,67 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Button, Pagination, Table } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
+import type { ColumnsType } from 'antd/es/table';
 
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
-const AntButton = Button as any;
-const AntPagination = Pagination as any;
-const AntTable = Table as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-type AnyRecord = Record<string, any>;
-interface FilterParam { name: string; defaultValue?: unknown; }
-interface HistoryLike { push(path: string): void; }
-interface LocationLike { pathname: string; }
-interface Props { columns?: unknown[]; filterParams: FilterParam[]; history: HistoryLike; location: LocationLike; queryParams: AnyRecord; pagedData: { data: AnyRecord[]; totalResults: number; }; newButtonLabel?: string; handleNewClicked?(): void; ListFilter: React.ComponentType<any>; }
+type QueryParamValue = string | number | boolean | null | undefined | string[];
 
-export default class PagedDataList extends Component<Props> {
-  static propTypes = {
-    columns: PropTypes.array,
-    filterParams: PropTypes.array,
+export interface PageParams {
+  pageIndex?: string | number;
+  pageSize?: string | number;
+}
 
-    history: PropTypes.object,
-    location: PropTypes.object,
-    queryParams: PropTypes.object,
+export type QueryParams = PageParams & Record<string, QueryParamValue>;
 
-    pagedData: PropTypes.shape({
-      data: PropTypes.array,
-      totalResults: PropTypes.number,
-    }),
-    newButtonLabel: PropTypes.string,
-    handleNewClicked: PropTypes.func,
-    ListFilter: PropTypes.element,
-  };
+export interface ListFilterProps {
+  refreshPage(params: Partial<QueryParams>): void;
+  queryParams: QueryParams;
+}
 
-  refreshPage = (newParams: AnyRecord) => {
+interface FilterParam {
+  name: string;
+  defaultValue?: QueryParamValue;
+}
+
+interface HistoryLike {
+  push(path: string): void;
+}
+
+interface LocationLike {
+  pathname: string;
+}
+
+interface PagedData<TRow> {
+  data: TRow[];
+  totalResults: number;
+}
+
+interface Props<TRow extends { _id: string } = { _id: string }> {
+  columns?: ColumnsType<TRow>;
+  filterParams: FilterParam[];
+  history: HistoryLike;
+  location: LocationLike;
+  queryParams: QueryParams;
+  pagedData: PagedData<TRow>;
+  newButtonLabel?: string;
+  handleNewClicked?(): void;
+  ListFilter: React.ComponentType<ListFilterProps>;
+}
+
+export default class PagedDataList<
+  TRow extends { _id: string } = { _id: string },
+> extends Component<Props<TRow>> {
+  refreshPage = (newParams: Partial<QueryParams>) => {
     const { filterParams } = this.props;
     const { queryParams, history, location } = this.props;
 
     const paramStrings = filterParams.map(({ name, defaultValue }) => {
-      let nameVal;
+      let nameVal: QueryParamValue;
       if (Object.prototype.hasOwnProperty.call(newParams, name)) {
-        nameVal = newParams[name] || defaultValue;
+        nameVal = newParams[name] ?? defaultValue;
       } else {
-        nameVal = queryParams[name] || defaultValue;
+        nameVal = queryParams[name] ?? defaultValue;
       }
 
       return `${name}=${nameVal}`;
@@ -76,10 +95,10 @@ export default class PagedDataList extends Component<Props> {
 
     return (
       <div className="list-table-header">
-        <AntButton type="primary" icon={<AntPlusCircleOutlined />} onClick={handleNewClicked}>
+        <Button type="primary" icon={<PlusCircleOutlined />} onClick={handleNewClicked}>
           {newButtonLabel}
-        </AntButton>
-        {React.createElement(ListFilter as any, { refreshPage: this.refreshPage, queryParams })}
+        </Button>
+        <ListFilter refreshPage={this.refreshPage} queryParams={queryParams} />
       </div>
     );
   };
@@ -96,7 +115,7 @@ export default class PagedDataList extends Component<Props> {
     const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
     return (
-      <AntTable
+      <Table<TRow>
         rowKey="_id"
         dataSource={data}
         columns={columns}
@@ -105,7 +124,7 @@ export default class PagedDataList extends Component<Props> {
         size="small"
         pagination={false}
         footer={() => (
-          <AntPagination
+          <Pagination
             current={numPageIndex}
             pageSize={numPageSize}
             showSizeChanger

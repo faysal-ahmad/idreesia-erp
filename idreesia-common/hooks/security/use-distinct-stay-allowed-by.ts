@@ -1,26 +1,36 @@
-import type { WatchQueryFetchPolicy } from '@apollo/client';
+import type { TypedDocumentNode, WatchQueryFetchPolicy } from '@apollo/client';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
+import type {
+  SecurityDistinctStayAllowedByQuery,
+  SecurityDistinctStayAllowedByQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-interface DistinctStayAllowedByData {
-  distinctStayAllowedBy: string[];
-}
-
-const QUERY = gql`
-  query distinctStayAllowedBy {
+const QUERY: TypedDocumentNode<
+  SecurityDistinctStayAllowedByQuery,
+  SecurityDistinctStayAllowedByQueryVariables
+> = gql`
+  query securityDistinctStayAllowedBy {
     distinctStayAllowedBy
   }
 `;
 
+const normalizeStrings = (
+  values: SecurityDistinctStayAllowedByQuery['distinctStayAllowedBy']
+): string[] | null => {
+  if (!values) return null;
+  return values.filter((value): value is string => value != null);
+};
+
 const useDistinctStayAllowedBy = (
   fetchPolicy: WatchQueryFetchPolicy = 'no-cache'
 ) => {
-  const { data, loading, refetch } = useQuery<DistinctStayAllowedByData>(QUERY, {
+  const { data, loading, refetch } = useQuery(QUERY, {
     fetchPolicy,
   });
 
   return {
-    distinctStayAllowedBy: data ? data.distinctStayAllowedBy : null,
+    distinctStayAllowedBy: normalizeStrings(data?.distinctStayAllowedBy ?? null),
     distinctStayAllowedByLoading: loading,
     distinctStayAllowedByRefetch: refetch,
   };

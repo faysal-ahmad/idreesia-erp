@@ -1,5 +1,5 @@
 import React, { Component, type CSSProperties } from 'react';
-import dayjs, { type Dayjs } from 'dayjs';
+import { type Dayjs } from 'dayjs';
 import { useQuery } from '@apollo/client/react';
 import FileSaver from 'file-saver';
 import {

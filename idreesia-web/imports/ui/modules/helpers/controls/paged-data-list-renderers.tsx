@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { UserOutlined } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar } from 'antd';
 
-const NameDivStyle = {
+const NameDivStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'flex-start',
@@ -14,15 +14,19 @@ const NameDivStyle = {
 };
 
 const RouterLink = Link as any;
-const AntAvatar = Avatar as any;
-const AntUserOutlined = UserOutlined as any;
 
-export function getNameWithImageRenderer(id: string, imageId: string | undefined, name: React.ReactNode, path: string, iconToUse?: React.ReactNode) {
+export function getNameWithImageRenderer(
+  id: string,
+  imageId: string | undefined,
+  name: React.ReactNode,
+  path: string,
+  iconToUse?: React.ReactNode
+) {
   if (imageId) {
     const url = getDownloadUrl(imageId);
     return (
-      <div style={NameDivStyle as any}>
-        <AntAvatar shape="square" size="large" src={url} />
+      <div style={NameDivStyle}>
+        <Avatar shape="square" size="large" src={url} />
         &nbsp;
         <RouterLink to={path}>{name}</RouterLink>
       </div>
@@ -30,11 +34,11 @@ export function getNameWithImageRenderer(id: string, imageId: string | undefined
   }
 
   return (
-    <div style={NameDivStyle as any}>
-      <AntAvatar
+    <div style={NameDivStyle}>
+      <Avatar
         shape="square"
         size="large"
-        icon={iconToUse || <AntUserOutlined />}
+        icon={iconToUse || <UserOutlined />}
       />
       &nbsp;
       <RouterLink to={path}>{name}</RouterLink>

@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import { InstagramOutlined } from '@ant-design/icons';
 
@@ -7,32 +6,28 @@ import { getUploadUrl } from 'meteor/idreesia-common/utilities';
 import { Button, Modal, message } from 'antd';
 import TakePictureForm from './take-picture-form';
 
-const ReactFragment = Fragment as any;
-const AntButton = Button as any;
-const AntModal = Modal as any;
-const AntInstagramOutlined = InstagramOutlined as any;
-const TakePictureFormControl = TakePictureForm as any;
-interface Props { disabled?: boolean; buttonText?: string; onPictureTaken?(attachmentId: string): void; }
-interface State { showForm: boolean; }
-interface UploadPayload { name: string; mimeType: string; data: string; }
+interface Props {
+  disabled?: boolean;
+  buttonText?: string;
+  onPictureTaken?(attachmentId: string): void;
+}
+
+interface State {
+  showForm: boolean;
+}
+
+interface UploadPayload {
+  name: string;
+  mimeType: string;
+  data: string;
+}
 
 export default class TakePicture extends Component<Props, State> {
-  static propTypes = {
-    disabled: PropTypes.bool,
-    buttonText: PropTypes.string,
-    onPictureTaken: PropTypes.func,
-  };
-
-  static defaultProps = {
-    disabled: false,
-    buttonText: 'Take Picture',
-  };
-
   state = {
     showForm: false,
   };
 
-  pictureForm: any;
+  pictureForm: TakePictureForm | null = null;
 
   updatePicture = () => {
     this.setState({ showForm: true });
@@ -58,7 +53,7 @@ export default class TakePicture extends Component<Props, State> {
   handlePictureFormSaved = () => {
     const { onPictureTaken } = this.props;
     this.setState({ showForm: false });
-    let data = this.pictureForm.state.imageSrc;
+    let data = this.pictureForm?.state.imageSrc;
     if (!data) return;
 
     const timestamp = dayjs();
@@ -81,17 +76,17 @@ export default class TakePicture extends Component<Props, State> {
   };
 
   render() {
-    const { disabled, buttonText } = this.props;
+    const { disabled = false, buttonText = 'Take Picture' } = this.props;
     const { showForm } = this.state;
 
     return (
-      <ReactFragment>
-        <AntButton type="default" disabled={disabled} onClick={this.updatePicture}>
-          <AntInstagramOutlined />
+      <Fragment>
+        <Button type="default" disabled={disabled} onClick={this.updatePicture}>
+          <InstagramOutlined />
           {buttonText}
-        </AntButton>
+        </Button>
 
-        <AntModal
+        <Modal
           open={showForm}
           title={buttonText}
           width={750}
@@ -100,13 +95,13 @@ export default class TakePicture extends Component<Props, State> {
           onOk={this.handlePictureFormSaved}
           onCancel={this.handlePictureFormCancelled}
         >
-          <TakePictureFormControl
-            ref={(f: any) => {
-              this.pictureForm = f;
+          <TakePictureForm
+            ref={(form) => {
+              this.pictureForm = form;
             }}
           />
-        </AntModal>
-      </ReactFragment>
+        </Modal>
+      </Fragment>
     );
   }
 }

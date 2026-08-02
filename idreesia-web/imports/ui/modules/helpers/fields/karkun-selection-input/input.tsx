@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
 import { EditOutlined } from '@ant-design/icons';
 
 import { Tabs, Drawer, Input } from 'antd';
+import type { HelperPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import MSKarkunsList from './ms-karkuns-list';
 
-const ContainerStyle = {
+const ContainerStyle: React.CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'flex-start',
@@ -13,27 +13,30 @@ const ContainerStyle = {
   width: '100%',
 };
 
-const ReactFragment = Fragment as any;
-const AntDrawer = Drawer as any;
-const TextInput = Input as any;
-const AntTabs = Tabs as any;
-const TabPane = (Tabs as any).TabPane;
-const AntEditOutlined = EditOutlined as any;
-const MSKarkunsSelectionList = MSKarkunsList as any;
-interface KarkunValue { _id?: string; name?: string; }
-interface Props { value?: KarkunValue | null; disabled?: boolean; placeholder?: string; onChange?(karkun: KarkunValue): void; showMsKarkunsList?: boolean; }
-interface State { showSelectionForm: boolean; }
+type HrKarkunRow = NonNullable<
+  NonNullable<
+    NonNullable<HelperPagedHrKarkunsQuery['pagedHrKarkuns']>['karkuns']
+  >[number]
+>;
+
+interface KarkunValue {
+  _id?: string;
+  name?: string;
+}
+
+interface Props {
+  value?: KarkunValue | null;
+  disabled?: boolean;
+  placeholder?: string;
+  onChange?(karkun: KarkunValue): void;
+  showMsKarkunsList?: boolean;
+}
+
+interface State {
+  showSelectionForm: boolean;
+}
 
 export default class CustomInput extends Component<Props, State> {
-  static propTypes = {
-    value: PropTypes.object,
-    disabled: PropTypes.bool,
-    placeholder: PropTypes.string,
-    onChange: PropTypes.func,
-
-    showMsKarkunsList: PropTypes.bool,
-  };
-
   state = {
     showSelectionForm: false,
   };
@@ -53,11 +56,14 @@ export default class CustomInput extends Component<Props, State> {
     });
   };
 
-  setSelectedValue = (karkun: KarkunValue) => {
+  setSelectedValue = (karkun: HrKarkunRow) => {
     const { onChange } = this.props;
     this.handleClose();
     if (onChange) {
-      onChange(karkun);
+      onChange({
+        _id: karkun._id ?? undefined,
+        name: karkun.name ?? undefined,
+      });
     }
   };
 
@@ -68,32 +74,32 @@ export default class CustomInput extends Component<Props, State> {
 
     if (showMsKarkunsList) {
       containersNode.push(
-        <TabPane tab="MS Karkuns" key="1">
-          <MSKarkunsSelectionList handleSelectItem={this.setSelectedValue} />
-        </TabPane>
+        <Tabs.TabPane tab="MS Karkuns" key="1">
+          <MSKarkunsList handleSelectItem={this.setSelectedValue} />
+        </Tabs.TabPane>
       );
     }
 
     return (
-      <ReactFragment>
-        <AntDrawer
+      <Fragment>
+        <Drawer
           title="Select a Karkun"
           width={800}
           onClose={this.handleClose}
           open={this.state.showSelectionForm}
         >
-          <AntTabs>{containersNode}</AntTabs>
-        </AntDrawer>
-        <div style={ContainerStyle as any}>
-          <TextInput
+          <Tabs>{containersNode}</Tabs>
+        </Drawer>
+        <div style={ContainerStyle}>
+          <Input
             type="text"
             value={value ? value.name : ''}
             readOnly
-            addonAfter={<AntEditOutlined onClick={this.handleEditClick} />}
+            addonAfter={<EditOutlined onClick={this.handleEditClick} />}
             placeholder={placeholder}
           />
         </div>
-      </ReactFragment>
+      </Fragment>
     );
   }
 }

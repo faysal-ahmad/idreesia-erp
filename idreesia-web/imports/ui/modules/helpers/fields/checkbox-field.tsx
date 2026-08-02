@@ -1,10 +1,14 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Checkbox, Form } from 'antd';
 
-const AntFormItem = (Form as any).Item;
-const CheckboxInput = Checkbox as any;
-interface FieldProps { fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: boolean; required?: boolean; requiredMessage?: string; }
+interface FieldProps {
+  fieldName: string;
+  fieldLabel?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: boolean;
+  required?: boolean;
+  requiredMessage?: string;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -35,19 +39,10 @@ const CheckboxField = ({
   ];
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} valuePropName="checked" initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <CheckboxInput />
-    </AntFormItem>
+    <Form.Item name={fieldName} label={fieldLabel} valuePropName="checked" initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <Checkbox />
+    </Form.Item>
   );
-}
-
-CheckboxField.propTypes = {
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.bool,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
 };
 
 export default CheckboxField;

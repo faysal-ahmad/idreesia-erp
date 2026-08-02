@@ -1,4 +1,4 @@
-import React, { Component, type CSSProperties } from 'react';
+import React, { type CSSProperties } from 'react';
 import Barcode from 'react-barcode';
 import type {
   MehfilKarkunByBarcodeIdQuery,
@@ -82,30 +82,30 @@ export const Card = ({ mehfilKarkun, showDutyNameInUrdu }: CardProps) => {
   );
 };
 
-export class NamedCards extends Component<NamedCardsProps> {
-  render() {
-    const { mehfilKarkunsByIds, showDutyNameInUrdu } = this.props;
-    if (!mehfilKarkunsByIds) return null;
+export const NamedCards = ({
+  mehfilKarkunsByIds,
+  showDutyNameInUrdu,
+}: NamedCardsProps) => {
+  if (!mehfilKarkunsByIds) return null;
 
-    const cards = mehfilKarkunsByIds.map((mehfilKarkun, index) => (
-      <Card key={index} mehfilKarkun={mehfilKarkun} showDutyNameInUrdu={showDutyNameInUrdu} />
-    ));
+  const cards = mehfilKarkunsByIds.map((mehfilKarkun, index) => (
+    <Card key={index} mehfilKarkun={mehfilKarkun} showDutyNameInUrdu={showDutyNameInUrdu} />
+  ));
 
-    let index = 0;
-    const cardContainers: React.ReactNode[] = [];
-    while (cards.length > 0) {
-      const cardsForPage = cards.splice(0, 9);
-      cardContainers.push(
-        <div key={`container_${index}`} style={ContainerStyle}>
-          {cardsForPage}
-        </div>
-      );
-      cardContainers.push(
-        <div key={`pagebreak_${index}`} className="pagebreak" />
-      );
-      index++;
-    }
-
-    return <div>{cardContainers}</div>;
+  let index = 0;
+  const cardContainers: React.ReactNode[] = [];
+  while (cards.length > 0) {
+    const cardsForPage = cards.splice(0, 9);
+    cardContainers.push(
+      <div key={`container_${index}`} style={ContainerStyle}>
+        {cardsForPage}
+      </div>
+    );
+    cardContainers.push(
+      <div key={`pagebreak_${index}`} className="pagebreak" />
+    );
+    index++;
   }
-}
+
+  return <div>{cardContainers}</div>;
+};

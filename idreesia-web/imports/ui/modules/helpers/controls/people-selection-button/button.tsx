@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import { type CSSProperties } from 'react';
 
 import { Button, Drawer } from 'antd';
+import type { PagedPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
 import PeopleList from './people-list';
 
-const ContainerStyle = {
+const ContainerStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'flex-start',
@@ -12,29 +13,26 @@ const ContainerStyle = {
   width: '100%',
 };
 
-const AntButton = Button as any;
-const AntDrawer = Drawer as any;
-const PeopleSelectionList = PeopleList as any;
-type SelectionValue = Record<string, any>;
-interface Props { icon?: unknown; label?: string; disabled?: boolean; onSelection?(value: SelectionValue): void; }
-interface State { showSelectionForm: boolean; }
+type PersonRow = NonNullable<
+  NonNullable<NonNullable<PagedPeopleQuery['pagedPeople']>['data']>[number]
+>;
+
+interface SelectedPerson {
+  _id: string;
+}
+
+interface Props {
+  icon?: React.ReactNode;
+  label?: string;
+  disabled?: boolean;
+  onSelection?(value: SelectedPerson): void;
+}
+
+interface State {
+  showSelectionForm: boolean;
+}
 
 export default class SelectionButton extends Component<Props, State> {
-  static propTypes = {
-    icon: PropTypes.any,
-    label: PropTypes.string,
-    disabled: PropTypes.bool,
-    onSelection: PropTypes.func,
-  };
-
-  static defaultProps = {
-    icon: 'plus-circle',
-    label: 'Select Karkuns',
-    disabled: false,
-    showMsKarkunsList: true,
-    showOutstationKarkunsList: true,
-  };
-
   state = {
     showSelectionForm: false,
   };
@@ -51,33 +49,34 @@ export default class SelectionButton extends Component<Props, State> {
     });
   };
 
-  setSelectedValue = (itemType: SelectionValue) => {
+  setSelectedValue = (item: PersonRow) => {
     const { onSelection } = this.props;
-    if (onSelection) {
-      onSelection(itemType);
-    }
+    if (!item._id) return;
+    onSelection?.({ _id: item._id });
   };
 
   render() {
+    const { icon = 'plus-circle', label = 'Select Karkuns', disabled = false } = this.props;
+
     return (
       <>
-        <AntDrawer
+        <Drawer
           title="Select Karkuns"
           width={720}
           onClose={this.handleClose}
           open={this.state.showSelectionForm}
         >
-          <PeopleSelectionList handleSelectItem={this.setSelectedValue} />
-        </AntDrawer>
-        <div style={ContainerStyle as any}>
-          <AntButton
+          <PeopleList handleSelectItem={this.setSelectedValue} />
+        </Drawer>
+        <div style={ContainerStyle}>
+          <Button
             size="large"
             onClick={this.handleClick}
-            disabled={this.props.disabled}
-            icon={this.props.icon}
+            disabled={disabled}
+            icon={icon}
           >
-            {this.props.label}
-          </AntButton>
+            {label}
+          </Button>
         </div>
       </>
     );

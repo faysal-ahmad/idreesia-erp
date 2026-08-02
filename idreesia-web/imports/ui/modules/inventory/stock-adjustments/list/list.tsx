@@ -82,22 +82,30 @@ const List = ({ history, location }: Props) => {
 
   const refreshPage = (newParams: RefreshParams) => {
     const { approvalStatus, startDate, endDate, pageIndex, pageSize } = newParams;
-    let showApprovedVal = Object.prototype.hasOwnProperty.call(newParams, 'approvalStatus')
-      ? (approvalStatus?.indexOf('approved') !== -1 ? 'true' : 'false')
-      : String(queryParams.showApproved || 'true');
-    let showUnapprovedVal = Object.prototype.hasOwnProperty.call(newParams, 'approvalStatus')
-      ? (approvalStatus?.indexOf('unapproved') !== -1 ? 'true' : 'false')
-      : String(queryParams.showUnapproved || 'true');
-    let startDateVal = Object.prototype.hasOwnProperty.call(newParams, 'startDate')
-      ? (startDate ? startDate.format(Formats.DATE_FORMAT) : '')
-      : String(queryParams.startDate || '');
-    let endDateVal = Object.prototype.hasOwnProperty.call(newParams, 'endDate')
-      ? (endDate ? endDate.format(Formats.DATE_FORMAT) : '')
-      : String(queryParams.endDate || '');
-    let pageIndexVal = Object.prototype.hasOwnProperty.call(newParams, 'pageIndex')
+
+    let showApprovedVal = String(queryParams.showApproved || 'true');
+    let showUnapprovedVal = String(queryParams.showUnapproved || 'true');
+    if (Object.prototype.hasOwnProperty.call(newParams, 'approvalStatus')) {
+      showApprovedVal =
+        approvalStatus?.indexOf('approved') !== -1 ? 'true' : 'false';
+      showUnapprovedVal =
+        approvalStatus?.indexOf('unapproved') !== -1 ? 'true' : 'false';
+    }
+
+    let startDateVal = String(queryParams.startDate || '');
+    if (Object.prototype.hasOwnProperty.call(newParams, 'startDate')) {
+      startDateVal = startDate ? startDate.format(Formats.DATE_FORMAT) : '';
+    }
+
+    let endDateVal = String(queryParams.endDate || '');
+    if (Object.prototype.hasOwnProperty.call(newParams, 'endDate')) {
+      endDateVal = endDate ? endDate.format(Formats.DATE_FORMAT) : '';
+    }
+
+    const pageIndexVal = Object.prototype.hasOwnProperty.call(newParams, 'pageIndex')
       ? (pageIndex || 0)
       : (queryParams.pageIndex || 0);
-    let pageSizeVal = Object.prototype.hasOwnProperty.call(newParams, 'pageSize')
+    const pageSizeVal = Object.prototype.hasOwnProperty.call(newParams, 'pageSize')
       ? (pageSize || 20)
       : (queryParams.pageSize || 20);
     history.push(`${location.pathname}?showApproved=${showApprovedVal}&showUnapproved=${showUnapprovedVal}&startDate=${startDateVal}&endDate=${endDateVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`);

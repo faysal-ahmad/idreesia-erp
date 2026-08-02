@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 
 type AttendanceValue = 'pr' | 'la' | 'ab' | 'ms' | null | undefined;
-interface Props { day: string; attendanceValue?: AttendanceValue; onChange(day: string, value: AttendanceValue): void; }
+
+interface Props {
+  day: string;
+  attendanceValue?: AttendanceValue;
+  onChange(day: string, value: AttendanceValue): void;
+}
 
 function getClassNamesForAttendance(attendanceValue: AttendanceValue) {
   if (attendanceValue === 'pr') return 'attendance-date attendance-present';
@@ -36,12 +40,6 @@ const AttendanceDay = ({ day, attendanceValue, onChange }: Props) => {
       <div className={classNames}>{day}</div>
     </td>
   );
-};
-
-AttendanceDay.propTypes = {
-  day: PropTypes.string,
-  attendanceValue: PropTypes.string,
-  onChange: PropTypes.func,
 };
 
 export default AttendanceDay;

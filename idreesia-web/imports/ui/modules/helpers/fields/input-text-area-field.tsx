@@ -1,11 +1,16 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 import { Input, Form } from "antd";
 
-const AntFormItem = (Form as any).Item;
-const TextInput = Input as any;
-interface FieldProps { fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; initialValue?: unknown; required?: boolean; requiredMessage?: string; }
+interface FieldProps {
+  fieldName: string;
+  fieldLabel?: string;
+  placeholder?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: unknown;
+  required?: boolean;
+  requiredMessage?: string;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -38,20 +43,10 @@ const InputTextAreaField = ({
   ];
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <TextInput.TextArea placeholder={placeholder} />
-    </AntFormItem>
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <Input.TextArea placeholder={placeholder} />
+    </Form.Item>
   );
-}
-
-InputTextAreaField.propTypes = {
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  placeholder: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.string,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
 };
 
 export default InputTextAreaField;

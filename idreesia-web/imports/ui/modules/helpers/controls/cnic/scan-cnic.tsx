@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import { debounce } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Input, Row } from 'antd';
 
-const AntCol = Col as any;
-const TextInput = Input as any;
-const AntRow = Row as any;
-interface Props { onCnicCaptured?(codes: string[]): void; }
-interface State { codes: string[]; }
+interface Props {
+  onCnicCaptured?(codes: string[]): void;
+}
+
+interface State {
+  codes: string[];
+}
 
 export default class ScanCnic extends Component<Props, State> {
-  static propTypes = {
-    onCnicCaptured: PropTypes.func,
-  };
-
   state = {
     codes: [],
   };
@@ -47,7 +44,7 @@ export default class ScanCnic extends Component<Props, State> {
         this.keyBuffer = [];
       }, 3000);
 
-      let barcodes = [];
+      let barcodes: string[] = [];
       if (scannedInput.length === 15) {
         barcodes = [
           this.formatCnicNumber(scannedInput.slice(0, 13)),
@@ -55,9 +52,7 @@ export default class ScanCnic extends Component<Props, State> {
         ];
 
         this.setState({ codes: barcodes });
-        if (onCnicCaptured) {
-          onCnicCaptured(barcodes);
-        }
+        onCnicCaptured?.(barcodes);
       } else if (scannedInput.length === 25) {
         barcodes = [
           this.formatCnicNumber(scannedInput.slice(11, 24)),
@@ -65,9 +60,7 @@ export default class ScanCnic extends Component<Props, State> {
         ];
 
         this.setState({ codes: barcodes });
-        if (onCnicCaptured) {
-          onCnicCaptured(barcodes);
-        }
+        onCnicCaptured?.(barcodes);
       } else if (scannedInput.length === 26) {
         barcodes = [
           this.formatCnicNumber(scannedInput.slice(11, 24)),
@@ -75,11 +68,8 @@ export default class ScanCnic extends Component<Props, State> {
         ];
 
         this.setState({ codes: barcodes });
-        if (onCnicCaptured) {
-          onCnicCaptured(barcodes);
-        }
+        onCnicCaptured?.(barcodes);
       } else if (scannedInput.length > 50) {
-        // Old 2D CNIC Formats
         const parts = scannedInput.split('Enter');
         if (parts.length > 6) {
           if (parts[1].length >= 13) {
@@ -90,12 +80,10 @@ export default class ScanCnic extends Component<Props, State> {
           }
 
           this.setState({ codes: barcodes });
-          if (onCnicCaptured) {
-            onCnicCaptured(barcodes);
-          }
+          onCnicCaptured?.(barcodes);
         }
-      } else if (onCnicCaptured) {
-        onCnicCaptured([]);
+      } else {
+        onCnicCaptured?.([]);
       }
     },
     100,
@@ -111,18 +99,18 @@ export default class ScanCnic extends Component<Props, State> {
     const { codes } = this.state;
 
     return (
-      <AntRow type="flex" justify="start" align="middle" gutter={16}>
-        <AntCol order={1}>Scan CNIC</AntCol>
-        <AntCol order={2}>
+      <Row justify="start" align="middle" gutter={16}>
+        <Col order={1}>Scan CNIC</Col>
+        <Col order={2}>
           {codes.length > 0 ? (
-            this.state.codes.map((code, index) => (
-              <TextInput key={index} readOnly value={code} />
+            codes.map((code, index) => (
+              <Input key={index} readOnly value={code} />
             ))
           ) : (
-            <TextInput readOnly />
+            <Input readOnly />
           )}
-        </AntCol>
-      </AntRow>
+        </Col>
+      </Row>
     );
   }
 }

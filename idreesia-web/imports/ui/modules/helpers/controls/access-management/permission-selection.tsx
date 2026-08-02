@@ -1,18 +1,34 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { forwardRef, useEffect, useImperativeHandle, useState, type Key } from 'react';
 import { Tree } from 'antd';
+import type { DataNode } from 'antd/es/tree';
 
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
 
 import { AllModulePermissions } from './all-module-permissions';
 
-const AntTree = Tree as any;
-type TreeKey = string;
-interface SecurityEntity { permissions?: TreeKey[]; }
-interface Props { permissions?: unknown[]; securityEntity?: SecurityEntity | null; onChange?(permissions: TreeKey[]): void; readOnly?: boolean; }
-export interface PermissionSelectionHandle { getSelectedPermissions(): TreeKey[]; }
+type TreeKey = Key;
 
-const PermissionSelection = forwardRef<PermissionSelectionHandle, Props>(({ permissions, securityEntity, onChange, readOnly }: Props, ref) => {
+interface SecurityEntity {
+  permissions?: TreeKey[];
+}
+
+interface Props {
+  permissions?: DataNode[];
+  securityEntity?: SecurityEntity | null;
+  onChange?(permissions: TreeKey[]): void;
+  readOnly?: boolean;
+}
+
+export interface PermissionSelectionHandle {
+  getSelectedPermissions(): string[];
+}
+
+const PermissionSelection = forwardRef<PermissionSelectionHandle, Props>(({
+  permissions = AllModulePermissions,
+  securityEntity,
+  onChange,
+  readOnly = false,
+}: Props, ref) => {
   const [initDone, setInitDone] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState<TreeKey[]>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeKey[]>([]);
@@ -23,27 +39,30 @@ const PermissionSelection = forwardRef<PermissionSelectionHandle, Props>(({ perm
       setCheckedKeys(securityEntity.permissions ?? []);
       setExpandedKeys(securityEntity.permissions ?? []);
     }
-  }, [securityEntity]);
+  }, [securityEntity, initDone]);
 
   useImperativeHandle(ref, () => ({
-    getSelectedPermissions: () => filter(checkedKeys, (key: TreeKey) => !key.startsWith('module-')),
+    getSelectedPermissions: () =>
+      filter(checkedKeys, (key: TreeKey) => !String(key).startsWith('module-')).map(
+        String
+      ),
   }), [checkedKeys]);
 
   const onExpand = (keys: TreeKey[]) => {
     setExpandedKeys(keys);
   };
 
-  const onCheck = (keys: TreeKey[] | { checked: TreeKey[] }) => {
+  const onCheck = (keys: TreeKey[] | { checked: TreeKey[]; halfChecked: TreeKey[] }) => {
     const selectedKeys = Array.isArray(keys) ? keys : keys.checked;
     if (!readOnly) {
       setCheckedKeys(selectedKeys);
-      const selectedPermissions = filter(selectedKeys, (key: TreeKey) => !key.startsWith('module-'));
+      const selectedPermissions = filter(selectedKeys, (key: TreeKey) => !String(key).startsWith('module-'));
       onChange?.(selectedPermissions);
     }
   };
-  
+
   return (
-    <AntTree
+    <Tree
       checkable
       autoExpandParent
       onExpand={onExpand}
@@ -54,17 +73,5 @@ const PermissionSelection = forwardRef<PermissionSelectionHandle, Props>(({ perm
     />
   );
 });
-
-PermissionSelection.propTypes = {
-  readOnly: PropTypes.bool,
-  permissions: PropTypes.array,
-  securityEntity: PropTypes.object,
-  onChange: PropTypes.func,
-};
-
-PermissionSelection.defaultProps = {
-  readOnly: false,
-  permissions: AllModulePermissions,
-};
 
 export default PermissionSelection;

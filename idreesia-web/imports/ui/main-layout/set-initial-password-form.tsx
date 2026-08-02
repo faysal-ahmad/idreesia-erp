@@ -1,34 +1,31 @@
 import { Accounts } from 'meteor/accounts-base';
-import React from 'react';
+import React, { type CSSProperties } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Card, Divider, Flex, Form, Input, message } from 'antd';
 
-const FormButtonStyle = {
+const FormButtonStyle: CSSProperties = {
   marginBottom: '10px',
 };
 
-const FormWrapperStyle = {
-  width: "300px",
-  height: "200px",
-  position: "absolute",
-  top: "40%",
-  left: "45%",
-  marginTop: "-100px",
-  marginLeft: "-150px",
+const FormWrapperStyle: CSSProperties = {
+  width: '300px',
+  height: '200px',
+  position: 'absolute',
+  top: '40%',
+  left: '45%',
+  marginTop: '-100px',
+  marginLeft: '-150px',
 };
 
 const RouterLink = Link as any;
-const AntButton = Button as any;
-const AntCard = Card as any;
-const AntDivider = Divider as any;
-const AntFlex = Flex as any;
-const AntForm = Form as any;
-const AntFormItem = (Form as any).Item;
-const TextInput = Input as any;
-interface FormValues { newPassword: string; confirmedNewPassword: string; }
+
+interface FormValues {
+  newPassword: string;
+  confirmedNewPassword: string;
+}
 
 export const SetInitialPasswordForm = () => {
-  const [form] = AntForm.useForm();
+  const [form] = Form.useForm<FormValues>();
   const { token } = useParams<{ token: string }>();
 
   const handleFinish = (values: FormValues) => {
@@ -43,11 +40,11 @@ export const SetInitialPasswordForm = () => {
   };
 
   return (
-    <div style={FormWrapperStyle as any}>
-      <AntCard title="Set Account Password" style={{ minWidth: 400 }}>
-        <AntFlex justify='center'>
-          <AntForm form={form} onFinish={handleFinish}>
-            <AntFormItem
+    <div style={FormWrapperStyle}>
+      <Card title="Set Account Password" style={{ minWidth: 400 }}>
+        <Flex justify="center">
+          <Form form={form} onFinish={handleFinish}>
+            <Form.Item
               name="newPassword"
               rules={[
                 {
@@ -56,9 +53,9 @@ export const SetInitialPasswordForm = () => {
                 },
               ]}
             >
-              <TextInput type="password" placeholder="New Password" />
-            </AntFormItem>
-            <AntFormItem
+              <Input type="password" placeholder="New Password" />
+            </Form.Item>
+            <Form.Item
               name="confirmedNewPassword"
               rules={[
                 {
@@ -67,20 +64,25 @@ export const SetInitialPasswordForm = () => {
                 },
               ]}
             >
-              <TextInput type="password" placeholder="Confirm New Password" />
-            </AntFormItem>
-            <AntFormItem>
-            <AntButton type="primary" htmlType="submit" style={FormButtonStyle} block>
-              Set Password
-            </AntButton>
-          </AntFormItem>
-          </AntForm>
-        </AntFlex>
-        <AntDivider style={{ marginTop: 0 }} />
-        <AntFlex justify='flex-end'>
+              <Input type="password" placeholder="Confirm New Password" />
+            </Form.Item>
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={FormButtonStyle}
+                block
+              >
+                Set Password
+              </Button>
+            </Form.Item>
+          </Form>
+        </Flex>
+        <Divider style={{ marginTop: 0 }} />
+        <Flex justify="flex-end">
           <RouterLink to="/">Back to Login</RouterLink>
-        </AntFlex>
-      </AntCard>
+        </Flex>
+      </Card>
     </div>
   );
-}
+};

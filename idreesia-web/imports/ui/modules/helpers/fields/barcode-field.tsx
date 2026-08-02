@@ -1,12 +1,18 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 import { Form } from "antd";
 import { DisplayBarcode } from "../controls";
 
-const AntFormItem = (Form as any).Item;
-const BarcodeInput = DisplayBarcode as any;
-interface FieldProps { fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; initialValue?: unknown; required?: boolean; requiredMessage?: string; disabled?: boolean; }
+interface FieldProps {
+  fieldName: string;
+  fieldLabel?: string;
+  placeholder?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: unknown;
+  required?: boolean;
+  requiredMessage?: string;
+  disabled?: boolean;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -40,21 +46,10 @@ const BarcodeField = ({
     ];
     
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <BarcodeInput disabled={disabled} placeholder={placeholder} />
-    </AntFormItem>
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <DisplayBarcode disabled={disabled} />
+    </Form.Item>
   );
-}
-
-BarcodeField.propTypes = {
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  placeholder: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.any,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
-  disabled: PropTypes.bool,
 };
 
 export default BarcodeField;

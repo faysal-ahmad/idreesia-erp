@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import { Input, InputNumber, Select } from 'antd';
 
-const ContainerStyle = {
+const ContainerStyle: React.CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'flex-start',
@@ -12,39 +11,39 @@ const ContainerStyle = {
 
 const DEFAULT_VALUE = JSON.stringify({ criteria: 'less-than' });
 
-const TextInput = Input as any;
-const NumberInput = InputNumber as any;
-const AntSelect = Select as any;
-interface FilterValue { criteria?: string; percentage?: number | null; }
-interface CustomInputProps { value?: string; disabled?: boolean; onChange?(value: string): void; }
+interface FilterValue {
+  criteria?: string;
+  percentage?: number | null;
+}
+
+interface CustomInputProps {
+  value?: string;
+  disabled?: boolean;
+  onChange?(value: string): void;
+}
+
+interface RefWithValue {
+  props: {
+    value: string | number | null;
+  };
+}
 
 export default class CustomInput extends Component<CustomInputProps> {
-  criteriaSelect: React.RefObject<any>;
-  percentageInput: React.RefObject<any>;
-  static propTypes = {
-    value: PropTypes.string,
-    disabled: PropTypes.bool,
-    onChange: PropTypes.func,
-  };
-
-  constructor(props: CustomInputProps) {
-    super(props);
-    this.criteriaSelect = React.createRef<any>();
-    this.percentageInput = React.createRef<any>();
-  }
+  criteriaSelect = React.createRef<React.ComponentRef<typeof Select>>();
+  percentageInput = React.createRef<React.ComponentRef<typeof InputNumber>>();
 
   getCriteriaOptions = () => [
-    <AntSelect.Option key="less-than" value="less-than">
+    <Select.Option key="less-than" value="less-than">
       Less Than
-    </AntSelect.Option>,
-    <AntSelect.Option key="more-than" value="more-than">
+    </Select.Option>,
+    <Select.Option key="more-than" value="more-than">
       More Than
-    </AntSelect.Option>,
+    </Select.Option>,
   ];
 
   handleCriteriaChange = (criteria: string) => {
     const { onChange } = this.props;
-    const percentage = this.percentageInput.current.props.value;
+    const percentage = (this.percentageInput.current as RefWithValue | null)?.props.value;
     const newValue = JSON.stringify({
       criteria,
       percentage,
@@ -54,7 +53,7 @@ export default class CustomInput extends Component<CustomInputProps> {
 
   handlePercentageChange = (percentage: number | null) => {
     const { onChange } = this.props;
-    const criteria = this.criteriaSelect.current.props.value;
+    const criteria = (this.criteriaSelect.current as RefWithValue | null)?.props.value;
     const newValue = JSON.stringify({
       criteria,
       percentage,
@@ -67,22 +66,22 @@ export default class CustomInput extends Component<CustomInputProps> {
     const { criteria, percentage } = JSON.parse(value || DEFAULT_VALUE) as FilterValue;
 
     return (
-      <TextInput.Group>
-        <div style={ContainerStyle as any}>
-          <AntSelect
+      <Input.Group>
+        <div style={ContainerStyle}>
+          <Select
             ref={this.criteriaSelect}
             style={{ width: '100px' }}
             onChange={this.handleCriteriaChange}
             value={criteria}
           >
             {this.getCriteriaOptions()}
-          </AntSelect>
-          <NumberInput
+          </Select>
+          <InputNumber
             ref={this.percentageInput}
             value={percentage}
             onChange={this.handlePercentageChange}
           />
-          <TextInput
+          <Input
             style={{
               width: 100,
               border: 0,
@@ -93,7 +92,7 @@ export default class CustomInput extends Component<CustomInputProps> {
             disabled
           />
         </div>
-      </TextInput.Group>
+      </Input.Group>
     );
   }
 }

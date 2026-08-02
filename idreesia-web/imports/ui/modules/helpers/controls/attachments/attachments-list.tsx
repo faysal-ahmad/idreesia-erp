@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/client/react';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  UpdateAttachmentMutation,
+  UpdateAttachmentMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -23,6 +27,7 @@ import {
   Popconfirm,
   message,
 } from 'antd';
+import { type CSSProperties } from 'react';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
@@ -34,59 +39,75 @@ import {
 
 import AttachmentForm from './attachment-form';
 
-const AntCol = Col as any;
-const AntDivider = Divider as any;
-const AntForm = Form as any;
-const AntModal = Modal as any;
-const AntRow = Row as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const AntPopconfirm = Popconfirm as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntEditOutlined = EditOutlined as any;
-const AntFileJpgOutlined = FileJpgOutlined as any;
-const AntFileTextOutlined = FileTextOutlined as any;
-const AntFilePdfOutlined = FilePdfOutlined as any;
-const AntFileExcelOutlined = FileExcelOutlined as any;
-const AntFileWordOutlined = FileWordOutlined as any;
-const AntFileUnknownOutlined = FileUnknownOutlined as any;
-const TakePictureControl = TakePicture as any;
-const UploadAttachmentControl = UploadAttachment as any;
-const AttachmentEditForm = AttachmentForm as any;
-interface Attachment { _id: string; name?: string; description?: string; mimeType?: string; }
-interface Props { attachments?: Attachment[]; canTakePicture?: boolean; canUploadDocument?: boolean; canEditAttachments?: boolean; handleAttachmentAdded?(id: string): void; handleAttachmentRemoved?(id: string): void; }
-interface FormValues { name?: string; description?: string; }
+interface Attachment {
+  _id: string;
+  name?: string;
+  description?: string;
+  mimeType?: string;
+}
 
-const NameStyle = {
+interface Props {
+  attachments?: Attachment[];
+  canTakePicture?: boolean;
+  canUploadDocument?: boolean;
+  canEditAttachments?: boolean;
+  handleAttachmentAdded?(id: string): void;
+  handleAttachmentRemoved?(id: string): void;
+}
+
+interface FormValues {
+  name?: string;
+  description?: string;
+}
+
+const NameStyle: CSSProperties = {
   cursor: 'pointer',
   color: '#1890ff',
 };
 
-const FileIconStyle = {
+const FileIconStyle: CSSProperties = {
   fontSize: 30,
 };
 
+const updateAttachmentMutation: TypedDocumentNode<
+  UpdateAttachmentMutation,
+  UpdateAttachmentMutationVariables
+> = gql`
+  mutation updateAttachment(
+    $_id: String!
+    $name: String
+    $description: String
+  ) {
+    updateAttachment(_id: $_id, name: $name, description: $description) {
+      _id
+      name
+      description
+      mimeType
+    }
+  }
+`;
+
 const AttachmentsList = ({
-  attachments,
-  canTakePicture,
-  canUploadDocument,
-  canEditAttachments,
-  handleAttachmentAdded,
-  handleAttachmentRemoved,
+  attachments = [],
+  canTakePicture = false,
+  canUploadDocument = false,
+  canEditAttachments = false,
+  handleAttachmentAdded = noop,
+  handleAttachmentRemoved = noop,
 }: Props) => {
   const [showForm, setShowForm] = useState(false);
   const [defaultValues, setDefaultValues] = useState<Attachment>({ _id: '' });
-  const [attachmentForm] = AntForm.useForm();
-  const [updateAttachment] = useMutation(updateAttachmentMutation as any);
+  const [attachmentForm] = Form.useForm();
+  const [updateAttachment] = useMutation(updateAttachmentMutation);
 
   const mimeTypeIconMap: Record<string, React.ReactNode> = {
-    'image/jpeg': <AntFileJpgOutlined style={FileIconStyle as any} />,
-    'text/html': <AntFileTextOutlined style={FileIconStyle as any} />,
-    'application/pdf': <AntFilePdfOutlined style={FileIconStyle as any} />,
+    'image/jpeg': <FileJpgOutlined style={FileIconStyle} />,
+    'text/html': <FileTextOutlined style={FileIconStyle} />,
+    'application/pdf': <FilePdfOutlined style={FileIconStyle} />,
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-      <AntFileExcelOutlined style={FileIconStyle as any} />,
+      <FileExcelOutlined style={FileIconStyle} />,
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-      <AntFileWordOutlined style={FileIconStyle as any} />,
+      <FileWordOutlined style={FileIconStyle} />,
   };
 
   const handleNameClicked = (record: Attachment) => {
@@ -100,7 +121,7 @@ const AttachmentsList = ({
   };
 
   const handleDeleteClicked = (attachmentId: string) => {
-    handleAttachmentRemoved?.(attachmentId);
+    handleAttachmentRemoved(attachmentId);
   };
 
   const handleAttachmentFormCancelled = () => {
@@ -130,24 +151,23 @@ const AttachmentsList = ({
       render: (_text: unknown, record: Attachment) => {
         const icon = record.mimeType
           ? mimeTypeIconMap[record.mimeType]
-          : <AntFileUnknownOutlined style={FileIconStyle as any} />;
+          : <FileUnknownOutlined style={FileIconStyle} />;
 
         return (
-          <AntRow
-            type="flex"
+          <Row
             align="middle"
             gutter={6}
             onClick={() => {
               handleNameClicked(record);
             }}
           >
-            <AntCol order={1}>
+            <Col order={1}>
               {icon}
-            </AntCol>
-            <AntCol order={2} style={NameStyle as any}>
+            </Col>
+            <Col order={2} style={NameStyle}>
               {record.name}
-            </AntCol>
-          </AntRow>
+            </Col>
+          </Row>
         );
       },
     },
@@ -163,16 +183,16 @@ const AttachmentsList = ({
       key: 'action',
       render: (_text: unknown, record: Attachment) => (
         <span>
-          <AntTooltip title="Edit">
-            <AntEditOutlined
+          <Tooltip title="Edit">
+            <EditOutlined
               className="list-actions-icon"
               onClick={() => {
                 handleEditClicked(record);
               }}
             />
-          </AntTooltip>
-          <AntDivider type="vertical" />
-          <AntPopconfirm
+          </Tooltip>
+          <Divider type="vertical" />
+          <Popconfirm
             title="Are you sure you want to delete this document?"
             onConfirm={() => {
               handleDeleteClicked(record._id);
@@ -180,10 +200,10 @@ const AttachmentsList = ({
             okText="Yes"
             cancelText="No"
           >
-            <AntTooltip title="Delete">
-              <AntDeleteOutlined className="list-actions-icon" />
-            </AntTooltip>
-          </AntPopconfirm>
+            <Tooltip title="Delete">
+              <DeleteOutlined className="list-actions-icon" />
+            </Tooltip>
+          </Popconfirm>
         </span>
       ),
     });
@@ -191,33 +211,33 @@ const AttachmentsList = ({
 
   return (
     <>
-      <AntTable
+      <Table
         rowKey="_id"
         dataSource={attachments}
-        columns={columns}
+        columns={columns as any}
         bordered
         title={() => (
-          <AntRow type="flex" gutter={16}>
-            <AntCol order={1}>
-              <UploadAttachmentControl
+          <Row gutter={16}>
+            <Col order={1}>
+              <UploadAttachment
                 disabled={!canUploadDocument}
                 buttonText="Upload Attachment"
                 onUploadFinish={handleAttachmentAdded}
               />
-            </AntCol>
+            </Col>
             {canTakePicture ? (
-              <AntCol order={2}>
-                <TakePictureControl
+              <Col order={2}>
+                <TakePicture
                   disabled={!canTakePicture}
                   buttonText="Capture Image"
                   onPictureTaken={handleAttachmentAdded}
                 />
-              </AntCol>
+              </Col>
             ) : null}
-          </AntRow>
+          </Row>
         )}
       />
-      <AntModal
+      <Modal
         open={showForm}
         title="Edit Attachment"
         okText="Save"
@@ -226,46 +246,13 @@ const AttachmentsList = ({
         onOk={handleAttachmentFormSaved}
         onCancel={handleAttachmentFormCancelled}
       >
-        <AttachmentEditForm
+        <AttachmentForm
           form={attachmentForm}
           defaultValues={defaultValues}
         />
-      </AntModal>
+      </Modal>
     </>
   );
-}
-
-const updateAttachmentMutation = gql`
-  mutation updateAttachment(
-    $_id: String!
-    $name: String
-    $description: String
-  ) {
-    updateAttachment(_id: $_id, name: $name, description: $description) {
-      _id
-      name
-      description
-      mimeType
-    }
-  }
-`;
-
-AttachmentsList.propTypes = {
-  attachments: PropTypes.array,
-  canTakePicture: PropTypes.bool,
-  canUploadDocument: PropTypes.bool,
-  canEditAttachments: PropTypes.bool,
-  handleAttachmentAdded: PropTypes.func,
-  handleAttachmentRemoved: PropTypes.func,
-};
-
-AttachmentsList.defaultProps = {
-  attachments: [],
-  canTakePicture: false,
-  canUploadDocument: false,
-  canEditAttachments: false,
-  handleAttachmentAdded: noop,
-  handleAttachmentRemoved: noop,
 };
 
 export default AttachmentsList;

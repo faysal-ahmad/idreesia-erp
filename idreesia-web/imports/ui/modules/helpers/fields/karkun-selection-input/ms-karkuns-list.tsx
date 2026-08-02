@@ -1,18 +1,30 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
 
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
+import type { HelperPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { useAllMSDuties } from '/imports/ui/modules/hr/common/hooks';
 import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
 
 import { PAGED_HR_KARKUNS } from './gql';
 
-const DataList = KarkunsList as any;
-const DataListFilter = KarkunsListFilter as any;
-type AnyRecord = Record<string, any>;
-interface Props { handleSelectItem?(item: AnyRecord): void; }
-interface QueryData { pagedHrKarkuns?: unknown; }
+type HrKarkunRow = NonNullable<
+  NonNullable<
+    NonNullable<HelperPagedHrKarkunsQuery['pagedHrKarkuns']>['karkuns']
+  >[number]
+>;
+
+interface PageParams {
+  name?: string | null;
+  cnicNumber?: string | null;
+  phoneNumber?: string | null;
+  pageIndex?: string;
+  pageSize?: string;
+}
+
+interface Props {
+  handleSelectItem?(item: HrKarkunRow): void;
+}
 
 const List = ({ handleSelectItem }: Props) => {
   const [name, setName] = useState<string | null>(null);
@@ -21,17 +33,17 @@ const List = ({ handleSelectItem }: Props) => {
   const [pageIndex, setPageIndex] = useState('0');
   const [pageSize, setPageSize] = useState('20');
 
-  const setPageParams = (values: AnyRecord) => {
-    if (Object.prototype.hasOwnProperty.call(values, 'name')) setName(values.name);
-    if (Object.prototype.hasOwnProperty.call(values, 'cnicNumber')) setCnicNumber(values.cnicNumber);
+  const setPageParams = (values: PageParams) => {
+    if (Object.prototype.hasOwnProperty.call(values, 'name')) setName(values.name ?? null);
+    if (Object.prototype.hasOwnProperty.call(values, 'cnicNumber')) setCnicNumber(values.cnicNumber ?? null);
     if (Object.prototype.hasOwnProperty.call(values, 'phoneNumber'))
-      setPhoneNumber(values.phoneNumber);
-    if (Object.prototype.hasOwnProperty.call(values, 'pageIndex')) setPageIndex(values.pageIndex);
-    if (Object.prototype.hasOwnProperty.call(values, 'pageSize')) setPageSize(values.pageSize);
+      setPhoneNumber(values.phoneNumber ?? null);
+    if (Object.prototype.hasOwnProperty.call(values, 'pageIndex')) setPageIndex(values.pageIndex ?? '0');
+    if (Object.prototype.hasOwnProperty.call(values, 'pageSize')) setPageSize(values.pageSize ?? '20');
   };
 
   const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
-  const { data, loading, refetch } = useQuery(PAGED_HR_KARKUNS as any, {
+  const { data, loading, refetch } = useQuery(PAGED_HR_KARKUNS, {
     variables: {
       filter: {
         name,
@@ -44,7 +56,7 @@ const List = ({ handleSelectItem }: Props) => {
   });
 
   if (loading) return null;
-  const { pagedHrKarkuns } = (data ?? {}) as QueryData;
+  const pagedHrKarkuns = data?.pagedHrKarkuns;
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
@@ -54,17 +66,17 @@ const List = ({ handleSelectItem }: Props) => {
     }
 
     return (
-      <DataListFilter
+      <KarkunsListFilter
         showBloodGroupFilter={false}
         showAttendanceFilter={false}
         showLastTarteebFilter={false}
         showMehfilDutyFilter={false}
         showCityMehfilFilter={false}
         showRegionFilter={false}
-        mehfilDuties={allMSDuties}
-        name={name}
-        cnicNumber={cnicNumber}
-        phoneNumber={phoneNumber}
+        mehfilDuties={(allMSDuties ?? []).filter((item) => item != null)}
+        name={name ?? undefined}
+        cnicNumber={cnicNumber ?? undefined}
+        phoneNumber={phoneNumber ?? undefined}
         setPageParams={setPageParams}
         refreshData={refetch}
       />
@@ -76,7 +88,7 @@ const List = ({ handleSelectItem }: Props) => {
   );
 
   return (
-    <DataList
+    <KarkunsList
       showSelectionColumn={false}
       showCnicColumn
       showPhoneNumbersColumn
@@ -88,13 +100,9 @@ const List = ({ handleSelectItem }: Props) => {
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}
-      pagedData={pagedHrKarkuns}
+      pagedData={pagedHrKarkuns ?? undefined}
     />
   );
-};
-
-List.propTypes = {
-  handleSelectItem: PropTypes.func,
 };
 
 export default List;

@@ -1,11 +1,20 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { InputNumber, Form } from 'antd';
 
-const AntFormItem = (Form as any).Item;
-const NumberInput = InputNumber as any;
-interface FieldProps { fieldName: string; fieldLabel?: string; placeholder?: string; fieldLayout?: Record<string, unknown>; initialValue?: number | null; minValue?: number; maxValue?: number; precision?: number; required?: boolean; requiredMessage?: string; disabled?: boolean; }
+interface FieldProps {
+  fieldName: string;
+  fieldLabel?: string;
+  placeholder?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: number | null;
+  minValue?: number;
+  maxValue?: number;
+  precision?: number;
+  required?: boolean;
+  requiredMessage?: string;
+  disabled?: boolean;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -47,24 +56,10 @@ const InputNumberField = ({
   ];
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} rules={rules} initialValue={initialValue} {...fieldLayout}>
-        <NumberInput disabled={disabled} placeholder={placeholder} {...additionalProps} />
-    </AntFormItem>
+    <Form.Item name={fieldName} label={fieldLabel} rules={rules} initialValue={initialValue} {...fieldLayout}>
+        <InputNumber disabled={disabled} placeholder={placeholder} {...additionalProps} />
+    </Form.Item>
   );
-}
-
-InputNumberField.propTypes = {
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  placeholder: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.number,
-  minValue: PropTypes.number,
-  maxValue: PropTypes.number,
-  precision: PropTypes.number,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
-  disabled: PropTypes.bool,
 };
 
 export default InputNumberField;

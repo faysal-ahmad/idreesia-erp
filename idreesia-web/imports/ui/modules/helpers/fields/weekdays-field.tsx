@@ -1,11 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { Checkbox, Form } from 'antd';
 
-const AntFormItem = (Form as any).Item;
-const CheckboxInput = Checkbox as any;
-interface FieldProps { fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; initialValue?: string[]; required?: boolean; requiredMessage?: string; }
+interface FieldProps {
+  fieldName: string;
+  fieldLabel?: string;
+  fieldLayout?: Record<string, unknown>;
+  initialValue?: string[];
+  required?: boolean;
+  requiredMessage?: string;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -47,19 +51,10 @@ const WeekDaysField = ({
   ];
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <CheckboxInput.Group options={options} />
-    </AntFormItem>
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+      <Checkbox.Group options={options} />
+    </Form.Item>
   );
-}
-
-WeekDaysField.propTypes = {
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.array,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
 };
 
 export default WeekDaysField;

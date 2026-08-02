@@ -5,7 +5,6 @@ import { type History } from 'history';
 import { type CSSProperties } from 'react';
 import { useParams } from 'react-router-dom';
 import { Form, message } from 'antd';
-import type { EditStockAdjustmentByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 import { usePhysicalStore } from '/imports/ui/modules/inventory/common/hooks';
@@ -25,7 +24,6 @@ import {
 } from './gql';
 
 const FormStyle: CSSProperties = { width: '800px' };
-type StockAdjustment = NonNullable<EditStockAdjustmentByIdQuery['stockAdjustmentById']>;
 type RouteParams = { formId: string; physicalStoreId: string };
 interface KarkunOption { _id: string; name: string; }
 

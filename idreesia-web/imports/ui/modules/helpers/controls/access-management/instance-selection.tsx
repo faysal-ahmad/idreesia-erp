@@ -1,80 +1,99 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-
-import { filter, flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+  type Key,
+} from 'react';
 import { Tree } from 'antd';
 
-const AntTree = Tree as any;
-type TreeKey = string;
-interface SecurityEntity { instances?: TreeKey[]; }
-interface PhysicalStore { _id: string; name: string; }
-interface TreeDataItem { title: string; key: string; children?: TreeDataItem[]; }
-interface Props { securityEntity?: SecurityEntity | null; allPhysicalStores?: PhysicalStore[]; }
-interface State { initDone: boolean; expandedKeys: TreeKey[]; checkedKeys: TreeKey[]; autoExpandParent?: boolean; }
+import { filter } from 'meteor/idreesia-common/utilities/lodash';
 
-class InstanceSelection extends Component<Props, State> {
-  static propTypes = {
-    securityEntity: PropTypes.object,
-    allPhysicalStores: PropTypes.array,
-  };
+type TreeKey = Key;
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-    const { securityEntity } = nextProps;
-    if (securityEntity && !prevState.initDone) {
-      return {
-        initDone: true,
-        checkedKeys: securityEntity.instances,
-      };
-    }
+interface SecurityEntity {
+  instances?: Array<string | null> | null;
+}
 
-    return null;
-  }
+interface PhysicalStore {
+  _id: string;
+  name: string;
+}
 
-  state: State = {
-    initDone: false,
-    expandedKeys: [],
-    checkedKeys: [],
-  };
+interface TreeDataItem {
+  title: string;
+  key: string;
+  children?: TreeDataItem[];
+}
 
-  onExpand = (expandedKeys: TreeKey[]) => {
-    this.setState({
-      expandedKeys,
-      autoExpandParent: false,
-    });
-  };
+interface Props {
+  securityEntity?: SecurityEntity | null;
+  allPhysicalStores?: PhysicalStore[];
+}
 
-  onCheck = (checkedKeys: TreeKey[] | { checked: TreeKey[] }) => {
-    const selectedKeys = Array.isArray(checkedKeys) ? checkedKeys : checkedKeys.checked;
-    this.setState({ checkedKeys: selectedKeys });
-  };
+export interface InstanceSelectionHandle {
+  getSelectedInstances(): string[];
+}
 
-  renderTreeNodes = (data: TreeDataItem[]): React.ReactNode[] =>
-    data.map((item: TreeDataItem) => {
-      if (item.children) {
-        return (
-          <AntTree.TreeNode title={item.title} key={item.key} dataRef={item}>
-            {this.renderTreeNodes(item.children)}
-          </AntTree.TreeNode>
+const InstanceSelection = forwardRef<InstanceSelectionHandle, Props>(
+  ({ securityEntity, allPhysicalStores }, ref) => {
+    const [initDone, setInitDone] = useState(false);
+    const [expandedKeys, setExpandedKeys] = useState<TreeKey[]>([]);
+    const [checkedKeys, setCheckedKeys] = useState<TreeKey[]>([]);
+    const [autoExpandParent, setAutoExpandParent] = useState<boolean | undefined>();
+
+    useEffect(() => {
+      if (securityEntity && !initDone) {
+        setInitDone(true);
+        setCheckedKeys(
+          (securityEntity.instances ?? []).filter(
+            (instance): instance is string => instance != null
+          )
         );
       }
+    }, [securityEntity, initDone]);
 
-      return <AntTree.TreeNode {...item} />;
-    });
+    useImperativeHandle(
+      ref,
+      () => ({
+        getSelectedInstances: () =>
+          filter(checkedKeys, (key: TreeKey) => !String(key).startsWith('module-')).map(
+            String
+          ),
+      }),
+      [checkedKeys]
+    );
 
-  getSelectedInstances = () => {
-    const { checkedKeys } = this.state;
-    const instances = filter(checkedKeys, (key: TreeKey) => !key.startsWith('module-'));
-    return instances;
-  };
+    const onExpand = (keys: TreeKey[]) => {
+      setExpandedKeys(keys);
+      setAutoExpandParent(false);
+    };
 
-  render() {
-    const { allPhysicalStores } = this.props;
+    const onCheck = (
+      keys: TreeKey[] | { checked: TreeKey[]; halfChecked: TreeKey[] }
+    ) => {
+      const selectedKeys = Array.isArray(keys) ? keys : keys.checked;
+      setCheckedKeys(selectedKeys);
+    };
+
+    const renderTreeNodes = (data: TreeDataItem[]): React.ReactNode[] =>
+      data.map((item) => {
+        if (item.children) {
+          return (
+            <Tree.TreeNode title={item.title} key={item.key}>
+              {renderTreeNodes(item.children)}
+            </Tree.TreeNode>
+          );
+        }
+
+        return <Tree.TreeNode {...item} />;
+      });
 
     const accessData = [
       {
         title: 'Physical Stores',
         key: 'module-inventory-physical-stores',
-        children: (allPhysicalStores ?? []).map((physicalStore: PhysicalStore) => ({
+        children: (allPhysicalStores ?? []).map((physicalStore) => ({
           title: physicalStore.name,
           key: physicalStore._id,
         })),
@@ -82,18 +101,18 @@ class InstanceSelection extends Component<Props, State> {
     ];
 
     return (
-      <AntTree
+      <Tree
         checkable
-        onExpand={this.onExpand}
-        expandedKeys={this.state.expandedKeys}
-        autoExpandParent={this.state.autoExpandParent}
-        onCheck={this.onCheck}
-        checkedKeys={this.state.checkedKeys}
+        onExpand={onExpand}
+        expandedKeys={expandedKeys}
+        autoExpandParent={autoExpandParent}
+        onCheck={onCheck}
+        checkedKeys={checkedKeys}
       >
-        {this.renderTreeNodes(accessData)}
-      </AntTree>
+        {renderTreeNodes(accessData)}
+      </Tree>
     );
   }
-}
+);
 
-export default flowRight()(InstanceSelection as any);
+export default InstanceSelection;

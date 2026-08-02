@@ -1,5 +1,4 @@
-import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, Fragment, type CSSProperties } from 'react';
 import { useQuery, useMutation } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import { WarningTwoTone } from '@ant-design/icons';
@@ -7,6 +6,7 @@ import { WarningTwoTone } from '@ant-design/icons';
 import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { SORT_BY } from 'meteor/idreesia-common/constants/security/list-options';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
+import type { ReportPagedVisitorStaysQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   Button,
   Pagination,
@@ -20,6 +20,7 @@ import { SortableColumnHeader } from '/imports/ui/modules/helpers/controls';
 import ListFilter from './list-filter';
 import FixSpelling from './fix-spelling';
 import ViewForm from '../visitor-stays/view-form';
+import type { PageParams } from './list-container';
 
 import {
   FIX_CITY_SPELLING,
@@ -27,17 +28,17 @@ import {
   PAGED_VISITOR_STAYS,
 } from './gql';
 
-const StatusStyle = {
+const StatusStyle: CSSProperties = {
   fontSize: 20,
 };
 
-const LinkStyle = {
+const LinkStyle: CSSProperties = {
   width: '100%',
   color: '#1890FF',
   cursor: 'pointer',
 };
 
-const StayDetailDivStyle = {
+const StayDetailDivStyle: CSSProperties = {
   width: '100%',
   color: '#1890FF',
   cursor: 'pointer',
@@ -48,36 +49,19 @@ const SPELLING_TYPE = {
   NAME: 'name',
 };
 
-const ReactFragment = Fragment as any;
-const AntButton = Button as any;
-const AntPagination = Pagination as any;
-const AntModal = Modal as any;
-const AntTable = Table as any;
-const AntWarningTwoTone = WarningTwoTone as any;
-const VisitorNameComponent = VisitorName as any;
-const SortableColumnHeaderComponent = SortableColumnHeader as any;
-const ListFilterComponent = ListFilter as any;
-const FixSpellingComponent = FixSpelling as any;
-const ViewFormComponent = ViewForm as any;
+type VisitorRecord = NonNullable<
+  NonNullable<
+    NonNullable<
+      NonNullable<ReportPagedVisitorStaysQuery['pagedVisitorStays']>['data']
+    >[number]
+  >['refVisitor']
+> & { _id: string; name: string };
 
-interface VisitorRecord {
-  _id: string;
-  name: string;
-  country?: string;
-  city?: string;
-  criminalRecord?: string | null;
-  otherNotes?: string | null;
-}
-
-interface VisitorStay {
-  _id: string;
-  refVisitor: VisitorRecord;
-  fromDate: string | number;
-  toDate: string | number;
-  numOfDays: number;
-  stayReason?: string;
-  stayAllowedBy?: string;
-}
+type VisitorStay = NonNullable<
+  NonNullable<
+    NonNullable<ReportPagedVisitorStaysQuery['pagedVisitorStays']>['data']
+  >[number]
+> & { _id: string; refVisitor: VisitorRecord };
 
 interface PagedVisitorStays {
   totalResults: number;
@@ -91,10 +75,14 @@ interface ListProps {
   sortOrder?: string;
   queryString?: string;
   queryParams?: Record<string, unknown>;
-  setPageParams(params: Record<string, unknown>): void;
-  handleItemSelected(visitor: VisitorRecord): void;
-  fixCitySpelling(args: unknown): Promise<unknown>;
-  fixNameSpelling(args: unknown): Promise<unknown>;
+  setPageParams(params: PageParams): void;
+  handleItemSelected(visitor: { _id: string }): void;
+  fixCitySpelling(args: {
+    variables: { existingSpelling: string; newSpelling: string };
+  }): Promise<unknown>;
+  fixNameSpelling(args: {
+    variables: { existingSpelling: string; newSpelling: string };
+  }): Promise<unknown>;
   loading?: boolean;
   pagedVisitorStays?: PagedVisitorStays;
 }
@@ -107,31 +95,21 @@ interface ListState {
   existingSpelling: string | null;
 }
 
+interface ListFilterQueryParams {
+  startDate?: string;
+  endDate?: string;
+  name?: string;
+  city?: string;
+  stayReason?: string;
+  additionalInfo?: string;
+}
+
 const emptyPagedVisitorStays: PagedVisitorStays = {
   data: [],
   totalResults: 0,
 };
 
 class List extends Component<ListProps, ListState> {
-  static propTypes = {
-    pageIndex: PropTypes.number,
-    pageSize: PropTypes.number,
-    sortBy: PropTypes.string,
-    sortOrder: PropTypes.string,
-    queryString: PropTypes.string,
-    queryParams: PropTypes.object,
-    setPageParams: PropTypes.func,
-    handleItemSelected: PropTypes.func,
-    fixCitySpelling: PropTypes.func,
-    fixNameSpelling: PropTypes.func,
-
-    loading: PropTypes.bool,
-    pagedVisitorStays: PropTypes.shape({
-      totalResults: PropTypes.number,
-      data: PropTypes.array,
-    }),
-  };
-
   state = {
     showViewDialog: false,
     visitorStayId: null,
@@ -147,14 +125,14 @@ class List extends Component<ListProps, ListState> {
       const { refVisitor } = record;
       if (refVisitor.criminalRecord) {
         return (
-          <AntWarningTwoTone
+          <WarningTwoTone
             style={StatusStyle}
             twoToneColor="red"
           />
         );
       } else if (refVisitor.otherNotes) {
         return (
-          <AntWarningTwoTone
+          <WarningTwoTone
             style={StatusStyle}
             twoToneColor="orange"
           />
@@ -170,20 +148,24 @@ class List extends Component<ListProps, ListState> {
 
     return {
       title: () => (
-        <SortableColumnHeaderComponent
+        <SortableColumnHeader
           headerKey={SORT_BY.NAME}
           title="Name"
           sortBy={sortBy}
-          sortOrder={sortOrder}
+          sortOrder={sortOrder as 'asc' | 'desc' | undefined}
           handleSortChange={this.handleSortChange}
         />
       ),
       dataIndex: ['refVisitor', 'name'],
       key: 'refVisitor.name',
       render: (_text: unknown, record: VisitorStay) => (
-        <VisitorNameComponent
-          visitor={record.refVisitor}
-          onVisitorNameClicked={this.props.handleItemSelected}
+        <VisitorName
+          visitor={{
+            _id: record.refVisitor._id,
+            name: record.refVisitor.name,
+            imageId: record.refVisitor.imageId ?? undefined,
+          }}
+          onVisitorNameClicked={(visitor) => this.props.handleItemSelected(visitor)}
         />
       ),
     };
@@ -194,11 +176,11 @@ class List extends Component<ListProps, ListState> {
 
     return {
       title: () => (
-        <SortableColumnHeaderComponent
+        <SortableColumnHeader
           headerKey={SORT_BY.CITY}
           title="City / Country"
           sortBy={sortBy}
-          sortOrder={sortOrder}
+          sortOrder={sortOrder as 'asc' | 'desc' | undefined}
           handleSortChange={this.handleSortChange}
         />
       ),
@@ -227,11 +209,11 @@ class List extends Component<ListProps, ListState> {
 
     return {
       title: () => (
-        <SortableColumnHeaderComponent
+        <SortableColumnHeader
           headerKey={SORT_BY.STAY_DATE}
           title="Stay Details"
           sortBy={sortBy}
-          sortOrder={sortOrder}
+          sortOrder={sortOrder as 'asc' | 'desc' | undefined}
           handleSortChange={this.handleSortChange}
         />
       ),
@@ -270,7 +252,7 @@ class List extends Component<ListProps, ListState> {
     dataIndex: 'stayReason',
     render: (text: string) => {
       if (!text) return null;
-      const reason = find(StayReasons, ({ _id }: { _id: string }) => _id === text) as { name: string } | undefined;
+      const reason = find(StayReasons, ({ _id }) => _id === text);
       return reason?.name ?? '';
     },
   };
@@ -346,7 +328,11 @@ class List extends Component<ListProps, ListState> {
     });
   };
 
-  handleFixSpellingSave = (spellingType: string, existingSpelling: string, newSpelling: string) => {
+  handleFixSpellingSave = (
+    spellingType: string,
+    existingSpelling: string,
+    newSpelling: string
+  ) => {
     const { fixCitySpelling, fixNameSpelling } = this.props;
     this.setState({
       spellingType: null,
@@ -381,7 +367,10 @@ class List extends Component<ListProps, ListState> {
 
     return (
       <div className="list-table-header">
-        <ListFilterComponent queryParams={queryParams} setPageParams={setPageParams} />
+        <ListFilter
+          queryParams={queryParams as ListFilterQueryParams}
+          setPageParams={setPageParams}
+        />
       </div>
     );
   };
@@ -409,12 +398,12 @@ class List extends Component<ListProps, ListState> {
 
     const viewForm =
       visitorStayId && showViewDialog ? (
-        <ViewFormComponent visitorStayId={visitorStayId} />
+        <ViewForm visitorStayId={visitorStayId} />
       ) : null;
 
     const fixSpellingForm =
       spellingType && existingSpelling && showFixSpellingDialog ? (
-        <FixSpellingComponent
+        <FixSpelling
           spellingType={spellingType}
           existingSpelling={existingSpelling}
           onSave={this.handleFixSpellingSave}
@@ -423,21 +412,21 @@ class List extends Component<ListProps, ListState> {
       ) : null;
 
     return (
-      <ReactFragment>
-        <AntTable
+      <Fragment>
+        <Table
           rowKey="_id"
           dataSource={data}
-          columns={this.getColumns()}
+          columns={this.getColumns() as any[]}
           title={this.getTableHeader}
           bordered
           size="small"
           pagination={false}
           footer={() => (
-            <AntPagination
+            <Pagination
               current={numPageIndex}
               pageSize={numPageSize}
               showSizeChanger
-              showTotal={(total: number, range: number[]) =>
+              showTotal={(total, range) =>
                 `${range[0]}-${range[1]} of ${total} items`
               }
               onChange={this.onChange}
@@ -446,24 +435,24 @@ class List extends Component<ListProps, ListState> {
             />
           )}
         />
-        <AntModal
+        <Modal
           title="Visitor Stay"
           open={showViewDialog}
           onCancel={this.handleStayDetailClose}
           width={400}
           footer={[
-            <AntButton
+            <Button
               key="close"
               type="primary"
               onClick={this.handleStayDetailClose}
             >
               Close
-            </AntButton>,
+            </Button>,
           ]}
         >
           <div>{viewForm}</div>
-        </AntModal>
-        <AntModal
+        </Modal>
+        <Modal
           title="Fix Spelling"
           open={showFixSpellingDialog}
           onCancel={this.handleFixSpellingClose}
@@ -471,40 +460,50 @@ class List extends Component<ListProps, ListState> {
           footer={null}
         >
           <div>{fixSpellingForm}</div>
-        </AntModal>
-      </ReactFragment>
+        </Modal>
+      </Fragment>
     );
   }
 }
 
-interface ListWithDataProps extends Omit<ListProps, 'fixCitySpelling' | 'fixNameSpelling' | 'pagedVisitorStays'> {
-  queryString?: string;
-}
-
-interface VisitorStaysData {
-  pagedVisitorStays?: PagedVisitorStays;
-}
+interface ListWithDataProps extends Omit<
+  ListProps,
+  'fixCitySpelling' | 'fixNameSpelling' | 'pagedVisitorStays' | 'loading'
+> {}
 
 const ListWithData = (props: ListWithDataProps) => {
-  const { queryString } = props;
-  const { data = {}, loading, ...queryResult } = useQuery(PAGED_VISITOR_STAYS as any, {
+  const { queryString = '' } = props;
+  const { data, loading } = useQuery(PAGED_VISITOR_STAYS, {
     variables: {
       queryString,
     },
   });
-  const [fixCitySpelling] = useMutation(FIX_CITY_SPELLING as any, {
+  const [fixCitySpelling] = useMutation(FIX_CITY_SPELLING, {
     refetchQueries: ['pagedSecurityVisitors', 'pagedVisitorStays'],
   });
-  const [fixNameSpelling] = useMutation(FIX_NAME_SPELLING as any, {
+  const [fixNameSpelling] = useMutation(FIX_NAME_SPELLING, {
     refetchQueries: ['pagedSecurityVisitors', 'pagedVisitorStays'],
   });
+
+  const pagedData = data?.pagedVisitorStays;
+  const rows = (pagedData?.data ?? []).filter(
+    (row): row is VisitorStay =>
+      row != null &&
+      row._id != null &&
+      row.refVisitor != null &&
+      row.refVisitor._id != null &&
+      row.refVisitor.name != null
+  );
+  const pagedVisitorStays: PagedVisitorStays = {
+    totalResults: pagedData?.totalResults ?? 0,
+    data: rows,
+  };
 
   return (
     <List
       {...props}
-      {...queryResult}
-      {...(data as VisitorStaysData)}
       loading={loading}
+      pagedVisitorStays={pagedVisitorStays}
       fixCitySpelling={fixCitySpelling}
       fixNameSpelling={fixNameSpelling}
     />

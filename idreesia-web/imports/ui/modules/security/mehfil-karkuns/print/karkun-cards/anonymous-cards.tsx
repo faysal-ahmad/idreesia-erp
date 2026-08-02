@@ -1,17 +1,21 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, type CSSProperties } from 'react';
 import Barcode from 'react-barcode';
 import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { UserOutlined } from '@ant-design/icons';
 
 import { Avatar } from 'antd';
+import type { SecurityMehfilDuty } from '/imports/ui/modules/security/common/composers';
 
 const BarcodeControl = Barcode as any;
-const AntAvatar = Avatar as any;
-const AntUserOutlined = UserOutlined as any;
-interface MehfilDuty { name?: string; urduName?: string; }
-interface CardProps { dutyName?: string; }
-interface AnonymousCardsProps { mehfilDuty?: MehfilDuty | null; showDutyNameInUrdu?: boolean; }
+
+interface CardProps {
+  dutyName?: string;
+}
+
+interface AnonymousCardsProps {
+  mehfilDuty?: SecurityMehfilDuty | null;
+  showDutyNameInUrdu?: boolean;
+}
 
 const barcodeOptions = {
   width: 1,
@@ -23,7 +27,7 @@ const barcodeOptions = {
   margin: 5,
 };
 
-const ContainerStyle = {
+const ContainerStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row wrap',
   justifyContent: 'center',
@@ -31,7 +35,7 @@ const ContainerStyle = {
   padding: '20px',
 };
 
-const ImageContainerStyle = {
+const ImageContainerStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row wrap',
   justifyContent: 'center',
@@ -42,8 +46,8 @@ const ImageContainerStyle = {
 
 export const Card = ({ dutyName }: CardProps) => {
   const karkunImage = (
-    <div style={ImageContainerStyle as any}>
-      <AntAvatar size={128} icon={<AntUserOutlined />} />
+    <div style={ImageContainerStyle}>
+      <Avatar size={128} icon={<UserOutlined />} />
     </div>
   );
 
@@ -61,26 +65,16 @@ export const Card = ({ dutyName }: CardProps) => {
   );
 };
 
-Card.propTypes = {
-  dutyName: PropTypes.string,
-};
-
-// eslint-disable-next-line react/prefer-stateless-function
 export class AnonymousCards extends Component<AnonymousCardsProps> {
-  static propTypes = {
-    mehfilDuty: PropTypes.object,
-    showDutyNameInUrdu: PropTypes.bool,
-  };
-
   render() {
     const { mehfilDuty, showDutyNameInUrdu } = this.props;
     const dutyName = showDutyNameInUrdu ? mehfilDuty?.urduName : mehfilDuty?.name;
 
     const cards: React.ReactNode[] = [];
     for (let i = 0; i < 9; i++) {
-      cards.push(<Card key={i.toString()} dutyName={dutyName} />);
+      cards.push(<Card key={i.toString()} dutyName={dutyName ?? undefined} />);
     }
 
-    return <div style={ContainerStyle as any}>{cards}</div>;
+    return <div style={ContainerStyle}>{cards}</div>;
   }
 }

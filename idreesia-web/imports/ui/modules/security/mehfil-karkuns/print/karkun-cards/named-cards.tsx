@@ -1,13 +1,31 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, type CSSProperties } from 'react';
 import Barcode from 'react-barcode';
+import type {
+  MehfilKarkunByBarcodeIdQuery,
+  MehfilKarkunsByIdsQuery,
+} from 'meteor/idreesia-common/types/client-operations';
 
 const BarcodeControl = Barcode as any;
-interface MehfilDuty { name?: string; urduName?: string; }
-interface SharedData { name?: string; imageId?: string; image?: { data?: string }; }
-interface MehfilKarkun { _id: string; dutyCardBarcodeId?: string; dutyDetail?: string; duty?: MehfilDuty | null; karkun: { sharedData: SharedData }; }
-interface CardProps { mehfilKarkun: MehfilKarkun; showDutyNameInUrdu?: boolean; }
-interface NamedCardsProps { mehfilKarkunsByIds?: MehfilKarkun[]; showDutyNameInUrdu?: boolean; }
+
+type MehfilKarkunByIds = NonNullable<
+  NonNullable<MehfilKarkunsByIdsQuery['mehfilKarkunsByIds']>[number]
+>;
+
+type MehfilKarkunByBarcode = NonNullable<
+  MehfilKarkunByBarcodeIdQuery['mehfilKarkunByBarcodeId']
+>;
+
+export type MehfilKarkunCardRecord = MehfilKarkunByIds | MehfilKarkunByBarcode;
+
+interface CardProps {
+  mehfilKarkun: MehfilKarkunCardRecord;
+  showDutyNameInUrdu?: boolean;
+}
+
+interface NamedCardsProps {
+  mehfilKarkunsByIds?: MehfilKarkunByIds[];
+  showDutyNameInUrdu?: boolean;
+}
 
 const barcodeOptions = {
   width: 1,
@@ -19,7 +37,7 @@ const barcodeOptions = {
   margin: 5,
 };
 
-const ContainerStyle = {
+const ContainerStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row wrap',
   justifyContent: 'center',
@@ -28,13 +46,13 @@ const ContainerStyle = {
 };
 
 export const Card = ({ mehfilKarkun, showDutyNameInUrdu }: CardProps) => {
-  const mehfilDuty = mehfilKarkun.duty;
+  const mehfilDuty = 'duty' in mehfilKarkun ? mehfilKarkun.duty : null;
   let cardHeading = '';
   if (mehfilDuty) {
     cardHeading = (showDutyNameInUrdu ? mehfilDuty.urduName : mehfilDuty.name) ?? '';
   }
 
-  const karkunImage = mehfilKarkun.karkun.sharedData.image ? (
+  const karkunImage = mehfilKarkun.karkun?.sharedData?.image ? (
     <img
       src={`data:image/jpeg;base64,${mehfilKarkun.karkun.sharedData.image.data}`}
       style={{ maxHeight: '100%', width: 'auto' }}
@@ -45,7 +63,7 @@ export const Card = ({ mehfilKarkun, showDutyNameInUrdu }: CardProps) => {
   );
 
   return (
-    <div key={mehfilKarkun._id} className="mehfil_card">
+    <div key={mehfilKarkun._id ?? undefined} className="mehfil_card">
       <div className="mehfil_card_heading">
         {cardHeading}
       </div>
@@ -53,31 +71,23 @@ export const Card = ({ mehfilKarkun, showDutyNameInUrdu }: CardProps) => {
         <div className="mehfil_card_subheading">{mehfilKarkun.dutyDetail}</div>
       ) : null}
       <div className="mehfil_card_picture">{karkunImage}</div>
-      <h1 className="mehfil_card_name">{mehfilKarkun.karkun.sharedData.name}</h1>
+      <h1 className="mehfil_card_name">{mehfilKarkun.karkun?.sharedData?.name}</h1>
       <div className="mehfil_card_barcode">
-        <BarcodeControl value={mehfilKarkun.dutyCardBarcodeId ?? mehfilKarkun._id} {...barcodeOptions} />
+        <BarcodeControl
+          value={mehfilKarkun.dutyCardBarcodeId ?? mehfilKarkun._id ?? ''}
+          {...barcodeOptions}
+        />
       </div>
     </div>
   );
 };
 
-Card.propTypes = {
-  mehfilKarkun: PropTypes.object,
-  showDutyNameInUrdu: PropTypes.bool,
-};
-
-// eslint-disable-next-line react/prefer-stateless-function
 export class NamedCards extends Component<NamedCardsProps> {
-  static propTypes = {
-    mehfilKarkunsByIds: PropTypes.array,
-    showDutyNameInUrdu: PropTypes.bool,
-  };
-
   render() {
     const { mehfilKarkunsByIds, showDutyNameInUrdu } = this.props;
     if (!mehfilKarkunsByIds) return null;
 
-    const cards = mehfilKarkunsByIds.map((mehfilKarkun: MehfilKarkun, index: number) => (
+    const cards = mehfilKarkunsByIds.map((mehfilKarkun, index) => (
       <Card key={index} mehfilKarkun={mehfilKarkun} showDutyNameInUrdu={showDutyNameInUrdu} />
     ));
 
@@ -86,7 +96,7 @@ export class NamedCards extends Component<NamedCardsProps> {
     while (cards.length > 0) {
       const cardsForPage = cards.splice(0, 9);
       cardContainers.push(
-        <div key={`container_${index}`} style={ContainerStyle as any}>
+        <div key={`container_${index}`} style={ContainerStyle}>
           {cardsForPage}
         </div>
       );

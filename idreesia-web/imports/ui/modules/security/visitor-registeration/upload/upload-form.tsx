@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
   InputFileField,
   FormButtonsSaveCancel,
@@ -12,18 +11,23 @@ import {
 
 import { IMPORT_SECURITY_VISITORS_CSV_DATA } from '../gql';
 
-const AntForm = Form as any;
-const FileField = InputFileField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { goBack(): void; }
-interface UploadFormProps { history: HistoryLike; }
-interface UploadValues { csv: string; }
-interface ImportResult { imported: number; ignored: number; }
+interface UploadValues {
+  csv: string;
+}
 
-const UploadForm = ({ history }: UploadFormProps) => {
+interface ImportResult {
+  imported: number;
+  ignored: number;
+}
+
+type Props = RouteComponentProps;
+
+const UploadForm = ({ history }: Props) => {
+  useBreadcrumbs(['Security', 'Visitor Registration', 'Upload']);
+
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [importSecurityVisitorsCsvData] = useMutation(
-    IMPORT_SECURITY_VISITORS_CSV_DATA as any,
+    IMPORT_SECURITY_VISITORS_CSV_DATA,
     {
       refetchQueries: ['pagedSecurityVisitors'],
     }
@@ -43,8 +47,10 @@ const UploadForm = ({ history }: UploadFormProps) => {
         csvData: csv,
       },
     })
-      .then((response: any) => {
-        const result = JSON.parse(response.data.importCsvData) as ImportResult;
+      .then((response) => {
+        const csvResult = response.data?.importSecurityVisitorsCsvData;
+        if (!csvResult) return;
+        const result = JSON.parse(csvResult) as ImportResult;
         message.success(
           `${result.imported} records were imported. ${result.ignored} were ignored.`
         );
@@ -58,28 +64,20 @@ const UploadForm = ({ history }: UploadFormProps) => {
   };
 
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <FileField
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputFileField
         accept=".csv"
         fieldName="csv"
         fieldLabel="Visitors Data"
         required
         requiredMessage="Select CSV file containing visitor data for upload."
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-UploadForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default flowRight(
-  WithBreadcrumbs(['Security', 'Visitor Registration', 'Upload'])
-)(UploadForm as any);
+export default UploadForm;

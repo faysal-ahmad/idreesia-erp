@@ -1,49 +1,35 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import gql from 'graphql-tag';
-import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
-import dayjs from 'dayjs';
+import type { TypedDocumentNode } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
+import dayjs, { type Dayjs } from 'dayjs';
 import { Button, DatePicker, Spin, Table } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 
 import {
-  flowRight,
   keyBy,
   keys,
   reverse,
   sortBy,
 } from 'meteor/idreesia-common/utilities/lodash';
+import type {
+  IssuanceFormsByMonthQuery,
+  IssuanceFormsByMonthQueryVariables,
+  LocationsByPhysicalStoreIdQuery,
+} from 'meteor/idreesia-common/types/client-operations';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 
-const AntButton = Button as any;
-const AntDatePickerMonth = DatePicker.MonthPicker as any;
-const AntSpin = Spin as any;
-const AntTable = Table as any;
-const AntLeftOutlined = LeftOutlined as any;
-const AntRightOutlined = RightOutlined as any;
-const StockItemNameComponent = StockItemName as any;
+type IssuanceForm = NonNullable<
+  NonNullable<IssuanceFormsByMonthQuery['issuanceFormsByMonth']>[number]
+>;
 
-interface LocationRecord {
-  _id: string;
-  name: string;
-}
+type IssuanceItem = NonNullable<
+  NonNullable<NonNullable<IssuanceForm['items']>[number]>
+>;
 
-interface IssuanceItem {
-  stockItemId: string;
-  quantity: number;
-  isInflow: boolean;
-  refStockItem: {
-    name: string;
-    imageId?: string;
-    categoryName?: string;
-    unitOfMeasurement?: string;
-  };
-}
-
-interface IssuanceForm {
-  locationId?: string;
-  items: IssuanceItem[];
-}
+type LocationRow = NonNullable<
+  NonNullable<LocationsByPhysicalStoreIdQuery['locationsByPhysicalStoreId']>[number]
+> & { _id: string; name: string };
 
 interface LocationSummary {
   locationId: string;
@@ -62,44 +48,64 @@ interface IssuanceSummaryItem {
 }
 
 interface ReportProps {
-  month: dayjs.Dayjs;
+  month: Dayjs;
   monthString: string;
-  physicalStoreId?: string;
-  setPageParams(params: { month: dayjs.Dayjs | null }): void;
-  loading?: boolean;
-  locations?: LocationRecord[];
-  issuanceFormsByMonth?: IssuanceForm[];
+  physicalStoreId: string;
+  setPageParams(params: { month: Dayjs | null }): void;
+  locations: LocationRow[];
 }
 
-class Report extends Component<ReportProps> {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
+const ISSUANCE_FORMS_BY_MONTH: TypedDocumentNode<
+  IssuanceFormsByMonthQuery,
+  IssuanceFormsByMonthQueryVariables
+> = gql`
+  query issuanceFormsByMonth($physicalStoreId: String!, $month: String!) {
+    issuanceFormsByMonth(physicalStoreId: $physicalStoreId, month: $month) {
+      _id
+      issueDate
+      locationId
+      items {
+        stockItemId
+        quantity
+        isInflow
+        refStockItem {
+          _id
+          name
+          imageId
+          categoryName
+          unitOfMeasurement
+        }
+      }
+    }
+  }
+`;
 
-    month: PropTypes.object,
-    monthString: PropTypes.string,
-    physicalStoreId: PropTypes.string,
-    setPageParams: PropTypes.func,
-    loading: PropTypes.bool,
-    locations: PropTypes.array,
-    issuanceFormsByMonth: PropTypes.array,
-  };
+const Report = ({
+  month,
+  monthString,
+  physicalStoreId,
+  locations,
+  setPageParams,
+}: ReportProps) => {
+  const { data, loading } = useQuery(ISSUANCE_FORMS_BY_MONTH, {
+    variables: { physicalStoreId, month: monthString },
+  });
 
-  columns: any[] = [
+  const columns: any[] = [
     {
       title: 'Item Name',
       dataIndex: 'stockItemName',
       key: 'stockItemName',
-      render: (_text: unknown, record: IssuanceSummaryItem) => {
-        const { physicalStoreId } = this.props;
-        const stockItem = {
-          _id: record.stockItemId,
-          physicalStoreId,
-          name: record.stockItemName,
-          imageId: record.stockItemImageId,
-        };
-        return <StockItemNameComponent stockItem={stockItem} />;
-      },
+      render: (_text: unknown, record: IssuanceSummaryItem) => (
+        <StockItemName
+          stockItem={{
+            _id: record.stockItemId,
+            physicalStoreId,
+            name: record.stockItemName,
+            imageId: record.stockItemImageId,
+          }}
+        />
+      ),
     },
     {
       title: 'Category',
@@ -144,172 +150,140 @@ class Report extends Component<ReportProps> {
     },
   ];
 
-  handleMonthChange = (value: dayjs.Dayjs | null) => {
-    const { setPageParams } = this.props;
+  const handleMonthChange = (value: Dayjs | null) => {
     setPageParams({
       month: value,
     });
   };
 
-  handleMonthGoBack = () => {
-    const { setPageParams, month } = this.props;
+  const handleMonthGoBack = () => {
     setPageParams({
       month: dayjs(month).subtract(1, 'months'),
     });
   };
 
-  handleMonthGoForward = () => {
-    const { setPageParams, month } = this.props;
+  const handleMonthGoForward = () => {
     setPageParams({
       month: dayjs(month).add(1, 'months'),
     });
   };
 
-  getTableHeader = () => {
-    const { month } = this.props;
-    return (
-      <div className="list-table-header">
-        <div>
-          <AntButton
-            type="primary"
-            shape="circle"
-            icon={<AntLeftOutlined />}
-            onClick={this.handleMonthGoBack}
-          />
-          &nbsp;&nbsp;
-          <AntDatePickerMonth
-            allowClear={false}
-            format="MMM, YYYY"
-            onChange={this.handleMonthChange}
-            value={month}
-          />
-          &nbsp;&nbsp;
-          <AntButton
-            type="primary"
-            shape="circle"
-            icon={<AntRightOutlined />}
-            onClick={this.handleMonthGoForward}
-          />
-        </div>
+  const getTableHeader = () => (
+    <div className="list-table-header">
+      <div>
+        <Button
+          type="primary"
+          shape="circle"
+          icon={<LeftOutlined />}
+          onClick={handleMonthGoBack}
+        />
+        &nbsp;&nbsp;
+        <DatePicker
+          picker="month"
+          allowClear={false}
+          format="MMM, YYYY"
+          onChange={handleMonthChange}
+          value={month}
+        />
+        &nbsp;&nbsp;
+        <Button
+          type="primary"
+          shape="circle"
+          icon={<RightOutlined />}
+          onClick={handleMonthGoForward}
+        />
       </div>
-    );
-  };
+    </div>
+  );
 
-  getIssuanceSummary = () => {
-    const { locations = [] } = this.props;
+  const getIssuanceSummary = () => {
     const locationsMap = keyBy(locations, '_id');
     const issuanceSummary: IssuanceSummaryItem[] = [];
     const issuanceSummaryMap: Record<string, IssuanceSummaryItem> = {};
 
-    const { issuanceFormsByMonth } = this.props;
+    const issuanceFormsByMonth = data?.issuanceFormsByMonth;
     if (!issuanceFormsByMonth) return null;
-    issuanceFormsByMonth.forEach((issuanceForm: IssuanceForm) => {
-      const { locationId, items } = issuanceForm;
-      items.forEach((item: IssuanceItem) => {
-        let summaryItem = issuanceSummaryMap[item.stockItemId];
-        if (!summaryItem) {
-          summaryItem = {
-            stockItemId: item.stockItemId,
-            stockItemName: item.refStockItem.name,
-            stockItemImageId: item.refStockItem.imageId,
-            categoryName: item.refStockItem.categoryName,
-            unitOfMeasurement: item.refStockItem.unitOfMeasurement,
-            byLocation: {},
-            quantity: 0,
-          };
 
-          issuanceSummary.push(summaryItem);
-          issuanceSummaryMap[item.stockItemId] = summaryItem;
-        }
-
-        if (item.isInflow) {
-          summaryItem.quantity -= item.quantity;
-
-          if (locationId && locationsMap[locationId]) {
-            if (!summaryItem.byLocation[locationId]) {
-              summaryItem.byLocation[locationId] = {
-                locationId,
-                locationName: locationsMap[locationId].name,
-                quantity: -item.quantity,
-              };
-            } else {
-              summaryItem.byLocation[locationId].quantity -= item.quantity;
+    issuanceFormsByMonth
+      .filter((form): form is IssuanceForm => form != null)
+      .forEach((issuanceForm) => {
+        const { locationId, items } = issuanceForm;
+        (items ?? [])
+          .filter((item): item is IssuanceItem => item != null)
+          .forEach((item) => {
+            const refStockItem = item.refStockItem;
+            if (!item.stockItemId || !refStockItem?.name) {
+              return;
             }
-          }
-        } else {
-          summaryItem.quantity += item.quantity;
 
-          if (locationId && locationsMap[locationId]) {
-            if (!summaryItem.byLocation[locationId]) {
-              summaryItem.byLocation[locationId] = {
-                locationId,
-                locationName: locationsMap[locationId].name,
-                quantity: item.quantity,
+            let summaryItem = issuanceSummaryMap[item.stockItemId];
+            if (!summaryItem) {
+              summaryItem = {
+                stockItemId: item.stockItemId,
+                stockItemName: refStockItem.name,
+                stockItemImageId: refStockItem.imageId ?? undefined,
+                categoryName: refStockItem.categoryName ?? undefined,
+                unitOfMeasurement: refStockItem.unitOfMeasurement ?? undefined,
+                byLocation: {},
+                quantity: 0,
               };
-            } else {
-              summaryItem.byLocation[locationId].quantity += item.quantity;
+
+              issuanceSummary.push(summaryItem);
+              issuanceSummaryMap[item.stockItemId] = summaryItem;
             }
-          }
-        }
+
+            const quantity = item.quantity ?? 0;
+
+            if (item.isInflow) {
+              summaryItem.quantity -= quantity;
+
+              if (locationId && locationsMap[locationId]) {
+                if (!summaryItem.byLocation[locationId]) {
+                  summaryItem.byLocation[locationId] = {
+                    locationId,
+                    locationName: locationsMap[locationId].name,
+                    quantity: -quantity,
+                  };
+                } else {
+                  summaryItem.byLocation[locationId].quantity -= quantity;
+                }
+              }
+            } else {
+              summaryItem.quantity += quantity;
+
+              if (locationId && locationsMap[locationId]) {
+                if (!summaryItem.byLocation[locationId]) {
+                  summaryItem.byLocation[locationId] = {
+                    locationId,
+                    locationName: locationsMap[locationId].name,
+                    quantity,
+                  };
+                } else {
+                  summaryItem.byLocation[locationId].quantity += quantity;
+                }
+              }
+            }
+          });
       });
-    });
 
     return reverse(sortBy(issuanceSummary, 'quantity'));
   };
 
-  render() {
-    const { loading } = this.props;
-    if (loading) {
-      return <AntSpin size="large" />;
-    }
-
-    return (
-      <AntTable
-        rowKey="stockItemId"
-        title={this.getTableHeader}
-        dataSource={this.getIssuanceSummary()}
-        columns={this.columns}
-        size="small"
-        pagination={false}
-        bordered
-      />
-    );
+  if (loading) {
+    return <Spin size="large" />;
   }
-}
 
-const listQuery = gql`
-  query issuanceFormsByMonth($physicalStoreId: String!, $month: String!) {
-    issuanceFormsByMonth(physicalStoreId: $physicalStoreId, month: $month) {
-      _id
-      issueDate
-      locationId
-      items {
-        stockItemId
-        quantity
-        isInflow
-        refStockItem {
-          _id
-          name
-          imageId
-          categoryName
-          unitOfMeasurement
-        }
-      }
-    }
-  }
-`;
+  return (
+    <Table
+      rowKey="stockItemId"
+      title={getTableHeader}
+      dataSource={getIssuanceSummary() ?? []}
+      columns={columns}
+      size="small"
+      pagination={false}
+      bordered
+    />
+  );
+};
 
-export default flowRight(
-  withQuery(listQuery, {
-    props: ({ data }: { data: Record<string, unknown> }) => ({ ...data }),
-    options: ({
-      physicalStoreId,
-      monthString,
-    }: {
-      physicalStoreId?: string;
-      monthString?: string;
-    }) => ({
-      variables: { physicalStoreId, month: monthString },
-    }),
-  })
-)(Report as any);
+export default Report;

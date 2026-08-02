@@ -1,60 +1,47 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
+
+const RouterLink = Link as any;
 import { useMutation, useQuery } from '@apollo/client/react';
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import { Button, Table, Tooltip, message } from 'antd';
+import { type History } from 'history';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import type { AllSecurityMehfilLangarDishesQuery } from 'meteor/idreesia-common/types/client-operations';
+import { Button, Table, Tooltip, message } from 'antd';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
-const listQuery = gql`
-  query allSecurityMehfilLangarDishes {
-    allSecurityMehfilLangarDishes {
-      _id
-      name
-      urduName
-      overallUsedCount
-    }
-  }
-`;
+import {
+  ALL_SECURITY_MEHFIL_LANGAR_DISHES,
+  REMOVE_SECURITY_MEHFIL_LANGAR_DISH,
+} from './gql';
 
-const removeSecurityMehfilLangarDishMutation = gql`
-  mutation removeSecurityMehfilLangarDish($_id: String!) {
-    removeSecurityMehfilLangarDish(_id: $_id)
-  }
-`;
+type LangarDishRow = NonNullable<
+  NonNullable<AllSecurityMehfilLangarDishesQuery['allSecurityMehfilLangarDishes']>[number]
+>;
 
-const AntButton = Button as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-const RouterLink = Link as any;
-interface HistoryLike { push(path: string): void; }
-interface ListProps { history: HistoryLike; }
-interface LangarDish { _id: string; name: string; urduName?: string; overallUsedCount?: number; }
-interface ListData { allSecurityMehfilLangarDishes?: LangarDish[]; }
+interface ListProps {
+  history: History;
+}
 
 const List = ({ history }: ListProps) => {
-  const { data = {} } = useQuery(listQuery as any);
-  const { allSecurityMehfilLangarDishes = [] } = data as ListData;
-  const [removeSecurityMehfilLangarDish] = useMutation(
-    removeSecurityMehfilLangarDishMutation as any,
-    {
-      refetchQueries: ['allSecurityMehfilLangarDishes'],
-    }
+  useBreadcrumbs(['Security', 'Mehfil Langar Dishes', 'List']);
+  const { data } = useQuery(ALL_SECURITY_MEHFIL_LANGAR_DISHES);
+  const allSecurityMehfilLangarDishes = (data?.allSecurityMehfilLangarDishes ?? []).filter(
+    (row): row is LangarDishRow => row != null && row._id != null
   );
+  const [removeSecurityMehfilLangarDish] = useMutation(REMOVE_SECURITY_MEHFIL_LANGAR_DISH, {
+    refetchQueries: ['allSecurityMehfilLangarDishes'],
+  });
 
   const handleNewClicked = () => {
     history.push(paths.mehfilLangarDishesNewFormPath);
   };
 
-  const handleDeleteClicked = (record: LangarDish) => {
+  const handleDeleteClicked = (record: LangarDishRow) => {
     removeSecurityMehfilLangarDish({
       variables: {
-        _id: record._id,
+        _id: record._id!,
       },
     }).catch((error: Error) => {
       message.error(error.message, 5);
@@ -66,7 +53,7 @@ const List = ({ history }: ListProps) => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, record: LangarDish) => (
+      render: (text: string, record: LangarDishRow) => (
         <RouterLink to={`${paths.mehfilLangarDishesPath}/${record._id}`}>{text}</RouterLink>
       ),
     },
@@ -77,17 +64,17 @@ const List = ({ history }: ListProps) => {
     },
     {
       key: 'action',
-      render: (_text: unknown, record: LangarDish) => {
+      render: (_text: unknown, record: LangarDishRow) => {
         if (record.overallUsedCount === 0) {
           return (
-            <AntTooltip title="Delete">
-              <AntDeleteOutlined
+            <Tooltip title="Delete">
+              <DeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleDeleteClicked(record);
                 }}
               />
-            </AntTooltip>
+            </Tooltip>
           );
         }
         return null;
@@ -96,28 +83,23 @@ const List = ({ history }: ListProps) => {
   ];
 
   return (
-    <AntTable
+    <Table
       rowKey="_id"
       dataSource={allSecurityMehfilLangarDishes}
       columns={columns}
       pagination={{ defaultPageSize: 20 }}
       bordered
       title={() => (
-        <AntButton
+        <Button
           type="primary"
-          icon={<AntPlusCircleOutlined />}
+          icon={<PlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New Langar Dish
-        </AntButton>
+        </Button>
       )}
     />
   );
 };
 
-List.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['Security', 'Mehfil Langar Dishes', 'List'])(List as any);
+export default List;

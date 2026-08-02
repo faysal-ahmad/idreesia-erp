@@ -1,67 +1,43 @@
 import React, { Fragment, useState } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
+import { type match } from 'react-router';
+import { type History } from 'history';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import {
   InputTextField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { AuditInfo } from '/imports/ui/modules/common';
+import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
-const formQuery = gql`
-  query setupSecurityMehfilDutyById($id: String!) {
-    securityMehfilDutyById(id: $id) {
-      _id
-      name
-      urduName
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
+import {
+  SETUP_SECURITY_MEHFIL_DUTY_BY_ID,
+  UPDATE_SECURITY_MEHFIL_DUTY,
+} from './gql';
 
-const formMutation = gql`
-  mutation updateSecurityMehfilDuty($id: String!, $name: String!, $urduName: String!) {
-    updateSecurityMehfilDuty(id: $id, name: $name, urduName: $urduName) {
-      _id
-      name
-      urduName
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
+interface EditFormProps {
+  match: match<{ mehfilDutyId: string }>;
+  history: History;
+}
 
-const ReactFragment = Fragment as any;
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-const AuditInfoComponent = AuditInfo as any;
-interface HistoryLike { push(path: string): void; }
-interface MatchLike { params: { mehfilDutyId: string } }
-interface EditFormProps { match: MatchLike; history: HistoryLike; }
-interface MehfilDuty { _id: string; name: string; urduName: string; }
-interface FormData { securityMehfilDutyById: MehfilDuty; }
-interface FormValues { name: string; urduName: string; }
+interface FormValues {
+  name: string;
+  urduName: string;
+}
 
 const EditForm = ({ match, history }: EditFormProps) => {
+  useBreadcrumbs(['Security', 'Mehfil Duties', 'Edit']);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { mehfilDutyId } = match.params;
-  const { loading, data } = useQuery(formQuery as any, {
+  const mehfilDutyId = match.params.mehfilDutyId;
+  const { loading, data } = useQuery(SETUP_SECURITY_MEHFIL_DUTY_BY_ID, {
     variables: { id: mehfilDutyId },
   });
-  const [updateSecurityMehfilDuty] = useMutation(formMutation as any, {
-    refetchQueries: ['allSecurityMehfilDuties'],
+  const [updateSecurityMehfilDuty] = useMutation(UPDATE_SECURITY_MEHFIL_DUTY, {
+    refetchQueries: ['setupAllSecurityMehfilDuties'],
   });
-  const securityMehfilDutyById = data ? (data as FormData).securityMehfilDutyById : null;
+  const securityMehfilDutyById = data?.securityMehfilDutyById;
 
   const handleCancel = () => {
     history.push(paths.mehfilDutiesPath);
@@ -72,7 +48,7 @@ const EditForm = ({ match, history }: EditFormProps) => {
   };
 
   const handleFinish = ({ name, urduName }: FormValues) => {
-    if (!securityMehfilDutyById) return;
+    if (!securityMehfilDutyById?._id) return;
     updateSecurityMehfilDuty({
       variables: {
         id: securityMehfilDutyById._id,
@@ -88,39 +64,33 @@ const EditForm = ({ match, history }: EditFormProps) => {
       });
   };
 
-  if (loading || !securityMehfilDutyById) return null;
+  if (loading || !securityMehfilDutyById?._id) return null;
 
   return (
-    <ReactFragment>
-      <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <TextField
+    <Fragment>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <InputTextField
           fieldName="name"
           fieldLabel="Name"
-          initialValue={securityMehfilDutyById.name}
+          initialValue={securityMehfilDutyById.name ?? undefined}
           required
           requiredMessage="Please input a name for the mehfil duty."
         />
-        <TextField
+        <InputTextField
           fieldName="urduName"
           fieldLabel="Urdu Name"
-          initialValue={securityMehfilDutyById.urduName}
+          initialValue={securityMehfilDutyById.urduName ?? undefined}
           required
           requiredMessage="Please input an urdu name for the mehfil duty."
         />
-        <SaveCancelButtons
+        <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </AntForm>
-      <AuditInfoComponent record={securityMehfilDutyById} />
-    </ReactFragment>
+      </Form>
+      <AuditInfo record={securityMehfilDutyById ?? {}} />
+    </Fragment>
   );
 };
 
-EditForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['Security', 'Mehfil Duties', 'Edit'])(EditForm as any);
+export default EditForm;

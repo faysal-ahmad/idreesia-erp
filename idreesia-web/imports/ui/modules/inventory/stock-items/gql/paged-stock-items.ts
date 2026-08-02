@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  PagedStockItemsQuery,
+  PagedStockItemsQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-export const PAGED_STOCK_ITEMS = gql`
+export const PAGED_STOCK_ITEMS: TypedDocumentNode<
+  PagedStockItemsQuery,
+  PagedStockItemsQueryVariables
+> = gql`
   query pagedStockItems($physicalStoreId: String!, $queryString: String) {
     pagedStockItems(
       physicalStoreId: $physicalStoreId

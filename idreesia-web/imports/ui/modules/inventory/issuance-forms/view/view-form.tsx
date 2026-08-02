@@ -1,30 +1,29 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { useQuery } from '@apollo/client/react';
 import { useParams } from 'react-router-dom';
+import { type RouteComponentProps } from 'react-router';
 import { Tabs } from 'antd';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { usePhysicalStore } from '/imports/ui/modules/inventory/common/hooks';
 
 import { IssuanceDetails } from './issuance-details';
 import { AttachmentsList } from './attachments-list';
 import { ISSUANCE_FORM_BY_ID } from '../gql';
 
-const AntTabs = Tabs as any;
-const AntTabPane = Tabs.TabPane as any;
-const IssuanceDetailsComponent = IssuanceDetails as any;
-const AttachmentsListComponent = AttachmentsList as any;
-interface RouteParams { formId: string; physicalStoreId: string; }
-interface IssuanceFormData { issuanceFormById: Record<string, unknown>; }
-type AnyProps = Record<string, any>;
+const TabPane = Tabs.TabPane;
 
-const ViewForm = (props: AnyProps) => {
-  const dispatch = useDispatch();
+type RouteParams = {
+  formId: string;
+  physicalStoreId: string;
+};
+
+type Props = RouteComponentProps<RouteParams>;
+
+const ViewForm = ({ history }: Props) => {
   const { formId, physicalStoreId } = useParams<RouteParams>();
   const { physicalStore } = usePhysicalStore(physicalStoreId);
-  const { data, loading } = useQuery(ISSUANCE_FORM_BY_ID as any, {
+  const { data, loading } = useQuery(ISSUANCE_FORM_BY_ID, {
     skip: !formId,
     variables: {
       _id: formId,
@@ -32,43 +31,32 @@ const ViewForm = (props: AnyProps) => {
     },
   });
 
-  useEffect(() => {
-    if (physicalStore) {
-      dispatch(
-        setBreadcrumbs(['Inventory', physicalStore.name, 'Issuance Forms', 'View'])
-      );
-    } else {
-      dispatch(setBreadcrumbs(['Inventory', 'Issuance Forms', 'View']));
-    }
-  }, [dispatch, physicalStore]);
-  
-  if (loading || !data) return null;
-  const { issuanceFormById } = data as IssuanceFormData;
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name, 'Issuance Forms', 'View']
+      : ['Inventory', 'Issuance Forms', 'View']
+  );
+
+  if (loading || !data?.issuanceFormById) {
+    return null;
+  }
+
+  const issuanceFormById = data.issuanceFormById;
 
   return (
-    <AntTabs defaultActiveKey="1">
-      <AntTabPane tab="Issuance Details" key="1">
-        <IssuanceDetailsComponent
+    <Tabs defaultActiveKey="1">
+      <TabPane tab="Issuance Details" key="1">
+        <IssuanceDetails
+          history={history}
           physicalStoreId={physicalStoreId}
           issuanceFormById={issuanceFormById}
-          {...props}
         />
-      </AntTabPane>
-      <AntTabPane tab="Attachments" key="2">
-        <AttachmentsListComponent
-          physicalStoreId={physicalStoreId}
-          issuanceFormById={issuanceFormById}
-          {...props}
-        />
-      </AntTabPane>
-    </AntTabs>
+      </TabPane>
+      <TabPane tab="Attachments" key="2">
+        <AttachmentsList issuanceFormById={issuanceFormById} />
+      </TabPane>
+    </Tabs>
   );
-};
-
-ViewForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default ViewForm;

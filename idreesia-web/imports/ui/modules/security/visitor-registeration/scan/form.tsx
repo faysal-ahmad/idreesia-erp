@@ -1,130 +1,102 @@
-import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
+import React, { Fragment, useRef, useState } from 'react';
+import { type RouteComponentProps } from 'react-router';
 import InputMask from 'react-input-mask';
 import { Button, Divider, Row, Col, message } from 'antd';
 import { SearchOutlined, UnorderedListOutlined, UserAddOutlined } from '@ant-design/icons';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
-import { ScanCnic } from '/imports/ui/modules/helpers/controls';
+import ScanCnic from '/imports/ui/modules/helpers/controls/cnic/scan-cnic';
 import SearchResult from './search-result';
 
-const ReactFragment = Fragment as any;
-const MaskedInput = InputMask as any;
-const AntButton = Button as any;
-const AntDivider = Divider as any;
-const AntRow = Row as any;
-const AntCol = Col as any;
-const AntSearchOutlined = SearchOutlined as any;
-const AntUnorderedListOutlined = UnorderedListOutlined as any;
-const AntUserAddOutlined = UserAddOutlined as any;
-const ScanCnicControl = ScanCnic as any;
-const SearchResultComponent = SearchResult as any;
-interface HistoryLike { push(path: string): void; }
-interface FormProps { history: HistoryLike; }
-interface FormState { cnicNumbers: string[]; }
+type Props = RouteComponentProps;
 
-class Form extends Component<FormProps, FormState> {
-  manualCnic: any;
-  scanCnic: any;
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-  };
+const Form = ({ history }: Props) => {
+  useBreadcrumbs(['Security', 'Visitor Registration']);
 
-  state = {
-    cnicNumbers: [],
-  };
+  const manualCnicRef = useRef<HTMLInputElement | null>(null);
+  const scanCnicRef = useRef<ScanCnic | null>(null);
+  const [cnicNumbers, setCnicNumbers] = useState<string[]>([]);
 
-  onCnicCaptured = (cnicNumbers: string[]) => {
-    this.manualCnic.value = '';
-    if (cnicNumbers.length === 0) {
+  const onCnicCaptured = (numbers: string[]) => {
+    if (manualCnicRef.current) {
+      manualCnicRef.current.value = '';
+    }
+    if (numbers.length === 0) {
       message.error('CNIC number was not recognized.', 3);
     } else {
-      this.setState({
-        cnicNumbers,
-      });
+      setCnicNumbers(numbers);
     }
   };
 
-  handleSearch = () => {
-    const { history } = this.props;
+  const handleSearch = () => {
     history.push(paths.visitorRegistrationListPath);
   };
 
-  handleNewVisitor = () => {
-    const { history } = this.props;
+  const handleNewVisitor = () => {
     history.push(paths.visitorRegistrationNewFormPath);
   };
 
-  render() {
-    const { cnicNumbers } = this.state;
-    const searchResults =
-      cnicNumbers.length > 0 ? (
-        <SearchResultComponent cnicNumbers={cnicNumbers} />
-      ) : null;
-    return (
-      <ReactFragment>
-        <AntRow type="flex" justify="space-between">
-          <AntCol order={1}>
-            <AntRow type="flex" justify="start" align="middle" gutter={16}>
-              <AntCol order={1}>Manual CNIC</AntCol>
-              <AntCol order={2}>
-                <MaskedInput
-                  mask="99999-9999999-9"
-                  ref={(manualCnic: any) => {
-                    this.manualCnic = manualCnic;
-                  }}
-                />
-              </AntCol>
-              <AntCol order={2}>
-                <AntButton
-                  icon={<AntSearchOutlined />}
-                  onClick={() => {
-                    if (this.manualCnic.value) {
-                      this.scanCnic.resetState();
-                      this.setState({
-                        cnicNumbers: [this.manualCnic.value],
-                      });
-                    }
-                  }}
-                />
-              </AntCol>
-            </AntRow>
-            <AntDivider />
-            <ScanCnicControl
-              onCnicCaptured={this.onCnicCaptured}
-              ref={(scanCnic: any) => {
-                this.scanCnic = scanCnic;
-              }}
-            />
-          </AntCol>
-          <AntCol order={2}>
-            <AntButton
-              size="large"
-              icon={<AntUnorderedListOutlined />}
-              onClick={this.handleSearch}
-            >
-              Visitors List
-            </AntButton>
-            &nbsp;
-            <AntButton
-              size="large"
-              icon={<AntUserAddOutlined />}
-              type="primary"
-              onClick={this.handleNewVisitor}
-            >
-              New Visitor Registration
-            </AntButton>
-          </AntCol>
-        </AntRow>
-        <AntRow>
-          <AntDivider />
-        </AntRow>
-        <AntRow>{searchResults}</AntRow>
-      </ReactFragment>
-    );
-  }
-}
+  const searchResults =
+    cnicNumbers.length > 0 ? (
+      <SearchResult cnicNumbers={cnicNumbers} />
+    ) : null;
 
-export default WithBreadcrumbs(['Security', 'Visitor Registration'])(Form as any);
+  return (
+    <Fragment>
+      <Row justify="space-between">
+        <Col order={1}>
+          <Row justify="start" align="middle" gutter={16}>
+            <Col order={1}>Manual CNIC</Col>
+            <Col order={2}>
+              <InputMask
+                mask="99999-9999999-9"
+                ref={manualCnicRef as React.Ref<never>}
+              />
+            </Col>
+            <Col order={2}>
+              <Button
+                icon={<SearchOutlined />}
+                onClick={() => {
+                  if (manualCnicRef.current?.value) {
+                    scanCnicRef.current?.resetState();
+                    setCnicNumbers([manualCnicRef.current.value]);
+                  }
+                }}
+              />
+            </Col>
+          </Row>
+          <Divider />
+          <ScanCnic
+            onCnicCaptured={onCnicCaptured}
+            ref={scanCnicRef}
+          />
+        </Col>
+        <Col order={2}>
+          <Button
+            size="large"
+            icon={<UnorderedListOutlined />}
+            onClick={handleSearch}
+          >
+            Visitors List
+          </Button>
+          &nbsp;
+          <Button
+            size="large"
+            icon={<UserAddOutlined />}
+            type="primary"
+            onClick={handleNewVisitor}
+          >
+            New Visitor Registration
+          </Button>
+        </Col>
+      </Row>
+      <Row>
+        <Divider />
+      </Row>
+      <Row>{searchResults}</Row>
+    </Fragment>
+  );
+};
+
+export default Form;

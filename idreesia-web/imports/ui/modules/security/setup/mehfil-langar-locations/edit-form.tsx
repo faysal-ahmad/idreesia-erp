@@ -1,69 +1,43 @@
 import React, { Fragment, useState } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
+import { type match } from 'react-router';
+import { type History } from 'history';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import {
   InputTextField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { AuditInfo } from '/imports/ui/modules/common';
+import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
-const formQuery = gql`
-  query securityMehfilLangarLocationById($id: String!) {
-    securityMehfilLangarLocationById(id: $id) {
-      _id
-      name
-      urduName
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
+import {
+  SECURITY_MEHFIL_LANGAR_LOCATION_BY_ID,
+  UPDATE_SECURITY_MEHFIL_LANGAR_LOCATION,
+} from './gql';
 
-const formMutation = gql`
-  mutation updateSecurityMehfilLangarLocation($id: String!, $name: String!, $urduName: String!) {
-    updateSecurityMehfilLangarLocation(id: $id, name: $name, urduName: $urduName) {
-      _id
-      name
-      urduName
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
+interface EditFormProps {
+  match: match<{ mehfilLangarLocationId: string }>;
+  history: History;
+}
 
-const ReactFragment = Fragment as any;
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-const AuditInfoComponent = AuditInfo as any;
-interface HistoryLike { push(path: string): void; }
-interface MatchLike { params: { mehfilLangarLocationId: string } }
-interface EditFormProps { match: MatchLike; history: HistoryLike; }
-interface LangarLocation { _id: string; name: string; urduName: string; }
-interface FormData { securityMehfilLangarLocationById: LangarLocation; }
-interface FormValues { name: string; urduName: string; }
+interface FormValues {
+  name: string;
+  urduName: string;
+}
 
 const EditForm = ({ match, history }: EditFormProps) => {
+  useBreadcrumbs(['Security', 'Mehfil Langar Locations', 'Edit']);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { mehfilLangarLocationId } = match.params;
-  const { loading, data } = useQuery(formQuery as any, {
+  const mehfilLangarLocationId = match.params.mehfilLangarLocationId;
+  const { loading, data } = useQuery(SECURITY_MEHFIL_LANGAR_LOCATION_BY_ID, {
     variables: { id: mehfilLangarLocationId },
   });
-  const [updateSecurityMehfilLangarLocation] = useMutation(formMutation as any, {
+  const [updateSecurityMehfilLangarLocation] = useMutation(UPDATE_SECURITY_MEHFIL_LANGAR_LOCATION, {
     refetchQueries: ['allSecurityMehfilLangarLocations'],
   });
-  const securityMehfilLangarLocationById = data
-    ? (data as FormData).securityMehfilLangarLocationById
-    : null;
+  const securityMehfilLangarLocationById = data?.securityMehfilLangarLocationById;
 
   const handleCancel = () => {
     history.push(paths.mehfilLangarLocationsPath);
@@ -74,7 +48,7 @@ const EditForm = ({ match, history }: EditFormProps) => {
   };
 
   const handleFinish = ({ name, urduName }: FormValues) => {
-    if (!securityMehfilLangarLocationById) return;
+    if (!securityMehfilLangarLocationById?._id) return;
     updateSecurityMehfilLangarLocation({
       variables: {
         id: securityMehfilLangarLocationById._id,
@@ -90,39 +64,33 @@ const EditForm = ({ match, history }: EditFormProps) => {
       });
   };
 
-  if (loading || !securityMehfilLangarLocationById) return null;
+  if (loading || !securityMehfilLangarLocationById?._id) return null;
 
   return (
-    <ReactFragment>
-      <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <TextField
+    <Fragment>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <InputTextField
           fieldName="name"
           fieldLabel="Name"
-          initialValue={securityMehfilLangarLocationById.name}
+          initialValue={securityMehfilLangarLocationById.name ?? undefined}
           required
           requiredMessage="Please input a name for the langar location."
         />
-        <TextField
+        <InputTextField
           fieldName="urduName"
           fieldLabel="Urdu Name"
-          initialValue={securityMehfilLangarLocationById.urduName}
+          initialValue={securityMehfilLangarLocationById.urduName ?? undefined}
           required
           requiredMessage="Please input an urdu name for the langar location."
         />
-        <SaveCancelButtons
+        <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </AntForm>
-      <AuditInfoComponent record={securityMehfilLangarLocationById} />
-    </ReactFragment>
+      </Form>
+      <AuditInfo record={securityMehfilLangarLocationById ?? {}} />
+    </Fragment>
   );
 };
 
-EditForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['Security', 'Mehfil Langar Locations', 'Edit'])(EditForm as any);
+export default EditForm;

@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client/react';
+import { type History } from 'history';
 import {
   Button,
   Popconfirm,
@@ -16,7 +15,8 @@ import {
   SyncOutlined,
 } from '@ant-design/icons';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import type { VendorsByPhysicalStoreIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import { usePhysicalStore } from '/imports/ui/modules/inventory/common/hooks';
 
@@ -25,72 +25,44 @@ import {
   VENDORS_BY_PHYSICAL_STORE_ID,
 } from './gql';
 
-const AntButton = Button as any;
-const AntPopconfirm = Popconfirm as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-const AntSyncOutlined = SyncOutlined as any;
 const RouterLink = Link as any;
 
-interface RouteParams {
-  physicalStoreId: string;
-}
-
-interface HistoryLike {
-  push(path: string): void;
-}
-
 interface ListProps {
-  history: HistoryLike;
+  history: History;
 }
 
-interface Vendor {
-  _id: string;
-  name: string;
-  contactPerson?: string;
-  contactNumber?: string;
-  address?: string;
-  usageCount?: number;
-}
-
-interface VendorsData {
-  vendorsByPhysicalStoreId: Vendor[];
-}
+type VendorRow = NonNullable<
+  NonNullable<VendorsByPhysicalStoreIdQuery['vendorsByPhysicalStoreId']>[number]
+>;
 
 const List = ({ history }: ListProps) => {
-  const dispatch = useDispatch();
-  const { physicalStoreId } = useParams<RouteParams>();
-  const { physicalStore } = usePhysicalStore(physicalStoreId);
-  const [removeVendor] = useMutation(REMOVE_VENDOR as any, {
+  const { physicalStoreId } = useParams<{ physicalStoreId: string }>();
+  const { physicalStore } = usePhysicalStore(physicalStoreId!);
+
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name ?? '', 'Setup', 'Vendors', 'List']
+      : ['Inventory', 'Setup', 'Vendors', 'List']
+  );
+
+  const [removeVendor] = useMutation(REMOVE_VENDOR, {
     refetchQueries: [{
-      query: VENDORS_BY_PHYSICAL_STORE_ID as any,
+      query: VENDORS_BY_PHYSICAL_STORE_ID,
       variables: {
         physicalStoreId,
       },
     }],
   });
-  
-  useEffect(() => {
-    if (physicalStore) {
-      dispatch(
-        setBreadcrumbs(['Inventory', physicalStore.name, 'Setup', 'Vendors', 'List'])
-      );
-    } else {
-      dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Vendors', 'List']));
-    }
-  }, [dispatch, physicalStore]);
 
   const handleNewClicked = () => {
-    history.push(paths.vendorsNewFormPath(physicalStoreId));
+    history.push(paths.vendorsNewFormPath(physicalStoreId!));
   };
 
-  const handleDeleteClicked = (vendor: Vendor) => {
+  const handleDeleteClicked = (vendor: VendorRow) => {
     removeVendor({
       variables: {
-        _id: vendor._id,
-        physicalStoreId,
+        _id: vendor._id!,
+        physicalStoreId: physicalStoreId!,
       },
     })
       .then(() => {
@@ -106,11 +78,11 @@ const List = ({ history }: ListProps) => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, record: Vendor) => (
+      render: (text: string, record: VendorRow) => (
         <RouterLink
           to={`${paths.vendorsEditFormPath(
-            physicalStoreId,
-            record._id
+            physicalStoreId!,
+            record._id!
           )}`}
         >
           {text}
@@ -135,13 +107,13 @@ const List = ({ history }: ListProps) => {
     {
       title: 'Actions',
       key: 'action',
-      render: (_text: unknown, record: Vendor) => {
+      render: (_text: unknown, record: VendorRow) => {
         const { usageCount } = record;
 
         if (usageCount === 0) {
           return (
             <div className="list-actions-column">
-              <AntPopconfirm
+              <Popconfirm
                 title="Are you sure you want to delete this vendor?"
                 onConfirm={() => {
                   handleDeleteClicked(record);
@@ -149,10 +121,10 @@ const List = ({ history }: ListProps) => {
                 okText="Yes"
                 cancelText="No"
               >
-                <AntTooltip title="Delete">
-                  <AntDeleteOutlined className="list-actions-icon" />
-                </AntTooltip>
-              </AntPopconfirm>
+                <Tooltip title="Delete">
+                  <DeleteOutlined className="list-actions-icon" />
+                </Tooltip>
+              </Popconfirm>
             </div>
           );
         }
@@ -162,37 +134,35 @@ const List = ({ history }: ListProps) => {
     },
   ];
 
-  const { data, loading, refetch } = useQuery(
-    VENDORS_BY_PHYSICAL_STORE_ID as any,
-    {
-      variables: { physicalStoreId },
-    }
-  );
-  
+  const { data, loading, refetch } = useQuery(VENDORS_BY_PHYSICAL_STORE_ID, {
+    variables: { physicalStoreId: physicalStoreId! },
+  });
+
   if (loading) return null;
-  const { vendorsByPhysicalStoreId } = (data as VendorsData) ?? {
-    vendorsByPhysicalStoreId: [],
-  };
+
+  const vendorsByPhysicalStoreId = (data?.vendorsByPhysicalStoreId ?? []).filter(
+    (row): row is VendorRow => row != null
+  );
 
   return (
-    <AntTable
+    <Table
       rowKey="_id"
       dataSource={vendorsByPhysicalStoreId}
       columns={columns}
       bordered
       title={() => (
         <div className="list-table-header">
-          <AntButton
+          <Button
             type="primary"
-            icon={<AntPlusCircleOutlined />}
+            icon={<PlusCircleOutlined />}
             onClick={handleNewClicked}
           >
             New Vendor
-          </AntButton>
+          </Button>
           <div className="list-table-header-section">
-            <AntButton
+            <Button
               size="large"
-              icon={<AntSyncOutlined />}
+              icon={<SyncOutlined />}
               onClick={() => { refetch(); }}
             />
           </div>
@@ -200,11 +170,6 @@ const List = ({ history }: ListProps) => {
       )}
     />
   );
-};
-
-List.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default List;

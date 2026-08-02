@@ -1,39 +1,38 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties } from 'react';
 import gql from 'graphql-tag';
-import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import type { TypedDocumentNode } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
+import { useParams } from 'react-router-dom';
 import { Badge, Descriptions, Spin } from 'antd';
+import type {
+  InventoryStatisticsQuery,
+  InventoryStatisticsQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-} from '/imports/ui/modules/inventory/common/composers';
+  usePhysicalStore,
+} from '/imports/ui/modules/inventory/common/hooks';
 
-const AntBadge = Badge as any;
-const AntDescriptions = Descriptions as any;
-const AntDescriptionsItem = Descriptions.Item as any;
-const AntSpin = Spin as any;
-
-interface InventoryStatistics {
-  itemsWithImages: number;
-  itemsWithoutImages: number;
-  itemsWithPositiveStockLevel: number;
-  itemsWithLessThanMinStockLevel: number;
-  itemsWithNegativeStockLevel: number;
-  itemsVerifiedLessThanThreeMonthsAgo: number;
-  itemsVerifiedThreeToSixMonthsAgo: number;
-  itemsVerifiedMoreThanSixMonthsAgo: number;
+interface RouteParams {
+  physicalStoreId: string;
 }
 
-interface DashboardProps {
-  loading?: boolean;
-  physicalStoreId?: string;
-  inventoryStatistics?: InventoryStatistics;
-}
+type InventoryStatistics = NonNullable<
+  InventoryStatisticsQuery['inventoryStatistics']
+>;
+
+const countBadgeStyle: CSSProperties = {
+  backgroundColor: '#fff',
+  color: '#000',
+  fontWeight: 'bold',
+};
+
+const greenBadgeStyle: CSSProperties = { backgroundColor: 'green' };
+const redBadgeStyle: CSSProperties = { backgroundColor: 'red' };
+const orangeBadgeStyle: CSSProperties = { backgroundColor: 'orange' };
 
 const emptyStatistics: InventoryStatistics = {
+  physicalStoreId: null,
   itemsWithImages: 0,
   itemsWithoutImages: 0,
   itemsWithPositiveStockLevel: 0,
@@ -44,115 +43,10 @@ const emptyStatistics: InventoryStatistics = {
   itemsVerifiedMoreThanSixMonthsAgo: 0,
 };
 
-const Dashboard = (props: DashboardProps) => {
-  const { loading, inventoryStatistics } = props;
-  if (loading) {
-    return <AntSpin size="large" />;
-  }
-  const statistics = inventoryStatistics ?? emptyStatistics;
-
-  return (
-    <>
-      <AntDescriptions title="Stock Items" bordered>
-        <AntDescriptionsItem label="Items Count">
-          <AntBadge
-            showZero
-            overflowCount={9999}
-            style={{
-              backgroundColor: '#fff',
-              color: '#000',
-              fontWeight: 'bold',
-            }}
-            count={
-              statistics.itemsWithImages +
-              statistics.itemsWithoutImages
-            }
-          />
-        </AntDescriptionsItem>
-        <AntDescriptionsItem label="With Images">
-          <AntBadge
-            showZero
-            overflowCount={9999}
-            style={{ backgroundColor: 'green' }}
-            count={statistics.itemsWithImages}
-          />
-        </AntDescriptionsItem>
-        <AntDescriptionsItem label="Without Images">
-          <AntBadge
-            showZero
-            overflowCount={9999}
-            style={{ backgroundColor: 'red' }}
-            count={statistics.itemsWithoutImages}
-          />
-        </AntDescriptionsItem>
-      </AntDescriptions>
-      <div style={{ height: '20px' }} />
-      <AntDescriptions title="Stock Levels" bordered>
-        <AntDescriptionsItem label="Positive">
-          <AntBadge
-            showZero
-            overflowCount={9999}
-            style={{ backgroundColor: 'green' }}
-            count={statistics.itemsWithPositiveStockLevel}
-          />
-        </AntDescriptionsItem>
-        <AntDescriptionsItem label="Less than minimum">
-          <AntBadge
-            showZero
-            overflowCount={9999}
-            style={{ backgroundColor: 'orange' }}
-            count={statistics.itemsWithLessThanMinStockLevel}
-          />
-        </AntDescriptionsItem>
-        <AntDescriptionsItem label="Negative">
-          <AntBadge
-            showZero
-            overflowCount={9999}
-            style={{ backgroundColor: 'red' }}
-            count={statistics.itemsWithNegativeStockLevel}
-          />
-        </AntDescriptionsItem>
-      </AntDescriptions>
-      <div style={{ height: '20px' }} />
-      <AntDescriptions title="Stock Level Verified" bordered>
-        <AntDescriptionsItem label="Less than 3 months ago">
-          <AntBadge
-            showZero
-            overflowCount={9999}
-            style={{ backgroundColor: 'green' }}
-            count={statistics.itemsVerifiedLessThanThreeMonthsAgo}
-          />
-        </AntDescriptionsItem>
-        <AntDescriptionsItem label="Between 3 to 6 months ago">
-          <AntBadge
-            showZero
-            overflowCount={9999}
-            style={{ backgroundColor: 'orange' }}
-            count={statistics.itemsVerifiedThreeToSixMonthsAgo}
-          />
-        </AntDescriptionsItem>
-        <AntDescriptionsItem label="More than 6 months ago">
-          <AntBadge
-            showZero
-            overflowCount={9999}
-            style={{ backgroundColor: 'red' }}
-            count={statistics.itemsVerifiedMoreThanSixMonthsAgo}
-          />
-        </AntDescriptionsItem>
-      </AntDescriptions>
-    </>
-  );
-};
-
-Dashboard.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-  physicalStoreId: PropTypes.string,
-  loading: PropTypes.bool,
-  inventoryStatistics: PropTypes.object,
-};
-
-const query = gql`
+const INVENTORY_STATISTICS: TypedDocumentNode<
+  InventoryStatisticsQuery,
+  InventoryStatisticsQueryVariables
+> = gql`
   query inventoryStatistics($physicalStoreId: String!) {
     inventoryStatistics(physicalStoreId: $physicalStoreId) {
       physicalStoreId
@@ -168,19 +62,111 @@ const query = gql`
   }
 `;
 
-export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
-  withQuery(query, {
-    props: ({ data }: { data: Record<string, unknown> }) => ({ ...data }),
-    options: ({ physicalStoreId }: DashboardProps) => ({
-      variables: { physicalStoreId },
-    }),
-  }),
-  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: { name: string } }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Status Dashboard`;
-    }
-    return `Inventory, Status Dashboard`;
-  })
-)(Dashboard as any);
+const Dashboard = () => {
+  const { physicalStoreId } = useParams<RouteParams>();
+  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const { data, loading } = useQuery(INVENTORY_STATISTICS, {
+    variables: { physicalStoreId },
+  });
+
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name, 'Status Dashboard']
+      : ['Inventory', 'Status Dashboard']
+  );
+
+  if (loading) {
+    return <Spin size="large" />;
+  }
+
+  const statistics = data?.inventoryStatistics ?? emptyStatistics;
+  const itemsCount =
+    (statistics.itemsWithImages ?? 0) + (statistics.itemsWithoutImages ?? 0);
+
+  return (
+    <>
+      <Descriptions title="Stock Items" bordered>
+        <Descriptions.Item label="Items Count">
+          <Badge
+            showZero
+            overflowCount={9999}
+            style={countBadgeStyle}
+            count={itemsCount}
+          />
+        </Descriptions.Item>
+        <Descriptions.Item label="With Images">
+          <Badge
+            showZero
+            overflowCount={9999}
+            style={greenBadgeStyle}
+            count={statistics.itemsWithImages ?? 0}
+          />
+        </Descriptions.Item>
+        <Descriptions.Item label="Without Images">
+          <Badge
+            showZero
+            overflowCount={9999}
+            style={redBadgeStyle}
+            count={statistics.itemsWithoutImages ?? 0}
+          />
+        </Descriptions.Item>
+      </Descriptions>
+      <div style={{ height: '20px' }} />
+      <Descriptions title="Stock Levels" bordered>
+        <Descriptions.Item label="Positive">
+          <Badge
+            showZero
+            overflowCount={9999}
+            style={greenBadgeStyle}
+            count={statistics.itemsWithPositiveStockLevel ?? 0}
+          />
+        </Descriptions.Item>
+        <Descriptions.Item label="Less than minimum">
+          <Badge
+            showZero
+            overflowCount={9999}
+            style={orangeBadgeStyle}
+            count={statistics.itemsWithLessThanMinStockLevel ?? 0}
+          />
+        </Descriptions.Item>
+        <Descriptions.Item label="Negative">
+          <Badge
+            showZero
+            overflowCount={9999}
+            style={redBadgeStyle}
+            count={statistics.itemsWithNegativeStockLevel ?? 0}
+          />
+        </Descriptions.Item>
+      </Descriptions>
+      <div style={{ height: '20px' }} />
+      <Descriptions title="Stock Level Verified" bordered>
+        <Descriptions.Item label="Less than 3 months ago">
+          <Badge
+            showZero
+            overflowCount={9999}
+            style={greenBadgeStyle}
+            count={statistics.itemsVerifiedLessThanThreeMonthsAgo ?? 0}
+          />
+        </Descriptions.Item>
+        <Descriptions.Item label="Between 3 to 6 months ago">
+          <Badge
+            showZero
+            overflowCount={9999}
+            style={orangeBadgeStyle}
+            count={statistics.itemsVerifiedThreeToSixMonthsAgo ?? 0}
+          />
+        </Descriptions.Item>
+        <Descriptions.Item label="More than 6 months ago">
+          <Badge
+            showZero
+            overflowCount={9999}
+            style={redBadgeStyle}
+            count={statistics.itemsVerifiedMoreThanSixMonthsAgo ?? 0}
+          />
+        </Descriptions.Item>
+      </Descriptions>
+    </>
+  );
+};
+
+export default Dashboard;

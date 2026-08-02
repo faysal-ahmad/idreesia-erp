@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { Form, message } from 'antd';
-import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client/react';
+import { type History } from 'history';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { AuditInfo } from '/imports/ui/modules/common';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 import {
   InputTextField,
   InputTextAreaField,
@@ -21,39 +20,8 @@ import {
   UPDATE_LOCATION,
 } from './gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const TreeField = TreeSelectField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-const AuditInfoComponent = AuditInfo as any;
-
-interface RouteParams {
-  physicalStoreId: string;
-  locationId: string;
-}
-
-interface HistoryLike {
-  goBack(): void;
-}
-
 interface EditFormProps {
-  history: HistoryLike;
-}
-
-interface LocationRecord {
-  _id: string;
-  name: string;
-  parentId?: string | null;
-  description?: string;
-}
-
-interface LocationData {
-  locationById: LocationRecord;
-}
-
-interface LocationsData {
-  locationsByPhysicalStoreId: LocationRecord[];
+  history: History;
 }
 
 interface LocationFormValues {
@@ -63,45 +31,43 @@ interface LocationFormValues {
 }
 
 const EditForm = ({ history }: EditFormProps) => {
-  const dispatch = useDispatch();
-  const { physicalStoreId, locationId } = useParams<RouteParams>();
-  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const { physicalStoreId, locationId } = useParams<{
+    physicalStoreId: string;
+    locationId: string;
+  }>();
+  const { physicalStore } = usePhysicalStore(physicalStoreId!);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [updateLocation] = useMutation(UPDATE_LOCATION as any, {
+  const [updateLocation] = useMutation(UPDATE_LOCATION, {
     refetchQueries: [{
-      query: LOCATIONS_BY_PHYSICAL_STORE_ID as any,
+      query: LOCATIONS_BY_PHYSICAL_STORE_ID,
       variables: {
         physicalStoreId,
       },
     }],
   });
-  
-  useEffect(() => {
-    if (physicalStore) {
-      dispatch(
-        setBreadcrumbs(['Inventory', physicalStore.name, 'Setup', 'Locations', 'Edit'])
-      );
-    } else {
-      dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Locations', 'Edit']));
-    }
-  }, [dispatch, physicalStore]);
 
-  const { data, loading } = useQuery(LOCATION_BY_ID as any, {
-    variables: { _id: locationId, physicalStoreId },
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name ?? '', 'Setup', 'Locations', 'Edit']
+      : ['Inventory', 'Setup', 'Locations', 'Edit']
+  );
+
+  const { data, loading } = useQuery(LOCATION_BY_ID, {
+    variables: { _id: locationId!, physicalStoreId: physicalStoreId! },
   });
 
   const { data: locationsData, loading: locationsDataLoading } = useQuery(
-    LOCATIONS_BY_PHYSICAL_STORE_ID as any,
+    LOCATIONS_BY_PHYSICAL_STORE_ID,
     {
-      variables: { physicalStoreId },
+      variables: { physicalStoreId: physicalStoreId! },
     }
   );
 
   if (loading || locationsDataLoading) return null;
-  const { locationById } = (data as LocationData) ?? {};
-  const { locationsByPhysicalStoreId } = (locationsData as LocationsData) ?? {
-    locationsByPhysicalStoreId: [],
-  };
+  const locationById = data?.locationById;
+  const locationsByPhysicalStoreId = (
+    locationsData?.locationsByPhysicalStoreId ?? []
+  ).filter((row) => row != null);
   if (!locationById) return null;
 
   const handleCancel = () => {
@@ -119,8 +85,8 @@ const EditForm = ({ history }: EditFormProps) => {
   }: LocationFormValues) => {
     updateLocation({
       variables: {
-        _id: locationById._id,
-        physicalStoreId,
+        _id: locationById._id!,
+        physicalStoreId: physicalStoreId!,
         name,
         parentId: parentId || null,
         description,
@@ -137,43 +103,38 @@ const EditForm = ({ history }: EditFormProps) => {
 
   return (
     <>
-      <AntForm
+      <Form
         layout="horizontal"
         onFinish={handleFinish}
         onFieldsChange={handleFieldsChange}
       >
-        <TextField
+        <InputTextField
           fieldName="name"
           fieldLabel="Name"
-          initialValue={locationById.name}
+          initialValue={locationById.name ?? undefined}
           required
           requiredMessage="Please input a name for the location."
         />
-        <TreeField
+        <TreeSelectField
           data={locationsByPhysicalStoreId}
-          skipValue={locationById._id}
+          skipValue={locationById._id ?? undefined}
           fieldName="parentId"
           fieldLabel="Parent Location"
-          initialValue={locationById.parentId}
+          initialValue={locationById.parentId ?? undefined}
         />
-        <TextAreaField
+        <InputTextAreaField
           fieldName="description"
           fieldLabel="Description"
-          initialValue={locationById.description}
+          initialValue={locationById.description ?? undefined}
         />
-        <SaveCancelButtons
+        <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </AntForm>
-      <AuditInfoComponent record={locationById} />
+      </Form>
+      <AuditInfo record={locationById} />
     </>
   );
-};
-
-EditForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default EditForm;

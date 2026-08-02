@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  CreateSecurityVisitorMutation,
+  CreateSecurityVisitorMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const CREATE_SECURITY_VISITOR = gql`
+const CREATE_SECURITY_VISITOR: TypedDocumentNode<
+  CreateSecurityVisitorMutation,
+  CreateSecurityVisitorMutationVariables
+> = gql`
   mutation createSecurityVisitor(
     $name: String!
     $parentName: String!

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import Barcode from 'react-barcode';
 import dayjs from 'dayjs';
 
@@ -7,9 +6,7 @@ import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import { Col, Row } from 'antd';
 
-const BarcodeControl = Barcode as any;
-const AntCol = Col as any;
-const AntRow = Row as any;
+const BarcodeView = Barcode as any;
 
 const barcodeOptions = {
   width: 0.9,
@@ -22,18 +19,18 @@ const barcodeOptions = {
 };
 
 interface Visitor {
-  name: string;
-  parentName?: string;
-  city?: string;
-  country?: string;
-  image?: { data?: string } | null;
+  name?: string | null;
+  parentName?: string | null;
+  city?: string | null;
+  country?: string | null;
+  image?: { data?: string | null } | null;
 }
 
 interface VisitorStay {
-  _id: string;
-  fromDate: string | number;
-  toDate: string | number;
-  stayReason?: string;
+  _id?: string | null;
+  fromDate?: string | null;
+  toDate?: string | null;
+  stayReason?: string | null;
 }
 
 interface DutyCardProps {
@@ -42,18 +39,13 @@ interface DutyCardProps {
 }
 
 export default class DutyCard extends Component<DutyCardProps> {
-  static propTypes = {
-    visitor: PropTypes.object,
-    visitorStay: PropTypes.object,
-  };
-
   getVisitorImage = () => {
     const { visitor } = this.props;
-    const visitorImage = visitor.image ? (
+    const visitorImage = visitor.image?.data ? (
       <img
         src={`data:image/jpeg;base64,${visitor.image.data}`}
         style={{ height: 'auto', width: '100%' }}
-        alt={visitor.name}
+        alt={visitor.name ?? 'Visitor'}
       />
     ) : null;
 
@@ -77,14 +69,14 @@ export default class DutyCard extends Component<DutyCardProps> {
     return (
       <div className="visitor-duty-card-print-view">
         <div className="visitor_duty_card">
-          <AntRow justify="center">
-            <AntCol>
+          <Row justify="center">
+            <Col>
               <div className="visitor_duty_card_heading">{title}</div>
               <div className="visitor_duty_card_subheading">{subTitle}</div>
-            </AntCol>
-          </AntRow>
-          <AntRow>
-            <AntCol>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
               <div className="visitor_duty_card_content">
                 <div className="visitor_duty_card_pic">{visitorImage}</div>
                 <div>
@@ -100,12 +92,12 @@ export default class DutyCard extends Component<DutyCardProps> {
                     {visitor.city}, {visitor.country}
                   </div>
                   <div className="visitor_duty_card_item">
-                    <BarcodeControl value={visitorStay._id} {...barcodeOptions} />
+                    <BarcodeView value={visitorStay._id ?? ''} {...barcodeOptions} />
                   </div>
                 </div>
               </div>
-            </AntCol>
-          </AntRow>
+            </Col>
+          </Row>
         </div>
       </div>
     );

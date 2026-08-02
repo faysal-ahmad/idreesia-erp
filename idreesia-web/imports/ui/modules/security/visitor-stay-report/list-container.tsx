@@ -1,10 +1,7 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
+import { type RouteComponentProps } from 'react-router';
+import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
-import {
-  flowRight,
-  toSafeInteger,
-} from 'meteor/idreesia-common/utilities/lodash';
 import {
   DEFAULT_PAGE_INDEX_INT,
   DEFAULT_PAGE_SIZE_INT,
@@ -14,133 +11,115 @@ import {
   DEFAULT_SORT_BY,
 } from 'meteor/idreesia-common/constants/security/list-options';
 import {
-  WithBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
+  useBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
 
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import List from './list';
 
-interface HistoryLike { push(path: string): void; }
-interface LocationLike { pathname: string; }
-type QueryParams = Record<string, string | number | undefined>;
-type PageParams = Record<string, string | number | null | undefined>;
-interface ListContainerProps {
-  history: HistoryLike;
-  location: LocationLike;
-  queryString?: string;
-  queryParams: QueryParams;
+export interface PageParams {
+  startDate?: string | null;
+  endDate?: string | null;
+  name?: string | null;
+  city?: string | null;
+  stayReason?: string | null;
+  additionalInfo?: string | null;
+  sortBy?: string | null;
+  sortOrder?: string | null;
+  pageIndex?: string | number | null;
+  pageSize?: string | number | null;
 }
-interface VisitorRecord { _id: string; }
-const ReportList = List as any;
 
-class ListContainer extends Component<ListContainerProps> {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    queryString: PropTypes.string,
-    queryParams: PropTypes.object,
-  };
+type Props = RouteComponentProps;
 
-  setPageParams = (newParams: PageParams) => {
-    const {
-      startDate,
-      endDate,
-      name,
-      city,
-      stayReason,
-      additionalInfo,
-      sortBy,
-      sortOrder,
-      pageIndex,
-      pageSize,
-    } = newParams;
-    const { queryParams, history } = this.props;
+const ListContainer = ({ history, location }: Props) => {
+  useBreadcrumbs(['Security', "Visitor's Stay Report"]);
 
-    let startDateVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'startDate'))
-      startDateVal = startDate ?? '';
-    else startDateVal = queryParams.startDate || '';
+  const { queryString, queryParams, setPageParams } = useQueryParams({
+    history,
+    location,
+    paramNames: [
+      'startDate',
+      'endDate',
+      'name',
+      'city',
+      'stayReason',
+      'additionalInfo',
+      'sortBy',
+      'sortOrder',
+      'pageIndex',
+      'pageSize',
+    ],
+    paramDefaultValues: {
+      sortBy: DEFAULT_SORT_BY,
+      sortOrder: DEFAULT_SORT_ORDER,
+      pageIndex: DEFAULT_PAGE_INDEX_INT,
+      pageSize: DEFAULT_PAGE_SIZE_INT,
+    },
+  });
 
-    let endDateVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'endDate'))
-      endDateVal = endDate ?? '';
-    else endDateVal = queryParams.endDate || '';
+  const sortBy = (queryParams.sortBy as string) || DEFAULT_SORT_BY;
+  const sortOrder = (queryParams.sortOrder as string) || DEFAULT_SORT_ORDER;
+  const pageIndex = queryParams.pageIndex
+    ? toSafeInteger(queryParams.pageIndex)
+    : DEFAULT_PAGE_INDEX_INT;
+  const pageSize = queryParams.pageSize
+    ? toSafeInteger(queryParams.pageSize)
+    : DEFAULT_PAGE_SIZE_INT;
 
-    let nameVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'name')) nameVal = name || '';
-    else nameVal = queryParams.name || '';
-
-    let cityVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'city')) cityVal = city || '';
-    else cityVal = queryParams.city || '';
-
-    let stayReasonVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'stayReason'))
-      stayReasonVal = stayReason || '';
-    else stayReasonVal = queryParams.stayReason || '';
-
-    let additionalInfoVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'additionalInfo'))
-      additionalInfoVal = additionalInfo || '';
-    else additionalInfoVal = queryParams.additionalInfo || '';
-
-    let sortByVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'sortBy'))
-      sortByVal = sortBy || DEFAULT_SORT_BY;
-    else sortByVal = queryParams.sortByVal || DEFAULT_SORT_BY;
-
-    let sortOrderVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'sortOrder'))
-      sortOrderVal = sortOrder || DEFAULT_SORT_ORDER;
-    else sortOrderVal = queryParams.sortOrderVal || DEFAULT_SORT_ORDER;
-
-    let pageIndexVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'pageIndex'))
-      pageIndexVal = pageIndex || DEFAULT_PAGE_INDEX_INT;
-    else pageIndexVal = queryParams.pageIndex || DEFAULT_PAGE_INDEX_INT;
-
-    let pageSizeVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'pageSize'))
-      pageSizeVal = pageSize || DEFAULT_PAGE_SIZE_INT;
-    else pageSizeVal = queryParams.pageSize || DEFAULT_PAGE_SIZE_INT;
-
-    const path = `${location.pathname}?startDate=${startDateVal}&endDate=${endDateVal}&name=${nameVal}&city=${cityVal}&stayReason=${stayReasonVal}&additionalInfo=${additionalInfoVal}&sortBy=${sortByVal}&sortOrder=${sortOrderVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
-    history.push(path);
-  };
-
-  handleItemSelected = (visitor: VisitorRecord) => {
-    const { history } = this.props;
+  const handleItemSelected = (visitor: { _id: string }) => {
     history.push(paths.visitorRegistrationEditFormPath(visitor._id));
   };
 
-  render() {
-    const { queryString, queryParams } = this.props;
-    const { sortBy, sortOrder, pageIndex, pageSize } = queryParams;
-    const numPageIndex = pageIndex
-      ? toSafeInteger(pageIndex)
-      : DEFAULT_PAGE_INDEX_INT;
-    const numPageSize = pageSize
-      ? toSafeInteger(pageSize)
-      : DEFAULT_PAGE_SIZE_INT;
+  const handleSetPageParams = (newParams: PageParams) => {
+    setPageParams({
+      startDate: Object.prototype.hasOwnProperty.call(newParams, 'startDate')
+        ? newParams.startDate ?? ''
+        : String(queryParams.startDate ?? ''),
+      endDate: Object.prototype.hasOwnProperty.call(newParams, 'endDate')
+        ? newParams.endDate ?? ''
+        : String(queryParams.endDate ?? ''),
+      name: Object.prototype.hasOwnProperty.call(newParams, 'name')
+        ? newParams.name ?? ''
+        : String(queryParams.name ?? ''),
+      city: Object.prototype.hasOwnProperty.call(newParams, 'city')
+        ? newParams.city ?? ''
+        : String(queryParams.city ?? ''),
+      stayReason: Object.prototype.hasOwnProperty.call(newParams, 'stayReason')
+        ? newParams.stayReason ?? ''
+        : String(queryParams.stayReason ?? ''),
+      additionalInfo: Object.prototype.hasOwnProperty.call(newParams, 'additionalInfo')
+        ? newParams.additionalInfo ?? ''
+        : String(queryParams.additionalInfo ?? ''),
+      sortBy: Object.prototype.hasOwnProperty.call(newParams, 'sortBy')
+        ? newParams.sortBy ?? DEFAULT_SORT_BY
+        : String(queryParams.sortBy ?? DEFAULT_SORT_BY),
+      sortOrder: Object.prototype.hasOwnProperty.call(newParams, 'sortOrder')
+        ? newParams.sortOrder ?? DEFAULT_SORT_ORDER
+        : String(queryParams.sortOrder ?? DEFAULT_SORT_ORDER),
+      pageIndex: Object.prototype.hasOwnProperty.call(newParams, 'pageIndex')
+        ? newParams.pageIndex ?? DEFAULT_PAGE_INDEX_INT
+        : String(queryParams.pageIndex ?? DEFAULT_PAGE_INDEX_INT),
+      pageSize: Object.prototype.hasOwnProperty.call(newParams, 'pageSize')
+        ? newParams.pageSize ?? DEFAULT_PAGE_SIZE_INT
+        : String(queryParams.pageSize ?? DEFAULT_PAGE_SIZE_INT),
+    });
+  };
 
-    return (
-      <ReportList
-        queryString={queryString}
-        queryParams={queryParams || {}}
-        sortBy={sortBy || DEFAULT_SORT_BY}
-        sortOrder={sortOrder || DEFAULT_SORT_ORDER}
-        pageIndex={numPageIndex}
-        pageSize={numPageSize}
-        setPageParams={this.setPageParams}
-        handleItemSelected={this.handleItemSelected}
-      />
-    );
-  }
-}
+  return (
+    <List
+      queryString={queryString}
+      queryParams={queryParams}
+      sortBy={sortBy}
+      sortOrder={sortOrder}
+      pageIndex={pageIndex}
+      pageSize={pageSize}
+      setPageParams={handleSetPageParams}
+      handleItemSelected={handleItemSelected}
+    />
+  );
+};
 
-export default flowRight(
-  WithQueryParams(),
-  WithBreadcrumbs(['Security', "Visitor's Stay Report"])
-)(ListContainer as any);
+export default ListContainer;

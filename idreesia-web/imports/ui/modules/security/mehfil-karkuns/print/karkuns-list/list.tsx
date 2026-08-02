@@ -1,59 +1,31 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-
 import { Row, Table } from 'antd';
+import type { MehfilKarkunsByIdsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-const AntRow = Row as any;
-const AntTable = Table as any;
-const PersonNameComponent = PersonName as any;
-
-interface SharedData {
-  name?: string;
-  imageId?: string;
-  image?: unknown;
-  cnicNumber?: string;
-  contactNumber1?: string;
-  contactNumber2?: string;
-}
-
-interface KarkunRecord {
-  sharedData: SharedData;
-  isKarkun?: boolean;
-  karkunData?: { city?: { name?: string } };
-  visitorData?: { city?: string };
-}
-
-interface MehfilKarkun {
-  _id: string;
-  karkun: KarkunRecord;
-  duty?: { name?: string };
-  dutyDetail?: string;
-}
+type MehfilKarkun = NonNullable<
+  NonNullable<MehfilKarkunsByIdsQuery['mehfilKarkunsByIds']>[number]
+>;
 
 interface ListProps {
   karkuns?: MehfilKarkun[];
 }
 
 export class List extends Component<ListProps> {
-  static propTypes = {
-    karkuns: PropTypes.array,
-  };
-
   nameColumn = {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
     render: (_text: unknown, record: MehfilKarkun) => {
+      const image = record.karkun?.sharedData?.image;
       const personNameData = {
-        _id: record._id,
-        name: record.karkun.sharedData.name,
-        imageId: record.karkun.sharedData.imageId,
-        image: record.karkun.sharedData.image,
+        _id: record._id ?? '',
+        name: record.karkun?.sharedData?.name ?? '',
+        ...(image?.data ? { image: { data: image.data } } : {}),
       };
 
       return (
-        <PersonNameComponent
+        <PersonName
           person={personNameData}
           onPersonNameClicked={() => {}}
         />
@@ -65,10 +37,10 @@ export class List extends Component<ListProps> {
     title: 'City',
     key: 'cityCountry',
     render: (_text: unknown, record: MehfilKarkun) => {
-      if (record.karkun.isKarkun && record.karkun.karkunData?.city) {
+      if (record.karkun?.isKarkun && record.karkun.karkunData?.city) {
         return record.karkun.karkunData.city.name;
-      } else if (record.karkun.visitorData?.city) {
-        return record.karkun.visitorData?.city;
+      } else if (record.karkun?.visitorData?.city) {
+        return record.karkun.visitorData.city;
       }
 
       return '';
@@ -78,7 +50,7 @@ export class List extends Component<ListProps> {
   cnicColumn = {
     title: 'CNIC Number',
     key: 'cnicNumber',
-    render: (_text: unknown, record: MehfilKarkun) => record.karkun.sharedData?.cnicNumber,
+    render: (_text: unknown, record: MehfilKarkun) => record.karkun?.sharedData?.cnicNumber,
   };
 
   phoneNumberColumn = {
@@ -86,10 +58,10 @@ export class List extends Component<ListProps> {
     key: 'contactNumbers',
     render: (_text: unknown, record: MehfilKarkun) => {
       const numbers: React.ReactNode[] = [];
-      if (record.karkun.sharedData?.contactNumber1)
-        numbers.push(<AntRow key="1">{record.karkun.sharedData?.contactNumber1}</AntRow>);
-      if (record.karkun.sharedData.contactNumber2)
-        numbers.push(<AntRow key="2">{record.karkun.sharedData?.contactNumber2}</AntRow>);
+      if (record.karkun?.sharedData?.contactNumber1)
+        numbers.push(<Row key="1">{record.karkun.sharedData.contactNumber1}</Row>);
+      if (record.karkun?.sharedData?.contactNumber2)
+        numbers.push(<Row key="2">{record.karkun.sharedData.contactNumber2}</Row>);
 
       if (numbers.length === 0) return '';
       return <>{numbers}</>;
@@ -101,8 +73,8 @@ export class List extends Component<ListProps> {
     key: 'dutyDetails',
     render: (_text: unknown, record: MehfilKarkun) => (
       <>
-        <AntRow>{record.duty?.name}</AntRow>
-        <AntRow>{record.dutyDetail}</AntRow>
+        <Row>{record.duty?.name}</Row>
+        <Row>{record.dutyDetail}</Row>
       </>
     ),
   };
@@ -127,7 +99,7 @@ export class List extends Component<ListProps> {
     while (allKarkuns.length > 0) {
       const karkunsForPage = allKarkuns.splice(0, 10);
       lists.push(
-        <AntTable
+        <Table
           rowKey="_id"
           key={`list_${index}`}
           dataSource={karkunsForPage}

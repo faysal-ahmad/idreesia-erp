@@ -1,69 +1,35 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
+import React, { useState } from 'react';
+import { type History } from 'history';
+import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
-import numeral from 'numeral';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import type {
+  ItemCategoriesByPhysicalStoreIdQuery,
+  StockItemByIdQuery,
+} from 'meteor/idreesia-common/types/client-operations';
+import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 import {
   InputTextField,
   InputNumberField,
   SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { AuditInfo } from '/imports/ui/modules/common';
 
 import allUnitOfMeasurements from '../all-unit-of-measurements';
 import { UPDATE_STOCK_ITEM } from '../gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const NumberField = InputNumberField as any;
-const SelectInputField = SelectField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-const AuditInfoComponent = AuditInfo as any;
-
-interface HistoryLike {
-  goBack(): void;
-}
-
-interface StockItem {
-  _id: string;
-  physicalStoreId: string;
-  name: string;
-  company?: string;
-  details?: string;
-  categoryId?: string;
-  unitOfMeasurement?: string;
-  startingStockLevel?: number;
-  currentStockLevel?: number;
-  minStockLevel?: number;
-}
-
-interface ItemCategory {
+interface UnitOfMeasurement {
   _id: string;
   name: string;
 }
 
-interface SelectOption {
-  _id: string;
-  name: string;
-}
+type StockItem = NonNullable<StockItemByIdQuery['stockItemById']>;
 
-interface MutateFunction {
-  (options: { variables: Record<string, unknown> }): Promise<unknown>;
-}
-
-interface EditFormProps {
-  history: HistoryLike;
-  stockItemById: StockItem;
-  itemCategoriesByPhysicalStoreId?: ItemCategory[];
-  updateStockItem: MutateFunction;
-}
-
-interface EditFormState {
-  isFieldsTouched: boolean;
-}
+type ItemCategory = NonNullable<
+  NonNullable<
+    ItemCategoriesByPhysicalStoreIdQuery['itemCategoriesByPhysicalStoreId']
+  >[number]
+>;
 
 interface StockItemFormValues {
   name: string;
@@ -74,30 +40,27 @@ interface StockItemFormValues {
   minStockLevel?: number;
 }
 
-class EditForm extends Component<EditFormProps, EditFormState> {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    stockItemById: PropTypes.object,
-    itemCategoriesByPhysicalStoreId: PropTypes.array,
+interface Props {
+  history: History;
+  stockItemById: StockItem;
+  itemCategoriesByPhysicalStoreId: ItemCategory[];
+}
 
-    updateStockItem: PropTypes.func,
-  };
+const GeneralInfo = ({
+  history,
+  stockItemById,
+  itemCategoriesByPhysicalStoreId,
+}: Props) => {
+  const [updateStockItem] = useMutation(UPDATE_STOCK_ITEM, {
+    refetchQueries: ['pagedStockItems'],
+  });
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
 
-  state = {
-    isFieldsTouched: false,
-  };
-
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  };
-
-  handleFinish = ({
+  const handleFinish = ({
     name,
     company,
     details,
@@ -105,7 +68,8 @@ class EditForm extends Component<EditFormProps, EditFormState> {
     unitOfMeasurement,
     minStockLevel,
   }: StockItemFormValues) => {
-    const { stockItemById, updateStockItem, history } = this.props;
+    if (!stockItemById._id || !stockItemById.physicalStoreId) return;
+
     updateStockItem({
       variables: {
         _id: stockItemById._id,
@@ -113,8 +77,8 @@ class EditForm extends Component<EditFormProps, EditFormState> {
         name,
         company,
         details,
-        categoryId,
-        unitOfMeasurement,
+        categoryId: categoryId ?? '',
+        unitOfMeasurement: unitOfMeasurement ?? '',
         minStockLevel,
       },
     })
@@ -126,91 +90,79 @@ class EditForm extends Component<EditFormProps, EditFormState> {
       });
   };
 
-  render() {
-    const isFieldsTouched = this.state.isFieldsTouched;
-    const { stockItemById, itemCategoriesByPhysicalStoreId } = this.props;
+  return (
+    <>
+      <Form
+        layout="horizontal"
+        onFinish={handleFinish}
+        onFieldsChange={() => {
+          setIsFieldsTouched(true);
+        }}
+      >
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Name"
+          initialValue={stockItemById.name}
+          required
+          requiredMessage="Please input a name for the stock item."
+        />
+        <InputTextField
+          fieldName="company"
+          fieldLabel="Company"
+          initialValue={stockItemById.company}
+          required={false}
+        />
+        <InputTextField
+          fieldName="details"
+          fieldLabel="Details"
+          initialValue={stockItemById.details}
+          required={false}
+        />
+        <SelectField<ItemCategory>
+          data={itemCategoriesByPhysicalStoreId}
+          getDataValue={({ _id }) => _id ?? ''}
+          getDataText={({ name }) => name ?? ''}
+          fieldName="categoryId"
+          fieldLabel="Category"
+          required
+          requiredMessage="Please select an item category."
+          initialValue={stockItemById.categoryId}
+        />
+        <SelectField<UnitOfMeasurement>
+          data={allUnitOfMeasurements}
+          getDataValue={({ _id }) => _id}
+          getDataText={({ name }) => name}
+          fieldName="unitOfMeasurement"
+          fieldLabel="Measurement Unit"
+          required
+          requiredMessage="Please select a unit of measurement."
+          initialValue={stockItemById.unitOfMeasurement}
+        />
+        <InputNumberField
+          disabled
+          fieldName="startingStockLevel"
+          fieldLabel="Starting Stock Level"
+          initialValue={stockItemById.startingStockLevel}
+        />
+        <InputNumberField
+          disabled
+          fieldName="currentStockLevel"
+          fieldLabel="Current Stock Level"
+          initialValue={stockItemById.currentStockLevel ?? undefined}
+        />
+        <InputNumberField
+          fieldName="minStockLevel"
+          fieldLabel="Min Stock Level"
+          initialValue={stockItemById.minStockLevel}
+        />
+        <FormButtonsSaveCancel
+          handleCancel={handleCancel}
+          isFieldsTouched={isFieldsTouched}
+        />
+      </Form>
+      <AuditInfo record={stockItemById} />
+    </>
+  );
+};
 
-    return (
-      <>
-        <AntForm
-          layout="horizontal"
-          onFinish={this.handleFinish}
-          onFieldsChange={this.handleFieldsChange}
-        >
-          <TextField
-            fieldName="name"
-            fieldLabel="Name"
-            initialValue={stockItemById.name}
-            required
-            requiredMessage="Please input a name for the stock item."
-          />
-          <TextField
-            fieldName="company"
-            fieldLabel="Company"
-            initialValue={stockItemById.company}
-            required={false}
-          />
-          <TextField
-            fieldName="details"
-            fieldLabel="Details"
-            initialValue={stockItemById.details}
-            required={false}
-          />
-          <SelectInputField
-            data={itemCategoriesByPhysicalStoreId ?? []}
-            getDataValue={({ _id }: SelectOption) => _id}
-            getDataText={({ name }: SelectOption) => name}
-            fieldName="categoryId"
-            fieldLabel="Category"
-            required
-            requiredMessage="Please select an item category."
-            initialValue={stockItemById.categoryId}
-          />
-          <SelectInputField
-            data={allUnitOfMeasurements}
-            getDataValue={({ _id }: SelectOption) => _id}
-            getDataText={({ name }: SelectOption) => name}
-            fieldName="unitOfMeasurement"
-            fieldLabel="Measurement Unit"
-            required
-            requiredMessage="Please select a unit of measurement."
-            initialValue={stockItemById.unitOfMeasurement}
-          />
-          <NumberField
-            disabled
-            fieldName="startingStockLevel"
-            fieldLabel="Starting Stock Level"
-            initialValue={stockItemById.startingStockLevel}
-          />
-          <NumberField
-            disabled
-            fieldName="currentStockLevel"
-            fieldLabel="Current Stock Level"
-            initialValue={numeral(stockItemById.currentStockLevel).format(
-              '0.00'
-            )}
-          />
-          <NumberField
-            fieldName="minStockLevel"
-            fieldLabel="Min Stock Level"
-            initialValue={stockItemById.minStockLevel}
-          />
-          <SaveCancelButtons
-            handleCancel={this.handleCancel}
-            isFieldsTouched={isFieldsTouched}
-          />
-        </AntForm>
-        <AuditInfoComponent record={stockItemById} />
-      </>
-    );
-  }
-}
-
-export default flowRight(
-  withMutation(UPDATE_STOCK_ITEM, {
-    name: 'updateStockItem',
-    options: {
-      refetchQueries: ['pagedStockItems'],
-    },
-  })
-)(EditForm as any);
+export default GeneralInfo;

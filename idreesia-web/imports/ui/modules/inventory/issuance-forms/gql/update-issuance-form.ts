@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  UpdateIssuanceFormMutation,
+  UpdateIssuanceFormMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-export const UPDATE_ISSUANCE_FORM = gql`
+export const UPDATE_ISSUANCE_FORM: TypedDocumentNode<
+  UpdateIssuanceFormMutation,
+  UpdateIssuanceFormMutationVariables
+> = gql`
   mutation updateIssuanceForm(
     $_id: String!
     $issueDate: String!

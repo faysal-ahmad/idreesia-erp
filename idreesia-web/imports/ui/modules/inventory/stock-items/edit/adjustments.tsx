@@ -1,145 +1,34 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
-import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
+import type { TypedDocumentNode } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { Table, Tooltip } from 'antd';
 import { FileOutlined, EditOutlined } from '@ant-design/icons';
+import { type History } from 'history';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import type {
+  StockAdjustmentsByStockItemQuery,
+  StockAdjustmentsByStockItemQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const AntFileOutlined = FileOutlined as any;
-const AntEditOutlined = EditOutlined as any;
+type AdjustmentRow = NonNullable<
+  NonNullable<
+    StockAdjustmentsByStockItemQuery['stockAdjustmentsByStockItem']
+  >[number]
+>;
 
-interface HistoryLike {
-  push(path: string): void;
+interface Props {
+  history: History;
+  physicalStoreId: string;
+  stockItemId: string;
 }
 
-interface Adjustment {
-  _id: string;
-  adjustmentDate: string;
-  quantity: number;
-  isInflow: boolean;
-  adjustmentReason?: string;
-  approvedOn?: string;
-}
-
-interface ListProps {
-  history: HistoryLike;
-  physicalStoreId?: string;
-  stockItemId?: string;
-  loading?: boolean;
-  stockAdjustmentsByStockItem?: Adjustment[];
-}
-
-class List extends Component<ListProps> {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    physicalStoreId: PropTypes.string,
-    loading: PropTypes.bool,
-    stockAdjustmentsByStockItem: PropTypes.array,
-  };
-
-  columns: any[] = [
-    {
-      title: 'Adjustment',
-      dataIndex: 'quantity',
-      key: 'quantity',
-      render: (text: number, record: Adjustment) => {
-        if (record.isInflow) {
-          return `Increased by ${text}`;
-        }
-        return `Decreased by ${text}`;
-      },
-    },
-    {
-      title: 'Adjustment Date',
-      dataIndex: 'adjustmentDate',
-      key: 'adjustmentDate',
-      render: (text: string) => dayjs(Number(text)).format('DD MMM, YYYY'),
-    },
-    {
-      title: 'Adjusted By',
-      dataIndex: ['refAdjustedBy', 'name'],
-      key: 'adjustedBy',
-    },
-    {
-      title: 'Adjusted Reason',
-      dataIndex: 'adjustmentReason',
-      key: 'adjustmentReason',
-    },
-    {
-      title: 'Actions',
-      key: 'action',
-      render: (_text: unknown, record: Adjustment) => {
-        let tooltipTitle;
-        let icon;
-
-        if (!record.approvedOn) {
-          tooltipTitle = 'Edit';
-          icon = (
-            <AntEditOutlined
-              className="list-actions-icon"
-              onClick={() => {
-                this.handleEditClicked(record);
-              }}
-            />
-          );
-        } else {
-          tooltipTitle = 'View';
-          icon = (
-            <AntFileOutlined
-              className="list-actions-icon"
-              onClick={() => {
-                this.handleViewClicked(record);
-              }}
-            />
-          );
-        }
-
-        return (
-          <div className="list-actions-column">
-            <AntTooltip title={tooltipTitle}>{icon}</AntTooltip>
-          </div>
-        );
-      },
-    },
-  ];
-
-  handleViewClicked = (adjustment: Adjustment) => {
-    const { history, physicalStoreId } = this.props;
-    history.push(
-      paths.stockAdjustmentsViewFormPath(physicalStoreId, adjustment._id)
-    );
-  };
-
-  handleEditClicked = (adjustment: Adjustment) => {
-    const { history, physicalStoreId } = this.props;
-    history.push(
-      paths.stockAdjustmentsEditFormPath(physicalStoreId, adjustment._id)
-    );
-  };
-
-  render() {
-    const { loading, stockAdjustmentsByStockItem } = this.props;
-    if (loading) return null;
-
-    return (
-      <AntTable
-        rowKey="_id"
-        dataSource={stockAdjustmentsByStockItem}
-        columns={this.columns}
-        bordered
-      />
-    );
-  }
-}
-
-const listQuery = gql`
+const STOCK_ADJUSTMENTS_BY_STOCK_ITEM: TypedDocumentNode<
+  StockAdjustmentsByStockItemQuery,
+  StockAdjustmentsByStockItemQueryVariables
+> = gql`
   query stockAdjustmentsByStockItem(
     $physicalStoreId: String!
     $stockItemId: String!
@@ -165,17 +54,106 @@ const listQuery = gql`
   }
 `;
 
-export default flowRight(
-  withQuery(listQuery, {
-    props: ({ data }: { data: Record<string, unknown> }) => ({ ...data }),
-    options: ({
-      physicalStoreId,
-      stockItemId,
-    }: {
-      physicalStoreId?: string;
-      stockItemId?: string;
-    }) => ({
-      variables: { physicalStoreId, stockItemId },
-    }),
-  })
-)(List as any);
+const Adjustments = ({ history, physicalStoreId, stockItemId }: Props) => {
+  const { data, loading } = useQuery(STOCK_ADJUSTMENTS_BY_STOCK_ITEM, {
+    variables: { physicalStoreId, stockItemId },
+    skip: !physicalStoreId || !stockItemId,
+  });
+
+  const handleViewClicked = (adjustment: AdjustmentRow) => {
+    if (!adjustment._id) return;
+    history.push(
+      paths.stockAdjustmentsViewFormPath(physicalStoreId, adjustment._id)
+    );
+  };
+
+  const handleEditClicked = (adjustment: AdjustmentRow) => {
+    if (!adjustment._id) return;
+    history.push(
+      paths.stockAdjustmentsEditFormPath(physicalStoreId, adjustment._id)
+    );
+  };
+
+  const columns: any[] = [
+    {
+      title: 'Adjustment',
+      dataIndex: 'quantity',
+      key: 'quantity',
+      render: (text: number, record: AdjustmentRow) => {
+        if (record.isInflow) {
+          return `Increased by ${text}`;
+        }
+        return `Decreased by ${text}`;
+      },
+    },
+    {
+      title: 'Adjustment Date',
+      dataIndex: 'adjustmentDate',
+      key: 'adjustmentDate',
+      render: (text: string) => dayjs(Number(text)).format('DD MMM, YYYY'),
+    },
+    {
+      title: 'Adjusted By',
+      dataIndex: ['refAdjustedBy', 'name'],
+      key: 'adjustedBy',
+    },
+    {
+      title: 'Adjusted Reason',
+      dataIndex: 'adjustmentReason',
+      key: 'adjustmentReason',
+    },
+    {
+      title: 'Actions',
+      key: 'action',
+      render: (_text: unknown, record: AdjustmentRow) => {
+        let tooltipTitle;
+        let icon;
+
+        if (!record.approvedOn) {
+          tooltipTitle = 'Edit';
+          icon = (
+            <EditOutlined
+              className="list-actions-icon"
+              onClick={() => {
+                handleEditClicked(record);
+              }}
+            />
+          );
+        } else {
+          tooltipTitle = 'View';
+          icon = (
+            <FileOutlined
+              className="list-actions-icon"
+              onClick={() => {
+                handleViewClicked(record);
+              }}
+            />
+          );
+        }
+
+        return (
+          <div className="list-actions-column">
+            <Tooltip title={tooltipTitle}>{icon}</Tooltip>
+          </div>
+        );
+      },
+    },
+  ];
+
+  if (loading) return null;
+
+  const stockAdjustmentsByStockItem = (
+    data?.stockAdjustmentsByStockItem ?? []
+  ).filter((row): row is AdjustmentRow => row != null);
+
+  return (
+    <Table
+      rowKey="_id"
+      dataSource={stockAdjustmentsByStockItem}
+      columns={columns}
+      bordered
+    />
+  );
+};
+
+export default Adjustments;

@@ -1,19 +1,21 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import dayjs from 'dayjs';
+import { type History } from 'history';
+import { type CSSProperties } from 'react';
 import { Divider, Form } from 'antd';
-
+import type { IssuanceFormByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
+
+import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 import {
   InputTextField,
   DateField,
   FormButtonsClose,
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
-import { AuditInfo } from '/imports/ui/modules/common';
 import { ItemsList } from '../../common/items-list';
 
-const FormStyle = {
+const FormStyle: CSSProperties = {
   width: '800px',
 };
 
@@ -22,114 +24,90 @@ const formItemExtendedLayout = {
   wrapperCol: { span: 20 },
 };
 
-const AntDivider = Divider as any;
-const AntForm = Form as any;
-const AntFormItem = Form.Item as any;
-const TextField = InputTextField as any;
-const IssueDateField = DateField as any;
-const CloseButton = FormButtonsClose as any;
-const TextAreaField = InputTextAreaField as any;
-const AuditInfoComponent = AuditInfo as any;
-const ItemsListComponent = ItemsList as any;
-interface HistoryLike { goBack(): void; }
-interface IssuanceForm {
-  issueDate: string;
-  refIssuedBy: { name: string };
-  refIssuedTo: { name: string };
-  handedOverTo?: string;
-  refLocation?: { name: string };
-  notes?: string;
-  items: unknown[];
-}
-interface IssuanceDetailsProps {
-  history: HistoryLike;
-  physicalStoreId?: string;
+type IssuanceForm = NonNullable<IssuanceFormByIdQuery['issuanceFormById']>;
+
+interface Props {
+  history: History;
+  physicalStoreId: string;
   issuanceFormById: IssuanceForm;
 }
 
-export class IssuanceDetails extends Component<IssuanceDetailsProps> {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    physicalStoreId: PropTypes.string,
-    issuanceFormById: PropTypes.object,
-  };
-
-  handleClose = () => {
-    const { history } = this.props;
+export const IssuanceDetails = ({
+  history,
+  physicalStoreId,
+  issuanceFormById,
+}: Props) => {
+  const handleClose = () => {
     history.goBack();
   };
 
-  render() {
-    const { issuanceFormById, physicalStoreId } = this.props;
+  const rules = [
+    {
+      required: true,
+      message: 'Please add some items.',
+    },
+  ];
 
-    const rules = [
-      {
-        required: true,
-        message: 'Please add some items.',
-      },
-    ];
+  return (
+    <>
+      <Form layout="horizontal" style={FormStyle} onFinish={noop}>
+        <DateField
+          fieldName="issueDate"
+          fieldLabel="Issue Date"
+          initialValue={dayjs(Number(issuanceFormById.issueDate))}
+          required
+          requiredMessage="Please input an issue date."
+        />
+        <InputTextField
+          fieldName="issuedBy"
+          fieldLabel="Issued By"
+          initialValue={issuanceFormById.refIssuedBy?.name ?? ''}
+          required
+          requiredMessage="Please input a name in issued by."
+        />
+        <InputTextField
+          fieldName="issuedTo"
+          fieldLabel="Issued To"
+          initialValue={issuanceFormById.refIssuedTo?.name ?? ''}
+          required
+          requiredMessage="Please input a name in issued to."
+        />
+        <InputTextField
+          fieldName="handedOverTo"
+          fieldLabel="Handed Over To / By"
+          initialValue={issuanceFormById.handedOverTo ?? undefined}
+        />
+        <InputTextField
+          fieldName="locationId"
+          fieldLabel="For Location"
+          initialValue={issuanceFormById.refLocation?.name ?? undefined}
+        />
+        <InputTextAreaField
+          fieldName="notes"
+          fieldLabel="Notes"
+          required={false}
+          initialValue={issuanceFormById.notes ?? undefined}
+        />
 
-    return (
-      <>
-        <AntForm layout="horizontal" style={FormStyle} onFinish={noop}>
-          <IssueDateField
-            fieldName="issueDate"
-            fieldLabel="Issue Date"
-            initialValue={dayjs(Number(issuanceFormById.issueDate))}
-            required
-            requiredMessage="Please input an issue date."
+        <Divider orientation="left">Issued / Returned Items</Divider>
+        <Form.Item
+          name="items"
+          initialValue={issuanceFormById.items ?? []}
+          rules={rules}
+          {...formItemExtendedLayout}
+        >
+          <ItemsList
+            readOnly
+            defaultLabel="Issued"
+            inflowLabel="Returned"
+            outflowLabel="Issued"
+            physicalStoreId={physicalStoreId}
           />
-          <TextField
-            fieldName="issuedBy"
-            fieldLabel="Issued By"
-            initialValue={issuanceFormById.refIssuedBy.name}
-            required
-            requiredMessage="Please input a name in issued by."
-          />
-          <TextField
-            fieldName="issuedTo"
-            fieldLabel="Issued To"
-            initialValue={issuanceFormById.refIssuedTo.name}
-            required
-            requiredMessage="Please input a name in issued to."
-          />
-          <TextField
-            fieldName="handedOverTo"
-            fieldLabel="Handed Over To / By"
-            initialValue={issuanceFormById.handedOverTo}
-          />
-          <TextField
-            fieldName="locationId"
-            fieldLabel="For Location"
-            initialValue={
-              issuanceFormById.refLocation
-                ? issuanceFormById.refLocation.name
-                : null
-            }
-          />
-          <TextAreaField
-            fieldName="notes"
-            fieldLabel="Notes"
-            required={false}
-            initialValue={issuanceFormById.notes}
-          />
+        </Form.Item>
 
-          <AntDivider orientation="left">Issued / Returned Items</AntDivider>
-          <AntFormItem name="items" initialValue={issuanceFormById.items} rules={rules} {...formItemExtendedLayout}>
-            <ItemsListComponent
-              readOnly
-              defaultLabel="Issued"
-              inflowLabel="Returned"
-              outflowLabel="Issued"
-              physicalStoreId={physicalStoreId}
-            />
-          </AntFormItem>
-
-          <CloseButton handleClose={this.handleClose} />
-        </AntForm>
-        <AuditInfoComponent record={issuanceFormById} />
-      </>
-    );
-  }
-}
+        <FormButtonsClose handleClose={handleClose} />
+      </Form>
+      <AuditInfo record={issuanceFormById} />
+    </>
+  );
+};

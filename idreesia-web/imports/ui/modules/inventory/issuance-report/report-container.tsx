@@ -1,95 +1,63 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import dayjs from 'dayjs';
+import React, { useState } from 'react';
+import dayjs, { type Dayjs } from 'dayjs';
+import { useParams } from 'react-router-dom';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-  WithLocationsByPhysicalStore,
-} from '/imports/ui/modules/inventory/common/composers';
+  usePhysicalStore,
+  usePhysicalStoreLocations,
+} from '/imports/ui/modules/inventory/common/hooks';
+
+import type { LocationsByPhysicalStoreIdQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import Report from './report';
 
-interface PhysicalStore {
-  name: string;
+interface RouteParams {
+  physicalStoreId: string;
 }
 
-interface LocationRecord {
-  _id: string;
-  name: string;
-}
+type LocationRow = NonNullable<
+  NonNullable<LocationsByPhysicalStoreIdQuery['locationsByPhysicalStoreId']>[number]
+> & { _id: string; name: string };
 
-interface ReportContainerProps {
-  physicalStoreId?: string;
-  physicalStoreLoading?: boolean;
-  physicalStore?: PhysicalStore;
-  locationsLoading?: boolean;
-  locationsByPhysicalStoreId?: LocationRecord[];
-}
+const ReportContainer = () => {
+  const { physicalStoreId } = useParams<RouteParams>();
+  const { physicalStore, physicalStoreLoading } = usePhysicalStore(physicalStoreId);
+  const {
+    locationsByPhysicalStoreId,
+    locationsByPhysicalStoreIdLoading,
+  } = usePhysicalStoreLocations(physicalStoreId);
+  const [month, setMonth] = useState<Dayjs>(() => dayjs());
 
-interface ReportContainerState {
-  month: dayjs.Dayjs;
-}
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name, 'Reports', 'Issuance Report']
+      : ['Inventory', 'Reports', 'Issuance Report']
+  );
 
-class ReportContainer extends Component<
-  ReportContainerProps,
-  ReportContainerState
-> {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-
-    physicalStoreId: PropTypes.string,
-    physicalStoreLoading: PropTypes.bool,
-    physicalStore: PropTypes.object,
-    locationsLoading: PropTypes.bool,
-    locationsByPhysicalStoreId: PropTypes.array,
-  };
-
-  state = {
-    month: dayjs(),
-  };
-
-  setPageParams = (pageParams: Pick<ReportContainerState, 'month'>) => {
-    this.setState(pageParams);
-  };
-
-  render() {
-    const { month } = this.state;
-    const {
-      physicalStoreId,
-      physicalStoreLoading,
-      physicalStore,
-      locationsLoading,
-      locationsByPhysicalStoreId,
-    } = this.props;
-    if (physicalStoreLoading || locationsLoading) return null;
-
-    const monthString = dayjs(month).startOf('month').format(Formats.DATE_FORMAT);
-    return (
-      <Report
-        month={month}
-        monthString={monthString}
-        physicalStoreId={physicalStoreId}
-        physicalStore={physicalStore}
-        locations={locationsByPhysicalStoreId}
-        setPageParams={this.setPageParams}
-      />
-    );
+  if (physicalStoreLoading || locationsByPhysicalStoreIdLoading) {
+    return null;
   }
-}
 
-export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
-  WithLocationsByPhysicalStore(),
-  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Reports, Issuance Report`;
-    }
-    return `Inventory, Reports, Issuance Report`;
-  })
-)(ReportContainer as any);
+  const monthString = dayjs(month).startOf('month').format(Formats.DATE_FORMAT);
+
+  return (
+    <Report
+      month={month}
+      monthString={monthString}
+      physicalStoreId={physicalStoreId}
+      locations={(locationsByPhysicalStoreId ?? []).filter(
+        (location): location is LocationRow =>
+          location != null && location._id != null && location.name != null
+      )}
+      setPageParams={({ month: nextMonth }) => {
+        if (nextMonth) {
+          setMonth(nextMonth);
+        }
+      }}
+    />
+  );
+};
+
+export default ReportContainer;

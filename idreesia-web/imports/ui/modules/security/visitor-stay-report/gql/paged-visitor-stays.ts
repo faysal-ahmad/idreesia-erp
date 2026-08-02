@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  ReportPagedVisitorStaysQuery,
+  ReportPagedVisitorStaysQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const PAGED_VISITOR_STAYS = gql`
+const PAGED_VISITOR_STAYS: TypedDocumentNode<
+  ReportPagedVisitorStaysQuery,
+  ReportPagedVisitorStaysQueryVariables
+> = gql`
   query reportPagedVisitorStays($queryString: String!) {
     pagedVisitorStays(queryString: $queryString) {
       totalResults

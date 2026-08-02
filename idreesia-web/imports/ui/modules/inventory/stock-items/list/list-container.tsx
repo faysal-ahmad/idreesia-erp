@@ -1,76 +1,39 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { type RouteComponentProps } from 'react-router';
 
+import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  flowRight,
-  toSafeInteger,
-} from 'meteor/idreesia-common/utilities/lodash';
-import {
-  WithDynamicBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
+  useDynamicBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
+import type { PagedStockItemsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
-import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-} from '/imports/ui/modules/inventory/common/composers';
+import { usePhysicalStore } from '/imports/ui/modules/inventory/common/hooks';
 
 import List from './list';
+import { type PageParams } from './list-filter';
 
-interface PhysicalStore {
-  name: string;
-}
+type StockItemRow = NonNullable<
+  NonNullable<
+    NonNullable<PagedStockItemsQuery['pagedStockItems']>['data']
+  >[number]
+>;
 
-interface HistoryLike {
-  push(path: string): void;
-}
+type Props = RouteComponentProps;
 
-interface LocationLike {
-  pathname: string;
-}
+const ListContainer = ({ history, location }: Props) => {
+  const { physicalStoreId = '' } = useParams<{ physicalStoreId: string }>();
+  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const { queryParams } = useQueryParams({ history, location });
 
-interface QueryParams {
-  categoryId?: string;
-  name?: string;
-  verifyDuration?: string;
-  stockLevel?: string;
-  pageIndex?: string | number;
-  pageSize?: string | number;
-}
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name ?? '', 'Stock Items', 'List']
+      : ['Inventory', 'Stock Items', 'List']
+  );
 
-interface StockItem {
-  _id: string;
-}
-
-interface ListContainerProps {
-  history: HistoryLike;
-  location: LocationLike;
-  queryString?: string;
-  queryParams: QueryParams;
-  physicalStoreId?: string;
-  physicalStore?: PhysicalStore;
-}
-
-interface PageParams {
-  name?: string | null;
-  categoryId?: string | null;
-  verifyDuration?: string | null;
-  stockLevel?: string | null;
-  pageIndex?: number;
-  pageSize?: number;
-}
-
-class ListContainer extends Component<ListContainerProps> {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    queryString: PropTypes.string,
-    queryParams: PropTypes.object,
-    physicalStoreId: PropTypes.string,
-    physicalStore: PropTypes.object,
-  };
-
-  setPageParams = (newParams: PageParams) => {
+  const setPageParams = (newParams: PageParams) => {
     const {
       name,
       categoryId,
@@ -79,93 +42,91 @@ class ListContainer extends Component<ListContainerProps> {
       pageIndex,
       pageSize,
     } = newParams;
-    const { queryParams, history, location } = this.props;
 
     let nameVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'name')) nameVal = name || '';
-    else nameVal = queryParams.name || '';
+    if (Object.prototype.hasOwnProperty.call(newParams, 'name')) {
+      nameVal = name || '';
+    } else {
+      nameVal = String(queryParams.name || '');
+    }
 
     let categoryIdVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'categoryId'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'categoryId')) {
       categoryIdVal = categoryId || '';
-    else categoryIdVal = queryParams.categoryId || '';
+    } else {
+      categoryIdVal = String(queryParams.categoryId || '');
+    }
 
     let verifyDurationVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'verifyDuration'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'verifyDuration')) {
       verifyDurationVal = verifyDuration || '';
-    else verifyDurationVal = queryParams.verifyDuration || '';
+    } else {
+      verifyDurationVal = String(queryParams.verifyDuration || '');
+    }
 
     let stockLevelVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'stockLevel'))
+    if (Object.prototype.hasOwnProperty.call(newParams, 'stockLevel')) {
       stockLevelVal = stockLevel || '';
-    else stockLevelVal = queryParams.stockLevel || '';
+    } else {
+      stockLevelVal = String(queryParams.stockLevel || '');
+    }
 
     let pageIndexVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'pageIndex')) pageIndexVal = pageIndex || 0;
-    else pageIndexVal = queryParams.pageIndex || 0;
+    if (Object.prototype.hasOwnProperty.call(newParams, 'pageIndex')) {
+      pageIndexVal = pageIndex ?? 0;
+    } else {
+      pageIndexVal = queryParams.pageIndex || 0;
+    }
 
     let pageSizeVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'pageSize')) pageSizeVal = pageSize || 20;
-    else pageSizeVal = queryParams.pageSize || 20;
+    if (Object.prototype.hasOwnProperty.call(newParams, 'pageSize')) {
+      pageSizeVal = pageSize ?? 20;
+    } else {
+      pageSizeVal = queryParams.pageSize || 20;
+    }
 
     const path = `${location.pathname}?name=${nameVal}&categoryId=${categoryIdVal}&verifyDuration=${verifyDurationVal}&stockLevel=${stockLevelVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
-  handleNewClicked = () => {
-    const { history, physicalStoreId } = this.props;
+  const handleNewClicked = () => {
     history.push(paths.stockItemsNewFormPath(physicalStoreId));
   };
 
-  handleItemSelected = (stockItem: StockItem) => {
-    const { history, physicalStoreId } = this.props;
+  const handleItemSelected = (stockItem: StockItemRow) => {
+    if (!stockItem._id) return;
     history.push(paths.stockItemsEditFormPath(physicalStoreId, stockItem._id));
   };
 
-  render() {
-    const { physicalStoreId } = this.props;
-    const {
-      queryParams: {
-        categoryId,
-        name,
-        verifyDuration,
-        stockLevel,
-        pageIndex,
-        pageSize,
-      },
-    } = this.props;
+  const {
+    categoryId,
+    name,
+    verifyDuration,
+    stockLevel,
+    pageIndex,
+    pageSize,
+  } = queryParams;
 
-    const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
-    const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
+  const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
+  const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
-    return (
-      <List
-        pageIndex={numPageIndex}
-        pageSize={numPageSize}
-        name={name}
-        categoryId={categoryId}
-        verifyDuration={verifyDuration}
-        stockLevel={stockLevel}
-        physicalStoreId={physicalStoreId}
-        setPageParams={this.setPageParams}
-        handleItemSelected={this.handleItemSelected}
-        showNewButton
-        showActions
-        showSelectionColumn
-        handleNewClicked={this.handleNewClicked}
-      />
-    );
-  }
-}
+  return (
+    <List
+      pageIndex={numPageIndex}
+      pageSize={numPageSize}
+      name={String(name || '')}
+      categoryId={String(categoryId || '')}
+      verifyDuration={String(verifyDuration || '')}
+      stockLevel={String(stockLevel || '')}
+      physicalStoreId={physicalStoreId}
+      setPageParams={setPageParams}
+      handleItemSelected={handleItemSelected}
+      showNewButton
+      showActions
+      showSelectionColumn
+      handleNewClicked={handleNewClicked}
+    />
+  );
+};
 
-export default flowRight(
-  WithQueryParams(),
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
-  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Stock Items, List`;
-    }
-    return `Inventory, Stock Items, List`;
-  })
-)(ListContainer as any);
+export default ListContainer;

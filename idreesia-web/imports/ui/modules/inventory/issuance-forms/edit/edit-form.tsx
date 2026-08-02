@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { useQuery } from '@apollo/client/react';
 import { useParams } from 'react-router-dom';
+import { type RouteComponentProps } from 'react-router';
 import { Tabs } from 'antd';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
   usePhysicalStore,
   usePhysicalStoreLocations,
@@ -14,20 +13,21 @@ import IssuanceDetails from './issuance-details';
 import AttachmentsList from './attachments-list';
 import { ISSUANCE_FORM_BY_ID } from '../gql';
 
-const AntTabs = Tabs as any;
-const AntTabPane = Tabs.TabPane as any;
-const IssuanceDetailsComponent = IssuanceDetails as any;
-const AttachmentsListComponent = AttachmentsList as any;
-interface RouteParams { formId: string; physicalStoreId: string; }
-interface IssuanceFormData { issuanceFormById: Record<string, unknown>; }
-type AnyProps = Record<string, any>;
+const TabPane = Tabs.TabPane;
 
-const EditForm = (props: AnyProps) => {
-  const dispatch = useDispatch();
+type RouteParams = {
+  formId: string;
+  physicalStoreId: string;
+};
+
+type Props = RouteComponentProps<RouteParams>;
+
+const EditForm = ({ history }: Props) => {
   const { formId, physicalStoreId } = useParams<RouteParams>();
   const { physicalStore, physicalStoreLoading } = usePhysicalStore(physicalStoreId);
-  const { locationsByPhysicalStoreId, locationsByPhysicalStoreIdLoading } = usePhysicalStoreLocations(physicalStoreId)
-  const { data, loading } = useQuery(ISSUANCE_FORM_BY_ID as any, {
+  const { locationsByPhysicalStoreId, locationsByPhysicalStoreIdLoading } =
+    usePhysicalStoreLocations(physicalStoreId);
+  const { data, loading } = useQuery(ISSUANCE_FORM_BY_ID, {
     skip: !formId,
     variables: {
       _id: formId,
@@ -35,53 +35,43 @@ const EditForm = (props: AnyProps) => {
     },
   });
 
-  useEffect(() => {
-    if (physicalStore) {
-      dispatch(
-        setBreadcrumbs(['Inventory', physicalStore.name, 'Issuance Forms', 'Edit'])
-      );
-    } else {
-      dispatch(setBreadcrumbs(['Inventory', 'Issuance Forms', 'Edit']));
-    }
-  }, [dispatch, physicalStore]);
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name, 'Issuance Forms', 'Edit']
+      : ['Inventory', 'Issuance Forms', 'Edit']
+  );
 
   if (
     loading ||
     physicalStoreLoading ||
     locationsByPhysicalStoreIdLoading ||
-    !data
-  ) return null;
-  const { issuanceFormById } = data as IssuanceFormData;
+    !data?.issuanceFormById
+  ) {
+    return null;
+  }
+
+  const issuanceFormById = data.issuanceFormById;
 
   return (
-    <AntTabs defaultActiveKey="1">
-      <AntTabPane tab="Issuance Details" key="1">
-        <IssuanceDetailsComponent
-          issuanceFormId={formId}
+    <Tabs defaultActiveKey="1">
+      <TabPane tab="Issuance Details" key="1">
+        <IssuanceDetails
+          history={history}
           issuanceFormById={issuanceFormById}
           physicalStoreId={physicalStoreId}
-          physicalStore={physicalStore}
-          locationsByPhysicalStoreId={locationsByPhysicalStoreId}
-          {...props}
+          locationsByPhysicalStoreId={(locationsByPhysicalStoreId ?? []).filter(
+            (location) => location != null
+          )}
         />
-      </AntTabPane>
-      <AntTabPane tab="Attachments" key="2">
-        <AttachmentsListComponent
-          issuanceFormId={formId}
-          issuanceFormById={issuanceFormById}
+      </TabPane>
+      <TabPane tab="Attachments" key="2">
+        <AttachmentsList
           physicalStoreId={physicalStoreId}
-          physicalStore={physicalStore}
-          {...props}
+          issuanceFormById={issuanceFormById}
         />
-      </AntTabPane>
-    </AntTabs>
+      </TabPane>
+    </Tabs>
   );
-};
-
-EditForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default EditForm;

@@ -1,10 +1,9 @@
-import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
-import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
+import React, { Fragment, type CSSProperties } from 'react';
+import { useMutation } from '@apollo/client/react';
 import { Row, Col, message } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
+import type { StockItemByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   TakePicture,
   UploadAttachment,
@@ -12,37 +11,20 @@ import {
 
 import { SET_STOCK_ITEM_IMAGE } from '../gql';
 
-const ReactFragment = Fragment as any;
-const AntRow = Row as any;
-const AntCol = Col as any;
-const UploadAttachmentComponent = UploadAttachment as any;
-const TakePictureComponent = TakePicture as any;
+type StockItem = NonNullable<StockItemByIdQuery['stockItemById']>;
 
-interface StockItem {
-  _id: string;
-  physicalStoreId: string;
-  imageId?: string;
-}
-
-interface MutateFunction {
-  (options: { variables: Record<string, unknown> }): Promise<unknown>;
-}
-
-interface PictureProps {
-  loading?: boolean;
+interface Props {
   stockItemById: StockItem;
-  setStockItemImage: MutateFunction;
 }
 
-class Picture extends Component<PictureProps> {
-  static propTypes = {
-    loading: PropTypes.bool,
-    stockItemById: PropTypes.object,
-    setStockItemImage: PropTypes.func,
-  };
+const Picture = ({ stockItemById }: Props) => {
+  const [setStockItemImage] = useMutation(SET_STOCK_ITEM_IMAGE, {
+    refetchQueries: ['pagedStockItems'],
+  });
 
-  updateImageId = (imageId: string) => {
-    const { stockItemById, setStockItemImage } = this.props;
+  const updateImageId = (imageId: string) => {
+    if (!stockItemById._id || !stockItemById.physicalStoreId) return;
+
     setStockItemImage({
       variables: {
         _id: stockItemById._id,
@@ -54,36 +36,27 @@ class Picture extends Component<PictureProps> {
     });
   };
 
-  render() {
-    const { stockItemById } = this.props;
-    const url = getDownloadUrl(stockItemById.imageId);
+  const url = getDownloadUrl(stockItemById.imageId);
+  const imageStyle: CSSProperties = { maxWidth: '400px' };
 
-    return (
-      <ReactFragment>
-        <AntRow>
-          <AntCol span={16}>
-            {url ? (
-              <img style={{ maxWidth: '400px' }} src={url} alt="Stock item" />
-            ) : null}
-          </AntCol>
-        </AntRow>
-        <br />
-        <AntRow>
-          <AntCol span={16}>
-            <UploadAttachmentComponent onUploadFinish={this.updateImageId} />
-            <TakePictureComponent onPictureTaken={this.updateImageId} />
-          </AntCol>
-        </AntRow>
-      </ReactFragment>
-    );
-  }
-}
+  return (
+    <Fragment>
+      <Row>
+        <Col span={16}>
+          {url ? (
+            <img style={imageStyle} src={url} alt="Stock item" />
+          ) : null}
+        </Col>
+      </Row>
+      <br />
+      <Row>
+        <Col span={16}>
+          <UploadAttachment onUploadFinish={updateImageId} />
+          <TakePicture onPictureTaken={updateImageId} />
+        </Col>
+      </Row>
+    </Fragment>
+  );
+};
 
-export default flowRight(
-  withMutation(SET_STOCK_ITEM_IMAGE, {
-    name: 'setStockItemImage',
-    options: {
-      refetchQueries: ['pagedStockItems'],
-    },
-  })
-)(Picture as any);
+export default Picture;

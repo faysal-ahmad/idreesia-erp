@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  SecurityUserByIdQuery,
+  SecurityUserByIdQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const USER_BY_ID = gql`
+const USER_BY_ID: TypedDocumentNode<
+  SecurityUserByIdQuery,
+  SecurityUserByIdQueryVariables
+> = gql`
   query securityUserById($_id: String!) {
     userById(_id: $_id) {
       _id

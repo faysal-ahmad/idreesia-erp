@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
+import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { type RouteComponentProps } from 'react-router';
+import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
   InputTextField,
   InputNumberField,
@@ -12,53 +12,16 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-  WithItemCategoriesByPhysicalStore,
-} from '/imports/ui/modules/inventory/common/composers';
+  usePhysicalStore,
+  usePhysicalStoreItemCategories,
+} from '/imports/ui/modules/inventory/common/hooks';
 
 import { CREATE_STOCK_ITEM } from './gql';
 import allUnitOfMeasurements from './all-unit-of-measurements';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const NumberField = InputNumberField as any;
-const SelectInputField = SelectField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-
-interface PhysicalStore {
-  name: string;
-}
-
-interface HistoryLike {
-  goBack(): void;
-}
-
-interface MutateFunction {
-  (options: { variables: Record<string, unknown> }): Promise<unknown>;
-}
-
-interface ItemCategory {
+interface UnitOfMeasurement {
   _id: string;
   name: string;
-}
-
-interface SelectOption {
-  _id: string;
-  name: string;
-}
-
-interface NewFormProps {
-  history: HistoryLike;
-  physicalStoreId?: string;
-  physicalStore?: PhysicalStore;
-  itemCategoriesLoading?: boolean;
-  itemCategoriesByPhysicalStoreId?: ItemCategory[];
-  createStockItem: MutateFunction;
-}
-
-interface NewFormState {
-  isFieldsTouched: boolean;
 }
 
 interface StockItemFormValues {
@@ -71,33 +34,31 @@ interface StockItemFormValues {
   currentStockLevel: number;
 }
 
-class NewForm extends Component<NewFormProps, NewFormState> {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    match: PropTypes.object,
-    physicalStoreId: PropTypes.string,
-    physicalStore: PropTypes.object,
+type Props = RouteComponentProps;
 
-    itemCategoriesLoading: PropTypes.bool,
-    itemCategoriesByPhysicalStoreId: PropTypes.array,
-    createStockItem: PropTypes.func,
-  };
+const NewForm = ({ history }: Props) => {
+  const { physicalStoreId = '' } = useParams<{ physicalStoreId: string }>();
+  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const {
+    itemCategoriesByPhysicalStoreId,
+    itemCategoriesByPhysicalStoreIdLoading,
+  } = usePhysicalStoreItemCategories(physicalStoreId);
+  const [createStockItem] = useMutation(CREATE_STOCK_ITEM, {
+    refetchQueries: ['pagedStockItems'],
+  });
+  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
 
-  state = {
-    isFieldsTouched: false,
-  };
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name ?? '', 'Stock Items', 'New']
+      : ['Inventory', 'Stock Items', 'New']
+  );
 
-  handleCancel = () => {
-    const { history } = this.props;
+  const handleCancel = () => {
     history.goBack();
   };
 
-  handleFieldsChange = () => {
-    this.setState({ isFieldsTouched: true });
-  };
-
-  handleFinish = ({
+  const handleFinish = ({
     name,
     company,
     details,
@@ -106,7 +67,6 @@ class NewForm extends Component<NewFormProps, NewFormState> {
     minStockLevel,
     currentStockLevel,
   }: StockItemFormValues) => {
-    const { history, physicalStoreId, createStockItem } = this.props;
     createStockItem({
       variables: {
         name,
@@ -127,85 +87,59 @@ class NewForm extends Component<NewFormProps, NewFormState> {
       });
   };
 
-  render() {
-    const { itemCategoriesLoading, itemCategoriesByPhysicalStoreId } =
-      this.props;
-    const isFieldsTouched = this.state.isFieldsTouched;
-    if (itemCategoriesLoading) return null;
+  if (itemCategoriesByPhysicalStoreIdLoading) return null;
 
-    return (
-      <AntForm
-        layout="horizontal"
-        onFinish={this.handleFinish}
-        onFieldsChange={this.handleFieldsChange}
-      >
-        <TextField
-          fieldName="name"
-          fieldLabel="Name"
-          required
-          requiredMessage="Please input a name for the stock item."
-        />
-        <TextField
-          fieldName="company"
-          fieldLabel="Company"
-          required={false}
-        />
-        <TextField
-          fieldName="details"
-          fieldLabel="Details"
-          required={false}
-        />
-        <SelectInputField
-          data={itemCategoriesByPhysicalStoreId ?? []}
-          getDataValue={({ _id }: SelectOption) => _id}
-          getDataText={({ name }: SelectOption) => name}
-          fieldName="categoryId"
-          fieldLabel="Category"
-          required
-          requiredMessage="Please select an item category."
-        />
-        <SelectInputField
-          data={allUnitOfMeasurements}
-          getDataValue={({ _id }: SelectOption) => _id}
-          getDataText={({ name }: SelectOption) => name}
-          fieldName="unitOfMeasurement"
-          fieldLabel="Measurement Unit"
-          required
-          requiredMessage="Please select a unit of measurement."
-        />
-        <NumberField
-          required
-          requiredMessage="Please set the current stock level."
-          fieldName="currentStockLevel"
-          fieldLabel="Current Stock Level"
-        />
-        <NumberField
-          fieldName="minStockLevel"
-          fieldLabel="Min Stock Level"
-        />
-        <SaveCancelButtons
-          handleCancel={this.handleCancel}
-          isFieldsTouched={isFieldsTouched}
-        />
-      </AntForm>
-    );
-  }
-}
+  const categories = (itemCategoriesByPhysicalStoreId ?? []).filter(
+    (category): category is NonNullable<typeof category> => category != null
+  );
 
-export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
-  WithItemCategoriesByPhysicalStore(),
-  withMutation(CREATE_STOCK_ITEM, {
-    name: 'createStockItem',
-    options: {
-      refetchQueries: ['pagedStockItems'],
-    },
-  }),
-  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Stock Items, New`;
-    }
-    return `Inventory, Stock Items, New`;
-  })
-)(NewForm as any);
+  return (
+    <Form
+      layout="horizontal"
+      onFinish={handleFinish}
+      onFieldsChange={() => {
+        setIsFieldsTouched(true);
+      }}
+    >
+      <InputTextField
+        fieldName="name"
+        fieldLabel="Name"
+        required
+        requiredMessage="Please input a name for the stock item."
+      />
+      <InputTextField fieldName="company" fieldLabel="Company" required={false} />
+      <InputTextField fieldName="details" fieldLabel="Details" required={false} />
+      <SelectField<NonNullable<(typeof categories)[number]>>
+        data={categories}
+        getDataValue={({ _id }) => _id ?? ''}
+        getDataText={({ name: categoryName }) => categoryName ?? ''}
+        fieldName="categoryId"
+        fieldLabel="Category"
+        required
+        requiredMessage="Please select an item category."
+      />
+      <SelectField<UnitOfMeasurement>
+        data={allUnitOfMeasurements}
+        getDataValue={({ _id }) => _id}
+        getDataText={({ name: unitName }) => unitName}
+        fieldName="unitOfMeasurement"
+        fieldLabel="Measurement Unit"
+        required
+        requiredMessage="Please select a unit of measurement."
+      />
+      <InputNumberField
+        required
+        requiredMessage="Please set the current stock level."
+        fieldName="currentStockLevel"
+        fieldLabel="Current Stock Level"
+      />
+      <InputNumberField fieldName="minStockLevel" fieldLabel="Min Stock Level" />
+      <FormButtonsSaveCancel
+        handleCancel={handleCancel}
+        isFieldsTouched={isFieldsTouched}
+      />
+    </Form>
+  );
+};
+
+export default NewForm;

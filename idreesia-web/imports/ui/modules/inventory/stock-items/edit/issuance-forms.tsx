@@ -1,155 +1,37 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import dayjs from 'dayjs';
 import gql from 'graphql-tag';
-import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
+import type { TypedDocumentNode } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { Table, Tooltip } from 'antd';
 import { FileOutlined, EditOutlined } from '@ant-design/icons';
+import { type History } from 'history';
 
-import { find, flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
+import type {
+  IssuanceFormsByStockItemQuery,
+  IssuanceFormsByStockItemQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const AntFileOutlined = FileOutlined as any;
-const AntEditOutlined = EditOutlined as any;
+type IssuanceFormRow = NonNullable<
+  NonNullable<IssuanceFormsByStockItemQuery['issuanceFormsByStockItem']>[number]
+>;
 
-interface HistoryLike {
-  push(path: string): void;
-}
+type FormItem = NonNullable<
+  NonNullable<NonNullable<IssuanceFormRow['items']>[number]>
+>;
 
-interface FormItem {
+interface Props {
+  history: History;
+  physicalStoreId: string;
   stockItemId: string;
-  quantity: number;
-  isInflow: boolean;
-  refStockItem: {
-    name: string;
-  };
 }
 
-interface IssuanceForm {
-  _id: string;
-  issueDate: string;
-  approvedOn?: string;
-  items: FormItem[];
-}
-
-interface ListProps {
-  history: HistoryLike;
-  physicalStoreId?: string;
-  stockItemId?: string;
-  loading?: boolean;
-  issuanceFormsByStockItem?: IssuanceForm[];
-}
-
-class List extends Component<ListProps> {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    physicalStoreId: PropTypes.string,
-    stockItemId: PropTypes.string,
-    loading: PropTypes.bool,
-    issuanceFormsByStockItem: PropTypes.array,
-  };
-
-  columns: any[] = [
-    {
-      title: 'Issue Date',
-      dataIndex: 'issueDate',
-      key: 'issueDate',
-      render: (text: string) => dayjs(Number(text)).format('DD MMM, YYYY'),
-    },
-    {
-      title: 'Issued To',
-      dataIndex: ['refIssuedTo', 'name'],
-      key: 'refIssuedTo.name',
-    },
-    {
-      title: 'For Location',
-      dataIndex: ['refLocation', 'name'],
-      key: 'refLocation.name',
-    },
-    {
-      title: 'Items',
-      dataIndex: 'items',
-      key: 'items',
-      render: (items: FormItem[]) => {
-        const { stockItemId } = this.props;
-        const item = find(items, (_item: FormItem) => _item.stockItemId === stockItemId);
-        if (!item) return '';
-        return `${item.refStockItem.name} [${item.quantity} ${
-          item.isInflow ? 'Returned' : 'Issued'
-        }]`;
-      },
-    },
-    {
-      title: 'Actions',
-      key: 'action',
-      render: (_text: unknown, record: IssuanceForm) => {
-        let tooltipTitle;
-        let icon;
-
-        if (!record.approvedOn) {
-          tooltipTitle = 'Edit';
-          icon = (
-            <AntEditOutlined
-              className="list-actions-icon"
-              onClick={() => {
-                this.handleEditClicked(record);
-              }}
-            />
-          );
-        } else {
-          tooltipTitle = 'View';
-          icon = (
-            <AntFileOutlined
-              className="list-actions-icon"
-              onClick={() => {
-                this.handleViewClicked(record);
-              }}
-            />
-          );
-        }
-
-        return (
-          <div className="list-actions-column">
-            <AntTooltip title={tooltipTitle}>{icon}</AntTooltip>
-          </div>
-        );
-      },
-    },
-  ];
-
-  handleViewClicked = (issuanceForm: IssuanceForm) => {
-    const { history, physicalStoreId } = this.props;
-    history.push(
-      paths.issuanceFormsViewFormPath(physicalStoreId, issuanceForm._id)
-    );
-  };
-
-  handleEditClicked = (issuanceForm: IssuanceForm) => {
-    const { history, physicalStoreId } = this.props;
-    history.push(
-      paths.issuanceFormsEditFormPath(physicalStoreId, issuanceForm._id)
-    );
-  };
-
-  render() {
-    const { loading, issuanceFormsByStockItem } = this.props;
-    if (loading) return null;
-
-    return (
-      <AntTable
-        rowKey="_id"
-        dataSource={issuanceFormsByStockItem}
-        columns={this.columns}
-        bordered
-      />
-    );
-  }
-}
-
-const listQuery = gql`
+const ISSUANCE_FORMS_BY_STOCK_ITEM: TypedDocumentNode<
+  IssuanceFormsByStockItemQuery,
+  IssuanceFormsByStockItemQueryVariables
+> = gql`
   query issuanceFormsByStockItem(
     $physicalStoreId: String!
     $stockItemId: String!
@@ -185,17 +67,113 @@ const listQuery = gql`
   }
 `;
 
-export default flowRight(
-  withQuery(listQuery, {
-    props: ({ data }: { data: Record<string, unknown> }) => ({ ...data }),
-    options: ({
-      physicalStoreId,
-      stockItemId,
-    }: {
-      physicalStoreId?: string;
-      stockItemId?: string;
-    }) => ({
-      variables: { physicalStoreId, stockItemId },
-    }),
-  })
-)(List as any);
+const IssuanceForms = ({ history, physicalStoreId, stockItemId }: Props) => {
+  const { data, loading } = useQuery(ISSUANCE_FORMS_BY_STOCK_ITEM, {
+    variables: { physicalStoreId, stockItemId },
+    skip: !physicalStoreId || !stockItemId,
+  });
+
+  const handleViewClicked = (issuanceForm: IssuanceFormRow) => {
+    if (!issuanceForm._id) return;
+    history.push(
+      paths.issuanceFormsViewFormPath(physicalStoreId, issuanceForm._id)
+    );
+  };
+
+  const handleEditClicked = (issuanceForm: IssuanceFormRow) => {
+    if (!issuanceForm._id) return;
+    history.push(
+      paths.issuanceFormsEditFormPath(physicalStoreId, issuanceForm._id)
+    );
+  };
+
+  const columns: any[] = [
+    {
+      title: 'Issue Date',
+      dataIndex: 'issueDate',
+      key: 'issueDate',
+      render: (text: string) => dayjs(Number(text)).format('DD MMM, YYYY'),
+    },
+    {
+      title: 'Issued To',
+      dataIndex: ['refIssuedTo', 'name'],
+      key: 'refIssuedTo.name',
+    },
+    {
+      title: 'For Location',
+      dataIndex: ['refLocation', 'name'],
+      key: 'refLocation.name',
+    },
+    {
+      title: 'Items',
+      dataIndex: 'items',
+      key: 'items',
+      render: (items: FormItem[] | null | undefined) => {
+        const itemList = (items ?? []).filter(
+          (item): item is FormItem => item != null
+        );
+        const item = find(
+          itemList,
+          formItem => formItem.stockItemId === stockItemId
+        );
+        if (!item?.refStockItem?.name) return '';
+        return `${item.refStockItem.name} [${item.quantity} ${
+          item.isInflow ? 'Returned' : 'Issued'
+        }]`;
+      },
+    },
+    {
+      title: 'Actions',
+      key: 'action',
+      render: (_text: unknown, record: IssuanceFormRow) => {
+        let tooltipTitle;
+        let icon;
+
+        if (!record.approvedOn) {
+          tooltipTitle = 'Edit';
+          icon = (
+            <EditOutlined
+              className="list-actions-icon"
+              onClick={() => {
+                handleEditClicked(record);
+              }}
+            />
+          );
+        } else {
+          tooltipTitle = 'View';
+          icon = (
+            <FileOutlined
+              className="list-actions-icon"
+              onClick={() => {
+                handleViewClicked(record);
+              }}
+            />
+          );
+        }
+
+        return (
+          <div className="list-actions-column">
+            <Tooltip title={tooltipTitle}>{icon}</Tooltip>
+          </div>
+        );
+      },
+    },
+  ];
+
+  if (loading) return null;
+
+  const issuanceFormsByStockItem = (
+    data?.issuanceFormsByStockItem ?? []
+  ).filter((row): row is IssuanceFormRow => row != null);
+
+  return (
+    <Table
+      rowKey="_id"
+      dataSource={issuanceFormsByStockItem}
+      columns={columns}
+      bordered
+    />
+  );
+};
+
+export default IssuanceForms;

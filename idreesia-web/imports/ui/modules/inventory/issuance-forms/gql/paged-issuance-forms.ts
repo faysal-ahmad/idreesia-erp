@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  PagedIssuanceFormsQuery,
+  PagedIssuanceFormsQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-export const PAGED_ISSUANCE_FORMS = gql`
+export const PAGED_ISSUANCE_FORMS: TypedDocumentNode<
+  PagedIssuanceFormsQuery,
+  PagedIssuanceFormsQueryVariables
+> = gql`
   query pagedIssuanceForms($physicalStoreId: String!, $queryString: String) {
     pagedIssuanceForms(
       physicalStoreId: $physicalStoreId

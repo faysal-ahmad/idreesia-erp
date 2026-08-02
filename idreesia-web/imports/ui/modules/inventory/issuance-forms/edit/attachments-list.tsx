@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withMutation } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
-import { flowRight } from 'lodash';
+import React from 'react';
+import { useMutation } from '@apollo/client/react';
 import { message } from 'antd';
+import type { IssuanceFormByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
 import {
@@ -10,35 +9,23 @@ import {
   REMOVE_ISSUANCE_FORM_ATTACHMENT,
 } from '../gql';
 
-const AttachmentsListControlComponent = AttachmentsListControl as any;
-interface Attachment { _id: string; name: string; }
-interface IssuanceForm { _id: string; attachments?: Attachment[]; }
-interface MutateFunction { (options: { variables: Record<string, unknown> }): Promise<unknown>; }
-interface AttachmentsListProps {
-  physicalStoreId?: string;
+type IssuanceForm = NonNullable<IssuanceFormByIdQuery['issuanceFormById']>;
+
+interface Props {
+  physicalStoreId: string;
   issuanceFormById: IssuanceForm;
-  addIssuanceFormAttachment: MutateFunction;
-  removeIssuanceFormAttachment: MutateFunction;
 }
 
-class AttachmentsList extends Component<AttachmentsListProps> {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
-    physicalStoreId: PropTypes.string,
-    issuanceFormById: PropTypes.object,
+const AttachmentsList = ({ physicalStoreId, issuanceFormById }: Props) => {
+  const [addIssuanceFormAttachment] = useMutation(ADD_ISSUANCE_FORM_ATTACHMENT);
+  const [removeIssuanceFormAttachment] = useMutation(REMOVE_ISSUANCE_FORM_ATTACHMENT);
 
-    addIssuanceFormAttachment: PropTypes.func,
-    removeIssuanceFormAttachment: PropTypes.func,
-  };
+  const formId = issuanceFormById._id as string;
 
-  handleAttachmentAdded = (attachmentId: string) => {
-    const { addIssuanceFormAttachment, physicalStoreId, issuanceFormById } =
-      this.props;
+  const handleAttachmentAdded = (attachmentId: string) => {
     addIssuanceFormAttachment({
       variables: {
-        _id: issuanceFormById._id,
+        _id: formId,
         physicalStoreId,
         attachmentId,
       },
@@ -47,12 +34,10 @@ class AttachmentsList extends Component<AttachmentsListProps> {
     });
   };
 
-  handleAttachmentRemoved = (attachmentId: string) => {
-    const { removeIssuanceFormAttachment, physicalStoreId, issuanceFormById } =
-      this.props;
+  const handleAttachmentRemoved = (attachmentId: string) => {
     removeIssuanceFormAttachment({
       variables: {
-        _id: issuanceFormById._id,
+        _id: formId,
         physicalStoreId,
         attachmentId,
       },
@@ -61,26 +46,15 @@ class AttachmentsList extends Component<AttachmentsListProps> {
     });
   };
 
-  render() {
-    const { issuanceFormById } = this.props;
+  return (
+    <AttachmentsListControl
+      canEditAttachments
+      canUploadDocument
+      attachments={(issuanceFormById.attachments ?? undefined) as Parameters<typeof AttachmentsListControl>[0]['attachments']}
+      handleAttachmentAdded={handleAttachmentAdded}
+      handleAttachmentRemoved={handleAttachmentRemoved}
+    />
+  );
+};
 
-    return (
-      <AttachmentsListControlComponent
-        canEditAttachments
-        canUploadDocument
-        attachments={issuanceFormById.attachments}
-        handleAttachmentAdded={this.handleAttachmentAdded}
-        handleAttachmentRemoved={this.handleAttachmentRemoved}
-      />
-    );
-  }
-}
-
-export default flowRight(
-  withMutation(ADD_ISSUANCE_FORM_ATTACHMENT, {
-    name: 'addIssuanceFormAttachment',
-  }),
-  withMutation(REMOVE_ISSUANCE_FORM_ATTACHMENT, {
-    name: 'removeIssuanceFormAttachment',
-  })
-)(AttachmentsList as any);
+export default AttachmentsList;

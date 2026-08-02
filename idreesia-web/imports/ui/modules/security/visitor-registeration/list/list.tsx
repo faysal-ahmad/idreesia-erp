@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import React, { useRef, useState, type CSSProperties } from 'react';
+import { type RouteComponentProps } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client/react';
 import {
   Button,
@@ -16,87 +15,34 @@ import {
   ScanOutlined,
 } from '@ant-design/icons';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
+import {
+  useBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
 import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import { VisitorsList, VisitorsListFilter } from '/imports/ui/modules/common';
+import type { VisitorListItem } from '/imports/ui/modules/common/visitors/list';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { PAGED_SECURITY_VISITORS, DELETE_SECURITY_VISITOR } from '../gql';
 
-const AntButton = Button as any;
-const AntDrawer = Drawer as any;
-const AntDropdown = Dropdown as any;
-const AntDownloadOutlined = DownloadOutlined as any;
-const AntUploadOutlined = UploadOutlined as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-const AntSettingOutlined = SettingOutlined as any;
-const AntScanOutlined = ScanOutlined as any;
-const VisitorsListComponent = VisitorsList as any;
-const VisitorsListFilterComponent = VisitorsListFilter as any;
-const VisitorStaysListComponent = VisitorStaysList as any;
-
-const ButtonGroupStyle = {
+const ButtonGroupStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   alignItems: 'center',
 };
 
-interface HistoryLike {
-  push(path: string): void;
-}
+type VisitorRecord = VisitorListItem;
 
-interface LocationLike {
-  pathname: string;
-  search: string;
-}
+type Props = RouteComponentProps;
 
-interface ListProps {
-  history: HistoryLike;
-  location: LocationLike;
-}
+const List = ({ history, location }: Props) => {
+  useBreadcrumbs(['Security', 'Visitor Registration', 'List']);
 
-interface QueryParams {
-  name?: string;
-  cnicNumber?: string;
-  phoneNumber?: string;
-  city?: string;
-  ehadDuration?: string;
-  additionalInfo?: string;
-  dataSource?: string;
-  updatedBetween?: string;
-  pageIndex?: string;
-  pageSize?: string;
-}
-
-interface VisitorRecord {
-  _id: string;
-}
-
-interface VisitorsListRef {
-  getSelectedRows(): VisitorRecord[];
-}
-
-interface PagedVisitors {
-  data: VisitorRecord[];
-  totalResults: number;
-}
-
-interface VisitorsData {
-  pagedSecurityVisitors?: PagedVisitors;
-}
-
-const emptyPagedVisitors: PagedVisitors = {
-  data: [],
-  totalResults: 0,
-};
-
-const List = ({ history, location }: ListProps) => {
-  const dispatch = useDispatch();
-  const visitorsList = useRef<VisitorsListRef | null>(null);
+  const visitorsList = useRef<InstanceType<typeof VisitorsList> | null>(null);
   const [showStayList, setShowStayList] = useState(false);
   const [visitorIdForList, setVisitorIdForList] = useState<string | null>(null);
   const { queryParams, setPageParams } = useQueryParams({
@@ -116,17 +62,13 @@ const List = ({ history, location }: ListProps) => {
     ],
   });
 
-  const [deleteSecurityVisitor] = useMutation(DELETE_SECURITY_VISITOR as any);
+  const [deleteSecurityVisitor] = useMutation(DELETE_SECURITY_VISITOR);
   const { distinctCities, distinctCitiesRefetch } = useDistinctCities(
     'cache-first'
   );
-  const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS as any, {
+  const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS, {
     variables: { filter: queryParams },
   });
-
-  useEffect(() => {
-    dispatch(setBreadcrumbs(['Security', 'Visitor Registration', 'List']));
-  }, [dispatch, location]);
 
   const {
     name,
@@ -139,11 +81,29 @@ const List = ({ history, location }: ListProps) => {
     updatedBetween,
     pageIndex,
     pageSize,
-  } = queryParams as QueryParams;
+  } = queryParams;
 
-  const refreshData = () => {
-    refetch();
-    distinctCitiesRefetch();
+  const refreshData = async () => {
+    await refetch();
+    await distinctCitiesRefetch();
+  };
+
+  const handleFilterSetPageParams = (params: {
+    pageIndex?: string | number;
+    name?: string;
+    cnicNumber?: string;
+    phoneNumber?: string;
+    city?: string;
+    ehadDuration?: string;
+    additionalInfo?: string;
+    dataSource?: string;
+    updatedBetween?: string;
+  }) => {
+    setPageParams(params);
+  };
+
+  const handleListSetPageParams = (params: { pageIndex: string; pageSize: string }) => {
+    setPageParams(params);
   };
 
   const handleSelectItem = (visitor: VisitorRecord) => {
@@ -194,7 +154,7 @@ const List = ({ history, location }: ListProps) => {
     const selectedRows = visitorsList.current?.getSelectedRows() ?? [];
     if (selectedRows.length === 0) return;
 
-    const reportArgs = selectedRows.map((row: VisitorRecord) => row._id);
+    const reportArgs = (selectedRows as VisitorListItem[]).map((row) => row._id);
     const url = `${
       window.location.origin
     }/generate-report?reportName=Visitors&reportArgs=${reportArgs.join(',')}`;
@@ -212,7 +172,7 @@ const List = ({ history, location }: ListProps) => {
         key: '1',
         label: (
           <>
-            <AntDownloadOutlined />&nbsp;
+            <DownloadOutlined />&nbsp;
             Download Selected
           </>
         ),
@@ -222,18 +182,18 @@ const List = ({ history, location }: ListProps) => {
         key: '2',
         label: (
           <>
-            <AntUploadOutlined />&nbsp;
+            <UploadOutlined />&nbsp;
             Download All
           </>
         ),
         onClick: handleDownloadAllAsCSV,
       },
-      { type: 'divider' },
+      { type: 'divider' as const },
       {
         key: '3',
         label: (
           <>
-            <AntUploadOutlined />&nbsp;
+            <UploadOutlined />&nbsp;
             Upload CSV Data
           </>
         ),
@@ -242,42 +202,42 @@ const List = ({ history, location }: ListProps) => {
     ];
 
     return (
-      <AntDropdown menu={{ items: menuItems }}>
-        <AntButton icon={<AntSettingOutlined />} size="large" />
-      </AntDropdown>
+      <Dropdown menu={{ items: menuItems }}>
+        <Button icon={<SettingOutlined />} size="large" />
+      </Dropdown>
     );
   };
 
   const getTableHeader = () => (
     <div className="list-table-header">
       <div style={ButtonGroupStyle}>
-        <AntButton
+        <Button
           type="primary"
-          icon={<AntPlusCircleOutlined />}
+          icon={<PlusCircleOutlined />}
           size="large"
           onClick={handleNewClicked}
         >
           New Visitor
-        </AntButton>
+        </Button>
         &nbsp;&nbsp;
-        <AntButton icon={<AntScanOutlined />} size="large" onClick={handleScanClicked}>
+        <Button icon={<ScanOutlined />} size="large" onClick={handleScanClicked}>
           Scan CNIC
-        </AntButton>
+        </Button>
       </div>
       <div className="list-table-header-section">
-        <VisitorsListFilterComponent
-          name={name}
-          cnicNumber={cnicNumber}
-          phoneNumber={phoneNumber}
-          city={city}
-          ehadDuration={ehadDuration}
-          additionalInfo={additionalInfo}
-          dataSource={dataSource}
-          updatedBetween={updatedBetween}
+        <VisitorsListFilter
+          name={name as string | undefined}
+          cnicNumber={cnicNumber as string | undefined}
+          phoneNumber={phoneNumber as string | undefined}
+          city={city as string | undefined}
+          ehadDuration={ehadDuration as string | undefined}
+          additionalInfo={additionalInfo as string | undefined}
+          dataSource={dataSource as string | undefined}
+          updatedBetween={updatedBetween as string | undefined}
           showAdditionalInfoFilter
           showDataSourceFilter
-          distinctCities={distinctCities || []}
-          setPageParams={setPageParams}
+          distinctCities={distinctCities ?? []}
+          setPageParams={handleFilterSetPageParams}
           refreshData={refreshData}
         />
         &nbsp;&nbsp;
@@ -286,15 +246,19 @@ const List = ({ history, location }: ListProps) => {
     </div>
   );
 
-  const pagedSecurityVisitors = data
-    ? (data as VisitorsData).pagedSecurityVisitors ?? emptyPagedVisitors
-    : emptyPagedVisitors;
+  const pagedData = data?.pagedSecurityVisitors;
+  const pagedSecurityVisitors = {
+    totalResults: pagedData?.totalResults ?? 0,
+    data: (pagedData?.data ?? []).flatMap((row) =>
+      row && row._id ? [row as VisitorListItem] : []
+    ),
+  };
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
   return (
     <>
-      <VisitorsListComponent
+      <VisitorsList
         ref={visitorsList}
         showSelectionColumn
         showStatusColumn
@@ -309,30 +273,27 @@ const List = ({ history, location }: ListProps) => {
         handleDeleteItem={handleDeleteItem}
         handleStayHistoryAction={handleStayHistoryAction}
         handleAuditLogsAction={handleAuditLogsAction}
-        setPageParams={setPageParams}
+        setPageParams={handleListSetPageParams}
         pageIndex={numPageIndex}
         pageSize={numPageSize}
         pagedData={pagedSecurityVisitors}
       />
-      <AntDrawer
+      <Drawer
         title="Stay History"
         width={600}
         onClose={handleStayListClose}
         open={showStayList}
       >
-        <VisitorStaysListComponent
-          showNewButton
-          showActionsColumn
-          visitorId={visitorIdForList}
-        />
-      </AntDrawer>
+        {visitorIdForList ? (
+          <VisitorStaysList
+            showNewButton
+            showActionsColumn
+            visitorId={visitorIdForList}
+          />
+        ) : null}
+      </Drawer>
     </>
   );
-};
-
-List.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default List;

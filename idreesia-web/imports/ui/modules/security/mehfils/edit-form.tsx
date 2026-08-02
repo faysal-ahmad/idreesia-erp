@@ -1,63 +1,38 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { type RouteComponentProps } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
 import dayjs from 'dayjs';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
   InputTextField,
   DateField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { AuditInfo } from '/imports/ui/modules/common';
+import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
 import { MEHFIL_BY_ID, UPDATE_MEHFIL, ALL_MEHFILS } from './gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const FormDateField = DateField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-const AuditInfoComponent = AuditInfo as any;
-
-interface HistoryLike {
-  goBack(): void;
-}
-
-interface MatchLike {
-  params: { mehfilId: string };
-}
-
-interface EditFormProps {
-  match: MatchLike;
-  history: HistoryLike;
-}
-
-interface Mehfil {
-  _id: string;
-  name: string;
-  mehfilDate: string | number;
-}
-
-interface MehfilData {
-  mehfilById?: Mehfil | null;
-}
+type Props = RouteComponentProps<{ mehfilId: string }>;
 
 interface MehfilFormValues {
   name: string;
   mehfilDate: string | number | Date;
 }
 
-const EditForm = ({ match, history }: EditFormProps) => {
+const EditForm = ({ match, history }: Props) => {
+  useBreadcrumbs(['Security', 'Mehfils', 'Edit']);
+
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { mehfilId } = match.params;
-  const { loading, data } = useQuery(MEHFIL_BY_ID as any, {
+  const { loading, data } = useQuery(MEHFIL_BY_ID, {
     variables: { _id: mehfilId },
   });
-  const [updateMehfil] = useMutation(UPDATE_MEHFIL as any, {
-    refetchQueries: [{ query: ALL_MEHFILS as any }],
+  const [updateMehfil] = useMutation(UPDATE_MEHFIL, {
+    refetchQueries: [{ query: ALL_MEHFILS }],
   });
-  const mehfilById = data ? (data as MehfilData).mehfilById : null;
+  const mehfilById = data?.mehfilById;
 
   const handleCancel = () => {
     history.goBack();
@@ -68,12 +43,12 @@ const EditForm = ({ match, history }: EditFormProps) => {
   };
 
   const handleFinish = ({ name, mehfilDate }: MehfilFormValues) => {
-    if (!mehfilById) return;
+    if (!mehfilById?._id) return;
     updateMehfil({
       variables: {
         _id: mehfilById._id,
         name,
-        mehfilDate,
+        mehfilDate: String(mehfilDate),
       },
     })
       .catch((error: Error) => {
@@ -88,33 +63,27 @@ const EditForm = ({ match, history }: EditFormProps) => {
 
   return (
     <>
-      <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <TextField
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <InputTextField
           fieldName="name"
           fieldLabel="Mehfil Name"
           initialValue={mehfilById.name}
           required
           requiredMessage="Please input a name for the Mehfil."
         />
-        <FormDateField
+        <DateField
           fieldName="mehfilDate"
           fieldLabel="Mehfil Date"
           initialValue={dayjs(Number(mehfilById.mehfilDate))}
         />
-        <SaveCancelButtons
+        <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </AntForm>
-      <AuditInfoComponent record={mehfilById} />
+      </Form>
+      <AuditInfo record={mehfilById} />
     </>
   );
 };
 
-EditForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['Security', 'Mehfils', 'Edit'])(EditForm as any);
+export default EditForm;

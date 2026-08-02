@@ -1,5 +1,4 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties } from 'react';
 import { Button, Form, Row } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
@@ -9,18 +8,11 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { StockItemField } from '/imports/ui/modules/inventory/stock-items/field';
 
-const AntButton = Button as any;
-const AntFormItem = Form.Item as any;
-const AntRow = Row as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-const InventoryStockItemField = StockItemField as any;
-const NumberField = InputNumberField as any;
-const SelectInputField = SelectField as any;
-
-const RowStyle = {
+const RowStyle: CSSProperties = {
   height: '40px',
 };
-const ButtonContainerStyle = {
+
+const ButtonContainerStyle: CSSProperties = {
   paddingLeft: '20px',
 };
 
@@ -36,6 +28,7 @@ interface ItemFormProps {
   outflowLabel?: string;
   handleAddItem?: () => void;
   showPrice?: boolean;
+  refForm?: unknown;
 }
 
 const ItemForm = ({
@@ -47,65 +40,51 @@ const ItemForm = ({
   showPrice,
 }: ItemFormProps) => (
   <>
-    <AntRow type="flex" justify="end" style={RowStyle}>
-      <InventoryStockItemField
+    <Row justify="end" style={RowStyle}>
+      <StockItemField
         physicalStoreId={physicalStoreId}
-        fieldLayout={null}
         fieldName="stockItem"
         placeholder="Stock Item"
       />
-      <NumberField
+      <InputNumberField
         fieldName="quantity"
         placeholder="Quantity"
-        fieldLayout={null}
         minValue={0}
         precision={2}
       />
       {showPrice ? (
-        <NumberField
+        <InputNumberField
           fieldName="price"
           placeholder="Price"
-          fieldLayout={null}
           minValue={0}
           precision={2}
         />
       ) : null}
-      <SelectInputField
+      <SelectField<SelectOption>
         allowClear={false}
         dropdownMatchSelectWidth={false}
         data={[
           { label: inflowLabel, value: 'inflow' },
           { label: outflowLabel, value: 'outflow' },
         ]}
-        getDataValue={({ value }: SelectOption) => value}
-        getDataText={({ label }: SelectOption) => label}
+        getDataValue={({ value }) => value}
+        getDataText={({ label }) => label}
         initialValue={defaultLabel === inflowLabel ? 'inflow' : 'outflow'}
-        fieldLayout={null}
         fieldName="status"
       />
-    </AntRow>
-    <AntRow type="flex" justify="end" style={RowStyle}>
-      <AntFormItem style={ButtonContainerStyle}>
-        <AntButton
+    </Row>
+    <Row justify="end" style={RowStyle}>
+      <Form.Item style={ButtonContainerStyle}>
+        <Button
           type="primary"
-          icon={<AntPlusCircleOutlined />}
+          icon={<PlusCircleOutlined />}
           onClick={handleAddItem}
         >
           Add Item
-        </AntButton>
-      </AntFormItem>
-    </AntRow>
+        </Button>
+      </Form.Item>
+    </Row>
   </>
 );
-
-ItemForm.propTypes = {
-  physicalStoreId: PropTypes.string,
-  stockItems: PropTypes.array,
-  defaultLabel: PropTypes.string,
-  inflowLabel: PropTypes.string,
-  outflowLabel: PropTypes.string,
-  showPrice: PropTypes.bool,
-  handleAddItem: PropTypes.func,
-};
 
 export default ItemForm;

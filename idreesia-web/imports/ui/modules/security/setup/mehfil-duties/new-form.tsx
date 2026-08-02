@@ -1,37 +1,31 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
+import { type History } from 'history';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import {
   InputTextField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const formMutation = gql`
-  mutation createSecurityMehfilDuty($name: String!, $urduName: String!) {
-    createSecurityMehfilDuty(name: $name, urduName: $urduName) {
-      _id
-      name
-      urduName
-    }
-  }
-`;
+import { CREATE_SECURITY_MEHFIL_DUTY } from './gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { push(path: string): void; }
-interface NewFormProps { history: HistoryLike; }
-interface FormValues { name: string; urduName: string; }
+interface NewFormProps {
+  history: History;
+}
+
+interface FormValues {
+  name: string;
+  urduName: string;
+}
 
 const NewForm = ({ history }: NewFormProps) => {
+  useBreadcrumbs(['Security', 'Mehfil Duties', 'New']);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createSecurityMehfilDuty] = useMutation(formMutation as any, {
-    refetchQueries: ['allSecurityMehfilDuties'],
+  const [createSecurityMehfilDuty] = useMutation(CREATE_SECURITY_MEHFIL_DUTY, {
+    refetchQueries: ['setupAllSecurityMehfilDuties'],
   });
 
   const handleCancel = () => {
@@ -58,30 +52,25 @@ const NewForm = ({ history }: NewFormProps) => {
   };
 
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextField
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input a name for the mehfil duty."
       />
-      <TextField
+      <InputTextField
         fieldName="urduName"
         fieldLabel="Urdu Name"
         required
         requiredMessage="Please input an urdu name for the mehfil duty."
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['Security', 'Mehfil Duties', 'New'])(NewForm as any);
+export default NewForm;

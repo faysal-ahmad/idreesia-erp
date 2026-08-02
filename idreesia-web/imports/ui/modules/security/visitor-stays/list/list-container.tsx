@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import List from './list';
 
-const VisitorStayList = List as any;
-interface ListContainerProps { visitorId: string; showNewButton?: boolean; showDutyColumn?: boolean; showActionsColumn?: boolean; }
-interface ListContainerState { pageIndex: number; pageSize: number; }
+interface ListContainerProps {
+  visitorId: string;
+  showNewButton?: boolean;
+  showDutyColumn?: boolean;
+  showActionsColumn?: boolean;
+}
+
+interface ListContainerState {
+  pageIndex: number;
+  pageSize: number;
+}
 
 export default class ListContainer extends Component<ListContainerProps, ListContainerState> {
-  static propTypes = {
-    visitorId: PropTypes.string,
-    showNewButton: PropTypes.bool,
-    showDutyColumn: PropTypes.bool,
-    showActionsColumn: PropTypes.bool,
-  };
-
   state = {
     pageIndex: 0,
     pageSize: 20,
@@ -34,7 +34,7 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
     const { pageIndex, pageSize } = this.state;
 
     return (
-      <VisitorStayList
+      <List
         pageIndex={pageIndex}
         pageSize={pageSize}
         visitorId={visitorId}

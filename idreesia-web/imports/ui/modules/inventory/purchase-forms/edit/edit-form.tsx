@@ -1,102 +1,61 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { useQuery } from '@apollo/client/react';
 import { useParams } from 'react-router-dom';
+import { type RouteComponentProps } from 'react-router';
 import { Tabs } from 'antd';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
   usePhysicalStore,
   usePhysicalStoreLocations,
   usePhysicalStoreVendors,
 } from '/imports/ui/modules/inventory/common/hooks';
-
-import PurchasDetails from './purchase-details';
+import PurchaseDetails from './purchase-details';
 import AttachmentsList from './attachments-list';
 import { PURCHASE_FORM_BY_ID } from '../gql';
 
-const AntTabs = Tabs as any;
-const AntTabPane = Tabs.TabPane as any;
-const PurchaseDetailsComponent = PurchasDetails as any;
-const AttachmentsListComponent = AttachmentsList as any;
+const TabPane = Tabs.TabPane;
+type RouteParams = { formId: string; physicalStoreId: string };
+type Props = RouteComponentProps<RouteParams>;
 
-interface RouteParams {
-  formId: string;
-  physicalStoreId: string;
-}
-
-interface PurchaseFormData {
-  purchaseFormById: Record<string, unknown>;
-}
-
-type AnyProps = Record<string, any>;
-
-const EditForm = (props: AnyProps) => {
-  const dispatch = useDispatch();
+const EditForm = ({ history }: Props) => {
   const { formId, physicalStoreId } = useParams<RouteParams>();
   const { physicalStore, physicalStoreLoading } = usePhysicalStore(physicalStoreId);
-  const { locationsByPhysicalStoreId, locationsByPhysicalStoreIdLoading } = usePhysicalStoreLocations(physicalStoreId)
-  const { vendorsByPhysicalStoreId, vendorsByPhysicalStoreIdLoading } = usePhysicalStoreVendors(physicalStoreId)
-  const { data, loading } = useQuery(PURCHASE_FORM_BY_ID as any, {
+  const { locationsByPhysicalStoreId, locationsByPhysicalStoreIdLoading } =
+    usePhysicalStoreLocations(physicalStoreId);
+  const { vendorsByPhysicalStoreId, vendorsByPhysicalStoreIdLoading } =
+    usePhysicalStoreVendors(physicalStoreId);
+  const { data, loading } = useQuery(PURCHASE_FORM_BY_ID, {
     skip: !formId || !physicalStoreId,
-    variables: {
-      _id: formId,
-      physicalStoreId,
-    },
+    variables: { _id: formId, physicalStoreId },
   });
 
-  useEffect(() => {
-    if (physicalStore) {
-      dispatch(
-        setBreadcrumbs(['Inventory', physicalStore.name, 'Purchase Forms', 'Edit'])
-      );
-    } else {
-      dispatch(setBreadcrumbs(['Inventory', 'Purchase Forms', 'Edit']));
-    }
-  }, [dispatch, physicalStore]);
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name, 'Purchase Forms', 'Edit']
+      : ['Inventory', 'Purchase Forms', 'Edit']
+  );
 
-  if (
-    loading ||
-    physicalStoreLoading ||
-    locationsByPhysicalStoreIdLoading ||
-    vendorsByPhysicalStoreIdLoading ||
-    !data
-  ) return null;
-  const { purchaseFormById } = data as PurchaseFormData;
+  if (loading || physicalStoreLoading || locationsByPhysicalStoreIdLoading || vendorsByPhysicalStoreIdLoading || !data?.purchaseFormById) {
+    return null;
+  }
 
   return (
-    <AntTabs defaultActiveKey="1">
-      <AntTabPane tab="Purchase Details" key="1">
-        <PurchaseDetailsComponent
-          purchaseFormId={formId}
-          purchaseFormById={purchaseFormById}
+    <Tabs defaultActiveKey="1">
+      <TabPane tab="Purchase Details" key="1">
+        <PurchaseDetails
+          history={history}
+          purchaseFormById={data.purchaseFormById}
           physicalStoreId={physicalStoreId}
-          physicalStore={physicalStore}
-          locationsByPhysicalStoreId={locationsByPhysicalStoreId}
-          vendorsByPhysicalStoreId={vendorsByPhysicalStoreId}
-          {...props}
+          locationsByPhysicalStoreId={(locationsByPhysicalStoreId ?? []).filter((l): l is NonNullable<typeof l> => l != null)}
+          vendorsByPhysicalStoreId={(vendorsByPhysicalStoreId ?? []).filter((v): v is NonNullable<typeof v> => v != null)}
         />
-      </AntTabPane>
-      <AntTabPane tab="Attachments" key="2">
-        <AttachmentsListComponent
-          purchaseFormId={formId}
-          purchaseFormById={purchaseFormById}
-          physicalStoreId={physicalStoreId}
-          physicalStore={physicalStore}
-          {...props}
-        />
-      </AntTabPane>
-    </AntTabs>
+      </TabPane>
+      <TabPane tab="Attachments" key="2">
+        <AttachmentsList physicalStoreId={physicalStoreId} purchaseFormById={data.purchaseFormById} />
+      </TabPane>
+    </Tabs>
   );
-};
-
-EditForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-  physicalStoreId: PropTypes.string,
-  physicalStore: PropTypes.object,
 };
 
 export default EditForm;

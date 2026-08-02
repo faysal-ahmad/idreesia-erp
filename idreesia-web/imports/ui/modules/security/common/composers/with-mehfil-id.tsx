@@ -1,21 +1,22 @@
-import React, { ComponentType } from "react";
-import PropTypes from "prop-types";
-import { get } from "lodash";
+import React, { ComponentType } from 'react';
+import { useParams } from 'react-router-dom';
 
-type AnyProps = Record<string, any>;
-
-export default () => (WrappedComponent: ComponentType<AnyProps>) => {
-  const WithMehfilId = (props: AnyProps) => {
-    const { match } = props;
-    const mehfilId = get(match, ["params", "mehfilId"], null);
-    return React.createElement(WrappedComponent as any, { mehfilId, ...props });
-  };
-
-  WithMehfilId.propTypes = {
-    location: PropTypes.object,
-    history: PropTypes.object,
-    match: PropTypes.object,
-  };
-
-  return WithMehfilId;
+type InjectedProps = {
+  mehfilId: string;
 };
+
+export const useMehfilIdParam = () => {
+  const { mehfilId = '' } = useParams<{ mehfilId: string }>();
+  return mehfilId;
+};
+
+export default <P extends object>() =>
+  (WrappedComponent: ComponentType<P & InjectedProps>) => {
+    const WithMehfilId = (props: P) => {
+      const mehfilId = useMehfilIdParam();
+
+      return <WrappedComponent {...props} mehfilId={mehfilId} />;
+    };
+
+    return WithMehfilId;
+  };

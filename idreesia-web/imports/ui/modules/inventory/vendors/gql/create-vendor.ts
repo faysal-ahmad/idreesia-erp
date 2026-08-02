@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  CreateVendorMutation,
+  CreateVendorMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-export const CREATE_VENDOR = gql`
+export const CREATE_VENDOR: TypedDocumentNode<
+  CreateVendorMutation,
+  CreateVendorMutationVariables
+> = gql`
   mutation createVendor(
     $name: String!
     $physicalStoreId: String!

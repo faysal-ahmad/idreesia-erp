@@ -1,50 +1,27 @@
 import React, { ComponentType } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { useQuery } from '@apollo/client/react';
 
+import { usePhysicalStore } from '../hooks/use-physical-store';
 
-type AnyProps = Record<string, any>;
-const physicalStoreByIdQuery = gql`
-  query inventoryPhysicalStoreById($id: String!) {
-    physicalStoreById(id: $id) {
-      _id
-      name
-    }
-  }
-`;
-
-export const usePhysicalStore = (physicalStoreId: string) => {
-  const { data, loading, ...queryResult } = useQuery(physicalStoreByIdQuery as any, {
-    variables: { id: physicalStoreId },
-  });
-
-  return {
-    ...queryResult,
-    loading,
-    physicalStoreLoading: loading,
-    physicalStoreById: (data as any)?.physicalStoreById ?? null,
-  };
+type InjectedProps = ReturnType<typeof usePhysicalStore> & {
+  physicalStoreLoading: boolean;
 };
 
-export default () => (WrappedComponent: ComponentType<AnyProps>) => {
-  const WithPhysicalStore = (props: AnyProps) => {
-    const { physicalStoreId } = props;
-    const physicalStoreProps = usePhysicalStore(physicalStoreId);
-    const { physicalStoreById, ...restPhysicalStoreProps } = physicalStoreProps;
+export { usePhysicalStore };
 
-    return React.createElement(WrappedComponent as any, {
-      ...props,
-      ...restPhysicalStoreProps,
-      physicalStore: physicalStoreById,
-    });
+export default <P extends { physicalStoreId?: string | null }>() =>
+  (WrappedComponent: ComponentType<P & InjectedProps>) => {
+    const WithPhysicalStore = (props: P) => {
+      const { physicalStoreId } = props;
+      const physicalStoreProps = usePhysicalStore(physicalStoreId ?? '');
+
+      return (
+        <WrappedComponent
+          {...props}
+          {...physicalStoreProps}
+          physicalStoreLoading={physicalStoreProps.physicalStoreLoading}
+        />
+      );
+    };
+
+    return WithPhysicalStore;
   };
-
-  WithPhysicalStore.propTypes = {
-    physicalStoreId: PropTypes.string,
-    physicalStoreLoading: PropTypes.bool,
-    physicalStoreById: PropTypes.object,
-  };
-
-  return WithPhysicalStore;
-};

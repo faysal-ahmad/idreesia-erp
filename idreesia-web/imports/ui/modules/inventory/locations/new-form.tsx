@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { Form, message } from 'antd';
-import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client/react';
+import { type History } from 'history';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   InputTextField,
@@ -20,34 +19,8 @@ import {
   LOCATIONS_BY_PHYSICAL_STORE_ID,
 } from './gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const TreeField = TreeSelectField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-
-interface RouteParams {
-  physicalStoreId: string;
-}
-
-interface HistoryLike {
-  goBack(): void;
-  push(path: string): void;
-}
-
 interface NewFormProps {
-  history: HistoryLike;
-}
-
-interface LocationRecord {
-  _id: string;
-  name: string;
-  parentId?: string | null;
-  description?: string;
-}
-
-interface LocationsData {
-  locationsByPhysicalStoreId: LocationRecord[];
+  history: History;
 }
 
 interface LocationFormValues {
@@ -57,40 +30,35 @@ interface LocationFormValues {
 }
 
 const NewForm = ({ history }: NewFormProps) => {
-  const dispatch = useDispatch();
-  const { physicalStoreId } = useParams<RouteParams>();
-  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const { physicalStoreId } = useParams<{ physicalStoreId: string }>();
+  const { physicalStore } = usePhysicalStore(physicalStoreId!);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createLocation] = useMutation(CREATE_LOCATION as any, {
+  const [createLocation] = useMutation(CREATE_LOCATION, {
     refetchQueries: [{
-      query: LOCATIONS_BY_PHYSICAL_STORE_ID as any,
+      query: LOCATIONS_BY_PHYSICAL_STORE_ID,
       variables: {
         physicalStoreId,
       },
     }],
   });
 
-  useEffect(() => {
-    if (physicalStore) {
-      dispatch(
-        setBreadcrumbs(['Inventory', physicalStore.name, 'Setup', 'Locations', 'New'])
-      );
-    } else {
-      dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Locations', 'New']));
-    }
-  }, [dispatch, physicalStore]);
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name ?? '', 'Setup', 'Locations', 'New']
+      : ['Inventory', 'Setup', 'Locations', 'New']
+  );
 
   const { data: locationsData, loading: locationsDataLoading } = useQuery(
-    LOCATIONS_BY_PHYSICAL_STORE_ID as any,
+    LOCATIONS_BY_PHYSICAL_STORE_ID,
     {
-      variables: { physicalStoreId },
+      variables: { physicalStoreId: physicalStoreId! },
     }
   );
 
   if (locationsDataLoading) return null;
-  const { locationsByPhysicalStoreId } = (locationsData as LocationsData) ?? {
-    locationsByPhysicalStoreId: [],
-  };
+  const locationsByPhysicalStoreId = (
+    locationsData?.locationsByPhysicalStoreId ?? []
+  ).filter((row) => row != null);
 
   const handleCancel = () => {
     history.goBack();
@@ -106,11 +74,11 @@ const NewForm = ({ history }: NewFormProps) => {
     description,
   }: LocationFormValues) => {
     createLocation({
-      variables: { name, physicalStoreId, parentId, description },
+      variables: { name, physicalStoreId: physicalStoreId!, parentId, description },
     })
       .then(() => {
         message.success('New location was created successfully.', 5);
-        history.push(paths.locationsPath(physicalStoreId));
+        history.push(paths.locationsPath(physicalStoreId!));
       })
       .catch((error: Error) => {
         message.error(error.message, 5);
@@ -118,37 +86,32 @@ const NewForm = ({ history }: NewFormProps) => {
   };
 
   return (
-    <AntForm
+    <Form
       layout="horizontal"
       onFinish={handleFinish}
       onFieldsChange={handleFieldsChange}
     >
-      <TextField
+      <InputTextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input a name for the location."
       />
-      <TreeField
+      <TreeSelectField
         data={locationsByPhysicalStoreId}
         fieldName="parentId"
         fieldLabel="Parent Location"
       />
-      <TextAreaField
+      <InputTextAreaField
         fieldName="description"
         fieldLabel="Description"
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
-};
-
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default NewForm;

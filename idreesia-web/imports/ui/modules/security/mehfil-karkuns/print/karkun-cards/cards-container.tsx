@@ -1,104 +1,100 @@
-import React, { useRef, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useRef, useState, type CSSProperties } from 'react';
 import { useQuery } from '@apollo/client/react';
+import { useParams } from 'react-router-dom';
+import { type RouteComponentProps } from 'react-router';
 import ReactToPrint from 'react-to-print';
 import { Button, Checkbox, Divider } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  WithDynamicBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
+  useDynamicBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
+import type { MehfilKarkunsByIdsQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
-  WithMehfilId,
-  WithMehfil,
-  WithAllMehfilDuties,
+  useMehfil,
+  useAllSecurityMehfilDuties,
 } from '/imports/ui/modules/security/common/composers';
 
 import { NamedCards } from './named-cards';
 import { AnonymousCards } from './anonymous-cards';
-import { MEHFIL_KARKUNS_BY_IDS } from '../../gql'
+import { MEHFIL_KARKUNS_BY_IDS } from '../../gql';
 
-const PrintControl = ReactToPrint as any;
-const AntButton = Button as any;
-const AntCheckbox = Checkbox as any;
-const AntDivider = Divider as any;
-const AntPrinterOutlined = PrinterOutlined as any;
-const NamedCardsComponent = NamedCards as any;
-const AnonymousCardsComponent = AnonymousCards as any;
-
-const ControlsContainer = {
+const ControlsContainer: CSSProperties = {
   display: 'flex',
   flexFlow: 'row wrap',
   justifyContent: 'space-between',
   width: '100%',
 };
 
-const InputControlsContainer = {
+const InputControlsContainer: CSSProperties = {
   display: 'flex',
   flexFlow: 'column wrap',
   justifyContent: 'flex-start',
 };
 
-interface HistoryLike { goBack(): void; }
-interface QueryParams { ids?: string; dutyId?: string; }
-interface MehfilDuty { _id: string; name?: string; urduName?: string; }
-interface CardsData { mehfilKarkunsByIds?: unknown[]; }
-interface CardsContainerProps {
-  queryParams: QueryParams;
-  history: HistoryLike;
-  allSecurityMehfilDutiesLoading?: boolean;
-  allSecurityMehfilDuties?: MehfilDuty[];
-}
+type MehfilKarkunRow = NonNullable<
+  NonNullable<MehfilKarkunsByIdsQuery['mehfilKarkunsByIds']>[number]
+>;
 
-const CardsContainer = ({ queryParams: { ids, dutyId }, history, allSecurityMehfilDutiesLoading, allSecurityMehfilDuties = [] }: CardsContainerProps) => {
-  const cardsRef = useRef<HTMLElement | null>(null);
+type Props = RouteComponentProps;
+
+export const MehfilKarkunsPrintCards = ({ history, location }: Props) => {
+  const { mehfilId = '' } = useParams<{ mehfilId: string }>();
+  const { queryParams } = useQueryParams({ history, location });
+  const ids = String(queryParams.ids || '');
+  const dutyId = String(queryParams.dutyId || '');
+  const cardsRef = useRef<HTMLDivElement>(null);
   const [showDutyNameInUrdu, setShowDutyNameInUrdu] = useState(false);
-  const { data, loading } = useQuery(MEHFIL_KARKUNS_BY_IDS as any, {
+  const { mehfilById } = useMehfil(mehfilId);
+  const {
+    allSecurityMehfilDutiesLoading,
+    allSecurityMehfilDuties,
+  } = useAllSecurityMehfilDuties(mehfilId);
+  const { data, loading } = useQuery(MEHFIL_KARKUNS_BY_IDS, {
+    skip: !ids,
     variables: { ids },
   });
 
+  useDynamicBreadcrumbs(
+    mehfilById?.name
+      ? ['Security', 'Mehfils', mehfilById.name, 'Print Karkun Cards']
+      : ['Security', 'Mehfils', 'Print Karkun Cards']
+  );
+
   if (loading || allSecurityMehfilDutiesLoading) return null;
-  const mehfilDuty = allSecurityMehfilDuties.find(duty => duty._id === dutyId);
+
+  const mehfilDuty = allSecurityMehfilDuties.find((duty) => duty._id === dutyId);
+  const mehfilKarkunsByIds = (data?.mehfilKarkunsByIds ?? []).filter(
+    (row): row is MehfilKarkunRow => row != null
+  );
 
   const cards = ids ? (
-    <NamedCardsComponent
-      ref={cardsRef}
-      mehfilKarkunsByIds={(data as CardsData | undefined)?.mehfilKarkunsByIds ?? []}
+    <NamedCards
+      mehfilKarkunsByIds={mehfilKarkunsByIds}
       showDutyNameInUrdu={showDutyNameInUrdu}
     />
   ) : (
-    <AnonymousCardsComponent
-      ref={cardsRef}
+    <AnonymousCards
       mehfilDuty={mehfilDuty}
       showDutyNameInUrdu={showDutyNameInUrdu}
     />
   );
 
-  const cardShowDutyNameInUrdu = (
-    <AntCheckbox
-      checked={showDutyNameInUrdu}
-      onChange={(e: any) => setShowDutyNameInUrdu(e.target.checked)}
-    >
-      Show Urdu Duty Name
-    </AntCheckbox>
-  );
-
   return (
     <>
-      <div style={ControlsContainer as any}>
+      <div style={ControlsContainer}>
         <div>
-          <PrintControl
-            content={() => cardsRef.current}
+          <ReactToPrint
+            content={() => cardsRef.current!}
             trigger={() => (
-              <AntButton size="large" type="primary" icon={<AntPrinterOutlined />}>
+              <Button size="large" type="primary" icon={<PrinterOutlined />}>
                 Print Cards
-              </AntButton>
+              </Button>
             )}
           />
           &nbsp;&nbsp;
-          <AntButton
+          <Button
             size="large"
             type="primary"
             onClick={() => {
@@ -106,36 +102,19 @@ const CardsContainer = ({ queryParams: { ids, dutyId }, history, allSecurityMehf
             }}
           >
             Back
-          </AntButton>
+          </Button>
         </div>
-        <div style={InputControlsContainer as any}>
-          {cardShowDutyNameInUrdu}
+        <div style={InputControlsContainer}>
+          <Checkbox
+            checked={showDutyNameInUrdu}
+            onChange={(e) => setShowDutyNameInUrdu(e.target.checked)}
+          >
+            Show Urdu Duty Name
+          </Checkbox>
         </div>
       </div>
-      <AntDivider />
-      {cards}
+      <Divider />
+      <div ref={cardsRef}>{cards}</div>
     </>
   );
 };
-
-CardsContainer.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-  queryParams: PropTypes.object,
-  allSecurityMehfilDutiesLoading: PropTypes.bool,
-  allSecurityMehfilDuties: PropTypes.array,
-};
-
-export const MehfilKarkunsPrintCards = flowRight(
-  WithAllMehfilDuties(),
-  WithQueryParams(),
-  WithMehfilId(),
-  WithMehfil(),
-  WithDynamicBreadcrumbs(({ mehfil }: { mehfil?: { name?: string } }) => {
-    if (mehfil) {
-      return `Security, Mehfils, ${mehfil.name}, Print Karkun Cards`;
-    }
-    return `Security, Mehfils, Print Karkun Cards`;
-  })
-)(CardsContainer as any);

@@ -1,27 +1,42 @@
 import React, { ComponentType } from 'react';
+import type { DocumentNode, TypedDocumentNode } from '@apollo/client';
+import type { OperationVariables } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 
-type AnyProps = Record<string, any>;
+type QueryDocument = DocumentNode | TypedDocumentNode<unknown, OperationVariables>;
+type MutationDocument = DocumentNode | TypedDocumentNode<unknown, OperationVariables>;
 
-interface ApolloHocConfig {
-  options?: Record<string, unknown> | ((props: AnyProps) => Record<string, unknown>);
-  props?(params: { data: AnyProps; ownProps: AnyProps }): AnyProps;
+type OptionsResolver<P> =
+  | Record<string, unknown>
+  | ((props: P) => Record<string, unknown>);
+
+interface QueryHocConfig<P extends object> {
+  options?: OptionsResolver<P>;
+  props?(params: {
+    data: Record<string, unknown>;
+    ownProps: P;
+  }): Record<string, unknown>;
+}
+
+interface MutationHocConfig<P extends object> {
+  options?: OptionsResolver<P>;
   name?: string;
 }
 
-const resolveOptions = (
-  options: ApolloHocConfig['options'],
-  props: AnyProps
+const resolveOptions = <P extends object>(
+  options: OptionsResolver<P> | undefined,
+  props: P
 ) => {
   if (!options) return {};
   return typeof options === 'function' ? options(props) : options;
 };
 
-export const withQuery = (query: unknown, config: ApolloHocConfig = {}) => (
-  WrappedComponent: ComponentType<AnyProps>
-) => {
-  const WithQuery = (props: AnyProps) => {
-    const result = useQuery(query as any, resolveOptions(config.options, props));
+export const withQuery = <P extends object>(
+  query: QueryDocument,
+  config: QueryHocConfig<P> = {}
+) => (WrappedComponent: ComponentType<P & Record<string, unknown>>) => {
+  const WithQuery = (props: P) => {
+    const result = useQuery(query, resolveOptions(config.options, props));
     const dataProps = {
       ...result,
       ...(result.data || {}),
@@ -30,32 +45,26 @@ export const withQuery = (query: unknown, config: ApolloHocConfig = {}) => (
       ? config.props({ data: dataProps, ownProps: props })
       : dataProps;
 
-    return React.createElement(WrappedComponent as any, {
-      ...props,
-      ...mappedProps,
-    });
+    return <WrappedComponent {...props} {...mappedProps} />;
   };
 
   return WithQuery;
 };
 
-export const withMutation = (
-  mutation: unknown,
-  config: ApolloHocConfig = {}
-) => (WrappedComponent: ComponentType<AnyProps>) => {
-  const WithMutation = (props: AnyProps) => {
+export const withMutation = <P extends object>(
+  mutation: MutationDocument,
+  config: MutationHocConfig<P> = {}
+) => (WrappedComponent: ComponentType<P & Record<string, unknown>>) => {
+  const WithMutation = (props: P) => {
     const [mutate, result] = useMutation(
-      mutation as any,
+      mutation,
       resolveOptions(config.options, props)
     );
     const mutationProps = config.name
       ? { [config.name]: mutate }
       : { mutate, ...result };
 
-    return React.createElement(WrappedComponent as any, {
-      ...props,
-      ...mutationProps,
-    });
+    return <WrappedComponent {...props} {...mutationProps} />;
   };
 
   return WithMutation;

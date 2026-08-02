@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { Form, message } from 'antd';
-import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useMutation } from '@apollo/client/react';
+import { type History } from 'history';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
   InputTextField,
   InputTextAreaField,
@@ -18,21 +17,8 @@ import {
   VENDORS_BY_PHYSICAL_STORE_ID,
 } from './gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-
-interface RouteParams {
-  physicalStoreId: string;
-}
-
-interface HistoryLike {
-  goBack(): void;
-}
-
 interface NewFormProps {
-  history: HistoryLike;
+  history: History;
 }
 
 interface VendorFormValues {
@@ -44,28 +30,23 @@ interface VendorFormValues {
 }
 
 const NewForm = ({ history }: NewFormProps) => {
-  const dispatch = useDispatch();
-  const { physicalStoreId } = useParams<RouteParams>();
-  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const { physicalStoreId } = useParams<{ physicalStoreId: string }>();
+  const { physicalStore } = usePhysicalStore(physicalStoreId!);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createVendor] = useMutation(CREATE_VENDOR as any, {
+  const [createVendor] = useMutation(CREATE_VENDOR, {
     refetchQueries: [{
-      query: VENDORS_BY_PHYSICAL_STORE_ID as any,
+      query: VENDORS_BY_PHYSICAL_STORE_ID,
       variables: {
         physicalStoreId,
       },
     }],
   });
 
-  useEffect(() => {
-    if (physicalStore) {
-      dispatch(
-        setBreadcrumbs(['Inventory', physicalStore.name, 'Setup', 'Vendors', 'New'])
-      );
-    } else {
-      dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Vendors', 'New']));
-    }
-  }, [dispatch, physicalStore]);
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name ?? '', 'Setup', 'Vendors', 'New']
+      : ['Inventory', 'Setup', 'Vendors', 'New']
+  );
 
   const handleCancel = () => {
     history.goBack();
@@ -85,7 +66,7 @@ const NewForm = ({ history }: NewFormProps) => {
     createVendor({
       variables: {
         name,
-        physicalStoreId,
+        physicalStoreId: physicalStoreId!,
         contactPerson,
         contactNumber,
         address,
@@ -102,44 +83,39 @@ const NewForm = ({ history }: NewFormProps) => {
   };
 
   return (
-    <AntForm
+    <Form
       layout="horizontal"
       onFinish={handleFinish}
       onFieldsChange={handleFieldsChange}
     >
-      <TextField
+      <InputTextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input a name for the vendor."
       />
-      <TextField
+      <InputTextField
         fieldName="contactPerson"
         fieldLabel="Contact Person"
       />
-      <TextField
+      <InputTextField
         fieldName="contactNumber"
         fieldLabel="Contact Number"
       />
-      <TextAreaField
+      <InputTextAreaField
         fieldName="address"
         fieldLabel="Address"
       />
-      <TextAreaField
+      <InputTextAreaField
         fieldName="notes"
         fieldLabel="Notes"
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
-};
-
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default NewForm;

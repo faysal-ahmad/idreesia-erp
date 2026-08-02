@@ -1,22 +1,17 @@
-import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
+import React, { Fragment, useState } from 'react';
 import { EditOutlined } from '@ant-design/icons';
-
 import { Drawer, Input } from 'antd';
+
+import type { PagedStockItemsQuery } from 'meteor/idreesia-common/types/client-operations';
 import ListContainer from './list-container';
 
-const AntDrawer = Drawer as any;
-const AntInput = Input as any;
-const AntEditOutlined = EditOutlined as any;
-const ReactFragment = Fragment as any;
-const StockItemListContainer = ListContainer as any;
+type StockItem = NonNullable<
+  NonNullable<
+    NonNullable<PagedStockItemsQuery['pagedStockItems']>['data']
+  >[number]
+>;
 
-interface StockItem {
-  _id: string;
-  formattedName?: string;
-}
-
-interface CustomInputProps {
+interface Props {
   value?: StockItem | null;
   disabled?: boolean;
   placeholder?: string;
@@ -24,73 +19,52 @@ interface CustomInputProps {
   physicalStoreId?: string;
 }
 
-interface CustomInputState {
-  showSelectionForm: boolean;
-}
+const CustomInput = ({
+  value,
+  disabled,
+  placeholder,
+  onChange,
+  physicalStoreId,
+}: Props) => {
+  const [showSelectionForm, setShowSelectionForm] = useState(false);
 
-export default class CustomInput extends Component<
-  CustomInputProps,
-  CustomInputState
-> {
-  static propTypes = {
-    value: PropTypes.object,
-    disabled: PropTypes.bool,
-    placeholder: PropTypes.string,
-    onChange: PropTypes.func,
-
-    physicalStoreId: PropTypes.string,
-  };
-
-  state = {
-    showSelectionForm: false,
-  };
-
-  handleEditClick = () => {
-    const { disabled } = this.props;
+  const handleEditClick = () => {
     if (!disabled) {
-      this.setState({
-        showSelectionForm: true,
-      });
+      setShowSelectionForm(true);
     }
   };
 
-  handleClose = () => {
-    this.setState({
-      showSelectionForm: false,
-    });
+  const handleClose = () => {
+    setShowSelectionForm(false);
   };
 
-  setSelectedValue = (stockItem: StockItem) => {
-    const { onChange } = this.props;
-    this.handleClose();
-    if (onChange) {
-      onChange(stockItem);
-    }
+  const setSelectedValue = (stockItem: StockItem) => {
+    handleClose();
+    onChange?.(stockItem);
   };
 
-  render() {
-    const { placeholder, value, physicalStoreId } = this.props;
-    return (
-      <ReactFragment>
-        <AntDrawer
-          title="Select a Stock Item"
-          width={720}
-          onClose={this.handleClose}
-          open={this.state.showSelectionForm}
-        >
-          <StockItemListContainer
-            setSelectedValue={this.setSelectedValue}
-            physicalStoreId={physicalStoreId}
-          />
-        </AntDrawer>
-        <AntInput
-          type="text"
-          value={value ? value.formattedName : ''}
-          readOnly
-          addonAfter={<AntEditOutlined onClick={this.handleEditClick} />}
-          placeholder={placeholder}
+  return (
+    <Fragment>
+      <Drawer
+        title="Select a Stock Item"
+        width={720}
+        onClose={handleClose}
+        open={showSelectionForm}
+      >
+        <ListContainer
+          setSelectedValue={setSelectedValue}
+          physicalStoreId={physicalStoreId}
         />
-      </ReactFragment>
-    );
-  }
-}
+      </Drawer>
+      <Input
+        type="text"
+        value={value ? value.formattedName ?? '' : ''}
+        readOnly
+        addonAfter={<EditOutlined onClick={handleEditClick} />}
+        placeholder={placeholder}
+      />
+    </Fragment>
+  );
+};
+
+export default CustomInput;

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import dayjs from 'dayjs';
+import { type CSSProperties } from 'react';
 import { Button, Collapse, Form, Row } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -11,7 +11,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 
-const ContainerStyle = {
+const ContainerStyle: CSSProperties = {
   width: '500px',
 };
 
@@ -24,16 +24,20 @@ const buttonItemLayout = {
   wrapperCol: { span: 12, offset: 4 },
 };
 
-const AntButton = Button as any;
-const AntCollapse = Collapse as any;
-const AntForm = Form as any;
-const AntFormItem = Form.Item as any;
-const AntRow = Row as any;
-const TreeField = TreeSelectField as any;
-const CheckboxField = CheckboxGroupField as any;
-const FilterDateField = DateField as any;
-const RefreshButtonComponent = RefreshButton as any;
-interface LocationRecord { _id: string; name: string; }
+interface LocationRecord {
+  _id: string | null;
+  name: string | null;
+}
+
+export interface IssuanceListFilterParams {
+  approvalStatus?: string[];
+  locationId?: string;
+  startDate?: dayjs.Dayjs | null;
+  endDate?: dayjs.Dayjs | null;
+  pageIndex?: number;
+  pageSize?: number;
+}
+
 interface QueryParams {
   startDate?: string;
   endDate?: string;
@@ -41,30 +45,26 @@ interface QueryParams {
   showApproved?: string;
   showUnapproved?: string;
 }
-interface FilterValues {
-  approvalStatus?: string[];
-  locationId?: string;
-  startDate?: dayjs.Dayjs | null;
-  endDate?: dayjs.Dayjs | null;
-  pageIndex?: number;
-}
+
 interface ListFilterProps {
   allLocations?: LocationRecord[];
-  refreshPage(params: FilterValues): void;
-  queryParams: QueryParams;
+  refreshPage(params: IssuanceListFilterParams): void;
+  queryParams: Record<string, string | number | boolean | null | undefined | string[]>;
   refreshData?(): void;
 }
 
-class ListFilter extends Component<ListFilterProps> {
-  static propTypes = {
-    allLocations: PropTypes.array,
-    refreshPage: PropTypes.func,
-    queryParams: PropTypes.object,
-    refreshData: PropTypes.func,
-  };
-
-  handleFinish = ({ approvalStatus, locationId, startDate, endDate }: FilterValues) => {
-    const { refreshPage } = this.props;
+const ListFilter = ({
+  allLocations,
+  refreshPage,
+  queryParams,
+  refreshData,
+}: ListFilterProps) => {
+  const handleFinish = ({
+    approvalStatus,
+    locationId,
+    startDate,
+    endDate,
+  }: IssuanceListFilterParams) => {
     refreshPage({
       approvalStatus,
       locationId,
@@ -74,8 +74,7 @@ class ListFilter extends Component<ListFilterProps> {
     });
   };
 
-  handleReset = () => {
-    const { refreshPage } = this.props;
+  const handleReset = () => {
     refreshPage({
       approvalStatus: ['approved', 'unapproved'],
       locationId: '',
@@ -85,86 +84,79 @@ class ListFilter extends Component<ListFilterProps> {
     });
   };
 
-  refreshButton = () => <RefreshButtonComponent refreshData={this.props.refreshData} />;
+  const {
+    startDate,
+    endDate,
+    locationId,
+    showApproved,
+    showUnapproved,
+  } = queryParams;
 
-  render() {
-    const { allLocations } = this.props;
-    const {
-      queryParams: {
-        startDate,
-        endDate,
-        locationId,
-        showApproved,
-        showUnapproved,
-      },
-    } = this.props;
+  const mStartDate = startDate ? dayjs(String(startDate), Formats.DATE_FORMAT) : null;
+  const mEndDate = endDate ? dayjs(String(endDate), Formats.DATE_FORMAT) : null;
+  const status: string[] = [];
+  if (!showApproved || showApproved === 'true') status.push('approved');
+  if (!showUnapproved || showUnapproved === 'true') status.push('unapproved');
 
-    const mStartDate = startDate ? dayjs(startDate, Formats.DATE_FORMAT) : null;
-    const mEndDate = endDate ? dayjs(endDate, Formats.DATE_FORMAT) : null;
-    const status: string[] = [];
-    if (!showApproved || showApproved === 'true') status.push('approved');
-    if (!showUnapproved || showUnapproved === 'true') status.push('unapproved');
+  return (
+    <Collapse
+      style={ContainerStyle}
+      items={[
+        {
+          key: '1',
+          label: 'Filter',
+            extra: <RefreshButton refreshData={refreshData ? async () => { refreshData(); } : undefined} />,
+          children: (
+            <Form layout="horizontal" onFinish={handleFinish}>
+              <CheckboxGroupField
+                fieldName="approvalStatus"
+                fieldLabel="Status"
+                fieldLayout={formItemLayout}
+                options={[
+                  { label: 'Approved', value: 'approved' },
+                  { label: 'Unapproved', value: 'unapproved' },
+                ]}
+                initialValue={status}
+              />
+              <DateField
+                fieldName="startDate"
+                fieldLabel="Start Date"
+                fieldLayout={formItemLayout}
+                required={false}
+                initialValue={mStartDate?.isValid() ? mStartDate : null}
+              />
+              <DateField
+                fieldName="endDate"
+                fieldLabel="End Date"
+                fieldLayout={formItemLayout}
+                required={false}
+                initialValue={mEndDate?.isValid() ? mEndDate : null}
+              />
+              <TreeSelectField
+                data={allLocations ?? []}
+                fieldName="locationId"
+                fieldLabel="Location"
+                fieldLayout={formItemLayout}
+                initialValue={locationId ? String(locationId) : undefined}
+              />
 
-    return (
-      <AntCollapse
-        style={ContainerStyle}
-        items={[
-          {
-            key: '1',
-            label: 'Filter',
-            extra: this.refreshButton(),
-            children: (
-              <AntForm layout="horizontal" onFinish={this.handleFinish}>
-                <CheckboxField
-                  fieldName="approvalStatus"
-                  fieldLabel="Status"
-                  fieldLayout={formItemLayout}
-                  options={[
-                    { label: 'Approved', value: 'approved' },
-                    { label: 'Unapproved', value: 'unapproved' },
-                  ]}
-                  initialValue={status}
-                />
-                <FilterDateField
-                  fieldName="startDate"
-                  fieldLabel="Start Date"
-                  fieldLayout={formItemLayout}
-                  required={false}
-                  initialValue={mStartDate?.isValid() ? mStartDate : null}
-                />
-                <FilterDateField
-                  fieldName="endDate"
-                  fieldLabel="End Date"
-                  fieldLayout={formItemLayout}
-                  required={false}
-                  initialValue={mEndDate?.isValid() ? mEndDate : null}
-                />
-                <TreeField
-                  data={allLocations ?? []}
-                  fieldName="locationId"
-                  fieldLabel="Location"
-                  fieldLayout={formItemLayout}
-                  initialValue={locationId}
-                />
-
-                <AntFormItem {...buttonItemLayout}>
-                  <AntRow type="flex" justify="end">
-                    <AntButton type="default" onClick={this.handleReset}>
-                      Reset
-                    </AntButton>
-                    &nbsp;
-                    <AntButton type="primary" htmlType="submit">
-                      Search
-                    </AntButton>
-                  </AntRow>
-                </AntFormItem>
-              </AntForm>
-            ),
-          },
-        ]}
-      />
-    );
-  }
-}
+              <Form.Item {...buttonItemLayout}>
+                <Row justify="end">
+                  <Button type="default" onClick={handleReset}>
+                    Reset
+                  </Button>
+                  &nbsp;
+                  <Button type="primary" htmlType="submit">
+                    Search
+                  </Button>
+                </Row>
+              </Form.Item>
+            </Form>
+          ),
+        },
+      ]}
+    />
+  );
+};
 
 export default ListFilter;

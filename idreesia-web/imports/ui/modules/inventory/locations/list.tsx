@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client/react';
+import { type History } from 'history';
 import {
   Button,
   Popconfirm,
@@ -16,7 +15,8 @@ import {
   SyncOutlined,
 } from '@ant-design/icons';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import type { LocationsByPhysicalStoreIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import { usePhysicalStore } from '/imports/ui/modules/inventory/common/hooks';
 
@@ -25,74 +25,44 @@ import {
   LOCATIONS_BY_PHYSICAL_STORE_ID,
 } from './gql';
 
-const AntButton = Button as any;
-const AntPopconfirm = Popconfirm as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-const AntSyncOutlined = SyncOutlined as any;
 const RouterLink = Link as any;
 
-interface RouteParams {
-  physicalStoreId: string;
-}
-
-interface HistoryLike {
-  push(path: string): void;
-}
-
 interface ListProps {
-  history: HistoryLike;
+  history: History;
 }
 
-interface LocationRecord {
-  _id: string;
-  name: string;
-  parentId?: string;
-  description?: string;
-  isInUse?: boolean;
-  refParent?: {
-    name?: string;
-  };
-}
-
-interface LocationsData {
-  locationsByPhysicalStoreId: LocationRecord[];
-}
+type LocationRow = NonNullable<
+  NonNullable<LocationsByPhysicalStoreIdQuery['locationsByPhysicalStoreId']>[number]
+>;
 
 const List = ({ history }: ListProps) => {
-  const dispatch = useDispatch();
-  const { physicalStoreId } = useParams<RouteParams>();
-  const { physicalStore } = usePhysicalStore(physicalStoreId);
-  const [removeLocation] = useMutation(REMOVE_LOCATION as any, {
+  const { physicalStoreId } = useParams<{ physicalStoreId: string }>();
+  const { physicalStore } = usePhysicalStore(physicalStoreId!);
+
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name ?? '', 'Setup', 'Locations', 'List']
+      : ['Inventory', 'Setup', 'Locations', 'List']
+  );
+
+  const [removeLocation] = useMutation(REMOVE_LOCATION, {
     refetchQueries: [{
-      query: LOCATIONS_BY_PHYSICAL_STORE_ID as any,
+      query: LOCATIONS_BY_PHYSICAL_STORE_ID,
       variables: {
         physicalStoreId,
       },
     }],
   });
-  
-  useEffect(() => {
-    if (physicalStore) {
-      dispatch(
-        setBreadcrumbs(['Inventory', physicalStore.name, 'Setup', 'Locations', 'List'])
-      );
-    } else {
-      dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Locations', 'List']));
-    }
-  }, [dispatch, physicalStore]);
 
   const handleNewClicked = () => {
-    history.push(paths.locationsNewFormPath(physicalStoreId));
+    history.push(paths.locationsNewFormPath(physicalStoreId!));
   };
 
-  const handleDeleteClicked = (location: LocationRecord) => {
+  const handleDeleteClicked = (location: LocationRow) => {
     removeLocation({
       variables: {
-        _id: location._id,
-        physicalStoreId,
+        _id: location._id!,
+        physicalStoreId: physicalStoreId!,
       },
     })
       .then(() => {
@@ -108,11 +78,11 @@ const List = ({ history }: ListProps) => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, record: LocationRecord) => (
+      render: (text: string, record: LocationRow) => (
         <RouterLink
           to={`${paths.locationsEditFormPath(
-            physicalStoreId,
-            record._id
+            physicalStoreId!,
+            record._id!
           )}`}
         >
           {text}
@@ -123,11 +93,11 @@ const List = ({ history }: ListProps) => {
       title: 'Parent Location',
       dataIndex: 'parentId',
       key: 'parentId',
-      render: (_text: unknown, record: LocationRecord) => (
+      render: (_text: unknown, record: LocationRow) => (
         <RouterLink
           to={`${paths.itemCategoriesEditFormPath(
-            physicalStoreId,
-            record.parentId
+            physicalStoreId!,
+            record.parentId!
           )}`}
         >
           {record.refParent ? record.refParent.name : ''}
@@ -142,13 +112,13 @@ const List = ({ history }: ListProps) => {
     {
       title: 'Actions',
       key: 'action',
-      render: (_text: unknown, record: LocationRecord) => {
+      render: (_text: unknown, record: LocationRow) => {
         const { isInUse } = record;
 
         if (!isInUse) {
           return (
             <div className="list-actions-column">
-              <AntPopconfirm
+              <Popconfirm
                 title="Are you sure you want to delete this location?"
                 onConfirm={() => {
                   handleDeleteClicked(record);
@@ -156,10 +126,10 @@ const List = ({ history }: ListProps) => {
                 okText="Yes"
                 cancelText="No"
               >
-                <AntTooltip title="Delete">
-                  <AntDeleteOutlined className="list-actions-icon" />
-                </AntTooltip>
-              </AntPopconfirm>
+                <Tooltip title="Delete">
+                  <DeleteOutlined className="list-actions-icon" />
+                </Tooltip>
+              </Popconfirm>
             </div>
           );
         }
@@ -169,37 +139,35 @@ const List = ({ history }: ListProps) => {
     },
   ];
 
-  const { data, loading, refetch } = useQuery(
-    LOCATIONS_BY_PHYSICAL_STORE_ID as any,
-    {
-      variables: { physicalStoreId },
-    }
-  );
-  
+  const { data, loading, refetch } = useQuery(LOCATIONS_BY_PHYSICAL_STORE_ID, {
+    variables: { physicalStoreId: physicalStoreId! },
+  });
+
   if (loading) return null;
-  const { locationsByPhysicalStoreId } = (data as LocationsData) ?? {
-    locationsByPhysicalStoreId: [],
-  };
+
+  const locationsByPhysicalStoreId = (data?.locationsByPhysicalStoreId ?? []).filter(
+    (row): row is LocationRow => row != null
+  );
 
   return (
-    <AntTable
+    <Table
       rowKey="_id"
       dataSource={locationsByPhysicalStoreId}
       columns={columns}
       bordered
       title={() => (
         <div className="list-table-header">
-          <AntButton
+          <Button
             type="primary"
-            icon={<AntPlusCircleOutlined />}
+            icon={<PlusCircleOutlined />}
             onClick={handleNewClicked}
           >
             New Location
-          </AntButton>
+          </Button>
           <div className="list-table-header-section">
-            <AntButton
+            <Button
               size="large"
-              icon={<AntSyncOutlined />}
+              icon={<SyncOutlined />}
               onClick={() => { refetch(); }}
             />
           </div>
@@ -207,11 +175,6 @@ const List = ({ history }: ListProps) => {
       )}
     />
   );
-};
-
-List.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default List;

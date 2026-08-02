@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { PictureOutlined } from '@ant-design/icons';
 
@@ -7,12 +6,9 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from 'antd';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 
-const AntAvatar = Avatar as any;
-const AntModal = Modal as any;
-const AntPictureOutlined = PictureOutlined as any;
 const RouterLink = Link as any;
 
-const NameDivStyle = {
+const NameDivStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'flex-start',
@@ -26,7 +22,7 @@ interface StockItem {
   _id: string;
   physicalStoreId: string;
   name: string;
-  imageId?: string;
+  imageId?: string | null;
 }
 
 interface StockItemNameProps {
@@ -62,12 +58,12 @@ const StockItemName = ({
 
   let imageUrl: string | undefined;
   let avatarNode = (
-    <AntAvatar shape="square" size="large" icon={<AntPictureOutlined />} />
+    <Avatar shape="square" size="large" icon={<PictureOutlined />} />
   );
   if (stockItem.imageId) {
     imageUrl = getDownloadUrl(stockItem.imageId) ?? undefined;
     avatarNode = (
-      <AntAvatar
+      <Avatar
         shape="square"
         size="large"
         src={imageUrl}
@@ -80,31 +76,21 @@ const StockItemName = ({
 
   return (
     <>
-      <div style={NameDivStyle as any}>
+      <div style={NameDivStyle}>
         {avatarNode}
         &nbsp;&nbsp;
         {nameNode}
       </div>
-      <AntModal
+      <Modal
         title={stockItem.name}
         open={showDialog}
         onCancel={() => setShowDialog(false)}
         footer={null}
       >
         {imageUrl ? <img src={imageUrl} alt={stockItem.name} /> : null}
-      </AntModal>
+      </Modal>
     </>
   );
-};
-
-StockItemName.propTypes = {
-  stockItem: PropTypes.shape({
-    _id: PropTypes.string,
-    physicalStoreId: PropTypes.string,
-    name: PropTypes.string,
-    imageId: PropTypes.string,
-  }),
-  onStockItemNameClicked: PropTypes.func,
 };
 
 export default StockItemName;

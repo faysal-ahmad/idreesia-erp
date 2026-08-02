@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  UpdateStockItemMutation,
+  UpdateStockItemMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-export const UPDATE_STOCK_ITEM = gql`
+export const UPDATE_STOCK_ITEM: TypedDocumentNode<
+  UpdateStockItemMutation,
+  UpdateStockItemMutationVariables
+> = gql`
   mutation updateStockItem(
     $_id: String!
     $physicalStoreId: String!

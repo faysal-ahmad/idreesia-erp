@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { Form, message } from 'antd';
-import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useMutation } from '@apollo/client/react';
+import { type History } from 'history';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { InventorySubModulePaths as paths } from '/imports/ui/modules/inventory';
 import {
   InputTextField,
@@ -18,20 +17,8 @@ import {
   ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID,
 } from './gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-
-interface RouteParams {
-  physicalStoreId: string;
-}
-
-interface HistoryLike {
-  push(path: string): void;
-}
-
 interface NewFormProps {
-  history: HistoryLike;
+  history: History;
 }
 
 interface ItemCategoryFormValues {
@@ -39,31 +26,26 @@ interface ItemCategoryFormValues {
 }
 
 const NewForm = ({ history }: NewFormProps) => {
-  const dispatch = useDispatch();
-  const { physicalStoreId } = useParams<RouteParams>();
-  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const { physicalStoreId } = useParams<{ physicalStoreId: string }>();
+  const { physicalStore } = usePhysicalStore(physicalStoreId!);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createItemCategory] = useMutation(CREATE_ITEM_CATEGORY as any, {
+  const [createItemCategory] = useMutation(CREATE_ITEM_CATEGORY, {
     refetchQueries: [{
-      query: ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID as any,
+      query: ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID,
       variables: {
         physicalStoreId,
       },
     }],
   });
 
-  useEffect(() => {
-    if (physicalStore) {
-      dispatch(
-        setBreadcrumbs(['Inventory', physicalStore.name, 'Setup', 'Item Categories', 'New'])
-      );
-    } else {
-      dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Item Categories', 'New']));
-    }
-  }, [dispatch, physicalStore]);
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name ?? '', 'Setup', 'Item Categories', 'New']
+      : ['Inventory', 'Setup', 'Item Categories', 'New']
+  );
 
   const handleCancel = () => {
-    history.push(paths.itemCategoriesPath(physicalStoreId));
+    history.push(paths.itemCategoriesPath(physicalStoreId!));
   };
 
   const handleFieldsChange = () => {
@@ -72,11 +54,11 @@ const NewForm = ({ history }: NewFormProps) => {
 
   const handleFinish = ({ name }: ItemCategoryFormValues) => {
     createItemCategory({
-      variables: { name, physicalStoreId },
+      variables: { name, physicalStoreId: physicalStoreId! },
     })
       .then(() => {
         message.success('New item category was created successfully.', 5);
-        history.push(paths.itemCategoriesPath(physicalStoreId));
+        history.push(paths.itemCategoriesPath(physicalStoreId!));
       })
       .catch((error: Error) => {
         message.error(error.message, 5);
@@ -84,28 +66,23 @@ const NewForm = ({ history }: NewFormProps) => {
   };
 
   return (
-    <AntForm
+    <Form
       layout="horizontal"
       onFinish={handleFinish}
       onFieldsChange={handleFieldsChange}
     >
-      <TextField
+      <InputTextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input a name for the item category."
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
-};
-
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default NewForm;

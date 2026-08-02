@@ -1,21 +1,26 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/client/react';
+import { useParams } from 'react-router-dom';
+import { type RouteComponentProps } from 'react-router';
+import { type History } from 'history';
 
 import { Modal, message } from 'antd';
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  WithDynamicBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
+  useDynamicBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
+import type {
+  MehfilByIdQuery,
+  MehfilKarkunsByMehfilIdQuery,
+} from 'meteor/idreesia-common/types/client-operations';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import {
-  WithMehfilId,
-  WithMehfil,
-  WithAllMehfilDuties,
+  useMehfil,
+  useAllSecurityMehfilDuties,
+  type SecurityMehfilDuty,
 } from '/imports/ui/modules/security/common/composers';
 
-import List from './list';
+import List, { type PageParams } from './list';
 import EditForm from './edit-form';
 import {
   ADD_MEHFIL_KARKUN,
@@ -23,31 +28,27 @@ import {
   REMOVE_MEHFIL_KARKUN,
 } from './gql';
 
-const AntModal = Modal as any;
-const KarkunsList = List as any;
+type MehfilRecord = NonNullable<MehfilByIdQuery['mehfilById']>;
 
-interface HistoryLike { push(path: string): void; }
-interface LocationLike { pathname: string; }
-interface MatchLike { params: { mehfilId: string }; }
-interface QueryParams { dutyId?: string; }
-interface MehfilKarkun { _id: string; }
-interface MehfilRecord { name?: string; }
-type MutationFn = (args: unknown) => Promise<unknown>;
+type MehfilKarkun = NonNullable<
+  NonNullable<
+    MehfilKarkunsByMehfilIdQuery['mehfilKarkunsByMehfilId']
+  >[number]
+>;
 
 interface ListContainerProps {
-  addMehfilKarkun: MutationFn;
-  setDutyDetail: MutationFn;
-  removeMehfilKarkun: MutationFn;
+  addMehfilKarkun(options: { variables: { mehfilId: string; karkunId: string; dutyId?: string } }): Promise<unknown>;
+  setDutyDetail(options: { variables: { ids: string[]; dutyDetail: string } }): Promise<unknown>;
+  removeMehfilKarkun(options: { variables: { _id: string } }): Promise<unknown>;
   mehfilLoading?: boolean;
   mehfilById?: MehfilRecord | null;
   allSecurityMehfilDutiesLoading?: boolean;
-  allSecurityMehfilDuties?: unknown[];
+  allSecurityMehfilDuties: SecurityMehfilDuty[];
   refetchAllSecurityMehfilDuties(): void;
-  match: MatchLike;
-  history: HistoryLike;
-  location: LocationLike;
-  queryString?: string;
-  queryParams: QueryParams;
+  mehfilId: string;
+  history: History;
+  location: RouteComponentProps['location'];
+  queryParams: PageParams;
 }
 
 interface ListContainerState {
@@ -56,29 +57,12 @@ interface ListContainerState {
 }
 
 class ListContainer extends Component<ListContainerProps, ListContainerState> {
-  static propTypes = {
-    addMehfilKarkun: PropTypes.func,
-    setDutyDetail: PropTypes.func,
-    removeMehfilKarkun: PropTypes.func,
-    mehfilLoading: PropTypes.bool,
-    mehfilById: PropTypes.object,
-    allSecurityMehfilDutiesLoading: PropTypes.bool,
-    allSecurityMehfilDuties: PropTypes.array,
-    refetchAllSecurityMehfilDuties: PropTypes.func,
-
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
-    queryString: PropTypes.string,
-    queryParams: PropTypes.object,
-  };
-
   state = {
     showEditForm: false,
-    mehfilKarkuns: [],
+    mehfilKarkuns: [] as MehfilKarkun[],
   };
 
-  setPageParams = (newParams: QueryParams) => {
+  setPageParams = (newParams: PageParams) => {
     const { queryParams, history, location } = this.props;
     const { dutyId } = newParams;
 
@@ -92,13 +76,11 @@ class ListContainer extends Component<ListContainerProps, ListContainerState> {
 
   handleAddMehfilKarkun = (karkunId: string, refetchQuery: () => void) => {
     const {
-      match,
+      mehfilId,
       addMehfilKarkun,
       refetchAllSecurityMehfilDuties,
       queryParams: { dutyId },
     } = this.props;
-
-    const { mehfilId } = match.params;
 
     addMehfilKarkun({
       variables: {
@@ -135,11 +117,10 @@ class ListContainer extends Component<ListContainerProps, ListContainerState> {
   handleViewPrintCards = (selectedRows: MehfilKarkun[]) => {
     const {
       history,
-      match,
+      mehfilId,
       queryParams: { dutyId },
     } = this.props;
-    const { mehfilId } = match.params;
-    const ids = selectedRows.map((row: MehfilKarkun) => row._id);
+    const ids = selectedRows.map((row) => row._id ?? '').filter(Boolean);
     const idsString = ids.join(',');
     const path = `${paths.mehfilsKarkunPrintCardsPath(
       mehfilId
@@ -150,11 +131,10 @@ class ListContainer extends Component<ListContainerProps, ListContainerState> {
   handleViewPrintList = (selectedRows: MehfilKarkun[]) => {
     const {
       history,
-      match,
+      mehfilId,
       queryParams: { dutyId },
     } = this.props;
-    const { mehfilId } = match.params;
-    const ids = selectedRows.map((row: MehfilKarkun) => row._id);
+    const ids = selectedRows.map((row) => row._id ?? '').filter(Boolean);
     const idsString = ids.join(',');
     const path = `${paths.mehfilsKarkunPrintListPath(
       mehfilId
@@ -175,11 +155,11 @@ class ListContainer extends Component<ListContainerProps, ListContainerState> {
     const { mehfilKarkuns } = this.state;
     const { setDutyDetail } = this.props;
 
-    const ids = mehfilKarkuns.map(({ _id }: MehfilKarkun) => _id);
+    const ids = mehfilKarkuns.map(({ _id }) => _id ?? '').filter(Boolean);
     setDutyDetail({
       variables: {
         ids,
-        dutyDetail,
+        dutyDetail: dutyDetail ?? '',
       },
     }).catch((error: Error) => {
       message.error(error.message, 5);
@@ -201,15 +181,14 @@ class ListContainer extends Component<ListContainerProps, ListContainerState> {
   render() {
     const {
       queryParams: { dutyId },
-      match,
+      mehfilId,
       mehfilLoading,
       mehfilById,
       allSecurityMehfilDutiesLoading,
       allSecurityMehfilDuties,
     } = this.props;
-    const { mehfilId } = match.params;
 
-    if (mehfilLoading || allSecurityMehfilDutiesLoading) return null;
+    if (mehfilLoading || allSecurityMehfilDutiesLoading || !mehfilById) return null;
 
     const { showEditForm } = this.state;
     const editForm = showEditForm ? (
@@ -221,7 +200,7 @@ class ListContainer extends Component<ListContainerProps, ListContainerState> {
 
     return (
       <>
-        <KarkunsList
+        <List
           dutyId={dutyId}
           mehfilId={mehfilId}
           mehfilById={mehfilById}
@@ -233,7 +212,7 @@ class ListContainer extends Component<ListContainerProps, ListContainerState> {
           handleViewPrintCards={this.handleViewPrintCards}
           handleViewPrintList={this.handleViewPrintList}
         />
-        <AntModal
+        <Modal
           title="Edit Duty Details"
           open={showEditForm}
           onCancel={this.handleEditMehfilKarkunClose}
@@ -241,36 +220,48 @@ class ListContainer extends Component<ListContainerProps, ListContainerState> {
           footer={null}
         >
           <div>{editForm}</div>
-        </AntModal>
+        </Modal>
       </>
     );
   }
 }
 
-const ListContainerWithData = (props: any) => {
-  const [addMehfilKarkun] = useMutation(ADD_MEHFIL_KARKUN as any);
-  const [setDutyDetail] = useMutation(SET_DUTY_DETAIL as any);
-  const [removeMehfilKarkun] = useMutation(REMOVE_MEHFIL_KARKUN as any);
+const ListContainerPage = ({ history, location }: RouteComponentProps) => {
+  const { mehfilId = '' } = useParams<{ mehfilId: string }>();
+  const { queryParams } = useQueryParams({ history, location });
+  const { mehfilLoading, mehfilById } = useMehfil(mehfilId);
+  const {
+    allSecurityMehfilDutiesLoading,
+    allSecurityMehfilDuties,
+    refetchAllSecurityMehfilDuties,
+  } = useAllSecurityMehfilDuties(mehfilId);
+
+  useDynamicBreadcrumbs(
+    mehfilById?.name
+      ? ['Security', 'Mehfils', mehfilById.name, 'Karkun Duties']
+      : ['Security', 'Mehfils', 'Karkun Duties']
+  );
+
+  const [addMehfilKarkun] = useMutation(ADD_MEHFIL_KARKUN);
+  const [setDutyDetail] = useMutation(SET_DUTY_DETAIL);
+  const [removeMehfilKarkun] = useMutation(REMOVE_MEHFIL_KARKUN);
 
   return (
     <ListContainer
-      {...props}
       addMehfilKarkun={addMehfilKarkun}
       setDutyDetail={setDutyDetail}
       removeMehfilKarkun={removeMehfilKarkun}
+      mehfilLoading={mehfilLoading}
+      mehfilById={mehfilById}
+      allSecurityMehfilDutiesLoading={allSecurityMehfilDutiesLoading}
+      allSecurityMehfilDuties={allSecurityMehfilDuties}
+      refetchAllSecurityMehfilDuties={refetchAllSecurityMehfilDuties}
+      mehfilId={mehfilId}
+      history={history}
+      location={location}
+      queryParams={{ dutyId: String(queryParams.dutyId || '') }}
     />
   );
 };
 
-export default flowRight(
-  WithQueryParams(),
-  WithMehfilId(),
-  WithMehfil(),
-  WithAllMehfilDuties(),
-  WithDynamicBreadcrumbs(({ mehfilById }: { mehfilById?: MehfilRecord }) => {
-    if (mehfilById) {
-      return `Security, Mehfils, ${mehfilById.name}, Karkun Duties`;
-    }
-    return `Security, Mehfils, Karkun Duties`;
-  })
-)(ListContainerWithData as any);
+export default ListContainerPage;

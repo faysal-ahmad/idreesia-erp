@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { useRef, type CSSProperties } from 'react';
 import { Button, Collapse, Form, Row } from 'antd';
 
+import type { ItemCategoriesByPhysicalStoreIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   InputTextField,
   SelectField,
 } from '/imports/ui/modules/helpers/fields';
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
-import { WithItemCategoriesByPhysicalStore } from '/imports/ui/modules/inventory/common/composers';
+import { usePhysicalStoreItemCategories } from '/imports/ui/modules/inventory/common/hooks';
 
-const ContainerStyle = {
+const ContainerStyle: CSSProperties = {
   width: '500px',
 };
 
@@ -22,61 +22,58 @@ const buttonItemLayout = {
   wrapperCol: { span: 12, offset: 4 },
 };
 
-const AntButton = Button as any;
-const AntCollapse = Collapse as any;
-const AntForm = Form as any;
-const AntFormItem = Form.Item as any;
-const AntRow = Row as any;
-const TextField = InputTextField as any;
-const SelectInputField = SelectField as any;
-const RefreshButtonComponent = RefreshButton as any;
-
-interface ItemCategory {
-  _id: string;
-  name: string;
-}
-
-interface SelectOption {
+interface LabelValue {
   label: string;
   value: string;
 }
 
-interface PageParams {
+type ItemCategory = NonNullable<
+  NonNullable<
+    ItemCategoriesByPhysicalStoreIdQuery['itemCategoriesByPhysicalStoreId']
+  >[number]
+>;
+
+export interface PageParams {
   pageIndex?: number;
+  pageSize?: number;
   categoryId?: string | null;
   name?: string | null;
   verifyDuration?: string | null;
   stockLevel?: string | null;
 }
 
-interface ListFilterProps {
+interface FilterFormValues {
+  categoryId?: string;
+  name?: string;
+  verifyDuration?: string;
+  stockLevel?: string;
+}
+
+interface Props {
   name?: string | null;
   categoryId?: string | null;
   verifyDuration?: string | null;
   stockLevel?: string | null;
-  physicalStoreId?: string;
-  itemCategoriesByPhysicalStoreId?: ItemCategory[];
+  physicalStoreId: string;
   setPageParams(params: PageParams): void;
-  refreshData?(): void;
+  refreshData?(): Promise<unknown>;
 }
 
-class ListFilter extends Component<ListFilterProps> {
-  static propTypes = {
-    name: PropTypes.string,
-    categoryId: PropTypes.string,
-    verifyDuration: PropTypes.string,
-    stockLevel: PropTypes.string,
-    physicalStoreId: PropTypes.string,
-    itemCategoriesByPhysicalStoreId: PropTypes.array,
-    setPageParams: PropTypes.func,
-    refreshData: PropTypes.func,
-  };
+const ListFilter = ({
+  name,
+  categoryId,
+  verifyDuration,
+  stockLevel,
+  physicalStoreId,
+  setPageParams,
+  refreshData,
+}: Props) => {
+  const formRef = useRef<any>(null);
+  const { itemCategoriesByPhysicalStoreId } =
+    usePhysicalStoreItemCategories(physicalStoreId);
 
-  formRef = React.createRef<any>();
-
-  handleReset = () => {
-    const { setPageParams } = this.props;
-    this.formRef.current.resetFields();
+  const handleReset = () => {
+    formRef.current?.resetFields();
     setPageParams({
       pageIndex: 0,
       categoryId: null,
@@ -86,116 +83,110 @@ class ListFilter extends Component<ListFilterProps> {
     });
   };
 
-  handleFinish = ({ categoryId, name, verifyDuration, stockLevel }: PageParams) => {
-    const { setPageParams } = this.props;
+  const handleFinish = ({
+    categoryId: categoryIdVal,
+    name: nameVal,
+    verifyDuration: verifyDurationVal,
+    stockLevel: stockLevelVal,
+  }: FilterFormValues) => {
     setPageParams({
       pageIndex: 0,
-      categoryId,
-      name,
-      verifyDuration,
-      stockLevel,
+      categoryId: categoryIdVal,
+      name: nameVal,
+      verifyDuration: verifyDurationVal,
+      stockLevel: stockLevelVal,
     });
   };
 
-  refreshButton = () => (
-    <RefreshButtonComponent refreshData={this.props.refreshData} />
+  const categories = (itemCategoriesByPhysicalStoreId ?? []).filter(
+    (category): category is ItemCategory => category != null
   );
 
-  render() {
-    const {
-      categoryId,
-      name,
-      stockLevel,
-      verifyDuration,
-      itemCategoriesByPhysicalStoreId,
-    } = this.props;
+  return (
+    <Collapse
+      style={ContainerStyle}
+      items={[
+        {
+          key: '1',
+          label: 'Filter',
+          extra: <RefreshButton refreshData={refreshData} />,
+          children: (
+            <Form ref={formRef} layout="horizontal" onFinish={handleFinish}>
+              <SelectField<ItemCategory>
+                data={categories}
+                getDataValue={category => category._id ?? ''}
+                getDataText={category => category.name ?? ''}
+                fieldName="categoryId"
+                fieldLabel="Category"
+                fieldLayout={formItemLayout}
+                initialValue={categoryId}
+              />
+              <InputTextField
+                fieldName="name"
+                fieldLabel="Name"
+                required={false}
+                fieldLayout={formItemLayout}
+                initialValue={name}
+              />
+              <SelectField<LabelValue>
+                fieldName="stockLevel"
+                fieldLabel="Stock Level"
+                required={false}
+                data={[
+                  {
+                    label: 'Negative Stock Level',
+                    value: 'negative-stock-level',
+                  },
+                  {
+                    label: 'Less than Min Stock Level',
+                    value: 'less-than-min-stock-level',
+                  },
+                ]}
+                getDataValue={({ value }) => value}
+                getDataText={({ label }) => label}
+                fieldLayout={formItemLayout}
+                initialValue={stockLevel}
+              />
+              <SelectField<LabelValue>
+                fieldName="verifyDuration"
+                fieldLabel="Stock Verified"
+                required={false}
+                data={[
+                  {
+                    label: 'Less than 3 months ago',
+                    value: 'less-than-3-months-ago',
+                  },
+                  {
+                    label: 'Between 3 to 6 months ago',
+                    value: 'between-3-to-6-months-ago',
+                  },
+                  {
+                    label: 'More than 6 months ago',
+                    value: 'more-than-6-months-ago',
+                  },
+                ]}
+                getDataValue={({ value }) => value}
+                getDataText={({ label }) => label}
+                fieldLayout={formItemLayout}
+                initialValue={verifyDuration}
+              />
+              <Form.Item {...buttonItemLayout}>
+                <Row justify="end">
+                  <Button type="default" onClick={handleReset}>
+                    Reset
+                  </Button>
+                  &nbsp;
+                  <Button type="primary" htmlType="submit">
+                    Search
+                  </Button>
+                </Row>
+              </Form.Item>
+            </Form>
+          ),
+        },
+      ]}
+    />
+  );
+};
 
-    return (
-      <AntCollapse
-        style={ContainerStyle}
-        items={[
-          {
-            key: '1',
-            label: 'Filter',
-            extra: this.refreshButton(),
-            children: (
-              <AntForm ref={this.formRef} layout="horizontal" onFinish={this.handleFinish}>
-                <SelectInputField
-                  data={itemCategoriesByPhysicalStoreId ?? []}
-                  getDataValue={(category: ItemCategory) => category._id}
-                  getDataText={(category: ItemCategory) => category.name}
-                  fieldName="categoryId"
-                  fieldLabel="Category"
-                  fieldLayout={formItemLayout}
-                  initialValue={categoryId}
-                />
-                <TextField
-                  fieldName="name"
-                  fieldLabel="Name"
-                  required={false}
-                  fieldLayout={formItemLayout}
-                  initialValue={name}
-                />
-                <SelectInputField
-                  fieldName="stockLevel"
-                  fieldLabel="Stock Level"
-                  required={false}
-                  data={[
-                    {
-                      label: 'Negative Stock Level',
-                      value: 'negative-stock-level',
-                    },
-                    {
-                      label: 'Less than Min Stock Level',
-                      value: 'less-than-min-stock-level',
-                    },
-                  ]}
-                  getDataValue={({ value }: SelectOption) => value}
-                  getDataText={({ label }: SelectOption) => label}
-                  fieldLayout={formItemLayout}
-                  initialValue={stockLevel}
-                />
-                <SelectInputField
-                  fieldName="verifyDuration"
-                  fieldLabel="Stock Verified"
-                  required={false}
-                  data={[
-                    {
-                      label: 'Less than 3 months ago',
-                      value: 'less-than-3-months-ago',
-                    },
-                    {
-                      label: 'Between 3 to 6 months ago',
-                      value: 'between-3-to-6-months-ago',
-                    },
-                    {
-                      label: 'More than 6 months ago',
-                      value: 'more-than-6-months-ago',
-                    },
-                  ]}
-                  getDataValue={({ value }: SelectOption) => value}
-                  getDataText={({ label }: SelectOption) => label}
-                  fieldLayout={formItemLayout}
-                  initialValue={verifyDuration}
-                />
-                <AntFormItem {...buttonItemLayout}>
-                  <AntRow type="flex" justify="end">
-                    <AntButton type="default" onClick={this.handleReset}>
-                      Reset
-                    </AntButton>
-                    &nbsp;
-                    <AntButton type="primary" htmlType="submit">
-                      Search
-                    </AntButton>
-                  </AntRow>
-                </AntFormItem>
-              </AntForm>
-            ),
-          },
-        ]}
-      />
-    );
-  }
-}
-
-export default WithItemCategoriesByPhysicalStore()(ListFilter as any);
+export default ListFilter;

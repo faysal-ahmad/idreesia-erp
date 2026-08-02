@@ -1,5 +1,4 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties } from 'react';
 import { useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import { ExclamationCircleTwoTone } from '@ant-design/icons';
@@ -10,109 +9,78 @@ import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 
 import { SECURITY_VISITOR_BY_CNIC } from '../gql';
 
-const AntExclamationCircleTwoTone = ExclamationCircleTwoTone as any;
-const AntCol = Col as any;
-const AntRow = Row as any;
-const AntSpin = Spin as any;
-const AntTabs = Tabs as any;
-const AntTabPane = (Tabs as any).TabPane;
-const VisitorStaysListComponent = VisitorStaysList as any;
+const TabPane = Tabs.TabPane;
 
-const LabelStyle = {
+const LabelStyle: CSSProperties = {
   fontWeight: 'bold',
   fontSize: 22,
 };
 
-const DataStyle = {
+const DataStyle: CSSProperties = {
   fontSize: 22,
 };
 
-const WarningDataStyle = {
+const WarningDataStyle: CSSProperties = {
   fontSize: 22,
   color: 'orange',
 };
 
-const ErrorDataStyle = {
+const ErrorDataStyle: CSSProperties = {
   fontSize: 22,
   color: 'red',
 };
 
-const NoRecordFoundStyle = {
+const NoRecordFoundStyle: CSSProperties = {
   color: 'orange',
   fontSize: 36,
 };
 
 interface SearchResultRowProps {
   label: string;
-  text?: string;
-  dataStyle: Record<string, string | number>;
+  text?: string | null;
+  dataStyle: CSSProperties;
 }
 
 const SearchResultRow = ({ label, text, dataStyle }: SearchResultRowProps) => (
-  <AntRow type="flex" gutter={16}>
-    <AntCol order={1}>
+  <Row gutter={16}>
+    <Col order={1}>
       <span style={LabelStyle}>{label}:</span>
-    </AntCol>
-    <AntCol order={2}>
+    </Col>
+    <Col order={2}>
       <span style={dataStyle}>{text}</span>
-    </AntCol>
-  </AntRow>
+    </Col>
+  </Row>
 );
-
-SearchResultRow.propTypes = {
-  label: PropTypes.string,
-  text: PropTypes.string,
-  dataStyle: PropTypes.object,
-};
-
-interface SecurityVisitor {
-  _id: string;
-  name?: string;
-  parentName?: string;
-  cnicNumber?: string;
-  ehadDate?: string | number;
-  referenceName?: string;
-  contactNumber1?: string;
-  city?: string;
-  country?: string;
-  imageId?: string;
-  criminalRecord?: string | null;
-  otherNotes?: string | null;
-}
-
-interface SecurityVisitorData {
-  securityVisitorByCnic?: SecurityVisitor | null;
-}
 
 interface SearchResultProps {
   cnicNumbers: string[];
 }
 
-const SearchResult = (props: SearchResultProps) => {
-  const { cnicNumbers } = props;
-  const { data = {}, loading } = useQuery(SECURITY_VISITOR_BY_CNIC as any, {
+const SearchResult = ({ cnicNumbers }: SearchResultProps) => {
+  const { data, loading } = useQuery(SECURITY_VISITOR_BY_CNIC, {
     variables: { cnicNumbers },
     fetchPolicy: 'network-only',
   });
-  const { securityVisitorByCnic } = data as SecurityVisitorData;
+  const securityVisitorByCnic = data?.securityVisitorByCnic;
+
   if (cnicNumbers.length === 0) return null;
-  if (loading) return <AntSpin size="large" />;
+  if (loading) return <Spin size="large" />;
 
   if (!securityVisitorByCnic) {
     return (
-      <AntRow type="flex" justify="start" align="middle" gutter={16}>
-        <AntCol>
-          <AntExclamationCircleTwoTone
+      <Row justify="start" align="middle" gutter={16}>
+        <Col>
+          <ExclamationCircleTwoTone
             style={NoRecordFoundStyle}
             twoToneColor={NoRecordFoundStyle.color}
           />
-        </AntCol>
-        <AntCol>
+        </Col>
+        <Col>
           <div style={NoRecordFoundStyle}>
-            {'No records found against scanned CNIC.'}
+            No records found against scanned CNIC.
           </div>
-        </AntCol>
-      </AntRow>
+        </Col>
+      </Row>
     );
   }
 
@@ -132,15 +100,17 @@ const SearchResult = (props: SearchResultProps) => {
   } = securityVisitorByCnic;
 
   const url = getDownloadUrl(imageId);
-  const image = url ? <img src={url} style={{ width: '250px' }} alt={name} /> : null;
+  const image = url ? (
+    <img src={url} style={{ width: '250px' }} alt={name ?? 'Visitor'} />
+  ) : null;
 
-  let dataStyle = DataStyle;
+  let dataStyle: CSSProperties = DataStyle;
   if (otherNotes) dataStyle = WarningDataStyle;
   if (criminalRecord) dataStyle = ErrorDataStyle;
 
   return (
-    <AntRow type="flex" justify="space-between" gutter={16}>
-      <AntCol order={1}>
+    <Row justify="space-between" gutter={16}>
+      <Col order={1}>
         {image}
         <SearchResultRow label="Name" text={name} dataStyle={dataStyle} />
         <SearchResultRow label="CNIC" text={cnicNumber} dataStyle={dataStyle} />
@@ -162,25 +132,21 @@ const SearchResult = (props: SearchResultProps) => {
         />
         <SearchResultRow label="City" text={city} dataStyle={dataStyle} />
         <SearchResultRow label="Country" text={country} dataStyle={dataStyle} />
-      </AntCol>
-      <AntCol order={2} span={16}>
-        <AntTabs defaultActiveKey="1">
-          <AntTabPane tab="Stay History" key="1">
-            <VisitorStaysListComponent
-              visitorId={_id}
+      </Col>
+      <Col order={2} span={16}>
+        <Tabs defaultActiveKey="1">
+          <TabPane tab="Stay History" key="1">
+            <VisitorStaysList
+              visitorId={_id ?? ''}
               showDutyColumn
               showNewButton
               showActionsColumn
             />
-          </AntTabPane>
-        </AntTabs>
-      </AntCol>
-    </AntRow>
+          </TabPane>
+        </Tabs>
+      </Col>
+    </Row>
   );
-};
-
-SearchResult.propTypes = {
-  cnicNumbers: PropTypes.array,
 };
 
 export default SearchResult;

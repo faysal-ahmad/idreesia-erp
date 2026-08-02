@@ -1,27 +1,17 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import type { IssuanceFormByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 
-import { AttachmentsList as AttachmentsListControl } from "/imports/ui/modules/helpers/controls";
+import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
 
-const AttachmentsListControlComponent = AttachmentsListControl as any;
-interface Attachment { _id: string; name: string; }
-interface IssuanceForm { attachments?: Attachment[]; }
-interface AttachmentsListProps { issuanceFormById: IssuanceForm; }
+type IssuanceForm = NonNullable<IssuanceFormByIdQuery['issuanceFormById']>;
 
-export const AttachmentsList = ({ issuanceFormById }: AttachmentsListProps) =>(
-  <AttachmentsListControlComponent
+interface Props {
+  issuanceFormById: IssuanceForm;
+}
+
+export const AttachmentsList = ({ issuanceFormById }: Props) => (
+  <AttachmentsListControl
     canEditAttachments={false}
-    attachments={issuanceFormById.attachments}
+    attachments={(issuanceFormById.attachments ?? undefined) as Parameters<typeof AttachmentsListControl>[0]['attachments']}
   />
 );
-
-AttachmentsList.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  physicalStoreId: PropTypes.string,
-  issuanceFormById: PropTypes.object,
-  addPurchaseFormAttachment: PropTypes.func,
-  removePurchaseFormAttachment: PropTypes.func,
-};

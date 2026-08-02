@@ -1,57 +1,45 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-
-import { flowRight, get } from 'meteor/idreesia-common/utilities/lodash';
-import { WithDynamicBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useQuery } from '@apollo/client/react';
+import { useParams } from 'react-router-dom';
+import { type RouteComponentProps } from 'react-router';
 import { Tabs } from 'antd';
-import {
-  WithPhysicalStore,
-  WithPhysicalStoreId,
-} from '/imports/ui/modules/inventory/common/composers';
 
-import PurchasDetails from './purchase-details';
-import AttachmentsList from './attachments-list';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import { usePhysicalStore } from '/imports/ui/modules/inventory/common/hooks';
+import PurchaseDetails from './purchase-details';
+import { AttachmentsList } from './attachments-list';
+import { PURCHASE_FORM_BY_ID } from '../gql';
 
-const AntTabs = Tabs as any;
-const AntTabPane = Tabs.TabPane as any;
-const PurchaseDetailsComponent = PurchasDetails as any;
-const AttachmentsListComponent = AttachmentsList as any;
+const TabPane = Tabs.TabPane;
+type RouteParams = { formId: string; physicalStoreId: string };
+type Props = RouteComponentProps<RouteParams>;
 
-interface PhysicalStore {
-  name: string;
-}
+const ViewForm = ({ history }: Props) => {
+  const { formId, physicalStoreId } = useParams<RouteParams>();
+  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const { data, loading } = useQuery(PURCHASE_FORM_BY_ID, {
+    skip: !formId,
+    variables: { _id: formId, physicalStoreId },
+  });
 
-type AnyProps = Record<string, any>;
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name, 'Purchase Forms', 'View']
+      : ['Inventory', 'Purchase Forms', 'View']
+  );
 
-const EditForm = (props: AnyProps) => {
-  const formId = get(props, ['match', 'params', 'formId'], null);
+  if (loading || !data?.purchaseFormById) return null;
+
   return (
-    <AntTabs defaultActiveKey="1">
-      <AntTabPane tab="Purchase Details" key="1">
-        <PurchaseDetailsComponent purchaseFormId={formId} {...props} />
-      </AntTabPane>
-      <AntTabPane tab="Attachments" key="2">
-        <AttachmentsListComponent purchaseFormId={formId} {...props} />
-      </AntTabPane>
-    </AntTabs>
+    <Tabs defaultActiveKey="1">
+      <TabPane tab="Purchase Details" key="1">
+        <PurchaseDetails history={history} physicalStoreId={physicalStoreId} purchaseFormById={data.purchaseFormById} />
+      </TabPane>
+      <TabPane tab="Attachments" key="2">
+        <AttachmentsList purchaseFormById={data.purchaseFormById} />
+      </TabPane>
+    </Tabs>
   );
 };
 
-EditForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-  physicalStoreId: PropTypes.string,
-  physicalStore: PropTypes.object,
-};
-
-export default flowRight(
-  WithPhysicalStoreId(),
-  WithPhysicalStore(),
-  WithDynamicBreadcrumbs(({ physicalStore }: { physicalStore?: PhysicalStore }) => {
-    if (physicalStore) {
-      return `Inventory, ${physicalStore.name}, Purchase Forms, View`;
-    }
-    return `Inventory, Purchase Forms, View`;
-  })
-)(EditForm as any);
+export default ViewForm;

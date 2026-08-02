@@ -1,7 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
 import { Form } from 'antd';
+import { type History } from 'history';
 
 import {
   InputTextField,
@@ -11,46 +11,17 @@ import {
 
 import { USER_BY_ID } from '../gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const ToggleField = SwitchField as any;
-const CloseButtons = FormButtonsClose as any;
-
-interface HistoryLike {
-  goBack(): void;
-}
-
-interface PersonRecord {
-  sharedData: {
-    name?: string;
-  };
-}
-
-interface UserRecord {
-  _id: string;
-  username?: string;
-  locked?: boolean;
-  email?: string;
-  displayName?: string;
-  person?: PersonRecord | null;
-}
-
 interface GeneralInfoProps {
-  history: HistoryLike;
-  loading?: boolean;
-  userById?: UserRecord | null;
+  history: History;
+  userId: string;
 }
 
-interface GeneralInfoWithDataProps {
-  history: HistoryLike;
-  userId?: string | null;
-}
+const GeneralInfo = ({ history, userId }: GeneralInfoProps) => {
+  const { data, loading } = useQuery(USER_BY_ID, {
+    variables: { _id: userId },
+  });
+  const userById = data?.userById;
 
-interface UserByIdData {
-  userById?: UserRecord | null;
-}
-
-const GeneralInfo = ({ history, loading, userById }: GeneralInfoProps) => {
   const handleClose = () => {
     history.goBack();
   };
@@ -58,75 +29,50 @@ const GeneralInfo = ({ history, loading, userById }: GeneralInfoProps) => {
   if (loading || !userById) return null;
 
   return (
-    <AntForm layout="horizontal">
-      <TextField
+    <Form layout="horizontal">
+      <InputTextField
         fieldName="userName"
         fieldLabel="User name"
         disabled
-        initialValue={userById.username}
+        initialValue={userById.username ?? undefined}
       />
 
-      <ToggleField
+      <SwitchField
         fieldName="locked"
         fieldLabel="Locked"
-        initialValue={userById.locked}
+        initialValue={userById.locked ?? undefined}
       />
 
-      <TextField
+      <InputTextField
         fieldName="password"
         fieldLabel="Password"
         type="password"
       />
 
-      <TextField
+      <InputTextField
         fieldName="email"
         fieldLabel="Google Email"
-        initialValue={userById.email}
+        initialValue={userById.email ?? undefined}
       />
 
-      <TextField
+      <InputTextField
         fieldName="displayName"
         fieldLabel="Display Name"
-        initialValue={userById.displayName}
+        initialValue={userById.displayName ?? undefined}
       />
 
-      <TextField
+      <InputTextField
         fieldName="personName"
         fieldLabel="Person Name"
         disabled
-        initialValue={userById.person ? userById.person.sharedData.name : ''}
+        initialValue={userById.person?.sharedData?.name ?? ''}
       />
 
-      <CloseButtons
+      <FormButtonsClose
         handleClose={handleClose}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-const GeneralInfoWithData = (props: GeneralInfoWithDataProps) => {
-  const { userId } = props;
-  const { data = {}, loading, ...queryResult } = useQuery(USER_BY_ID as any, {
-    variables: { _id: userId },
-  });
-
-  return (
-    <GeneralInfo
-      {...props}
-      {...queryResult}
-      {...(data as UserByIdData)}
-      loading={loading}
-    />
-  );
-};
-
-GeneralInfo.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-  loading: PropTypes.bool,
-  userId: PropTypes.string,
-  userById: PropTypes.object,
-};
-
-export default GeneralInfoWithData;
+export default GeneralInfo;

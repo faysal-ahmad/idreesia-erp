@@ -1,51 +1,31 @@
 import React, { ComponentType } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { useQuery } from '@apollo/client/react';
 
+import { usePhysicalStoreVendors } from '../hooks/use-physical-store-vendors';
 
-type AnyProps = Record<string, any>;
-const vendorsListQuery = gql`
-  query vendorsByPhysicalStoreId($physicalStoreId: String!) {
-    vendorsByPhysicalStoreId(physicalStoreId: $physicalStoreId) {
-      _id
-      name
-      physicalStoreId
-      contactPerson
-      contactNumber
-      address
-      notes
-      usageCount
-    }
-  }
-`;
-
-export const useVendorsByPhysicalStore = (physicalStoreId: string) => {
-  const { data, loading, ...queryResult } = useQuery(vendorsListQuery as any, {
-    variables: { physicalStoreId },
-  });
-
-  return {
-    ...queryResult,
-    loading,
-    vendorsLoading: loading,
-    vendorsByPhysicalStoreId: (data as any)?.vendorsByPhysicalStoreId ?? null,
-  };
+type InjectedProps = {
+  vendorsLoading: boolean;
+  vendorsByPhysicalStoreId: ReturnType<
+    typeof usePhysicalStoreVendors
+  >['vendorsByPhysicalStoreId'];
 };
 
-export default () => (WrappedComponent: ComponentType<AnyProps>) => {
-  const WithVendorsByPhysicalStore = (props: AnyProps) => {
-    const { physicalStoreId } = props;
-    const vendorsProps = useVendorsByPhysicalStore(physicalStoreId);
+export { usePhysicalStoreVendors as useVendorsByPhysicalStore };
 
-    return React.createElement(WrappedComponent as any, { ...props, ...vendorsProps });
+export default <P extends { physicalStoreId?: string | null }>() =>
+  (WrappedComponent: ComponentType<P & InjectedProps>) => {
+    const WithVendorsByPhysicalStore = (props: P) => {
+      const { physicalStoreId } = props;
+      const { vendorsByPhysicalStoreId, vendorsByPhysicalStoreIdLoading } =
+        usePhysicalStoreVendors(physicalStoreId ?? '');
+
+      return (
+        <WrappedComponent
+          {...props}
+          vendorsLoading={vendorsByPhysicalStoreIdLoading}
+          vendorsByPhysicalStoreId={vendorsByPhysicalStoreId}
+        />
+      );
+    };
+
+    return WithVendorsByPhysicalStore;
   };
-
-  WithVendorsByPhysicalStore.propTypes = {
-    physicalStoreId: PropTypes.string,
-    vendorsLoading: PropTypes.bool,
-    vendorsByPhysicalStoreId: PropTypes.array,
-  };
-
-  return WithVendorsByPhysicalStore;
-};

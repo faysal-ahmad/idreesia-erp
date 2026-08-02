@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  RemovePurchaseFormAttachmentMutation,
+  RemovePurchaseFormAttachmentMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-export const REMOVE_PURCHASE_FORM_ATTACHMENT = gql`
+export const REMOVE_PURCHASE_FORM_ATTACHMENT: TypedDocumentNode<
+  RemovePurchaseFormAttachmentMutation,
+  RemovePurchaseFormAttachmentMutationVariables
+> = gql`
   mutation removePurchaseFormAttachment(
     $_id: String!
     $physicalStoreId: String!

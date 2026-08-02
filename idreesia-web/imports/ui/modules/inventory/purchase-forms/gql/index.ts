@@ -1,5 +1,6 @@
 export { ADD_PURCHASE_FORM_ATTACHMENT } from './add-purchase-form-attachment';
 export { APPROVE_PURCHASE_FORMS } from './approve-purchase-forms';
+export { CREATE_PURCHASE_FORM } from './create-purchase-form';
 export { PAGED_PURCHASE_FORMS } from './paged-purchase-forms';
 export { PURCHASE_FORM_BY_ID } from './purchase-form-by-id';
 export {

@@ -1,61 +1,59 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import Barcode from "react-barcode";
+import React, { Component, type CSSProperties } from 'react';
+import Barcode from 'react-barcode';
 import dayjs from 'dayjs';
-import { find } from "lodash";
+import { find } from 'meteor/idreesia-common/utilities/lodash';
 
-import { Card } from "antd";
-import { StayReasons } from "meteor/idreesia-common/constants/security";
+import { Card } from 'antd';
+import { StayReasons } from 'meteor/idreesia-common/constants/security';
 
-const BarcodeControl = Barcode as any;
-const AntCard = Card as any;
+const BarcodeView = Barcode as any;
 
 const barcodeOptions = {
   width: 1,
   height: 20,
-  format: "CODE128B",
+  format: 'CODE128B',
   displayValue: false,
-  background: "#ffffff",
-  lineColor: "#000000",
+  background: '#ffffff',
+  lineColor: '#000000',
   margin: 5,
 };
 
-const HeadStyle = {
-  color: "black",
-  fontSize: "24px",
-  fontWeight: "bold",
-  textAlign: "center",
+const HeadStyle: CSSProperties = {
+  color: 'black',
+  fontSize: '24px',
+  fontWeight: 'bold',
+  textAlign: 'center',
 };
 
-const BodyStyle = {
-  paddingTop: "0px",
+const BodyStyle: CSSProperties = {
+  paddingTop: '0px',
 };
 
-const FooterStyle = {
-  color: "black",
-  fontSize: "12px",
-  textAlign: "center",
-  paddingTop: "4px",
+const FooterStyle: CSSProperties = {
+  color: 'black',
+  fontSize: '12px',
+  textAlign: 'center',
+  paddingTop: '4px',
 };
 
 interface Visitor {
-  name: string;
-  parentName?: string;
-  referenceName?: string;
-  city?: string;
-  cnicNumber?: string;
-  contactNumber1?: string;
+  name?: string | null;
+  parentName?: string | null;
+  referenceName?: string | null;
+  city?: string | null;
+  cnicNumber?: string | null;
+  contactNumber1?: string | null;
   criminalRecord?: string | null;
 }
 
 interface VisitorStay {
-  _id: string;
-  fromDate: string | number;
-  toDate: string | number;
-  stayReason?: string;
-  stayAllowedBy?: string;
-  dutyName?: string;
-  shiftName?: string;
+  _id?: string | null;
+  fromDate?: string | null;
+  toDate?: string | null;
+  stayReason?: string | null;
+  stayAllowedBy?: string | null;
+  dutyName?: string | null;
+  shiftName?: string | null;
 }
 
 interface StayCardProps {
@@ -64,11 +62,6 @@ interface StayCardProps {
 }
 
 export default class StayCard extends Component<StayCardProps> {
-  static propTypes = {
-    visitor: PropTypes.object,
-    visitorStay: PropTypes.object,
-  };
-
   getDutyDetails = () => {
     const { visitorStay } = this.props;
 
@@ -100,20 +93,20 @@ export default class StayCard extends Component<StayCardProps> {
   render() {
     const { visitor, visitorStay } = this.props;
     const title = visitor.criminalRecord
-      ? "Night Stay Card - (D)"
-      : "Night Stay Card";
+      ? 'Night Stay Card - (D)'
+      : 'Night Stay Card';
 
     const dutyDetails = this.getDutyDetails();
     const reason = visitorStay.stayReason
       ? find(StayReasons, ({ _id }) => _id === visitorStay.stayReason)
       : null;
-    const reasonText = reason ? reason.name : "";
-    const stayAllowedBy = visitorStay.stayAllowedBy ?? "";
-    const fromDate = dayjs(Number(visitorStay.fromDate)).format("DD MMM, YYYY");
-    const toDate = dayjs(Number(visitorStay.toDate)).format("DD MMM, YYYY");
+    const reasonText = reason ? reason.name : '';
+    const stayAllowedBy = visitorStay.stayAllowedBy ?? '';
+    const fromDate = dayjs(Number(visitorStay.fromDate)).format('DD MMM, YYYY');
+    const toDate = dayjs(Number(visitorStay.toDate)).format('DD MMM, YYYY');
 
     return (
-        <AntCard
+      <Card
         size="small"
         title={title}
         headStyle={HeadStyle}
@@ -139,40 +132,34 @@ export default class StayCard extends Component<StayCardProps> {
           <b>Phone:</b> {visitor.contactNumber1}
         </div>
         <h2 className="stay_card_section">Stay Details</h2>
-        {
-          fromDate === toDate ? (
-            <div className="stay_card_item">
-              <b>Date:</b>&nbsp;{fromDate}
-            </div>
-          ) : (
-            <div className="stay_card_item">
-              <b>Dates:</b>&nbsp;{fromDate}&nbsp;-&nbsp;{toDate}
-            </div>
-            )
-        }
-        {
-          reasonText ? (
-            <div className="stay_card_item">
-              <b>Reason:</b> {reasonText}
-            </div>
-          ) : null
-        }
-        {
-          stayAllowedBy ? (
-            <div className="stay_card_item">
-              <b>Allowed By:</b> {stayAllowedBy}
-            </div>
-          ) : null
-        }
+        {fromDate === toDate ? (
+          <div className="stay_card_item">
+            <b>Date:</b>&nbsp;{fromDate}
+          </div>
+        ) : (
+          <div className="stay_card_item">
+            <b>Dates:</b>&nbsp;{fromDate}&nbsp;-&nbsp;{toDate}
+          </div>
+        )}
+        {reasonText ? (
+          <div className="stay_card_item">
+            <b>Reason:</b> {reasonText}
+          </div>
+        ) : null}
+        {stayAllowedBy ? (
+          <div className="stay_card_item">
+            <b>Allowed By:</b> {stayAllowedBy}
+          </div>
+        ) : null}
         {dutyDetails}
         <div className="stay_card_item">
-          <BarcodeControl value={visitorStay._id} {...barcodeOptions} />
+          <BarcodeView value={visitorStay._id ?? ''} {...barcodeOptions} />
         </div>
-        <div style={FooterStyle as any}>
+        <div style={FooterStyle}>
           381 A-Block, Shah Rukn-e-Alam Colony, Multan<br />
           Ph: 061-111-111-381
         </div>
-      </AntCard>
+      </Card>
     );
   }
 }

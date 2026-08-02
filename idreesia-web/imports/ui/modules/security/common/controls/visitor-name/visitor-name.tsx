@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { UserOutlined } from '@ant-design/icons';
 
@@ -7,12 +6,9 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from 'antd';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
-const AntAvatar = Avatar as any;
-const AntModal = Modal as any;
-const AntUserOutlined = UserOutlined as any;
 const RouterLink = Link as any;
 
-const ContainerDivStyle = {
+const ContainerDivStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'flex-start',
@@ -22,7 +18,7 @@ const ContainerDivStyle = {
   cursor: 'pointer',
 };
 
-const TextDivStyle = {
+const TextDivStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'column nowrap',
   justifyContent: 'flex-start',
@@ -64,11 +60,11 @@ const VisitorName = ({ visitor, additionalInfo, onVisitorNameClicked }: VisitorN
   ) : null;
 
   let imageUrl: string | undefined;
-  let avatarNode = <AntAvatar shape="square" size="large" icon={<AntUserOutlined />} />;
+  let avatarNode = <Avatar shape="square" size="large" icon={<UserOutlined />} />;
   if (visitor.imageId) {
     imageUrl = getDownloadUrl(visitor.imageId) ?? undefined;
     avatarNode = (
-      <AntAvatar
+      <Avatar
         shape="square"
         size="large"
         src={imageUrl}
@@ -81,30 +77,24 @@ const VisitorName = ({ visitor, additionalInfo, onVisitorNameClicked }: VisitorN
 
   return (
     <>
-      <div style={ContainerDivStyle as any}>
+      <div style={ContainerDivStyle}>
         {avatarNode}
         &nbsp;&nbsp;
-        <div style={TextDivStyle as any}>
+        <div style={TextDivStyle}>
           {nameNode}
           {additionalInfoNode}
         </div>
       </div>
-      <AntModal
+      <Modal
         title={visitor.name}
         open={showDialog}
         onCancel={() => setShowDialog(false)}
         footer={null}
       >
         {imageUrl ? <img src={imageUrl} alt={visitor.name} /> : null}
-      </AntModal>
+      </Modal>
     </>
   );
-};
-
-VisitorName.propTypes = {
-  visitor: PropTypes.object,
-  additionalInfo: PropTypes.string,
-  onVisitorNameClicked: PropTypes.func,
 };
 
 export default VisitorName;

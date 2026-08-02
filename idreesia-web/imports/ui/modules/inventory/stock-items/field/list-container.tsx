@@ -1,72 +1,63 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+
+import type { PagedStockItemsQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import List from '../list/list';
+import { type PageParams } from '../list/list-filter';
 
-interface StockItem {
-  _id: string;
-  formattedName?: string;
-}
+type StockItem = NonNullable<
+  NonNullable<
+    NonNullable<PagedStockItemsQuery['pagedStockItems']>['data']
+  >[number]
+>;
 
-interface ListContainerProps {
+interface Props {
   physicalStoreId?: string;
   setSelectedValue?(stockItem: StockItem): void;
 }
 
-interface ListContainerState {
-  pageIndex: number;
-  pageSize: number;
-  categoryId: string | null;
-  name: string | null;
-  verifyDuration: string | null;
-  stockLevel: string | null;
-}
+const ListContainer = ({ physicalStoreId = '', setSelectedValue }: Props) => {
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [name, setName] = useState<string | null>(null);
+  const [verifyDuration, setVerifyDuration] = useState<string | null>(null);
+  const [stockLevel, setStockLevel] = useState<string | null>(null);
 
-export default class ListContainer extends Component<
-  ListContainerProps,
-  ListContainerState
-> {
-  static propTypes = {
-    physicalStoreId: PropTypes.string,
-    setSelectedValue: PropTypes.func,
+  const setPageParams = (pageParams: PageParams) => {
+    if (Object.prototype.hasOwnProperty.call(pageParams, 'pageIndex')) {
+      setPageIndex(pageParams.pageIndex ?? 0);
+    }
+    if (Object.prototype.hasOwnProperty.call(pageParams, 'pageSize')) {
+      setPageSize(pageParams.pageSize ?? 20);
+    }
+    if (Object.prototype.hasOwnProperty.call(pageParams, 'categoryId')) {
+      setCategoryId(pageParams.categoryId ?? null);
+    }
+    if (Object.prototype.hasOwnProperty.call(pageParams, 'name')) {
+      setName(pageParams.name ?? null);
+    }
+    if (Object.prototype.hasOwnProperty.call(pageParams, 'verifyDuration')) {
+      setVerifyDuration(pageParams.verifyDuration ?? null);
+    }
+    if (Object.prototype.hasOwnProperty.call(pageParams, 'stockLevel')) {
+      setStockLevel(pageParams.stockLevel ?? null);
+    }
   };
 
-  state = {
-    pageIndex: 0,
-    pageSize: 20,
-    categoryId: null,
-    name: null,
-    verifyDuration: null,
-    stockLevel: null,
-  };
+  return (
+    <List
+      pageIndex={pageIndex}
+      pageSize={pageSize}
+      physicalStoreId={physicalStoreId}
+      categoryId={categoryId ?? undefined}
+      name={name ?? undefined}
+      verifyDuration={verifyDuration ?? undefined}
+      stockLevel={stockLevel ?? undefined}
+      setPageParams={setPageParams}
+      handleItemSelected={setSelectedValue}
+    />
+  );
+};
 
-  setPageParams = (pageParams: Partial<ListContainerState>) => {
-    this.setState(pageParams as Pick<ListContainerState, keyof ListContainerState>);
-  };
-
-  render() {
-    const { physicalStoreId, setSelectedValue } = this.props;
-    const {
-      pageIndex,
-      pageSize,
-      categoryId,
-      name,
-      verifyDuration,
-      stockLevel,
-    } = this.state;
-
-    return (
-      <List
-        pageIndex={pageIndex}
-        pageSize={pageSize}
-        physicalStoreId={physicalStoreId}
-        categoryId={categoryId}
-        name={name}
-        verifyDuration={verifyDuration}
-        stockLevel={stockLevel}
-        setPageParams={this.setPageParams}
-        handleItemSelected={setSelectedValue}
-      />
-    );
-  }
-}
+export default ListContainer;

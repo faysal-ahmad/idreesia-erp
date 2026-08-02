@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  IssuanceFormByIdQuery,
+  IssuanceFormByIdQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-export const ISSUANCE_FORM_BY_ID = gql`
+export const ISSUANCE_FORM_BY_ID: TypedDocumentNode<
+  IssuanceFormByIdQuery,
+  IssuanceFormByIdQueryVariables
+> = gql`
   query issuanceFormById($physicalStoreId: String!, $_id: String!) {
     issuanceFormById(physicalStoreId: $physicalStoreId, _id: $_id) {
       _id

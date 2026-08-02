@@ -1,62 +1,35 @@
-import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
+import { type RouteComponentProps } from 'react-router';
 
 import {
-  WithBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
+  useBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Divider, Row } from 'antd';
 import { ScanBarcode } from '/imports/ui/modules/helpers/controls';
 import SearchResult from './search-result';
 
-const ReactFragment = Fragment as any;
-const AntDivider = Divider as any;
-const AntRow = Row as any;
-const ScanBarcodeControl = ScanBarcode as any;
-const SearchResultComponent = SearchResult as any;
+const Form = ({ history, location }: RouteComponentProps) => {
+  useBreadcrumbs(['Security', 'Karkun Card Verification']);
+  const { queryParams } = useQueryParams({ history, location });
+  const cardId = String(queryParams.cardId || '');
 
-interface HistoryLike { push(path: string): void; }
-interface QueryParams { cardId?: string; }
-interface FormProps {
-  history: HistoryLike;
-  queryParams: QueryParams;
-}
-
-class Form extends Component<FormProps> {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    queryString: PropTypes.string,
-    queryParams: PropTypes.object,
-  };
-
-  onBarcodeCaptured = (code: string) => {
-    const { history } = this.props;
+  const onBarcodeCaptured = (code: string) => {
     history.push(`${paths.karkunCardVerificationPath}?cardId=${code}`);
   };
 
-  render() {
-    const {
-      queryParams: { cardId },
-    } = this.props;
+  return (
+    <>
+      <Row>
+        <ScanBarcode onBarcodeCaptured={onBarcodeCaptured} />
+      </Row>
+      <Row>
+        <Divider />
+      </Row>
+      <Row>{cardId ? <SearchResult barcode={cardId} /> : null}</Row>
+    </>
+  );
+};
 
-    return (
-      <ReactFragment>
-        <AntRow>
-          <ScanBarcodeControl onBarcodeCaptured={this.onBarcodeCaptured} />
-        </AntRow>
-        <AntRow>
-          <AntDivider />
-        </AntRow>
-        <AntRow>{cardId ? <SearchResultComponent barcode={cardId} /> : null}</AntRow>
-      </ReactFragment>
-    );
-  }
-}
-
-export default flowRight(
-  WithQueryParams(),
-  WithBreadcrumbs(['Security', 'Karkun Card Verification'])
-)(Form as any);
+export default Form;

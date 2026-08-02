@@ -1,30 +1,35 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { useQuery, useMutation } from '@apollo/client/react';
+import { type History } from 'history';
+import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
 
+import type { SecurityRegistrationVisitorByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
-import { SECURITY_VISITOR_BY_ID, UPDATE_SECURITY_VISITOR_NOTES } from '../gql';
+import { UPDATE_SECURITY_VISITOR_NOTES } from '../gql';
 
-const AntForm = Form as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { push(path: string): void; }
-interface VisitorRecord { _id: string; criminalRecord?: string; otherNotes?: string; }
-interface NotesValues { criminalRecord?: string; otherNotes?: string; }
-interface NotesProps { history: HistoryLike; loading?: boolean; securityVisitorById?: VisitorRecord | null; }
-interface NotesWithDataProps { match: { params: { visitorId: string } }; history: HistoryLike; [key: string]: any; }
-interface VisitorData { securityVisitorById?: VisitorRecord | null; }
+type SecurityVisitor = NonNullable<
+  SecurityRegistrationVisitorByIdQuery['securityVisitorById']
+>;
 
-const Notes = ({ history, loading, securityVisitorById }: NotesProps) => {
+interface NotesValues {
+  criminalRecord?: string;
+  otherNotes?: string;
+}
+
+interface Props {
+  history: History;
+  securityVisitorById: SecurityVisitor;
+}
+
+const Notes = ({ history, securityVisitorById }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [updateSecurityVisitorNotes] = useMutation(
-    UPDATE_SECURITY_VISITOR_NOTES as any,
+    UPDATE_SECURITY_VISITOR_NOTES,
     {
       refetchQueries: ['pagedSecurityVisitors'],
     }
@@ -39,10 +44,9 @@ const Notes = ({ history, loading, securityVisitorById }: NotesProps) => {
   };
 
   const handleFinish = ({ criminalRecord, otherNotes }: NotesValues) => {
-    if (!securityVisitorById) return;
     updateSecurityVisitorNotes({
       variables: {
-        _id: securityVisitorById._id,
+        _id: securityVisitorById._id ?? '',
         criminalRecord,
         otherNotes,
       },
@@ -55,56 +59,28 @@ const Notes = ({ history, loading, securityVisitorById }: NotesProps) => {
       });
   };
 
-  if (loading || !securityVisitorById) return null;
-
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextAreaField
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextAreaField
         fieldName="criminalRecord"
         fieldLabel="Criminal Record"
         initialValue={securityVisitorById.criminalRecord}
         required={false}
       />
 
-      <TextAreaField
+      <InputTextAreaField
         fieldName="otherNotes"
         fieldLabel="Other Notes"
         initialValue={securityVisitorById.otherNotes}
         required={false}
       />
 
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-const NotesWithData = (props: NotesWithDataProps) => {
-  const { match } = props;
-  const { visitorId } = match.params;
-  const { data = {}, loading, ...queryResult } = useQuery(SECURITY_VISITOR_BY_ID as any, {
-    variables: { _id: visitorId },
-  });
-
-  return (
-    <Notes
-      {...props}
-      {...queryResult}
-      {...(data as VisitorData)}
-      loading={loading}
-    />
-  );
-};
-
-Notes.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-  loading: PropTypes.bool,
-  visitorId: PropTypes.string,
-  securityVisitorById: PropTypes.object,
-};
-
-export default NotesWithData;
+export default Notes;

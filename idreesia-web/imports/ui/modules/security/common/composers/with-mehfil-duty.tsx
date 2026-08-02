@@ -1,15 +1,16 @@
-import React, { ComponentType } from "react";
-import PropTypes from "prop-types";
+import React, { ComponentType } from 'react';
 import { useQuery } from '@apollo/client/react';
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import type {
   ComposerSecurityMehfilDutyByIdQuery,
   ComposerSecurityMehfilDutyByIdQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
-type AnyProps = Record<string, any>;
-
-const securityMehfilDutyByIdQuery = gql`
+const securityMehfilDutyByIdQuery: TypedDocumentNode<
+  ComposerSecurityMehfilDutyByIdQuery,
+  ComposerSecurityMehfilDutyByIdQueryVariables
+> = gql`
   query composerSecurityMehfilDutyById($id: String!) {
     securityMehfilDutyById(id: $id) {
       _id
@@ -23,43 +24,43 @@ const securityMehfilDutyByIdQuery = gql`
   }
 `;
 
+type InjectedProps = {
+  securityMehfilDutyByIdLoading: boolean;
+  securityMehfilDutyById?: ComposerSecurityMehfilDutyByIdQuery['securityMehfilDutyById'];
+  mehfilDutyById?: ComposerSecurityMehfilDutyByIdQuery['securityMehfilDutyById'];
+};
+
 export const useMehfilDuty = (mehfilDutyId?: string) => {
-  const { loading, data, ...queryProps } = useQuery<
-    ComposerSecurityMehfilDutyByIdQuery,
-    ComposerSecurityMehfilDutyByIdQueryVariables
-  >(
-    securityMehfilDutyByIdQuery as any,
-    {
-      variables: { id: mehfilDutyId ?? '' },
-      skip: !mehfilDutyId,
-    }
-  );
+  const { loading, data, refetch } = useQuery(securityMehfilDutyByIdQuery, {
+    variables: { id: mehfilDutyId ?? '' },
+    skip: !mehfilDutyId,
+  });
 
   return {
-    ...queryProps,
-    ...(data ?? {}),
     loading,
     mehfilDutyById: data?.securityMehfilDutyById,
+    securityMehfilDutyById: data?.securityMehfilDutyById,
     securityMehfilDutyByIdLoading: loading,
+    refetchMehfilDuty: refetch,
   };
 };
 
-export default () => (WrappedComponent: ComponentType<AnyProps>) => {
-  const WithMehfilDuty = (props: AnyProps) => {
-    const { mehfilDutyId, ...rest } = props;
-    const mehfilDutyProps = useMehfilDuty(mehfilDutyId);
+export default <P extends { mehfilDutyId?: string }>() =>
+  (WrappedComponent: ComponentType<P & InjectedProps>) => {
+    const WithMehfilDuty = (props: P) => {
+      const { mehfilDutyId, ...rest } = props;
+      const mehfilDutyProps = useMehfilDuty(mehfilDutyId);
 
-    return React.createElement(WrappedComponent as any, {
-      ...rest,
-      ...mehfilDutyProps,
-    });
+      return (
+        <WrappedComponent
+          {...(rest as P)}
+          mehfilDutyId={mehfilDutyId}
+          mehfilDutyById={mehfilDutyProps.mehfilDutyById}
+          securityMehfilDutyById={mehfilDutyProps.securityMehfilDutyById}
+          securityMehfilDutyByIdLoading={mehfilDutyProps.securityMehfilDutyByIdLoading}
+        />
+      );
+    };
+
+    return WithMehfilDuty;
   };
-
-  WithMehfilDuty.propTypes = {
-    mehfilDutyId: PropTypes.string,
-    securityMehfilDutyByIdLoading: PropTypes.bool,
-    securityMehfilDutyById: PropTypes.object,
-  };
-
-  return WithMehfilDuty;
-};

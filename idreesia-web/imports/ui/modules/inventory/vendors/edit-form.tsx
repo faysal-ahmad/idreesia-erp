@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { Form, message } from 'antd';
-import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client/react';
+import { type History } from 'history';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { AuditInfo } from '/imports/ui/modules/common';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 import {
   InputTextField,
   InputTextAreaField,
@@ -20,36 +19,8 @@ import {
   UPDATE_VENDOR,
 } from './gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-const AuditInfoComponent = AuditInfo as any;
-
-interface RouteParams {
-  physicalStoreId: string;
-  vendorId: string;
-}
-
-interface HistoryLike {
-  goBack(): void;
-}
-
 interface EditFormProps {
-  history: HistoryLike;
-}
-
-interface Vendor {
-  _id: string;
-  name: string;
-  contactPerson?: string;
-  contactNumber?: string;
-  address?: string;
-  notes?: string;
-}
-
-interface VendorByIdData {
-  vendorById: Vendor;
+  history: History;
 }
 
 interface VendorFormValues {
@@ -61,35 +32,33 @@ interface VendorFormValues {
 }
 
 const EditForm = ({ history }: EditFormProps) => {
-  const dispatch = useDispatch();
-  const { physicalStoreId, vendorId } = useParams<RouteParams>();
-  const { physicalStore } = usePhysicalStore(physicalStoreId);
+  const { physicalStoreId, vendorId } = useParams<{
+    physicalStoreId: string;
+    vendorId: string;
+  }>();
+  const { physicalStore } = usePhysicalStore(physicalStoreId!);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [updateVendor] = useMutation(UPDATE_VENDOR as any, {
+  const [updateVendor] = useMutation(UPDATE_VENDOR, {
     refetchQueries: [{
-      query: VENDORS_BY_PHYSICAL_STORE_ID as any,
+      query: VENDORS_BY_PHYSICAL_STORE_ID,
       variables: {
         physicalStoreId,
       },
     }],
   });
-  
-  useEffect(() => {
-    if (physicalStore) {
-      dispatch(
-        setBreadcrumbs(['Inventory', physicalStore.name, 'Setup', 'Vendors', 'Edit'])
-      );
-    } else {
-      dispatch(setBreadcrumbs(['Inventory', 'Setup', 'Vendors', 'Edit']));
-    }
-  }, [dispatch, physicalStore]);
 
-  const { data, loading } = useQuery(VENDOR_BY_ID as any, {
-    variables: { _id: vendorId, physicalStoreId },
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name ?? '', 'Setup', 'Vendors', 'Edit']
+      : ['Inventory', 'Setup', 'Vendors', 'Edit']
+  );
+
+  const { data, loading } = useQuery(VENDOR_BY_ID, {
+    variables: { _id: vendorId!, physicalStoreId: physicalStoreId! },
   });
 
   if (loading) return null;
-  const { vendorById } = (data as VendorByIdData) ?? {};
+  const vendorById = data?.vendorById;
   if (!vendorById) return null;
 
   const handleCancel = () => {
@@ -109,8 +78,8 @@ const EditForm = ({ history }: EditFormProps) => {
   }: VendorFormValues) => {
     updateVendor({
       variables: {
-        _id: vendorById._id,
-        physicalStoreId,
+        _id: vendorById._id!,
+        physicalStoreId: physicalStoreId!,
         name,
         contactPerson,
         contactNumber,
@@ -129,52 +98,46 @@ const EditForm = ({ history }: EditFormProps) => {
 
   return (
     <>
-      <AntForm
+      <Form
         layout="horizontal"
         onFinish={handleFinish}
         onFieldsChange={handleFieldsChange}
       >
-        <TextField
+        <InputTextField
           fieldName="name"
           fieldLabel="Name"
-          initialValue={vendorById.name}
+          initialValue={vendorById.name ?? undefined}
           required
           requiredMessage="Please input a name for the vendor."
         />
-        <TextField
+        <InputTextField
           fieldName="contactPerson"
           fieldLabel="Contact Person"
-          initialValue={vendorById.contactPerson}
+          initialValue={vendorById.contactPerson ?? undefined}
         />
-        <TextField
+        <InputTextField
           fieldName="contactNumber"
           fieldLabel="Contact Number"
-          initialValue={vendorById.contactNumber}
+          initialValue={vendorById.contactNumber ?? undefined}
         />
-        <TextAreaField
+        <InputTextAreaField
           fieldName="address"
           fieldLabel="Address"
-          initialValue={vendorById.address}
+          initialValue={vendorById.address ?? undefined}
         />
-        <TextAreaField
+        <InputTextAreaField
           fieldName="notes"
           fieldLabel="Notes"
-          initialValue={vendorById.notes}
+          initialValue={vendorById.notes ?? undefined}
         />
-        <SaveCancelButtons
+        <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </AntForm>
-      <AuditInfoComponent record={vendorById} />
+      </Form>
+      <AuditInfo record={vendorById} />
     </>
   );
-};
-
-EditForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default EditForm;

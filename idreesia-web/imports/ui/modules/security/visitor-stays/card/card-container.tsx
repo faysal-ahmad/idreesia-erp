@@ -1,6 +1,4 @@
 import React, { Fragment, useRef } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client/react';
 import ReactToPrint from 'react-to-print';
 import { PrinterOutlined } from '@ant-design/icons';
@@ -9,20 +7,17 @@ import { Button } from 'antd';
 import DutyCard from './duty-card';
 import StayCard from './stay-card';
 
-const ReactFragment = Fragment as any;
-const AntButton = Button as any;
-const AntPrinterOutlined = PrinterOutlined as any;
-const PrintControl = ReactToPrint as any;
-const DutyCardComponent = DutyCard as any;
-const StayCardComponent = StayCard as any;
+import {
+  VISITOR_STAY_CARD_BY_ID,
+  VISITOR_STAY_CARD_SECURITY_VISITOR_BY_ID,
+} from '../gql';
+
 interface StayCardContainerProps {
   cardType: string;
   visitorId: string;
   visitorStayId: string;
   onCloseCard(): void;
 }
-interface VisitorData { securityVisitorById?: Record<string, unknown>; }
-interface VisitorStayData { visitorStayById?: Record<string, unknown>; }
 
 const StayCardContainer = ({
   cardType,
@@ -30,104 +25,62 @@ const StayCardContainer = ({
   visitorStayId,
   onCloseCard,
 }: StayCardContainerProps) => {
-  const cardRef = useRef<HTMLElement | null>(null);
-  const { data: visitorData = {}, loading: visitorLoading } = useQuery(
-    formQueryVisitor as any,
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const { data: visitorData, loading: visitorLoading } = useQuery(
+    VISITOR_STAY_CARD_SECURITY_VISITOR_BY_ID,
     {
       variables: { _id: visitorId },
     }
   );
-  const { data: visitorStayData = {}, loading: visitorStayLoading } = useQuery(
-    formQueryVisitorStay as any,
+  const { data: visitorStayData, loading: visitorStayLoading } = useQuery(
+    VISITOR_STAY_CARD_BY_ID,
     {
       variables: { _id: visitorStayId },
     }
   );
-  const { securityVisitorById } = visitorData as VisitorData;
-  const { visitorStayById } = visitorStayData as VisitorStayData;
+  const securityVisitorById = visitorData?.securityVisitorById;
+  const visitorStayById = visitorStayData?.visitorStayById;
 
   if (visitorLoading || visitorStayLoading) return null;
+  if (!securityVisitorById || !visitorStayById) return null;
 
   const card =
     cardType === 'stay-card' ? (
-      <StayCardComponent
-        ref={cardRef}
+      <StayCard
         visitor={securityVisitorById}
         visitorStay={visitorStayById}
       />
     ) : (
-      <DutyCardComponent
-        ref={cardRef}
+      <DutyCard
         visitor={securityVisitorById}
         visitorStay={visitorStayById}
       />
     );
 
   return (
-    <ReactFragment>
-      {card}
+    <Fragment>
+      <div ref={cardRef}>{card}</div>
       <div style={{ paddingTop: '5px' }}>
-        <PrintControl
+        <ReactToPrint
           trigger={() => (
-            <AntButton type="primary" size="large">
-              <AntPrinterOutlined />
+            <Button type="primary" size="large">
+              <PrinterOutlined />
               Print
-            </AntButton>
+            </Button>
           )}
-          content={() => cardRef.current}
+          content={() => cardRef.current as HTMLElement}
         />
         &nbsp;
-        <AntButton
+        <Button
           size="large"
           type="default"
           onClick={() => onCloseCard()}
         >
           Close
-        </AntButton>
+        </Button>
       </div>
-    </ReactFragment>
+    </Fragment>
   );
-};
-
-const formQueryVisitor = gql`
-  query visitorStayCardSecurityVisitorById($_id: String!) {
-    securityVisitorById(_id: $_id) {
-      _id
-      name
-      parentName
-      cnicNumber
-      referenceName
-      contactNumber1
-      city
-      country
-      criminalRecord
-      image {
-        _id
-        data
-      }
-    }
-  }
-`;
-
-const formQueryVisitorStay = gql`
-  query visitorStayCardById($_id: String!) {
-    visitorStayById(_id: $_id) {
-      _id
-      fromDate
-      toDate
-      stayReason
-      stayAllowedBy
-      dutyName
-      shiftName
-    }
-  }
-`;
-
-StayCardContainer.propTypes = {
-  cardType: PropTypes.string,
-  visitorId: PropTypes.string,
-  visitorStayId: PropTypes.string,
-  onCloseCard: PropTypes.func,
 };
 
 export default StayCardContainer;

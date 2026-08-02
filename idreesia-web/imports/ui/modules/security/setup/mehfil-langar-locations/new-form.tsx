@@ -1,36 +1,30 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
+import { type History } from 'history';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import {
   InputTextField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const formMutation = gql`
-  mutation createSecurityMehfilLangarLocation($name: String!, $urduName: String!) {
-    createSecurityMehfilLangarLocation(name: $name, urduName: $urduName) {
-      _id
-      name
-      urduName
-    }
-  }
-`;
+import { CREATE_SECURITY_MEHFIL_LANGAR_LOCATION } from './gql';
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { push(path: string): void; }
-interface NewFormProps { history: HistoryLike; }
-interface FormValues { name: string; urduName: string; }
+interface NewFormProps {
+  history: History;
+}
+
+interface FormValues {
+  name: string;
+  urduName: string;
+}
 
 const NewForm = ({ history }: NewFormProps) => {
+  useBreadcrumbs(['Security', 'Mehfil Langar Locations', 'New']);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createSecurityMehfilLangarLocation] = useMutation(formMutation as any, {
+  const [createSecurityMehfilLangarLocation] = useMutation(CREATE_SECURITY_MEHFIL_LANGAR_LOCATION, {
     refetchQueries: ['allSecurityMehfilLangarLocations'],
   });
 
@@ -58,30 +52,25 @@ const NewForm = ({ history }: NewFormProps) => {
   };
 
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextField
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input a name for the langar location."
       />
-      <TextField
+      <InputTextField
         fieldName="urduName"
         fieldLabel="Urdu Name"
         required
         requiredMessage="Please input an urdu name for the langar location."
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['Security', 'Mehfil Langar Locations', 'New'])(NewForm as any);
+export default NewForm;

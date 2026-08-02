@@ -1,23 +1,21 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
-
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
 import { message } from 'antd';
+
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { VisitorsNewForm } from '/imports/ui/modules/common';
+import type { VisitorNewFormValues } from '/imports/ui/modules/common/visitors/new-form';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import { CREATE_SECURITY_VISITOR } from '../gql';
 
-const VisitorsNewFormComponent = VisitorsNewForm as any;
-interface HistoryLike { goBack(): void; push(path: string): void; }
-interface NewFormProps { history: HistoryLike; }
-interface VisitorValues { [key: string]: unknown; name?: string; parentName?: string; cnicNumber?: string; ehadDate?: string; birthDate?: string; referenceName?: string; contactNumber1?: string; contactNumber2?: string; city?: string; country?: string; currentAddress?: string; permanentAddress?: string; educationalQualification?: string; meansOfEarning?: string; }
-interface VisitorMutationResult { createSecurityVisitor?: { _id: string }; }
+type Props = RouteComponentProps;
 
-const NewForm = ({ history }: NewFormProps) => {
-  const [createSecurityVisitor] = useMutation(CREATE_SECURITY_VISITOR as any, {
+const NewForm = ({ history }: Props) => {
+  useBreadcrumbs(['Security', 'Visitor Registration', 'New']);
+
+  const [createSecurityVisitor] = useMutation(CREATE_SECURITY_VISITOR, {
     refetchQueries: ['pagedSecurityVisitors'],
   });
 
@@ -40,15 +38,15 @@ const NewForm = ({ history }: NewFormProps) => {
     permanentAddress,
     educationalQualification,
     meansOfEarning,
-  }: VisitorValues) => {
+  }: VisitorNewFormValues) => {
     createSecurityVisitor({
       variables: {
-        name,
-        parentName,
-        cnicNumber,
-        ehadDate,
-        birthDate,
-        referenceName,
+        name: name ?? '',
+        parentName: parentName ?? '',
+        cnicNumber: cnicNumber ?? '',
+        ehadDate: ehadDate as unknown as string,
+        birthDate: birthDate as unknown as string | null | undefined,
+        referenceName: referenceName ?? '',
         contactNumber1,
         contactNumber2,
         city,
@@ -59,9 +57,9 @@ const NewForm = ({ history }: NewFormProps) => {
         meansOfEarning,
       },
     })
-      .then((response: any) => {
-        const newVisitor = (response.data as VisitorMutationResult | undefined)?.createSecurityVisitor;
-        if (!newVisitor) return;
+      .then((response) => {
+        const newVisitor = response.data?.createSecurityVisitor;
+        if (!newVisitor?._id) return;
         history.push(
           `${paths.visitorRegistrationEditFormPath(newVisitor._id)}`
         );
@@ -72,18 +70,11 @@ const NewForm = ({ history }: NewFormProps) => {
   };
 
   return (
-    <VisitorsNewFormComponent
+    <VisitorsNewForm
       handleFinish={handleFinish}
       handleCancel={handleCancel}
     />
   );
 };
 
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default flowRight(
-  WithBreadcrumbs(['Security', 'Visitor Registration', 'New'])
-)(NewForm as any);
+export default NewForm;

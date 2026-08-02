@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { Tabs } from 'antd';
-import { useDispatch } from 'react-redux';
+import React from 'react';
+import { type RouteComponentProps } from 'react-router';
 import { useParams } from 'react-router-dom';
+import { Tabs } from 'antd';
 import { useQuery } from '@apollo/client/react';
 
-import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
-import { 
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import {
   usePhysicalStore,
   usePhysicalStoreItemCategories,
 } from '/imports/ui/modules/inventory/common/hooks';
@@ -18,85 +17,75 @@ import PurchaseForms from './purchase-forms';
 import Adjustments from './adjustments';
 import { STOCK_ITEM_BY_ID } from '../gql';
 
-const AntTabs = Tabs as any;
-const AntTabPane = Tabs.TabPane as any;
-const GeneralInfoComponent = GeneralInfo as any;
-const PictureComponent = Picture as any;
-const IssuanceFormsComponent = IssuanceForms as any;
-const PurchaseFormsComponent = PurchaseForms as any;
-const AdjustmentsComponent = Adjustments as any;
+const TabPane = Tabs.TabPane;
 
-interface RouteParams {
-  physicalStoreId: string;
-  stockItemId: string;
-}
+type Props = RouteComponentProps;
 
-interface StockItem {
-  _id: string;
-  name: string;
-}
-
-interface StockItemData {
-  stockItemById: StockItem;
-}
-
-type AnyProps = Record<string, any>;
-
-const EditForm = (props: AnyProps) => {
-  const dispatch = useDispatch();
-  const { physicalStoreId, stockItemId } = useParams<RouteParams>();
+const EditForm = ({ history }: Props) => {
+  const { physicalStoreId = '', stockItemId = '' } = useParams<{
+    physicalStoreId: string;
+    stockItemId: string;
+  }>();
   const { physicalStore } = usePhysicalStore(physicalStoreId);
-  const { 
+  const {
     itemCategoriesByPhysicalStoreId,
     itemCategoriesByPhysicalStoreIdLoading,
   } = usePhysicalStoreItemCategories(physicalStoreId);
-  
-  useEffect(() => {
-    if (physicalStore) {
-      dispatch(
-        setBreadcrumbs(['Inventory', physicalStore.name, 'Stock Items', 'Edit'])
-      );
-    } else {
-      dispatch(setBreadcrumbs(['Inventory', 'Stock Items', 'Edit']));
-    }
-  }, [dispatch, physicalStore]);
 
-  const { data, loading } = useQuery(STOCK_ITEM_BY_ID as any, {
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name ?? '', 'Stock Items', 'Edit']
+      : ['Inventory', 'Stock Items', 'Edit']
+  );
+
+  const { data, loading } = useQuery(STOCK_ITEM_BY_ID, {
     variables: { _id: stockItemId, physicalStoreId },
+    skip: !stockItemId || !physicalStoreId,
   });
 
   if (loading || itemCategoriesByPhysicalStoreIdLoading) return null;
-  const { stockItemById } = (data as StockItemData) ?? {};
+  const stockItemById = data?.stockItemById;
   if (!stockItemById) return null;
 
-  return (
-    <AntTabs defaultActiveKey="1">
-      <AntTabPane tab="General Info" key="1">
-        <GeneralInfoComponent
-          stockItemById={stockItemById}
-          itemCategoriesByPhysicalStoreId={itemCategoriesByPhysicalStoreId}
-          {...props}
-        />
-      </AntTabPane>
-      <AntTabPane tab="Picture" key="2">
-        <PictureComponent stockItemById={stockItemById} {...props} />
-      </AntTabPane>
-      <AntTabPane tab="Issuance Forms" key="3">
-        <IssuanceFormsComponent stockItemId={stockItemId} physicalStoreId={physicalStoreId} {...props} />
-      </AntTabPane>
-      <AntTabPane tab="Purchase Forms" key="4">
-        <PurchaseFormsComponent stockItemId={stockItemId} physicalStoreId={physicalStoreId} {...props} />
-      </AntTabPane>
-      <AntTabPane tab="Adjustments" key="5">
-        <AdjustmentsComponent stockItemId={stockItemId} physicalStoreId={physicalStoreId} {...props} />
-      </AntTabPane>
-    </AntTabs>
+  const categories = (itemCategoriesByPhysicalStoreId ?? []).filter(
+    (category): category is NonNullable<typeof category> => category != null
   );
-};
 
-EditForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
+  return (
+    <Tabs defaultActiveKey="1">
+      <TabPane tab="General Info" key="1">
+        <GeneralInfo
+          history={history}
+          stockItemById={stockItemById}
+          itemCategoriesByPhysicalStoreId={categories}
+        />
+      </TabPane>
+      <TabPane tab="Picture" key="2">
+        <Picture stockItemById={stockItemById} />
+      </TabPane>
+      <TabPane tab="Issuance Forms" key="3">
+        <IssuanceForms
+          history={history}
+          stockItemId={stockItemId}
+          physicalStoreId={physicalStoreId}
+        />
+      </TabPane>
+      <TabPane tab="Purchase Forms" key="4">
+        <PurchaseForms
+          history={history}
+          stockItemId={stockItemId}
+          physicalStoreId={physicalStoreId}
+        />
+      </TabPane>
+      <TabPane tab="Adjustments" key="5">
+        <Adjustments
+          history={history}
+          stockItemId={stockItemId}
+          physicalStoreId={physicalStoreId}
+        />
+      </TabPane>
+    </Tabs>
+  );
 };
 
 export default EditForm;

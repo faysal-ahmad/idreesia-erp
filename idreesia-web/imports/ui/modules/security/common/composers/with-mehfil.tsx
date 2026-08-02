@@ -1,11 +1,16 @@
-import React, { ComponentType } from "react";
-import PropTypes from "prop-types";
+import React, { ComponentType } from 'react';
 import { useQuery } from '@apollo/client/react';
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  MehfilByIdQuery,
+  MehfilByIdQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-type AnyProps = Record<string, any>;
-
-const mehfilByIdQuery = gql`
+const mehfilByIdQuery: TypedDocumentNode<
+  MehfilByIdQuery,
+  MehfilByIdQueryVariables
+> = gql`
   query mehfilById($_id: String!) {
     mehfilById(_id: $_id) {
       _id
@@ -19,36 +24,40 @@ const mehfilByIdQuery = gql`
   }
 `;
 
+type InjectedProps = {
+  mehfilLoading: boolean;
+  mehfilById?: MehfilByIdQuery['mehfilById'];
+};
+
 export const useMehfil = (mehfilId?: string) => {
-  const { loading, data = {}, ...queryProps } = useQuery(mehfilByIdQuery as any, {
-    variables: { _id: mehfilId },
+  const { loading, data, refetch } = useQuery(mehfilByIdQuery, {
+    variables: { _id: mehfilId ?? '' },
+    skip: !mehfilId,
   });
 
   return {
-    ...queryProps,
-    ...(data as AnyProps),
     loading,
     mehfilLoading: loading,
+    mehfilById: data?.mehfilById,
+    refetchMehfil: refetch,
   };
 };
 
-export default () => (WrappedComponent: ComponentType<AnyProps>) => {
-  const WithMehfil = (props: AnyProps) => {
-    const { mehfilId, ...rest } = props;
-    const mehfilProps = useMehfil(mehfilId);
+export default <P extends { mehfilId?: string }>() =>
+  (WrappedComponent: ComponentType<P & InjectedProps>) => {
+    const WithMehfil = (props: P) => {
+      const { mehfilId, ...rest } = props;
+      const mehfilProps = useMehfil(mehfilId);
 
-    return React.createElement(WrappedComponent as any, {
-      ...rest,
-      mehfilId,
-      ...mehfilProps,
-    });
+      return (
+        <WrappedComponent
+          {...(rest as P)}
+          mehfilId={mehfilId}
+          mehfilLoading={mehfilProps.mehfilLoading}
+          mehfilById={mehfilProps.mehfilById}
+        />
+      );
+    };
+
+    return WithMehfil;
   };
-
-  WithMehfil.propTypes = {
-    mehfilId: PropTypes.string,
-    mehfilLoading: PropTypes.bool,
-    mehfilById: PropTypes.object,
-  };
-
-  return WithMehfil;
-};

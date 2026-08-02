@@ -1,8 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { useQuery } from '@apollo/client/react';
 import gql from 'graphql-tag';
-import dayjs from 'dayjs';
+import type { TypedDocumentNode } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
+import dayjs, { type Dayjs } from 'dayjs';
 import numeral from 'numeral';
 import { Button, DatePicker, Spin, Row, Table } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
@@ -13,39 +13,24 @@ import {
   reverse,
   sortBy,
 } from 'meteor/idreesia-common/utilities/lodash';
+import type {
+  LocationsByPhysicalStoreIdQuery,
+  PurchaseFormsByMonthQuery,
+  PurchaseFormsByMonthQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 import { StockItemName } from '/imports/ui/modules/inventory/common/controls';
 
-const AntButton = Button as any;
-const AntDatePickerMonth = DatePicker.MonthPicker as any;
-const AntSpin = Spin as any;
-const AntRow = Row as any;
-const AntTable = Table as any;
-const AntLeftOutlined = LeftOutlined as any;
-const AntRightOutlined = RightOutlined as any;
-const StockItemNameComponent = StockItemName as any;
+type PurchaseForm = NonNullable<
+  NonNullable<PurchaseFormsByMonthQuery['purchaseFormsByMonth']>[number]
+>;
 
-interface LocationRecord {
-  _id: string;
-  name: string;
-}
+type PurchaseItem = NonNullable<
+  NonNullable<NonNullable<PurchaseForm['items']>[number]>
+>;
 
-interface PurchaseItem {
-  stockItemId: string;
-  quantity: number;
-  isInflow: boolean;
-  price: number;
-  refStockItem: {
-    name: string;
-    imageId?: string;
-    categoryName?: string;
-    unitOfMeasurement?: string;
-  };
-}
-
-interface PurchaseForm {
-  locationId?: string;
-  items: PurchaseItem[];
-}
+type LocationRow = NonNullable<
+  NonNullable<LocationsByPhysicalStoreIdQuery['locationsByPhysicalStoreId']>[number]
+> & { _id: string; name: string };
 
 interface LocationSummary {
   locationId: string;
@@ -66,19 +51,18 @@ interface PurchaseSummaryItem {
   cost: number;
 }
 
-interface PurchaseFormsData {
-  purchaseFormsByMonth: PurchaseForm[];
-}
-
 interface ReportProps {
-  physicalStoreId?: string;
-  month: dayjs.Dayjs;
-  monthString?: string;
-  locations?: LocationRecord[];
-  setPageParams(params: { month: dayjs.Dayjs | null }): void;
+  physicalStoreId: string;
+  month: Dayjs;
+  monthString: string;
+  locations: LocationRow[];
+  setPageParams(params: { month: Dayjs | null }): void;
 }
 
-const LIST_QUERY = gql`
+const PURCHASE_FORMS_BY_MONTH: TypedDocumentNode<
+  PurchaseFormsByMonthQuery,
+  PurchaseFormsByMonthQueryVariables
+> = gql`
   query purchaseFormsByMonth($physicalStoreId: String!, $month: String!) {
     purchaseFormsByMonth(physicalStoreId: $physicalStoreId, month: $month) {
       _id
@@ -105,31 +89,28 @@ const Report = ({
   physicalStoreId,
   month,
   monthString,
-  locations = [],
+  locations,
   setPageParams,
 }: ReportProps) => {
-  const { data, loading } = useQuery(LIST_QUERY as any, {
+  const { data, loading } = useQuery(PURCHASE_FORMS_BY_MONTH, {
     variables: { physicalStoreId, month: monthString },
   });
-
-  if (loading) {
-    return <AntSpin size="large" />;
-  }
 
   const columns: any[] = [
     {
       title: 'Item Name',
       dataIndex: 'stockItemName',
       key: 'stockItemName',
-      render: (_text: unknown, record: PurchaseSummaryItem) => {
-        const stockItem = {
-          _id: record.stockItemId,
-          physicalStoreId,
-          name: record.stockItemName,
-          imageId: record.stockItemImageId,
-        };
-        return <StockItemNameComponent stockItem={stockItem} />;
-      },
+      render: (_text: unknown, record: PurchaseSummaryItem) => (
+        <StockItemName
+          stockItem={{
+            _id: record.stockItemId,
+            physicalStoreId,
+            name: record.stockItemName,
+            imageId: record.stockItemImageId,
+          }}
+        />
+      ),
     },
     {
       title: 'Category',
@@ -166,7 +147,7 @@ const Report = ({
             nodeText = `${nodeText} ${record.unitOfMeasurement}`;
           }
 
-          locationNodes.push(<AntRow key={locationId}>{nodeText}</AntRow>);
+          locationNodes.push(<Row key={locationId}>{nodeText}</Row>);
         });
 
         return locationNodes;
@@ -189,7 +170,7 @@ const Report = ({
     },
   ];
 
-  const handleMonthChange = (value: dayjs.Dayjs | null) => {
+  const handleMonthChange = (value: Dayjs | null) => {
     setPageParams({
       month: value,
     });
@@ -208,69 +189,78 @@ const Report = ({
   };
 
   const locationsMap = keyBy(locations, '_id');
-  const { purchaseFormsByMonth } = (data as PurchaseFormsData) ?? {
-    purchaseFormsByMonth: [],
-  };
   const purchaseSummary: PurchaseSummaryItem[] = [];
   const purchaseSummaryMap: Record<string, PurchaseSummaryItem> = {};
 
-  purchaseFormsByMonth.forEach((purchaseForm: PurchaseForm) => {
-    const { locationId, items } = purchaseForm;
-    items.forEach((item: PurchaseItem) => {
-      let summaryItem = purchaseSummaryMap[item.stockItemId];
-      if (!summaryItem) {
-        summaryItem = {
-          stockItemId: item.stockItemId,
-          stockItemName: item.refStockItem.name,
-          stockItemImageId: item.refStockItem.imageId,
-          categoryName: item.refStockItem.categoryName,
-          unitOfMeasurement: item.refStockItem.unitOfMeasurement,
-          byLocation: {},
-          inflow: 0,
-          outflow: 0,
-          quantity: 0,
-          cost: 0,
-        };
-
-        purchaseSummary.push(summaryItem);
-        purchaseSummaryMap[item.stockItemId] = summaryItem;
-      }
-
-      if (item.isInflow) {
-        summaryItem.inflow += item.quantity;
-        summaryItem.quantity += item.quantity;
-        summaryItem.cost += item.price;
-
-        if (locationId && locationsMap[locationId]) {
-          if (!summaryItem.byLocation[locationId]) {
-            summaryItem.byLocation[locationId] = {
-              locationId,
-              locationName: locationsMap[locationId].name,
-              quantity: item.quantity,
-            };
-          } else {
-            summaryItem.byLocation[locationId].quantity += item.quantity;
+  (data?.purchaseFormsByMonth ?? [])
+    .filter((form): form is PurchaseForm => form != null)
+    .forEach((purchaseForm) => {
+      const { locationId, items } = purchaseForm;
+      (items ?? [])
+        .filter((item): item is PurchaseItem => item != null)
+        .forEach((item) => {
+          const refStockItem = item.refStockItem;
+          if (!item.stockItemId || !refStockItem?.name) {
+            return;
           }
-        }
-      } else {
-        summaryItem.outflow += item.quantity;
-        summaryItem.quantity -= item.quantity;
-        summaryItem.cost -= item.price;
 
-        if (locationId && locationsMap[locationId]) {
-          if (!summaryItem.byLocation[locationId]) {
-            summaryItem.byLocation[locationId] = {
-              locationId,
-              locationName: locationsMap[locationId].name,
-              quantity: -item.quantity,
+          let summaryItem = purchaseSummaryMap[item.stockItemId];
+          if (!summaryItem) {
+            summaryItem = {
+              stockItemId: item.stockItemId,
+              stockItemName: refStockItem.name,
+              stockItemImageId: refStockItem.imageId ?? undefined,
+              categoryName: refStockItem.categoryName ?? undefined,
+              unitOfMeasurement: refStockItem.unitOfMeasurement ?? undefined,
+              byLocation: {},
+              inflow: 0,
+              outflow: 0,
+              quantity: 0,
+              cost: 0,
             };
-          } else {
-            summaryItem.byLocation[locationId].quantity -= item.quantity;
+
+            purchaseSummary.push(summaryItem);
+            purchaseSummaryMap[item.stockItemId] = summaryItem;
           }
-        }
-      }
+
+          const quantity = item.quantity ?? 0;
+          const price = item.price ?? 0;
+
+          if (item.isInflow) {
+            summaryItem.inflow += quantity;
+            summaryItem.quantity += quantity;
+            summaryItem.cost += price;
+
+            if (locationId && locationsMap[locationId]) {
+              if (!summaryItem.byLocation[locationId]) {
+                summaryItem.byLocation[locationId] = {
+                  locationId,
+                  locationName: locationsMap[locationId].name,
+                  quantity,
+                };
+              } else {
+                summaryItem.byLocation[locationId].quantity += quantity;
+              }
+            }
+          } else {
+            summaryItem.outflow += quantity;
+            summaryItem.quantity -= quantity;
+            summaryItem.cost -= price;
+
+            if (locationId && locationsMap[locationId]) {
+              if (!summaryItem.byLocation[locationId]) {
+                summaryItem.byLocation[locationId] = {
+                  locationId,
+                  locationName: locationsMap[locationId].name,
+                  quantity: -quantity,
+                };
+              } else {
+                summaryItem.byLocation[locationId].quantity -= quantity;
+              }
+            }
+          }
+        });
     });
-  });
 
   const sortedPurchaseSummary = reverse(sortBy(purchaseSummary, 'cost'));
 
@@ -282,24 +272,25 @@ const Report = ({
   const getTableHeader = () => (
     <div className="list-table-header">
       <div className="list-table-header-section">
-        <AntButton
+        <Button
           type="primary"
           shape="circle"
-          icon={<AntLeftOutlined />}
+          icon={<LeftOutlined />}
           onClick={handleMonthGoBack}
         />
         &nbsp;&nbsp;
-        <AntDatePickerMonth
+        <DatePicker
+          picker="month"
           allowClear={false}
           format="MMM, YYYY"
           onChange={handleMonthChange}
           value={month}
         />
         &nbsp;&nbsp;
-        <AntButton
+        <Button
           type="primary"
           shape="circle"
-          icon={<AntRightOutlined />}
+          icon={<RightOutlined />}
           onClick={handleMonthGoForward}
         />
       </div>
@@ -311,8 +302,12 @@ const Report = ({
     </div>
   );
 
+  if (loading) {
+    return <Spin size="large" />;
+  }
+
   return (
-    <AntTable
+    <Table
       rowKey="stockItemId"
       title={getTableHeader}
       dataSource={sortedPurchaseSummary}
@@ -322,19 +317,6 @@ const Report = ({
       bordered
     />
   );
-};
-
-Report.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  month: PropTypes.object,
-  monthString: PropTypes.string,
-  physicalStoreId: PropTypes.string,
-  setPageParams: PropTypes.func,
-  loading: PropTypes.bool,
-  locations: PropTypes.array,
-  purchaseFormsByMonth: PropTypes.array,
 };
 
 export default Report;

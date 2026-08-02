@@ -1,8 +1,16 @@
 import { useEffect } from 'react';
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
+import type {
+  UseInventoryPhysicalStoreByIdQuery,
+  UseInventoryPhysicalStoreByIdQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const QUERY = gql`
+const QUERY: TypedDocumentNode<
+  UseInventoryPhysicalStoreByIdQuery,
+  UseInventoryPhysicalStoreByIdQueryVariables
+> = gql`
   query useInventoryPhysicalStoreById($id: String!) {
     physicalStoreById(id: $id) {
       _id
@@ -11,29 +19,22 @@ const QUERY = gql`
   }
 `;
 
-interface PhysicalStore {
-  _id: string;
-  name: string;
-}
-
-interface PhysicalStoreQueryData {
-  physicalStoreById: PhysicalStore | null;
-}
-
 export const usePhysicalStore = (physicalStoreId: string) => {
-  const { data, loading, refetch } = useQuery(QUERY as any, {
+  const { data, loading, refetch } = useQuery(QUERY, {
     variables: {
       id: physicalStoreId,
     },
+    skip: !physicalStoreId,
   });
 
   useEffect(() => {
-    refetch();
+    if (physicalStoreId) {
+      refetch();
+    }
   }, [physicalStoreId, refetch]);
 
   return {
-    physicalStore: (data as PhysicalStoreQueryData | undefined)
-      ?.physicalStoreById ?? null,
+    physicalStore: data?.physicalStoreById ?? null,
     physicalStoreLoading: loading,
   };
 };

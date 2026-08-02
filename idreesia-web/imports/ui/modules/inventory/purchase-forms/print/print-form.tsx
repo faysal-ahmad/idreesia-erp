@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import { type CSSProperties } from 'react';
 import { Col, Divider, Input, Row } from 'antd';
 import dayjs from 'dayjs';
-
+import type { InventoryPurchaseFormByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { DisplayItem } from '/imports/ui/modules/helpers/controls';
 
-const RowStyle = {
+const RowStyle: CSSProperties = {
   border: 'none',
   borderBottom: '1px dotted #444',
   color: '#fff',
@@ -14,32 +14,8 @@ const RowStyle = {
   width: '100%',
 };
 
-const AntCol = Col as any;
-const AntDivider = Divider as any;
-const AntInputTextArea = Input.TextArea as any;
-const AntRow = Row as any;
-const DisplayItemComponent = DisplayItem as any;
-
-interface PurchaseItem {
-  quantity: number;
-  isInflow: boolean;
-  price?: number;
-  refStockItem: {
-    name: string;
-    unitOfMeasurement?: string;
-  };
-}
-
-interface PurchaseForm {
-  issueDate?: string;
-  purchaseDate?: string;
-  items: PurchaseItem[];
-  refPurchasedBy: { name: string };
-  refReceivedBy: { name: string };
-  refVendor?: { name: string };
-  refLocation?: { name: string };
-  notes?: string;
-}
+type PurchaseForm = NonNullable<InventoryPurchaseFormByIdQuery['purchaseFormById']>;
+type PurchaseItem = NonNullable<NonNullable<PurchaseForm['items']>[number]>;
 
 interface PrintFormProps {
   physicalStoreId?: string;
@@ -48,68 +24,47 @@ interface PrintFormProps {
 }
 
 export class PrintForm extends Component<PrintFormProps> {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
-    physicalStoreId: PropTypes.string,
-    physicalStore: PropTypes.object,
-    purchaseFormById: PropTypes.object,
-  };
-
-  getItemsList = () => {
-    const { purchaseFormById } = this.props;
-    const formattedItems = purchaseFormById.items.map((item: PurchaseItem) => {
-      let quantity: number | string = item.quantity;
-      if (item.refStockItem.unitOfMeasurement !== 'quantity') {
-        quantity = `${quantity} ${item.refStockItem.unitOfMeasurement}`;
+  getItemsList = () => (this.props.purchaseFormById.items ?? [])
+    .filter((item): item is PurchaseItem => item != null)
+    .map((item) => {
+      let quantity: number | string = item.quantity ?? 0;
+      if (item.refStockItem?.unitOfMeasurement !== 'quantity') {
+        quantity = `${quantity} ${item.refStockItem?.unitOfMeasurement ?? ''}`;
       }
-
       return (
-        <AntRow style={{ fontSize: 16 }} justify="space-between" gutter={10}>
-          <AntCol>{item.refStockItem.name}</AntCol>
-          <AntCol flex="auto">
-            <hr style={RowStyle} />
-          </AntCol>
-          <AntCol>{`${quantity} ${item.isInflow ? 'Purchased' : 'Returned'} for Rs. ${item.price || '???'}`}</AntCol>
-        </AntRow>
+        <Row style={{ fontSize: 16 }} justify="space-between" gutter={10} key={`${item.stockItemId}${item.isInflow}`}>
+          <Col>{item.refStockItem?.name}</Col>
+          <Col flex="auto"><hr style={RowStyle} /></Col>
+          <Col>{`${quantity} ${item.isInflow ? 'Purchased' : 'Returned'} for Rs. ${item.price || '???'}`}</Col>
+        </Row>
       );
     });
 
-    return formattedItems;
-  }
-
   render() {
     const { purchaseFormById, physicalStore } = this.props;
-    const items = this.getItemsList();
-
     return (
       <div className="form-print-view">
-        <AntRow type="flex" justify="start" gutter={20}>
-          <AntCol flex={2}>
-            <DisplayItemComponent label="Store" value={physicalStore.name} />
-            <DisplayItemComponent label="Purchase Date" value={dayjs(Number(purchaseFormById.purchaseDate ?? purchaseFormById.issueDate)).format('DD-MMM-YYYY')} />
-            <DisplayItemComponent label="Purchased By" value={purchaseFormById.refPurchasedBy.name} />
-            <DisplayItemComponent label="Vendor" value={purchaseFormById.refVendor?.name} />
-            <DisplayItemComponent label="For Location" value={purchaseFormById.refLocation?.name} />
-            <DisplayItemComponent label="Received By" value={purchaseFormById.refReceivedBy.name} />
-          </AntCol>
-          <AntCol flex={3}>
-            <DisplayItemComponent label="Printing Time" value={dayjs().format('DD-MMM-YYYY hh:mm:ss A')} />
-            <DisplayItemComponent label="Notes">
-              <AntInputTextArea style={{ width: '100%' }}>{purchaseFormById.notes}</AntInputTextArea>
-            </DisplayItemComponent>
-          </AntCol>
-        </AntRow>
-        <AntDivider style={{ fontSize: 20 }}>Issued / Returned Items</AntDivider>
-        <AntRow type="flex" justify="space-between" gutter={20}>
-          <AntCol flex="auto">
-            {items}
-          </AntCol>
-        </AntRow>
+        <Row justify="start" gutter={20}>
+          <Col flex={2}>
+            <DisplayItem label="Store" value={physicalStore.name} />
+            <DisplayItem label="Purchase Date" value={dayjs(Number(purchaseFormById.purchaseDate)).format('DD-MMM-YYYY')} />
+            <DisplayItem label="Purchased By" value={purchaseFormById.refPurchasedBy?.name ?? ''} />
+            <DisplayItem label="Vendor" value={purchaseFormById.refVendor?.name ?? undefined} />
+            <DisplayItem label="For Location" value={purchaseFormById.refLocation?.name ?? undefined} />
+            <DisplayItem label="Received By" value={purchaseFormById.refReceivedBy?.name ?? ''} />
+          </Col>
+          <Col flex={3}>
+            <DisplayItem label="Printing Time" value={dayjs().format('DD-MMM-YYYY hh:mm:ss A')} />
+            <DisplayItem label="Notes">
+              <Input.TextArea style={{ width: '100%' }}>{purchaseFormById.notes}</Input.TextArea>
+            </DisplayItem>
+          </Col>
+        </Row>
+        <Divider style={{ fontSize: 20 }}>Issued / Returned Items</Divider>
+        <Row justify="space-between" gutter={20}>
+          <Col flex="auto">{this.getItemsList()}</Col>
+        </Row>
       </div>
     );
-  };
+  }
 }
-
-

@@ -1,22 +1,25 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties, Component } from 'react';
 import gql from 'graphql-tag';
-import { withQuery } from '/imports/ui/modules/inventory/common/composers/apollo-hooks';
+import type { TypedDocumentNode } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { DeleteOutlined } from '@ant-design/icons';
 
 import { filter, find } from 'meteor/idreesia-common/utilities/lodash';
+import type {
+  StockItemsByIdQuery,
+  StockItemsByIdQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 import { Table, Tooltip, message } from 'antd';
 import { default as ItemForm } from './item-form';
 
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntItemForm = ItemForm as any;
+type StockItemRow = NonNullable<
+  NonNullable<StockItemsByIdQuery['stockItemsById']>[number]
+>;
 
 interface StockItem {
   _id: string;
-  formattedName?: string;
-  unitOfMeasurement?: string;
+  formattedName?: string | null;
+  unitOfMeasurement?: string | null;
 }
 
 interface ListItem {
@@ -45,7 +48,7 @@ interface ItemsListProps {
   inflowLabel?: string;
   outflowLabel?: string;
   loading?: boolean;
-  stockItemsById?: StockItem[];
+  stockItemsById?: StockItemRow[];
   showPrice?: boolean;
   refForm?: RefForm;
 }
@@ -55,21 +58,21 @@ interface ItemsListState {
   stockItems: ListItem[];
 }
 
-class ItemsList extends Component<ItemsListProps, ItemsListState> {
-  static propTypes = {
-    readOnly: PropTypes.bool,
-    value: PropTypes.array,
-    onChange: PropTypes.func,
-    physicalStoreId: PropTypes.string,
-    defaultLabel: PropTypes.string,
-    inflowLabel: PropTypes.string,
-    outflowLabel: PropTypes.string,
-    loading: PropTypes.bool,
-    stockItemsById: PropTypes.array,
-    showPrice: PropTypes.bool,
-    refForm: PropTypes.object,
-  };
+const STOCK_ITEMS_BY_ID: TypedDocumentNode<
+  StockItemsByIdQuery,
+  StockItemsByIdQueryVariables
+> = gql`
+  query stockItemsById($physicalStoreId: String!, $_ids: [String]!) {
+    stockItemsById(physicalStoreId: $physicalStoreId, _ids: $_ids) {
+      _id
+      name
+      formattedName
+      unitOfMeasurement
+    }
+  }
+`;
 
+class ItemsList extends Component<ItemsListProps, ItemsListState> {
   static defaultProps = {
     readOnly: false,
   };
@@ -104,24 +107,10 @@ class ItemsList extends Component<ItemsListProps, ItemsListState> {
     }
 
     const isInflow = status === 'inflow';
-    /*
-    if (!isInflow && stockItem.currentStockLevel < quantity) {
-      message.error(
-        `You current stock level is ${
-          stockItem.currentStockLevel
-        }. You cannot have ${quantity} ${outflowLabel}.`,
-        5
-      );
-      return;
-    }
-    */
 
-    // Save this stock item in the state so that we can use it to display the label
     referenceStockItems.push(stockItem);
 
     const { stockItems } = this.state;
-    // If we have an existing item against this itemStockId, then add the
-    // count to the existing item instead of adding a new item.
     const existingItem = find(stockItems, {
       stockItemId: stockItem._id,
       isInflow,
@@ -147,22 +136,29 @@ class ItemsList extends Component<ItemsListProps, ItemsListState> {
     refForm.resetFields(['stockItem', 'quantity', 'price', 'status']);
   };
 
-  getStockItemName(stockItemId: string) {
+  getResolvedStockItems(): StockItem[] {
     const { stockItemsById = [] } = this.props;
     const { referenceStockItems } = this.state;
 
-    const allStockItems = referenceStockItems.concat(stockItemsById);
-    const stockItem = find(allStockItems, { _id: stockItemId });
+    const queriedItems = stockItemsById
+      .filter((row): row is StockItemRow => row != null && row._id != null)
+      .map((row) => ({
+        _id: row._id!,
+        formattedName: row.formattedName,
+        unitOfMeasurement: row.unitOfMeasurement,
+      }));
+
+    return referenceStockItems.concat(queriedItems);
+  }
+
+  getStockItemName(stockItemId: string) {
+    const stockItem = find(this.getResolvedStockItems(), { _id: stockItemId });
     if (stockItem) return stockItem.formattedName;
     return null;
   }
 
   getStockItemUom(stockItemId: string) {
-    const { stockItemsById = [] } = this.props;
-    const { referenceStockItems } = this.state;
-
-    const allStockItems = referenceStockItems.concat(stockItemsById);
-    const stockItem = find(allStockItems, { _id: stockItemId });
+    const stockItem = find(this.getResolvedStockItems(), { _id: stockItemId });
     if (stockItem) return stockItem.unitOfMeasurement;
     return null;
   }
@@ -207,14 +203,14 @@ class ItemsList extends Component<ItemsListProps, ItemsListState> {
       columns.push({
         key: 'actions',
         render: (_text: unknown, record: ListItem) => (
-          <AntTooltip title="Delete">
-            <AntDeleteOutlined
+          <Tooltip title="Delete">
+            <DeleteOutlined
               className="list-actions-icon"
               onClick={() => {
                 this.handleDeleteClicked(record);
               }}
             />
-          </AntTooltip>
+          </Tooltip>
         ),
       });
     }
@@ -234,7 +230,7 @@ class ItemsList extends Component<ItemsListProps, ItemsListState> {
 
     if (readOnly) return null;
     return (
-      <AntItemForm
+      <ItemForm
         refForm={refForm}
         physicalStoreId={physicalStoreId}
         defaultLabel={defaultLabel}
@@ -268,7 +264,7 @@ class ItemsList extends Component<ItemsListProps, ItemsListState> {
     if (loading) return null;
 
     return (
-      <AntTable
+      <Table
         rowKey={(item: ListItem) =>
           `${item.stockItemId}_${item.isInflow ? 'inflow' : 'outflow'}`
         }
@@ -283,23 +279,32 @@ class ItemsList extends Component<ItemsListProps, ItemsListState> {
   }
 }
 
-const stockItemsByIdQuery = gql`
-  query stockItemsById($physicalStoreId: String!, $_ids: [String]!) {
-    stockItemsById(physicalStoreId: $physicalStoreId, _ids: $_ids) {
-      _id
-      name
-      formattedName
-      unitOfMeasurement
-    }
-  }
-`;
+interface ItemsListContainerProps extends Omit<ItemsListProps, 'stockItemsById' | 'loading'> {}
 
-export default withQuery(stockItemsByIdQuery, {
-  props: ({ data }: { data: Record<string, unknown> }) => ({ ...data }),
-  options: ({ physicalStoreId, value }: ItemsListProps) => {
-    const _ids = value
-      ? value.map(({ stockItemId }: ListItem) => stockItemId)
-      : [];
-    return { variables: { physicalStoreId, _ids } };
-  },
-})(ItemsList as any);
+const ItemsListContainer = (props: ItemsListContainerProps) => {
+  const { physicalStoreId, value, ...rest } = props;
+  const _ids = value ? value.map(({ stockItemId }) => stockItemId) : [];
+  const { data, loading } = useQuery(STOCK_ITEMS_BY_ID, {
+    variables: {
+      physicalStoreId: physicalStoreId ?? '',
+      _ids,
+    },
+    skip: !physicalStoreId,
+  });
+
+  const stockItemsById = (data?.stockItemsById ?? []).filter(
+    (row): row is StockItemRow => row != null
+  );
+
+  return (
+    <ItemsList
+      {...rest}
+      physicalStoreId={physicalStoreId}
+      value={value}
+      loading={loading}
+      stockItemsById={stockItemsById}
+    />
+  );
+};
+
+export default ItemsListContainer;

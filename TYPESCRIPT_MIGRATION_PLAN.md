@@ -47,13 +47,19 @@ This file tracks recurring bug patterns and fixes found while cleaning up module
 
 Prefer hooks over `flowRight(...)`-composed HOCs when a hook equivalent exists.
 
-| Composer (`idreesia-common/composers/common`) | Hook equivalent (`idreesia-common/hooks/common`) | Status |
+| Former composer (`idreesia-common/composers/*`) | Hook (`idreesia-common/hooks/*`) | Status |
 | --- | --- | --- |
-| `WithAllCities` | `useAllCities` | existed already |
-| `WithAllCityMehfils` | `useAllCityMehfils` | existed already |
-| `WithQueryParams` | `useQueryParams` | existed already (note: slightly different shape — hook takes `{history, location, paramNames, paramDefaultValues}` and returns `{queryString, queryParams, setPageParams}`; composer just parses the query string via `withRouter` and doesn't support `paramNames`/defaults) |
-| `WithBreadcrumbs` | `useBreadcrumbs` | **created this session** — `idreesia-common/hooks/common/use-breadcrumbs.ts`, dispatches `setBreadcrumbs` once on mount via `useDispatch` + `useEffect([])`, mirrors the composer's `componentDidMount` |
-| `WithDynamicBreadcrumbs` | `useDynamicBreadcrumbs` | **created** — `idreesia-common/hooks/common/use-dynamic-breadcrumbs.ts`; re-dispatches when the breadcrumbs array changes (e.g. after an async store name loads). Pass a `unknown[]` (not a comma-separated string). |
+| `WithAllCities` | `useAllCities` | done |
+| `WithAllCityMehfils` | `useAllCityMehfils` | done |
+| `WithQueryParams` | `useQueryParams` | done (hook takes `{history, location, paramNames, paramDefaultValues}` → `{queryString, queryParams, setPageParams}`) |
+| `WithBreadcrumbs` | `useBreadcrumbs` | done |
+| `WithDynamicBreadcrumbs` | `useDynamicBreadcrumbs` | done (pass `unknown[]`, not a comma-separated string) |
+| `WithActiveModule` | `useActiveModule` | done |
+| `WithLoggedInUser` | `useLoggedInUser` | done |
+| `WithAllPhysicalStores` | `useAllPhysicalStores` (`hooks/admin`) | done |
+| `WithDistinctCities` / `Countries` / `StayAllowedBy` | `useDistinct*` (`hooks/security`) | done |
+
+**`idreesia-common/composers` removed** — every former HOC had a hook counterpart and zero remaining call sites after the hr/inventory/security/admin sweeps.
 
 **Migration pattern:**
 
@@ -70,7 +76,7 @@ Once a component's params are typed via a TS `interface`/type, delete the `impor
 
 Components rendered via react-router v5's `<Route component={...}>` (confirmed: every `*EditForm` is wired up this way in each module's `router.tsx`) receive `match`/`location`/`history` shaped by react-router itself, not by us. The TS conversion invented local per-file interfaces for these instead of importing the real types, which duplicates the shape (often incompletely/incorrectly) across dozens of files.
 
-The real types already exist as devDependencies (declared at the repo root, `@types/react-router` + `@types/react-router-dom` + `@types/history`) and are already used correctly in at least one place (`idreesia-common/composers/common/with-query-params.tsx` imports `RouteComponentProps` from `'react-router'`):
+The real types already exist as devDependencies (declared at the repo root, `@types/react-router` + `@types/react-router-dom` + `@types/history`) and are used via imports from `'react-router'` / `'history'`:
 
 - `RouteComponentProps<Params>` (from `'react-router'`) — `{ history: History; location: Location; match: match<Params>; staticContext?: ...}`. Use this when a component needs all three (e.g. the top-level `*EditForm` that a `<Route>` renders directly).
 - `match<Params>` (from `'react-router'`) — `{ params: Params; isExact: boolean; path: string; url: string; }`. Use this (as `match<{ karkunId: string }>` etc., with the actual route param names) when a component only needs `match`.
@@ -312,15 +318,16 @@ Applied patterns #1–#13 across all of `idreesia-web/imports/ui/modules/admin/`
 
 Apply the same treatment (patterns #1–#13) when we get to these:
 
-- Remaining top-level UI modules (accounts, communication, imdad, outstation, portals, …) still using `flowRight` + composers, `PropTypes`, or `as any` gql casts
+- Remaining cleanup outside cleaned modules: `PropTypes` / `as any` gql casts in helpers or other packages if any remain
 
-**RESUME POINT:** `ui/modules/{common,hr,inventory,security,admin}` done. Next: another remaining top-level module (accounts / communication / imdad / outstation / portals / …).
+**RESUME POINT:** `ui/modules/{common,hr,inventory,security,admin}` done; `idreesia-common/composers` removed in favor of `idreesia-common/hooks`.
 
 ### Codebase-wide follow-ups
 
 - [ ] Sweep for other `X as any` casts on `useQuery`/`useMutation` document arguments outside cleaned modules now that the `graphql` dedupe fix applies repo-wide
 - [x] Create a `useDynamicBreadcrumbs` hook (mirroring `useBreadcrumbs`) — done; reused in inventory + security
-- [x] Create `useAllPhysicalStores` hook — done for admin; composer HOC may still exist unused
+- [x] Create `useAllPhysicalStores` hook — done for admin
+- [x] Remove `idreesia-common/composers` after all call sites migrated to hooks
 
 ## How to verify a fix
 

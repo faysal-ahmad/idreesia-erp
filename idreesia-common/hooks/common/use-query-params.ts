@@ -21,6 +21,10 @@ interface QueryParamsHookProps {
   paramDefaultValues?: QueryParamValues;
 }
 
+const isBlankParam = (
+  value: QueryParamValue | readonly (string | null)[] | undefined
+) => value === null || value === undefined || value === '';
+
 const useQueryParams = ({
   history,
   location,
@@ -39,21 +43,32 @@ const useQueryParams = ({
   );
 
   paramNames.forEach(paramName => {
+    const current = queryParams[paramName] as QueryParamValue | undefined;
     if (!has(queryParams, paramName)) {
-      queryParams[paramName] = String(_paramDefaultValues[paramName] || '');
+      // Use nullish coalescing so numeric 0 defaults are preserved as "0"
+      queryParams[paramName] = String(_paramDefaultValues[paramName] ?? '');
+      return;
+    }
+
+    // Repair blank pageIndex/pageSize in the URL (e.g. pageIndex= from a
+    // prior falsy 0 → '' conversion), which would make Mongo $skip NaN.
+    if (
+      (paramName === 'pageIndex' || paramName === 'pageSize') &&
+      isBlankParam(current)
+    ) {
+      queryParams[paramName] = String(_paramDefaultValues[paramName] ?? '');
     }
   });
 
   const setPageParams = (newParams: QueryParamValues) => {
     const paramVals: string[] = [];
     paramNames.forEach(paramName => {
-      let paramVal: QueryParamValue | readonly (string | null)[] = '';
-      if (newParams.hasOwnProperty(paramName)) {
-        paramVal = newParams[paramName] || _paramDefaultValues[paramName] || '';
-      } else {
-        paramVal =
-          queryParams[paramName] || _paramDefaultValues[paramName] || '';
-      }
+      const raw = Object.prototype.hasOwnProperty.call(newParams, paramName)
+        ? newParams[paramName]
+        : (queryParams[paramName] as QueryParamValue | undefined);
+      const paramVal = isBlankParam(raw)
+        ? (_paramDefaultValues[paramName] ?? '')
+        : raw;
 
       paramVals.push(`${paramName}=${paramVal}`);
     });

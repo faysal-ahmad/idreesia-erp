@@ -11,6 +11,10 @@ Guidance distilled from the Security **Visitor Registration** list and edit mode
 | Area | Location |
 |------|----------|
 | List page wiring | `idreesia-web/imports/ui/modules/security/visitor-registeration/list/list.tsx` |
+| Stay report list (same list guidelines) | `idreesia-web/imports/ui/modules/security/visitor-stay-report/list.tsx` |
+| Simple setup list + modal create | `idreesia-web/imports/ui/modules/security/setup/mehfil-duties/list.tsx` |
+| Entity list + modal create + scroll.y | `idreesia-web/imports/ui/modules/security/mehfils/list.tsx` |
+| Nested list (selection + duty filter) | `idreesia-web/imports/ui/modules/security/mehfil-karkuns/list.tsx` |
 | Shared list table | `idreesia-web/imports/ui/modules/common/visitors/list.tsx` |
 | Shared list filter + chips | `idreesia-web/imports/ui/modules/common/visitors/list-filter.tsx` |
 | Edit shell (tabs, breadcrumbs, loading) | `idreesia-web/imports/ui/modules/security/visitor-registeration/edit/edit-form.tsx` |
@@ -20,8 +24,11 @@ Guidance distilled from the Security **Visitor Registration** list and edit mode
 | Picture side panel | `idreesia-web/imports/ui/modules/security/visitor-registeration/edit/picture.tsx` |
 | Audit footer | `idreesia-web/imports/ui/modules/common/audit-info/audit-info.tsx` |
 | Shared list / audit CSS | `idreesia-web/client/main.css` (`.list-*`, `.audit-info`) |
-| Feature-specific CSS | `idreesia-web/client/security-visitors-list.css` |
-| CSS entry | `idreesia-web/client/main.tsx` |
+| Visitors list CSS | `idreesia-web/imports/ui/modules/common/visitors/list.styles.css` |
+| Visitor form CSS | `idreesia-web/imports/ui/modules/common/visitors/general-info.styles.css` |
+| Visitor picture CSS | `idreesia-web/imports/ui/modules/security/visitor-registeration/edit/picture.styles.css` |
+| CSS entry | `idreesia-web/client/main.tsx` (imports page CSS; do not import CSS from `.tsx` under `imports/ui`) |
+| Security sidebar URL sync | `idreesia-web/imports/ui/modules/security/sidebar.tsx` |
 
 ---
 
@@ -39,12 +46,18 @@ Split primary actions (left) from utilities (right). Utilities stack **filter co
   <div className="list-table-header-utilities">
     <Space size={8}>
       <ListFilter {...filterProps} />
-      {/* Optional: settings / download menu */}
+      {/* Optional: settings / download menu / simple Select filters */}
+      <Button icon={<SyncOutlined />} onClick={handleRefresh} title="Reload Data" />
     </Space>
     <FilterChips {...filterProps} />
   </div>
 </div>
 ```
+
+**Placement:**
+
+- When using viewport-measured `scroll.y`, put the toolbar in the Table `title` so height measurement includes it (see visitors / mehfils / mehfil-karkuns).
+- Short setup lists that omit `scroll.y` may keep the toolbar as a sibling above the table (mehfil-duties).
 
 **Shared classes** (in `main.css`):
 
@@ -52,9 +65,11 @@ Split primary actions (left) from utilities (right). Utilities stack **filter co
 - `list-table-header-section` — left action cluster
 - `list-table-header-utilities` — right column, end-aligned, chips underneath
 
+Always include **Refresh** (`SyncOutlined`) in utilities, even when the list has no Filter popover.
+
 ### 2. Filter UX
 
-- Prefer **Popover** over Collapse / always-visible filter forms
+- Prefer **Popover** over Collapse / always-visible filter forms for multi-field filters
 - Trigger: **Filter** button with `FilterOutlined`
 - Wrap in `Badge` with `count={activeFilterCount}`
 - Place **Refresh** (`SyncOutlined`) beside Filter
@@ -63,6 +78,7 @@ Split primary actions (left) from utilities (right). Utilities stack **filter co
 - Override global `form { width: 600px }` inside the popover with `list-filter-panel` (640px)
 - Keep a single primary **Search** submit; do **not** add Reset when chips provide **Clear all**
 - Gate optional filter fields with props (enable only what that list needs)
+- A single domain Select in utilities is fine when that is the only filter (e.g. duty on mehfil-karkuns) — no need to force a Filter popover
 
 ### 3. Active filter chips
 
@@ -81,6 +97,22 @@ Split primary actions (left) from utilities (right). Utilities stack **filter co
 | `tableLayout` | `"fixed"` |
 | Pagination | In `footer`, not on Table |
 | `scroll.y` | Viewport-measured when useful |
+| Loading | Centered `Spin` — never blank `null` |
+| Delete | Prefer `Popconfirm` before destructive remove |
+
+**`scroll.y` measurement** (when used):
+
+- Measure after layout (`requestAnimationFrame`); re-run on resize and after content changes that alter title/footer height
+- Height = content padding-box bottom − title bottom − thead − footer − small gap (see `common/visitors/list.tsx` / `mehfils/list.tsx`)
+- Use `Layout.Content`’s padding box as the bottom limit (not `window.innerHeight` alone), or pagination clips when the title grows
+- Minimum body height ~200px; only update state when the delta is > ~2px to avoid thrash
+- Do not override `.ant-table-header` overflow; antd syncs the scrollbar gutter
+
+**Pagination:**
+
+- Server-paged lists: footer drives query `pageIndex` / `pageSize`
+- All-at-once lists (e.g. mehfils, mehfil-karkuns): client-slice the array for the footer; still use footer `Pagination`, not Table’s built-in pager
+- With `rowSelection` + client paging: merge selections across pages (keep other pages’ keys; replace only the current page’s selection)
 
 **Shared table palette** (`.list-table` in `main.css`):
 
@@ -88,17 +120,38 @@ Split primary actions (left) from utilities (right). Utilities stack **filter co
 - Inner column & row lines: `#cfd4dc`
 - Header fill: `#f3f4f6`, text `#344054`
 - Row hover: `#f5f9ff`
-- Selection column locked to 48px when using `scroll.y`
+- Do **not** put column widths or selection-column locks in `main.css`
 
-**Page-specific row tinting** (optional): keep in a dedicated `client/<module>-*.css` file (e.g. warning/alert row backgrounds). Do not put entity-specific tints in shared `.list-table` rules.
+**Page-specific CSS** (colocated next to the UI module, imported from `client/main.tsx`):
 
-### 5. List checklist
+- Row tinting (e.g. warning/alert backgrounds)
+- Selection column width locks when that page uses `rowSelection` + `scroll.y` — target `.ant-table-selection-col` / `.ant-table-selection-column` only (never `:first-child`)
+- Note: visitors `list.styles.css` currently locks selection on all `.list-table` tables; reuse that unless a page needs different widths
+- Any other column-width CSS for that page
 
-1. Toolbar with `list-table-header` + utilities
-2. Filter Popover + badge + refresh; chips + Clear all; no form Reset
-3. `list-container` / `list-table`; middle, bordered, footer pagination
-4. Shared CSS only in `main.css`; page-specific rules in `client/*.css` imported from `main.tsx`
-5. Smoke-test apply/clear filters, vertical scroll, selection column width
+### 5. Modal create (simple / setup lists)
+
+Prefer **create-in-modal on the list** when the new form is a few fields and there is no need for a full edit shell after create:
+
+- Parent owns `Form.useForm`, Modal `open` / OK / Cancel / `confirmLoading`
+- `new-form.tsx` is fields only (no Save/Cancel buttons, no route)
+- OK → `validateFields` → mutation → toast → close + reset; stay on the list
+- Remove the `/new` route, submodule path, and export
+- Keep a separate **edit** route when the entity still has a full edit page (e.g. mehfils)
+
+Use a **full new page** (Part B §7) when create reuses a large sectioned form or should land on edit after create (e.g. visitors).
+
+References: `setup/mehfil-duties`, `setup/mehfil-langar-dishes`, `setup/mehfil-langar-locations`, `mehfils`.
+
+### 6. List checklist
+
+1. Toolbar with `list-table-header` + utilities (in Table `title` when using `scroll.y`)
+2. Filter Popover + badge when multi-field filters; Refresh always; chips + Clear all; no form Reset
+3. `list-container` / `list-table`; middle, bordered, footer pagination; `Spin` while loading
+4. Viewport-measured `scroll.y` when the list can grow; omit only for tiny setup tables
+5. Modal create for simple entities; full new page only when Part B §7 applies
+6. Shared CSS in `main.css`; page CSS next to the module, loaded from `client/main.tsx`
+7. Smoke-test apply/clear filters, vertical scroll, selection across pages, create/delete
 
 ---
 
@@ -164,7 +217,7 @@ When an edit tab embeds a list (e.g. Stay History), apply the same **Part A** li
 
 ### 7. New forms
 
-Reuse the same sectioned layout as edit (prefer wrapping the shared general-info form):
+**Full new page** — reuse the same sectioned layout as edit (prefer wrapping the shared general-info form):
 
 - Same collapse sections and `fullWidth` Save/Cancel alignment
 - Defaults as needed (e.g. Country = Pakistan for new visitors)
@@ -172,17 +225,19 @@ Reuse the same sectioned layout as edit (prefer wrapping the shared general-info
 - Cancel → list; on successful create, toast then navigate to the edit page
 - Show `Spin` while lookup data (cities/countries) loads — not a blank page
 
+**Modal create** — for short setup/entity creates, use Part A §5 instead of a `/new` route.
+
 ### 8. Edit / new checklist
 
-1. Dynamic breadcrumbs (entity name on edit; “New” on create)
+1. Dynamic breadcrumbs (entity name on edit; “New” on create page)
 2. Spin / Empty instead of blank render
 3. Collapse sections with shared header chrome; `forceRender` on panels
 4. Optional picture side panel (non-collapsible, no title bar) beside Personal Information
 5. Consolidate notes onto main tab when possible; badge + alerts for risk
-6. Edit: stay-on-save + toast; Cancel → list. New: toast + navigate to edit after create
+6. Edit: stay-on-save + toast; Cancel → list. Full new page: toast + navigate to edit after create. Modal create: toast + stay on list
 7. Semantic URL tab keys if multiple tabs remain
 8. Form + AuditInfo share one max-width wrapper (hide audit on new if not applicable)
-9. Page-specific CSS in `client/<feature>.css`; import from `main.tsx`
+9. Page-specific CSS colocated next to the module; import from `client/main.tsx`
 
 ---
 
@@ -197,19 +252,29 @@ Reuse the same sectioned layout as edit (prefer wrapping the shared general-info
 | `list-container` / `list-table` | Table chrome |
 | `audit-info` / `audit-info-line` / `audit-info-label` | Edit form audit footer |
 
-### Feature-specific (`client/<module>-<feature>.css`)
+### Page-specific (colocated under `imports/ui/...`, loaded from `client/main.tsx`)
 
-Only rules unique to that feature (row tints, form side panel, collapse skin for that module until/unless promoted to shared).
+| File | Owns |
+|------|------|
+| `modules/common/visitors/list.styles.css` | Row tints, selection-column lock |
+| `modules/common/visitors/general-info.styles.css` | Form width, side panel, collapse sections |
+| `modules/security/visitor-registeration/edit/picture.styles.css` | Picture panel |
 
-Import from `client/main.tsx` next to other feature styles.
+Put new page-only rules next to the component that owns the class names. Keep shared chrome in `main.css`.
+
+**Name CSS `*.styles.css`** (not `list.css` beside `list.tsx`). Meteor’s extensionless import of `./list` can resolve to the CSS module object and break React (`type is invalid… got: object`).
 
 ### Meteor CSS loading (important)
 
-**Do not** `import './foo.css'` from files under `imports/ui/...`.
+**Do** colocate `*.styles.css` next to UI modules under `imports/ui/...`.
 
-Meteor can treat that import as a module value and break component exports (blank page; “type is invalid… got: object”).
+**Do not** `import './foo.css'` from those modules’ `.tsx` files, and **do not** use the same basename as a `.tsx` sibling.
 
-Always load CSS from `client/main.tsx` (or another client entry).
+Always load page CSS from `client/main.tsx` (or another client entry):
+
+```ts
+import '../imports/ui/modules/common/visitors/list.styles.css';
+```
 
 ---
 
@@ -235,7 +300,7 @@ Reuse these so lists and forms feel like one system:
 Module sidebars should derive selection from the current pathname (not only from click handlers):
 
 - `selectedKeys` from a path → menu-key map (most specific routes first)
-- Keep the parent group in `openKeys` when a child is active; still allow manual expand/collapse
+- Keep all ancestor groups in `openKeys` when a nested child is active (e.g. Mehfil Management → Setup → Mehfil Duties); still allow manual expand/collapse
 - Sync `activeSubModuleName` from the URL so refresh / deep links keep the sidebar highlight
 - Nested routes (edit/new/upload) should highlight the parent list item, not a blank selection
 
@@ -246,7 +311,8 @@ Reference: `idreesia-web/imports/ui/modules/security/sidebar.tsx`
 ## Out of scope / avoid
 
 - Dumping page-only rules into `main.css` when they will not be reused
-- Colocating CSS imports next to React components under `imports/ui`
+- Importing CSS from `.tsx` under `imports/ui` (file colocation is fine; load from `client/main.tsx`)
+- Naming colocated CSS the same as a sibling module (`list.css` next to `list.tsx`)
 - Sticky table columns unless selection/scroll behavior is re-verified
 - Duplicate Reset + Clear all for the same filter state
 - Numeric tab keys that fight legacy URL remapping

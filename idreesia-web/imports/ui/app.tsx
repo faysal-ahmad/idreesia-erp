@@ -40,7 +40,7 @@ const App = ({ userId }: Props) => {
   const dispatch = useDispatch<any>();
   useEffect(() => {
     dispatch(setLoggedInUserId(userId || null));
-  });
+  }, [dispatch, userId]);
 
   if (userId) {
     return (

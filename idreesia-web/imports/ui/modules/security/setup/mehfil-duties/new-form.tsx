@@ -1,76 +1,54 @@
-import React, { useState } from 'react';
-import { useMutation } from '@apollo/client/react';
-import { Form, message } from 'antd';
-import { type History } from 'history';
+import React from 'react';
+import { Form, Input, type FormInstance } from 'antd';
 
-import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
-import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
-import {
-  InputTextField,
-  FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
-
-import { CREATE_SECURITY_MEHFIL_DUTY } from './gql';
-
-interface NewFormProps {
-  history: History;
-}
-
-interface FormValues {
+export interface NewMehfilDutyFormValues {
   name: string;
   urduName: string;
 }
 
-const NewForm = ({ history }: NewFormProps) => {
-  useBreadcrumbs(['Security', 'Mehfil Duties', 'New']);
-  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createSecurityMehfilDuty] = useMutation(CREATE_SECURITY_MEHFIL_DUTY, {
-    refetchQueries: ['setupAllSecurityMehfilDuties'],
-  });
+interface NewFormProps {
+  form: FormInstance<NewMehfilDutyFormValues>;
+}
 
-  const handleCancel = () => {
-    history.push(paths.mehfilDutiesPath);
-  };
-
-  const handleFieldsChange = () => {
-    setIsFieldsTouched(true);
-  };
-
-  const handleFinish = (fieldsValue: FormValues) => {
-    createSecurityMehfilDuty({
-      variables: {
-        name: fieldsValue.name,
-        urduName: fieldsValue.urduName,
-      },
-    })
-      .then(() => {
-        history.push(paths.mehfilDutiesPath);
-      })
-      .catch((error: Error) => {
-        message.error(error.message, 5);
-      });
-  };
-
-  return (
-    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <InputTextField
-        fieldName="name"
-        fieldLabel="Name"
-        required
-        requiredMessage="Please input a name for the mehfil duty."
-      />
-      <InputTextField
-        fieldName="urduName"
-        fieldLabel="Urdu Name"
-        required
-        requiredMessage="Please input an urdu name for the mehfil duty."
-      />
-      <FormButtonsSaveCancel
-        handleCancel={handleCancel}
-        isFieldsTouched={isFieldsTouched}
-      />
-    </Form>
-  );
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
 };
+
+const NewForm = ({ form }: NewFormProps) => (
+  <Form
+    form={form}
+    layout="horizontal"
+    style={{ width: '100%', maxWidth: '100%' }}
+    preserve={false}
+  >
+    <Form.Item
+      name="name"
+      label="Name"
+      rules={[
+        {
+          required: true,
+          message: 'Please input a name for the mehfil duty.',
+        },
+      ]}
+      {...formItemLayout}
+    >
+      <Input />
+    </Form.Item>
+    <Form.Item
+      name="urduName"
+      label="Urdu Name"
+      rules={[
+        {
+          required: true,
+          message: 'Please input an urdu name for the mehfil duty.',
+        },
+      ]}
+      {...formItemLayout}
+    >
+      <Input />
+    </Form.Item>
+  </Form>
+);
 
 export default NewForm;

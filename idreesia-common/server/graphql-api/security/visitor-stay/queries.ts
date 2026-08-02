@@ -181,8 +181,11 @@ export async function getVisitorStays(queryString: string) {
     $count: 'total',
   });
 
-  const nPageIndex = parseInt(String(pageIndex), 10);
-  const nPageSize = parseInt(String(pageSize), 10);
+  const nPageIndex = Number.parseInt(String(pageIndex || DEFAULT_PAGE_INDEX), 10);
+  const nPageSize = Number.parseInt(String(pageSize || DEFAULT_PAGE_SIZE), 10);
+  if (Number.isNaN(nPageIndex) || Number.isNaN(nPageSize)) {
+    throw new Error('Invalid value passed for pageIndex or pageSize');
+  }
 
   const sortByColumnName =
     sortByColumnMapping[sortByText as keyof typeof sortByColumnMapping];

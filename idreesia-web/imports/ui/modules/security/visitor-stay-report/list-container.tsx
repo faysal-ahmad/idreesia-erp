@@ -3,6 +3,8 @@ import { type RouteComponentProps } from 'react-router';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import {
+  DEFAULT_PAGE_INDEX,
+  DEFAULT_PAGE_SIZE,
   DEFAULT_PAGE_INDEX_INT,
   DEFAULT_PAGE_SIZE_INT,
 } from 'meteor/idreesia-common/constants/list-options';
@@ -55,8 +57,10 @@ const ListContainer = ({ history, location }: Props) => {
     paramDefaultValues: {
       sortBy: DEFAULT_SORT_BY,
       sortOrder: DEFAULT_SORT_ORDER,
-      pageIndex: DEFAULT_PAGE_INDEX_INT,
-      pageSize: DEFAULT_PAGE_SIZE_INT,
+      // Must be strings — numeric 0 is falsy and used to become pageIndex=
+      // which makes Mongo $skip NaN and returns no rows.
+      pageIndex: DEFAULT_PAGE_INDEX,
+      pageSize: DEFAULT_PAGE_SIZE,
     },
   });
 

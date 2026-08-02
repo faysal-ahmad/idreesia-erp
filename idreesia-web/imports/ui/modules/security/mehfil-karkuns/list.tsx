@@ -1,9 +1,24 @@
-import React, { Component } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
-import { Button, Row, Select, Table, Tooltip } from 'antd';
-import { EditOutlined, PrinterOutlined, UsergroupAddOutlined, UsergroupDeleteOutlined } from '@ant-design/icons';
-import type { CSSProperties } from 'react';
+import {
+  Button,
+  Pagination,
+  Popconfirm,
+  Select,
+  Space,
+  Spin,
+  Table,
+  Tooltip,
+  message,
+} from 'antd';
+import {
+  EditOutlined,
+  PrinterOutlined,
+  SyncOutlined,
+  UsergroupAddOutlined,
+  UsergroupDeleteOutlined,
+} from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { sortBy } from 'meteor/idreesia-common/utilities/lodash';
@@ -11,14 +26,17 @@ import type {
   MehfilByIdQuery,
   MehfilKarkunsByMehfilIdQuery,
 } from 'meteor/idreesia-common/types/client-operations';
-import { PersonName, PeopleSelectionButton } from '/imports/ui/modules/helpers/controls';
+import {
+  PersonName,
+  PeopleSelectionButton,
+} from '/imports/ui/modules/helpers/controls';
 import type { SecurityMehfilDuty } from '/imports/ui/modules/security/common/hooks';
 
 import { MEHFIL_KARKUNS_BY_MEHFIL_ID } from './gql';
 
-const SelectStyle: CSSProperties = {
-  width: '300px',
-};
+const DEFAULT_PAGE_SIZE = 20;
+const TABLE_HEADER_ROW_HEIGHT = 55;
+const VIEWPORT_BOTTOM_GAP = 16;
 
 type MehfilRecord = NonNullable<MehfilByIdQuery['mehfilById']>;
 
@@ -43,264 +61,335 @@ interface ListProps {
   refetchMehfilKarkuns(): void;
   handleAddMehfilKarkun(karkunId: string, refetchQuery: () => void): void;
   handleEditMehfilKarkun(selectedRows: MehfilKarkun[]): void;
-  handleRemoveMehfilKarkun(mehfilKarkunId: string, refetchQuery: () => void): void;
+  handleRemoveMehfilKarkun(
+    mehfilKarkunId: string,
+    refetchQuery: () => void
+  ): void;
   handleViewPrintCards(selectedRows: MehfilKarkun[]): void;
   handleViewPrintList(selectedRows: MehfilKarkun[]): void;
 }
 
-interface ListState {
-  selectedRows: MehfilKarkun[];
-}
+type ListWithDataProps = Omit<
+  ListProps,
+  'mehfilKarkunsByMehfilId' | 'refetchMehfilKarkuns' | 'mehfilKarkunsLoading'
+>;
 
-interface ListWithDataProps extends Omit<ListProps, 'mehfilKarkunsByMehfilId' | 'refetchMehfilKarkuns'> {}
+const isPastMehfil = (mehfilById: MehfilRecord) => {
+  const mehfilDate = dayjs(Number(mehfilById.mehfilDate));
+  return (
+    dayjs().diff(dayjs(mehfilDate, Formats.DATE_FORMAT), 'days') > 30
+  );
+};
 
-export class List extends Component<ListProps, ListState> {
-  state = {
-    selectedRows: [] as MehfilKarkun[],
+const List = ({
+  dutyId,
+  mehfilById,
+  allSecurityMehfilDuties,
+  setPageParams,
+  mehfilKarkunsLoading,
+  mehfilKarkunsByMehfilId,
+  refetchMehfilKarkuns,
+  handleAddMehfilKarkun,
+  handleEditMehfilKarkun,
+  handleRemoveMehfilKarkun,
+  handleViewPrintCards,
+  handleViewPrintList,
+}: ListProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scrollY, setScrollY] = useState(360);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [selectedRows, setSelectedRows] = useState<MehfilKarkun[]>([]);
+
+  const pastMehfil = isPastMehfil(mehfilById);
+
+  const updateScrollY = () => {
+    requestAnimationFrame(() => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const table = container.querySelector('.list-table');
+      if (!table) return;
+
+      const title = table.querySelector('.ant-table-title');
+      const footer = table.querySelector('.ant-table-footer');
+      const thead = table.querySelector('.ant-table-thead');
+      const titleBottom = title
+        ? title.getBoundingClientRect().bottom
+        : table.getBoundingClientRect().top;
+      const theadHeight = thead
+        ? Math.ceil((thead as HTMLElement).getBoundingClientRect().height)
+        : TABLE_HEADER_ROW_HEIGHT;
+      const footerHeight = footer
+        ? Math.ceil((footer as HTMLElement).getBoundingClientRect().height)
+        : 64;
+
+      const contentEl = container.closest(
+        '.ant-layout-content'
+      ) as HTMLElement | null;
+      let bottomLimit = window.innerHeight;
+      if (contentEl) {
+        const paddingBottom =
+          Number.parseFloat(getComputedStyle(contentEl).paddingBottom) || 0;
+        bottomLimit =
+          contentEl.getBoundingClientRect().bottom - paddingBottom;
+      }
+
+      const nextScrollY = Math.max(
+        200,
+        Math.floor(
+          bottomLimit -
+            titleBottom -
+            theadHeight -
+            footerHeight -
+            VIEWPORT_BOTTOM_GAP
+        )
+      );
+
+      setScrollY((prev) =>
+        Math.abs(nextScrollY - prev) > 2 ? nextScrollY : prev
+      );
+    });
   };
 
-  getIsPastMehfil = (mehfilById: MehfilRecord) => {
-    const mehfilDate = dayjs(Number(mehfilById.mehfilDate));
-    return dayjs().diff(
-      dayjs(mehfilDate, Formats.DATE_FORMAT),
-      'days'
-      ) > 30;
+  useEffect(() => {
+    updateScrollY();
+    window.addEventListener('resize', updateScrollY);
+    return () => window.removeEventListener('resize', updateScrollY);
+  });
+
+  const handleDutyChange = (value?: string) => {
+    setPageParams({ dutyId: value });
+    setSelectedRows([]);
+    setPageIndex(0);
   };
 
-  getColumns = (isPastMehfil: boolean, allSecurityMehfilDuties: SecurityMehfilDuty[]): any[] => {
-    const columns: any[] = [
-      {
-        title: 'Name',
-        key: 'karkun.name',
-        render: (_text: unknown, record: MehfilKarkun) => {
-          const personNameData = {
+  const handleRefresh = () => {
+    Promise.resolve(refetchMehfilKarkuns()).then(() => {
+      message.success('Data Reloaded', 2);
+    });
+  };
+
+  const onPaginationChange = (page: number, nextPageSize?: number) => {
+    setPageIndex(page - 1);
+    if (nextPageSize != null) setPageSize(nextPageSize);
+  };
+
+  if (mehfilKarkunsLoading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  const sortedMehfilKarkuns = sortBy(
+    mehfilKarkunsByMehfilId ?? [],
+    'karkun.sharedData.name'
+  );
+  const totalResults = sortedMehfilKarkuns.length;
+  const maxPageIndex = Math.max(0, Math.ceil(totalResults / pageSize) - 1);
+  const safePageIndex = Math.min(pageIndex, maxPageIndex);
+  const pageData = sortedMehfilKarkuns.slice(
+    safePageIndex * pageSize,
+    safePageIndex * pageSize + pageSize
+  );
+
+  const columns: any[] = [
+    {
+      title: 'Name',
+      key: 'karkun.name',
+      render: (_text: unknown, record: MehfilKarkun) => (
+        <PersonName
+          person={{
             _id: record._id ?? '',
             name: record.karkun?.sharedData?.name ?? '',
             imageId: record.karkun?.sharedData?.imageId ?? undefined,
-          };
-
-          return (
-            <PersonName
-              person={personNameData}
-              onPersonNameClicked={() => {}}
-            />
-          );
-        },
-      },
-      {
-        title: 'City',
-        key: 'cityCountry',
-        render: (_text: unknown, record: MehfilKarkun) => {
-          if (record.karkun?.isKarkun && record.karkun.karkunData?.city) {
-            return record.karkun.karkunData.city.name;
-          } else if (record.karkun?.visitorData?.city) {
-            return record.karkun.visitorData.city;
-          }
-
-          return '';
-        },
-      },
-      {
-        title: 'CNIC',
-        key: 'cnicNumber',
-        render: (_text: unknown, record: MehfilKarkun) => record.karkun?.sharedData?.cnicNumber,
-      },
-      {
-        title: 'Contact No.',
-        key: 'contactNumbers',
-        render: (_text: unknown, record: MehfilKarkun) => {
-          const numbers: React.ReactNode[] = [];
-          if (record.karkun?.sharedData?.contactNumber1)
-            numbers.push(<Row key="1">{record.karkun.sharedData.contactNumber1}</Row>);
-          if (record.karkun?.sharedData?.contactNumber2)
-            numbers.push(<Row key="2">{record.karkun.sharedData.contactNumber2}</Row>);
-
-          if (numbers.length === 0) return '';
-          return <>{numbers}</>;
-        },
-      },
-      {
-        title: 'Duty Name',
-        dataIndex: 'dutyId',
-        key: 'dutyId',
-        render: (text: string | null) => {
-          const duty = allSecurityMehfilDuties.find((mehfilDuty) => mehfilDuty._id === text);
-          return duty?.name;
-        },
-      },
-      {
-        title: 'Duty Detail',
-        dataIndex: 'dutyDetail',
-        key: 'dutyDetail',
-      },
-    ];
-
-    if (!isPastMehfil) {
-      columns.push({
-        key: 'action',
-        render: (_text: unknown, record: MehfilKarkun) => (
-          <div className="list-actions-column">
-            <Tooltip key="delete" title="Remove Karkun">
-              <UsergroupDeleteOutlined
-                className="list-actions-icon"
-                onClick={() => {
-                  const {
-                    handleRemoveMehfilKarkun,
-                    refetchMehfilKarkuns,
-                  } = this.props;
-                  handleRemoveMehfilKarkun(record._id ?? '', refetchMehfilKarkuns);
-                }}
-              />
-            </Tooltip>
-          </div>
-        ),
-      });
-    }
-    return columns;
-  };
-
-  rowSelection = {
-    onChange: (_selectedRowKeys: React.Key[], selectedRows: MehfilKarkun[]) => {
-      this.setState({
-        selectedRows,
-      });
+          }}
+          onPersonNameClicked={() => {}}
+        />
+      ),
     },
-  };
+    {
+      title: 'City',
+      key: 'cityCountry',
+      width: 140,
+      render: (_text: unknown, record: MehfilKarkun) => {
+        if (record.karkun?.isKarkun && record.karkun.karkunData?.city) {
+          return record.karkun.karkunData.city.name;
+        }
+        if (record.karkun?.visitorData?.city) {
+          return record.karkun.visitorData.city;
+        }
+        return '';
+      },
+    },
+    {
+      title: 'CNIC',
+      key: 'cnicNumber',
+      width: 150,
+      render: (_text: unknown, record: MehfilKarkun) =>
+        record.karkun?.sharedData?.cnicNumber,
+    },
+    {
+      title: 'Contact No.',
+      key: 'contactNumbers',
+      width: 140,
+      render: (_text: unknown, record: MehfilKarkun) => {
+        const numbers = [
+          record.karkun?.sharedData?.contactNumber1,
+          record.karkun?.sharedData?.contactNumber2,
+        ].filter(Boolean);
+        return numbers.length > 0 ? numbers.join(', ') : '';
+      },
+    },
+    {
+      title: 'Duty Name',
+      dataIndex: 'dutyId',
+      key: 'dutyId',
+      width: 160,
+      render: (text: string | null) => {
+        const duty = allSecurityMehfilDuties.find(
+          (mehfilDuty) => mehfilDuty._id === text
+        );
+        return duty?.name;
+      },
+    },
+    {
+      title: 'Duty Detail',
+      dataIndex: 'dutyDetail',
+      key: 'dutyDetail',
+    },
+  ];
 
-  handleSelectionChange = (value?: string) => {
-    const { setPageParams } = this.props;
-    setPageParams({
-      dutyId: value,
+  if (!pastMehfil) {
+    columns.push({
+      key: 'action',
+      width: 56,
+      render: (_text: unknown, record: MehfilKarkun) => (
+        <div className="list-actions-column">
+          <Popconfirm
+            title="Are you sure you want to remove this karkun?"
+            onConfirm={() => {
+              handleRemoveMehfilKarkun(record._id ?? '', refetchMehfilKarkuns);
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Tooltip title="Remove Karkun">
+              <UsergroupDeleteOutlined className="list-actions-icon" />
+            </Tooltip>
+          </Popconfirm>
+        </div>
+      ),
     });
-    this.setState({
-      selectedRows: [],
-    });
-  };
+  }
 
-  handleEditDutyDetails = () => {
-    const { handleEditMehfilKarkun } = this.props;
-    const { selectedRows } = this.state;
-    if (handleEditMehfilKarkun) {
-      handleEditMehfilKarkun(selectedRows);
-    }
-  };
-
-  handleViewPrintCards = () => {
-    const { handleViewPrintCards } = this.props;
-    const { selectedRows } = this.state;
-    if (handleViewPrintCards) {
-      handleViewPrintCards(selectedRows);
-    }
-  };
-
-  handleViewPrintList = () => {
-    const { handleViewPrintList } = this.props;
-    const { selectedRows } = this.state;
-    if (handleViewPrintList) {
-      handleViewPrintList(selectedRows);
-    }
-  };
-
-  onKarkunSelection = (karkun: { _id: string }) => {
-    const { handleAddMehfilKarkun, refetchMehfilKarkuns } = this.props;
-    handleAddMehfilKarkun(karkun._id, refetchMehfilKarkuns);
-  };
-
-  getTableHeader = () => {
-    const { mehfilById, allSecurityMehfilDuties, dutyId } = this.props;
-    const { selectedRows } = this.state;
-    const isPastMehfil = this.getIsPastMehfil(mehfilById);
-
-    const options = allSecurityMehfilDuties.map(duty => (
-      <Select.Option key={duty._id ?? ''} value={duty._id ?? ''}>
-        {`${duty.name} - ${duty.mehfilUsedCount}`}
-      </Select.Option>
-    ));
-
-    const dutySelector = (
-      <Select
-        defaultValue={dutyId}
-        style={SelectStyle}
-        onChange={this.handleSelectionChange}
-        allowClear
-        dropdownMatchSelectWidth
-      >
-        {options}
-      </Select>
-    );
-
-    const actions = (
-      <div className="list-table-header-section">
+  const getTableHeader = () => (
+    <div className="list-table-header">
+      <Space size={12} wrap>
         <PeopleSelectionButton
           icon={<UsergroupAddOutlined />}
           label="Add Karkuns"
-          onSelection={this.onKarkunSelection}
-          disabled={isPastMehfil || !dutyId}
+          onSelection={(karkun: { _id: string }) => {
+            handleAddMehfilKarkun(karkun._id, refetchMehfilKarkuns);
+          }}
+          disabled={pastMehfil || !dutyId}
         />
-        &nbsp;&nbsp;
         <Button
-          disabled={isPastMehfil || !(selectedRows && selectedRows.length > 0)}
+          disabled={pastMehfil || selectedRows.length === 0}
           icon={<EditOutlined />}
-          size="large"
-          onClick={this.handleEditDutyDetails}
+          onClick={() => handleEditMehfilKarkun(selectedRows)}
         >
           Edit Duty Detail
         </Button>
-        &nbsp;&nbsp;
         <Button
-          disabled={isPastMehfil}
+          disabled={pastMehfil}
           icon={<PrinterOutlined />}
-          size="large"
-          onClick={this.handleViewPrintCards}
+          onClick={() => handleViewPrintCards(selectedRows)}
         >
           Print Cards
         </Button>
-        &nbsp;&nbsp;
         <Button
-          disabled={isPastMehfil}
+          disabled={pastMehfil}
           icon={<PrinterOutlined />}
-          size="large"
-          onClick={this.handleViewPrintList}
+          onClick={() => handleViewPrintList(selectedRows)}
         >
           Print List
         </Button>
+      </Space>
+      <div className="list-table-header-utilities">
+        <Space size={8}>
+          <Select
+            value={dutyId || undefined}
+            placeholder="Filter by duty"
+            style={{ width: 280 }}
+            onChange={handleDutyChange}
+            allowClear
+            options={allSecurityMehfilDuties.map((duty) => ({
+              value: duty._id ?? '',
+              label: `${duty.name} - ${duty.mehfilUsedCount}`,
+            }))}
+          />
+          <Button
+            icon={<SyncOutlined />}
+            onClick={handleRefresh}
+            title="Reload Data"
+          />
+        </Space>
       </div>
-    );
+    </div>
+  );
 
-    return (
-      <div className="list-table-header">
-        <div>{dutySelector}</div>
-        {actions}
-      </div>
-    );
-  };
-
-  render() {
-    const {
-      mehfilById,
-      mehfilKarkunsLoading,
-      mehfilKarkunsByMehfilId,
-      allSecurityMehfilDuties,
-    } = this.props;
-    if (mehfilKarkunsLoading) return null;
-
-    const isPastMehfil = this.getIsPastMehfil(mehfilById);
-    const sortedMehfilKarkuns = sortBy(mehfilKarkunsByMehfilId ?? [], 'karkun.sharedData.name');
-
-    return (
+  return (
+    <div className="list-container" ref={containerRef}>
       <Table
+        className="list-table"
         rowKey="_id"
-        size="small"
-        title={this.getTableHeader}
-        columns={this.getColumns(isPastMehfil, allSecurityMehfilDuties)}
-        rowSelection={!isPastMehfil ? this.rowSelection : undefined}
-        dataSource={sortedMehfilKarkuns}
-        pagination={false}
+        size="middle"
+        title={getTableHeader}
+        columns={columns}
+        rowSelection={
+          !pastMehfil
+            ? {
+                selectedRowKeys: selectedRows
+                  .map((row) => row._id)
+                  .filter((id): id is string => id != null),
+                onChange: (_keys, rows) => {
+                  // Keep selections from other pages; replace only this page.
+                  const pageIds = new Set(
+                    pageData.map((row) => row._id).filter(Boolean)
+                  );
+                  const kept = selectedRows.filter(
+                    (row) => row._id != null && !pageIds.has(row._id)
+                  );
+                  setSelectedRows([...kept, ...rows]);
+                },
+              }
+            : undefined
+        }
+        dataSource={pageData}
         bordered
+        tableLayout="fixed"
+        pagination={false}
+        scroll={{ y: scrollY }}
+        footer={() => (
+          <Pagination
+            current={safePageIndex + 1}
+            pageSize={pageSize}
+            showSizeChanger
+            showTotal={(total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`
+            }
+            onChange={onPaginationChange}
+            onShowSizeChange={onPaginationChange}
+            total={totalResults}
+          />
+        )}
       />
-    );
-  }
-}
+    </div>
+  );
+};
 
 const ListWithData = (props: ListWithDataProps) => {
   const { mehfilId, dutyId } = props;

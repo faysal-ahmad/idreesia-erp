@@ -3,19 +3,16 @@ import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
 import { MehfilCardVerificationForm } from './mehfil-card-verification';
-import { MehfilsNewForm, MehfilsEditForm, MehfilsList } from './mehfils';
+import { MehfilsEditForm, MehfilsList } from './mehfils';
 import {
-  MehfilDutiesNewForm,
   MehfilDutiesEditForm,
   MehfilDutiesList,
 } from './setup/mehfil-duties';
 import {
-  MehfilLangarDishesNewForm,
   MehfilLangarDishesEditForm,
   MehfilLangarDishesList,
 } from './setup/mehfil-langar-dishes';
 import {
-  MehfilLangarLocationsNewForm,
   MehfilLangarLocationsEditForm,
   MehfilLangarLocationsList,
 } from './setup/mehfil-langar-locations';
@@ -44,19 +41,15 @@ const Router = () => (
     <RouterRoute path={paths.mehfilsKarkunListPath()} component={MehfilKarkunsList} />
     <RouterRoute path={paths.mehfilsKarkunPrintCardsPath()} component={MehfilKarkunsPrintCards} />
     <RouterRoute path={paths.mehfilsKarkunPrintListPath()} component={MehfilKarkunsPrintList} />
-    <RouterRoute path={paths.mehfilsNewFormPath} component={MehfilsNewForm} />
     <RouterRoute path={paths.mehfilsEditFormPath()} component={MehfilsEditForm} />
     <RouterRoute path={paths.mehfilsPath} component={MehfilsList} />
 
-    <RouterRoute path={paths.mehfilDutiesNewFormPath} component={MehfilDutiesNewForm} />
     <RouterRoute path={paths.mehfilDutiesEditFormPath()} component={MehfilDutiesEditForm} />
     <RouterRoute path={paths.mehfilDutiesPath} component={MehfilDutiesList} />
 
-    <RouterRoute path={paths.mehfilLangarDishesNewFormPath} component={MehfilLangarDishesNewForm} />
     <RouterRoute path={paths.mehfilLangarDishesEditFormPath()} component={MehfilLangarDishesEditForm} />
     <RouterRoute path={paths.mehfilLangarDishesPath} component={MehfilLangarDishesList} />
 
-    <RouterRoute path={paths.mehfilLangarLocationsNewFormPath} component={MehfilLangarLocationsNewForm} />
     <RouterRoute path={paths.mehfilLangarLocationsEditFormPath()} component={MehfilLangarLocationsEditForm} />
     <RouterRoute path={paths.mehfilLangarLocationsPath} component={MehfilLangarLocationsList} />
 

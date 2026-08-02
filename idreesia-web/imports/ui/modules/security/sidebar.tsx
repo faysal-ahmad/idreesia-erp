@@ -40,6 +40,28 @@ const menuItems = [
         icon: <BarcodeOutlined style={IconStyle} />,
         label: 'Scan Karkun Card',
       },
+      {
+        key: 'setup',
+        icon: <LaptopOutlined style={IconStyle} />,
+        label: 'Setup',
+        children: [
+          {
+            key: 'mehfil-duties',
+            icon: <TagsOutlined style={IconStyle} />,
+            label: 'Mehfil Duties',
+          },
+          {
+            key: 'mehfil-langar-dishes',
+            icon: <TagsOutlined style={IconStyle} />,
+            label: 'Langar Dishes',
+          },
+          {
+            key: 'mehfil-langar-locations',
+            icon: <TagsOutlined style={IconStyle} />,
+            label: 'Langar Locations',
+          },
+        ],
+      },
     ],
   },
   {
@@ -66,28 +88,6 @@ const menuItems = [
         key: 'visitor-stay-report',
         icon: <BookOutlined style={IconStyle} />,
         label: 'Visitor Stay Report',
-      },
-    ],
-  },
-  {
-    key: 'setup',
-    icon: <LaptopOutlined style={IconStyle} />,
-    label: 'Setup',
-    children: [
-      {
-        key: 'mehfil-duties',
-        icon: <TagsOutlined style={IconStyle} />,
-        label: 'Mehfil Duties',
-      },
-      {
-        key: 'mehfil-langar-dishes',
-        icon: <TagsOutlined style={IconStyle} />,
-        label: 'Langar Dishes',
-      },
-      {
-        key: 'mehfil-langar-locations',
-        icon: <TagsOutlined style={IconStyle} />,
-        label: 'Langar Locations',
       },
     ],
   },
@@ -120,7 +120,7 @@ interface MenuClickInfo {
 
 interface MenuRouteMatch {
   key: string;
-  openKey: string;
+  openKeys: string[];
   subModuleName: string;
   matches: (pathname: string) => boolean;
 }
@@ -131,19 +131,19 @@ const isPath = (pathname: string, basePath: string) =>
 const menuRouteMatches: MenuRouteMatch[] = [
   {
     key: 'mehfils',
-    openKey: 'mehfil-management',
+    openKeys: ['mehfil-management'],
     subModuleName: SubModuleNames.mehfils,
     matches: (pathname) => isPath(pathname, paths.mehfilsPath),
   },
   {
     key: 'mehfil-card-verification',
-    openKey: 'mehfil-management',
+    openKeys: ['mehfil-management'],
     subModuleName: SubModuleNames.mehfilCardVerification,
     matches: (pathname) => isPath(pathname, paths.mehfilCardVerificationPath),
   },
   {
     key: 'visitor-list',
-    openKey: 'visitors',
+    openKeys: ['visitors'],
     subModuleName: SubModuleNames.visitorList,
     matches: (pathname) =>
       isPath(pathname, paths.visitorRegistrationListPath) ||
@@ -154,49 +154,49 @@ const menuRouteMatches: MenuRouteMatch[] = [
   },
   {
     key: 'visitor-registration',
-    openKey: 'visitors',
+    openKeys: ['visitors'],
     subModuleName: SubModuleNames.visitorRegistration,
     matches: (pathname) => pathname === paths.visitorRegistrationPath,
   },
   {
     key: 'visitor-card-verification',
-    openKey: 'visitors',
+    openKeys: ['visitors'],
     subModuleName: SubModuleNames.visitorCardVerification,
     matches: (pathname) => isPath(pathname, paths.visitorCardVerificationPath),
   },
   {
     key: 'visitor-stay-report',
-    openKey: 'visitors',
+    openKeys: ['visitors'],
     subModuleName: SubModuleNames.visitorStayReport,
     matches: (pathname) => isPath(pathname, paths.visitorStayReportPath),
   },
   {
     key: 'mehfil-duties',
-    openKey: 'setup',
+    openKeys: ['mehfil-management', 'setup'],
     subModuleName: SubModuleNames.mehfilDuties,
     matches: (pathname) => isPath(pathname, paths.mehfilDutiesPath),
   },
   {
     key: 'mehfil-langar-dishes',
-    openKey: 'setup',
+    openKeys: ['mehfil-management', 'setup'],
     subModuleName: SubModuleNames.mehfilLangarDishes,
     matches: (pathname) => isPath(pathname, paths.mehfilLangarDishesPath),
   },
   {
     key: 'mehfil-langar-locations',
-    openKey: 'setup',
+    openKeys: ['mehfil-management', 'setup'],
     subModuleName: SubModuleNames.mehfilLangarLocations,
     matches: (pathname) => isPath(pathname, paths.mehfilLangarLocationsPath),
   },
   {
     key: 'security-user-accounts',
-    openKey: 'administration',
+    openKeys: ['administration'],
     subModuleName: SubModuleNames.securityUsers,
     matches: (pathname) => isPath(pathname, paths.securityUsersPath),
   },
   {
     key: 'audit-logs',
-    openKey: 'administration',
+    openKeys: ['administration'],
     subModuleName: SubModuleNames.auditLogs,
     matches: (pathname) => isPath(pathname, paths.auditLogsPath),
   },
@@ -205,8 +205,14 @@ const menuRouteMatches: MenuRouteMatch[] = [
 const resolveMenuFromPath = (pathname: string): MenuRouteMatch | null =>
   menuRouteMatches.find((entry) => entry.matches(pathname)) ?? null;
 
+const sameKeySet = (a: string[], b: string[]) => {
+  if (a.length !== b.length) return false;
+  const setB = new Set(b);
+  return a.every((key) => setB.has(key));
+};
+
 const Sidebar = ({ history }: SidebarProps) => {
-  const { setActiveSubModuleName } = useActiveModule();
+  const { activeSubModuleName, setActiveSubModuleName } = useActiveModule();
   const [pathname, setPathname] = useState(history.location.pathname);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
 
@@ -225,13 +231,19 @@ const Sidebar = ({ history }: SidebarProps) => {
   useEffect(() => {
     if (!activeMenu) return;
 
-    setActiveSubModuleName(activeMenu.subModuleName);
-    setOpenKeys((prev) =>
-      prev.includes(activeMenu.openKey)
-        ? prev
-        : [...prev, activeMenu.openKey]
-    );
-  }, [activeMenu, setActiveSubModuleName]);
+    if (activeSubModuleName !== activeMenu.subModuleName) {
+      setActiveSubModuleName(activeMenu.subModuleName);
+    }
+
+    setOpenKeys((prev) => {
+      const merged = Array.from(new Set([...prev, ...activeMenu.openKeys]));
+      return sameKeySet(prev, merged) ? prev : merged;
+    });
+  }, [activeMenu, activeSubModuleName, setActiveSubModuleName]);
+
+  const handleOpenChange = (keys: string[]) => {
+    setOpenKeys((prev) => (sameKeySet(prev, keys) ? prev : keys));
+  };
 
   const handleMenuItemSelected = ({ key }: MenuClickInfo) => {
     switch (key) {
@@ -290,9 +302,7 @@ const Sidebar = ({ history }: SidebarProps) => {
       style={{ height: '100%', borderRight: 0 }}
       selectedKeys={activeMenu ? [activeMenu.key] : []}
       openKeys={openKeys}
-      onOpenChange={(keys) => {
-        setOpenKeys(keys as string[]);
-      }}
+      onOpenChange={handleOpenChange}
       onClick={handleMenuItemSelected}
       items={menuItems}
     />

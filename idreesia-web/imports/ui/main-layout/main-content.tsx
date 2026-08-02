@@ -38,14 +38,14 @@ const MainContent = () => {
     main = (
       <Suspense fallback={<div />}>
         <ErrorBoundary
-          fallbackRender={({
-            resetErrorBoundary,
-          }: {
-            resetErrorBoundary(): void;
-          }) => {
-            resetErrorBoundary();
-            return <div />;
-          }}
+          fallbackRender={({ error }) => (
+            <div style={{ padding: 24 }}>
+              <h3>Something went wrong</h3>
+              <pre style={{ whiteSpace: 'pre-wrap' }}>
+                {error?.message ?? String(error)}
+              </pre>
+            </div>
+          )}
         >
           <Router />
         </ErrorBoundary>
@@ -55,7 +55,8 @@ const MainContent = () => {
 
   return (
     <Layout.Content
-      style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}
+      className="app-shell-main"
+      style={{ background: '#fff', padding: 24, margin: 0 }}
     >
       {main}
     </Layout.Content>

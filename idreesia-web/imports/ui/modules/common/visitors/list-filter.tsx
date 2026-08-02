@@ -89,10 +89,6 @@ const formItemLayout = {
   wrapperCol: { span: 18 },
 };
 
-const buttonItemLayout = {
-  wrapperCol: { span: 18, offset: 6 },
-};
-
 const ADDITIONAL_INFO_LABELS: Record<string, string> = {
   'has-notes': 'Has Associated Notes',
   'has-criminal-record': 'Has Criminal Record',
@@ -476,10 +472,12 @@ const ListFilter = ({
           fieldLayout={formItemLayout}
           initialValue={updatedBetweenInitialValue}
         />
-        <Form.Item {...buttonItemLayout}>
-          <Button type="primary" htmlType="submit">
-            Search
-          </Button>
+        <Form.Item style={{ marginBottom: 0 }}>
+          <Flex justify="flex-end">
+            <Button type="primary" htmlType="submit">
+              Search
+            </Button>
+          </Flex>
         </Form.Item>
       </Form>
     </div>

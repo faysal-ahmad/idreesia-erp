@@ -2,8 +2,42 @@
  * Base structure
  */
 
+html,
+body,
+#render-target {
+  height: 100%;
+}
+
 body {
   margin: 0;
+  /* Keep scrollbar gutter stable so modal open/close doesn't
+     resize the layout and thrash tables with scroll.y */
+  scrollbar-gutter: stable;
+}
+
+/* Fill the viewport even when page content is short */
+.app-shell.ant-layout {
+  min-height: 100vh;
+}
+
+.app-shell-body.ant-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.app-shell-content.ant-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.app-shell-sidebar {
+  align-self: stretch;
+  background: #fff;
+}
+
+.app-shell-main.ant-layout-content {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 /*
@@ -209,35 +243,20 @@ form {
 }
 
 /*
- * With scroll.y, antd splits header/body tables and often ignores
- * rowSelection.columnWidth; also vertical scrollbar can trigger a
- * horizontal scrollbar. Lock selection width and allow only Y scroll.
+ * With scroll.y, antd splits header/body into separate tables and syncs
+ * the scrollbar gutter itself. Do not force overflow on .ant-table-header
+ * — that breaks antd's width sync. Only clamp horizontal overflow on body.
+ * Column / selection widths belong in page-specific CSS, not here.
  */
-.list-table .ant-table-header,
-.list-table .ant-table-body,
-.list-table .ant-table-content {
+.list-table .ant-table-body {
   overflow-x: hidden !important;
 }
 
-.list-table .ant-table-body {
-  overflow-y: auto !important;
-}
-
-.list-table .ant-table-header table,
-.list-table .ant-table-body table {
-  width: 100% !important;
-  table-layout: fixed !important;
-}
-
-.list-table .ant-table-header colgroup col.ant-table-selection-col,
-.list-table .ant-table-body colgroup col.ant-table-selection-col,
-.list-table .ant-table-header colgroup col:first-child,
-.list-table .ant-table-body colgroup col:first-child,
-.list-table th.ant-table-selection-column,
-.list-table td.ant-table-selection-column {
-  width: 48px !important;
-  min-width: 48px !important;
-  max-width: 48px !important;
+/* scroll.y adds a placeholder cell for the scrollbar — don't draw it as a column */
+.list-table .ant-table-cell-scrollbar {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 @media print {

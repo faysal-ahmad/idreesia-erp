@@ -1,7 +1,6 @@
 import React, { Component, Fragment, type CSSProperties } from 'react';
 import { useQuery, useMutation } from '@apollo/client/react';
 import dayjs from 'dayjs';
-import { WarningTwoTone } from '@ant-design/icons';
 
 import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { SORT_BY } from 'meteor/idreesia-common/constants/security/list-options';
@@ -11,13 +10,14 @@ import {
   Button,
   Pagination,
   Modal,
+  Spin,
   Table,
   message,
 } from 'antd';
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import { SortableColumnHeader } from '/imports/ui/modules/helpers/controls';
 
-import ListFilter from './list-filter';
+import ListFilter, { StayReportFilterChips } from './list-filter';
 import FixSpelling from './fix-spelling';
 import ViewForm from '../visitor-stays/view-form';
 import type { PageParams } from './list-container';
@@ -27,10 +27,6 @@ import {
   FIX_NAME_SPELLING,
   PAGED_VISITOR_STAYS,
 } from './gql';
-
-const StatusStyle: CSSProperties = {
-  fontSize: 20,
-};
 
 const LinkStyle: CSSProperties = {
   width: '100%',
@@ -48,6 +44,9 @@ const SPELLING_TYPE = {
   CITY: 'city',
   NAME: 'name',
 };
+
+const TABLE_HEADER_ROW_HEIGHT = 55;
+const VIEWPORT_BOTTOM_GAP = 16;
 
 type VisitorRecord = NonNullable<
   NonNullable<
@@ -83,6 +82,7 @@ interface ListProps {
   fixNameSpelling(args: {
     variables: { existingSpelling: string; newSpelling: string };
   }): Promise<unknown>;
+  refreshData?: () => Promise<unknown>;
   loading?: boolean;
   pagedVisitorStays?: PagedVisitorStays;
 }
@@ -93,6 +93,7 @@ interface ListState {
   showFixSpellingDialog: boolean;
   spellingType: string | null;
   existingSpelling: string | null;
+  scrollY: number;
 }
 
 interface ListFilterQueryParams {
@@ -110,37 +111,80 @@ const emptyPagedVisitorStays: PagedVisitorStays = {
 };
 
 class List extends Component<ListProps, ListState> {
-  state = {
+  containerRef = React.createRef<HTMLDivElement>();
+
+  state: ListState = {
     showViewDialog: false,
     visitorStayId: null,
     showFixSpellingDialog: false,
     spellingType: null,
     existingSpelling: null,
+    scrollY: 360,
   };
 
-  statusColumn = {
-    title: '',
-    key: 'status',
-    render: (_text: unknown, record: VisitorStay) => {
-      const { refVisitor } = record;
-      if (refVisitor.criminalRecord) {
-        return (
-          <WarningTwoTone
-            style={StatusStyle}
-            twoToneColor="red"
-          />
-        );
-      } else if (refVisitor.otherNotes) {
-        return (
-          <WarningTwoTone
-            style={StatusStyle}
-            twoToneColor="orange"
-          />
-        );
+  componentDidMount() {
+    this.updateScrollY();
+    window.addEventListener('resize', this.updateScrollY);
+  }
+
+  componentDidUpdate() {
+    this.updateScrollY();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateScrollY);
+  }
+
+  updateScrollY = () => {
+    // Measure after layout so filter chips in the table title are included.
+    requestAnimationFrame(() => {
+      const container = this.containerRef.current;
+      if (!container) return;
+
+      const table = container.querySelector('.list-table');
+      if (!table) return;
+
+      const title = table.querySelector('.ant-table-title');
+      const footer = table.querySelector('.ant-table-footer');
+      const thead = table.querySelector('.ant-table-thead');
+      const titleBottom = title
+        ? title.getBoundingClientRect().bottom
+        : table.getBoundingClientRect().top;
+      const theadHeight = thead
+        ? Math.ceil((thead as HTMLElement).getBoundingClientRect().height)
+        : TABLE_HEADER_ROW_HEIGHT;
+      const footerHeight = footer
+        ? Math.ceil((footer as HTMLElement).getBoundingClientRect().height)
+        : 64;
+
+      // Stay inside Layout.Content's padding box (padding: 24), not the
+      // window edge — otherwise chips grow the title and clip pagination.
+      const contentEl = container.closest(
+        '.ant-layout-content'
+      ) as HTMLElement | null;
+      let bottomLimit = window.innerHeight;
+      if (contentEl) {
+        const paddingBottom =
+          Number.parseFloat(getComputedStyle(contentEl).paddingBottom) || 0;
+        bottomLimit =
+          contentEl.getBoundingClientRect().bottom - paddingBottom;
       }
 
-      return null;
-    },
+      const nextScrollY = Math.max(
+        200,
+        Math.floor(
+          bottomLimit -
+            titleBottom -
+            theadHeight -
+            footerHeight -
+            VIEWPORT_BOTTOM_GAP
+        )
+      );
+
+      if (Math.abs(nextScrollY - this.state.scrollY) > 2) {
+        this.setState({ scrollY: nextScrollY });
+      }
+    });
   };
 
   getNameColumn = () => {
@@ -185,6 +229,7 @@ class List extends Component<ListProps, ListState> {
         />
       ),
       key: 'cityCountry',
+      width: 220,
       render: (_text: unknown, record: VisitorStay) => {
         const { refVisitor } = record;
         if (refVisitor.city) {
@@ -218,6 +263,7 @@ class List extends Component<ListProps, ListState> {
         />
       ),
       key: 'stayDetails',
+      width: 280,
       render: (_text: unknown, record: VisitorStay) => {
         const fromDate = dayjs(Number(record.fromDate));
         const toDate = dayjs(Number(record.toDate));
@@ -250,6 +296,7 @@ class List extends Component<ListProps, ListState> {
     title: 'Stay Reason',
     key: 'stayReason',
     dataIndex: 'stayReason',
+    width: 160,
     render: (text: string) => {
       if (!text) return null;
       const reason = find(StayReasons, ({ _id }) => _id === text);
@@ -261,6 +308,7 @@ class List extends Component<ListProps, ListState> {
     title: 'Allowed By',
     key: 'stayAllowedBy',
     dataIndex: 'stayAllowedBy',
+    width: 160,
     render: (text: string) => (
       <div
         style={LinkStyle}
@@ -274,13 +322,18 @@ class List extends Component<ListProps, ListState> {
   };
 
   getColumns = () => [
-    this.statusColumn,
     this.getNameColumn(),
     this.getCityCountryColumn(),
     this.getStayDetailsColumn(),
     this.stayReasonColumn,
     this.stayAllowedByColumn,
   ];
+
+  getRowClassName = (record: VisitorStay) => {
+    if (record.refVisitor.criminalRecord) return 'visitors-list-row-alert';
+    if (record.refVisitor.otherNotes) return 'visitors-list-row-warning';
+    return '';
+  };
 
   handleSortChange = (sortBy: string, sortOrder: string) => {
     const { setPageParams } = this.props;
@@ -363,21 +416,33 @@ class List extends Component<ListProps, ListState> {
   };
 
   getTableHeader = () => {
-    const { queryParams, setPageParams } = this.props;
+    const { queryParams, setPageParams, refreshData } = this.props;
+    const filterProps = {
+      queryParams: queryParams as ListFilterQueryParams,
+      setPageParams,
+      refreshData,
+    };
 
     return (
       <div className="list-table-header">
-        <ListFilter
-          queryParams={queryParams as ListFilterQueryParams}
-          setPageParams={setPageParams}
-        />
+        <div />
+        <div className="list-table-header-utilities">
+          <ListFilter {...filterProps} />
+          <StayReportFilterChips {...filterProps} />
+        </div>
       </div>
     );
   };
 
   render() {
     const { loading } = this.props;
-    if (loading) return null;
+    if (loading) {
+      return (
+        <div style={{ textAlign: 'center', padding: '80px 0' }}>
+          <Spin size="large" />
+        </div>
+      );
+    }
 
     const {
       visitorStayId,
@@ -385,6 +450,7 @@ class List extends Component<ListProps, ListState> {
       spellingType,
       existingSpelling,
       showFixSpellingDialog,
+      scrollY,
     } = this.state;
     const {
       pageIndex,
@@ -413,28 +479,34 @@ class List extends Component<ListProps, ListState> {
 
     return (
       <Fragment>
-        <Table
-          rowKey="_id"
-          dataSource={data}
-          columns={this.getColumns() as any[]}
-          title={this.getTableHeader}
-          bordered
-          size="small"
-          pagination={false}
-          footer={() => (
-            <Pagination
-              current={numPageIndex}
-              pageSize={numPageSize}
-              showSizeChanger
-              showTotal={(total, range) =>
-                `${range[0]}-${range[1]} of ${total} items`
-              }
-              onChange={this.onChange}
-              onShowSizeChange={this.onShowSizeChange}
-              total={totalResults}
-            />
-          )}
-        />
+        <div className="list-container" ref={this.containerRef}>
+          <Table
+            className="list-table"
+            rowKey="_id"
+            dataSource={data}
+            columns={this.getColumns() as any[]}
+            title={this.getTableHeader}
+            rowClassName={this.getRowClassName}
+            bordered
+            size="middle"
+            tableLayout="fixed"
+            pagination={false}
+            scroll={{ y: scrollY }}
+            footer={() => (
+              <Pagination
+                current={numPageIndex}
+                pageSize={numPageSize}
+                showSizeChanger
+                showTotal={(total, range) =>
+                  `${range[0]}-${range[1]} of ${total} items`
+                }
+                onChange={this.onChange}
+                onShowSizeChange={this.onShowSizeChange}
+                total={totalResults}
+              />
+            )}
+          />
+        </div>
         <Modal
           title="Visitor Stay"
           open={showViewDialog}
@@ -468,12 +540,16 @@ class List extends Component<ListProps, ListState> {
 
 interface ListWithDataProps extends Omit<
   ListProps,
-  'fixCitySpelling' | 'fixNameSpelling' | 'pagedVisitorStays' | 'loading'
+  | 'fixCitySpelling'
+  | 'fixNameSpelling'
+  | 'pagedVisitorStays'
+  | 'loading'
+  | 'refreshData'
 > {}
 
 const ListWithData = (props: ListWithDataProps) => {
   const { queryString = '' } = props;
-  const { data, loading } = useQuery(PAGED_VISITOR_STAYS, {
+  const { data, loading, refetch } = useQuery(PAGED_VISITOR_STAYS, {
     variables: {
       queryString,
     },
@@ -506,6 +582,7 @@ const ListWithData = (props: ListWithDataProps) => {
       pagedVisitorStays={pagedVisitorStays}
       fixCitySpelling={fixCitySpelling}
       fixNameSpelling={fixNameSpelling}
+      refreshData={refetch}
     />
   );
 };

@@ -1,0 +1,31 @@
+/*
+ * Shared visitors list — row tints + selection column.
+ * Named *.styles.css so it does not collide with list.tsx.
+ * Loaded from client/main.tsx (do not import from this folder's .tsx).
+ */
+
+/* Registration list uses rowSelection + scroll.y; lock checkbox col only. */
+.list-table .ant-table-header colgroup col.ant-table-selection-col,
+.list-table .ant-table-body colgroup col.ant-table-selection-col,
+.list-table th.ant-table-selection-column,
+.list-table td.ant-table-selection-column {
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+}
+
+.list-table .ant-table-tbody > tr.visitors-list-row-warning > td {
+  background: #fff7e6 !important;
+}
+
+.list-table .ant-table-tbody > tr.visitors-list-row-alert > td {
+  background: #fff1f0 !important;
+}
+
+.list-table .ant-table-tbody > tr.visitors-list-row-warning:hover > td {
+  background: #ffe7ba !important;
+}
+
+.list-table .ant-table-tbody > tr.visitors-list-row-alert:hover > td {
+  background: #ffccc7 !important;
+}

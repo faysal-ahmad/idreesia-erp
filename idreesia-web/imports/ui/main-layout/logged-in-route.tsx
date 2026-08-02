@@ -39,11 +39,11 @@ export const LoggedInRoute = ({ location, history }: Props) => {
   };
 
   return (
-    <Layout>
+    <Layout className="app-shell">
       <HeaderContent location={location} history={history} user={user} />
-      <Layout>
+      <Layout className="app-shell-body">
         <SidebarContent history={history} />
-        <Layout style={{ padding: '0 24px 24px' }}>
+        <Layout className="app-shell-content" style={{ padding: '0 24px 24px' }}>
           {getBreadcrumbs()}
           <MainContent />
         </Layout>

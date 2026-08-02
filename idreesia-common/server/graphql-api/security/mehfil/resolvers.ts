@@ -8,6 +8,15 @@ interface ResolverMap {
   [key: string]: ResolverField;
 }
 
+const toMehfilDate = (mehfilDate: string | number | Date) => {
+  if (mehfilDate instanceof Date) return mehfilDate;
+  const asNumber = Number(mehfilDate);
+  if (Number.isFinite(asNumber) && String(mehfilDate).trim() !== '') {
+    return new Date(asNumber);
+  }
+  return new Date(mehfilDate);
+};
+
 const resolvers: ResolverMap = {
   MehfilType: {
     karkunCount: async mehfilType =>
@@ -18,6 +27,14 @@ const resolvers: ResolverMap = {
       MehfilKarkuns.find({
         mehfilId: { $eq: mehfilType._id },
       }).fetchAsync(),
+    mehfilDate: mehfilType => {
+      if (!mehfilType.mehfilDate) return null;
+      const value =
+        mehfilType.mehfilDate instanceof Date
+          ? mehfilType.mehfilDate.getTime()
+          : Number(mehfilType.mehfilDate);
+      return Number.isFinite(value) ? String(value) : String(mehfilType.mehfilDate);
+    },
   },
 
   Query: {
@@ -32,7 +49,7 @@ const resolvers: ResolverMap = {
       const date = new Date();
       const mehfilId = await Mehfils.insertAsync({
         name,
-        mehfilDate,
+        mehfilDate: toMehfilDate(mehfilDate),
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -47,7 +64,9 @@ const resolvers: ResolverMap = {
       await Mehfils.updateAsync(_id, {
         $set: {
           name,
-          mehfilDate,
+          ...(mehfilDate != null
+            ? { mehfilDate: toMehfilDate(mehfilDate) }
+            : {}),
           updatedAt: date,
           updatedBy: user._id,
         },

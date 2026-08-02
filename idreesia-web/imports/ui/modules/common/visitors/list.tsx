@@ -97,34 +97,55 @@ export default class VisitorsList extends Component<Props, State> {
   }
 
   updateScrollY = () => {
-    const container = this.containerRef.current;
-    if (!container) return;
+    // Measure after layout so filter chips in the table title are included.
+    requestAnimationFrame(() => {
+      const container = this.containerRef.current;
+      if (!container) return;
 
-    const table = container.querySelector('.list-table');
-    if (!table) return;
+      const table = container.querySelector('.list-table');
+      if (!table) return;
 
-    const title = table.querySelector('.ant-table-title');
-    const footer = table.querySelector('.ant-table-footer');
-    const titleBottom = title
-      ? title.getBoundingClientRect().bottom
-      : table.getBoundingClientRect().top;
-    const footerHeight = footer
-      ? (footer as HTMLElement).offsetHeight
-      : 64;
-    const nextScrollY = Math.max(
-      240,
-      Math.floor(
-        window.innerHeight -
-          titleBottom -
-          TABLE_HEADER_ROW_HEIGHT -
-          footerHeight -
-          VIEWPORT_BOTTOM_GAP
-      )
-    );
+      const title = table.querySelector('.ant-table-title');
+      const footer = table.querySelector('.ant-table-footer');
+      const thead = table.querySelector('.ant-table-thead');
+      const titleBottom = title
+        ? title.getBoundingClientRect().bottom
+        : table.getBoundingClientRect().top;
+      const theadHeight = thead
+        ? Math.ceil((thead as HTMLElement).getBoundingClientRect().height)
+        : TABLE_HEADER_ROW_HEIGHT;
+      const footerHeight = footer
+        ? Math.ceil((footer as HTMLElement).getBoundingClientRect().height)
+        : 64;
 
-    if (Math.abs(nextScrollY - this.state.scrollY) > 2) {
-      this.setState({ scrollY: nextScrollY });
-    }
+      // Stay inside Layout.Content's padding box (padding: 24), not the
+      // window edge — otherwise chips grow the title and clip pagination.
+      const contentEl = container.closest(
+        '.ant-layout-content'
+      ) as HTMLElement | null;
+      let bottomLimit = window.innerHeight;
+      if (contentEl) {
+        const paddingBottom =
+          Number.parseFloat(getComputedStyle(contentEl).paddingBottom) || 0;
+        bottomLimit =
+          contentEl.getBoundingClientRect().bottom - paddingBottom;
+      }
+
+      const nextScrollY = Math.max(
+        200,
+        Math.floor(
+          bottomLimit -
+            titleBottom -
+            theadHeight -
+            footerHeight -
+            VIEWPORT_BOTTOM_GAP
+        )
+      );
+
+      if (Math.abs(nextScrollY - this.state.scrollY) > 2) {
+        this.setState({ scrollY: nextScrollY });
+      }
+    });
   };
 
   nameColumn = {

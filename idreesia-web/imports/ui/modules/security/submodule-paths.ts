@@ -5,7 +5,6 @@ export default class SubModulePaths {
   // Mehfil Routes
   // *************************************************************************************
   static mehfilsPath = `${ModulePaths.security}/mehfils`;
-  static mehfilsNewFormPath = `${SubModulePaths.mehfilsPath}/new`;
   static mehfilsEditFormPath(mehfilId = ':mehfilId') {
     return `${SubModulePaths.mehfilsPath}/${mehfilId}`;
   }
@@ -23,13 +22,11 @@ export default class SubModulePaths {
   }
 
   static mehfilDutiesPath = `${ModulePaths.security}/mehfil-duties`;
-  static mehfilDutiesNewFormPath = `${SubModulePaths.mehfilDutiesPath}/new`;
   static mehfilDutiesEditFormPath(mehfilDutyId = ':mehfilDutyId') {
     return `${SubModulePaths.mehfilDutiesPath}/${mehfilDutyId}`;
   }
 
   static mehfilLangarDishesPath = `${ModulePaths.security}/mehfil-langar-dishes`;
-  static mehfilLangarDishesNewFormPath = `${SubModulePaths.mehfilLangarDishesPath}/new`;
   static mehfilLangarDishesEditFormPath(
     mehfilLangarDishId = ':mehfilLangarDishId'
   ) {
@@ -37,7 +34,6 @@ export default class SubModulePaths {
   }
 
   static mehfilLangarLocationsPath = `${ModulePaths.security}/mehfil-langar-locations`;
-  static mehfilLangarLocationsNewFormPath = `${SubModulePaths.mehfilLangarLocationsPath}/new`;
   static mehfilLangarLocationsEditFormPath(
     mehfilLangarLocationId = ':mehfilLangarLocationId'
   ) {

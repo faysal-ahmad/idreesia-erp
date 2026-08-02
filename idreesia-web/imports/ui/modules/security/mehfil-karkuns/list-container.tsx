@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { type RouteComponentProps } from 'react-router';
 import { type History } from 'history';
 
-import { Modal, message } from 'antd';
+import { Modal, Spin, message } from 'antd';
 import {
   useDynamicBreadcrumbs,
   useQueryParams,
@@ -188,7 +188,15 @@ class ListContainer extends Component<ListContainerProps, ListContainerState> {
       allSecurityMehfilDuties,
     } = this.props;
 
-    if (mehfilLoading || allSecurityMehfilDutiesLoading || !mehfilById) return null;
+    if (mehfilLoading || allSecurityMehfilDutiesLoading) {
+      return (
+        <div style={{ textAlign: 'center', padding: '80px 0' }}>
+          <Spin size="large" />
+        </div>
+      );
+    }
+
+    if (!mehfilById) return null;
 
     const { showEditForm } = this.state;
     const editForm = showEditForm ? (

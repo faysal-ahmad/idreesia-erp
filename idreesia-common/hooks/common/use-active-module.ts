@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -19,13 +20,19 @@ const useActiveModule = () => {
     (state: ActiveModuleState) => state.activeSubModuleName
   );
 
-  const setActiveModuleName = (moduleName: string | null) => {
-    dispatch(setActiveModuleNameAction(moduleName));
-  };
+  const setActiveModuleName = useCallback(
+    (moduleName: string | null) => {
+      dispatch(setActiveModuleNameAction(moduleName));
+    },
+    [dispatch]
+  );
 
-  const setActiveSubModuleName = (subModuleName: string | null) => {
-    dispatch(setActiveSubModuleNameAction(subModuleName));
-  };
+  const setActiveSubModuleName = useCallback(
+    (subModuleName: string | null) => {
+      dispatch(setActiveSubModuleNameAction(subModuleName));
+    },
+    [dispatch]
+  );
 
   return {
     activeModuleName,

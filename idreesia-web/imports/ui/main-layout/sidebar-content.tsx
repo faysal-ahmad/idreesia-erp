@@ -59,8 +59,8 @@ const SidebarContent = ({ history }: Props) => {
   };
 
   return (
-    <Flex vertical>
-      <Flex justify="center">
+    <Flex vertical className="app-shell-sidebar">
+      <Flex justify="center" style={{ flexShrink: 0 }}>
         {sidebarCollapsed ? (
           <div>&nbsp;</div>
         ) : (
@@ -71,7 +71,7 @@ const SidebarContent = ({ history }: Props) => {
       </Flex>
       <Layout.Sider
         width={220}
-        style={{ background: '#fff' }}
+        style={{ background: '#fff', flex: '1 1 auto' }}
         collapsible
         trigger={null}
         collapsed={sidebarCollapsed}
@@ -85,7 +85,7 @@ const SidebarContent = ({ history }: Props) => {
           sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
         }
         onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        style={{ fontSize: '16px', width: 64, height: 64 }}
+        style={{ fontSize: '16px', width: 64, height: 64, flexShrink: 0 }}
       />
     </Flex>
   );

@@ -20,7 +20,12 @@ import './attendance.css';
 import './karkun-cards.css';
 import './mehfil-cards.css';
 import './stay-cards.css';
-import './security-visitors-list.css';
+/* Page CSS lives next to UI modules; load only from this client entry.
+ * Use *.styles.css — same basename as a .tsx (list.css vs list.tsx)
+ * makes Meteor resolve extensionless imports to the CSS object. */
+import '../imports/ui/modules/common/visitors/list.styles.css';
+import '../imports/ui/modules/common/visitors/general-info.styles.css';
+import '../imports/ui/modules/security/visitor-registeration/edit/picture.styles.css';
 
 import App from '../imports/ui/app';
 import combinedReducer from '../imports/ui/reducers/combined-reducer';

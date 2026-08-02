@@ -1,23 +1,22 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, type CSSProperties } from 'react';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { formatDate, parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { filter, sortBy } from 'meteor/idreesia-common/utilities/lodash';
+import type { SalaryReceiptSalariesByIdsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { Col, Divider, Row } from 'antd';
 
 import { Item } from './item';
 
-const AntCol = Col as any;
-const AntDivider = Divider as any;
-const AntRow = Row as any;
-const ReceiptItem = Item as any;
-interface Karkun { name: string; parentName?: string; cnicNumber?: string; contactNumber1?: string; image?: { data?: string }; }
-interface Job { name: string; }
-interface SalaryReceiptRecord { _id: string; month: string; karkun: Karkun; job: Job; salary?: number; openingLoan?: number; loanDeduction?: number; otherDeduction?: number; newLoan?: number; closingLoan?: number; arrears?: number; netPayment?: number; rashanMadad?: number; }
-interface ReceiptsProps { salariesByIds?: SalaryReceiptRecord[]; }
+type SalaryReceiptRecord = NonNullable<
+  NonNullable<SalaryReceiptSalariesByIdsQuery['salariesByIds']>[number]
+>;
 
-const ContainerStyle = {
+interface ReceiptsProps {
+  salariesByIds?: SalaryReceiptRecord[];
+}
+
+const ContainerStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'column nowrap',
   justifyContent: 'center',
@@ -25,29 +24,26 @@ const ContainerStyle = {
   padding: '20px',
 };
 
-const HeaderStyle = {
+const HeaderStyle: CSSProperties = {
   fontSize: 20,
   border: 'solid',
 };
 
 export default class SalaryReceipts extends Component<ReceiptsProps> {
-  static propTypes = {
-    salariesByIds: PropTypes.array,
-  };
-
-  getImageColumn = (karkun: Karkun) =>
+  getImageColumn = (karkun: NonNullable<SalaryReceiptRecord['karkun']>) =>
     karkun.image ? (
-      <AntCol order={1}>
+      <Col order={1}>
         <img
           src={`data:image/jpeg;base64,${karkun.image.data}`}
           style={{ width: '100px' }}
-          alt={karkun.name}
+          alt={karkun.name ?? undefined}
         />
-      </AntCol>
+      </Col>
     ) : null;
 
   getSalaryReceipts = (salary: SalaryReceiptRecord) => {
     const { karkun, job } = salary;
+    if (!karkun || !job || !salary._id || !salary.month) return null;
     const imageColumn = this.getImageColumn(karkun);
     const displayMonth = formatDate(
       parseDate(`01-${salary.month}`, Formats.DATE_FORMAT),
@@ -56,56 +52,56 @@ export default class SalaryReceipts extends Component<ReceiptsProps> {
 
     return (
       <div key={salary._id} className="form-print-view">
-        <AntRow type="flex" justify="center" style={HeaderStyle as any}>
+        <Row justify="center" style={HeaderStyle}>
           <div>Salary Receipt - {displayMonth}</div>
-        </AntRow>
-        <AntRow type="flex" justify="start" gutter={10}>
+        </Row>
+        <Row justify="start" gutter={10}>
           {imageColumn}
-          <AntCol order={2} style={{ minWidth: '150px' }}>
-            <ReceiptItem label="Name" value={karkun.name} />
-            <ReceiptItem label="S/O" value={karkun.parentName} />
-            <ReceiptItem label="CNIC" value={karkun.cnicNumber || ''} />
-            <ReceiptItem label="Phone" value={karkun.contactNumber1 || ''} />
-            <ReceiptItem label="Dept." value={job.name} />
-          </AntCol>
-          <AntCol order={3} style={{ minWidth: '150px' }}>
-            <ReceiptItem label="Salary" value={salary.salary} />
-            <ReceiptItem label="L/OB" value={salary.openingLoan || 0} />
-            <ReceiptItem label="Loan Ded." value={salary.loanDeduction || 0} />
-            <ReceiptItem label="Other Ded." value={salary.otherDeduction || 0} />
-            <ReceiptItem label="New Loan" value={salary.newLoan || 0} />
-          </AntCol>
-          <AntCol order={4} style={{ minWidth: '150px' }}>
-            <ReceiptItem label="L/CB" value={salary.closingLoan || 0} />
-            <ReceiptItem label="Arrears" value={salary.arrears || 0} />
-            <ReceiptItem label="Net Payment" value={salary.netPayment || 0} />
-            <ReceiptItem label="Signature" value="" />
-          </AntCol>
-        </AntRow>
-        <AntDivider style={{ margin: '10px' }} />
+          <Col order={2} style={{ minWidth: '150px' }}>
+            <Item label="Name" value={karkun.name} />
+            <Item label="S/O" value={karkun.parentName} />
+            <Item label="CNIC" value={karkun.cnicNumber || ''} />
+            <Item label="Phone" value={karkun.contactNumber1 || ''} />
+            <Item label="Dept." value={job.name} />
+          </Col>
+          <Col order={3} style={{ minWidth: '150px' }}>
+            <Item label="Salary" value={salary.salary} />
+            <Item label="L/OB" value={salary.openingLoan || 0} />
+            <Item label="Loan Ded." value={salary.loanDeduction || 0} />
+            <Item label="Other Ded." value={salary.otherDeduction || 0} />
+            <Item label="New Loan" value={salary.newLoan || 0} />
+          </Col>
+          <Col order={4} style={{ minWidth: '150px' }}>
+            <Item label="L/CB" value={salary.closingLoan || 0} />
+            <Item label="Arrears" value={salary.arrears || 0} />
+            <Item label="Net Payment" value={salary.netPayment || 0} />
+            <Item label="Signature" value="" />
+          </Col>
+        </Row>
+        <Divider style={{ margin: '10px' }} />
       </div>
     );
   };
 
   render() {
     const { salariesByIds } = this.props;
-    // Filter out records where the net payment amount is zero.
     const filteredSalaries = filter(
       salariesByIds ?? [],
       (salary: SalaryReceiptRecord) => salary.netPayment !== 0
     );
     const sortedSalariesByMonth = sortBy(filteredSalaries, 'karkun.name');
 
-    const receipts = sortedSalariesByMonth.map((salary: SalaryReceiptRecord) =>
-      this.getSalaryReceipts(salary)
-    );
+    const receipts = sortedSalariesByMonth
+      .map((salary: SalaryReceiptRecord) => this.getSalaryReceipts(salary))
+      .filter(Boolean);
 
     let index = 0;
     const receiptContainers = [];
-    while (receipts.length > 0) {
-      const receiptsForPage = receipts.splice(0, 4);
+    const receiptsCopy = [...receipts];
+    while (receiptsCopy.length > 0) {
+      const receiptsForPage = receiptsCopy.splice(0, 4);
       receiptContainers.push(
-        <div key={`container_${index}`} style={ContainerStyle as any}>
+        <div key={`container_${index}`} style={ContainerStyle}>
           {receiptsForPage}
         </div>
       );

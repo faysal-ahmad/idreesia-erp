@@ -1,6 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
+
+const RouterLink = Link as any;
 import { useQuery } from '@apollo/client/react';
 import { addMonths, startOfMonth } from 'date-fns';
 
@@ -11,71 +12,65 @@ import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import { ATTENDANCE_BY_BARCODE_ID } from '../gql';
 
-const RouterLink = Link as any;
-const AntRow = Row as any;
-const AntCol = Col as any;
-const AntSpin = Spin as any;
-interface SearchResultRowProps { label: string; value?: string | number | null; linkTo?: string; }
-interface SearchResultProps { barcode?: string; }
-interface Karkun { _id: string; name: string; imageId?: string; cnicNumber?: string; contactNumber1?: string; }
-interface NamedRecord { name: string; }
-interface AttendanceRecord { month: string; percentage: number; karkun: Karkun; duty?: NamedRecord | null; shift?: NamedRecord | null; job?: NamedRecord | null; }
-interface QueryData { attendanceByBarcodeId?: AttendanceRecord | null; }
+interface SearchResultRowProps {
+  label: string;
+  value?: string | number | null;
+  linkTo?: string;
+}
 
-const LabelStyle = {
+interface SearchResultProps {
+  barcode?: string;
+}
+
+const LabelStyle: CSSProperties = {
   fontWeight: 'bold',
   fontSize: 26,
 };
 
-const DataStyle = {
+const DataStyle: CSSProperties = {
   fontSize: 26,
 };
 
 const SearchResultRow = ({ label, value, linkTo }: SearchResultRowProps) => (
-  <AntRow gutter={16}>
-    <AntCol order={1}>
-      <span style={LabelStyle as any}>{label}:</span>
-    </AntCol>
-    <AntCol order={2}>
+  <Row gutter={16}>
+    <Col order={1}>
+      <span style={LabelStyle}>{label}:</span>
+    </Col>
+    <Col order={2}>
       {linkTo ? (
-        <RouterLink style={DataStyle as any} to={linkTo}>
+        <RouterLink style={DataStyle} to={linkTo}>
           {value}
         </RouterLink>
       ) : (
-        <span style={DataStyle as any}>{value}</span>
+        <span style={DataStyle}>{value}</span>
       )}
-    </AntCol>
-  </AntRow>
+    </Col>
+  </Row>
 );
 
-SearchResultRow.propTypes = {
-  label: PropTypes.string,
-  value: PropTypes.string,
-  linkTo: PropTypes.string,
-};
-
 const SearchResult = ({ barcode }: SearchResultProps) => {
-  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_ID as any, {
-    variables: { barcodeId: barcode },
+  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_ID, {
+    variables: { barcodeId: barcode ?? '' },
     skip: !barcode,
   });
 
   if (!barcode) return null;
-  if (loading) return <AntSpin size="large" />;
+  if (loading) return <Spin size="large" />;
 
-  const attendanceByBarcodeId = data ? (data as QueryData).attendanceByBarcodeId : null;
+  const attendanceByBarcodeId = data?.attendanceByBarcodeId;
   if (!attendanceByBarcodeId) {
     message.error(`No records found against scanned barcode ${barcode}`, 2);
     return null;
   }
 
   const { month, percentage, karkun, duty, shift, job } = attendanceByBarcodeId;
+  if (!karkun) return null;
 
   const url = getDownloadUrl(karkun.imageId);
   const imageColumn = url ? (
-    <AntCol order={1}>
-      <img src={url} style={{ width: '250px' }} alt={karkun.name} />
-    </AntCol>
+    <Col order={1}>
+      <img src={url} style={{ width: '250px' }} alt={karkun.name ?? ''} />
+    </Col>
   ) : null;
 
   const displayMonth = startOfMonth(
@@ -83,9 +78,9 @@ const SearchResult = ({ barcode }: SearchResultProps) => {
   );
 
   return (
-    <AntRow gutter={16}>
+    <Row gutter={16}>
       {imageColumn}
-      <AntCol order={2}>
+      <Col order={2}>
         <SearchResultRow
           label="Name"
           value={karkun.name}
@@ -101,13 +96,9 @@ const SearchResult = ({ barcode }: SearchResultProps) => {
           value={formatDate(displayMonth, 'D MMM YYYY')}
         />
         <SearchResultRow label="Attendance" value={`${percentage}%`} />
-      </AntCol>
-    </AntRow>
+      </Col>
+    </Row>
   );
-};
-
-SearchResult.propTypes = {
-  barcode: PropTypes.string,
 };
 
 export default SearchResult;

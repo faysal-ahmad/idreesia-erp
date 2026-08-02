@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, type CSSProperties } from 'react';
 import Barcode from 'react-barcode';
 import dayjs from 'dayjs';
 import { Checkbox, Col, Divider, InputNumber, Row } from 'antd';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
+import type { HrKarkunByIdForKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { DisplayItem, EhadDurationDisplay } from '/imports/ui/modules/helpers/controls';
 
 const barcodeOptions = {
@@ -17,37 +17,35 @@ const barcodeOptions = {
   margin: 5,
 };
 
-const DataStyle = {
+const DataStyle: CSSProperties = {
   fontSize: 20,
 };
 
 const BarcodeView = Barcode as any;
-const AntCol = Col as any;
-const AntCheckbox = Checkbox as any;
-const NumberInput = InputNumber as any;
-const EhadDurationDisplayControl = EhadDurationDisplay as any;
-const AntDivider = Divider as any;
-const AntRow = Row as any;
-const DisplayItemControl = DisplayItem as any;
-type AnyRecord = Record<string, any>;
-interface Props { hrKarkunById: AnyRecord; }
+
+type HrKarkun = NonNullable<HrKarkunByIdForKarkunsQuery['hrKarkunById']>;
+type KarkunDuty = NonNullable<NonNullable<HrKarkun['duties']>[number]>;
+
+interface Props {
+  hrKarkunById?: HrKarkun | null;
+}
 
 export class DetailedForm extends Component<Props> {
-  static propTypes = {
-    hrKarkunById: PropTypes.object,
-  };
-
   getImageColumn = () => {
     const { hrKarkunById } = this.props;
+    if (!hrKarkunById) return null;
     const url = getDownloadUrl(hrKarkunById.imageId);
     return url ? (
-      <AntCol order={2}>
+      <Col order={2}>
         <img src={url} style={{ width: '200px' }} alt="Karkun" />
-      </AntCol>
+      </Col>
     ) : null;
   };
 
-  getJobDetails = (job: AnyRecord | null | undefined, duties: AnyRecord[] = []) => {
+  getJobDetails = (
+    job: HrKarkun['job'],
+    duties: KarkunDuty[] = []
+  ) => {
     let jobName: React.ReactNode[] = [];
     let dutyNames: React.ReactNode[] = [];
 
@@ -56,7 +54,7 @@ export class DetailedForm extends Component<Props> {
     }
 
     if (duties.length > 0) {
-      dutyNames = duties.map((duty: AnyRecord) => {
+      dutyNames = duties.map((duty) => {
         let dutyName = duty.dutyName;
         if (duty.shiftName) {
           dutyName = `${dutyName} - ${duty.shiftName}`;
@@ -74,24 +72,27 @@ export class DetailedForm extends Component<Props> {
 
   render() {
     const { hrKarkunById } = this.props;
+    if (!hrKarkunById) return null;
 
     const imageColumn = this.getImageColumn();
     const jobDetails = this.getJobDetails(
       hrKarkunById.job,
-      hrKarkunById.duties ?? []
+      (hrKarkunById.duties ?? []).filter(
+        (duty): duty is KarkunDuty => duty != null
+      )
     );
     const timestamp = dayjs().format('DD MMM, YYYY');
 
     return (
       <div className="form-print-view">
-        <AntRow type="flex" justify="start" gutter={40}>
-          <AntCol order={1}>
+        <Row justify="start" gutter={40}>
+          <Col order={1}>
             <BarcodeView value={hrKarkunById._id} {...barcodeOptions} />
-            <DisplayItemControl label="Generated On" value={timestamp} />
-            <DisplayItemControl label="Name" value={hrKarkunById.name} />
-            <DisplayItemControl label="S/O" value={hrKarkunById.parentName} />
-            <DisplayItemControl label="CNIC" value={hrKarkunById.cnicNumber} />
-            <DisplayItemControl
+            <DisplayItem label="Generated On" value={timestamp} />
+            <DisplayItem label="Name" value={hrKarkunById.name} />
+            <DisplayItem label="S/O" value={hrKarkunById.parentName} />
+            <DisplayItem label="CNIC" value={hrKarkunById.cnicNumber} />
+            <DisplayItem
               label="Mobile No."
               value={`${hrKarkunById.contactNumber1} - ${
                 hrKarkunById.contactNumber1Subscribed
@@ -100,7 +101,7 @@ export class DetailedForm extends Component<Props> {
               }`}
             />
             {hrKarkunById.contactNumber2 ? (
-              <DisplayItemControl
+              <DisplayItem
                 label="Other Contact No."
                 value={`${hrKarkunById.contactNumber2} - ${
                   hrKarkunById.contactNumber2Subscribed
@@ -109,100 +110,100 @@ export class DetailedForm extends Component<Props> {
                 }`}
               />
             ) : (
-              <DisplayItemControl label="Other Contact No." value="" />
+              <DisplayItem label="Other Contact No." value="" />
             )}
-          </AntCol>
+          </Col>
           {imageColumn}
-        </AntRow>
-        <AntRow type="flex" justify="start" gutter={20}>
-          <AntCol order={1} span={11}>
-            <DisplayItemControl label="Email" value={hrKarkunById.emailAddress} />
-          </AntCol>
-          <AntCol order={2}>
-            <DisplayItemControl label="Blood Group" value={hrKarkunById.bloodGroup} />
-          </AntCol>
-        </AntRow>
-        <AntRow type="flex" justify="start" gutter={20}>
-          <AntCol order={1} span={11}>
-            <DisplayItemControl label="Ehad Duration">
-              <EhadDurationDisplayControl
+        </Row>
+        <Row justify="start" gutter={20}>
+          <Col order={1} span={11}>
+            <DisplayItem label="Email" value={hrKarkunById.emailAddress} />
+          </Col>
+          <Col order={2}>
+            <DisplayItem label="Blood Group" value={hrKarkunById.bloodGroup} />
+          </Col>
+        </Row>
+        <Row justify="start" gutter={20}>
+          <Col order={1} span={11}>
+            <DisplayItem label="Ehad Duration">
+              <EhadDurationDisplay
                 value={
                   hrKarkunById.ehadDate
                     ? dayjs(Number(hrKarkunById.ehadDate))
                     : dayjs()
                 }
               />
-            </DisplayItemControl>
-          </AntCol>
-          <AntCol order={2}>
-            <DisplayItemControl
+            </DisplayItem>
+          </Col>
+          <Col order={2}>
+            <DisplayItem
               label="Ehad Reference"
               value={hrKarkunById.referenceName}
             />
-          </AntCol>
-        </AntRow>
-        <AntRow type="flex" justify="start" gutter={40}>
-          <AntCol order={1}>
-            <DisplayItemControl
+          </Col>
+        </Row>
+        <Row justify="start" gutter={40}>
+          <Col order={1}>
+            <DisplayItem
               label="Current Address"
               value={hrKarkunById.currentAddress}
             />
-            <DisplayItemControl
+            <DisplayItem
               label="Permanent Address"
               value={hrKarkunById.permanentAddress}
             />
-            <DisplayItemControl label="381-A Job / Duties" value={jobDetails} />
-          </AntCol>
-        </AntRow>
-        <AntDivider>Education / Means of Earning</AntDivider>
-        <AntRow type="flex" justify="start" gutter={20}>
-          <AntCol order={1}>
-            <DisplayItemControl
+            <DisplayItem label="381-A Job / Duties" value={jobDetails} />
+          </Col>
+        </Row>
+        <Divider>Education / Means of Earning</Divider>
+        <Row justify="start" gutter={20}>
+          <Col order={1}>
+            <DisplayItem
               label="Education"
               value={hrKarkunById.educationalQualification}
             />
-            <DisplayItemControl label="Means of Earning">
-              <AntCheckbox style={DataStyle as any}>Job</AntCheckbox>
-              <AntCheckbox style={DataStyle as any}>Business</AntCheckbox>
-            </DisplayItemControl>
-            <DisplayItemControl label="Job / Business Details" value="" />
-          </AntCol>
-        </AntRow>
-        <AntDivider>Family Details</AntDivider>
-        <DisplayItemControl label="Marital Status">
-          <AntCheckbox style={DataStyle as any}>Single</AntCheckbox>
-          <AntCheckbox style={DataStyle as any}>Married</AntCheckbox>
-        </DisplayItemControl>
-        <DisplayItemControl label="Dependent Family Members" value="" />
-        <AntRow type="flex" justify="space-between" gutter={20}>
-          <DisplayItemControl label="Men" labelStyle={DataStyle as any}>
-            <NumberInput />
-          </DisplayItemControl>
-          <DisplayItemControl label="Women" labelStyle={DataStyle as any}>
-            <NumberInput />
-          </DisplayItemControl>
-          <DisplayItemControl label="Sons" labelStyle={DataStyle as any}>
-            <NumberInput />
-          </DisplayItemControl>
-          <DisplayItemControl label="Daughters" labelStyle={DataStyle as any}>
-            <NumberInput />
-          </DisplayItemControl>
-        </AntRow>
+            <DisplayItem label="Means of Earning">
+              <Checkbox style={DataStyle}>Job</Checkbox>
+              <Checkbox style={DataStyle}>Business</Checkbox>
+            </DisplayItem>
+            <DisplayItem label="Job / Business Details" value="" />
+          </Col>
+        </Row>
+        <Divider>Family Details</Divider>
+        <DisplayItem label="Marital Status">
+          <Checkbox style={DataStyle}>Single</Checkbox>
+          <Checkbox style={DataStyle}>Married</Checkbox>
+        </DisplayItem>
+        <DisplayItem label="Dependent Family Members" value="" />
+        <Row justify="space-between" gutter={20}>
+          <DisplayItem label="Men" labelStyle={DataStyle as Record<string, unknown>}>
+            <InputNumber />
+          </DisplayItem>
+          <DisplayItem label="Women" labelStyle={DataStyle as Record<string, unknown>}>
+            <InputNumber />
+          </DisplayItem>
+          <DisplayItem label="Sons" labelStyle={DataStyle as Record<string, unknown>}>
+            <InputNumber />
+          </DisplayItem>
+          <DisplayItem label="Daughters" labelStyle={DataStyle as Record<string, unknown>}>
+            <InputNumber />
+          </DisplayItem>
+        </Row>
 
-        <AntDivider>Emergency Contact</AntDivider>
-        <AntRow type="flex" justify="start" gutter={20}>
-          <AntCol order={1}>
-            <DisplayItemControl label="Name" value="" />
-            <DisplayItemControl label="Relationship" value="" />
-          </AntCol>
-          <AntCol order={2} offset={8}>
-            <DisplayItemControl label="Phone" value="" />
-          </AntCol>
-        </AntRow>
-        <AntDivider>If not originally from Multan</AntDivider>
-        <DisplayItemControl label="Date Shifted to Multan" value="" />
-        <DisplayItemControl label="Permission Received Through" value="" />
-        <DisplayItemControl label="Address before Shifting" value="" />
+        <Divider>Emergency Contact</Divider>
+        <Row justify="start" gutter={20}>
+          <Col order={1}>
+            <DisplayItem label="Name" value="" />
+            <DisplayItem label="Relationship" value="" />
+          </Col>
+          <Col order={2} offset={8}>
+            <DisplayItem label="Phone" value="" />
+          </Col>
+        </Row>
+        <Divider>If not originally from Multan</Divider>
+        <DisplayItem label="Date Shifted to Multan" value="" />
+        <DisplayItem label="Permission Received Through" value="" />
+        <DisplayItem label="Address before Shifting" value="" />
       </div>
     );
   }

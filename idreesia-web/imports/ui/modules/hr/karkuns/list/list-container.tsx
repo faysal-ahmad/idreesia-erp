@@ -1,33 +1,23 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
+import { type RouteComponentProps } from 'react-router';
 
+import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  flowRight,
-  toSafeInteger,
-} from 'meteor/idreesia-common/utilities/lodash';
-import {
-  WithBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
+  useBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import List from './list';
+import type { PageParams } from './list-filter';
 
-type AnyRecord = Record<string, any>;
-interface HistoryLike { push(path: string): void; }
-interface LocationLike { pathname: string; }
-interface Props { history: HistoryLike; location: LocationLike; queryString?: string; queryParams: AnyRecord; }
-const KarkunList = List as any;
+type Props = RouteComponentProps;
 
-class ListContainer extends Component<Props> {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    queryString: PropTypes.string,
-    queryParams: PropTypes.object,
-  };
+const ListContainer = ({ history, location }: Props) => {
+  const { queryParams } = useQueryParams({ history, location });
+  useBreadcrumbs(['HR', 'Karkuns', 'List']);
 
-  setPageParams = (newParams: AnyRecord) => {
+  const setPageParams = (newParams: PageParams) => {
     const {
       name,
       cnicNumber,
@@ -41,156 +31,158 @@ class ListContainer extends Component<Props> {
       pageIndex,
       pageSize,
     } = newParams;
-    const { queryParams, history, location } = this.props;
 
-    let showVolunteersVal;
-    let showEmployeesVal;
+    let showVolunteersVal: string;
+    let showEmployeesVal: string;
     if (Object.prototype.hasOwnProperty.call(newParams, 'karkunType')) {
       showVolunteersVal =
-        karkunType.indexOf('volunteers') !== -1 ? 'true' : 'false';
+        karkunType?.indexOf('volunteers') !== -1 ? 'true' : 'false';
       showEmployeesVal =
-        karkunType.indexOf('employees') !== -1 ? 'true' : 'false';
+        karkunType?.indexOf('employees') !== -1 ? 'true' : 'false';
     } else {
-      showVolunteersVal = queryParams.showVolunteers || 'true';
-      showEmployeesVal = queryParams.showEmployees || 'true';
+      showVolunteersVal = (queryParams.showVolunteers as string) || 'true';
+      showEmployeesVal = (queryParams.showEmployees as string) || 'true';
     }
 
-    let nameVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'name')) nameVal = name || '';
-    else nameVal = queryParams.name || '';
+    const nameVal = Object.prototype.hasOwnProperty.call(newParams, 'name')
+      ? name || ''
+      : (queryParams.name as string) || '';
 
-    let cnicNumberVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'cnicNumber'))
-      cnicNumberVal = cnicNumber || '';
-    else cnicNumberVal = queryParams.cnicNumber || '';
+    const cnicNumberVal = Object.prototype.hasOwnProperty.call(
+      newParams,
+      'cnicNumber'
+    )
+      ? cnicNumber || ''
+      : (queryParams.cnicNumber as string) || '';
 
-    let phoneNumberVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'phoneNumber'))
-      phoneNumberVal = phoneNumber || '';
-    else phoneNumberVal = queryParams.phoneNumber || '';
+    const phoneNumberVal = Object.prototype.hasOwnProperty.call(
+      newParams,
+      'phoneNumber'
+    )
+      ? phoneNumber || ''
+      : (queryParams.phoneNumber as string) || '';
 
-    let bloodGroupVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'bloodGroup'))
-      bloodGroupVal = bloodGroup || '';
-    else bloodGroupVal = queryParams.bloodGroup || '';
+    const bloodGroupVal = Object.prototype.hasOwnProperty.call(
+      newParams,
+      'bloodGroup'
+    )
+      ? bloodGroup || ''
+      : (queryParams.bloodGroup as string) || '';
 
-    let lastTarteebVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'lastTarteeb'))
-      lastTarteebVal = lastTarteeb || '';
-    else lastTarteebVal = queryParams.lastTarteeb || '';
+    const lastTarteebVal = Object.prototype.hasOwnProperty.call(
+      newParams,
+      'lastTarteeb'
+    )
+      ? lastTarteeb || ''
+      : (queryParams.lastTarteeb as string) || '';
 
-    let jobIdVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'jobId')) jobIdVal = jobId || '';
-    else jobIdVal = queryParams.jobId || '';
+    const jobIdVal = Object.prototype.hasOwnProperty.call(newParams, 'jobId')
+      ? jobId || ''
+      : (queryParams.jobId as string) || '';
 
-    let dutyIdVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'dutyId')) dutyIdVal = dutyId || '';
-    else dutyIdVal = queryParams.dutyId || '';
+    const dutyIdVal = Object.prototype.hasOwnProperty.call(newParams, 'dutyId')
+      ? dutyId || ''
+      : (queryParams.dutyId as string) || '';
 
-    let dutyShiftIdVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'dutyShiftId'))
-      dutyShiftIdVal = dutyShiftId || '';
-    else dutyShiftIdVal = queryParams.dutyShiftId || '';
+    const dutyShiftIdVal = Object.prototype.hasOwnProperty.call(
+      newParams,
+      'dutyShiftId'
+    )
+      ? dutyShiftId || ''
+      : (queryParams.dutyShiftId as string) || '';
 
-    let pageIndexVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'pageIndex')) pageIndexVal = pageIndex || 0;
-    else pageIndexVal = queryParams.pageIndex || 0;
+    const pageIndexVal = Object.prototype.hasOwnProperty.call(
+      newParams,
+      'pageIndex'
+    )
+      ? pageIndex ?? 0
+      : toSafeInteger(queryParams.pageIndex) || 0;
 
-    let pageSizeVal;
-    if (Object.prototype.hasOwnProperty.call(newParams, 'pageSize')) pageSizeVal = pageSize || 20;
-    else pageSizeVal = queryParams.pageSize || 20;
+    const pageSizeVal = Object.prototype.hasOwnProperty.call(
+      newParams,
+      'pageSize'
+    )
+      ? pageSize ?? 20
+      : toSafeInteger(queryParams.pageSize) || 20;
 
     const path = `${location.pathname}?name=${nameVal}&cnicNumber=${cnicNumberVal}&phoneNumber=${phoneNumberVal}&bloodGroup=${bloodGroupVal}&lastTarteeb=${lastTarteebVal}&jobId=${jobIdVal}&dutyId=${dutyIdVal}&dutyShiftId=${dutyShiftIdVal}&showVolunteers=${showVolunteersVal}&showEmployees=${showEmployeesVal}&pageIndex=${pageIndexVal}&pageSize=${pageSizeVal}`;
     history.push(path);
   };
 
-  handleNewClicked = () => {
-    const { history } = this.props;
+  const handleNewClicked = () => {
     history.push(paths.karkunsNewFormPath);
   };
 
-  handleScanClicked = () => {
-    const { history } = this.props;
+  const handleScanClicked = () => {
     history.push(paths.karkunsScanCardPath);
   };
 
-  handlePrintClicked = (karkun: AnyRecord) => {
-    const { history } = this.props;
-    history.push(paths.karkunsPrintPath(karkun._id));
+  const handlePrintClicked = (karkun: { _id?: string | null }) => {
+    history.push(paths.karkunsPrintPath(karkun._id ?? ''));
   };
 
-  handleAuditLogClicked = (karkun: AnyRecord) => {
-    const { history } = this.props;
+  const handleAuditLogClicked = (karkun: { _id?: string | null }) => {
     history.push(`${paths.auditLogsPath}?entityId=${karkun._id}`);
   };
 
-  handleItemSelected = (karkun: AnyRecord) => {
-    const { history } = this.props;
+  const handleItemSelected = (karkun: { _id?: string | null }) => {
     history.push(`${paths.karkunsPath}/${karkun._id}`);
   };
 
-  handlePrintSelected = (karkuns: AnyRecord[]) => {
-    const { history } = this.props;
-    const karkunIds = karkuns.map((karkun: AnyRecord) => karkun._id);
+  const handlePrintSelected = (karkuns: Array<{ _id?: string | null }>) => {
+    const karkunIds = karkuns.map((karkun) => karkun._id);
     history.push(
       `${paths.karkunsPrintListPath}?karkunIds=${karkunIds.join(',')}`
     );
   };
 
-  render() {
-    const {
-      queryParams: {
-        pageIndex,
-        pageSize,
-        name,
-        cnicNumber,
-        phoneNumber,
-        bloodGroup,
-        lastTarteeb,
-        jobId,
-        dutyId,
-        dutyShiftId,
-        showVolunteers,
-        showEmployees,
-      },
-    } = this.props;
+  const {
+    pageIndex,
+    pageSize,
+    name,
+    cnicNumber,
+    phoneNumber,
+    bloodGroup,
+    lastTarteeb,
+    jobId,
+    dutyId,
+    dutyShiftId,
+    showVolunteers,
+    showEmployees,
+  } = queryParams;
 
-    const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
-    const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
+  const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
+  const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
-    return (
-      <KarkunList
-        pageIndex={numPageIndex}
-        pageSize={numPageSize}
-        name={name}
-        cnicNumber={cnicNumber}
-        phoneNumber={phoneNumber}
-        bloodGroup={bloodGroup}
-        lastTarteeb={lastTarteeb}
-        jobId={jobId}
-        dutyId={dutyId}
-        dutyShiftId={dutyShiftId}
-        showVolunteers={showVolunteers || 'true'}
-        showEmployees={showEmployees || 'true'}
-        setPageParams={this.setPageParams}
-        handleItemSelected={this.handleItemSelected}
-        showNewButton
-        showDownloadButton
-        showSelectionColumn
-        showPhoneNumbersColumn
-        showDutiesColumn
-        showActionsColumn
-        handleNewClicked={this.handleNewClicked}
-        handleScanClicked={this.handleScanClicked}
-        handlePrintClicked={this.handlePrintClicked}
-        handleAuditLogClicked={this.handleAuditLogClicked}
-        handlePrintSelected={this.handlePrintSelected}
-      />
-    );
-  }
-}
+  return (
+    <List
+      pageIndex={numPageIndex}
+      pageSize={numPageSize}
+      name={name as string}
+      cnicNumber={cnicNumber as string}
+      phoneNumber={phoneNumber as string}
+      bloodGroup={bloodGroup as string}
+      lastTarteeb={lastTarteeb as string}
+      jobId={jobId as string}
+      dutyId={dutyId as string}
+      dutyShiftId={dutyShiftId as string}
+      showVolunteers={(showVolunteers as string) || 'true'}
+      showEmployees={(showEmployees as string) || 'true'}
+      setPageParams={setPageParams}
+      handleItemSelected={handleItemSelected}
+      showNewButton
+      showDownloadButton
+      showSelectionColumn
+      showPhoneNumbersColumn
+      showDutiesColumn
+      showActionsColumn
+      handleNewClicked={handleNewClicked}
+      handleScanClicked={handleScanClicked}
+      handlePrintClicked={handlePrintClicked}
+      handleAuditLogClicked={handleAuditLogClicked}
+      handlePrintSelected={handlePrintSelected}
+    />
+  );
+};
 
-export default flowRight(
-  WithQueryParams(),
-  WithBreadcrumbs(['HR', 'Karkuns', 'List'])
-)(ListContainer as any);
+export default ListContainer;

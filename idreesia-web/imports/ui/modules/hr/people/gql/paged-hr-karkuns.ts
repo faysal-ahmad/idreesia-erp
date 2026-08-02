@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  HrPeoplePagedHrKarkunsQuery,
+  HrPeoplePagedHrKarkunsQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const PAGED_HR_KARKUNS = gql`
+const PAGED_HR_KARKUNS: TypedDocumentNode<
+  HrPeoplePagedHrKarkunsQuery,
+  HrPeoplePagedHrKarkunsQueryVariables
+> = gql`
   query hrPeoplePagedHrKarkuns($filter: KarkunFilter) {
     pagedHrKarkuns(filter: $filter) {
       totalResults

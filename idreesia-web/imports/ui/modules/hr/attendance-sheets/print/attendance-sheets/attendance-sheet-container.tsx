@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/client/react';
 import ReactToPrint from 'react-to-print';
 import { Button, Divider } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
+import { type History } from 'history';
+import { type Location } from 'history';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
@@ -12,48 +13,48 @@ import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { ATTENDANCE_BY_MONTH } from '../../gql';
 import AttendanceSheet from './attendance-sheet';
 
-const PrintControl = ReactToPrint as any;
-const PrintButton = Button as any;
-const AntDivider = Divider as any;
-const AntPrinterOutlined = PrinterOutlined as any;
-const AttendanceSheetView = AttendanceSheet as any;
-interface HistoryLike { goBack(): void; push(path: string): void; }
-interface LocationLike { pathname: string; search: string; }
-interface ContainerProps { history: HistoryLike; location: LocationLike; }
-interface QueryData { attendanceByMonth?: unknown[]; }
+interface ContainerProps {
+  history: History;
+  location: Location;
+}
 
 const AttendanceSheetContainer = ({ history, location }: ContainerProps) => {
-  const attendanceSheet = useRef<any>(null);
-  const dispatch = useDispatch<any>();
-  const { queryParams } = useQueryParams({ history, location });
+  const attendanceSheetRef = useRef<any>(null);
+  const dispatch = useDispatch();
+  const { queryParams } = useQueryParams({
+    history,
+    location,
+    paramNames: ['selectedMonth', 'selectedCategoryId', 'selectedSubCategoryId'],
+  });
 
-  const { data, loading, error } = useQuery(ATTENDANCE_BY_MONTH as any, {
+  const { data, loading, error } = useQuery(ATTENDANCE_BY_MONTH, {
     variables: {
       month: `01-${queryParams.selectedMonth}`,
-      categoryId: queryParams.selectedCategoryId,
-      subCategoryId: queryParams.selectedSubCategoryId,
+      categoryId: queryParams.selectedCategoryId as string | undefined,
+      subCategoryId: queryParams.selectedSubCategoryId as string | undefined,
     },
   });
 
   useEffect(() => {
     dispatch(setBreadcrumbs(['HR', 'Attendance Sheets', 'Print Attendance Sheet']));
-  }, [location]);
+  }, [dispatch, location]);
 
   if (loading || error) return null;
 
-  const { attendanceByMonth = [] } = (data ?? {}) as QueryData;
+  const attendanceByMonth = (data?.attendanceByMonth ?? []).filter(row => row != null);
+
   return (
     <>
-      <PrintControl
-        content={() => attendanceSheet.current}
+      <ReactToPrint
+        content={() => attendanceSheetRef.current}
         trigger={() => (
-          <PrintButton size="large" type="primary" icon={<AntPrinterOutlined />}>
+          <Button size="large" type="primary" icon={<PrinterOutlined />}>
             Print Data
-          </PrintButton>
+          </Button>
         )}
       />
       &nbsp;
-      <PrintButton
+      <Button
         size="large"
         type="primary"
         onClick={() => {
@@ -61,17 +62,15 @@ const AttendanceSheetContainer = ({ history, location }: ContainerProps) => {
         }}
       >
         Back
-      </PrintButton>
-      <AntDivider />
-      <AttendanceSheetView ref={attendanceSheet} month={queryParams.selectedMonth} attendanceByMonth={attendanceByMonth} />
+      </Button>
+      <Divider />
+      <AttendanceSheet
+        ref={attendanceSheetRef}
+        month={queryParams.selectedMonth as string | undefined}
+        attendanceByMonth={attendanceByMonth}
+      />
     </>
   );
-};
-
-AttendanceSheetContainer.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default AttendanceSheetContainer;

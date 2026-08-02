@@ -1,18 +1,29 @@
 import React, { Fragment, useState } from 'react';
-import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
+import { type match } from 'react-router';
+import { type History } from 'history';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import type {
+  DutyLocationByIdQuery,
+  DutyLocationByIdQueryVariables,
+  UpdateDutyLocationMutation,
+  UpdateDutyLocationMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputTextField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { AuditInfo } from '/imports/ui/modules/common';
+import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
-const formQuery = gql`
+const DUTY_LOCATION_BY_ID: TypedDocumentNode<
+  DutyLocationByIdQuery,
+  DutyLocationByIdQueryVariables
+> = gql`
   query dutyLocationById($id: String!) {
     dutyLocationById(id: $id) {
       _id
@@ -25,7 +36,10 @@ const formQuery = gql`
   }
 `;
 
-const formMutation = gql`
+const UPDATE_DUTY_LOCATION: TypedDocumentNode<
+  UpdateDutyLocationMutation,
+  UpdateDutyLocationMutationVariables
+> = gql`
   mutation updateDutyLocation($id: String!, $name: String!) {
     updateDutyLocation(id: $id, name: $name) {
       _id
@@ -38,28 +52,26 @@ const formMutation = gql`
   }
 `;
 
-const ReactFragment = Fragment as any;
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-const AuditInfoComponent = AuditInfo as any;
-interface HistoryLike { push(path: string): void; }
-interface MatchLike { params: Record<string, string>; }
-interface EditFormProps { match: MatchLike; history: HistoryLike; }
-interface RecordData { _id: string; name: string; description?: string; }
-interface QueryData { dutyLocationById?: RecordData | null; }
-interface FormValues { name: string; description?: string; }
+interface EditFormProps {
+  match: match<{ dutyLocationId: string }>;
+  history: History;
+}
+
+interface FormValues {
+  name: string;
+}
 
 const EditForm = ({ match, history }: EditFormProps) => {
+  useBreadcrumbs(['HR', 'Duty Locations', 'Edit']);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { dutyLocationId } = match.params;
-  const { data, loading } = useQuery(formQuery as any, {
+  const dutyLocationId = match.params.dutyLocationId;
+  const { data, loading } = useQuery(DUTY_LOCATION_BY_ID, {
     variables: { id: dutyLocationId },
   });
-  const [updateDutyLocation] = useMutation(formMutation as any, {
+  const [updateDutyLocation] = useMutation(UPDATE_DUTY_LOCATION, {
     refetchQueries: ['allDutyLocations'],
   });
-  const { dutyLocationById } = (data ?? {}) as QueryData;
+  const dutyLocationById = data?.dutyLocationById;
 
   const handleCancel = () => {
     history.push(paths.dutyLocationsPath);
@@ -70,7 +82,7 @@ const EditForm = ({ match, history }: EditFormProps) => {
   };
 
   const handleFinish = ({ name }: FormValues) => {
-    if (!dutyLocationById) return;
+    if (!dutyLocationById?._id) return;
     updateDutyLocation({
       variables: {
         id: dutyLocationById._id,
@@ -85,32 +97,26 @@ const EditForm = ({ match, history }: EditFormProps) => {
       });
   };
 
-  if (loading || !dutyLocationById) return null;
+  if (loading || !dutyLocationById?._id) return null;
 
   return (
-    <ReactFragment>
-      <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <TextField
+    <Fragment>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <InputTextField
           fieldName="name"
           fieldLabel="Name"
-          initialValue={dutyLocationById.name}
+          initialValue={dutyLocationById.name ?? undefined}
           required
           requiredMessage="Please input a name for the duty location."
         />
-        <SaveCancelButtons
+        <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </AntForm>
-      <AuditInfoComponent record={dutyLocationById} />
-    </ReactFragment>
+      </Form>
+      <AuditInfo record={dutyLocationById ?? {}} />
+    </Fragment>
   );
 };
 
-EditForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['HR', 'Duty Locations', 'Edit'])(EditForm as any);
+export default EditForm;

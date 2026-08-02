@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  CreateDutyShiftMutation,
+  CreateDutyShiftMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const CREATE_DUTY_SHIFT = gql`
+const CREATE_DUTY_SHIFT: TypedDocumentNode<
+  CreateDutyShiftMutation,
+  CreateDutyShiftMutationVariables
+> = gql`
   mutation createDutyShift(
     $name: String!
     $dutyId: String!

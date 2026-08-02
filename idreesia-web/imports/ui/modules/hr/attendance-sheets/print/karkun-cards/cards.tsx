@@ -1,24 +1,31 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, type CSSProperties } from 'react';
 import Barcode from 'react-barcode';
 
-const BarcodeView = Barcode as any;
-interface Karkun { name: string; bloodGroup?: string; contactNumber1Subscribed?: boolean; contactNumber2Subscribed?: boolean; image?: { data?: string }; }
-interface NamedRecord { name: string; }
-interface AttendanceRecord { _id: string; month?: string; percentage?: number; meetingCardBarcodeId: string; karkun: Karkun; duty?: NamedRecord | null; job?: NamedRecord | null; shift?: NamedRecord | null; }
-interface CardsProps { cardType?: string; cardHeading?: string; cardSubHeading?: string | null; showDutyInfo?: boolean; attendanceByBarcodeIds?: AttendanceRecord[]; }
+import type { AttendanceByBarcodeIdsQuery } from 'meteor/idreesia-common/types/client-operations';
+
+type AttendanceRecord = NonNullable<
+  NonNullable<AttendanceByBarcodeIdsQuery['attendanceByBarcodeIds']>[number]
+>;
+
+interface CardsProps {
+  cardType?: string;
+  cardHeading?: string;
+  cardSubHeading?: string | null;
+  showDutyInfo?: boolean;
+  attendanceByBarcodeIds?: AttendanceRecord[];
+}
 
 const barcodeOptions = {
   width: 1,
   height: 20,
-  format: 'CODE128B',
+  format: 'CODE128B' as const,
   displayValue: false,
   background: '#ffffff',
   lineColor: '#000000',
   margin: 5,
 };
 
-const ContainerStyle = {
+const ContainerStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row wrap',
   justifyContent: 'center',
@@ -27,31 +34,33 @@ const ContainerStyle = {
 };
 
 export default class Cards extends Component<CardsProps> {
-  static propTypes = {
-    cardHeading: PropTypes.string,
-    cardSubHeading: PropTypes.string,
-    showDutyInfo: PropTypes.bool,
-    attendanceByBarcodeIds: PropTypes.array,
-  };
+  getCardMarkup(attendance: AttendanceRecord) {
+    const { cardHeading, cardSubHeading, showDutyInfo } = this.props;
+    const karkun = attendance.karkun;
+    if (!karkun?.name || !attendance.meetingCardBarcodeId) return null;
 
-  getKarkunImage = (attendance: AttendanceRecord) => {
-    const karkunImage = attendance.karkun.image ? (
+    const subscribed =
+      karkun.contactNumber1Subscribed ||
+      karkun.contactNumber2Subscribed;
+    const percentageClass =
+      (attendance.percentage ?? 0) > 0 ? 'info_box' : 'info_box hidden';
+    const subscriptionClass = subscribed ? 'info_box hidden' : 'info_box';
+    const bloodGroupClass = karkun.bloodGroup
+      ? 'info_box'
+      : 'info_box hidden';
+
+    const karkunImage = karkun.image ? (
       <img
-        src={`data:image/jpeg;base64,${attendance.karkun.image.data}`}
+        src={`data:image/jpeg;base64,${karkun.image.data}`}
         style={{ maxHeight: '100%', width: 'auto' }}
-        alt={attendance.karkun.name}
+        alt={karkun.name ?? undefined}
       />
     ) : (
       <div style={{ height: '100%', width: 'auto' }} />
     );
 
-    return <div className="mehfil_card_picture">{karkunImage}</div>;
-  };
-
-  getDutyShiftInfo = (attendance: AttendanceRecord) => {
-    const { showDutyInfo } = this.props;
-    const dutyShiftNode = showDutyInfo ? (
-      <p className="mehfil_card_duty_shift_job">
+    const dutyShiftInfo = showDutyInfo ? (
+      <p className="duty_shift_job">
         {attendance.duty ? attendance.duty.name : ''}
         {attendance.job ? attendance.job.name : ''}
         <br />
@@ -59,32 +68,26 @@ export default class Cards extends Component<CardsProps> {
       </p>
     ) : null;
 
-    return dutyShiftNode;
-  };
-
-  getCardMarkup(attendance: AttendanceRecord) {
-    const { cardHeading, cardSubHeading, showDutyInfo } = this.props;
-    const karkunImage = this.getKarkunImage(attendance);
-    const dutyShiftInfo = this.getDutyShiftInfo(attendance);
-
-    let cardHeight = 325;
-    if (showDutyInfo) cardHeight += 30;
-
     return (
-      <div
-        key={attendance._id}
-        className="mehfil_card"
-        style={{ height: cardHeight }}
-      >
-        <div className="mehfil_card_heading">{cardHeading}</div>
+      <div key={attendance._id ?? attendance.meetingCardBarcodeId} className="card_karkon">
+        <div className="heading_card_k">
+          <h1>{cardHeading}</h1>
+        </div>
         {cardSubHeading ? (
-          <div className="mehfil_card_subheading">{cardSubHeading}</div>
+          <div className="subheading_card_k">{cardSubHeading}</div>
         ) : null}
-        {karkunImage}
-        <h1 className="mehfil_card_name">{attendance.karkun.name}</h1>
+        <div className="pic_card_k">
+          {karkunImage}
+          <div className="info_container">
+            <div className={percentageClass}>{attendance.percentage}%</div>
+            <div className={bloodGroupClass}>{karkun.bloodGroup}</div>
+            <div className={subscriptionClass}>NS</div>
+          </div>
+        </div>
+        <h1 className="name_card_k">{karkun.name}</h1>
         {dutyShiftInfo}
-        <div className="mehfil_card_barcode">
-          <BarcodeView
+        <div className="barcode_card_k">
+          <Barcode
             value={attendance.meetingCardBarcodeId}
             {...barcodeOptions}
           />
@@ -95,16 +98,17 @@ export default class Cards extends Component<CardsProps> {
 
   render() {
     const { attendanceByBarcodeIds } = this.props;
-    const cards = (attendanceByBarcodeIds ?? []).map((attendance: AttendanceRecord) =>
-      this.getCardMarkup(attendance)
-    );
+    const cards = (attendanceByBarcodeIds ?? [])
+      .map((attendance: AttendanceRecord) => this.getCardMarkup(attendance))
+      .filter(Boolean);
 
     let index = 0;
     const cardContainers = [];
-    while (cards.length > 0) {
-      const cardsForPage = cards.splice(0, 9);
+    const cardsCopy = [...cards];
+    while (cardsCopy.length > 0) {
+      const cardsForPage = cardsCopy.splice(0, 12);
       cardContainers.push(
-        <div key={`container_${index}`} style={ContainerStyle as any}>
+        <div key={`container_${index}`} style={ContainerStyle}>
           {cardsForPage}
         </div>
       );

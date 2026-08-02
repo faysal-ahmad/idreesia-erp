@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { useRef, type CSSProperties } from 'react';
 import { Button, Collapse, Form, Row } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
+import type { AllJobsQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   CheckboxGroupField,
   InputCnicField,
@@ -14,29 +13,59 @@ import {
 import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 import {
-  WithAllJobs,
-  WithAllMSDuties,
-  WithAllDutyShifts,
+  useAllJobs,
+  useAllMSDuties,
+  useAllDutyShifts,
 } from '/imports/ui/modules/hr/common/composers';
 
-const AntButton = Button as any;
-const AntCollapse = Collapse as any;
-const AntForm = Form as any;
-const AntFormItem = (Form as any).Item;
-const AntRow = Row as any;
-const CheckboxGroupInputField = CheckboxGroupField as any;
-const CnicField = InputCnicField as any;
-const TextField = InputTextField as any;
-const CascaderInputField = CascaderField as any;
-const SelectInputField = SelectField as any;
-const LastTarteebInputField = LastTarteebFilterField as any;
-const RefreshControl = RefreshButton as any;
-type AnyRecord = Record<string, any>;
-interface LabelValue { label: string; value: string; }
-interface Props extends AnyRecord { setPageParams(params: AnyRecord): void; refreshData?: () => Promise<unknown>; }
-interface FilterValues extends AnyRecord { dutyIdShiftId?: string[]; karkunType?: string[]; }
+interface LabelValue {
+  label: string;
+  value: string;
+}
 
-const ContainerStyle = {
+export interface PageParams {
+  pageIndex?: number;
+  pageSize?: number;
+  name?: string | null;
+  cnicNumber?: string | null;
+  phoneNumber?: string | null;
+  bloodGroup?: string | null;
+  lastTarteeb?: string | null;
+  jobId?: string | null;
+  dutyId?: string | null;
+  dutyShiftId?: string | null;
+  karkunType?: string[];
+}
+
+interface FilterFormValues {
+  name?: string;
+  cnicNumber?: string;
+  phoneNumber?: string;
+  bloodGroup?: string;
+  lastTarteeb?: string;
+  jobId?: string;
+  dutyIdShiftId?: string[];
+  karkunType?: string[];
+}
+
+interface Props {
+  setPageParams(params: PageParams): void;
+  refreshData?: () => Promise<unknown>;
+  name?: string;
+  cnicNumber?: string;
+  phoneNumber?: string;
+  bloodGroup?: string;
+  lastTarteeb?: string;
+  jobId?: string;
+  dutyId?: string;
+  dutyShiftId?: string;
+  showVolunteers?: string;
+  showEmployees?: string;
+}
+
+type Job = NonNullable<NonNullable<AllJobsQuery['allJobs']>[number]>;
+
+const ContainerStyle: CSSProperties = {
   width: '500px',
 };
 
@@ -49,37 +78,27 @@ const buttonItemLayout = {
   wrapperCol: { span: 12, offset: 4 },
 };
 
-class ListFilter extends Component<Props> {
-  static propTypes = {
-    allJobs: PropTypes.array,
-    allMSDuties: PropTypes.array,
-    allDutyShifts: PropTypes.array,
-    allJobsLoading: PropTypes.bool,
-    allMSDutiesLoading: PropTypes.bool,
-    allDutyShiftsLoading: PropTypes.bool,
-    name: PropTypes.string,
-    cnicNumber: PropTypes.string,
-    phoneNumber: PropTypes.string,
-    bloodGroup: PropTypes.string,
-    lastTarteeb: PropTypes.string,
-    jobId: PropTypes.string,
-    dutyId: PropTypes.string,
-    dutyShiftId: PropTypes.string,
-    showVolunteers: PropTypes.string,
-    showEmployees: PropTypes.string,
-    setPageParams: PropTypes.func,
-    refreshData: PropTypes.func,
-  };
+const ListFilter = ({
+  showVolunteers,
+  showEmployees,
+  name,
+  cnicNumber = '',
+  phoneNumber,
+  bloodGroup,
+  lastTarteeb,
+  jobId,
+  dutyId,
+  dutyShiftId,
+  setPageParams,
+  refreshData,
+}: Props) => {
+  const formRef = useRef<any>(null);
+  const { allJobs, allJobsLoading } = useAllJobs();
+  const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
+  const { allDutyShifts, allDutyShiftsLoading } = useAllDutyShifts();
 
-  static defaultProps = {
-    cnicNumber: '',
-  };
-
-  formRef = React.createRef<any>();
-
-  handleReset = () => {
-    const { setPageParams } = this.props;
-    this.formRef.current?.resetFields();
+  const handleReset = () => {
+    formRef.current?.resetFields();
     setPageParams({
       pageIndex: 0,
       name: null,
@@ -94,178 +113,152 @@ class ListFilter extends Component<Props> {
     });
   };
 
-  handleFinish = ({
-    name,
-    cnicNumber,
-    phoneNumber,
-    bloodGroup,
-    lastTarteeb,
-    jobId,
+  const handleFinish = ({
+    name: filterName,
+    cnicNumber: filterCnicNumber,
+    phoneNumber: filterPhoneNumber,
+    bloodGroup: filterBloodGroup,
+    lastTarteeb: filterLastTarteeb,
+    jobId: filterJobId,
     dutyIdShiftId,
     karkunType,
-  }: FilterValues) => {
-    const { setPageParams } = this.props;
+  }: FilterFormValues) => {
     setPageParams({
       pageIndex: 0,
-      name,
-      cnicNumber,
-      phoneNumber,
-      bloodGroup,
-      lastTarteeb,
-      jobId,
+      name: filterName,
+      cnicNumber: filterCnicNumber,
+      phoneNumber: filterPhoneNumber,
+      bloodGroup: filterBloodGroup,
+      lastTarteeb: filterLastTarteeb,
+      jobId: filterJobId,
       dutyId: dutyIdShiftId?.[0],
       dutyShiftId: dutyIdShiftId?.[1],
       karkunType,
     });
   };
 
-  refreshButton = () => <RefreshControl refreshData={this.props.refreshData} />;
+  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
-  render() {
-    const {
-      showVolunteers,
-      showEmployees,
-      name,
-      cnicNumber,
-      phoneNumber,
-      bloodGroup,
-      lastTarteeb,
-      jobId,
-      dutyId,
-      dutyShiftId,
-      allJobs,
-      allMSDuties,
-      allDutyShifts,
-      allJobsLoading,
-      allMSDutiesLoading,
-      allDutyShiftsLoading,
-    } = this.props;
-    if (allJobsLoading || allMSDutiesLoading || allDutyShiftsLoading)
-      return null;
+  if (allJobsLoading || allMSDutiesLoading || allDutyShiftsLoading) return null;
 
-    const dutyShiftCascaderData = getDutyShiftCascaderData(
-      (allMSDuties ?? []) as any,
-      (allDutyShifts ?? []) as any
-    );
+  const dutyShiftCascaderData = getDutyShiftCascaderData(
+    (allMSDuties ?? []).filter(
+      (duty): duty is NonNullable<typeof duty> => duty != null
+    ),
+    (allDutyShifts ?? []).filter(
+      (shift): shift is NonNullable<typeof shift> => shift != null
+    )
+  );
 
-    const karkunTypes: string[] = [];
-    if (!showVolunteers || showVolunteers === 'true')
-      karkunTypes.push('volunteers');
-    if (!showEmployees || showEmployees === 'true')
-      karkunTypes.push('employees');
+  const karkunTypes: string[] = [];
+  if (!showVolunteers || showVolunteers === 'true') karkunTypes.push('volunteers');
+  if (!showEmployees || showEmployees === 'true') karkunTypes.push('employees');
 
-    return (
-      <AntCollapse
-        style={ContainerStyle as any}
-        items={[
-          {
-            key: '1',
-            label: 'Filter',
-            extra: this.refreshButton(),
-            children: (
-              <AntForm
-                ref={this.formRef}
-                layout="horizontal"
-                onFinish={this.handleFinish}
-              >
-                <CheckboxGroupInputField
-                  fieldName="karkunType"
-                  fieldLabel="Karkun Type"
-                  fieldLayout={formItemLayout}
-                  options={[
-                    { label: 'Volunteers', value: 'volunteers' },
-                    { label: 'Employees', value: 'employees' },
-                  ]}
-                  initialValue={karkunTypes}
-                />
-                <TextField
-                  fieldName="name"
-                  fieldLabel="Name"
-                  required={false}
-                  fieldLayout={formItemLayout}
-                  initialValue={name}
-                />
-                <CnicField
-                  fieldName="cnicNumber"
-                  fieldLabel="CNIC Number"
-                  required={false}
-                  requiredMessage="Please input a valid CNIC number."
-                  fieldLayout={formItemLayout}
-                  initialValue={cnicNumber}
-                />
-                <TextField
-                  fieldName="phoneNumber"
-                  fieldLabel="Phone Number"
-                  required={false}
-                  fieldLayout={formItemLayout}
-                  initialValue={phoneNumber}
-                />
-                <SelectInputField
-                  fieldName="bloodGroup"
-                  fieldLabel="Blood Group"
-                  required={false}
-                  data={[
-                    { label: 'A-', value: 'A-' },
-                    { label: 'A+', value: 'Aplus' },
-                    { label: 'B-', value: 'B-' },
-                    { label: 'B+', value: 'Bplus' },
-                    { label: 'AB-', value: 'AB-' },
-                    { label: 'AB+', value: 'ABplus' },
-                    { label: 'O-', value: 'O-' },
-                    { label: 'O+', value: 'Oplus' },
-                  ]}
-                  getDataValue={({ value }: LabelValue) => value}
-                  getDataText={({ label }: LabelValue) => label}
-                  fieldLayout={formItemLayout}
-                  initialValue={bloodGroup}
-                />
-                <LastTarteebInputField
-                  fieldName="lastTarteeb"
-                  fieldLabel="Last Tarteeb"
-                  required={false}
-                  fieldLayout={formItemLayout}
-                  initialValue={lastTarteeb}
-                />
-                <SelectInputField
-                  fieldName="jobId"
-                  fieldLabel="Job"
-                  required={false}
-                  data={allJobs}
-                  getDataValue={({ _id }: AnyRecord) => _id}
-                  getDataText={({ name: _name }: AnyRecord) => _name}
-                  fieldLayout={formItemLayout}
-                  initialValue={jobId}
-                />
-                <CascaderInputField
-                  data={dutyShiftCascaderData}
-                  fieldName="dutyIdShiftId"
-                  fieldLabel="Duty/Shift"
-                  fieldLayout={formItemLayout}
-                  initialValue={[dutyId, dutyShiftId]}
-                  required={false}
-                />
-                <AntFormItem {...buttonItemLayout}>
-                  <AntRow type="flex" justify="end">
-                    <AntButton type="default" onClick={this.handleReset}>
-                      Reset
-                    </AntButton>
-                    &nbsp;
-                    <AntButton type="primary" htmlType="submit">
-                      Search
-                    </AntButton>
-                  </AntRow>
-                </AntFormItem>
-              </AntForm>
-            ),
-          },
-        ]}
-      />
-    );
-  }
-}
+  return (
+    <Collapse
+      style={ContainerStyle}
+      items={[
+        {
+          key: '1',
+          label: 'Filter',
+          extra: refreshButton(),
+          children: (
+            <Form ref={formRef} layout="horizontal" onFinish={handleFinish}>
+              <CheckboxGroupField
+                fieldName="karkunType"
+                fieldLabel="Karkun Type"
+                fieldLayout={formItemLayout}
+                options={[
+                  { label: 'Volunteers', value: 'volunteers' },
+                  { label: 'Employees', value: 'employees' },
+                ]}
+                initialValue={karkunTypes}
+              />
+              <InputTextField
+                fieldName="name"
+                fieldLabel="Name"
+                required={false}
+                fieldLayout={formItemLayout}
+                initialValue={name}
+              />
+              <InputCnicField
+                fieldName="cnicNumber"
+                fieldLabel="CNIC Number"
+                required={false}
+                requiredMessage="Please input a valid CNIC number."
+                fieldLayout={formItemLayout}
+                initialValue={cnicNumber}
+              />
+              <InputTextField
+                fieldName="phoneNumber"
+                fieldLabel="Phone Number"
+                required={false}
+                fieldLayout={formItemLayout}
+                initialValue={phoneNumber}
+              />
+              <SelectField<LabelValue>
+                fieldName="bloodGroup"
+                fieldLabel="Blood Group"
+                required={false}
+                data={[
+                  { label: 'A-', value: 'A-' },
+                  { label: 'A+', value: 'Aplus' },
+                  { label: 'B-', value: 'B-' },
+                  { label: 'B+', value: 'Bplus' },
+                  { label: 'AB-', value: 'AB-' },
+                  { label: 'AB+', value: 'ABplus' },
+                  { label: 'O-', value: 'O-' },
+                  { label: 'O+', value: 'Oplus' },
+                ]}
+                getDataValue={({ value }) => value}
+                getDataText={({ label }) => label}
+                fieldLayout={formItemLayout}
+                initialValue={bloodGroup}
+              />
+              <LastTarteebFilterField
+                fieldName="lastTarteeb"
+                fieldLabel="Last Tarteeb"
+                required={false}
+                fieldLayout={formItemLayout}
+                initialValue={lastTarteeb}
+              />
+              <SelectField<Job>
+                fieldName="jobId"
+                fieldLabel="Job"
+                required={false}
+                data={(allJobs ?? []).filter(
+                  (job): job is Job => job != null
+                )}
+                getDataValue={({ _id }) => _id ?? ''}
+                getDataText={({ name: jobName }) => jobName ?? ''}
+                fieldLayout={formItemLayout}
+                initialValue={jobId}
+              />
+              <CascaderField
+                data={dutyShiftCascaderData}
+                fieldName="dutyIdShiftId"
+                fieldLabel="Duty/Shift"
+                fieldLayout={formItemLayout}
+                initialValue={[dutyId, dutyShiftId]}
+                required={false}
+              />
+              <Form.Item {...buttonItemLayout}>
+                <Row justify="end">
+                  <Button type="default" onClick={handleReset}>
+                    Reset
+                  </Button>
+                  &nbsp;
+                  <Button type="primary" htmlType="submit">
+                    Search
+                  </Button>
+                </Row>
+              </Form.Item>
+            </Form>
+          ),
+        },
+      ]}
+    />
+  );
+};
 
-export default flowRight(
-  WithAllJobs(),
-  WithAllMSDuties(),
-  WithAllDutyShifts()
-)(ListFilter as any);
+export default ListFilter;

@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
+import { type History } from 'history';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import type {
+  CreateDutyMutation,
+  CreateDutyMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const formMutation = gql`
+const CREATE_DUTY: TypedDocumentNode<
+  CreateDutyMutation,
+  CreateDutyMutationVariables
+> = gql`
   mutation createDuty(
     $name: String!
     $isMehfilDuty: Boolean!
@@ -33,17 +41,20 @@ const formMutation = gql`
   }
 `;
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { goBack(): void; }
-interface NewFormProps { history: HistoryLike; }
-interface FormValues { name: string; description?: string; attendanceSheet?: string; }
+interface NewFormProps {
+  history: History;
+}
+
+interface FormValues {
+  name: string;
+  description?: string;
+  attendanceSheet?: string;
+}
 
 const NewForm = ({ history }: NewFormProps) => {
+  useBreadcrumbs(['HR', 'Duties & Shifts', 'New']);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createDuty] = useMutation(formMutation as any, {
+  const [createDuty] = useMutation(CREATE_DUTY, {
     refetchQueries: ['allMSDuties'],
   });
 
@@ -73,31 +84,27 @@ const NewForm = ({ history }: NewFormProps) => {
   };
 
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextField
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
         fieldName="name"
         fieldLabel="Duty Name"
         required
         requiredMessage="Please input a name for the duty."
       />
-      <TextAreaField
+      <InputTextAreaField
         fieldName="description"
         fieldLabel="Description"
       />
-      <TextField
+      <InputTextField
         fieldName="attendanceSheet"
         fieldLabel="Attendance Sheet"
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-NewForm.propTypes = {
-  history: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['HR', 'Duties & Shifts', 'New'])(NewForm as any);
+export default NewForm;

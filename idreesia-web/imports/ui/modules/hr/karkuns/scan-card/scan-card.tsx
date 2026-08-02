@@ -1,57 +1,38 @@
-import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
+import { type RouteComponentProps } from 'react-router';
 
 import {
-  WithBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
+  useBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import { Divider, Row } from 'antd';
 import { ScanBarcode } from '/imports/ui/modules/helpers/controls';
 import SearchResult from './search-result';
 
-const ReactFragment = Fragment as any;
-const AntDivider = Divider as any;
-const AntRow = Row as any;
-const ScanBarcodeControl = ScanBarcode as any;
-const ScanSearchResult = SearchResult as any;
-interface HistoryLike { push(path: string): void; }
-interface ScanCardProps { history: HistoryLike; location?: unknown; queryString?: string; queryParams: { cardId?: string }; }
+type Props = RouteComponentProps;
 
-class ScanCard extends Component<ScanCardProps> {
-  static propTypes = {
-    history: PropTypes.object,
-    location: PropTypes.object,
-    queryString: PropTypes.string,
-    queryParams: PropTypes.object,
-  };
+const ScanCard = ({ history, location }: Props) => {
+  const { queryParams } = useQueryParams({ history, location });
+  useBreadcrumbs(['HR', 'Karkuns', 'Scan Card']);
 
-  onBarcodeCaptured = (code: string) => {
-    const { history } = this.props;
+  const onBarcodeCaptured = (code: string) => {
     history.push(`${paths.karkunsScanCardPath}?cardId=${code}`);
   };
 
-  render() {
-    const {
-      queryParams: { cardId },
-    } = this.props;
+  const cardId = queryParams.cardId as string | undefined;
 
-    return (
-      <ReactFragment>
-        <AntRow>
-          <ScanBarcodeControl onBarcodeCaptured={this.onBarcodeCaptured} />
-        </AntRow>
-        <AntRow>
-          <AntDivider />
-        </AntRow>
-        <AntRow>{cardId ? <ScanSearchResult barcode={cardId} /> : null}</AntRow>
-      </ReactFragment>
-    );
-  }
-}
+  return (
+    <>
+      <Row>
+        <ScanBarcode onBarcodeCaptured={onBarcodeCaptured} />
+      </Row>
+      <Row>
+        <Divider />
+      </Row>
+      <Row>{cardId ? <SearchResult barcode={cardId} /> : null}</Row>
+    </>
+  );
+};
 
-export default flowRight(
-  WithQueryParams(),
-  WithBreadcrumbs(['HR', 'Karkuns', 'Scan Card'])
-)(ScanCard as any);
+export default ScanCard;

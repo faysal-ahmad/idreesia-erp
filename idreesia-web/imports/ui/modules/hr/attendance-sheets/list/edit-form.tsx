@@ -1,24 +1,34 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Button, Col, Form, Row } from 'antd';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
+import type { UpdateAttendanceMutationVariables } from 'meteor/idreesia-common/types/client-operations';
 import {
   AttendanceDetailField,
   InputNumberField,
 } from '/imports/ui/modules/helpers/fields';
 
-const AntButton = Button as any;
-const AntCol = Col as any;
-const AntForm = Form as any;
-const AntRow = Row as any;
-const AntCloseCircleOutlined = CloseCircleOutlined as any;
-const AntSaveOutlined = SaveOutlined as any;
-const AttendanceDetails = AttendanceDetailField as any;
-const NumberField = InputNumberField as any;
-interface AttendanceRecord { _id: string; month?: string; attendanceDetails?: string; presentCount?: number; absentCount?: number; percentage?: number; }
-interface EditFormProps { attendance: AttendanceRecord; handleSave(values: Record<string, unknown>): void; handleCancel(): void; }
-interface FormValues { attendanceDetails?: unknown; presentCount?: number; absentCount?: number; percentage?: number; }
+interface AttendanceRecord {
+  _id: string;
+  month?: string;
+  attendanceDetails?: string;
+  presentCount?: number;
+  absentCount?: number;
+  percentage?: number;
+}
+
+interface EditFormProps {
+  attendance: AttendanceRecord;
+  handleSave(values: UpdateAttendanceMutationVariables): void;
+  handleCancel(): void;
+}
+
+interface FormValues {
+  attendanceDetails?: unknown;
+  presentCount?: number;
+  absentCount?: number;
+  percentage?: number;
+}
 
 const EditForm = ({ attendance, handleSave, handleCancel }: EditFormProps) => {
   const handleFinish = ({ attendanceDetails, presentCount, absentCount, percentage }: FormValues) => {
@@ -32,8 +42,8 @@ const EditForm = ({ attendance, handleSave, handleCancel }: EditFormProps) => {
   };
 
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish}>
-      <AttendanceDetails
+    <Form layout="horizontal" onFinish={handleFinish}>
+      <AttendanceDetailField
         fieldName="attendanceDetails"
         fieldLabel="Attendance Details"
         initialValue={
@@ -43,21 +53,21 @@ const EditForm = ({ attendance, handleSave, handleCancel }: EditFormProps) => {
         }
         forMonth={attendance.month}
       />
-      <NumberField
+      <InputNumberField
         fieldName="presentCount"
         fieldLabel="Present Days"
         initialValue={attendance.presentCount || 0}
         minValue={0}
         maxValue={31}
       />
-      <NumberField
+      <InputNumberField
         fieldName="absentCount"
         fieldLabel="Absent Days"
         initialValue={attendance.absentCount || 0}
         minValue={0}
         maxValue={31}
       />
-      <NumberField
+      <InputNumberField
         fieldName="percentage"
         fieldLabel="Percentage"
         initialValue={attendance.percentage || 0}
@@ -65,30 +75,24 @@ const EditForm = ({ attendance, handleSave, handleCancel }: EditFormProps) => {
         maxValue={100}
       />
 
-      <AntRow type="flex" justify="start">
-        <AntCol offset={10}>
-          <AntButton
+      <Row justify="start">
+        <Col offset={10}>
+          <Button
             size="large"
             type="default"
-            icon={<AntCloseCircleOutlined />}
+            icon={<CloseCircleOutlined />}
             onClick={handleCancel}
           >
             Cancel
-          </AntButton>
+          </Button>
           &nbsp;
-          <AntButton size="large" type="primary" icon={<AntSaveOutlined />} htmlType="submit">
+          <Button size="large" type="primary" icon={<SaveOutlined />} htmlType="submit">
             Save
-          </AntButton>
-        </AntCol>
-      </AntRow>
-    </AntForm>
+          </Button>
+        </Col>
+      </Row>
+    </Form>
   );
-}
-
-EditForm.propTypes = {
-  attendance: PropTypes.object,
-  handleSave: PropTypes.func,
-  handleCancel: PropTypes.func,
 };
 
 export default EditForm;

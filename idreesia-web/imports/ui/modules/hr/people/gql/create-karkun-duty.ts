@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  CreateKarkunDutyMutation,
+  CreateKarkunDutyMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const CREATE_KARKUN_DUTY = gql`
+const CREATE_KARKUN_DUTY: TypedDocumentNode<
+  CreateKarkunDutyMutation,
+  CreateKarkunDutyMutationVariables
+> = gql`
   mutation createKarkunDuty(
     $karkunId: String!
     $dutyId: String!

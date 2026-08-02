@@ -1,17 +1,27 @@
 import React, { Fragment, useState } from 'react';
-import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
+import { type History } from 'history';
 
+import type {
+  DutyByIdQuery,
+  DutyByIdQueryVariables,
+  UpdateDutyMutation,
+  UpdateDutyMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { AuditInfo } from '/imports/ui/modules/common';
+import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
-const formQuery = gql`
+const DUTY_BY_ID: TypedDocumentNode<
+  DutyByIdQuery,
+  DutyByIdQueryVariables
+> = gql`
   query dutyById($id: String!) {
     dutyById(id: $id) {
       _id
@@ -26,7 +36,10 @@ const formQuery = gql`
   }
 `;
 
-const formMutation = gql`
+const UPDATE_DUTY: TypedDocumentNode<
+  UpdateDutyMutation,
+  UpdateDutyMutationVariables
+> = gql`
   mutation updateDuty(
     $id: String!
     $name: String!
@@ -51,30 +64,29 @@ const formMutation = gql`
   }
 `;
 
-const ReactFragment = Fragment as any;
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-const AuditInfoComponent = AuditInfo as any;
-interface HistoryLike { goBack(): void; }
-interface EditFormProps { dutyId?: string | null; history?: HistoryLike; }
-interface DutyRecord { _id: string; name: string; description?: string; attendanceSheet?: string; }
-interface QueryData { dutyById?: DutyRecord | null; }
-interface FormValues { name: string; description?: string; attendanceSheet?: string; }
+interface EditFormProps {
+  dutyId: string;
+  history: History;
+}
+
+interface FormValues {
+  name: string;
+  description?: string;
+  attendanceSheet?: string;
+}
 
 const EditForm = ({ dutyId, history }: EditFormProps) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { data, loading } = useQuery(formQuery as any, {
+  const { data, loading } = useQuery(DUTY_BY_ID, {
     variables: { id: dutyId },
   });
-  const [updateDuty] = useMutation(formMutation as any, {
+  const [updateDuty] = useMutation(UPDATE_DUTY, {
     refetchQueries: ['allMSDuties'],
   });
-  const { dutyById } = (data ?? {}) as QueryData;
+  const dutyById = data?.dutyById;
 
   const handleCancel = () => {
-    history?.goBack();
+    history.goBack();
   };
 
   const handleFieldsChange = () => {
@@ -82,7 +94,7 @@ const EditForm = ({ dutyId, history }: EditFormProps) => {
   };
 
   const handleFinish = ({ name, description, attendanceSheet }: FormValues) => {
-    if (!dutyById) return;
+    if (!dutyById?._id) return;
     updateDuty({
       variables: {
         id: dutyById._id,
@@ -92,48 +104,43 @@ const EditForm = ({ dutyId, history }: EditFormProps) => {
       },
     })
       .then(() => {
-        history?.goBack();
+        history.goBack();
       })
       .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  if (loading || !dutyById) return null;
+  if (loading || !dutyById?._id) return null;
 
   return (
-    <ReactFragment>
-      <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <TextField
+    <Fragment>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <InputTextField
           fieldName="name"
           fieldLabel="Duty Name"
-          initialValue={dutyById.name}
+          initialValue={dutyById.name ?? undefined}
           required
           requiredMessage="Please input a name for the duty."
         />
-        <TextAreaField
+        <InputTextAreaField
           fieldName="description"
           fieldLabel="Description"
-          initialValue={dutyById.description}
+          initialValue={dutyById.description ?? undefined}
         />
-        <TextField
+        <InputTextField
           fieldName="attendanceSheet"
           fieldLabel="Attendance Sheet"
-          initialValue={dutyById.attendanceSheet}
+          initialValue={dutyById.attendanceSheet ?? undefined}
         />
-        <SaveCancelButtons
+        <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </AntForm>
-      <AuditInfoComponent record={dutyById} />
-    </ReactFragment>
+      </Form>
+      <AuditInfo record={dutyById ?? {}} />
+    </Fragment>
   );
-};
-
-EditForm.propTypes = {
-  dutyId: PropTypes.string,
-  history: PropTypes.object,
 };
 
 export default EditForm;

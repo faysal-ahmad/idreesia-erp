@@ -1,14 +1,11 @@
-import React, { ComponentType } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
+import React, { ComponentType } from 'react';
+import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import type {
   AllDutyShiftsQuery,
   AllDutyShiftsQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-
-type AnyProps = Record<string, any>;
 
 const ALL_DUTY_SHIFTS_QUERY: TypedDocumentNode<
   AllDutyShiftsQuery,
@@ -36,16 +33,14 @@ export const useAllDutyShifts = () => {
   };
 };
 
-export default () => (WrappedComponent: ComponentType<AnyProps>) => {
-  const WithAllDutyShifts = (props: AnyProps) => {
-    const allDutyShiftsProps = useAllDutyShifts();
-    return React.createElement(WrappedComponent as any, { ...props, ...allDutyShiftsProps} as any);
-  };
+type InjectedProps = ReturnType<typeof useAllDutyShifts>;
 
-  WithAllDutyShifts.propTypes = {
-    allDutyShiftsLoading: PropTypes.bool,
-    allDutyShifts: PropTypes.array,
-  };
+export default <P extends object>() =>
+  (WrappedComponent: ComponentType<P & InjectedProps>) => {
+    const WithAllDutyShifts = (props: P) => {
+      const allDutyShiftsProps = useAllDutyShifts();
+      return <WrappedComponent {...props} {...allDutyShiftsProps} />;
+    };
 
-  return WithAllDutyShifts;
-};
+    return WithAllDutyShifts;
+  };

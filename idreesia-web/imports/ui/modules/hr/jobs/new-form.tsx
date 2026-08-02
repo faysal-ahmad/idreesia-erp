@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
 import { Form, message } from 'antd';
+import { type History } from 'history';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import type {
+  CreateJobMutation,
+  CreateJobMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputTextField,
@@ -12,7 +17,10 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
-const formMutation = gql`
+const CREATE_JOB: TypedDocumentNode<
+  CreateJobMutation,
+  CreateJobMutationVariables
+> = gql`
   mutation createJob($name: String!, $description: String) {
     createJob(name: $name, description: $description) {
       _id
@@ -22,17 +30,19 @@ const formMutation = gql`
   }
 `;
 
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { push(path: string): void; }
-interface NewFormProps { history: HistoryLike; }
-interface FormValues { name: string; description?: string; }
+interface NewFormProps {
+  history: History;
+}
+
+interface FormValues {
+  name: string;
+  description?: string;
+}
 
 const NewForm = ({ history }: NewFormProps) => {
+  useBreadcrumbs(['HR', 'Jobs', 'New']);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createJob] = useMutation(formMutation as any, {
+  const [createJob] = useMutation(CREATE_JOB, {
     refetchQueries: ['allJobs'],
   });
 
@@ -60,28 +70,23 @@ const NewForm = ({ history }: NewFormProps) => {
   };
 
   return (
-    <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextField
+    <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+      <InputTextField
         fieldName="name"
         fieldLabel="Job Name"
         required
         requiredMessage="Please input a name for the job."
       />
-      <TextAreaField
+      <InputTextAreaField
         fieldName="description"
         fieldLabel="Description"
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['HR', 'Jobs', 'New'])(NewForm as any);
+export default NewForm;

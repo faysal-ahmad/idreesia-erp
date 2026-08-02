@@ -1,17 +1,22 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, type CSSProperties } from 'react';
 
 import { Row, Table } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
-import { filter, sortBy } from 'meteor/idreesia-common/utilities/lodash';
+import { sortBy } from 'meteor/idreesia-common/utilities/lodash';
+import type { AttendanceByMonthQuery } from 'meteor/idreesia-common/types/client-operations';
 
-const AntRow = Row as any;
-const AntTable = Table as any;
-const PersonNameDisplay = PersonName as any;
-type AnyRecord = Record<string, any>;
-interface AttendanceSheetProps { month?: string; attendanceByMonth?: AnyRecord[]; }
+type AttendanceRow = NonNullable<
+  NonNullable<AttendanceByMonthQuery['attendanceByMonth']>[number]
+>;
 
-const HeadingContainerStyle = {
+type AttendanceListRow = AttendanceRow & { _id: string };
+
+interface AttendanceSheetProps {
+  month?: string;
+  attendanceByMonth?: AttendanceRow[];
+}
+
+const HeadingContainerStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row wrap',
   justifyContent: 'center',
@@ -19,28 +24,30 @@ const HeadingContainerStyle = {
 };
 
 export default class AttendanceSheet extends Component<AttendanceSheetProps> {
-  static propTypes = {
-    month: PropTypes.string,
-    attendanceByMonth: PropTypes.array,
-  };
-
   nameColumn = {
     title: 'Name',
     dataIndex: 'karkun.name',
     key: 'karkun.name',
-    render: (_text: any, record: AnyRecord) => <PersonNameDisplay person={record.karkun} />,
+    render: (_text: unknown, record: AttendanceListRow) => (
+      <PersonName
+        person={
+          record.karkun as Parameters<typeof PersonName>[0]['person']
+        }
+      />
+    ),
   };
 
   phoneNumberColumn = {
     title: 'Contact Number',
     key: 'contactNumber',
-    render: (_text: any, record: AnyRecord) => {
+    render: (_text: unknown, record: AttendanceListRow) => {
       const numbers = [];
       const karkun = record.karkun;
+      if (!karkun) return '';
       if (karkun.contactNumber1)
-        numbers.push(<AntRow key="1">{karkun.contactNumber1}</AntRow>);
+        numbers.push(<Row key="1">{karkun.contactNumber1}</Row>);
       if (karkun.contactNumber2)
-        numbers.push(<AntRow key="2">{karkun.contactNumber2}</AntRow>);
+        numbers.push(<Row key="2">{karkun.contactNumber2}</Row>);
 
       if (numbers.length === 0) return '';
       return <>{numbers}</>;
@@ -50,17 +57,14 @@ export default class AttendanceSheet extends Component<AttendanceSheetProps> {
   dutiesColumn = {
     title: 'Duties',
     key: 'duties',
-    render: (_text: any, record: AnyRecord) => {
-      let name;
-      if (record.job) {
-        name = record.job.name;
-      } else {
-        name = record.duty.name;
-        if (record.shift) {
-          name = `${name} - ${record.shift.name}`;
-        }
+    render: (_text: unknown, record: AttendanceListRow) => {
+      if (record.job?.name) {
+        return record.job.name;
       }
-
+      let name = record.duty?.name ?? '';
+      if (record.shift?.name) {
+        name = `${name} - ${record.shift.name}`;
+      }
       return name;
     },
   };
@@ -69,43 +73,42 @@ export default class AttendanceSheet extends Component<AttendanceSheetProps> {
     title: 'Attendance %',
     dataIndex: 'percentage',
     key: 'percentage',
-    render: (text: any) => `${text}%`,
+    render: (text: number | null) => `${text}%`,
   };
 
-  getColumns = () => {
-    const columns = [
-      this.nameColumn,
-      this.phoneNumberColumn,
-      this.dutiesColumn,
-      this.percentageColumn,
-    ];
-
-    return columns;
-  };
+  getColumns = () => [
+    this.nameColumn,
+    this.phoneNumberColumn,
+    this.dutiesColumn,
+    this.percentageColumn,
+  ];
 
   render() {
     const { month, attendanceByMonth } = this.props;
-    const filterAttendanceByMonth = filter(attendanceByMonth ?? [], (attendance: AnyRecord) => !!attendance.karkun)
-    const sortedAttendanceByMonth = sortBy(filterAttendanceByMonth, 'karkun.name');
+    const filterAttendanceByMonth = (attendanceByMonth ?? []).filter(
+      (attendance): attendance is AttendanceListRow =>
+        !!attendance?.karkun && !!attendance._id
+    );
+    const sortedAttendanceByMonth = sortBy(filterAttendanceByMonth, row => row.karkun?.name);
+    const pages = [...sortedAttendanceByMonth];
 
     let index = 0;
     const lists = [];
-    while (sortedAttendanceByMonth.length > 0) {
-      const attendanceForPage = sortedAttendanceByMonth.splice(0, 15);
+    while (pages.length > 0) {
+      const attendanceForPage = pages.splice(0, 15);
       lists.push(
-        <>
-        <div style={HeadingContainerStyle as any}>Attendance for Month: {month}</div>
-        <AntTable
-          rowKey="_id"
-          key={`list_${index}`}
-          dataSource={attendanceForPage}
-          columns={this.getColumns()}
-          bordered
-          size="small"
-          pagination={false}
-          style={{ padding: '20px' }}
-        />
-        </>
+        <React.Fragment key={`list_${index}`}>
+          <div style={HeadingContainerStyle}>Attendance for Month: {month}</div>
+          <Table
+            rowKey="_id"
+            dataSource={attendanceForPage}
+            columns={this.getColumns()}
+            bordered
+            size="small"
+            pagination={false}
+            style={{ padding: '20px' }}
+          />
+        </React.Fragment>
       );
 
       lists.push(<div key={`pagebreak_${index}`} className="pagebreak" />);

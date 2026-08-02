@@ -1,19 +1,30 @@
 import React, { Fragment, useState } from 'react';
-import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Form, message } from 'antd';
+import { type match } from 'react-router';
+import { type History } from 'history';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import type {
+  JobByIdQuery,
+  JobByIdQueryVariables,
+  UpdateJobMutation,
+  UpdateJobMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { AuditInfo } from '/imports/ui/modules/common';
+import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
-const formQuery = gql`
+const JOB_BY_ID: TypedDocumentNode<
+  JobByIdQuery,
+  JobByIdQueryVariables
+> = gql`
   query jobById($id: String!) {
     jobById(id: $id) {
       _id
@@ -27,7 +38,10 @@ const formQuery = gql`
   }
 `;
 
-const formMutation = gql`
+const UPDATE_JOB: TypedDocumentNode<
+  UpdateJobMutation,
+  UpdateJobMutationVariables
+> = gql`
   mutation updateJob($id: String!, $name: String!, $description: String) {
     updateJob(id: $id, name: $name, description: $description) {
       _id
@@ -41,29 +55,27 @@ const formMutation = gql`
   }
 `;
 
-const ReactFragment = Fragment as any;
-const AntForm = Form as any;
-const TextField = InputTextField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-const AuditInfoComponent = AuditInfo as any;
-interface HistoryLike { push(path: string): void; }
-interface MatchLike { params: Record<string, string>; }
-interface EditFormProps { match: MatchLike; history: HistoryLike; }
-interface RecordData { _id: string; name: string; description?: string; }
-interface QueryData { jobById?: RecordData | null; }
-interface FormValues { name: string; description?: string; }
+interface EditFormProps {
+  match: match<{ jobId: string }>;
+  history: History;
+}
+
+interface FormValues {
+  name: string;
+  description?: string;
+}
 
 const EditForm = ({ match, history }: EditFormProps) => {
+  useBreadcrumbs(['HR', 'Jobs', 'Edit']);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { jobId } = match.params;
-  const { loading, data } = useQuery(formQuery as any, {
+  const jobId = match.params.jobId;
+  const { loading, data } = useQuery(JOB_BY_ID, {
     variables: { id: jobId },
   });
-  const [updateJob] = useMutation(formMutation as any, {
+  const [updateJob] = useMutation(UPDATE_JOB, {
     refetchQueries: ['allJobs'],
   });
-  const jobById = data ? (data as QueryData).jobById : null;
+  const jobById = data?.jobById;
 
   const handleCancel = () => {
     history.push(paths.jobsPath);
@@ -74,7 +86,7 @@ const EditForm = ({ match, history }: EditFormProps) => {
   };
 
   const handleFinish = ({ name, description }: FormValues) => {
-    if (!jobById) return;
+    if (!jobById?._id) return;
     updateJob({
       variables: {
         id: jobById._id,
@@ -90,38 +102,31 @@ const EditForm = ({ match, history }: EditFormProps) => {
       });
   };
 
-  if (loading || !jobById) return null;
+  if (loading || !jobById?._id) return null;
 
   return (
-    <ReactFragment>
-      <AntForm layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <TextField
+    <Fragment>
+      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+        <InputTextField
           fieldName="name"
           fieldLabel="Job Name"
-          initialValue={jobById.name}
+          initialValue={jobById.name ?? undefined}
           required
           requiredMessage="Please input a name for the job."
         />
-        <TextAreaField
-          disabled
+        <InputTextAreaField
           fieldName="description"
           fieldLabel="Description"
-          initialValue={jobById.description}
+          initialValue={jobById.description ?? undefined}
         />
-        <SaveCancelButtons
+        <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
         />
-      </AntForm>
-      <AuditInfoComponent record={jobById} />
-    </ReactFragment>
+      </Form>
+      <AuditInfo record={jobById ?? {}} />
+    </Fragment>
   );
 };
 
-EditForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['HR', 'Jobs', 'Edit'])(EditForm as any);
+export default EditForm;

@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react';
-import PropTypes from 'prop-types';
+import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
 import { Divider, Form, message } from 'antd';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   AgeField,
@@ -18,25 +18,36 @@ import {
 
 import { CREATE_HR_KARKUN } from '../gql';
 
-const AntDivider = Divider as any;
-const AntForm = Form as any;
-const AgeInputField = AgeField as any;
-const EhadDurationInputField = EhadDurationField as any;
-const CnicField = InputCnicField as any;
-const MobileField = InputMobileField as any;
-const TextField = InputTextField as any;
-const SelectInputField = SelectField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { goBack(): void; push(path: string): void; }
-interface FormValues { name?: string; parentName?: string; cnicNumber?: string; contactNumber1?: string; contactNumber2?: string; emailAddress?: string; currentAddress?: string; permanentAddress?: string; bloodGroup?: string; educationalQualification?: string; meansOfEarning?: string; ehadDate?: unknown; birthDate?: unknown; referenceName?: string; }
-interface Props { history: HistoryLike; }
-interface LabelValue { label: string; value: string; }
+interface LabelValue {
+  label: string;
+  value: string;
+}
+
+export interface NewKarkunFormValues {
+  name?: string;
+  parentName?: string;
+  cnicNumber?: string;
+  contactNumber1?: string;
+  contactNumber2?: string;
+  emailAddress?: string;
+  currentAddress?: string;
+  permanentAddress?: string;
+  bloodGroup?: string;
+  educationalQualification?: string;
+  meansOfEarning?: string;
+  ehadDate?: unknown;
+  birthDate?: unknown;
+  referenceName?: string;
+}
+
+type Props = RouteComponentProps;
 
 const NewForm = ({ history }: Props) => {
   const formRef = useRef<any>(null);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createHrKarkun] = useMutation(CREATE_HR_KARKUN as any, {
+  useBreadcrumbs(['HR', 'Karkuns', 'New']);
+
+  const [createHrKarkun] = useMutation(CREATE_HR_KARKUN, {
     refetchQueries: ['pagedHrKarkuns'],
   });
 
@@ -63,22 +74,22 @@ const NewForm = ({ history }: Props) => {
     ehadDate,
     birthDate,
     referenceName,
-  }: FormValues) => {
+  }: NewKarkunFormValues) => {
     if (!cnicNumber && !contactNumber1) {
       formRef.current?.setFields([
         {
-          name: "cnicNumber",
+          name: 'cnicNumber',
           errors: ['Please input the CNIC or Mobile Number for the person'],
         },
         {
-          name: "contactNumber1",
+          name: 'contactNumber1',
           errors: ['Please input the CNIC or Mobile Number for the person'],
         },
       ]);
     } else {
       createHrKarkun({
         variables: {
-          name,
+          name: name ?? '',
           parentName,
           cnicNumber,
           contactNumber1,
@@ -89,14 +100,16 @@ const NewForm = ({ history }: Props) => {
           bloodGroup,
           educationalQualification,
           meansOfEarning,
-          ehadDate,
-          birthDate,
+          ehadDate: ehadDate as string | null | undefined,
+          birthDate: birthDate as string | null | undefined,
           referenceName,
         },
       })
-        .then(({ data }: any) => {
-          const newKarkun = data.createHrKarkun;
-          history.push(`${paths.karkunsPath}/${newKarkun._id}`);
+        .then(({ data }) => {
+          const newKarkun = data?.createHrKarkun;
+          if (newKarkun?._id) {
+            history.push(`${paths.karkunsPath}/${newKarkun._id}`);
+          }
         })
         .catch((error: Error) => {
           message.error(error.message, 5);
@@ -105,59 +118,55 @@ const NewForm = ({ history }: Props) => {
   };
 
   return (
-    <AntForm ref={formRef} layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-      <TextField
+    <Form
+      ref={formRef}
+      layout="horizontal"
+      onFinish={handleFinish}
+      onFieldsChange={handleFieldsChange}
+    >
+      <InputTextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input the name for the karkun."
       />
 
-      <TextField
+      <InputTextField
         fieldName="parentName"
         fieldLabel="S/O"
         required
         requiredMessage="Please input the parent name for the karkun."
       />
 
-      <AgeInputField
-        fieldName="birthDate"
-        fieldLabel="Age (years)"
-      />
+      <AgeField fieldName="birthDate" fieldLabel="Age (years)" />
 
-      <EhadDurationInputField
+      <EhadDurationField
         fieldName="ehadDate"
         fieldLabel="Ehad Duration"
         required
         requiredMessage="Please specify the Ehad duration for the karkun."
       />
 
-      <TextField
+      <InputTextField
         fieldName="referenceName"
         fieldLabel="R/O"
         required
         requiredMessage="Please input the reference name for the karkun."
       />
 
-      <CnicField
-        fieldName="cnicNumber"
-        fieldLabel="CNIC Number"
-      />
+      <InputCnicField fieldName="cnicNumber" fieldLabel="CNIC Number" />
 
-      <MobileField
-        fieldName="contactNumber1"
-        fieldLabel="Mobile Number"
-      />
+      <InputMobileField fieldName="contactNumber1" fieldLabel="Mobile Number" />
 
-      <AntDivider />
+      <Divider />
 
-      <TextField
+      <InputTextField
         fieldName="contactNumber2"
         fieldLabel="Home Number"
         required={false}
       />
 
-      <SelectInputField
+      <SelectField<LabelValue>
         fieldName="bloodGroup"
         fieldLabel="Blood Group"
         required={false}
@@ -171,49 +180,40 @@ const NewForm = ({ history }: Props) => {
           { label: 'O-', value: 'O-' },
           { label: 'O+', value: 'O+' },
         ]}
-        getDataValue={({ value }: LabelValue) => value}
-        getDataText={({ label }: LabelValue) => label}
+        getDataValue={({ value }) => value}
+        getDataText={({ label }) => label}
       />
 
-      <TextField
-        fieldName="emailAddress"
-        fieldLabel="Email"
-        required={false}
-      />
+      <InputTextField fieldName="emailAddress" fieldLabel="Email" required={false} />
 
-      <TextAreaField
+      <InputTextAreaField
         fieldName="currentAddress"
         fieldLabel="Current Address"
         required={false}
       />
-      <TextAreaField
+      <InputTextAreaField
         fieldName="permanentAddress"
         fieldLabel="Permanent Address"
         required={false}
       />
 
-      <TextField
+      <InputTextField
         fieldName="educationalQualification"
         fieldLabel="Education"
         required={false}
       />
 
-      <TextAreaField
+      <InputTextAreaField
         fieldName="meansOfEarning"
         fieldLabel="Means of Earning"
         required={false}
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['HR', 'Karkuns', 'New'])(NewForm as any);
+export default NewForm;

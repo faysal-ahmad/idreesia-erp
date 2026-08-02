@@ -1,14 +1,11 @@
-import React, { ComponentType } from "react";
-import PropTypes from "prop-types";
-import gql from "graphql-tag";
+import React, { ComponentType } from 'react';
+import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import type {
   AllJobsQuery,
   AllJobsQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-
-type AnyProps = Record<string, any>;
 
 const ALL_JOBS_QUERY: TypedDocumentNode<
   AllJobsQuery,
@@ -35,16 +32,14 @@ export const useAllJobs = () => {
   };
 };
 
-export default () => (WrappedComponent: ComponentType<AnyProps>) => {
-  const WithAllJobs = (props: AnyProps) => {
-    const allJobsProps = useAllJobs();
-    return React.createElement(WrappedComponent as any, { ...props, ...allJobsProps} as any);
-  };
+type InjectedProps = ReturnType<typeof useAllJobs>;
 
-  WithAllJobs.propTypes = {
-    allJobsLoading: PropTypes.bool,
-    allJobs: PropTypes.array,
-  };
+export default <P extends object>() =>
+  (WrappedComponent: ComponentType<P & InjectedProps>) => {
+    const WithAllJobs = (props: P) => {
+      const allJobsProps = useAllJobs();
+      return <WrappedComponent {...props} {...allJobsProps} />;
+    };
 
-  return WithAllJobs;
-};
+    return WithAllJobs;
+  };

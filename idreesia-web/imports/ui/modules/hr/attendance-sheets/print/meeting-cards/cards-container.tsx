@@ -1,32 +1,35 @@
 import React, { useRef } from 'react';
-import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client/react';
 import ReactToPrint from 'react-to-print';
 import { Button, Divider } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
+import { type History } from 'history';
+import { type Location } from 'history';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  WithBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
+  useBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
 
 import Cards from './cards';
 import { ATTENDANCE_BY_BARCODE_IDS } from '../../gql';
 
-const PrintControl = ReactToPrint as any;
-const PrintButton = Button as any;
-const AntDivider = Divider as any;
-const AntPrinterOutlined = PrinterOutlined as any;
-const CardsView = Cards as any;
-interface HistoryLike { goBack(): void; }
-interface ContainerProps { history: HistoryLike; queryParams: Record<string, string | undefined>; }
-interface QueryData { attendanceByBarcodeIds?: unknown[]; }
+interface ContainerProps {
+  history: History;
+  location: Location;
+}
 
-const CardsContainer = ({ history, queryParams }: ContainerProps) => {
+const CardsContainer = ({ history, location }: ContainerProps) => {
   const meetingCardsRef = useRef<any>(null);
-  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_IDS as any, {
-    variables: { barcodeIds: queryParams.barcodeIds },
+  const { queryParams } = useQueryParams({
+    history,
+    location,
+    paramNames: ['barcodeIds', 'cardType'],
+  });
+  useBreadcrumbs(['HR', 'Attendance Sheets', 'Meeting Cards']);
+
+  const { data, loading } = useQuery(ATTENDANCE_BY_BARCODE_IDS, {
+    variables: { barcodeIds: queryParams.barcodeIds as string },
   });
 
   if (loading) return null;
@@ -34,18 +37,22 @@ const CardsContainer = ({ history, queryParams }: ContainerProps) => {
   const { cardType } = queryParams;
   if (!cardType) return null;
 
+  const attendanceByBarcodeIds = (data?.attendanceByBarcodeIds ?? []).filter(
+    row => row != null
+  );
+
   return (
     <>
-      <PrintControl
+      <ReactToPrint
         content={() => meetingCardsRef.current}
         trigger={() => (
-          <PrintButton size="large" type="primary" icon={<AntPrinterOutlined />}>
+          <Button size="large" type="primary" icon={<PrinterOutlined />}>
             Print Cards
-          </PrintButton>
+          </Button>
         )}
       />
       &nbsp;
-      <PrintButton
+      <Button
         size="large"
         type="primary"
         onClick={() => {
@@ -53,27 +60,15 @@ const CardsContainer = ({ history, queryParams }: ContainerProps) => {
         }}
       >
         Back
-      </PrintButton>
-      <AntDivider />
-      <CardsView
+      </Button>
+      <Divider />
+      <Cards
         ref={meetingCardsRef}
-        cardType={cardType}
-        attendanceByBarcodeIds={
-          data ? (data as QueryData).attendanceByBarcodeIds : []
-        }
+        cardType={cardType as string}
+        attendanceByBarcodeIds={attendanceByBarcodeIds}
       />
     </>
   );
 };
 
-CardsContainer.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-  queryParams: PropTypes.object,
-};
-
-export default flowRight(
-  WithQueryParams(),
-  WithBreadcrumbs(['HR', 'Attendance Sheets', 'Meeting Cards'])
-)(CardsContainer as any);
+export default CardsContainer;

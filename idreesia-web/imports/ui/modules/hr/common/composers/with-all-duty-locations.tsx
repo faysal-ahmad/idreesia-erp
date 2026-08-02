@@ -1,5 +1,4 @@
 import React, { ComponentType } from 'react';
-import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
@@ -7,8 +6,6 @@ import type {
   ComposerAllDutyLocationsQuery,
   ComposerAllDutyLocationsQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-
-type AnyProps = Record<string, any>;
 
 const ALL_DUTY_LOCATIONS_QUERY: TypedDocumentNode<
   ComposerAllDutyLocationsQuery,
@@ -33,16 +30,14 @@ export const useAllDutyLocations = () => {
   };
 };
 
-export default () => (WrappedComponent: ComponentType<AnyProps>) => {
-  const WithAllDutyLocations = (props: AnyProps) => {
-    const allDutyLocationsProps = useAllDutyLocations();
-    return React.createElement(WrappedComponent as any, { ...props, ...allDutyLocationsProps} as any);
-  };
+type InjectedProps = ReturnType<typeof useAllDutyLocations>;
 
-  WithAllDutyLocations.propTypes = {
-    allDutyLocationsLoading: PropTypes.bool,
-    allDutyLocations: PropTypes.array,
-  };
+export default <P extends object>() =>
+  (WrappedComponent: ComponentType<P & InjectedProps>) => {
+    const WithAllDutyLocations = (props: P) => {
+      const allDutyLocationsProps = useAllDutyLocations();
+      return <WrappedComponent {...props} {...allDutyLocationsProps} />;
+    };
 
-  return WithAllDutyLocations;
-};
+    return WithAllDutyLocations;
+  };

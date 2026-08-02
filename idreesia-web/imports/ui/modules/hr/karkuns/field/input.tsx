@@ -1,11 +1,10 @@
-import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, Fragment, type CSSProperties } from 'react';
 import { EditOutlined } from '@ant-design/icons';
 
 import { Tabs, Drawer, Input } from 'antd';
 import ListContainer from './list-container';
 
-const ContainerStyle = {
+const ContainerStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'flex-start',
@@ -13,27 +12,31 @@ const ContainerStyle = {
   width: '100%',
 };
 
-const ReactFragment = Fragment as any;
-const AntTabs = Tabs as any;
-const AntTabPane = (Tabs as any).TabPane;
-const AntDrawer = Drawer as any;
-const AntInput = Input as any;
-const AntEditOutlined = EditOutlined as any;
-const KarkunListContainer = ListContainer as any;
-interface SelectionValue { _id?: string; name?: string; sharedData?: { name?: string }; }
-interface CustomInputProps { value?: SelectionValue | null; disabled?: boolean; placeholder?: string; onChange?(value: SelectionValue): void; predefinedFilterName?: string; predefinedFilterStoreId?: string; }
-interface CustomInputState { showSelectionForm: boolean; }
+const TabPane = Tabs.TabPane;
 
-export default class CustomInput extends Component<CustomInputProps, CustomInputState> {
-  static propTypes = {
-    value: PropTypes.object,
-    disabled: PropTypes.bool,
-    placeholder: PropTypes.string,
-    onChange: PropTypes.func,
-    predefinedFilterName: PropTypes.string,
-    predefinedFilterStoreId: PropTypes.string,
-  };
+interface SelectionValue {
+  _id?: string;
+  name?: string;
+  sharedData?: { name?: string };
+}
 
+interface CustomInputProps {
+  value?: SelectionValue | null;
+  disabled?: boolean;
+  placeholder?: string;
+  onChange?(value: SelectionValue): void;
+  predefinedFilterName?: string;
+  predefinedFilterStoreId?: string;
+}
+
+interface CustomInputState {
+  showSelectionForm: boolean;
+}
+
+export default class CustomInput extends Component<
+  CustomInputProps,
+  CustomInputState
+> {
   state = {
     showSelectionForm: false,
   };
@@ -61,59 +64,52 @@ export default class CustomInput extends Component<CustomInputProps, CustomInput
     }
   };
 
-  setSelectedValueFromQuickSelection = (item: SelectionValue) => {
-    const { onChange } = this.props;
-    this.handleClose();
-    if (onChange) {
-      onChange(item);
-    }
-  };
-
   render() {
-    const { placeholder, value, predefinedFilterName, predefinedFilterStoreId } = this.props;
+    const { placeholder, value, predefinedFilterName, predefinedFilterStoreId } =
+      this.props;
 
     let containersNode;
     if (predefinedFilterName) {
       containersNode = (
-        <AntTabs>
-          <AntTabPane tab="Recently Used" key="1">
-            <KarkunListContainer
+        <Tabs>
+          <TabPane tab="Recently Used" key="1">
+            <ListContainer
               setSelectedValue={this.setSelectedValue}
               predefinedFilterName={predefinedFilterName}
               predefinedFilterStoreId={predefinedFilterStoreId}
             />
-          </AntTabPane>
-          <AntTabPane tab="All Karkuns" key="2">
-            <KarkunListContainer setSelectedValue={this.setSelectedValue} />
-          </AntTabPane>
-        </AntTabs>
+          </TabPane>
+          <TabPane tab="All Karkuns" key="2">
+            <ListContainer setSelectedValue={this.setSelectedValue} />
+          </TabPane>
+        </Tabs>
       );
     } else {
       containersNode = (
-        <KarkunListContainer setSelectedValue={this.setSelectedValue} />
+        <ListContainer setSelectedValue={this.setSelectedValue} />
       );
     }
 
     return (
-      <ReactFragment>
-        <AntDrawer
+      <Fragment>
+        <Drawer
           title="Select a Karkun"
           width={720}
           onClose={this.handleClose}
           open={this.state.showSelectionForm}
         >
           {containersNode}
-        </AntDrawer>
-        <div style={ContainerStyle as any}>
-          <AntInput
+        </Drawer>
+        <div style={ContainerStyle}>
+          <Input
             type="text"
             value={value ? value.name || value.sharedData?.name || '' : ''}
             readOnly
-            addonAfter={<AntEditOutlined onClick={this.handleEditClick} />}
+            addonAfter={<EditOutlined onClick={this.handleEditClick} />}
             placeholder={placeholder}
           />
         </div>
-      </ReactFragment>
+      </Fragment>
     );
   }
 }

@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  HrKarkunByIdForPeopleQuery,
+  HrKarkunByIdForPeopleQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const HR_KARKUN_BY_ID = gql`
+const HR_KARKUN_BY_ID: TypedDocumentNode<
+  HrKarkunByIdForPeopleQuery,
+  HrKarkunByIdForPeopleQueryVariables
+> = gql`
   query hrKarkunByIdForPeople($_id: String!) {
     hrKarkunById(_id: $_id) {
       _id

@@ -1,74 +1,26 @@
 import React, { useRef } from 'react';
-import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import ReactToPrint from 'react-to-print';
 import { Button, Divider } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
+import { type History } from 'history';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  WithBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
+  useBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
+import type {
+  SalaryReceiptSalariesByIdsQuery,
+  SalaryReceiptSalariesByIdsQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 import SalaryReceipts from './salary-receipts';
 
-const PrintButton = Button as any;
-const AntDivider = Divider as any;
-const AntPrinterOutlined = PrinterOutlined as any;
-const PrintControl = ReactToPrint as any;
-const ReceiptsView = SalaryReceipts as any;
-interface HistoryLike { goBack(): void; }
-interface ContainerProps { history: HistoryLike; queryParams: { ids: string; }; }
-interface QueryData { salariesByIds?: unknown[]; }
-
-const SalaryReceiptsContainer = ({
-  history,
-  queryParams,
-}: ContainerProps) => {
-  const { data, loading: salariesLoading } = useQuery(salariesByIdsQuery as any, {
-    variables: { ids: queryParams.ids },
-  });
-  const salaryReceiptsRef = useRef<any>(null);
-  if (salariesLoading) return null;
-
-  return (
-    <>
-      <PrintControl
-        content={() => salaryReceiptsRef.current}
-        trigger={() => (
-          <PrintButton size="large" type="primary" icon={<AntPrinterOutlined />}>
-            Print Receipts
-          </PrintButton>
-        )}
-      />
-      &nbsp;
-      <PrintButton
-        size="large"
-        type="primary"
-        onClick={() => {
-          history.goBack();
-        }}
-      >
-        Back
-      </PrintButton>
-      <AntDivider />
-      <ReceiptsView
-        ref={salaryReceiptsRef}
-        salariesByIds={data ? (data as QueryData).salariesByIds : []}
-      />
-    </>
-  );
-};
-
-SalaryReceiptsContainer.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-  queryParams: PropTypes.object,
-};
-
-const salariesByIdsQuery = gql`
+const SALARY_RECEIPT_SALARIES_BY_IDS: TypedDocumentNode<
+  SalaryReceiptSalariesByIdsQuery,
+  SalaryReceiptSalariesByIdsQueryVariables
+> = gql`
   query salaryReceiptSalariesByIds($ids: String!) {
     salariesByIds(ids: $ids) {
       _id
@@ -102,7 +54,54 @@ const salariesByIdsQuery = gql`
   }
 `;
 
-export default flowRight(
-  WithQueryParams(),
-  WithBreadcrumbs(['HR', 'Salary Sheets', 'Salary Receipts'])
-)(SalaryReceiptsContainer as any);
+interface ContainerProps {
+  history: History;
+}
+
+const SalaryReceiptsContainer = ({ history }: ContainerProps) => {
+  const { queryParams } = useQueryParams({
+    history,
+    location: history.location,
+    paramNames: ['ids'],
+  });
+  useBreadcrumbs(['HR', 'Salary Sheets', 'Salary Receipts']);
+
+  const ids = queryParams.ids as string;
+  const { data, loading: salariesLoading } = useQuery(SALARY_RECEIPT_SALARIES_BY_IDS, {
+    variables: { ids },
+  });
+  const salaryReceiptsRef = useRef<any>(null);
+  if (salariesLoading) return null;
+
+  const salariesByIds = (data?.salariesByIds ?? []).filter(row => row != null);
+
+  return (
+    <>
+      <ReactToPrint
+        content={() => salaryReceiptsRef.current}
+        trigger={() => (
+          <Button size="large" type="primary" icon={<PrinterOutlined />}>
+            Print Receipts
+          </Button>
+        )}
+      />
+      &nbsp;
+      <Button
+        size="large"
+        type="primary"
+        onClick={() => {
+          history.goBack();
+        }}
+      >
+        Back
+      </Button>
+      <Divider />
+      <SalaryReceipts
+        ref={salaryReceiptsRef}
+        salariesByIds={salariesByIds}
+      />
+    </>
+  );
+};
+
+export default SalaryReceiptsContainer;

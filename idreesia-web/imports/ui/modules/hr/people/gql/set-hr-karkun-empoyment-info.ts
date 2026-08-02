@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  SetPeopleKarkunEmploymentInfoMutation,
+  SetPeopleKarkunEmploymentInfoMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const SET_HR_KARKUN_EMPLOYMENT_INFO = gql`
+const SET_HR_KARKUN_EMPLOYMENT_INFO: TypedDocumentNode<
+  SetPeopleKarkunEmploymentInfoMutation,
+  SetPeopleKarkunEmploymentInfoMutationVariables
+> = gql`
   mutation setPeopleKarkunEmploymentInfo(
     $_id: String!
     $isEmployee: Boolean!

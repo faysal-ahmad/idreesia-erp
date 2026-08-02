@@ -1,15 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
+
+const RouterLink = Link as any;
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import { Button, Table, Tooltip, message } from 'antd';
+import { type History } from 'history';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import type {
+  ListAllDutyLocationsQuery,
+  ListAllDutyLocationsQueryVariables,
+  RemoveDutyLocationMutation,
+  RemoveDutyLocationMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
+import { Button, Table, Tooltip, message } from 'antd';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
-const listQuery = gql`
+const LIST_ALL_DUTY_LOCATIONS: TypedDocumentNode<
+  ListAllDutyLocationsQuery,
+  ListAllDutyLocationsQueryVariables
+> = gql`
   query listAllDutyLocations {
     allDutyLocations {
       _id
@@ -19,35 +31,35 @@ const listQuery = gql`
   }
 `;
 
-const removeDutyLocationMutation = gql`
+const REMOVE_DUTY_LOCATION: TypedDocumentNode<
+  RemoveDutyLocationMutation,
+  RemoveDutyLocationMutationVariables
+> = gql`
   mutation removeDutyLocation($_id: String!) {
     removeDutyLocation(_id: $_id)
   }
 `;
 
-const RouterLink = Link as any;
-const AntButton = Button as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-interface HistoryLike { push(path: string): void; }
-interface ListProps { history: HistoryLike; }
-interface ListRecord { _id: string; name: string; description?: string; usedCount?: number; }
-interface ListData { allDutyLocations?: ListRecord[]; }
+interface ListProps {
+  history: History;
+}
+
+type DutyLocationRow = NonNullable<
+  NonNullable<ListAllDutyLocationsQuery['allDutyLocations']>[number]
+> & { _id: string; name: string };
 
 const List = ({ history }: ListProps) => {
-  const { data } = useQuery(listQuery as any);
-  const [removeDutyLocation] = useMutation(removeDutyLocationMutation as any, {
+  useBreadcrumbs(['HR', 'Duty Locations', 'List']);
+  const { data } = useQuery(LIST_ALL_DUTY_LOCATIONS);
+  const [removeDutyLocation] = useMutation(REMOVE_DUTY_LOCATION, {
     refetchQueries: ['allDutyLocations'],
   });
-  const { allDutyLocations = [] } = (data ?? {}) as ListData;
 
   const handleNewClicked = () => {
     history.push(paths.dutyLocationsNewFormPath);
   };
 
-  const handleDeleteClicked = (record: ListRecord) => {
+  const handleDeleteClicked = (record: DutyLocationRow) => {
     removeDutyLocation({
       variables: {
         _id: record._id,
@@ -62,23 +74,23 @@ const List = ({ history }: ListProps) => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, record: ListRecord) => (
+      render: (text: string, record: DutyLocationRow) => (
         <RouterLink to={`${paths.dutyLocationsPath}/${record._id}`}>{text}</RouterLink>
       ),
     },
     {
       key: 'action',
-      render: (_text: unknown, record: ListRecord) => {
+      render: (_text: unknown, record: DutyLocationRow) => {
         if (record.usedCount === 0) {
           return (
-            <AntTooltip title="Delete">
-              <AntDeleteOutlined
+            <Tooltip key="delete" title="Delete">
+              <DeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleDeleteClicked(record);
                 }}
               />
-            </AntTooltip>
+            </Tooltip>
           );
         }
         return null;
@@ -86,29 +98,29 @@ const List = ({ history }: ListProps) => {
     },
   ];
 
+  const allDutyLocations = (data?.allDutyLocations ?? []).filter(
+    (row): row is DutyLocationRow =>
+      row != null && row._id != null && row.name != null
+  );
+
   return (
-    <AntTable
+    <Table
       rowKey="_id"
       dataSource={allDutyLocations}
       columns={columns}
       pagination={{ defaultPageSize: 20 }}
       bordered
       title={() => (
-        <AntButton
+        <Button
           type="primary"
-          icon={<AntPlusCircleOutlined />}
+          icon={<PlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New Duty Location
-        </AntButton>
+        </Button>
       )}
     />
   );
 };
 
-List.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['HR', 'Duty Locations', 'List'])(List as any);
+export default List;

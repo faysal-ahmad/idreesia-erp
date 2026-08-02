@@ -136,7 +136,7 @@ Then every consumer just does `useQuery(HR_KARKUN_BY_ID, { variables: { _id } })
 
 **Where this hits hard:** typing the query for real makes its `QueryVariables` strict (e.g. `_id: string`, not `string | undefined`). Any consumer that was passing a possibly-`undefined`/`null` value straight through (because the untyped query never checked) becomes a genuine compile error — this is a feature, not a regression: it caught a real bug in `wazaif-and-raabta.tsx`, which was passing an optional `karkunId` straight into `_id` (see pattern #10 — the actual fix there was to make `karkunId` correctly required, not to paper over it with `?? ''`).
 
-**Status:** done for every constant under `hr/karkuns/gql/` and the HR common lookup hooks (`useAllJobs`, `useAllMSDuties`, `useAllDutyShifts`, `useAllDutyLocations`). Still needed everywhere else in the repo — apply the same `TypedDocumentNode` + `meteor/idreesia-common/types/client-operations` pattern when touching a module (see also pattern #13 for dropping the `AnyRecord`/`QueryData` casts that usually accompany untyped docs).
+**Status:** done for **all** of `ui/modules/hr/**/gql/` plus inline gql in `hr/jobs` and `hr/duty-locations`, and the HR common lookup hooks (`useAllJobs`, `useAllMSDuties`, `useAllDutyShifts`, `useAllDutyLocations`). Still needed outside `hr/`/`common/` — apply the same `TypedDocumentNode` + `meteor/idreesia-common/types/client-operations` pattern when touching a module (see also pattern #13).
 
 ### 10. Keep prop optionality honest — don't default a required value to `null`/`""` to dodge a type error
 
@@ -183,7 +183,7 @@ Plain style consts (`const ContainerStyle = { width: '500px' }`) often needed `s
 
 **Do not** reintroduce `AnyRecord` to silence a type error — fix the upstream type (pattern #9 / #10) or add a narrow cast at the true mismatch.
 
-**Status:** done for `hr/karkuns/edit` and all of `ui/modules/common`. Apply when sweeping the next module.
+**Status:** done for entire `ui/modules/hr` and all of `ui/modules/common`. Apply when sweeping the next top-level module (`security`, `admin`, `inventory`, …).
 
 ## Work log
 
@@ -250,22 +250,38 @@ Shared barrel at `idreesia-web/imports/ui/modules/common/` — cleaned end-to-en
 
 **Verified:** `cd idreesia-web && npx tsc --noEmit -p tsconfig.json` — zero errors under `modules/common/`; zero `AnyRecord` / `Record<string, any>` left in that tree.
 
+### `ui/modules/hr` (entire module — done)
+
+Applied patterns #1–#13 across all of `idreesia-web/imports/ui/modules/hr/` (not just edit screens).
+
+- [x] All `*/gql/*.ts` docs typed as `TypedDocumentNode` (karkuns, people, salary-sheets, attendance-sheets, ms-duties, audit-logs) importing from `meteor/idreesia-common/types/client-operations`
+- [x] Inline gql in `jobs/` and `duty-locations/` (and ms-duties list mutations) typed the same way
+- [x] `hr/people/**` — edit/list/new/field/scan-card/print cleaned (mirrors karkuns; breadcrumbs `['HR', 'People', …]`; people-specific ops: `HrKarkunByIdForPeopleQuery`, `PagedAttendanceByHrPersonQuery`, `SetPeopleKarkunEmploymentInfoMutation`, `HrPeoplePagedHrKarkunsQuery`)
+- [x] `hr/karkuns/**` beyond edit — list/new/field/scan-card/print cleaned
+- [x] `hr/salary-sheets/**`, `hr/attendance-sheets/**` (list + print), `hr/ms-duties/**`, `hr/jobs/**`, `hr/duty-locations/**`, `hr/audit-logs/**`
+- [x] `sidebar.tsx` → functional + `useActiveModule`; `router.tsx` keeps narrow `Switch`/`Route` `as any` aliases (react-router-dom JSX boundary)
+- [x] `hr/common/composers` HOC wrappers cleaned (hooks already TypedDocumentNode); PropTypes/`as any` removed
+- [x] Zero `PropTypes`, `AnyRecord`, `Record<string, any>`, or `flowRight` + breadcrumb/query-params composers left under `modules/hr/`
+
+**Legitimate remaining `as any` / loose typing under `hr/`:** `Link as RouterLink`, `ReactToPrint` / `Barcode` third-party, antd `columns as any`, attachment control vs nullable GraphQL lists, `useRef<any>` for print refs, `router` Switch/Route.
+
+**Verified:** `cd idreesia-web && npx tsc --noEmit -p tsconfig.json` — **zero errors** project-wide after this sweep (including all of `modules/hr/`).
+
 ### Other use-cases (not started)
 
 Apply the same treatment (patterns #1–#13) when we get to these:
 
-- `hr/people/edit`
-- `security/security-users/edit`
+- `security/security-users/edit` (and rest of `modules/security`)
 - `security/visitor-registeration/edit`
-- `admin/cities/edit`, `admin/user-groups/edit`, `admin/users/edit`
-- `inventory/*/edit` modules
+- `admin/cities/edit`, `admin/user-groups/edit`, `admin/users/edit` (and rest of `modules/admin`)
+- `inventory/*/edit` modules (and rest of `modules/inventory`)
 - Any other module using `flowRight` + composers, `PropTypes`, or `as any` gql casts
 
-**RESUME POINT:** `ui/modules/common` (alias/PropTypes sweep) and `hr/karkuns/edit` (including AnyRecord removal + relocated codegen types) are done. Next consumer module: `hr/people/edit`, etc.
+**RESUME POINT:** entire `ui/modules/hr` and `ui/modules/common` are done. Next: `ui/modules/security` (or admin/inventory).
 
 ### Codebase-wide follow-ups
 
-- [ ] Sweep for other `X as any` casts on `useQuery`/`useMutation` document arguments now that the `graphql` dedupe fix applies repo-wide, and remove where `tsc --noEmit` confirms they're dead weight
+- [ ] Sweep for other `X as any` casts on `useQuery`/`useMutation` document arguments outside `hr/`/`common/` now that the `graphql` dedupe fix applies repo-wide
 - [ ] Create a `useDynamicBreadcrumbs` hook (mirroring `useBreadcrumbs`) if/when a module using `WithDynamicBreadcrumbs` gets this treatment
 
 ## How to verify a fix

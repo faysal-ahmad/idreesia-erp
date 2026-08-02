@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  PagedSalariesByKarkunQuery,
+  PagedSalariesByKarkunQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const PAGED_SALARIES_BY_KARKUN = gql`
+const PAGED_SALARIES_BY_KARKUN: TypedDocumentNode<
+  PagedSalariesByKarkunQuery,
+  PagedSalariesByKarkunQueryVariables
+> = gql`
   query pagedSalariesByKarkun($queryString: String) {
     pagedSalariesByKarkun(queryString: $queryString) {
       totalResults

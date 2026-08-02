@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client/react';
 import {
@@ -23,100 +22,113 @@ import {
 } from 'antd';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
+import type { HrPeoplePagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
-import ListFilter from './list-filter';
+import ListFilter, { type PageParams } from './list-filter';
 
 import { PAGED_HR_KARKUNS, DELETE_HR_KARKUN } from '../gql';
 
 const RouterLink = Link as any;
-const AntAuditOutlined = AuditOutlined as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntDownloadOutlined = DownloadOutlined as any;
-const AntPrinterOutlined = PrinterOutlined as any;
-const AntSettingOutlined = SettingOutlined as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-const AntBarcodeOutlined = BarcodeOutlined as any;
-const AntButton = Button as any;
-const AntDropdown = Dropdown as any;
-const AntPagination = Pagination as any;
-const AntPopconfirm = Popconfirm as any;
-const AntRow = Row as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const KarkunNameControl = KarkunName as any;
-const KarkunListFilter = ListFilter as any;
-type AnyRecord = Record<string, any>;
-interface PagedKarkuns { totalResults: number; karkuns: AnyRecord[]; }
-interface QueryData { pagedHrKarkuns?: PagedKarkuns | null; }
-interface Props extends Record<string, any> { pageIndex: number; pageSize: number; setPageParams(params: AnyRecord): void; handleItemSelected?(record: AnyRecord): void; handlePrintClicked?(record: AnyRecord): void; handleAuditLogClicked?(record: AnyRecord): void; handleNewClicked?(): void; handleScanClicked?(): void; handlePrintSelected?(records: AnyRecord[]): void; }
 
-const ContactNumberSubscribed = {
+type HrKarkunRow = NonNullable<
+  NonNullable<
+    NonNullable<HrPeoplePagedHrKarkunsQuery['pagedHrKarkuns']>['karkuns']
+  >[number]
+>;
+
+interface Props {
+  pageIndex: number;
+  pageSize: number;
+  name?: string;
+  cnicNumber?: string;
+  phoneNumber?: string;
+  bloodGroup?: string;
+  lastTarteeb?: string;
+  jobId?: string;
+  dutyId?: string;
+  dutyShiftId?: string;
+  showVolunteers?: string;
+  showEmployees?: string;
+  setPageParams(params: PageParams): void;
+  handleItemSelected?(record: HrKarkunRow): void;
+  handlePrintClicked?(record: HrKarkunRow): void;
+  handleAuditLogClicked?(record: HrKarkunRow): void;
+  handleNewClicked?(): void;
+  handleScanClicked?(): void;
+  handlePrintSelected?(records: HrKarkunRow[]): void;
+  showNewButton?: boolean;
+  showDownloadButton?: boolean;
+  showSelectionColumn?: boolean;
+  showPhoneNumbersColumn?: boolean;
+  showDutiesColumn?: boolean;
+  showActionsColumn?: boolean;
+  predefinedFilterName?: string;
+}
+
+const ContactNumberSubscribed: CSSProperties = {
   color: 'green',
 };
 
-const ContactNumberNotSubscribed = {
+const ContactNumberNotSubscribed: CSSProperties = {
   color: 'red',
 };
 
-const List = (props: Props) => {
-  const {
-    pageIndex,
-    pageSize,
-    name,
-    cnicNumber,
-    phoneNumber,
-    bloodGroup,
-    lastTarteeb,
-    jobId,
-    dutyId,
-    dutyShiftId,
-    showVolunteers,
-    showEmployees,
-    setPageParams,
-    handleItemSelected,
-    showNewButton,
-    showDownloadButton,
-    showSelectionColumn,
-    showPhoneNumbersColumn,
-    showDutiesColumn,
-    showActionsColumn,
-    predefinedFilterName,
-    handlePrintClicked,
-    handleAuditLogClicked,
-    handleNewClicked,
-    handleScanClicked,
-    handlePrintSelected,
-  } = props;
-
-  const [selectedRows, setSelectedRows] = useState<AnyRecord[]>([]);
-  const { data = {}, loading, refetch: refetchListQuery } = useQuery(
-    PAGED_HR_KARKUNS as any,
-    {
-      variables: {
-        filter: {
-          name,
-          cnicNumber,
-          phoneNumber,
-          bloodGroup,
-          lastTarteeb,
-          jobId,
-          dutyId,
-          dutyShiftId,
-          showVolunteers,
-          showEmployees,
-          predefinedFilterName,
-          pageIndex: pageIndex.toString(),
-          pageSize: pageSize.toString(),
-        },
+const List = ({
+  pageIndex,
+  pageSize,
+  name,
+  cnicNumber,
+  phoneNumber,
+  bloodGroup,
+  lastTarteeb,
+  jobId,
+  dutyId,
+  dutyShiftId,
+  showVolunteers,
+  showEmployees,
+  setPageParams,
+  handleItemSelected = noop,
+  handleNewClicked = noop,
+  handleScanClicked = noop,
+  handlePrintClicked = noop,
+  handleAuditLogClicked,
+  handlePrintSelected,
+  showNewButton,
+  showDownloadButton,
+  showSelectionColumn,
+  showPhoneNumbersColumn,
+  showDutiesColumn,
+  showActionsColumn,
+  predefinedFilterName,
+}: Props) => {
+  const [selectedRows, setSelectedRows] = useState<HrKarkunRow[]>([]);
+  const { data, loading, refetch: refetchListQuery } = useQuery(PAGED_HR_KARKUNS, {
+    variables: {
+      filter: {
+        name,
+        cnicNumber,
+        phoneNumber,
+        bloodGroup,
+        lastTarteeb,
+        jobId,
+        dutyId,
+        dutyShiftId,
+        showVolunteers,
+        showEmployees,
+        predefinedFilterName,
+        pageIndex: pageIndex.toString(),
+        pageSize: pageSize.toString(),
       },
-    }
-  );
-  const [deleteHrKarkun] = useMutation(DELETE_HR_KARKUN as any, {
+    },
+  });
+  const [deleteHrKarkun] = useMutation(DELETE_HR_KARKUN, {
     refetchQueries: ['pagedHrKarkuns'],
   });
 
-  const handleDeleteClicked = (record: AnyRecord) => {
+  const handleDeleteClicked = (record: HrKarkunRow) => {
+    if (!record._id) return;
+
     deleteHrKarkun({
       variables: {
         _id: record._id,
@@ -130,12 +142,20 @@ const List = (props: Props) => {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (_text: unknown, record: AnyRecord) => (
-      <KarkunNameControl
-        karkun={record}
-        onKarkunNameClicked={handleItemSelected ?? noop}
-      />
-    ),
+    render: (_text: unknown, record: HrKarkunRow) => {
+      if (!record._id || !record.name) return null;
+
+      return (
+        <KarkunName
+          karkun={{
+            _id: record._id,
+            name: record.name,
+            imageId: record.imageId ?? undefined,
+          }}
+          onKarkunNameClicked={() => handleItemSelected(record)}
+        />
+      );
+    },
   };
 
   const cnicColumn = {
@@ -147,9 +167,9 @@ const List = (props: Props) => {
   const phoneNumberColumn = {
     title: 'Contact Number',
     key: 'contactNumber',
-    render: (_text: unknown, record: AnyRecord) => {
+    render: (_text: unknown, record: HrKarkunRow) => {
       const numbers: React.ReactNode[] = [];
-      let style: Record<string, string> = {};
+      let style: CSSProperties = {};
       if (record.contactNumber1) {
         if (record.contactNumber1Subscribed === true) {
           style = ContactNumberSubscribed;
@@ -158,9 +178,9 @@ const List = (props: Props) => {
         }
 
         numbers.push(
-          <AntRow key="1">
-            <span style={style as any}>{record.contactNumber1}</span>
-          </AntRow>
+          <Row key="1">
+            <span style={style}>{record.contactNumber1}</span>
+          </Row>
         );
       }
 
@@ -173,9 +193,9 @@ const List = (props: Props) => {
         }
 
         numbers.push(
-          <AntRow key="2">
-            <span style={style as any}>{record.contactNumber2}</span>
-          </AntRow>
+          <Row key="2">
+            <span style={style}>{record.contactNumber2}</span>
+          </Row>
         );
       }
 
@@ -188,29 +208,34 @@ const List = (props: Props) => {
     title: 'Job / Duties',
     dataIndex: 'duties',
     key: 'duties',
-    render: (duties: AnyRecord[] | undefined, record: AnyRecord) => {
-      const normalizedDuties = duties ?? [];
+    render: (
+      duties: HrKarkunRow['duties'],
+      record: HrKarkunRow
+    ) => {
+      const normalizedDuties = (duties ?? []).filter(
+        (duty): duty is NonNullable<typeof duty> => duty != null
+      );
       let jobName: React.ReactNode[] = [];
       let dutyNames: React.ReactNode[] = [];
 
-      if (record.job) {
+      if (record.job?.name && record._id) {
         const jobTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=7`;
         jobName = [<RouterLink to={jobTabLink}>{record.job.name}</RouterLink>];
       }
 
-      if (normalizedDuties.length > 0) {
+      if (normalizedDuties.length > 0 && record._id) {
         const dutyTabLink = `${paths.karkunsPath}/${record._id}?default-active-tab=4`;
-        dutyNames = normalizedDuties.map((duty: AnyRecord) => {
-          let dutyName = duty.dutyName;
+        dutyNames = normalizedDuties.map((duty, index) => {
+          let dutyName = duty.dutyName ?? '';
           if (duty.shiftName) {
-            dutyName = `${duty.dutyName} - ${duty.shiftName}`;
+            dutyName = `${dutyName} - ${duty.shiftName}`;
           }
 
           if (duty.role === 'CO') {
             dutyName = `(CO) - ${dutyName}`;
           }
 
-          return <RouterLink to={dutyTabLink}>{dutyName}</RouterLink>;
+          return <RouterLink key={index} to={dutyTabLink}>{dutyName}</RouterLink>;
         });
       }
 
@@ -223,7 +248,7 @@ const List = (props: Props) => {
       return (
         <>
           {links.map((link, index) => (
-            <AntRow key={index}>{link}</AntRow>
+            <Row key={index}>{link}</Row>
           ))}
         </>
       );
@@ -232,25 +257,25 @@ const List = (props: Props) => {
 
   const actionsColumn = {
     key: 'action',
-    render: (_text: unknown, record: AnyRecord) => (
+    render: (_text: unknown, record: HrKarkunRow) => (
       <div className="list-actions-column">
-        <AntTooltip title="Print">
-          <AntPrinterOutlined
+        <Tooltip title="Print">
+          <PrinterOutlined
             className="list-actions-icon"
             onClick={() => {
-              handlePrintClicked?.(record);
+              handlePrintClicked(record);
             }}
           />
-        </AntTooltip>
-        <AntTooltip title="Audit Log">
-          <AntAuditOutlined
+        </Tooltip>
+        <Tooltip title="Audit Log">
+          <AuditOutlined
             className="list-actions-icon"
             onClick={() => {
               handleAuditLogClicked?.(record);
             }}
           />
-        </AntTooltip>
-        <AntPopconfirm
+        </Tooltip>
+        <Popconfirm
           title="Are you sure you want to delete this karkun?"
           onConfirm={() => {
             handleDeleteClicked(record);
@@ -258,10 +283,10 @@ const List = (props: Props) => {
           okText="Yes"
           cancelText="No"
         >
-          <AntTooltip title="Delete">
-            <AntDeleteOutlined className="list-actions-icon" />
-          </AntTooltip>
-        </AntPopconfirm>
+          <Tooltip title="Delete">
+            <DeleteOutlined className="list-actions-icon" />
+          </Tooltip>
+        </Popconfirm>
       </div>
     ),
   };
@@ -285,29 +310,31 @@ const List = (props: Props) => {
   };
 
   const rowSelection = {
-    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
-      setSelectedRows(selectedRows);
+    onChange: (_selectedRowKeys: React.Key[], rows: HrKarkunRow[]) => {
+      setSelectedRows(rows);
     },
   };
 
-  const onChange = (pageIndex: number, pageSize?: number) => {
+  const onChange = (nextPageIndex: number, nextPageSize?: number) => {
     setPageParams({
-      pageIndex: pageIndex - 1,
-      pageSize: pageSize ?? 20,
+      pageIndex: nextPageIndex - 1,
+      pageSize: nextPageSize ?? 20,
     });
   };
 
-  const onShowSizeChange = (pageIndex: number, pageSize?: number) => {
+  const onShowSizeChange = (nextPageIndex: number, nextPageSize?: number) => {
     setPageParams({
-      pageIndex: pageIndex - 1,
-      pageSize: pageSize ?? 20,
+      pageIndex: nextPageIndex - 1,
+      pageSize: nextPageSize ?? 20,
     });
   };
 
   const handleExportSelected = () => {
     if (selectedRows.length === 0) return;
 
-    const reportArgs = selectedRows.map((row: AnyRecord) => row._id);
+    const reportArgs = selectedRows
+      .map(row => row._id)
+      .filter((id): id is string => Boolean(id));
     const url = `${
       window.location.origin
     }/generate-report?reportName=Karkuns&reportArgs=${reportArgs.join(',')}`;
@@ -327,18 +354,18 @@ const List = (props: Props) => {
         key: '1',
         label: (
           <>
-            <AntPrinterOutlined />&nbsp;
+            <PrinterOutlined />&nbsp;
             Print Selected
           </>
         ),
         onClick: onPrintSelected,
       },
-      { type: 'divider' },
+      { type: 'divider' as const },
       {
         key: '2',
         label: (
           <>
-            <AntDownloadOutlined />&nbsp;
+            <DownloadOutlined />&nbsp;
             Download Selected
           </>
         ),
@@ -347,9 +374,9 @@ const List = (props: Props) => {
     ];
 
     return (
-      <AntDropdown menu={{ items: menuItems }}>
-        <AntButton icon={<AntSettingOutlined />} size="large" />
-      </AntDropdown>
+      <Dropdown menu={{ items: menuItems }}>
+        <Button icon={<SettingOutlined />} size="large" />
+      </Dropdown>
     );
   };
 
@@ -358,23 +385,23 @@ const List = (props: Props) => {
     if (showNewButton) {
       newButton = (
         <div>
-          <AntButton
+          <Button
             size="large"
             type="primary"
-            icon={<AntPlusCircleOutlined />}
+            icon={<PlusCircleOutlined />}
             onClick={handleNewClicked}
           >
             New Karkun
-          </AntButton>
+          </Button>
           &nbsp;
-          <AntButton
+          <Button
             size="large"
-            type="secondary"
-            icon={<AntBarcodeOutlined />}
+            type="default"
+            icon={<BarcodeOutlined />}
             onClick={handleScanClicked}
           >
             Scan Card
-          </AntButton>
+          </Button>
         </div>
       );
     }
@@ -382,7 +409,7 @@ const List = (props: Props) => {
     let listFilter = null;
     if (!predefinedFilterName) {
       listFilter = (
-        <KarkunListFilter
+        <ListFilter
           name={name}
           cnicNumber={cnicNumber}
           phoneNumber={phoneNumber}
@@ -412,15 +439,18 @@ const List = (props: Props) => {
     );
   };
 
-  if (loading || !(data as QueryData).pagedHrKarkuns) return null;
+  if (loading || !data?.pagedHrKarkuns) return null;
 
-  const { totalResults, karkuns } = (data as QueryData).pagedHrKarkuns ?? { totalResults: 0, karkuns: [] };
+  const { totalResults, karkuns: rawKarkuns } = data.pagedHrKarkuns;
+  const karkuns = (rawKarkuns ?? []).filter(
+    (row): row is HrKarkunRow => row != null
+  );
 
   const numPageIndex = pageIndex ? pageIndex + 1 : 1;
   const numPageSize = pageSize || 20;
 
   return (
-    <AntTable
+    <Table
       rowKey="_id"
       dataSource={karkuns}
       columns={getColumns() as any}
@@ -430,7 +460,7 @@ const List = (props: Props) => {
       size="small"
       pagination={false}
       footer={() => (
-        <AntPagination
+        <Pagination
           current={numPageIndex}
           pageSize={numPageSize}
           showSizeChanger
@@ -439,47 +469,11 @@ const List = (props: Props) => {
           }
           onChange={onChange}
           onShowSizeChange={onShowSizeChange}
-          total={totalResults}
+          total={totalResults ?? 0}
         />
       )}
     />
   );
-};
-
-List.propTypes = {
-  pageIndex: PropTypes.number,
-  pageSize: PropTypes.number,
-  name: PropTypes.string,
-  cnicNumber: PropTypes.string,
-  phoneNumber: PropTypes.string,
-  bloodGroup: PropTypes.string,
-  lastTarteeb: PropTypes.string,
-  jobId: PropTypes.string,
-  dutyId: PropTypes.string,
-  dutyShiftId: PropTypes.string,
-  showVolunteers: PropTypes.string,
-  showEmployees: PropTypes.string,
-  setPageParams: PropTypes.func,
-  handleItemSelected: PropTypes.func,
-  showNewButton: PropTypes.bool,
-  showDownloadButton: PropTypes.bool,
-  showSelectionColumn: PropTypes.bool,
-  showPhoneNumbersColumn: PropTypes.bool,
-  showDutiesColumn: PropTypes.bool,
-  showActionsColumn: PropTypes.bool,
-  predefinedFilterName: PropTypes.string,
-  handlePrintClicked: PropTypes.func,
-  handleAuditLogClicked: PropTypes.func,
-  handleNewClicked: PropTypes.func,
-  handleScanClicked: PropTypes.func,
-  handlePrintSelected: PropTypes.func,
-};
-
-List.defaultProps = {
-  handleItemSelected: noop,
-  handleNewClicked: noop,
-  handleScanClicked: noop,
-  handlePrintClicked: noop,
 };
 
 export default List;

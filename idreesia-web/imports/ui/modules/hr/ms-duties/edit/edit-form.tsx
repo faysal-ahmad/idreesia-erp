@@ -1,43 +1,33 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { type RouteComponentProps } from 'react-router';
 
-import { get, flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  WithBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
+  useBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
 import { Tabs } from 'antd';
 import GeneralInfo from './general-info';
 import DutyShifts from './duty-shifts';
 
-const AntTabs = Tabs as any;
-const TabPane = (Tabs as any).TabPane;
-type AnyProps = Record<string, any>;
+const TabPane = Tabs.TabPane;
+type Props = RouteComponentProps<{ dutyId: string }>;
 
-const EditForm = (props: AnyProps) => {
-  const { match, queryParams } = props;
-  const dutyId = get(match, 'params.dutyId', null) as string | null;
-  const activeKey = (queryParams?.['default-active-tab'] as string | undefined) || '1';
+const EditForm = ({ match, location, history }: Props) => {
+  const dutyId = match.params.dutyId;
+  const { queryParams } = useQueryParams({ history, location });
+  useBreadcrumbs(['HR', 'Duties & Shifts', 'Edit']);
+  const activeKey = (queryParams['default-active-tab'] as string) || '1';
+
   return (
-    <AntTabs defaultActiveKey={activeKey}>
+    <Tabs defaultActiveKey={activeKey}>
       <TabPane tab="General Info" key="1">
-        <GeneralInfo dutyId={dutyId} {...props} />
+        <GeneralInfo dutyId={dutyId} history={history} />
       </TabPane>
       <TabPane tab="Shifts" key="2">
-        <DutyShifts dutyId={dutyId} {...props} />
+        <DutyShifts dutyId={dutyId} />
       </TabPane>
-    </AntTabs>
+    </Tabs>
   );
 };
 
-EditForm.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-  queryParams: PropTypes.object,
-};
-
-export default flowRight(
-  WithQueryParams(),
-  WithBreadcrumbs(['HR', 'Duties & Shifts', 'Edit'])
-)(EditForm as any);
+export default EditForm;

@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  CurrentMonthSalariesQuery,
+  CurrentMonthSalariesQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const CURRENT_MONTH_SALARIES = gql`
+const CURRENT_MONTH_SALARIES: TypedDocumentNode<
+  CurrentMonthSalariesQuery,
+  CurrentMonthSalariesQueryVariables
+> = gql`
   query currentMonthSalaries($month: String!, $jobId: String) {
     salariesByMonth(month: $month, jobId: $jobId) {
       _id

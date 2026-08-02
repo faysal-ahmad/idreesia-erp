@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/client/react';
 import { Link } from 'react-router-dom';
+
+const RouterLink = Link as any;
+import { type Location } from 'history';
+import { type History } from 'history';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
@@ -11,6 +14,7 @@ import {
   EntityType,
   OperationTypeDisplayName,
 } from 'meteor/idreesia-common/constants/audit';
+import type { PagedHrAuditLogsQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import { AuditLogsList, AuditLogsListFilter } from '/imports/ui/modules/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
@@ -21,54 +25,70 @@ const EntityTypeDisplayNames = {
   [EntityType.KARKUN]: 'Karkun',
 };
 
-const RouterLink = Link as any;
-const CommonAuditLogsList = AuditLogsList as any;
-const CommonAuditLogsListFilter = AuditLogsListFilter as any;
-interface HistoryLike { push(path: string): void; }
-interface LocationLike { search: string; pathname: string; }
-interface ListProps { history: HistoryLike; location: LocationLike; }
-interface QueryParams { entityId?: string; pageIndex?: string | number; pageSize?: string | number; [key: string]: unknown; }
-interface AuditLog { entityId: string; entityType: string; operationType: string; }
-interface PagedAuditLogs { data: AuditLog[]; totalResults: number; }
-interface QueryData { pagedHrAuditLogs?: PagedAuditLogs; }
+type AuditLogRow = NonNullable<
+  NonNullable<NonNullable<PagedHrAuditLogsQuery['pagedHrAuditLogs']>['data']>[number]
+>;
+
+interface ListProps {
+  history: History;
+  location: Location;
+}
 
 const List = ({ history, location }: ListProps) => {
-  const dispatch = useDispatch<any>();
+  const dispatch = useDispatch();
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
     paramNames: ['entityId', 'pageIndex', 'pageSize'],
   });
 
-  const { data, refetch } = useQuery(PAGED_HR_AUDIT_LOGS as any, {
+  const { data, refetch } = useQuery(PAGED_HR_AUDIT_LOGS, {
     variables: { filter: queryParams },
   });
 
   useEffect(() => {
     dispatch(setBreadcrumbs(['HR', 'Audit Logs', 'List']));
-  }, [location]);
+  }, [dispatch, location]);
 
-  const { entityId, pageIndex, pageSize } = queryParams as QueryParams;
+  const { entityId, pageIndex, pageSize } = queryParams;
+
+  const handleFilterPageParams = (params: {
+    pageIndex: number;
+    entityId?: string | null;
+    dataSource?: string | null;
+  }) => {
+    setPageParams({
+      entityId: params.entityId ?? '',
+      pageIndex: params.pageIndex,
+    });
+  };
+
+  const handleTablePageParams = (params: { pageIndex: number; pageSize?: number }) => {
+    setPageParams({
+      pageIndex: params.pageIndex,
+      pageSize: params.pageSize,
+    });
+  };
 
   const getTableHeader = () => (
     <div className="list-table-header">
       <div />
       <div className="list-table-header-section">
-        <CommonAuditLogsListFilter
-          entityId={entityId}
-          setPageParams={setPageParams}
+        <AuditLogsListFilter
+          entityId={entityId as string | undefined}
+          setPageParams={handleFilterPageParams}
           refreshData={refetch}
         />
       </div>
     </div>
   );
 
-  const getAuditLogEntityRenderer = (auditLog: AuditLog) => {
+  const getAuditLogEntityRenderer = (auditLog: AuditLogRow) => {
     const { entityId: _entityId, entityType, operationType } = auditLog;
-    if (entityType === EntityType.KARKUN) {
+    if (entityType === EntityType.KARKUN && _entityId) {
       return (
         <RouterLink to={paths.karkunsEditFormPath(_entityId)}>
-          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayName[operationType]}]`}
+          {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayName[operationType ?? '']}]`}
         </RouterLink>
       );
     }
@@ -76,32 +96,28 @@ const List = ({ history, location }: ListProps) => {
     return _entityId;
   };
 
-  const pagedHrAuditLogs = data
-    ? (data as QueryData).pagedHrAuditLogs
-    : {
-        data: [],
-        totalResults: 0,
-      };
+  const pagedHrAuditLogs = data?.pagedHrAuditLogs ?? {
+    data: [],
+    totalResults: 0,
+  };
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
   return (
-    <>
-      <CommonAuditLogsList
-        entityRenderer={getAuditLogEntityRenderer}
-        listHeader={getTableHeader}
-        setPageParams={setPageParams}
-        pageIndex={numPageIndex}
-        pageSize={numPageSize}
-        pagedData={pagedHrAuditLogs}
-      />
-    </>
+    <AuditLogsList
+      entityRenderer={getAuditLogEntityRenderer}
+      listHeader={getTableHeader}
+      setPageParams={handleTablePageParams}
+      pageIndex={numPageIndex}
+      pageSize={numPageSize}
+      pagedData={{
+        data: (pagedHrAuditLogs.data ?? []).filter(
+          (row): row is AuditLogRow => row != null && row.entityId != null
+        ),
+        totalResults: pagedHrAuditLogs.totalResults ?? 0,
+      }}
+    />
   );
-};
-
-List.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
 };
 
 export default List;

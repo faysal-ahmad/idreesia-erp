@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  UpdateSalaryMutation,
+  UpdateSalaryMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const UPDATE_SALARY = gql`
+const UPDATE_SALARY: TypedDocumentNode<
+  UpdateSalaryMutation,
+  UpdateSalaryMutationVariables
+> = gql`
   mutation updateSalary(
     $_id: String!
     $salary: Int

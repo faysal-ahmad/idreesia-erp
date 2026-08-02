@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { type CSSProperties } from 'react';
+import { type History } from 'history';
 import {
   AuditOutlined,
   DollarOutlined,
@@ -12,97 +12,84 @@ import {
   ToolOutlined,
 } from '@ant-design/icons';
 
-import { WithActiveModule } from 'meteor/idreesia-common/composers/common';
+import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
 import { Menu } from 'antd';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
 
-const AntMenu = Menu as any;
-const AntAuditOutlined = AuditOutlined as any;
-const AntDollarOutlined = DollarOutlined as any;
-const AntEnvironmentOutlined = EnvironmentOutlined as any;
-const AntLaptopOutlined = LaptopOutlined as any;
-const AntSolutionOutlined = SolutionOutlined as any;
-const AntTagOutlined = TagOutlined as any;
-const AntTagsOutlined = TagsOutlined as any;
-const AntTeamOutlined = TeamOutlined as any;
-const AntToolOutlined = ToolOutlined as any;
-interface HistoryLike { push(path: string): void; }
-interface SidebarProps { history: HistoryLike; activeModuleName?: string; activeSubModuleName?: string; setActiveSubModuleName(name: string): void; }
-interface MenuSelectInfo { key: string; }
-
-const IconStyle = {
+const IconStyle: CSSProperties = {
   fontSize: '20px',
 };
 
 const menuItems = [
   {
     key: 'people',
-    icon: <AntTeamOutlined style={IconStyle} />,
+    icon: <TeamOutlined style={IconStyle} />,
     label: 'People',
   },
   {
     key: 'karkuns',
-    icon: <AntTeamOutlined style={IconStyle} />,
+    icon: <TeamOutlined style={IconStyle} />,
     label: 'Karkuns',
   },
   {
     key: 'salary-sheets',
-    icon: <AntDollarOutlined style={IconStyle} />,
+    icon: <DollarOutlined style={IconStyle} />,
     label: 'Salary Sheets',
   },
   {
     key: 'attendance-sheets',
-    icon: <AntSolutionOutlined style={IconStyle} />,
+    icon: <SolutionOutlined style={IconStyle} />,
     label: 'Attendance Sheets',
   },
   {
     key: 'setup',
-    icon: <AntLaptopOutlined style={IconStyle} />,
+    icon: <LaptopOutlined style={IconStyle} />,
     label: 'Setup',
     children: [
       {
         key: 'jobs',
-        icon: <AntTagOutlined style={IconStyle} />,
+        icon: <TagOutlined style={IconStyle} />,
         label: 'Jobs',
       },
       {
         key: 'ms-duties',
-        icon: <AntTagsOutlined style={IconStyle} />,
+        icon: <TagsOutlined style={IconStyle} />,
         label: 'Duties & Shifts',
       },
       {
         key: 'duty-locations',
-        icon: <AntEnvironmentOutlined style={IconStyle} />,
+        icon: <EnvironmentOutlined style={IconStyle} />,
         label: 'Duty Locations',
       },
     ],
   },
   {
     key: 'administration',
-    icon: <AntToolOutlined style={IconStyle} />,
+    icon: <ToolOutlined style={IconStyle} />,
     label: 'Administration',
     children: [
       {
         key: 'audit-logs',
-        icon: <AntAuditOutlined style={IconStyle} />,
+        icon: <AuditOutlined style={IconStyle} />,
         label: 'Audit Logs',
       },
     ],
   },
 ];
 
-class Sidebar extends Component<SidebarProps> {
-  static propTypes = {
-    history: PropTypes.object,
-    activeModuleName: PropTypes.string,
-    activeSubModuleName: PropTypes.string,
-    setActiveSubModuleName: PropTypes.func,
-  };
+interface SidebarProps {
+  history: History;
+}
 
-  handleMenuItemSelected = ({ key }: MenuSelectInfo) => {
-    const { history, setActiveSubModuleName } = this.props;
+interface MenuSelectInfo {
+  key: string;
+}
 
+const Sidebar = ({ history }: SidebarProps) => {
+  const { setActiveSubModuleName } = useActiveModule();
+
+  const handleMenuItemSelected = ({ key }: MenuSelectInfo) => {
     switch (key) {
       case 'jobs':
         setActiveSubModuleName(SubModuleNames.jobs);
@@ -149,17 +136,14 @@ class Sidebar extends Component<SidebarProps> {
     }
   };
 
-  render() {
-    return (
-      <AntMenu
-        mode="inline"
-        style={{ height: '100%', borderRight: 0 }}
-        onClick={this.handleMenuItemSelected}
-        items={menuItems}
-      />
-    );
-  }
-}
+  return (
+    <Menu
+      mode="inline"
+      style={{ height: '100%', borderRight: 0 }}
+      onClick={handleMenuItemSelected}
+      items={menuItems}
+    />
+  );
+};
 
-const SidebarContainer = WithActiveModule()(Sidebar as any);
-export default SidebarContainer;
+export default Sidebar;

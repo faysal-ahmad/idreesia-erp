@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  AttendanceByBarcodeIdsQuery,
+  AttendanceByBarcodeIdsQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const ATTENDANCE_BY_BARCODE_IDS = gql`
+const ATTENDANCE_BY_BARCODE_IDS: TypedDocumentNode<
+  AttendanceByBarcodeIdsQuery,
+  AttendanceByBarcodeIdsQueryVariables
+> = gql`
   query attendanceByBarcodeIds($barcodeIds: String!) {
     attendanceByBarcodeIds(barcodeIds: $barcodeIds) {
       _id

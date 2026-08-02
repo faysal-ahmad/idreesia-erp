@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  AttendanceByMonthQuery,
+  AttendanceByMonthQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const ATTENDANCE_BY_MONTH = gql`
+const ATTENDANCE_BY_MONTH: TypedDocumentNode<
+  AttendanceByMonthQuery,
+  AttendanceByMonthQueryVariables
+> = gql`
   query attendanceByMonth(
     $month: String!
     $categoryId: String

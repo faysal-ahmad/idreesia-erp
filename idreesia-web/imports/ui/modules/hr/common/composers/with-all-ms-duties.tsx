@@ -1,5 +1,4 @@
 import React, { ComponentType } from 'react';
-import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
@@ -7,8 +6,6 @@ import type {
   ComposerAllMsDutiesQuery,
   ComposerAllMsDutiesQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-
-type AnyProps = Record<string, any>;
 
 const ALL_MS_DUTIES_QUERY: TypedDocumentNode<
   ComposerAllMsDutiesQuery,
@@ -33,16 +30,14 @@ export const useAllMSDuties = () => {
   };
 };
 
-export default () => (WrappedComponent: ComponentType<AnyProps>) => {
-  const WithAllMSDuties = (props: AnyProps) => {
-    const allMSDutiesProps = useAllMSDuties();
-    return React.createElement(WrappedComponent as any, { ...props, ...allMSDutiesProps} as any);
-  };
+type InjectedProps = ReturnType<typeof useAllMSDuties>;
 
-  WithAllMSDuties.propTypes = {
-    allMSDutiesLoading: PropTypes.bool,
-    allMSDuties: PropTypes.array,
-  };
+export default <P extends object>() =>
+  (WrappedComponent: ComponentType<P & InjectedProps>) => {
+    const WithAllMSDuties = (props: P) => {
+      const allMSDutiesProps = useAllMSDuties();
+      return <WrappedComponent {...props} {...allMSDutiesProps} />;
+    };
 
-  return WithAllMSDuties;
-};
+    return WithAllMSDuties;
+  };

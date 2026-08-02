@@ -1,18 +1,18 @@
-import React, { useRef, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useRef, useState, type CSSProperties } from 'react';
+import { type RouteComponentProps } from 'react-router';
 import { useQuery } from '@apollo/client/react';
 import ReactToPrint from 'react-to-print';
 import { Button, Checkbox, Divider } from 'antd';
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { PrinterOutlined } from '@ant-design/icons';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 
 import { HR_KARKUN_BY_ID } from '../../gql';
 import { DetailedForm } from './detailed-form';
 import { NonDetailedForm } from './non-detailed-form';
 
-const ControlsContainer = {
+const ControlsContainer: CSSProperties = {
   display: 'flex',
   flexFlow: 'row wrap',
   justifyContent: 'space-between',
@@ -20,48 +20,40 @@ const ControlsContainer = {
 };
 
 const ReactToPrintControl = ReactToPrint as any;
-const AntButton = Button as any;
-const AntCheckbox = Checkbox as any;
-const AntDivider = Divider as any;
-const AntPrinterOutlined = PrinterOutlined as any;
-const DetailedKarkunForm = DetailedForm as any;
-const NonDetailedKarkunForm = NonDetailedForm as any;
-type AnyRecord = Record<string, any>;
-interface HistoryLike { goBack(): void; }
-interface MatchLike { params: { karkunId: string; }; }
-interface QueryData { hrKarkunById?: AnyRecord | null; }
-interface Props { history: HistoryLike; match: MatchLike; }
+
+type Props = RouteComponentProps<{ karkunId: string }>;
 
 const PrintView = ({ history, match }: Props) => {
   const printViewRef = useRef<HTMLDivElement | null>(null);
   const [showDetails, setShowDetails] = useState(false);
-  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID as any, {
+  useBreadcrumbs(['HR', 'Karkuns', 'Print Karkun']);
+  const { data, loading: formDataLoading } = useQuery(HR_KARKUN_BY_ID, {
     variables: { _id: match.params.karkunId },
   });
 
   if (formDataLoading) return null;
 
-  const { hrKarkunById } = (data ?? {}) as QueryData;
+  const hrKarkunById = data?.hrKarkunById;
   const form = showDetails ? (
-    <DetailedKarkunForm hrKarkunById={hrKarkunById} />
+    <DetailedForm hrKarkunById={hrKarkunById} />
   ) : (
-    <NonDetailedKarkunForm hrKarkunById={hrKarkunById} />
+    <NonDetailedForm hrKarkunById={hrKarkunById} />
   );
 
   return (
     <>
-      <div style={ControlsContainer as any}>
+      <div style={ControlsContainer}>
         <div>
           <ReactToPrintControl
             content={() => printViewRef.current}
             trigger={() => (
-              <AntButton size="large" type="primary" icon={<AntPrinterOutlined />}>
+              <Button size="large" type="primary" icon={<PrinterOutlined />}>
                 Print
-              </AntButton>
+              </Button>
             )}
           />
           &nbsp;
-          <AntButton
+          <Button
             size="large"
             type="primary"
             onClick={() => {
@@ -69,16 +61,18 @@ const PrintView = ({ history, match }: Props) => {
             }}
           >
             Back
-          </AntButton>
+          </Button>
         </div>
-        <AntCheckbox
+        <Checkbox
           checked={showDetails}
-          onChange={(e: any) => setShowDetails(e.target.checked)}
+          onChange={(e: CheckboxChangeEvent) =>
+            setShowDetails(e.target.checked)
+          }
         >
           Show Detailed Form
-        </AntCheckbox>
+        </Checkbox>
       </div>
-      <AntDivider />
+      <Divider />
       <div className="form-print-view" ref={printViewRef}>
         {form}
       </div>
@@ -86,14 +80,4 @@ const PrintView = ({ history, match }: Props) => {
   );
 };
 
-PrintView.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-
-  karkunId: PropTypes.string,
-};
-
-export default flowRight(
-  WithBreadcrumbs(['HR', 'Karkuns', 'Print Karkun'])
-)(PrintView as any);
+export default PrintView;

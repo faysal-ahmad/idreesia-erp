@@ -1,12 +1,20 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import { Form } from 'antd';
 
-import { Form } from "antd";
-import Input from "./input";
+import Input from './input';
 
-const AntFormItem = (Form as any).Item;
-const SelectionInput = Input as any;
-interface FieldProps { fieldName: string; fieldLabel?: string; fieldLayout?: Record<string, unknown>; placeholder?: string; disabled?: boolean; required?: boolean; requiredMessage?: string; initialValue?: unknown; predefinedFilterName?: string; predefinedFilterStoreId?: string; }
+interface FieldProps {
+  fieldName: string;
+  fieldLabel?: string;
+  fieldLayout?: Record<string, unknown>;
+  placeholder?: string;
+  disabled?: boolean;
+  required?: boolean;
+  requiredMessage?: string;
+  initialValue?: unknown;
+  predefinedFilterName?: string;
+  predefinedFilterStoreId?: string;
+}
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -25,12 +33,12 @@ const formItemLayout = {
 const Field = ({
   fieldName,
   fieldLabel,
-  fieldLayout,
+  fieldLayout = formItemLayout,
   placeholder,
   disabled,
   required,
   requiredMessage,
-  initialValue,
+  initialValue = null,
   predefinedFilterName,
 }: FieldProps) => {
   const rules = [
@@ -41,31 +49,20 @@ const Field = ({
   ];
 
   return (
-    <AntFormItem name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <SelectionInput
+    <Form.Item
+      name={fieldName}
+      label={fieldLabel}
+      initialValue={initialValue}
+      rules={rules}
+      {...fieldLayout}
+    >
+      <Input
         placeholder={placeholder}
         disabled={disabled}
         predefinedFilterName={predefinedFilterName}
       />
-      </AntFormItem>
+    </Form.Item>
   );
-}
-
-Field.propTypes = {
-  fieldName: PropTypes.string,
-  fieldLabel: PropTypes.string,
-  placeholder: PropTypes.string,
-  fieldLayout: PropTypes.object,
-  initialValue: PropTypes.object,
-  predefinedFilterName: PropTypes.string,
-  required: PropTypes.bool,
-  requiredMessage: PropTypes.string,
-  disabled: PropTypes.bool,
-};
-
-Field.defaultProps = {
-  initialValue: null,
-  fieldLayout: formItemLayout,
 };
 
 export default Field;

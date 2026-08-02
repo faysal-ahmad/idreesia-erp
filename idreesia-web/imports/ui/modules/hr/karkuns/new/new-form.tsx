@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react';
-import PropTypes from 'prop-types';
+import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
+import type { Dayjs } from 'dayjs';
 import { Divider, Form, message } from 'antd';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   AgeField,
@@ -16,28 +16,40 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+import type { FormInstance } from 'antd';
+import type { CreateHrKarkunMutation } from 'meteor/idreesia-common/types/client-operations';
 
 import { CREATE_HR_KARKUN } from '../gql';
 
-const AntDivider = Divider as any;
-const AntForm = Form as any;
-const AgeInputField = AgeField as any;
-const EhadDurationInputField = EhadDurationField as any;
-const CnicField = InputCnicField as any;
-const MobileField = InputMobileField as any;
-const TextField = InputTextField as any;
-const SelectInputField = SelectField as any;
-const TextAreaField = InputTextAreaField as any;
-const SaveCancelButtons = FormButtonsSaveCancel as any;
-interface HistoryLike { goBack(): void; push(path: string): void; }
-interface FormValues { name?: string; parentName?: string; cnicNumber?: string; contactNumber1?: string; contactNumber2?: string; emailAddress?: string; currentAddress?: string; permanentAddress?: string; bloodGroup?: string; educationalQualification?: string; meansOfEarning?: string; ehadDate?: unknown; birthDate?: unknown; referenceName?: string; }
-interface Props { history: HistoryLike; }
-interface LabelValue { label: string; value: string; }
+interface LabelValue {
+  label: string;
+  value: string;
+}
+
+interface FormValues {
+  name?: string;
+  parentName?: string;
+  cnicNumber?: string;
+  contactNumber1?: string;
+  contactNumber2?: string;
+  emailAddress?: string;
+  currentAddress?: string;
+  permanentAddress?: string;
+  bloodGroup?: string;
+  educationalQualification?: string;
+  meansOfEarning?: string;
+  ehadDate?: Dayjs | null;
+  birthDate?: Dayjs | null;
+  referenceName?: string;
+}
+
+type Props = RouteComponentProps;
 
 const NewForm = ({ history }: Props) => {
-  const formRef = useRef<any>(null);
+  const formRef = useRef<FormInstance>(null);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createHrKarkun] = useMutation(CREATE_HR_KARKUN as any, {
+  useBreadcrumbs(['HR', 'Karkuns', 'New']);
+  const [createHrKarkun] = useMutation(CREATE_HR_KARKUN, {
     refetchQueries: ['pagedHrKarkuns'],
   });
 
@@ -79,7 +91,7 @@ const NewForm = ({ history }: Props) => {
     } else {
       createHrKarkun({
         variables: {
-          name,
+          name: name ?? '',
           parentName,
           cnicNumber,
           contactNumber1,
@@ -90,14 +102,16 @@ const NewForm = ({ history }: Props) => {
           bloodGroup,
           educationalQualification,
           meansOfEarning,
-          ehadDate,
-          birthDate,
+          ehadDate: ehadDate as unknown as string,
+          birthDate: birthDate as unknown as string,
           referenceName,
         },
       })
-        .then(({ data }: any) => {
-          const newKarkun = data.createHrKarkun;
-          history.push(`${paths.karkunsPath}/${newKarkun._id}`);
+        .then(({ data }: { data?: CreateHrKarkunMutation | null }) => {
+          const newKarkun = data?.createHrKarkun;
+          if (newKarkun?._id) {
+            history.push(`${paths.karkunsPath}/${newKarkun._id}`);
+          }
         })
         .catch((error: Error) => {
           message.error(error.message, 5);
@@ -106,55 +120,55 @@ const NewForm = ({ history }: Props) => {
   };
 
   return (
-    <AntForm
+    <Form
       ref={formRef}
       layout="horizontal"
       onFinish={handleFinish}
       onFieldsChange={handleFieldsChange}
     >
-      <TextField
+      <InputTextField
         fieldName="name"
         fieldLabel="Name"
         required
         requiredMessage="Please input the name for the karkun."
       />
 
-      <TextField
+      <InputTextField
         fieldName="parentName"
         fieldLabel="S/O"
         required
         requiredMessage="Please input the parent name for the karkun."
       />
 
-      <AgeInputField fieldName="birthDate" fieldLabel="Age (years)" />
+      <AgeField fieldName="birthDate" fieldLabel="Age (years)" />
 
-      <EhadDurationInputField
+      <EhadDurationField
         fieldName="ehadDate"
         fieldLabel="Ehad Duration"
         required
         requiredMessage="Please specify the Ehad duration for the karkun."
       />
 
-      <TextField
+      <InputTextField
         fieldName="referenceName"
         fieldLabel="R/O"
         required
         requiredMessage="Please input the reference name for the karkun."
       />
 
-      <CnicField fieldName="cnicNumber" fieldLabel="CNIC Number" />
+      <InputCnicField fieldName="cnicNumber" fieldLabel="CNIC Number" />
 
-      <MobileField fieldName="contactNumber1" fieldLabel="Mobile Number" />
+      <InputMobileField fieldName="contactNumber1" fieldLabel="Mobile Number" />
 
-      <AntDivider />
+      <Divider />
 
-      <TextField
+      <InputTextField
         fieldName="contactNumber2"
         fieldLabel="Home Number"
         required={false}
       />
 
-      <SelectInputField
+      <SelectField<LabelValue>
         fieldName="bloodGroup"
         fieldLabel="Blood Group"
         required={false}
@@ -168,51 +182,44 @@ const NewForm = ({ history }: Props) => {
           { label: 'O-', value: 'O-' },
           { label: 'O+', value: 'O+' },
         ]}
-        getDataValue={({ value }: LabelValue) => value}
-        getDataText={({ label }: LabelValue) => label}
+        getDataValue={({ value }) => value}
+        getDataText={({ label }) => label}
       />
 
-      <TextField
+      <InputTextField
         fieldName="emailAddress"
         fieldLabel="Email"
         required={false}
       />
 
-      <TextAreaField
+      <InputTextAreaField
         fieldName="currentAddress"
         fieldLabel="Current Address"
         required={false}
       />
-      <TextAreaField
+      <InputTextAreaField
         fieldName="permanentAddress"
         fieldLabel="Permanent Address"
         required={false}
       />
 
-      <TextField
+      <InputTextField
         fieldName="educationalQualification"
         fieldLabel="Education"
         required={false}
       />
 
-      <TextAreaField
+      <InputTextAreaField
         fieldName="meansOfEarning"
         fieldLabel="Means of Earning"
         required={false}
       />
-      <SaveCancelButtons
+      <FormButtonsSaveCancel
         handleCancel={handleCancel}
         isFieldsTouched={isFieldsTouched}
       />
-    </AntForm>
+    </Form>
   );
 };
 
-NewForm.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default flowRight(
-  WithBreadcrumbs(['HR', 'Karkuns', 'New'])
-)(NewForm as any);
+export default NewForm;

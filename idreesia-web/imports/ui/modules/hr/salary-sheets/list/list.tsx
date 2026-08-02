@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import dayjs from 'dayjs';
+import React, { Component, type CSSProperties } from 'react';
+import dayjs, { type Dayjs } from 'dayjs';
 import { useQuery } from '@apollo/client/react';
 import FileSaver from 'file-saver';
 import {
@@ -33,66 +32,67 @@ import {
   sortBy,
 } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
+import type {
+  AllJobsQuery,
+  CurrentMonthSalariesQuery,
+  PreviousMonthSalariesQuery,
+} from 'meteor/idreesia-common/types/client-operations';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 
 import { PREV_MONTH_SALARIES, CURRENT_MONTH_SALARIES } from '../gql';
+import type { SalarySheetsPageParams } from './list-container';
 
-const AntButton = Button as any;
-const AntDatePicker = DatePicker as any;
-const AntDropdown = Dropdown as any;
-const AntModal = Modal as any;
-const AntPopconfirm = Popconfirm as any;
-const AntSelect = Select as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const AntCheckCircleOutlined = CheckCircleOutlined as any;
-const AntCheckCircleTwoTone = CheckCircleTwoTone as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntEditOutlined = EditOutlined as any;
-const AntFileExcelOutlined = FileExcelOutlined as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-const AntPrinterOutlined = PrinterOutlined as any;
-const AntSettingOutlined = SettingOutlined as any;
-const AntWarningTwoTone = WarningTwoTone as any;
-const AntLeftOutlined = LeftOutlined as any;
-const AntRightOutlined = RightOutlined as any;
-const KarkunNameDisplay = KarkunName as any;
-type AnyRecord = Record<string, any>;
-interface ListProps extends AnyRecord { selectedMonth: any; selectedJobId?: string; allJobs: AnyRecord[]; prevSalaries?: AnyRecord[]; currentSalaries?: AnyRecord[]; setPageParams(params: AnyRecord): void; }
-interface ListState { selectedRows: AnyRecord[]; }
-interface QueryData { salariesByMonth?: AnyRecord[]; }
+type CurrentSalaryRow = NonNullable<
+  NonNullable<CurrentMonthSalariesQuery['salariesByMonth']>[number]
+>;
+type PrevSalaryRow = NonNullable<
+  NonNullable<PreviousMonthSalariesQuery['salariesByMonth']>[number]
+>;
+type JobRow = NonNullable<
+  NonNullable<AllJobsQuery['allJobs']>[number]
+> & { _id: string; name: string };
+
+export type SalaryListRow = CurrentSalaryRow & {
+  prevSalary: number;
+  prevOtherDeduction: number;
+  prevArrears: number;
+  prevRashanMadad: number;
+};
+
+interface ListProps {
+  selectedMonth: Dayjs;
+  selectedJobId?: string;
+  allJobs: JobRow[];
+  prevSalaries?: PrevSalaryRow[];
+  currentSalaries?: CurrentSalaryRow[];
+  prevSalariesLoading?: boolean;
+  currentSalariesLoading?: boolean;
+  setPageParams(params: Partial<Omit<SalarySheetsPageParams, 'selectedMonth'>> & { selectedMonth?: Dayjs }): void;
+  handleItemSelected(karkun: { _id: string }): void;
+  handleCreateMissingSalaries(): void;
+  handleEditSalary(salary: SalaryListRow): void;
+  handleViewSalaryReceipts(rows: SalaryListRow[]): void;
+  handleViewRashanReceipts(rows: SalaryListRow[]): void;
+  handleViewEidReceipts(rows: SalaryListRow[]): void;
+  handleApproveSelectedSalaries(rows: SalaryListRow[]): void;
+  handleApproveAllSalaries(): void;
+  handleDeleteSelectedSalaries(rows: SalaryListRow[]): void;
+  handleDeleteAllSalaries(): void;
+}
+
+interface ListState {
+  selectedRows: SalaryListRow[];
+}
 
 const SelectStyle = {
   width: '300px',
 };
 
-const IconStyle = {
+const IconStyle: CSSProperties = {
   fontSize: '20px',
 };
 
 export class List extends Component<ListProps, ListState> {
-  static propTypes = {
-    selectedMonth: PropTypes.object,
-    selectedJobId: PropTypes.string,
-    allJobs: PropTypes.array,
-
-    prevSalaries: PropTypes.array,
-    prevSalariesLoading: PropTypes.bool,
-    currentSalaries: PropTypes.array,
-    currentSalariesLoading: PropTypes.bool,
-    setPageParams: PropTypes.func,
-    handleItemSelected: PropTypes.func,
-    handleCreateMissingSalaries: PropTypes.func,
-    handleEditSalary: PropTypes.func,
-    handleViewSalaryReceipts: PropTypes.func,
-    handleViewRashanReceipts: PropTypes.func,
-    handleViewEidReceipts: PropTypes.func,
-    handleApproveSelectedSalaries: PropTypes.func,
-    handleApproveAllSalaries: PropTypes.func,
-    handleDeleteSelectedSalaries: PropTypes.func,
-    handleDeleteAllSalaries: PropTypes.func,
-  };
-
   state = {
     selectedRows: [],
   };
@@ -101,7 +101,7 @@ export class List extends Component<ListProps, ListState> {
     const columns: any[] = [
       {
         key: 'approved',
-        render: (text: any, record: AnyRecord) => {
+        render: (text: any, record: SalaryListRow) => {
           if (record.approvedOn) {
             let tooltip = 'Approved';
             if (record.approver) {
@@ -109,31 +109,31 @@ export class List extends Component<ListProps, ListState> {
             }
 
             return (
-              <AntTooltip title={tooltip}>
-                <AntCheckCircleTwoTone
+              <Tooltip title={tooltip}>
+                <CheckCircleTwoTone
                   style={IconStyle}
                   twoToneColor="#52c41a"
                 />
-              </AntTooltip>
+              </Tooltip>
             );
           }
 
           return (
-            <AntTooltip title="Not Approved">
-              <AntWarningTwoTone
+            <Tooltip title="Not Approved">
+              <WarningTwoTone
                 style={IconStyle}
                 twoToneColor="orange"
               />
-            </AntTooltip>
+            </Tooltip>
           );
         },
       },
       {
         title: 'Name',
         key: 'name',
-        render: (_text: any, record: AnyRecord) => (
-          <KarkunNameDisplay
-            karkun={record.karkun}
+        render: (_text: unknown, record: SalaryListRow) => (
+          <KarkunName
+            karkun={record.karkun ?? undefined}
             onKarkunNameClicked={this.props.handleItemSelected}
           />
         ),
@@ -142,15 +142,15 @@ export class List extends Component<ListProps, ListState> {
         title: 'Salary',
         dataIndex: 'salary',
         key: 'salary',
-        render: (text: any, record: AnyRecord) => {
+        render: (text: any, record: SalaryListRow) => {
           if (record.salary !== record.prevSalary) {
             const tooltip = `Last month Salary value was ${record.prevSalary}`;
             return (
-              <AntTooltip title={tooltip}>
+              <Tooltip title={tooltip}>
                 <span style={{ fontWeight: 'bold', color: 'orange' }}>
                   {text}
                 </span>
-              </AntTooltip>
+              </Tooltip>
             );
           }
           return text;
@@ -160,15 +160,15 @@ export class List extends Component<ListProps, ListState> {
         title: 'Rashan',
         dataIndex: 'rashanMadad',
         key: 'rashanMadad',
-        render: (text: any, record: AnyRecord) => {
+        render: (text: any, record: SalaryListRow) => {
           if (record.rashanMadad !== record.prevRashanMadad) {
             const tooltip = `Last month Rashan value was ${record.prevRashanMadad}`;
             return (
-              <AntTooltip title={tooltip}>
+              <Tooltip title={tooltip}>
                 <span style={{ fontWeight: 'bold', color: 'orange' }}>
                   {text}
                 </span>
-              </AntTooltip>
+              </Tooltip>
             );
           }
           return text;
@@ -203,15 +203,15 @@ export class List extends Component<ListProps, ListState> {
         title: 'Other Deduction',
         dataIndex: 'otherDeduction',
         key: 'otherDeduction',
-        render: (text: any, record: AnyRecord) => {
+        render: (text: any, record: SalaryListRow) => {
           if (record.otherDeduction !== record.prevOtherDeduction) {
             const tooltip = `Last month Other Deduction value was ${record.prevOtherDeduction}`;
             return (
-              <AntTooltip title={tooltip}>
+              <Tooltip title={tooltip}>
                 <span style={{ fontWeight: 'bold', color: 'orange' }}>
                   {text}
                 </span>
-              </AntTooltip>
+              </Tooltip>
             );
           }
           return text;
@@ -221,15 +221,15 @@ export class List extends Component<ListProps, ListState> {
         title: 'Arrears',
         dataIndex: 'arrears',
         key: 'arrears',
-        render: (text: any, record: AnyRecord) => {
+        render: (text: any, record: SalaryListRow) => {
           if (record.arrears !== record.prevArrears) {
             const tooltip = `Last month Arrears value was ${record.prevArrears}`;
             return (
-              <AntTooltip title={tooltip}>
+              <Tooltip title={tooltip}>
                 <span style={{ fontWeight: 'bold', color: 'orange' }}>
                   {text}
                 </span>
-              </AntTooltip>
+              </Tooltip>
             );
           }
           return text;
@@ -244,19 +244,19 @@ export class List extends Component<ListProps, ListState> {
 
     const actionsColumn = {
       key: 'action',
-      render: (text: any, record: AnyRecord) => {
+      render: (text: any, record: SalaryListRow) => {
         const { handleEditSalary, handleDeleteSelectedSalaries } = this.props;
         return (
           <div className="list-actions-column">
-            <AntTooltip title="Edit">
-              <AntEditOutlined
+            <Tooltip title="Edit">
+              <EditOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleEditSalary(record);
                 }}
               />
-            </AntTooltip>
-            <AntPopconfirm
+            </Tooltip>
+            <Popconfirm
               title="Are you sure you want to delete this salary record?"
               onConfirm={() => {
                 handleDeleteSelectedSalaries([record]);
@@ -264,10 +264,10 @@ export class List extends Component<ListProps, ListState> {
               okText="Yes"
               cancelText="No"
             >
-              <AntTooltip title="Delete">
-                <AntDeleteOutlined className="list-actions-icon" />
-              </AntTooltip>
-            </AntPopconfirm>
+              <Tooltip title="Delete">
+                <DeleteOutlined className="list-actions-icon" />
+              </Tooltip>
+            </Popconfirm>
           </div>
         );
       },
@@ -284,14 +284,15 @@ export class List extends Component<ListProps, ListState> {
   };
 
   rowSelection = {
-    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: SalaryListRow[]) => {
       this.setState({
         selectedRows,
       });
     },
   };
 
-  handleMonthChange = (value: any) => {
+  handleMonthChange = (value: Dayjs | null) => {
+    if (!value) return;
     const { setPageParams } = this.props;
     setPageParams({
       selectedMonth: value,
@@ -349,12 +350,11 @@ export class List extends Component<ListProps, ListState> {
 
     const header =
       'Name, S/O, CNIC, Phone No., Dept, Bank Account, Salary, Opening Loan, Loan Deduction, New Loan, Closing Loan, Other Deduction, Arrears, Net Payment \r\n';
-    const rows = sortedSalariesByMonth.map(
-      (salary: AnyRecord) => {
+    const rows = sortedSalariesByMonth.map((salary) => {
+        if (!salary.karkun || !salary.job) return '';
         const bankAccountDetails = (salary.karkun.bankAccountDetails || '').replace('\n', ' - ');
-        return `${salary.karkun.name}, ${salary.karkun.parentName}, ${salary.karkun.cnicNumber}, ${salary.karkun.contactNumber1}, ${salary.job.name}, ${bankAccountDetails}, ${salary.salary}, ${salary.openingLoan}, ${salary.loanDeduction}, ${salary.newLoan}, ${salary.closingLoan}, ${salary.otherDeduction}, ${salary.arrears}, ${salary.netPayment}`
-      }
-    );
+        return `${salary.karkun.name}, ${salary.karkun.parentName}, ${salary.karkun.cnicNumber}, ${salary.karkun.contactNumber1}, ${salary.job.name}, ${bankAccountDetails}, ${salary.salary}, ${salary.openingLoan}, ${salary.loanDeduction}, ${salary.newLoan}, ${salary.closingLoan}, ${salary.otherDeduction}, ${salary.arrears}, ${salary.netPayment}`;
+      }).filter(Boolean);
     const csvContent = `${header}${rows.join('\r\n')}`;
 
     const blob = new Blob([csvContent], {
@@ -375,7 +375,7 @@ export class List extends Component<ListProps, ListState> {
     const { selectedRows } = this.state;
     const { handleDeleteSelectedSalaries } = this.props;
     if (handleDeleteSelectedSalaries) {
-      AntModal.confirm({
+      Modal.confirm({
         title: 'Delete Salaries',
         content: 'Are you sure you want to delete the selected salary records?',
         onOk() {
@@ -388,7 +388,7 @@ export class List extends Component<ListProps, ListState> {
   _handleDeleteAllSalaries = () => {
     const { handleDeleteAllSalaries } = this.props;
     if (handleDeleteAllSalaries) {
-      AntModal.confirm({
+      Modal.confirm({
         title: 'Delete All Salaries',
         content:
           'Are you sure you want to delete all salary records for the month?',
@@ -403,13 +403,13 @@ export class List extends Component<ListProps, ListState> {
     const { selectedJobId, allJobs } = this.props;
 
     const options = allJobs.map(job => (
-      <AntSelect.Option key={job._id} value={job._id}>
+      <Select.Option key={job._id} value={job._id}>
         {job.name}
-      </AntSelect.Option>
+      </Select.Option>
     ));
 
     return (
-      <AntSelect
+      <Select
         defaultValue={selectedJobId}
         style={SelectStyle}
         onChange={this.handleSelectionChange}
@@ -417,7 +417,7 @@ export class List extends Component<ListProps, ListState> {
         dropdownMatchSelectWidth
       >
         {options}
-      </AntSelect>
+      </Select>
     );
   };
 
@@ -443,7 +443,7 @@ export class List extends Component<ListProps, ListState> {
           key: '8',
           label: (
             <>
-              <AntDeleteOutlined />&nbsp;
+              <DeleteOutlined />&nbsp;
               Delete Selected Salaries
             </>
           ),
@@ -453,7 +453,7 @@ export class List extends Component<ListProps, ListState> {
           key: '9',
           label: (
             <>
-              <AntDeleteOutlined />&nbsp;
+              <DeleteOutlined />&nbsp;
               Delete All Salaries
             </>
           ),
@@ -467,7 +467,7 @@ export class List extends Component<ListProps, ListState> {
         key: '1',
         label: (
           <>
-            <AntPlusCircleOutlined />&nbsp;
+            <PlusCircleOutlined />&nbsp;
             Create Missing Salaries
           </>
         ),
@@ -478,7 +478,7 @@ export class List extends Component<ListProps, ListState> {
         key: '2-1',
         label: (
           <>
-            <AntCheckCircleOutlined />&nbsp;
+            <CheckCircleOutlined />&nbsp;
             Approve Selected Salaries
           </>
         ),
@@ -488,7 +488,7 @@ export class List extends Component<ListProps, ListState> {
         key: '2-2',
         label: (
           <>
-            <AntCheckCircleOutlined />&nbsp;
+            <CheckCircleOutlined />&nbsp;
             Approve All Salaries
           </>
         ),
@@ -499,7 +499,7 @@ export class List extends Component<ListProps, ListState> {
         key: '3',
         label: (
           <>
-            <AntFileExcelOutlined />&nbsp;
+            <FileExcelOutlined />&nbsp;
             Download as CSV
           </>
         ),
@@ -509,7 +509,7 @@ export class List extends Component<ListProps, ListState> {
         key: '4',
         label: (
           <>
-            <AntPrinterOutlined />&nbsp;
+            <PrinterOutlined />&nbsp;
             Print Salary Receipts
           </>
         ),
@@ -519,7 +519,7 @@ export class List extends Component<ListProps, ListState> {
         key: '5',
         label: (
           <>
-            <AntPrinterOutlined />&nbsp;
+            <PrinterOutlined />&nbsp;
             Print Rashan Receipts
           </>
         ),
@@ -529,7 +529,7 @@ export class List extends Component<ListProps, ListState> {
         key: '6',
         label: (
           <>
-            <AntPrinterOutlined />&nbsp;
+            <PrinterOutlined />&nbsp;
             Print Eid Receipts
           </>
         ),
@@ -539,9 +539,9 @@ export class List extends Component<ListProps, ListState> {
     ];
 
     return (
-      <AntDropdown menu={{ items: menuItems }}>
-        <AntButton icon={<AntSettingOutlined />}>Actions</AntButton>
-      </AntDropdown>
+      <Dropdown menu={{ items: menuItems }}>
+        <Button icon={<SettingOutlined />}>Actions</Button>
+      </Dropdown>
     );
   };
 
@@ -552,24 +552,24 @@ export class List extends Component<ListProps, ListState> {
         <div className="list-table-header-section">
           {this.getJobSelector()}
           &nbsp;&nbsp;
-          <AntButton
+          <Button
             type="primary"
             shape="circle"
-            icon={<AntLeftOutlined />}
+            icon={<LeftOutlined />}
             onClick={this.handleMonthGoBack}
           />
           &nbsp;&nbsp;
-          <AntDatePicker.MonthPicker
+          <DatePicker.MonthPicker
             allowClear={false}
             format="MMM, YYYY"
             onChange={this.handleMonthChange}
             value={selectedMonth}
           />
           &nbsp;&nbsp;
-          <AntButton
+          <Button
             type="primary"
             shape="circle"
-            icon={<AntRightOutlined />}
+            icon={<RightOutlined />}
             onClick={this.handleMonthGoForward}
           />
         </div>
@@ -578,17 +578,22 @@ export class List extends Component<ListProps, ListState> {
     );
   };
 
-  getSortedSalaries = memoize((currentSalaries, prevSalaries) => {
-    const prevSalariesMap = keyBy(prevSalaries ?? [], 'karkunId');
-    const sortedCurrentSalaries = sortBy(currentSalaries ?? [], 'karkun.name');
-    return sortedCurrentSalaries.map((currentSalary: AnyRecord) => {
-      const prevSalary = prevSalariesMap[currentSalary.karkunId];
+  getSortedSalaries = memoize((currentSalaries?: CurrentSalaryRow[], prevSalaries?: PrevSalaryRow[]) => {
+    const prevSalariesMap = keyBy(
+      (prevSalaries ?? []).filter(row => row?.karkunId),
+      'karkunId'
+    );
+    const sortedCurrentSalaries = sortBy(currentSalaries ?? [], row => row?.karkun?.name);
+    return sortedCurrentSalaries.map((currentSalary) => {
+      const prevSalary = currentSalary.karkunId
+        ? prevSalariesMap[currentSalary.karkunId]
+        : undefined;
       return Object.assign({}, currentSalary, {
         prevSalary: prevSalary ? prevSalary.salary : 0,
         prevOtherDeduction: prevSalary ? prevSalary.otherDeduction : 0,
         prevArrears: prevSalary ? prevSalary.arrears : 0,
         prevRashanMadad: prevSalary ? prevSalary.rashanMadad : 0,
-      });
+      }) as SalaryListRow;
     });
   });
 
@@ -600,7 +605,7 @@ export class List extends Component<ListProps, ListState> {
     );
 
     return (
-      <AntTable
+      <Table
         rowKey="_id"
         size="small"
         title={this.getTableHeader}
@@ -621,8 +626,7 @@ const ListWithSalaries = (props: ListProps) => {
   const {
     data: prevSalariesData,
     loading: prevSalariesLoading,
-    ...prevQueryResult
-  } = useQuery(PREV_MONTH_SALARIES as any, {
+  } = useQuery(PREV_MONTH_SALARIES, {
     variables: {
       month: previousMonth.format(Formats.DATE_FORMAT),
       jobId: selectedJobId,
@@ -632,8 +636,7 @@ const ListWithSalaries = (props: ListProps) => {
   const {
     data: currentSalariesData,
     loading: currentSalariesLoading,
-    ...currentQueryResult
-  } = useQuery(CURRENT_MONTH_SALARIES as any, {
+  } = useQuery(CURRENT_MONTH_SALARIES, {
     variables: {
       month: selectedMonth.format(Formats.DATE_FORMAT),
       jobId: selectedJobId,
@@ -644,24 +647,15 @@ const ListWithSalaries = (props: ListProps) => {
     <List
       {...props}
       prevSalariesLoading={prevSalariesLoading}
-      prevSalaries={
-        prevSalariesData ? (prevSalariesData as QueryData).salariesByMonth : undefined
-      }
+      prevSalaries={(prevSalariesData?.salariesByMonth ?? undefined)?.filter(
+        (row): row is PrevSalaryRow => row != null
+      )}
       currentSalariesLoading={currentSalariesLoading}
-      currentSalaries={
-        currentSalariesData
-          ? (currentSalariesData as QueryData).salariesByMonth
-          : undefined
-      }
-      prevSalariesQuery={prevQueryResult}
-      currentSalariesQuery={currentQueryResult}
+      currentSalaries={(currentSalariesData?.salariesByMonth ?? undefined)?.filter(
+        (row): row is CurrentSalaryRow => row != null
+      )}
     />
   );
-};
-
-ListWithSalaries.propTypes = {
-  selectedMonth: PropTypes.object,
-  selectedJobId: PropTypes.string,
 };
 
 export default ListWithSalaries;

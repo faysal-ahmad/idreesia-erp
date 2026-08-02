@@ -1,29 +1,43 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, type CSSProperties } from 'react';
 import Barcode from 'react-barcode';
 import { addMonths, format, startOfMonth } from 'date-fns';
 
-import { CardTypes as ImportedCardTypes } from 'meteor/idreesia-common/constants/hr';
+import { CardTypes } from 'meteor/idreesia-common/constants/hr';
+import type { AttendanceByBarcodeIdsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 
-const BarcodeView = Barcode as any;
-const CardTypes = ImportedCardTypes as Record<string, string>;
-interface Karkun { name: string; bloodGroup?: string; contactNumber1Subscribed?: boolean; contactNumber2Subscribed?: boolean; image?: { data?: string }; }
-interface NamedRecord { name: string; }
-interface AttendanceRecord { _id: string; month?: string; percentage?: number; meetingCardBarcodeId: string; karkun: Karkun; duty?: NamedRecord | null; job?: NamedRecord | null; shift?: NamedRecord | null; }
-interface CardsProps { cardType?: string; cardHeading?: string; cardSubHeading?: string | null; showDutyInfo?: boolean; attendanceByBarcodeIds?: AttendanceRecord[]; }
+const MeetingCardTypes = {
+  ...CardTypes,
+  RABI_UL_AWAL_LANGAR: 'rabi-ul-awal-langar',
+  SPECIAL_SECURITY: 'special-security',
+  ENTRY_GATE: 'entry-gate',
+  HALL_SECURITY: 'hall-security',
+  INTERCOM_DUTY: 'intercom-duty',
+} as const;
+
+type AttendanceRecord = NonNullable<
+  NonNullable<AttendanceByBarcodeIdsQuery['attendanceByBarcodeIds']>[number]
+>;
+
+interface CardsProps {
+  cardType?: string;
+  cardHeading?: string;
+  cardSubHeading?: string | null;
+  showDutyInfo?: boolean;
+  attendanceByBarcodeIds?: AttendanceRecord[];
+}
 
 const barcodeOptions = {
   width: 1,
   height: 20,
-  format: 'CODE128B',
+  format: 'CODE128B' as const,
   displayValue: false,
   background: '#ffffff',
   lineColor: '#000000',
   margin: 5,
 };
 
-const ContainerStyle = {
+const ContainerStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row wrap',
   justifyContent: 'center',
@@ -47,20 +61,15 @@ const MonthTranslations: Record<string, string> = {
 };
 
 const HeadingMapping: Record<string, boolean> = {
-  [CardTypes.NAAM_I_MUBARIK_MEETING]: true,
-  [CardTypes.RABI_UL_AWAL_LANGAR]: true,
-  [CardTypes.SPECIAL_SECURITY]: false,
-  [CardTypes.ENTRY_GATE]: false,
-  [CardTypes.HALL_SECURITY]: false,
-  [CardTypes.INTERCOM_DUTY]: false,
+  [MeetingCardTypes.NAAM_I_MUBARIK_MEETING]: true,
+  [MeetingCardTypes.RABI_UL_AWAL_LANGAR]: true,
+  [MeetingCardTypes.SPECIAL_SECURITY]: false,
+  [MeetingCardTypes.ENTRY_GATE]: false,
+  [MeetingCardTypes.HALL_SECURITY]: false,
+  [MeetingCardTypes.INTERCOM_DUTY]: false,
 };
 
 export default class Cards extends Component<CardsProps> {
-  static propTypes = {
-    cardType: PropTypes.string,
-    attendanceByBarcodeIds: PropTypes.array,
-  };
-
   getHeadingImage = () => {
     const { cardType = '' } = this.props;
     const headingImageUrl = '/images/heading.png';
@@ -82,22 +91,22 @@ export default class Cards extends Component<CardsProps> {
       addMonths(parseDate(`01-${attendance.month}`, 'DD-MM-YYYY'), 1)
     );
 
-    if (cardType === CardTypes.NAAM_I_MUBARIK_MEETING) {
+    if (cardType === MeetingCardTypes.NAAM_I_MUBARIK_MEETING) {
       subHeading = ` نام مبارک میٹنگ - یکم ${
         MonthTranslations[format(month, 'MMM')]
       }`;
-    } else if (cardType === CardTypes.RABI_UL_AWAL_LANGAR) {
+    } else if (cardType === MeetingCardTypes.RABI_UL_AWAL_LANGAR) {
       subHeading = '١٢ ربیع الاول - لنگر شریف تقسیم';
-    } else if (cardType === CardTypes.SPECIAL_SECURITY) {
+    } else if (cardType === MeetingCardTypes.SPECIAL_SECURITY) {
       subHeading = 'اسپیشل سیکورٹی';
       className = 'subheading_card_extended_k';
-    } else if (cardType === CardTypes.ENTRY_GATE) {
+    } else if (cardType === MeetingCardTypes.ENTRY_GATE) {
       subHeading = 'اینٹری گیٹ';
       className = 'subheading_card_extended_k';
-    } else if (cardType === CardTypes.HALL_SECURITY) {
+    } else if (cardType === MeetingCardTypes.HALL_SECURITY) {
       subHeading = 'ہال سیکورٹی';
       className = 'subheading_card_extended_k';
-    } else if (cardType === CardTypes.INTERCOM_DUTY) {
+    } else if (cardType === MeetingCardTypes.INTERCOM_DUTY) {
       subHeading = 'انٹرکام ڈیوٹی';
       className = 'subheading_card_extended_k';
     }
@@ -107,21 +116,24 @@ export default class Cards extends Component<CardsProps> {
 
   getKarkunImage = (attendance: AttendanceRecord) => {
     const { cardType = '' } = this.props;
+    const karkun = attendance.karkun;
+    if (!karkun) return null;
+
     const subscribed =
-      attendance.karkun.contactNumber1Subscribed ||
-      attendance.karkun.contactNumber2Subscribed;
+      karkun.contactNumber1Subscribed ||
+      karkun.contactNumber2Subscribed;
     const percentageClass =
       (attendance.percentage ?? 0) > 0 ? 'info_box' : 'info_box hidden';
     const subscriptionClass = subscribed ? 'info_box hidden' : 'info_box';
-    const bloodGroupClass = attendance.karkun.bloodGroup
+    const bloodGroupClass = karkun.bloodGroup
       ? 'info_box'
       : 'info_box hidden';
 
-    const karkunImage = attendance.karkun.image ? (
+    const karkunImage = karkun.image ? (
       <img
-        src={`data:image/jpeg;base64,${attendance.karkun.image.data}`}
+        src={`data:image/jpeg;base64,${karkun.image.data}`}
         style={{ maxHeight: '100%', width: 'auto' }}
-        alt={attendance.karkun.name}
+        alt={karkun.name ?? undefined}
       />
     ) : (
       <div style={{ height: '100%', width: 'auto' }} />
@@ -135,7 +147,7 @@ export default class Cards extends Component<CardsProps> {
         {karkunImage}
         <div className="info_container">
           <div className={percentageClass}>{attendance.percentage}%</div>
-          <div className={bloodGroupClass}>{attendance.karkun.bloodGroup}</div>
+          <div className={bloodGroupClass}>{karkun.bloodGroup}</div>
           <div className={subscriptionClass}>NS</div>
         </div>
       </div>
@@ -157,20 +169,21 @@ export default class Cards extends Component<CardsProps> {
   };
 
   getCardMarkup(attendance: AttendanceRecord) {
+    if (!attendance.karkun?.name || !attendance.meetingCardBarcodeId) return null;
     const headingImage = this.getHeadingImage();
     const subHeading = this.getSubHeading(attendance);
     const karkunImage = this.getKarkunImage(attendance);
     const dutyShiftInfo = this.getDutyShiftInfo(attendance);
 
     return (
-      <div key={attendance._id} className="card_karkon">
+      <div key={attendance._id ?? attendance.meetingCardBarcodeId} className="card_karkon">
         {headingImage}
         {subHeading}
         {karkunImage}
         <h1 className="name_card_k">{attendance.karkun.name}</h1>
         {dutyShiftInfo}
         <div className="barcode_card_k">
-          <BarcodeView
+          <Barcode
             value={attendance.meetingCardBarcodeId}
             {...barcodeOptions}
           />
@@ -181,16 +194,17 @@ export default class Cards extends Component<CardsProps> {
 
   render() {
     const { attendanceByBarcodeIds } = this.props;
-    const cards = (attendanceByBarcodeIds ?? []).map((attendance: AttendanceRecord) =>
-      this.getCardMarkup(attendance)
-    );
+    const cards = (attendanceByBarcodeIds ?? [])
+      .map((attendance: AttendanceRecord) => this.getCardMarkup(attendance))
+      .filter(Boolean);
 
     let index = 0;
     const cardContainers = [];
-    while (cards.length > 0) {
-      const cardsForPage = cards.splice(0, 12);
+    const cardsCopy = [...cards];
+    while (cardsCopy.length > 0) {
+      const cardsForPage = cardsCopy.splice(0, 12);
       cardContainers.push(
-        <div key={`container_${index}`} style={ContainerStyle as any}>
+        <div key={`container_${index}`} style={ContainerStyle}>
           {cardsForPage}
         </div>
       );

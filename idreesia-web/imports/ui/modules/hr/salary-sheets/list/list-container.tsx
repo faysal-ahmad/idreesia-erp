@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import dayjs from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import { useMutation } from '@apollo/client/react';
+import { type History } from 'history';
+import { type Location } from 'history';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  WithBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
+  useBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
+import type {
+  AllJobsQuery,
+  CreateSalariesMutation,
+  CurrentMonthSalariesQuery,
+  UpdateSalaryMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 import { Modal, message } from 'antd';
 import { useAllJobs } from '/imports/ui/modules/hr/common/composers';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
-import List from './list';
+import List, { type SalaryListRow } from './list';
 import EditForm from './edit-form';
 
 import {
@@ -25,55 +31,68 @@ import {
   UPDATE_SALARY,
 } from '../gql';
 
-const AntModal = Modal as any;
-const SalariesList = List as any;
-const SalaryEditForm = EditForm as any;
-type AnyRecord = Record<string, any>;
-interface HistoryLike { push(path: string): void; }
-interface LocationLike { pathname: string; }
-interface ListContainerProps { history: HistoryLike; location: LocationLike; queryParams: AnyRecord; }
+export interface SalarySheetsPageParams {
+  selectedMonth?: string;
+  selectedJobId?: string;
+}
+
+type SalaryRow = SalaryListRow;
+
+type JobRow = NonNullable<
+  NonNullable<AllJobsQuery['allJobs']>[number]
+> & { _id: string; name: string };
+
+type KarkunRef = { _id: string };
+
+interface ListContainerProps {
+  history: History;
+  location: Location;
+}
 
 const mutationOptions = {
   refetchQueries: ['salariesByMonth'],
 };
 
-const ListContainer = ({ history, location, queryParams }: ListContainerProps) => {
+const ListContainer = ({ history, location }: ListContainerProps) => {
+  const { queryParams } = useQueryParams({
+    history,
+    location,
+    paramNames: ['selectedMonth', 'selectedJobId'],
+  });
+  useBreadcrumbs(['HR', 'Salary Sheets', 'List']);
+
   const [showEditForm, setShowEditForm] = useState(false);
-  const [selectedSalary, setSelectedSalary] = useState<AnyRecord | null>(null);
+  const [selectedSalary, setSelectedSalary] = useState<SalaryRow | null>(null);
 
   const { allJobs, allJobsLoading } = useAllJobs();
 
-  const [createSalaries] = useMutation(CREATE_SALARIES as any, mutationOptions);
-  const [updateSalary] = useMutation(UPDATE_SALARY as any, mutationOptions);
-  const [approveSalaries] = useMutation(APPROVE_SALARIES as any, mutationOptions);
-  const [approveAllSalaries] = useMutation(
-    APPROVE_ALL_SALARIES as any,
-    mutationOptions
-  );
-  const [deleteSalaries] = useMutation(DELETE_SALARIES as any, mutationOptions);
-  const [deleteAllSalaries] = useMutation(
-    DELETE_ALL_SALARIES as any,
-    mutationOptions
-  );
+  const [createSalaries] = useMutation(CREATE_SALARIES, mutationOptions);
+  const [updateSalary] = useMutation(UPDATE_SALARY, mutationOptions);
+  const [approveSalaries] = useMutation(APPROVE_SALARIES, mutationOptions);
+  const [approveAllSalaries] = useMutation(APPROVE_ALL_SALARIES, mutationOptions);
+  const [deleteSalaries] = useMutation(DELETE_SALARIES, mutationOptions);
+  const [deleteAllSalaries] = useMutation(DELETE_ALL_SALARIES, mutationOptions);
 
-  const setPageParams = (newParams: AnyRecord) => {
+  const pageParams = queryParams as SalarySheetsPageParams;
+
+  const setPageParams = (newParams: Partial<Omit<SalarySheetsPageParams, 'selectedMonth'>> & { selectedMonth?: Dayjs }) => {
     const { selectedJobId, selectedMonth } = newParams;
 
     let selectedJobIdVal;
     if (Object.prototype.hasOwnProperty.call(newParams, 'selectedJobId'))
       selectedJobIdVal = selectedJobId || '';
-    else selectedJobIdVal = queryParams.selectedJobId || '';
+    else selectedJobIdVal = pageParams.selectedJobId || '';
 
     let selectedMonthVal;
     if (Object.prototype.hasOwnProperty.call(newParams, 'selectedMonth'))
       selectedMonthVal = selectedMonth ? selectedMonth.format('MM-YYYY') : '';
-    else selectedMonthVal = queryParams.selectedMonth || '';
+    else selectedMonthVal = pageParams.selectedMonth || '';
 
     const path = `${location.pathname}?selectedMonth=${selectedMonthVal}&selectedJobId=${selectedJobIdVal}`;
     history.push(path);
   };
 
-  const handleEditSalary = (salary: AnyRecord) => {
+  const handleEditSalary = (salary: SalaryRow) => {
     setShowEditForm(true);
     setSelectedSalary(salary);
   };
@@ -83,36 +102,18 @@ const ListContainer = ({ history, location, queryParams }: ListContainerProps) =
     setSelectedSalary(null);
   };
 
-  const handleEditSalarySave = ({
-    _id,
-    salary,
-    openingLoan,
-    loanDeduction,
-    newLoan,
-    otherDeduction,
-    arrears,
-    rashanMadad,
-  }: AnyRecord) => {
+  const handleEditSalarySave = (values: UpdateSalaryMutationVariables) => {
     setShowEditForm(false);
     setSelectedSalary(null);
 
     updateSalary({
-      variables: {
-        _id,
-        salary,
-        openingLoan,
-        loanDeduction,
-        newLoan,
-        otherDeduction,
-        arrears,
-        rashanMadad,
-      },
+      variables: values,
     }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  const handleViewSalaryReceipts = (selectedRows: AnyRecord[]) => {
+  const handleViewSalaryReceipts = (selectedRows: SalaryRow[]) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const ids = selectedRows.map(row => row._id);
@@ -121,7 +122,7 @@ const ListContainer = ({ history, location, queryParams }: ListContainerProps) =
     history.push(path);
   };
 
-  const handleViewRashanReceipts = (selectedRows: AnyRecord[]) => {
+  const handleViewRashanReceipts = (selectedRows: SalaryRow[]) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const ids = selectedRows.map(row => row._id);
@@ -130,7 +131,7 @@ const ListContainer = ({ history, location, queryParams }: ListContainerProps) =
     history.push(path);
   };
 
-  const handleViewEidReceipts = (selectedRows: AnyRecord[]) => {
+  const handleViewEidReceipts = (selectedRows: SalaryRow[]) => {
     if (!selectedRows || selectedRows.length === 0) return;
 
     const ids = selectedRows.map(row => row._id);
@@ -140,7 +141,7 @@ const ListContainer = ({ history, location, queryParams }: ListContainerProps) =
   };
 
   const handleCreateMissingSalaries = () => {
-    const { selectedMonth } = queryParams;
+    const { selectedMonth } = pageParams;
 
     const _selectedMonth = selectedMonth
       ? `01-${selectedMonth}`
@@ -151,9 +152,9 @@ const ListContainer = ({ history, location, queryParams }: ListContainerProps) =
         month: _selectedMonth,
       },
     })
-      .then(({ data }: AnyRecord) => {
+      .then(({ data }: { data?: CreateSalariesMutation | null }) => {
         message.success(
-          `${data.createSalaries} missing salary records have been created.`,
+          `${data?.createSalaries} missing salary records have been created.`,
           5
         );
       })
@@ -162,10 +163,10 @@ const ListContainer = ({ history, location, queryParams }: ListContainerProps) =
       });
   };
 
-  const handleApproveSelectedSalaries = (selectedSalaries: AnyRecord[]) => {
+  const handleApproveSelectedSalaries = (selectedSalaries: SalaryRow[]) => {
     if (!selectedSalaries || selectedSalaries.length === 0) return;
 
-    const { selectedMonth } = queryParams;
+    const { selectedMonth } = pageParams;
     const ids = selectedSalaries.map(({ _id }) => _id);
 
     const _selectedMonth = selectedMonth
@@ -187,7 +188,7 @@ const ListContainer = ({ history, location, queryParams }: ListContainerProps) =
   };
 
   const handleApproveAllSalaries = () => {
-    const { selectedMonth } = queryParams;
+    const { selectedMonth } = pageParams;
 
     const _selectedMonth = selectedMonth
       ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
@@ -209,10 +210,10 @@ const ListContainer = ({ history, location, queryParams }: ListContainerProps) =
       });
   };
 
-  const handleDeleteSelectedSalaries = (selectedSalaries: AnyRecord[]) => {
+  const handleDeleteSelectedSalaries = (selectedSalaries: SalaryRow[]) => {
     if (!selectedSalaries || selectedSalaries.length === 0) return;
 
-    const { selectedMonth } = queryParams;
+    const { selectedMonth } = pageParams;
     const ids = selectedSalaries.map(({ _id }) => _id);
 
     const _selectedMonth = selectedMonth
@@ -234,7 +235,7 @@ const ListContainer = ({ history, location, queryParams }: ListContainerProps) =
   };
 
   const handleDeleteAllSalaries = () => {
-    const { selectedMonth } = queryParams;
+    const { selectedMonth } = pageParams;
 
     const _selectedMonth = selectedMonth
       ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
@@ -256,21 +257,25 @@ const ListContainer = ({ history, location, queryParams }: ListContainerProps) =
       });
   };
 
-  const handleItemSelected = (karkun: AnyRecord) => {
+  const handleItemSelected = (karkun: KarkunRef) => {
     history.push(`${paths.karkunsPath}/${karkun._id}`);
   };
 
   if (allJobsLoading) return null;
 
-  const { selectedMonth, selectedJobId } = queryParams;
+  const { selectedMonth, selectedJobId } = pageParams;
 
   const _selectedMonth = selectedMonth
     ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
     : dayjs();
 
+  const jobs = (allJobs ?? []).filter((row): row is JobRow =>
+    row != null && row._id != null && row.name != null
+  );
+
   return (
     <>
-      <SalariesList
+      <List
         selectedJobId={selectedJobId}
         selectedMonth={_selectedMonth}
         setPageParams={setPageParams}
@@ -284,36 +289,34 @@ const ListContainer = ({ history, location, queryParams }: ListContainerProps) =
         handleDeleteSelectedSalaries={handleDeleteSelectedSalaries}
         handleDeleteAllSalaries={handleDeleteAllSalaries}
         handleItemSelected={handleItemSelected}
-        allJobs={allJobs}
+        allJobs={jobs}
       />
-      {showEditForm ? (
-        <AntModal
+      {showEditForm && selectedSalary ? (
+        <Modal
           title="Update Salary"
           open={showEditForm}
           onCancel={handleEditSalaryCancel}
           width={520}
           footer={null}
         >
-          <SalaryEditForm
-            salary={selectedSalary}
+          <EditForm
+            salary={{
+              _id: selectedSalary._id!,
+              salary: selectedSalary.salary,
+              rashanMadad: selectedSalary.rashanMadad,
+              openingLoan: selectedSalary.openingLoan,
+              loanDeduction: selectedSalary.loanDeduction,
+              newLoan: selectedSalary.newLoan,
+              otherDeduction: selectedSalary.otherDeduction,
+              arrears: selectedSalary.arrears,
+            }}
             handleSave={handleEditSalarySave}
             handleCancel={handleEditSalaryCancel}
           />
-        </AntModal>
+        </Modal>
       ) : null}
     </>
   );
 };
 
-ListContainer.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-  queryString: PropTypes.string,
-  queryParams: PropTypes.object,
-};
-
-export default flowRight(
-  WithQueryParams(),
-  WithBreadcrumbs(['HR', 'Salary Sheets', 'List'])
-)(ListContainer as any);
+export default ListContainer;

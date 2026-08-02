@@ -1,71 +1,26 @@
 import React, { useRef } from 'react';
-import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import ReactToPrint from 'react-to-print';
 import { Button, Divider } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
+import { type History } from 'history';
 
-import { flowRight } from 'meteor/idreesia-common/utilities/lodash';
 import {
-  WithBreadcrumbs,
-  WithQueryParams,
-} from 'meteor/idreesia-common/composers/common';
+  useBreadcrumbs,
+  useQueryParams,
+} from 'meteor/idreesia-common/hooks/common';
+import type {
+  EidReceiptSalariesByIdsQuery,
+  EidReceiptSalariesByIdsQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 import EidReceipts from './eid-receipts';
 
-const PrintButton = Button as any;
-const AntDivider = Divider as any;
-const AntPrinterOutlined = PrinterOutlined as any;
-const PrintControl = ReactToPrint as any;
-const ReceiptsView = EidReceipts as any;
-interface HistoryLike { goBack(): void; }
-interface ContainerProps { history: HistoryLike; queryParams: { ids: string; }; }
-interface QueryData { salariesByIds?: unknown[]; }
-
-const EidReceiptsContainer = ({ history, queryParams }: ContainerProps) => {
-  const { data, loading: salariesLoading } = useQuery(salariesByIdsQuery as any, {
-    variables: { ids: queryParams.ids },
-  });
-  const eidReceiptsRef = useRef<any>(null);
-  if (salariesLoading) return null;
-
-  return (
-    <>
-      <PrintControl
-        content={() => eidReceiptsRef.current}
-        trigger={() => (
-          <PrintButton size="large" type="primary" icon={<AntPrinterOutlined />}>
-            Print Receipts
-          </PrintButton>
-        )}
-      />
-      &nbsp;
-      <PrintButton
-        size="large"
-        type="primary"
-        onClick={() => {
-          history.goBack();
-        }}
-      >
-        Back
-      </PrintButton>
-      <AntDivider />
-      <ReceiptsView
-        ref={eidReceiptsRef}
-        salariesByIds={data ? (data as QueryData).salariesByIds : []}
-      />
-    </>
-  );
-};
-
-EidReceiptsContainer.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-  queryParams: PropTypes.object,
-};
-
-const salariesByIdsQuery = gql`
+const EID_RECEIPT_SALARIES_BY_IDS: TypedDocumentNode<
+  EidReceiptSalariesByIdsQuery,
+  EidReceiptSalariesByIdsQueryVariables
+> = gql`
   query eidReceiptSalariesByIds($ids: String!) {
     salariesByIds(ids: $ids) {
       _id
@@ -92,7 +47,54 @@ const salariesByIdsQuery = gql`
   }
 `;
 
-export default flowRight(
-  WithQueryParams(),
-  WithBreadcrumbs(['HR', 'Salary Sheets', 'Eid Receipts'])
-)(EidReceiptsContainer as any);
+interface ContainerProps {
+  history: History;
+}
+
+const EidReceiptsContainer = ({ history }: ContainerProps) => {
+  const { queryParams } = useQueryParams({
+    history,
+    location: history.location,
+    paramNames: ['ids'],
+  });
+  useBreadcrumbs(['HR', 'Salary Sheets', 'Eid Receipts']);
+
+  const ids = queryParams.ids as string;
+  const { data, loading: salariesLoading } = useQuery(EID_RECEIPT_SALARIES_BY_IDS, {
+    variables: { ids },
+  });
+  const eidReceiptsRef = useRef<any>(null);
+  if (salariesLoading) return null;
+
+  const salariesByIds = (data?.salariesByIds ?? []).filter(row => row != null);
+
+  return (
+    <>
+      <ReactToPrint
+        content={() => eidReceiptsRef.current}
+        trigger={() => (
+          <Button size="large" type="primary" icon={<PrinterOutlined />}>
+            Print Receipts
+          </Button>
+        )}
+      />
+      &nbsp;
+      <Button
+        size="large"
+        type="primary"
+        onClick={() => {
+          history.goBack();
+        }}
+      >
+        Back
+      </Button>
+      <Divider />
+      <EidReceipts
+        ref={eidReceiptsRef}
+        salariesByIds={salariesByIds}
+      />
+    </>
+  );
+};
+
+export default EidReceiptsContainer;

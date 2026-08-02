@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import PropTypes from 'prop-types';
+import React, { useRef, type CSSProperties } from 'react';
+import type { FormInstance } from 'antd';
 import { Button, Collapse, Form, Row } from 'antd';
 
 import {
@@ -17,25 +17,62 @@ import {
   useAllMSDuties,
   useAllDutyShifts,
 } from '/imports/ui/modules/hr/common/composers';
+import type {
+  AllJobsQuery,
+  ComposerAllMsDutiesQuery,
+  AllDutyShiftsQuery,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const AntButton = Button as any;
-const AntCollapse = Collapse as any;
-const AntForm = Form as any;
-const AntFormItem = (Form as any).Item;
-const AntRow = Row as any;
-const CheckboxGroupInputField = CheckboxGroupField as any;
-const CnicField = InputCnicField as any;
-const TextField = InputTextField as any;
-const CascaderInputField = CascaderField as any;
-const SelectInputField = SelectField as any;
-const LastTarteebInputField = LastTarteebFilterField as any;
-const RefreshControl = RefreshButton as any;
-type AnyRecord = Record<string, any>;
-interface LabelValue { label: string; value: string; }
-interface Props extends AnyRecord { setPageParams(params: AnyRecord): void; refreshData?: () => Promise<unknown>; }
-interface FilterValues extends AnyRecord { dutyIdShiftId?: string[]; karkunType?: string[]; }
+type Job = NonNullable<NonNullable<AllJobsQuery['allJobs']>[number]>;
+type MSDuty = NonNullable<NonNullable<ComposerAllMsDutiesQuery['allMSDuties']>[number]>;
+type DutyShift = NonNullable<NonNullable<AllDutyShiftsQuery['allDutyShifts']>[number]>;
 
-const ContainerStyle = {
+interface LabelValue {
+  label: string;
+  value: string;
+}
+
+export interface PageParams {
+  pageIndex?: number;
+  pageSize?: number;
+  name?: string | null;
+  cnicNumber?: string | null;
+  phoneNumber?: string | null;
+  bloodGroup?: string | null;
+  lastTarteeb?: string | null;
+  jobId?: string | null;
+  dutyId?: string | null;
+  dutyShiftId?: string | null;
+  karkunType?: string[];
+}
+
+interface FilterFormValues {
+  name?: string;
+  cnicNumber?: string;
+  phoneNumber?: string;
+  bloodGroup?: string;
+  lastTarteeb?: string;
+  jobId?: string;
+  dutyIdShiftId?: string[];
+  karkunType?: string[];
+}
+
+interface Props {
+  name?: string | null;
+  cnicNumber?: string | null;
+  phoneNumber?: string | null;
+  bloodGroup?: string | null;
+  lastTarteeb?: string | null;
+  jobId?: string | null;
+  dutyId?: string | null;
+  dutyShiftId?: string | null;
+  showVolunteers?: string;
+  showEmployees?: string;
+  setPageParams(params: PageParams): void;
+  refreshData?: () => Promise<unknown>;
+}
+
+const ContainerStyle: CSSProperties = {
   width: '500px',
 };
 
@@ -62,7 +99,7 @@ const ListFilter = ({
   showEmployees,
   showVolunteers,
 }: Props) => {
-  const formRef = useRef<any>(null);
+  const formRef = useRef<FormInstance>(null);
   const { allJobs, allJobsLoading } = useAllJobs();
   const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
   const { allDutyShifts, allDutyShiftsLoading } = useAllDutyShifts();
@@ -92,7 +129,7 @@ const ListFilter = ({
     jobId,
     dutyIdShiftId,
     karkunType,
-  }: FilterValues) => {
+  }: FilterFormValues) => {
     setPageParams({
       pageIndex: 0,
       name,
@@ -107,15 +144,17 @@ const ListFilter = ({
     });
   };
 
-  const refreshButton = () => <RefreshControl refreshData={refreshData} />;
+  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
 
   if (allJobsLoading || allMSDutiesLoading || allDutyShiftsLoading)
     return null;
 
-  const dutyShiftCascaderData = getDutyShiftCascaderData(
-    (allMSDuties ?? []) as any,
-    (allDutyShifts ?? []) as any
+  const jobs = (allJobs ?? []).filter((job): job is Job => job != null);
+  const msDuties = (allMSDuties ?? []).filter((duty): duty is MSDuty => duty != null);
+  const dutyShifts = (allDutyShifts ?? []).filter(
+    (shift): shift is DutyShift => shift != null
   );
+  const dutyShiftCascaderData = getDutyShiftCascaderData(msDuties, dutyShifts);
 
   const karkunTypes: string[] = [];
   if (!showVolunteers || showVolunteers === 'true')
@@ -123,16 +162,16 @@ const ListFilter = ({
   if (!showEmployees || showEmployees === 'true') karkunTypes.push('employees');
 
   return (
-    <AntCollapse
-      style={ContainerStyle as any}
+    <Collapse
+      style={ContainerStyle}
       items={[
         {
           key: '1',
           label: 'Filter',
           extra: refreshButton(),
           children: (
-            <AntForm ref={formRef} layout="horizontal" onFinish={handleFinish}>
-              <CheckboxGroupInputField
+            <Form ref={formRef} layout="horizontal" onFinish={handleFinish}>
+              <CheckboxGroupField
                 fieldName="karkunType"
                 fieldLabel="Karkun Type"
                 fieldLayout={formItemLayout}
@@ -142,14 +181,14 @@ const ListFilter = ({
                 ]}
                 initialValue={karkunTypes}
               />
-              <TextField
+              <InputTextField
                 fieldName="name"
                 fieldLabel="Name"
                 required={false}
                 fieldLayout={formItemLayout}
                 initialValue={name}
               />
-              <CnicField
+              <InputCnicField
                 fieldName="cnicNumber"
                 fieldLabel="CNIC Number"
                 required={false}
@@ -157,14 +196,14 @@ const ListFilter = ({
                 fieldLayout={formItemLayout}
                 initialValue={cnicNumber}
               />
-              <TextField
+              <InputTextField
                 fieldName="phoneNumber"
                 fieldLabel="Phone Number"
                 required={false}
                 fieldLayout={formItemLayout}
                 initialValue={phoneNumber}
               />
-              <SelectInputField
+              <SelectField<LabelValue>
                 fieldName="bloodGroup"
                 fieldLabel="Blood Group"
                 required={false}
@@ -178,29 +217,29 @@ const ListFilter = ({
                   { label: 'O-', value: 'O-' },
                   { label: 'O+', value: 'Oplus' },
                 ]}
-                getDataValue={({ value }: LabelValue) => value}
-                getDataText={({ label }: LabelValue) => label}
+                getDataValue={({ value }) => value}
+                getDataText={({ label }) => label}
                 fieldLayout={formItemLayout}
                 initialValue={bloodGroup}
               />
-              <LastTarteebInputField
+              <LastTarteebFilterField
                 fieldName="lastTarteeb"
                 fieldLabel="Last Tarteeb"
                 required={false}
                 fieldLayout={formItemLayout}
                 initialValue={lastTarteeb}
               />
-              <SelectInputField
+              <SelectField<Job>
                 fieldName="jobId"
                 fieldLabel="Job"
                 required={false}
-                data={allJobs}
-                getDataValue={({ _id }: AnyRecord) => _id}
-                getDataText={({ name: _name }: AnyRecord) => _name}
+                data={jobs}
+                getDataValue={({ _id }) => _id ?? ''}
+                getDataText={({ name: jobName }) => jobName ?? ''}
                 fieldLayout={formItemLayout}
                 initialValue={jobId}
               />
-              <CascaderInputField
+              <CascaderField
                 data={dutyShiftCascaderData}
                 fieldName="dutyIdShiftId"
                 fieldLabel="Duty/Shift"
@@ -208,42 +247,23 @@ const ListFilter = ({
                 initialValue={[dutyId, dutyShiftId]}
                 required={false}
               />
-              <AntFormItem {...buttonItemLayout}>
-                <AntRow type="flex" justify="end">
-                  <AntButton type="default" onClick={handleReset}>
+              <Form.Item {...buttonItemLayout}>
+                <Row justify="end">
+                  <Button type="default" onClick={handleReset}>
                     Reset
-                  </AntButton>
+                  </Button>
                   &nbsp;
-                  <AntButton type="primary" htmlType="submit">
+                  <Button type="primary" htmlType="submit">
                     Search
-                  </AntButton>
-                </AntRow>
-              </AntFormItem>
-            </AntForm>
+                  </Button>
+                </Row>
+              </Form.Item>
+            </Form>
           ),
         },
       ]}
     />
   );
-};
-
-ListFilter.propTypes = {
-  name: PropTypes.string,
-  cnicNumber: PropTypes.string,
-  phoneNumber: PropTypes.string,
-  bloodGroup: PropTypes.string,
-  lastTarteeb: PropTypes.string,
-  jobId: PropTypes.string,
-  dutyId: PropTypes.string,
-  dutyShiftId: PropTypes.string,
-  showVolunteers: PropTypes.string,
-  showEmployees: PropTypes.string,
-  setPageParams: PropTypes.func,
-  refreshData: PropTypes.func,
-};
-
-ListFilter.defaultProps = {
-  cnicNumber: '',
 };
 
 export default ListFilter;

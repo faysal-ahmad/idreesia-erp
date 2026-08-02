@@ -1,20 +1,38 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import List from '../list/list';
+import { type PageParams } from '../list/list-filter';
 
-const KarkunList = List as any;
-interface SelectionValue { _id?: string; name?: string; sharedData?: { name?: string }; }
-interface ListContainerProps { setSelectedValue?(value: SelectionValue): void; predefinedFilterName?: string; predefinedFilterStoreId?: string; }
-interface ListContainerState { pageIndex: number; pageSize: number; name: string | null; cnicNumber: string | null; phoneNumber: string | null; bloodGroup: string | null; jobId: string | null; dutyId: string | null; dutyShiftId: string | null; karkunType: string[]; }
+interface SelectionValue {
+  _id?: string;
+  name?: string;
+  sharedData?: { name?: string };
+}
 
-export default class ListContainer extends Component<ListContainerProps, ListContainerState> {
-  static propTypes = {
-    setSelectedValue: PropTypes.func,
-    predefinedFilterName: PropTypes.string,
-  };
+interface ListContainerProps {
+  setSelectedValue?(value: SelectionValue): void;
+  predefinedFilterName?: string;
+  predefinedFilterStoreId?: string;
+}
 
-  state = {
+interface ListContainerState {
+  pageIndex: number;
+  pageSize: number;
+  name: string | null;
+  cnicNumber: string | null;
+  phoneNumber: string | null;
+  bloodGroup: string | null;
+  jobId: string | null;
+  dutyId: string | null;
+  dutyShiftId: string | null;
+  karkunType: string[];
+}
+
+export default class ListContainer extends Component<
+  ListContainerProps,
+  ListContainerState
+> {
+  state: ListContainerState = {
     pageIndex: 0,
     pageSize: 20,
     name: null,
@@ -28,7 +46,10 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
   };
 
   setPageParams = (pageParams: Partial<ListContainerState>) => {
-    this.setState(pageParams as any);
+    this.setState(prevState => ({
+      ...prevState,
+      ...pageParams,
+    }));
   };
 
   render() {
@@ -52,20 +73,28 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
       karkunType.indexOf('employees') !== -1 ? 'true' : 'false';
 
     return (
-      <KarkunList
+      <List
         pageIndex={pageIndex}
         pageSize={pageSize}
-        name={name}
-        cnicNumber={cnicNumber}
-        phoneNumber={phoneNumber}
-        bloodGroup={bloodGroup}
-        jobId={jobId}
-        dutyId={dutyId}
-        dutyShiftId={dutyShiftId}
+        name={name ?? undefined}
+        cnicNumber={cnicNumber ?? undefined}
+        phoneNumber={phoneNumber ?? undefined}
+        bloodGroup={bloodGroup ?? undefined}
+        jobId={jobId ?? undefined}
+        dutyId={dutyId ?? undefined}
+        dutyShiftId={dutyShiftId ?? undefined}
         showVolunteers={showVolunteers}
         showEmployees={showEmployees}
-        setPageParams={this.setPageParams}
-        handleItemSelected={setSelectedValue}
+        setPageParams={this.setPageParams as (params: PageParams) => void}
+        handleItemSelected={
+          setSelectedValue
+            ? record =>
+                setSelectedValue({
+                  _id: record._id ?? undefined,
+                  name: record.name ?? undefined,
+                })
+            : undefined
+        }
         showPhoneNumbersColumn={false}
         showDutiesColumn
         showActionsColumn={false}

@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  UpdateHrKarkunMutation,
+  UpdateHrKarkunMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const UPDATE_HR_KARKUN = gql`
+const UPDATE_HR_KARKUN: TypedDocumentNode<
+  UpdateHrKarkunMutation,
+  UpdateHrKarkunMutationVariables
+> = gql`
   mutation updateHrKarkun(
     $_id: String!
     $name: String!

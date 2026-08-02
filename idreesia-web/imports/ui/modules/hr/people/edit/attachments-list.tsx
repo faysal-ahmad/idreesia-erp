@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { type match } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client/react';
 
 import { message } from 'antd';
@@ -11,19 +11,14 @@ import {
   REMOVE_HR_KARKUN_ATTACHMENT,
 } from '../gql';
 
-const AttachmentsListControlComponent = AttachmentsListControl as any;
-type AnyRecord = Record<string, any>;
-interface MatchLike { params: { karkunId: string; }; }
-interface QueryData { hrKarkunById?: AnyRecord | null; }
-interface Props { match: MatchLike; karkunId?: string | null; }
+interface Props { match: match<{ karkunId: string }>; karkunId: string; }
 
-const AttachmentsList = ({ match, karkunId }: Props) => {
-  const { data, loading } = useQuery(HR_KARKUN_BY_ID as any, {
+const AttachmentsList = ({ karkunId, match }: Props) => {
+  const { data, loading } = useQuery(HR_KARKUN_BY_ID, {
     variables: { _id: match.params.karkunId },
   });
-  const [addHrKarkunAttachment] = useMutation(ADD_HR_KARKUN_ATTACHMENT as any);
-  const [removeHrKarkunAttachment] = useMutation(REMOVE_HR_KARKUN_ATTACHMENT as any);
-  const { hrKarkunById } = (data ?? {}) as QueryData;
+  const [addHrKarkunAttachment] = useMutation(ADD_HR_KARKUN_ATTACHMENT);
+  const [removeHrKarkunAttachment] = useMutation(REMOVE_HR_KARKUN_ATTACHMENT);
 
   const handleAttachmentAdded = (attachmentId: string) => {
     addHrKarkunAttachment({
@@ -50,21 +45,14 @@ const AttachmentsList = ({ match, karkunId }: Props) => {
   if (loading) return null;
 
   return (
-    <AttachmentsListControlComponent
+    <AttachmentsListControl
       canUploadDocument
       canEditAttachments
-      attachments={hrKarkunById?.attachments ?? []}
+      attachments={(data?.hrKarkunById?.attachments ?? []) as any}
       handleAttachmentAdded={handleAttachmentAdded}
       handleAttachmentRemoved={handleAttachmentRemoved}
     />
   );
-};
-
-AttachmentsList.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
-  location: PropTypes.object,
-  karkunId: PropTypes.string,
 };
 
 export default AttachmentsList;

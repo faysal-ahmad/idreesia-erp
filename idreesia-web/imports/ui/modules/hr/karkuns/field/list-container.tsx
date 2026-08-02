@@ -1,21 +1,45 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import List from '../list/list';
+import type { PageParams } from '../list/list-filter';
+import type { HrKarkunsPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 
-const KarkunList = List as any;
-interface SelectionValue { _id?: string; name?: string; sharedData?: { name?: string }; }
-interface ListContainerProps { setSelectedValue?(value: SelectionValue): void; predefinedFilterName?: string; predefinedFilterStoreId?: string; }
-interface ListContainerState { pageIndex: number; pageSize: number; name: string | null; cnicNumber: string | null; phoneNumber: string | null; bloodGroup: string | null; jobId: string | null; dutyId: string | null; dutyShiftId: string | null; karkunType: string[]; }
+type KarkunRow = NonNullable<
+  NonNullable<
+    NonNullable<HrKarkunsPagedHrKarkunsQuery['pagedHrKarkuns']>['karkuns']
+  >[number]
+>;
 
-export default class ListContainer extends Component<ListContainerProps, ListContainerState> {
-  static propTypes = {
-    setSelectedValue: PropTypes.func,
-    predefinedFilterName: PropTypes.string,
-    predefinedFilterStoreId: PropTypes.string,
-  };
+interface SelectionValue {
+  _id?: string;
+  name?: string;
+  sharedData?: { name?: string };
+}
 
-  state = {
+interface ListContainerProps {
+  setSelectedValue?(value: SelectionValue): void;
+  predefinedFilterName?: string;
+  predefinedFilterStoreId?: string;
+}
+
+interface ListContainerState {
+  pageIndex: number;
+  pageSize: number;
+  name: string | null;
+  cnicNumber: string | null;
+  phoneNumber: string | null;
+  bloodGroup: string | null;
+  jobId: string | null;
+  dutyId: string | null;
+  dutyShiftId: string | null;
+  karkunType: string[];
+}
+
+export default class ListContainer extends Component<
+  ListContainerProps,
+  ListContainerState
+> {
+  state: ListContainerState = {
     pageIndex: 0,
     pageSize: 20,
     name: null,
@@ -28,12 +52,16 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
     karkunType: ['volunteers', 'employees'],
   };
 
-  setPageParams = (pageParams: Partial<ListContainerState>) => {
-    this.setState(pageParams as any);
+  setPageParams = (pageParams: PageParams) => {
+    this.setState((prevState) => ({
+      ...prevState,
+      ...pageParams,
+    }));
   };
 
   render() {
-    const { predefinedFilterName, predefinedFilterStoreId, setSelectedValue } = this.props;
+    const { predefinedFilterName, predefinedFilterStoreId, setSelectedValue } =
+      this.props;
     const {
       pageIndex,
       pageSize,
@@ -53,7 +81,7 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
       karkunType.indexOf('employees') !== -1 ? 'true' : 'false';
 
     return (
-      <KarkunList
+      <List
         pageIndex={pageIndex}
         pageSize={pageSize}
         name={name}
@@ -66,7 +94,7 @@ export default class ListContainer extends Component<ListContainerProps, ListCon
         showVolunteers={showVolunteers}
         showEmployees={showEmployees}
         setPageParams={this.setPageParams}
-        handleItemSelected={setSelectedValue}
+        handleItemSelected={setSelectedValue as (record: KarkunRow) => void}
         showPhoneNumbersColumn={false}
         showDutiesColumn
         showActionsColumn={false}

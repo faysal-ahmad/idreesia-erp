@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
+
+const RouterLink = Link as any;
 import { UserOutlined } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from 'antd';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
-const NameDivStyle = {
+const NameDivStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
   justifyContent: 'flex-start',
@@ -17,16 +18,20 @@ const NameDivStyle = {
   cursor: 'pointer',
 };
 
-const AntAvatar = Avatar as any;
-const AntModal = Modal as any;
-const AntUserOutlined = UserOutlined as any;
-const RouterLink = Link as any;
-interface Karkun { _id: string; name: string; imageId?: string; }
-interface KarkunNameProps { karkun?: Karkun | null; onKarkunNameClicked?(karkun: Karkun): void; }
+interface Karkun {
+  _id?: string | null;
+  name?: string | null;
+  imageId?: string | null;
+}
+
+interface KarkunNameProps {
+  karkun?: Karkun | null;
+  onKarkunNameClicked?(karkun: Karkun): void;
+}
 
 const KarkunName = ({ karkun, onKarkunNameClicked }: KarkunNameProps) => {
   const [showDialog, setShowDialog] = useState(false);
-  if (!karkun) return null;
+  if (!karkun || !karkun._id || !karkun.name) return null;
 
   const nameNode = onKarkunNameClicked ? (
     <div
@@ -41,11 +46,11 @@ const KarkunName = ({ karkun, onKarkunNameClicked }: KarkunNameProps) => {
   );
 
   let imageUrl: string | undefined;
-  let avatarNode = <AntAvatar shape="square" size="large" icon={<AntUserOutlined />} />;
+  let avatarNode = <Avatar shape="square" size="large" icon={<UserOutlined />} />;
   if (karkun.imageId) {
     imageUrl = getDownloadUrl(karkun.imageId) ?? undefined;
     avatarNode = (
-      <AntAvatar
+      <Avatar
         shape="square"
         size="large"
         src={imageUrl}
@@ -58,26 +63,21 @@ const KarkunName = ({ karkun, onKarkunNameClicked }: KarkunNameProps) => {
 
   return (
     <>
-      <div style={NameDivStyle as any}>
+      <div style={NameDivStyle}>
         {avatarNode}
         &nbsp;&nbsp;
         {nameNode}
       </div>
-      <AntModal
+      <Modal
         title={karkun.name}
         open={showDialog}
         onCancel={() => setShowDialog(false)}
         footer={null}
       >
         {imageUrl ? <img src={imageUrl} style={{ maxWidth: '470px' }} alt={karkun.name} /> : null}
-      </AntModal>
+      </Modal>
     </>
   );
-};
-
-KarkunName.propTypes = {
-  karkun: PropTypes.object,
-  onKarkunNameClicked: PropTypes.func,
 };
 
 export default KarkunName;

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, type CSSProperties } from 'react';
+import dayjs, { type Dayjs } from 'dayjs';
 import { useQuery } from '@apollo/client/react';
 import FileSaver from 'file-saver';
 import {
@@ -30,72 +30,82 @@ import {
 } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { CardTypes } from 'meteor/idreesia-common/constants/hr';
+import type {
+  AllDutyShiftsQuery,
+  AllJobsQuery,
+  AttendanceByMonthQuery,
+  ComposerAllMsDutiesQuery,
+} from 'meteor/idreesia-common/types/client-operations';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 
 import { ATTENDANCE_BY_MONTH } from '../gql';
+import type { AttendanceSheetsPageParams } from './list-container';
 
-const AntButton = Button as any;
-const AntCascader = Cascader as any;
-const AntDatePicker = DatePicker as any;
-const AntDropdown = Dropdown as any;
-const AntModal = Modal as any;
-const AntPopconfirm = Popconfirm as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntDownloadOutlined = DownloadOutlined as any;
-const AntEditOutlined = EditOutlined as any;
-const AntImportOutlined = ImportOutlined as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-const AntSettingOutlined = SettingOutlined as any;
-const AntPrinterOutlined = PrinterOutlined as any;
-const AntLeftOutlined = LeftOutlined as any;
-const AntRightOutlined = RightOutlined as any;
-const KarkunNameDisplay = KarkunName as any;
-type AnyRecord = Record<string, any>;
-interface ListProps extends AnyRecord { selectedMonth: any; selectedCategoryId?: string; selectedSubCategoryId?: string; allJobs: AnyRecord[]; allMSDuties: AnyRecord[]; allDutyShifts: AnyRecord[]; attendanceByMonth?: AnyRecord[]; setPageParams(params: AnyRecord): void; }
-interface ListState { selectedRows: AnyRecord[]; }
+type AttendanceRow = NonNullable<
+  NonNullable<AttendanceByMonthQuery['attendanceByMonth']>[number]
+>;
 
-const CascaderStyle = {
+export type AttendanceListRow = AttendanceRow & { _id: string };
+
+type JobRow = NonNullable<
+  NonNullable<AllJobsQuery['allJobs']>[number]
+> & { _id: string; name: string };
+
+type MSDutyRow = NonNullable<
+  NonNullable<ComposerAllMsDutiesQuery['allMSDuties']>[number]
+> & { _id: string; name: string };
+
+type DutyShiftRow = NonNullable<
+  NonNullable<AllDutyShiftsQuery['allDutyShifts']>[number]
+> & { _id: string; name: string; dutyId: string };
+
+export interface ListProps {
+  selectedMonth: Dayjs;
+  selectedCategoryId?: string;
+  selectedSubCategoryId?: string;
+  allJobs: JobRow[];
+  allMSDuties: MSDutyRow[];
+  allDutyShifts: DutyShiftRow[];
+  attendanceByMonth?: AttendanceRow[];
+  attendanceLoading?: boolean;
+  setPageParams(
+    params: Partial<Omit<AttendanceSheetsPageParams, 'selectedMonth'>> & {
+      selectedMonth?: Dayjs;
+    }
+  ): void;
+  handleItemSelected(karkun: { _id: string }): void;
+  handleCreateMissingAttendances(): void;
+  handleEditAttendance(attendance: AttendanceListRow): void;
+  handleImportFromGoogleSheet(): void;
+  handleViewMeetingCards(rows: AttendanceListRow[], cardType: string): void;
+  handleViewKarkunCards(rows: AttendanceListRow[]): void;
+  handlePrintKarkunsList(rows: AttendanceListRow[]): void;
+  handlePrintAttendanceSheet(): void;
+  handleDeleteSelectedAttendances(rows: AttendanceListRow[]): void;
+  handleDeleteAllAttendances(): void;
+}
+
+interface ListState {
+  selectedRows: AttendanceListRow[];
+}
+
+const CascaderStyle: CSSProperties = {
   width: '300px',
 };
 
 export class List extends Component<ListProps, ListState> {
-  static propTypes = {
-    selectedMonth: PropTypes.object,
-    selectedCategoryId: PropTypes.string,
-    selectedSubCategoryId: PropTypes.string,
-    allJobs: PropTypes.array,
-    allMSDuties: PropTypes.array,
-    allDutyShifts: PropTypes.array,
-
-    attendanceByMonth: PropTypes.array,
-    attendanceLoading: PropTypes.bool,
-    setPageParams: PropTypes.func,
-    handleItemSelected: PropTypes.func,
-    handleCreateMissingAttendances: PropTypes.func,
-    handleEditAttendance: PropTypes.func,
-    handleImportFromGoogleSheet: PropTypes.func,
-    handleViewMeetingCards: PropTypes.func,
-    handleViewKarkunCards: PropTypes.func,
-    handlePrintKarkunsList: PropTypes.func,
-    handlePrintAttendanceSheet: PropTypes.func,
-    handleDeleteSelectedAttendances: PropTypes.func,
-    handleDeleteAllAttendances: PropTypes.func,
-  };
-
   state = {
-    selectedRows: [],
+    selectedRows: [] as AttendanceListRow[],
   };
 
-  columns = [
+  columns: any[] = [
     {
       title: 'Name',
       dataIndex: 'karkun.name',
       key: 'karkun.name',
-      render: (_text: any, record: AnyRecord) => (
-        <KarkunNameDisplay
-          karkun={record.karkun}
+      render: (_text: unknown, record: AttendanceListRow) => (
+        <KarkunName
+          karkun={record.karkun ?? undefined}
           onKarkunNameClicked={this.props.handleItemSelected}
         />
       ),
@@ -103,17 +113,14 @@ export class List extends Component<ListProps, ListState> {
     {
       title: 'Job / Duty / Shift',
       key: 'shift.name',
-      render: (text: any, record: AnyRecord) => {
-        let name;
-        if (record.job) {
-          name = record.job.name;
-        } else {
-          name = record.duty.name;
-          if (record.shift) {
-            name = `${name} - ${record.shift.name}`;
-          }
+      render: (_text: unknown, record: AttendanceListRow) => {
+        if (record.job?.name) {
+          return record.job.name;
         }
-
+        let name = record.duty?.name ?? '';
+        if (record.shift?.name) {
+          name = `${name} - ${record.shift.name}`;
+        }
         return name;
       },
     },
@@ -121,38 +128,38 @@ export class List extends Component<ListProps, ListState> {
       title: 'Present',
       dataIndex: 'presentCount',
       key: 'presentCount',
-      render: (text: any) => text || '0',
+      render: (text: number | null) => text || '0',
     },
     {
       title: 'Absent',
       dataIndex: 'absentCount',
       key: 'absentCount',
-      render: (text: any) => text || '0',
+      render: (text: number | null) => text || '0',
     },
     {
       title: 'Percentage',
       dataIndex: 'percentage',
       key: 'percentage',
-      render: (text: any) => `${text}%`,
+      render: (text: number | null) => `${text}%`,
     },
     {
       key: 'action',
-      render: (text: any, record: AnyRecord) => {
+      render: (_text: unknown, record: AttendanceListRow) => {
         const {
           handleEditAttendance,
           handleDeleteSelectedAttendances,
         } = this.props;
         return (
           <div className="list-actions-column">
-            <AntTooltip key="edit" title="Edit">
-              <AntEditOutlined
+            <Tooltip key="edit" title="Edit">
+              <EditOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleEditAttendance(record);
                 }}
               />
-            </AntTooltip>
-            <AntPopconfirm
+            </Tooltip>
+            <Popconfirm
               title="Are you sure you want to delete this attendance record?"
               onConfirm={() => {
                 handleDeleteSelectedAttendances([record]);
@@ -160,10 +167,10 @@ export class List extends Component<ListProps, ListState> {
               okText="Yes"
               cancelText="No"
             >
-              <AntTooltip key="delete" title="Delete">
-                <AntDeleteOutlined className="list-actions-icon" />
-              </AntTooltip>
-            </AntPopconfirm>
+              <Tooltip key="delete" title="Delete">
+                <DeleteOutlined className="list-actions-icon" />
+              </Tooltip>
+            </Popconfirm>
           </div>
         );
       },
@@ -171,14 +178,15 @@ export class List extends Component<ListProps, ListState> {
   ];
 
   rowSelection = {
-    onChange: (_selectedRowKeys: React.Key[], selectedRows: AnyRecord[]) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: AttendanceListRow[]) => {
       this.setState({
         selectedRows,
       });
     },
   };
 
-  handleMonthChange = (value: any) => {
+  handleMonthChange = (value: Dayjs | null) => {
+    if (!value) return;
     const { setPageParams } = this.props;
     setPageParams({
       selectedMonth: value,
@@ -199,11 +207,11 @@ export class List extends Component<ListProps, ListState> {
     });
   };
 
-  handleSelectionChange = (value: string[]) => {
+  handleSelectionChange = (value: (string | number)[]) => {
     const { setPageParams } = this.props;
     setPageParams({
-      selectedCategoryId: value[0],
-      selectedSubCategoryId: value[1],
+      selectedCategoryId: String(value[0] ?? ''),
+      selectedSubCategoryId: value[1] != null ? String(value[1]) : '',
     });
   };
 
@@ -234,16 +242,18 @@ export class List extends Component<ListProps, ListState> {
 
   handleDownloadAsCSV = () => {
     const { attendanceByMonth } = this.props;
-    const sortedAttendanceByMonth = sortBy(attendanceByMonth ?? [], 'karkun.name');
+    const sortedAttendanceByMonth = sortBy(attendanceByMonth ?? [], row => row?.karkun?.name);
 
     const header = 'Name, CNIC, Phone No., Present, Absent, Percetage \r\n';
-    const rows = sortedAttendanceByMonth.map(
-      (attendance: AnyRecord) =>
-        `${attendance.karkun.name}, ${attendance.karkun.cnicNumber ||
+    const rows = sortedAttendanceByMonth
+      .map((attendance) => {
+        if (!attendance.karkun) return '';
+        return `${attendance.karkun.name}, ${attendance.karkun.cnicNumber ||
           ''}, ${attendance.karkun.contactNumber1 || ''}, ${
           attendance.presentCount
-        }, ${attendance.absentCount}, ${attendance.percentage}`
-    );
+        }, ${attendance.absentCount}, ${attendance.percentage}`;
+      })
+      .filter(Boolean);
     const csvContent = `${header}${rows.join('\r\n')}`;
 
     const blob = new Blob([csvContent], {
@@ -256,7 +266,7 @@ export class List extends Component<ListProps, ListState> {
     const { selectedRows } = this.state;
     const { handleDeleteSelectedAttendances } = this.props;
     if (handleDeleteSelectedAttendances) {
-      AntModal.confirm({
+      Modal.confirm({
         title: 'Delete Attendances',
         content:
           'Are you sure you want to delete the selected attendance records?',
@@ -270,7 +280,7 @@ export class List extends Component<ListProps, ListState> {
   _handleDeleteAllAttendances = () => {
     const { handleDeleteAllAttendances } = this.props;
     if (handleDeleteAllAttendances) {
-      AntModal.confirm({
+      Modal.confirm({
         title: 'Delete All Attendances',
         content:
           'Are you sure you want to delete all attendance records for the selected duty/shift/job in the month?',
@@ -293,35 +303,35 @@ export class List extends Component<ListProps, ListState> {
     const jobsItem = {
       label: 'All Jobs',
       value: 'all_jobs',
-      children: allJobs.map((job: AnyRecord) => ({
+      children: allJobs.map(job => ({
         value: job._id,
         label: job.name,
       })),
     };
 
-    const dutiesData = allMSDuties.map((duty: AnyRecord) => {
+    const dutiesData = allMSDuties.map(duty => {
       const dutyShifts = filter(
         allDutyShifts,
-        (dutyShift: AnyRecord) => dutyShift.dutyId === duty._id
+        dutyShift => dutyShift.dutyId === duty._id
       );
-      const dataItem = {
+      return {
         label: duty.name,
         value: duty._id,
-        children: dutyShifts.map((dutyShift: AnyRecord) => ({
+        children: dutyShifts.map(dutyShift => ({
           value: dutyShift._id,
           label: dutyShift.name,
         })),
       };
-
-      return dataItem;
     });
 
     const data = [jobsItem].concat(dutiesData);
     return (
-      <AntCascader
+      <Cascader
         style={CascaderStyle}
         onChange={this.handleSelectionChange}
-        defaultValue={[selectedCategoryId, selectedSubCategoryId]}
+        defaultValue={[selectedCategoryId, selectedSubCategoryId].filter(
+          (value): value is string => value != null && value !== ''
+        )}
         options={data}
         expandTrigger="hover"
         changeOnSelect
@@ -340,7 +350,7 @@ export class List extends Component<ListProps, ListState> {
         key: '1',
         label: (
           <>
-            <AntPlusCircleOutlined />&nbsp;
+            <PlusCircleOutlined />&nbsp;
             Create Missing Attendances
           </>
         ),
@@ -350,7 +360,7 @@ export class List extends Component<ListProps, ListState> {
         key: '2',
         label: (
           <>
-            <AntDownloadOutlined />&nbsp;
+            <DownloadOutlined />&nbsp;
             Download as CSV
           </>
         ),
@@ -360,17 +370,17 @@ export class List extends Component<ListProps, ListState> {
         key: '4',
         label: (
           <>
-            <AntImportOutlined />&nbsp;
+            <ImportOutlined />&nbsp;
             Import from Google Sheets
           </>
         ),
         onClick: handleImportFromGoogleSheet,
       },
-      { type: 'divider' },
+      { type: 'divider' as const },
       {
         key: '5',
         label: 'Print',
-        icon: <AntPrinterOutlined />,
+        icon: <PrinterOutlined />,
         children: [
           {
             key: '5-1',
@@ -378,19 +388,19 @@ export class List extends Component<ListProps, ListState> {
             onClick: () =>
               this.handleViewMeetingCards(CardTypes.NAAM_I_MUBARIK_MEETING),
           },
-          { type: 'divider' },
+          { type: 'divider' as const },
           {
             key: '5-2',
             label: 'Karkun Cards',
             onClick: () => this.handleViewKarkunCards(),
           },
-          { type: 'divider' },
+          { type: 'divider' as const },
           {
             key: '5-3',
             label: 'Karkuns List',
             onClick: () => this.handlePrintKarkunsList(),
           },
-          { type: 'divider' },
+          { type: 'divider' as const },
           {
             key: '5-4',
             label: 'Attendance Sheet',
@@ -398,12 +408,12 @@ export class List extends Component<ListProps, ListState> {
           },
         ],
       },
-      { type: 'divider' },
+      { type: 'divider' as const },
       {
         key: '6',
         label: (
           <>
-            <AntDeleteOutlined />&nbsp;
+            <DeleteOutlined />&nbsp;
             Delete Selected Attendances
           </>
         ),
@@ -413,7 +423,7 @@ export class List extends Component<ListProps, ListState> {
         key: '7',
         label: (
           <>
-            <AntDeleteOutlined />&nbsp;
+            <DeleteOutlined />&nbsp;
             Delete All Attendances
           </>
         ),
@@ -422,9 +432,9 @@ export class List extends Component<ListProps, ListState> {
     ];
 
     return (
-      <AntDropdown menu={{ items: menuItems }}>
-        <AntButton icon={<AntSettingOutlined />}>Actions</AntButton>
-      </AntDropdown>
+      <Dropdown menu={{ items: menuItems }}>
+        <Button icon={<SettingOutlined />}>Actions</Button>
+      </Dropdown>
     );
   };
 
@@ -435,24 +445,24 @@ export class List extends Component<ListProps, ListState> {
         <div className="list-table-header-section">
           {this.getDutyShiftSelector()}
           &nbsp;&nbsp;
-          <AntButton
+          <Button
             type="primary"
             shape="circle"
-            icon={<AntLeftOutlined />}
+            icon={<LeftOutlined />}
             onClick={this.handleMonthGoBack}
           />
           &nbsp;&nbsp;
-          <AntDatePicker.MonthPicker
+          <DatePicker.MonthPicker
             allowClear={false}
             format="MMM, YYYY"
             onChange={this.handleMonthChange}
             value={selectedMonth}
           />
           &nbsp;&nbsp;
-          <AntButton
+          <Button
             type="primary"
             shape="circle"
-            icon={<AntRightOutlined />}
+            icon={<RightOutlined />}
             onClick={this.handleMonthGoForward}
           />
         </div>
@@ -463,11 +473,13 @@ export class List extends Component<ListProps, ListState> {
 
   render() {
     const { attendanceByMonth } = this.props;
-    const filterAttendanceByMonth = filter(attendanceByMonth, attendance => !!attendance.karkun)
-    const sortedAttendanceByMonth = sortBy(filterAttendanceByMonth, 'karkun.name');
+    const filterAttendanceByMonth = (attendanceByMonth ?? []).filter(
+      attendance => attendance?.karkun && attendance._id
+    ) as AttendanceListRow[];
+    const sortedAttendanceByMonth = sortBy(filterAttendanceByMonth, row => row.karkun?.name);
 
     return (
-      <AntTable
+      <Table
         rowKey="_id"
         size="small"
         title={this.getTableHeader}
@@ -483,7 +495,7 @@ export class List extends Component<ListProps, ListState> {
 
 const ListWithAttendance = (props: ListProps) => {
   const { selectedMonth, selectedCategoryId, selectedSubCategoryId } = props;
-  const { data, loading, ...queryResult } = useQuery(ATTENDANCE_BY_MONTH as any, {
+  const { data, loading } = useQuery(ATTENDANCE_BY_MONTH, {
     variables: {
       month: selectedMonth.format(Formats.DATE_FORMAT),
       categoryId: selectedCategoryId,
@@ -495,17 +507,11 @@ const ListWithAttendance = (props: ListProps) => {
     <List
       {...props}
       attendanceLoading={loading}
-      loading={loading}
-      {...queryResult}
-      {...(data || {})}
+      attendanceByMonth={(data?.attendanceByMonth ?? undefined)?.filter(
+        (row): row is AttendanceRow => row != null
+      )}
     />
   );
-};
-
-ListWithAttendance.propTypes = {
-  selectedMonth: PropTypes.object,
-  selectedCategoryId: PropTypes.string,
-  selectedSubCategoryId: PropTypes.string,
 };
 
 export default ListWithAttendance;

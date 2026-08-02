@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  SetHrKarkunWazaifAndRaabtaMutation,
+  SetHrKarkunWazaifAndRaabtaMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 
-const SET_HR_KARKUN_WAZAIF_AND_RAABTA = gql`
+const SET_HR_KARKUN_WAZAIF_AND_RAABTA: TypedDocumentNode<
+  SetHrKarkunWazaifAndRaabtaMutation,
+  SetHrKarkunWazaifAndRaabtaMutationVariables
+> = gql`
   mutation setHrKarkunWazaifAndRaabta(
     $_id: String!
     $lastTarteebDate: String

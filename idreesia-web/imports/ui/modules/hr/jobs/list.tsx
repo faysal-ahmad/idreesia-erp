@@ -1,34 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
+
+const RouterLink = Link as any;
 import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { type History } from 'history';
 
-import { WithBreadcrumbs } from 'meteor/idreesia-common/composers/common';
+import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import type {
+  RemoveJobMutation,
+  RemoveJobMutationVariables,
+} from 'meteor/idreesia-common/types/client-operations';
 import { Button, Table, Tooltip, message } from 'antd';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { useAllJobs } from '/imports/ui/modules/hr/common/composers';
 
-const removeJobMutation = gql`
+const REMOVE_JOB: TypedDocumentNode<
+  RemoveJobMutation,
+  RemoveJobMutationVariables
+> = gql`
   mutation removeJob($_id: String!) {
     removeJob(_id: $_id)
   }
 `;
 
-const RouterLink = Link as any;
-const AntButton = Button as any;
-const AntTable = Table as any;
-const AntTooltip = Tooltip as any;
-const AntDeleteOutlined = DeleteOutlined as any;
-const AntPlusCircleOutlined = PlusCircleOutlined as any;
-interface HistoryLike { push(path: string): void; }
-interface ListProps { history: HistoryLike; }
-interface ListRecord { _id: string; name: string; description?: string; usedCount?: number; }
+interface ListProps {
+  history: History;
+}
+
+type JobRow = {
+  _id: string;
+  name: string;
+  description?: string | null;
+  usedCount?: number | null;
+};
 
 const List = ({ history }: ListProps) => {
+  useBreadcrumbs(['HR', 'Jobs', 'List']);
   const { allJobs, allJobsLoading } = useAllJobs();
-  const [removeJob] = useMutation(removeJobMutation as any, {
+  const [removeJob] = useMutation(REMOVE_JOB, {
     refetchQueries: ['allJobs'],
   });
 
@@ -36,7 +48,7 @@ const List = ({ history }: ListProps) => {
     history.push(paths.jobsNewFormPath);
   };
 
-  const handleDeleteClicked = (record: ListRecord) => {
+  const handleDeleteClicked = (record: JobRow) => {
     removeJob({
       variables: {
         _id: record._id,
@@ -51,7 +63,7 @@ const List = ({ history }: ListProps) => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, record: ListRecord) => (
+      render: (text: string, record: JobRow) => (
         <RouterLink to={`${paths.jobsEditFormPath(record._id)}`}>{text}</RouterLink>
       ),
     },
@@ -67,17 +79,17 @@ const List = ({ history }: ListProps) => {
     },
     {
       key: 'action',
-      render: (_text: unknown, record: ListRecord) => {
+      render: (_text: unknown, record: JobRow) => {
         if (record.usedCount === 0) {
           return (
-            <AntTooltip key="delete" title="Delete">
-              <AntDeleteOutlined
+            <Tooltip key="delete" title="Delete">
+              <DeleteOutlined
                 className="list-actions-icon"
                 onClick={() => {
                   handleDeleteClicked(record);
                 }}
               />
-            </AntTooltip>
+            </Tooltip>
           );
         }
 
@@ -88,29 +100,26 @@ const List = ({ history }: ListProps) => {
 
   if (allJobsLoading) return null;
 
+  const dataSource = (allJobs ?? []).filter(row => row != null && row._id != null && row.name != null) as JobRow[];
+
   return (
-    <AntTable
+    <Table
       rowKey="_id"
-      dataSource={allJobs}
+      dataSource={dataSource}
       columns={columns}
       bordered
       pagination={{ defaultPageSize: 20 }}
       title={() => (
-        <AntButton
+        <Button
           type="primary"
-          icon={<AntPlusCircleOutlined />}
+          icon={<PlusCircleOutlined />}
           onClick={handleNewClicked}
         >
           New Job
-        </AntButton>
+        </Button>
       )}
     />
   );
 };
 
-List.propTypes = {
-  history: PropTypes.object,
-  location: PropTypes.object,
-};
-
-export default WithBreadcrumbs(['HR', 'Jobs', 'List'])(List as any);
+export default List;

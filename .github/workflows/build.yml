@@ -39,10 +39,31 @@ jobs:
           meteor-release: 3.5
       
       - run: meteor npm install -g yarn
-      
-      - name: Install Dependencies
+
+      - name: Install Workspace Tooling
+        run: meteor yarn install
+
+      - name: Install Web Dependencies
         run: meteor yarn install
         working-directory: ./idreesia-web
+
+      - name: Install Mobile Dependencies
+        run: meteor yarn install
+        working-directory: ./idreesia-mobile
+
+      - name: Lint Workspace
+        run: meteor yarn run lint
+
+      - name: Typecheck Common Package
+        run: meteor yarn run typecheck:common
+
+      - name: Typecheck Web App
+        run: meteor yarn run typecheck
+        working-directory: ./idreesia-web
+
+      - name: Typecheck Mobile App
+        run: meteor yarn run typecheck
+        working-directory: ./idreesia-mobile
 
       - name: Build Application
         run: meteor yarn run build

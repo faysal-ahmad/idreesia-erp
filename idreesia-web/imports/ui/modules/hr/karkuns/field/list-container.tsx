@@ -1,0 +1,106 @@
+import React, { Component } from 'react';
+
+import type { HrKarkunsPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
+import List from '../list/list';
+import type { PageParams } from '../list/list-filter';
+
+type KarkunRow = NonNullable<
+  NonNullable<
+    NonNullable<HrKarkunsPagedHrKarkunsQuery['pagedHrKarkuns']>['karkuns']
+  >[number]
+>;
+
+interface SelectionValue {
+  _id?: string;
+  name?: string;
+  sharedData?: { name?: string };
+}
+
+interface ListContainerProps {
+  setSelectedValue?(value: SelectionValue): void;
+  predefinedFilterName?: string;
+  predefinedFilterStoreId?: string;
+}
+
+interface ListContainerState {
+  pageIndex: number;
+  pageSize: number;
+  name: string | null;
+  cnicNumber: string | null;
+  phoneNumber: string | null;
+  bloodGroup: string | null;
+  jobId: string | null;
+  dutyId: string | null;
+  dutyShiftId: string | null;
+  karkunType: string[];
+}
+
+export default class ListContainer extends Component<
+  ListContainerProps,
+  ListContainerState
+> {
+  state: ListContainerState = {
+    pageIndex: 0,
+    pageSize: 20,
+    name: null,
+    cnicNumber: null,
+    phoneNumber: null,
+    bloodGroup: null,
+    jobId: null,
+    dutyId: null,
+    dutyShiftId: null,
+    karkunType: ['volunteers', 'employees'],
+  };
+
+  setPageParams = (pageParams: PageParams) => {
+    this.setState((prevState) => ({
+      ...prevState,
+      ...pageParams,
+    }));
+  };
+
+  render() {
+    const { predefinedFilterName, predefinedFilterStoreId, setSelectedValue } =
+      this.props;
+    const {
+      pageIndex,
+      pageSize,
+      name,
+      cnicNumber,
+      phoneNumber,
+      bloodGroup,
+      jobId,
+      dutyId,
+      dutyShiftId,
+      karkunType,
+    } = this.state;
+
+    const showVolunteers =
+      karkunType.indexOf('volunteers') !== -1 ? 'true' : 'false';
+    const showEmployees =
+      karkunType.indexOf('employees') !== -1 ? 'true' : 'false';
+
+    return (
+      <List
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+        name={name}
+        cnicNumber={cnicNumber}
+        phoneNumber={phoneNumber}
+        bloodGroup={bloodGroup}
+        jobId={jobId}
+        dutyId={dutyId}
+        dutyShiftId={dutyShiftId}
+        showVolunteers={showVolunteers}
+        showEmployees={showEmployees}
+        setPageParams={this.setPageParams}
+        handleItemSelected={setSelectedValue as (record: KarkunRow) => void}
+        showPhoneNumbersColumn={false}
+        showDutiesColumn
+        showActionsColumn={false}
+        predefinedFilterName={predefinedFilterName}
+        predefinedFilterStoreId={predefinedFilterStoreId}
+      />
+    );
+  }
+}

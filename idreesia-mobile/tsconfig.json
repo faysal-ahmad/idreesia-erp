@@ -1,0 +1,28 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "..",
+    "tsBuildInfoFile": "../node_modules/.cache/tsbuildinfo/idreesia-mobile.tsbuildinfo",
+    "paths": {
+      "/imports/*": ["idreesia-mobile/imports/*"],
+      "/client/*": ["idreesia-mobile/client/*"],
+      "meteor/idreesia-common/*": ["idreesia-common/*"]
+    }
+  },
+  "include": [
+    "../types/**/*.d.ts",
+    "../idreesia-common/**/*.js",
+    "../idreesia-common/**/*.jsx",
+    "../idreesia-common/**/*.ts",
+    "../idreesia-common/**/*.tsx",
+    "./client/**/*.js",
+    "./client/**/*.jsx",
+    "./client/**/*.ts",
+    "./client/**/*.tsx",
+    "./imports/**/*.js",
+    "./imports/**/*.jsx",
+    "./imports/**/*.ts",
+    "./imports/**/*.tsx"
+  ],
+  "exclude": ["node_modules", ".meteor", "build"]
+}

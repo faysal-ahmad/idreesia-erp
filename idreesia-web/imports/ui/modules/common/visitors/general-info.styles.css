@@ -1,0 +1,78 @@
+/*
+ * Shared visitor general-info form layout.
+ * Loaded from client/main.tsx (do not import from this folder's .tsx).
+ */
+
+.visitor-form {
+  width: 600px;
+  max-width: 100%;
+}
+
+.visitor-form-with-side {
+  width: 100%;
+  max-width: 960px;
+}
+
+.visitor-form form,
+.visitor-form-with-side form {
+  width: 100% !important;
+  max-width: none;
+}
+
+.visitor-form-personal-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+}
+
+.visitor-form-personal-row > .visitor-form-sections {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.visitor-form-side-panel {
+  flex: 0 0 280px;
+  width: 280px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  align-self: flex-start;
+}
+
+.visitor-form-side-panel-body {
+  padding: 12px;
+}
+
+.visitor-form-sections.ant-collapse {
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.visitor-form-sections > .ant-collapse-item {
+  border: 1px solid #d0d5dd !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  background: #fff;
+}
+
+.visitor-form-sections > .ant-collapse-item > .ant-collapse-header {
+  background: #f3f4f6;
+  color: #344054;
+  font-weight: 600;
+  font-size: 14px;
+  align-items: center;
+}
+
+.visitor-form-sections > .ant-collapse-item > .ant-collapse-content {
+  border-top: 1px solid #d0d5dd;
+}
+
+.visitor-form-sections > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box {
+  padding-top: 20px;
+  padding-bottom: 8px;
+}

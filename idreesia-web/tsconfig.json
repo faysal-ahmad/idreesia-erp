@@ -1,0 +1,33 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "..",
+    "tsBuildInfoFile": "../node_modules/.cache/tsbuildinfo/idreesia-web.tsbuildinfo",
+    "paths": {
+      "/imports/*": ["idreesia-web/imports/*"],
+      "/client/*": ["idreesia-web/client/*"],
+      "/server/*": ["idreesia-web/server/*"],
+      "meteor/idreesia-common/*": ["idreesia-common/*"]
+    }
+  },
+  "include": [
+    "../types/**/*.d.ts",
+    "../idreesia-common/**/*.js",
+    "../idreesia-common/**/*.jsx",
+    "../idreesia-common/**/*.ts",
+    "../idreesia-common/**/*.tsx",
+    "./client/**/*.js",
+    "./client/**/*.jsx",
+    "./client/**/*.ts",
+    "./client/**/*.tsx",
+    "./imports/**/*.js",
+    "./imports/**/*.jsx",
+    "./imports/**/*.ts",
+    "./imports/**/*.tsx",
+    "./server/**/*.js",
+    "./server/**/*.jsx",
+    "./server/**/*.ts",
+    "./server/**/*.tsx"
+  ],
+  "exclude": ["node_modules", ".meteor", "build"]
+}

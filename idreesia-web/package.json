@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "METEOR_PACKAGE_DIRS=../ MONGO_URL=mongodb://localhost:27017/idreesia-erp meteor run --settings ./private/env/settings.json",
-    "build": "METEOR_PACKAGE_DIRS=../ meteor build --directory ./build",
+    "build": "METEOR_PACKAGE_DIRS=../ meteor build --directory ../build/idreesia-web",
+    "typecheck": "../node_modules/.bin/tsc --noEmit --project tsconfig.json",
     "visualize": "METEOR_PACKAGE_DIRS=../ MONGO_URL=mongodb://localhost:27017/idreesia-erp meteor --production --extra-packages bundle-visualizer --settings ./private/env/settings.json"
   },
   "dependencies": {
@@ -25,7 +26,7 @@
     "express": "^4.21.2",
     "file-saver": "^2.0.5",
     "googleapis": "^173.0.0",
-    "graphql": "^16.6.0",
+    "graphql": "^16.14.2",
     "graphql-scalars": "^1.20.1",
     "graphql-tag": "^2.10.3",
     "lodash": "^4.18.1",
@@ -53,6 +54,8 @@
     "meteor-babel": "^7.10.7"
   },
   "resolutions": {
+    "typescript": "6.0.3",
+    "@types/react": "17.0.93",
     "@babel/core": "^7.29.6",
     "@babel/helpers": "^7.29.7",
     "@babel/traverse": "^7.29.7",

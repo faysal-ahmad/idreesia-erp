@@ -1,0 +1,69 @@
+import { ModulePaths } from 'meteor/idreesia-common/constants';
+
+export default class SubModulePaths {
+  // *************************************************************************************
+  // Mehfil Routes
+  // *************************************************************************************
+  static mehfilsPath = `${ModulePaths.security}/mehfils`;
+  static mehfilsEditFormPath(mehfilId = ':mehfilId') {
+    return `${SubModulePaths.mehfilsPath}/${mehfilId}`;
+  }
+
+  static mehfilsKarkunPrintCardsPath(mehfilId = ':mehfilId') {
+    return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkun-print-cards`;
+  }
+
+  static mehfilsKarkunPrintListPath(mehfilId = ':mehfilId') {
+    return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkun-print-list`;
+  }
+
+  static mehfilDutiesPath = `${ModulePaths.security}/mehfil-duties`;
+  static mehfilDutiesEditFormPath(mehfilDutyId = ':mehfilDutyId') {
+    return `${SubModulePaths.mehfilDutiesPath}/${mehfilDutyId}`;
+  }
+
+  static mehfilLangarDishesPath = `${ModulePaths.security}/mehfil-langar-dishes`;
+  static mehfilLangarDishesEditFormPath(
+    mehfilLangarDishId = ':mehfilLangarDishId'
+  ) {
+    return `${SubModulePaths.mehfilLangarDishesPath}/${mehfilLangarDishId}`;
+  }
+
+  static mehfilLangarLocationsPath = `${ModulePaths.security}/mehfil-langar-locations`;
+  static mehfilLangarLocationsEditFormPath(
+    mehfilLangarLocationId = ':mehfilLangarLocationId'
+  ) {
+    return `${SubModulePaths.mehfilLangarLocationsPath}/${mehfilLangarLocationId}`;
+  }
+
+  // *************************************************************************************
+  // Card Verification Routes
+  // *************************************************************************************
+  static mehfilCardVerificationPath = `${ModulePaths.security}/mehfil-card-verification`;
+  static visitorCardVerificationPath = `${ModulePaths.security}/visitor-card-verification`;
+
+  // *************************************************************************************
+  // Visitor Routes
+  // *************************************************************************************
+  static visitorStayReportPath = `${ModulePaths.security}/visitor-stay-report`;
+  static visitorRegistrationPath = `${ModulePaths.security}/visitor-registration`;
+  static visitorRegistrationListPath = `${SubModulePaths.visitorRegistrationPath}/list`;
+  static visitorRegistrationNewFormPath = `${SubModulePaths.visitorRegistrationPath}/new`;
+  static visitorRegistrationUploadFormPath = `${SubModulePaths.visitorRegistrationPath}/upload`;
+  static visitorRegistrationEditFormPath(visitorId = ':visitorId') {
+    return `${SubModulePaths.visitorRegistrationPath}/${visitorId}`;
+  }
+
+  // *************************************************************************************
+  // Security Users Routes
+  // *************************************************************************************
+  static securityUsersPath = `${ModulePaths.security}/security-users`;
+  static securityUsersEditFormPath(userId = ':userId') {
+    return `${SubModulePaths.securityUsersPath}/${userId}`;
+  }
+
+  // ******************************************************************************
+  // Audit Logs
+  // ******************************************************************************
+  static auditLogsPath = `${ModulePaths.security}/audit-logs`;
+}

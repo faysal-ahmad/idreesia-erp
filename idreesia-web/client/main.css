@@ -2,8 +2,42 @@
  * Base structure
  */
 
+html,
+body,
+#render-target {
+  height: 100%;
+}
+
 body {
   margin: 0;
+  /* Keep scrollbar gutter stable so modal open/close doesn't
+     resize the layout and thrash tables with scroll.y */
+  scrollbar-gutter: stable;
+}
+
+/* Fill the viewport even when page content is short */
+.app-shell.ant-layout {
+  min-height: 100vh;
+}
+
+.app-shell-body.ant-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.app-shell-content.ant-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.app-shell-sidebar {
+  align-self: stretch;
+  background: #fff;
+}
+
+.app-shell-main.ant-layout-content {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 /*
@@ -66,12 +100,25 @@ form {
   width: 600px;
 }
 
+/*
+ * Shared list chrome used across modules.
+ * Page-specific overrides belong in dedicated client/*.css files
+ * (e.g. security-visitors-list.css for visitor row tinting).
+ */
+.list-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
 .list-table-header {
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
+  gap: 12px;
 }
 
 .list-table-header-section {
@@ -79,6 +126,16 @@ form {
   flex-flow: row nowrap;
   justify-content: left;
   align-items: center;
+  gap: 8px;
+}
+
+.list-table-header-utilities {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: 0;
+  max-width: 65%;
 }
 
 .list-actions-column {
@@ -93,6 +150,113 @@ form {
   cursor: pointer;
   font-size: 20px;
   padding-right: 7px;
+}
+
+/*
+ * Audit footer — quiet metadata under edit forms.
+ */
+.audit-info {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.audit-info-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #667085;
+}
+
+.audit-info-label {
+  flex: 0 0 96px;
+  color: #98a2b3;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 11px;
+}
+
+.audit-info-value strong {
+  color: #344054;
+  font-weight: 600;
+}
+
+.audit-info-sep {
+  margin: 0 6px;
+  color: #d0d5dd;
+}
+
+.list-filter-chips {
+  width: 100%;
+}
+
+.list-filter-panel,
+.list-filter-panel form {
+  width: 640px !important;
+  max-width: 640px;
+  overflow: visible;
+}
+
+.list-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.list-table .ant-table-container {
+  border: 1px solid #d0d5dd !important;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.list-table .ant-table-thead > tr > th {
+  background: #f3f4f6 !important;
+  border-bottom: 1px solid #d0d5dd !important;
+  color: #344054;
+  font-weight: 600;
+}
+
+.list-table .ant-table-thead > tr > th:not(:last-child),
+.list-table .ant-table-tbody > tr > td:not(:last-child) {
+  border-inline-end: 1px solid #cfd4dc !important;
+}
+
+.list-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #cfd4dc !important;
+}
+
+.list-table .ant-table-tbody > tr:hover > td {
+  background: #f5f9ff !important;
+}
+
+.list-table .ant-table-footer {
+  border-top: 1px solid #d0d5dd;
+  background: #fafafa;
+}
+
+/*
+ * With scroll.y, antd splits header/body into separate tables and syncs
+ * the scrollbar gutter itself. Do not force overflow on .ant-table-header
+ * — that breaks antd's width sync. Only clamp horizontal overflow on body.
+ * Column / selection widths belong in page-specific CSS, not here.
+ */
+.list-table .ant-table-body {
+  overflow-x: hidden !important;
+}
+
+/* scroll.y adds a placeholder cell for the scrollbar — don't draw it as a column */
+.list-table .ant-table-cell-scrollbar {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 @media print {

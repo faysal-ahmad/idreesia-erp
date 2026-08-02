@@ -1,0 +1,2010 @@
+directive @checkPermissions(permissions: [String]) on FIELD_DEFINITION
+
+directive @checkInstanceAccess(instanceIdArgName: String) on FIELD_DEFINITION
+
+type Query
+
+type Mutation
+
+directive @checkInstanceAccess(
+  instanceIdArgName: String!,
+  returnType: String,
+  dataFieldName: String,
+) on FIELD_DEFINITION
+
+directive @checkPermissions(
+  permissions: [Permission!],
+  dataFieldName: String,
+) on FIELD_DEFINITION
+
+enum Permission {
+  ADMIN_VIEW_USERS_AND_GROUPS
+  ADMIN_MANAGE_USERS_AND_GROUPS
+  ADMIN_MANAGE_PHYSICAL_STORES
+  ADMIN_MANAGE_CITIES
+
+  HR_MANAGE_SETUP_DATA
+  HR_DELETE_DATA
+  HR_VIEW_AUDIT_LOGS
+  HR_VIEW_KARKUNS
+  HR_MANAGE_KARKUNS
+  HR_VIEW_EMPLOYEES
+  HR_MANAGE_EMPLOYEES
+  HR_APPROVE_SALARIES
+
+  IN_MANAGE_SETUP_DATA
+  IN_MANAGE_STOCK_ITEMS
+  IN_VIEW_ISSUANCE_FORMS
+  IN_MANAGE_ISSUANCE_FORMS
+  IN_APPROVE_ISSUANCE_FORMS
+  IN_VIEW_PURCHASE_FORMS
+  IN_MANAGE_PURCHASE_FORMS
+  IN_APPROVE_PURCHASE_FORMS
+  IN_VIEW_STOCK_ADJUSTMENTS
+  IN_MANAGE_STOCK_ADJUSTMENTS
+  IN_APPROVE_STOCK_ADJUSTMENTS
+
+  SECURITY_DELETE_DATA
+  SECURITY_MANAGE_SETUP_DATA
+  SECURITY_VIEW_AUDIT_LOGS
+  SECURITY_VIEW_USERS
+  SECURITY_MANAGE_USERS
+  SECURITY_VIEW_KARKUN_VERIFICATION
+  SECURITY_VIEW_VISITORS
+  SECURITY_MANAGE_VISITORS
+  SECURITY_VIEW_MEHFILS
+  SECURITY_MANAGE_MEHFILS
+}
+
+scalar Date
+scalar Time
+scalar DateTime
+scalar Timestamp
+scalar UtcOffset
+scalar EmailAddress
+scalar PhoneNumber
+scalar PostalCode
+scalar URL
+scalar Currency
+scalar JSON
+scalar JSONObject
+
+type UserGroupType {
+  _id: String
+  name: String
+  moduleName: String
+  description: String
+  permissions: [String]
+  instances: [String]
+}
+
+type PagedUserGroupType {
+  totalResults: Int
+  data: [UserGroupType]
+}
+
+extend type Query {
+  pagedUserGroups(queryString: String): PagedUserGroupType
+    @checkPermissions(permissions: [ADMIN_VIEW_USERS_AND_GROUPS, ADMIN_MANAGE_USERS_AND_GROUPS])
+  
+  userGroupById(_id: String!): UserGroupType
+    @checkPermissions(permissions: [ADMIN_VIEW_USERS_AND_GROUPS, ADMIN_MANAGE_USERS_AND_GROUPS])
+}
+
+extend type Mutation {
+  createUserGroup(
+    name: String!
+    moduleName: String!
+    description: String
+  ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  updateUserGroup(
+    _id: String!
+    name: String
+    description: String
+  ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  deleteUserGroup(_id: String!): Int
+    @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+  
+  setUserGroupPermissions(
+    _id: String!
+    permissions: [String]!
+  ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  setUserGroupInstanceAccess(
+    _id: String!
+    instances: [String]!
+  ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+}
+
+type UserType {
+  _id: String
+  username: String
+  email: String
+  emailVerified: Boolean
+
+  personId: String
+  displayName: String
+  locked: Boolean
+  lastLoggedInAt: String
+  lastActiveAt: String
+  permissions: [String]
+  instances: [String]
+  groups: [String]
+
+  person: PersonType
+  karkun: KarkunType
+}
+
+type PagedUserType {
+  totalResults: Int
+  data: [UserType]
+}
+
+input UserFilter {
+  showLocked: String
+  showUnlocked: String
+  showActive: String
+  showInactive: String
+  moduleAccess: String
+  pageIndex: String
+  pageSize: String
+}
+
+extend type Query {
+  pagedUsers(filter: UserFilter): PagedUserType
+    @checkPermissions(permissions: [ADMIN_VIEW_USERS_AND_GROUPS, ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  userById(_id: String): UserType
+    @checkPermissions(permissions: [ADMIN_VIEW_USERS_AND_GROUPS, ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  currentUser: UserType
+  userNames(ids: [String]): [String]
+}
+
+extend type Mutation {
+  registerUser(displayName: String!, email: String!): Int
+
+  createUser(
+    userName: String
+    password: String
+    email: String
+    displayName: String
+    personId: String
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  updateUser(
+    userId: String!
+    password: String
+    email: String
+    displayName: String
+    locked: Boolean
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  setPermissions(
+    userId: String!
+    permissions: [String]!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  setInstanceAccess(
+    userId: String!
+    instances: [String]!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  setGroups(
+    userId: String!
+    groups: [String]!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  resetPassword(
+    userName: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  updateLoginTime: Int
+  updateLastActiveTime: Int
+}
+
+type Attachment {
+  _id: String
+  name: String
+  description: String
+  mimeType: String
+  data: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type Query {
+  attachmentsById(ids: [String]!): [Attachment]
+}
+
+type Mutation {
+  createAttachment(
+    name: String
+    description: String
+    mimeType: String
+    data: String!
+  ): Attachment
+
+  updateAttachment(_id: String!, name: String, description: String): Attachment
+}
+
+type AuditLogType {
+  _id: String
+  entityId: String
+  entityType: String
+  operationType: String
+  auditValues: [String]
+  operationTime: String
+  operationBy: String
+
+  operationByName: String
+  operationByImageId: String
+}
+
+input AuditLogFilter {
+  entityId: String
+  operationBy: String
+  pageIndex: String
+  pageSize: String
+}
+
+type PagedAuditLogType {
+  totalResults: Int
+  data: [AuditLogType]
+}
+
+type ApprovedImdadType {
+  fromMonth: String
+  toMonth: String
+  oneOffMedical: Int
+  oneOffHouseConstruction: Int
+  oneOffMarriageExpense: Int
+  oneOffMiscPayment: Int
+  fixedRecurringWeeklyPayment: Int
+  fixedRecurringMonthlyPayment: Int
+  fixedRecurringHouseRent: Int
+  ration: String
+  fixedRecurringMedical: Int
+  fixedRecurringSchoolFee: Int
+  fixedRecurringMilk: Int
+  fixedRecurringFuel: Int
+  variableRecurringMedical: Int
+  variableRecurringUtilityBills: Int
+}
+
+type ImdadRequestType {
+  _id: String
+  visitorId: String
+  dataSource: String
+  requestDate: String
+  imdadReasonId: String
+  status: String
+  notes: String
+  approvedImdad: ApprovedImdadType
+  attachmentIds: [String]
+
+  visitor: VisitorType
+  attachments: [Attachment]
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedImdadRequestType {
+  totalResults: Int
+  data: [ImdadRequestType]
+}
+
+input ImdadRequestFilter {
+  visitorId: String
+  requestDate: String
+  cnicNumber: String
+  status: String
+  updatedBetween: String
+  pageIndex: String
+  pageSize: String
+}
+
+type KarkunUserType {
+  _id: String
+  username: String
+  email: String
+  emailVerified: Boolean
+  displayName: String
+  locked: Boolean
+  lastLoggedInAt: String
+  lastActiveAt: String
+  permissions: [String]
+  instances: [String]
+  groups: [String]
+}
+
+type KarkunType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  contactNumber2: String
+  contactNumber1Subscribed: Boolean
+  contactNumber2Subscribed: Boolean
+  emailAddress: String
+  currentAddress: String
+  permanentAddress: String
+  cityId: String
+  cityMehfilId: String
+  bloodGroup: String
+  educationalQualification: String
+  meansOfEarning: String
+  ehadDate: String
+  ehadKarkun: Boolean
+  ehadPermissionDate: String
+  birthDate: String
+  deathDate: String
+  lastTarteebDate: String
+  mehfilRaabta: String
+  msRaabta: String
+  msLastVisitDate: String
+  referenceName: String
+  imageId: String
+  attachmentIds: [String]
+
+  isEmployee: Boolean
+  jobId: String
+  employmentStartDate: String
+  employmentEndDate: String
+  bankAccountDetails: String
+
+  job: JobType
+  duties: [KarkunDutyType]
+  attachments: [Attachment]
+  image: Attachment
+  city: CityType
+  cityMehfil: CityMehfilType
+  user: KarkunUserType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+input KarkunFilter {
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  bloodGroup: String
+  lastTarteeb: String
+  attendance: String
+  isEmployee: Boolean
+  jobId: String
+  dutyId: String
+  userAccount: String
+  ehadKarkun: String
+  dutyShiftId: String
+  cityId: String
+  cityMehfilId: String
+  region: String
+  updatedBetween: String
+  predefinedFilterName: String
+  predefinedFilterStoreId: String
+  showVolunteers: String
+  showEmployees: String
+  pageIndex: String
+  pageSize: String
+}
+
+type PagedKarkunType {
+  totalResults: Int
+  karkuns: [KarkunType]
+}
+
+type PersonSharedDataType {
+  name: String
+  parentName: String
+  cnicNumber: String
+  birthDate: String
+  currentAddress: String
+  permanentAddress: String
+  contactNumber1: String
+  contactNumber2: String
+  contactNumber1Subscribed: Boolean
+  contactNumber2Subscribed: Boolean
+  emailAddress: String
+  bloodGroup: String
+  educationalQualification: String
+  meansOfEarning: String
+  ehadDate: String
+  deathDate: String
+  referenceName: String
+  imageId: String
+
+  image: Attachment
+}
+
+type PersonVisitorDataType {
+  city: String
+  country: String
+  criminalRecord: String
+  otherNotes: String
+}
+
+type PersonKarkunDataType {
+  cityId: String
+  cityMehfilId: String
+  ehadKarkun: Boolean
+  ehadPermissionDate: String
+  lastTarteebDate: String
+  mehfilRaabta: String
+  msRaabta: String
+  msLastVisitDate: String
+  attachmentIds: [String]
+
+  city: CityType
+  cityMehfil: CityMehfilType
+  duties: [KarkunDutyType]
+  attachments: [Attachment]
+}
+
+type PersonEmployeeDataType {
+  jobId: String
+  employmentStartDate: String
+  employmentEndDate: String
+  bankAccountDetails: String
+
+  job: JobType
+}
+
+type PersonType {
+  _id: String
+  isEmployee: Boolean
+  isVisitor: Boolean
+  isKarkun: Boolean
+  userId: String
+  dataSource: String
+  sharedData: PersonSharedDataType
+  visitorData: PersonVisitorDataType
+  karkunData: PersonKarkunDataType
+  employeeData: PersonEmployeeDataType
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+input PersonFilter {
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  city: String
+  pageIndex: String
+  pageSize: String
+}
+
+type PagedPeopleType {
+  totalResults: Int
+  data: [PersonType]
+}
+
+extend type Query {
+  pagedPeople(filter: PersonFilter): PagedPeopleType
+}
+
+type SecurityLogType {
+  _id: String
+  userId: String
+  operationType: String
+  operationDetails: JSONObject
+  operationTime: String
+  operationBy: String
+  dataSource: String
+  dataSourceDetail: String
+
+  userName: String
+  userImageId: String
+  operationByName: String
+  operationByImageId: String
+}
+
+input SecurityLogFilter {
+  dataSource: String
+  pageIndex: String
+  pageSize: String
+}
+
+type PagedSecurityLogType {
+  totalResults: Int
+  data: [SecurityLogType]
+}
+
+type VisitorType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  ehadDate: String
+  birthDate: String
+  referenceName: String
+  contactNumber1: String
+  contactNumber2: String
+  contactNumber1Subscribed: Boolean
+  contactNumber2Subscribed: Boolean
+  city: String
+  country: String
+  currentAddress: String
+  permanentAddress: String
+  educationalQualification: String
+  meansOfEarning: String
+  imageId: String
+  dataSource: String
+  criminalRecord: String
+  otherNotes: String
+  isKarkun: Boolean
+  karkunId: String
+
+  image: Attachment
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedVisitorType {
+  totalResults: Int
+  data: [VisitorType]
+}
+
+input VisitorFilter {
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  city: String
+  ehadDuration: String
+  ehadDate: String
+  additionalInfo: String
+  dataSource: String
+  updatedBetween: String
+  pageIndex: String
+  pageSize: String
+}
+
+extend type Query {
+  distinctCities: [String]
+  distinctCountries: [String]
+  pagedVisitors(filter: VisitorFilter): PagedVisitorType
+}
+
+extend type Mutation {
+  fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
+}
+
+type AttendanceType {
+  _id: String
+  karkunId: String
+  dutyId: String
+  shiftId: String
+  jobId: String
+  month: String
+  attendanceDetails: String
+  presentCount: Int
+  absentCount: Int
+  percentage: Float
+  meetingCardBarcodeId: String
+
+  karkun: KarkunType
+  job: JobType
+  duty: DutyType
+  shift: DutyShiftType
+
+  createdByName: String
+  updatedByName: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+type PagedAttendanceType {
+  totalResults: Int
+  data: [AttendanceType]
+}
+extend type Query {
+  attendanceById(_id: String!): AttendanceType
+  pagedAttendanceByKarkun(queryString: String): PagedAttendanceType
+  attendanceByMonth(
+    month: String!
+    categoryId: String
+    subCategoryId: String
+  ): [AttendanceType]
+  attendanceByBarcodeId(barcodeId: String!): AttendanceType
+  attendanceByBarcodeIds(barcodeIds: String!): [AttendanceType]
+}
+
+extend type Mutation {
+  createAttendances(
+    month: String!
+  ): Int
+
+  updateAttendance(
+    _id: String!
+    attendanceDetails: String
+    presentCount: Int
+    absentCount: Int
+    percentage: Int
+  ): AttendanceType
+
+  importAttendances(
+    month: String!
+    dutyId: String!
+    shiftId: String
+  ): Int
+   
+  deleteAttendances(month: String!, ids: [String]!): Int
+  deleteAllAttendances(month: String!, categoryId: String, subCategoryId: String): Int
+}
+
+extend type Query {
+  pagedHrAuditLogs(filter: AuditLogFilter): PagedAuditLogType
+}
+
+type DutyLocationType {	
+  _id: String	
+  name: String	
+  usedCount: Int	
+
+  createdAt: String	
+  createdBy: String	
+  updatedAt: String	
+  updatedBy: String	
+}	
+
+extend type Query {	
+  allDutyLocations: [DutyLocationType]	
+  dutyLocationById(id: String!): DutyLocationType	
+}	
+
+extend type Mutation {	
+  createDutyLocation(name: String!): DutyLocationType	
+  updateDutyLocation(id: String!, name: String!): DutyLocationType	
+  removeDutyLocation(_id: String!): Int	
+}
+
+type DutyShiftType {
+  _id: String
+  dutyId: String
+  name: String
+  startTime: String
+  endTime: String
+  attendanceSheet: String
+
+  duty: DutyType
+  canDelete: Boolean
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allDutyShifts: [DutyShiftType]
+  dutyShiftsByDutyId(dutyId: String!): [DutyShiftType]
+  dutyShiftById(id: String!): DutyShiftType
+}
+
+extend type Mutation {
+  createDutyShift(
+    name: String!
+    dutyId: String!
+    startTime: String
+    endTime: String
+    attendanceSheet: String
+  ): DutyShiftType
+  updateDutyShift(
+    _id: String!
+    name: String!
+    dutyId: String!
+    startTime: String
+    endTime: String
+    attendanceSheet: String
+  ): DutyShiftType
+  removeDutyShift(_id: String!): Int
+}
+
+type DutyType {
+  _id: String
+  name: String
+  isMehfilDuty: Boolean
+  description: String
+  attendanceSheet: String
+
+  usedCount: Int
+  shifts: [DutyShiftType]
+  canDelete: Boolean
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allMSDuties: [DutyType]
+  allMehfilDuties: [DutyType]
+  dutyById(id: String!): DutyType
+}
+
+extend type Mutation {
+  createDuty(name: String!, isMehfilDuty: Boolean!, description: String, attendanceSheet: String): DutyType
+  updateDuty(id: String!, name: String!, description: String, attendanceSheet: String): DutyType
+  removeDuty(_id: String!): Int
+}
+
+type JobType {
+  _id: String
+  name: String
+  description: String
+
+  usedCount: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allJobs: [JobType]
+  jobById(id: String!): JobType
+}
+
+extend type Mutation {
+  createJob(name: String!, description: String): JobType
+  updateJob(id: String!, name: String!, description: String): JobType
+  removeJob(_id: String!): Int
+}
+
+type KarkunDutyType {
+  _id: String
+  karkunId: String
+  dutyId: String
+  shiftId: String
+  locationId: String
+  role: String
+  daysOfWeek: [String]
+
+  duty: DutyType
+  shift: DutyShiftType
+  location: DutyLocationType
+  
+  dutyName: String
+  shiftName: String
+  locationName: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  karkunDutiesByKarkunId(karkunId: String!): [KarkunDutyType]
+  karkunDutyById(_id: String!): KarkunDutyType
+}
+
+extend type Mutation {
+  createKarkunDuty(
+    karkunId: String!
+    dutyId: String!
+    shiftId: String
+    locationId: String
+    role: String
+    daysOfWeek: [String]
+  ): KarkunDutyType
+
+  updateKarkunDuty(
+    _id: String!
+    karkunId: String!
+    dutyId: String!
+    shiftId: String
+    locationId: String
+    role: String
+    daysOfWeek: [String]
+  ): KarkunDutyType
+
+  removeKarkunDuty(_id: String!): Int
+}
+
+extend type Query {
+  hrKarkunById(_id: String!): KarkunType
+  @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
+
+  hrKarkunsById(_ids: String!): [KarkunType]
+  @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
+
+  pagedHrKarkuns(filter: KarkunFilter): PagedKarkunType
+  @checkPermissions(permissions: [
+    HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES,
+    IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS,
+    IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS,
+    IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS
+  ], dataFieldName: "karkuns")
+}
+
+extend type Mutation {
+  createHrKarkun(
+    name: String!
+    parentName: String
+    cnicNumber: String
+    contactNumber1: String
+    contactNumber2: String
+    emailAddress: String
+    currentAddress: String
+    cityId: String
+    cityMehfilId: String
+    permanentAddress: String
+    bloodGroup: String
+    educationalQualification: String
+    meansOfEarning: String
+    ehadDate: String
+    birthDate: String
+    referenceName: String
+  ): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
+
+  updateHrKarkun(
+    _id: String!
+    name: String!
+    parentName: String
+    cnicNumber: String
+    contactNumber1: String
+    contactNumber2: String
+    emailAddress: String
+    currentAddress: String
+    permanentAddress: String
+    cityId: String
+    cityMehfilId: String
+    bloodGroup: String
+    educationalQualification: String
+    meansOfEarning: String
+    ehadDate: String
+    birthDate: String
+    deathDate: String
+    referenceName: String
+  ): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
+
+  deleteHrKarkun(_id: String!): Int
+  @checkPermissions(permissions: [HR_DELETE_DATA])
+
+  setHrKarkunWazaifAndRaabta(
+    _id: String!
+    lastTarteebDate: String
+    mehfilRaabta: String
+    msRaabta: String
+  ): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+
+  setHrKarkunEmploymentInfo(
+    _id: String!
+    isEmployee: Boolean!
+    jobId: String
+    employmentStartDate: String
+    employmentEndDate: String
+    bankAccountDetails: String
+  ): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  setHrKarkunProfileImage(_id: String!, imageId: String!): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+
+  addHrKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+
+  removeHrKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+}
+
+type SalaryType {
+  _id: String
+  karkunId: String
+  jobId: String
+  month: String
+  salary: Int
+  openingLoan: Int
+  loanDeduction: Int
+  newLoan: Int
+  closingLoan: Int
+  otherDeduction: Int
+  arrears: Int
+  netPayment: Int
+  rashanMadad: Int
+
+  karkun: KarkunType
+  job: JobType
+  approver: KarkunType
+
+  approvedOn: String
+  approvedBy: String
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+type PagedSalaryType {
+  totalResults: Int
+  salaries: [SalaryType]
+}
+extend type Query {
+  pagedSalariesByKarkun(queryString: String): PagedSalaryType
+  salariesByMonth(
+    month: String!
+    jobId: String
+  ): [SalaryType]
+  salariesByIds(ids: String!): [SalaryType]
+}
+
+extend type Mutation {
+  createSalaries(
+    month: String!
+  ): Int
+
+  updateSalary(
+    _id: String!
+    salary: Int
+    openingLoan: Int
+    loanDeduction: Int
+    otherDeduction: Int
+    newLoan: Int
+    arrears: Int
+    rashanMadad: Int
+  ): SalaryType
+
+  approveSalaries(month: String!, ids: [String]!): Int
+  approveAllSalaries(month: String!): Int
+  deleteSalaries(month: String!, ids: [String]!): Int
+  deleteAllSalaries(month: String!): Int
+}
+
+type ItemWithQuantity {
+  stockItemId: String
+  quantity: Float
+  isInflow: Boolean
+
+  refStockItem: StockItem
+}
+
+input ItemWithQuantityInput {
+  stockItemId: String
+  quantity: Float
+  isInflow: Boolean
+}
+
+type ItemWithQuantityAndPrice {
+  stockItemId: String
+  quantity: Float
+  isInflow: Boolean
+  price: Float
+
+  refStockItem: StockItem
+}
+
+input ItemWithQuantityAndPriceInput {
+  stockItemId: String
+  quantity: Float
+  isInflow: Boolean
+  price: Float
+}
+
+type IssuanceForm {
+  _id: String
+  issueDate: String
+  issuedBy: String
+  issuedTo: String
+  handedOverTo: String
+  locationId: String
+  physicalStoreId: String
+  items: [ItemWithQuantity]
+  notes: String
+  attachmentIds: [String]
+
+  attachments: [Attachment]
+  refLocation: Location
+  refIssuedBy: KarkunType
+  refIssuedTo: KarkunType
+  refPhysicalStore: PhysicalStore
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+  approvedOn: String
+  approvedBy: String
+}
+
+type PagedIssuanceForm {
+  totalResults: Int
+  data: [IssuanceForm]
+}
+
+extend type Query {
+  issuanceFormById(
+    _id: String!
+    physicalStoreId: String!
+  ): IssuanceForm
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
+  issuanceFormsByStockItem(
+    physicalStoreId: String!
+    stockItemId: String!
+  ): [IssuanceForm]
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+
+  issuanceFormsByMonth(
+    physicalStoreId: String!
+    month: String!
+  ): [IssuanceForm]
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+
+  pagedIssuanceForms(
+    physicalStoreId: String!
+    queryString: String
+  ): PagedIssuanceForm
+  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+}
+
+extend type Mutation {
+  createIssuanceForm(
+    issueDate: String!
+    issuedBy: String!
+    issuedTo: String!
+    handedOverTo: String
+    physicalStoreId: String!
+    locationId: String
+    items: [ItemWithQuantityInput]
+    notes: String
+  ): IssuanceForm
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  updateIssuanceForm(
+    _id: String!
+    issueDate: String!
+    issuedBy: String!
+    issuedTo: String!
+    handedOverTo: String
+    physicalStoreId: String!
+    locationId: String
+    items: [ItemWithQuantityInput]
+    notes: String
+  ): IssuanceForm
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  approveIssuanceForms(physicalStoreId: String!, _ids: [String]!): [IssuanceForm]
+  @checkPermissions(permissions: [IN_APPROVE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  addIssuanceFormAttachment(
+    _id: String!
+    physicalStoreId: String!
+    attachmentId: String!
+  ): IssuanceForm
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  removeIssuanceFormAttachment(
+    _id: String!
+    physicalStoreId: String!
+    attachmentId: String!
+  ): IssuanceForm
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  removeIssuanceForms(physicalStoreId: String!, _ids: [String]!): Int
+  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+}
+
+type ItemCategory {
+  _id: String
+  name: String
+  physicalStoreId: String
+  stockItemCount: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  itemCategoryById(_id: String!, physicalStoreId: String!): ItemCategory
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
+  itemCategoriesByPhysicalStoreId(physicalStoreId: String!): [ItemCategory]
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+}
+
+extend type Mutation {
+  createItemCategory(name: String!, physicalStoreId: String!): ItemCategory
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  
+  updateItemCategory(_id: String!, physicalStoreId: String!, name: String!): ItemCategory
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  
+  removeItemCategory(_id: String!, physicalStoreId: String!): Int
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+}
+
+type Location {
+  _id: String
+  name: String
+  parentId: String
+  physicalStoreId: String
+  description: String
+
+  refParent: Location
+  isInUse: Boolean
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  locationById(_id: String!, physicalStoreId: String!): Location
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
+  locationsByPhysicalStoreId(physicalStoreId: String!): [Location]
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+}
+
+extend type Mutation {
+  createLocation(
+    name: String!
+    physicalStoreId: String!
+    parentId: String
+    description: String
+  ): Location
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  updateLocation(
+    _id: String!
+    physicalStoreId: String!
+    name: String!
+    parentId: String
+    description: String
+  ): Location
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  removeLocation(_id: String!, physicalStoreId: String!): Int
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+}
+
+type PhysicalStore {
+  _id: String
+  name: String
+  address: String
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allPhysicalStores: [PhysicalStore]
+  allAccessiblePhysicalStores: [PhysicalStore]
+  physicalStoreById(id: String!): PhysicalStore
+}
+
+extend type Mutation {
+  createPhysicalStore(name: String!, address: String): PhysicalStore
+  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+
+  updatePhysicalStore(id: String!, name: String!, address: String): PhysicalStore
+  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+}
+
+type PurchaseForm {
+  _id: String
+  purchaseDate: String
+  receivedBy: String
+  purchasedBy: String
+  locationId: String
+  physicalStoreId: String
+  vendorId: String
+  items: [ItemWithQuantityAndPrice]
+  notes: String
+  attachmentIds: [String]
+
+  attachments: [Attachment]
+  refVendor: Vendor
+  refLocation: Location
+  refReceivedBy: KarkunType
+  refPurchasedBy: KarkunType
+  refPhysicalStore: PhysicalStore
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+  approvedOn: String
+  approvedBy: String
+}
+
+type PagedPurchaseForm {
+  totalResults: Int
+  data: [PurchaseForm]
+}
+
+extend type Query {
+  purchaseFormById(
+    _id: String!
+    physicalStoreId: String!
+  ): PurchaseForm
+  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
+  purchaseFormsByStockItem(
+    physicalStoreId: String!
+    stockItemId: String!
+  ): [PurchaseForm]
+  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+
+  purchaseFormsByMonth(
+    physicalStoreId: String!
+    month: String!
+  ): [PurchaseForm]
+  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+
+  pagedPurchaseForms(
+    physicalStoreId: String!
+    queryString: String
+  ): PagedPurchaseForm
+  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+}
+
+extend type Mutation {
+  createPurchaseForm(
+    physicalStoreId: String!
+    purchaseDate: String!
+    receivedBy: String!
+    purchasedBy: String!
+    locationId: String
+    vendorId: String
+    items: [ItemWithQuantityAndPriceInput]
+    notes: String
+  ): PurchaseForm
+  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  updatePurchaseForm(
+    _id: String!
+    physicalStoreId: String!
+    purchaseDate: String!
+    receivedBy: String!
+    purchasedBy: String!
+    locationId: String
+    vendorId: String
+    items: [ItemWithQuantityAndPriceInput]
+    notes: String
+  ): PurchaseForm
+  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  approvePurchaseForms(physicalStoreId: String!, _ids: [String]!): [PurchaseForm]
+  @checkPermissions(permissions: [IN_APPROVE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  addPurchaseFormAttachment(
+    _id: String!
+    physicalStoreId: String!
+    attachmentId: String!
+  ): PurchaseForm
+  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  removePurchaseFormAttachment(
+    _id: String!
+    physicalStoreId: String!
+    attachmentId: String!
+  ): PurchaseForm
+  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  removePurchaseForms(physicalStoreId: String!, _ids: [String]!): Int
+  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+}
+
+type StockAdjustment {
+  _id: String
+  physicalStoreId: String
+  stockItemId: String
+  adjustmentDate: String
+  adjustedBy: String
+  quantity: Float
+  isInflow: Boolean
+  adjustmentReason: String
+
+  refStockItem: StockItem
+  refAdjustedBy: KarkunType
+  refPhysicalStore: PhysicalStore
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+  approvedOn: String
+  approvedBy: String
+}
+
+type PagedStockAdjustment {
+  totalResults: Int
+  data: [StockAdjustment]
+}
+
+extend type Query {
+  stockAdjustmentById(_id: String!, physicalStoreId: String!): StockAdjustment
+  @checkPermissions(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
+  stockAdjustmentsByStockItem(
+    physicalStoreId: String!
+    stockItemId: String!
+  ): [StockAdjustment]
+  @checkPermissions(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+
+  pagedStockAdjustments(
+    physicalStoreId: String!
+    queryString: String
+  ): PagedStockAdjustment
+  @checkPermissions(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+}
+
+extend type Mutation {
+  createStockAdjustment(
+    physicalStoreId: String!
+    stockItemId: String!
+    adjustmentDate: String!
+    adjustedBy: String!
+    quantity: Float!
+    isInflow: Boolean!
+    adjustmentReason: String
+  ): StockAdjustment
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  updateStockAdjustment(
+    _id: String!
+    physicalStoreId: String!
+    adjustmentDate: String!
+    adjustedBy: String!
+    quantity: Float!
+    isInflow: Boolean!
+    adjustmentReason: String
+  ): StockAdjustment
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  approveStockAdjustments(physicalStoreId: String!, _ids: [String]!): [StockAdjustment]
+  @checkPermissions(permissions: [IN_APPROVE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  removeStockAdjustments(physicalStoreId: String!, _ids: [String]!): Int
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+}
+
+type StockItem {
+  _id: String
+  name: String
+  company: String
+  details: String
+  unitOfMeasurement: String
+  categoryId: String
+  imageId: String
+  physicalStoreId: String
+  startingStockLevel: Float
+  minStockLevel: Float
+  currentStockLevel: Float
+  totalStockLevel: Float
+  verifiedOn: String
+
+  formattedName: String
+  categoryName: String
+  purchaseFormsCount: Float
+  issuanceFormsCount: Float
+  stockAdjustmentsCount: Float
+
+  refPhysicalStore: PhysicalStore
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedStockItem {
+  totalResults: Int
+  data: [StockItem]
+}
+
+type InventoryStatistics {
+  physicalStoreId: String
+  itemsWithImages: Int
+  itemsWithoutImages: Int
+  itemsWithPositiveStockLevel: Int
+  itemsWithLessThanMinStockLevel: Int
+  itemsWithNegativeStockLevel: Int
+  itemsVerifiedLessThanThreeMonthsAgo: Int
+  itemsVerifiedThreeToSixMonthsAgo: Int
+  itemsVerifiedMoreThanSixMonthsAgo: Int
+}
+
+extend type Query {
+  pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+
+  stockItemById(_id: String!, physicalStoreId: String!): StockItem
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
+  stockItemsById(_ids: [String]!, physicalStoreId: String!): [StockItem]
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+
+  inventoryStatistics(physicalStoreId: String!): InventoryStatistics
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+}
+
+extend type Mutation {
+  createStockItem(
+    name: String!
+    company: String
+    details: String
+    unitOfMeasurement: String!
+    categoryId: String!
+    physicalStoreId: String!
+    minStockLevel: Float
+    currentStockLevel: Float
+  ): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  updateStockItem(
+    _id: String!
+    physicalStoreId: String!
+    name: String!
+    company: String
+    details: String
+    unitOfMeasurement: String!
+    categoryId: String!
+    minStockLevel: Float
+  ): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  verifyStockItemLevel(_id: String!, physicalStoreId: String!): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  removeStockItem(_id: String!, physicalStoreId: String!): Int
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  setStockItemImage(_id: String!, physicalStoreId: String!, imageId: String!): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  mergeStockItems(_idToKeep: String!, _idsToMerge: [String]!, physicalStoreId: String!): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  recalculateStockLevels(_ids: [String]!, physicalStoreId: String!): [StockItem]
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+}
+
+type Vendor {
+  _id: String
+  physicalStoreId: String
+  name: String
+  contactPerson: String
+  contactNumber: String
+  address: String
+  notes: String
+
+  usageCount: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  vendorById(_id: String!, physicalStoreId: String!): Vendor
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+
+  vendorsByPhysicalStoreId(physicalStoreId: String!): [Vendor]
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+}
+
+extend type Mutation {
+  createVendor(
+    name: String!
+    physicalStoreId: String!
+    contactPerson: String
+    contactNumber: String
+    address: String
+    notes: String
+  ): Vendor
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  updateVendor(
+    _id: String!
+    physicalStoreId: String!
+    name: String
+    contactPerson: String
+    contactNumber: String
+    address: String
+    notes: String
+  ): Vendor
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+
+  removeVendor(_id: String!, physicalStoreId: String!): Int
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
+  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+}
+
+type CityMehfilType {
+  _id: String
+  cityId: String
+  name: String
+  address: String
+  mehfilStartYear: String
+  timingDetails: String
+  lcdAvailability: Boolean
+  tabAvailability: Boolean
+  otherMehfilDetails: String
+
+  karkunCount: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allCityMehfils: [CityMehfilType]
+  cityMehfilsByCityId(cityId: String!): [CityMehfilType]
+  cityMehfilById(_id: String!): CityMehfilType
+}
+
+extend type Mutation {
+  createCityMehfil(
+    name: String!
+    cityId: String!
+    address: String
+    mehfilStartYear: String
+    timingDetails: String
+    lcdAvailability: Boolean
+    tabAvailability: Boolean
+    otherMehfilDetails: String
+  ): CityMehfilType
+  @checkPermissions(permissions: [ADMIN_MANAGE_CITIES])
+
+  updateCityMehfil(
+    _id: String!
+    name: String!
+    cityId: String!
+    address: String
+    mehfilStartYear: String
+    timingDetails: String
+    lcdAvailability: Boolean
+    tabAvailability: Boolean
+    otherMehfilDetails: String
+  ): CityMehfilType
+  @checkPermissions(permissions: [ADMIN_MANAGE_CITIES])
+
+  removeCityMehfil(_id: String!): Int
+  @checkPermissions(permissions: [ADMIN_MANAGE_CITIES])
+}
+
+type CityType {
+  _id: String
+  name: String
+  peripheryOf: String
+  country: String
+  region: String
+
+  karkunCount: Int
+  memberCount: Int
+  mehfils: [CityMehfilType]
+  peripheryOfCity: CityType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedCityType {
+  totalResults: Int
+  data: [CityType]
+}
+
+input CityFilter {
+  peripheryOf: String
+  region: String
+  pageIndex: String
+  pageSize: String
+}
+
+extend type Query {
+  allCities: [CityType]
+  pagedCities(filter: CityFilter): PagedCityType
+  cityById(_id: String!): CityType
+
+  distinctRegions: [String]
+}
+
+extend type Mutation {
+  createCity(name: String!, peripheryOf: String, country: String!, region: String): CityType
+  @checkPermissions(permissions: [ADMIN_MANAGE_CITIES])
+
+  updateCity(_id: String!, peripheryOf: String, name: String!, country: String!, region: String): CityType
+  @checkPermissions(permissions: [ADMIN_MANAGE_CITIES])
+
+  removeCity(_id: String!): Int
+  @checkPermissions(permissions: [ADMIN_MANAGE_CITIES])
+}
+
+extend type Query {
+  pagedSecurityAuditLogs(filter: AuditLogFilter): PagedAuditLogType
+  @checkPermissions(permissions: [SECURITY_VIEW_AUDIT_LOGS])
+}
+
+type MehfilDutyType {	
+  _id: String	
+  name: String	
+  urduName: String	
+  overallUsedCount: Int	
+  mehfilUsedCount: Int	
+
+  createdAt: String	
+  createdBy: String	
+  updatedAt: String	
+  updatedBy: String	
+}	
+
+extend type Query {	
+  allSecurityMehfilDuties(mehfilId: String): [MehfilDutyType]	
+  securityMehfilDutyById(id: String!): MehfilDutyType	
+}	
+
+extend type Mutation {	
+  createSecurityMehfilDuty(name: String!, urduName: String!): MehfilDutyType	
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+
+  updateSecurityMehfilDuty(id: String!, name: String!, urduName: String!): MehfilDutyType	
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+
+  removeSecurityMehfilDuty(_id: String!): Int	
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+}
+
+type MehfilKarkunType {
+  _id: String
+  mehfilId: String
+  karkunId: String
+  dutyId: String
+  dutyDetail: String
+  dutyCardBarcodeId: String
+
+  karkun: PersonType
+  mehfil: MehfilType
+  duty: MehfilDutyType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  mehfilKarkunsByMehfilId(mehfilId: String!, dutyId: String): [MehfilKarkunType]
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+
+  mehfilKarkunsByIds(ids: String!): [MehfilKarkunType]
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+
+  mehfilKarkunByBarcodeId(barcode: String!): MehfilKarkunType
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+}
+
+extend type Mutation {
+  addMehfilKarkun(mehfilId: String!, karkunId: String!, dutyId: String!): MehfilKarkunType
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+
+  setDutyDetail(ids: [String]!, dutyDetail: String): [MehfilKarkunType]
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+
+  removeMehfilKarkun(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+}
+
+type MehfilLangarDishType {	
+  _id: String	
+  name: String	
+  urduName: String	
+  overallUsedCount: Int	
+
+  createdAt: String	
+  createdBy: String	
+  updatedAt: String	
+  updatedBy: String	
+}	
+
+extend type Query {	
+  allSecurityMehfilLangarDishes: [MehfilLangarDishType]	
+  securityMehfilLangarDishById(id: String!): MehfilLangarDishType	
+}	
+
+extend type Mutation {	
+  createSecurityMehfilLangarDish(name: String!, urduName: String!): MehfilLangarDishType	
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+
+  updateSecurityMehfilLangarDish(id: String!, name: String!, urduName: String!): MehfilLangarDishType	
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+
+  removeSecurityMehfilLangarDish(_id: String!): Int	
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+}
+
+type MehfilLangarLocationType {	
+  _id: String	
+  name: String	
+  urduName: String	
+  overallUsedCount: Int	
+
+  createdAt: String	
+  createdBy: String	
+  updatedAt: String	
+  updatedBy: String	
+}	
+
+extend type Query {	
+  allSecurityMehfilLangarLocations: [MehfilLangarLocationType]	
+  securityMehfilLangarLocationById(id: String!): MehfilLangarLocationType	
+}	
+
+extend type Mutation {	
+  createSecurityMehfilLangarLocation(name: String!, urduName: String!): MehfilLangarLocationType	
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+
+  updateSecurityMehfilLangarLocation(id: String!, name: String!, urduName: String!): MehfilLangarLocationType	
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+
+  removeSecurityMehfilLangarLocation(_id: String!): Int	
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+}
+
+type MehfilType {
+  _id: String
+  name: String
+  mehfilDate: String
+
+  karkunCount: Int
+  mehfilKarkuns: MehfilKarkunType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allMehfils: [MehfilType]
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+
+  mehfilById(_id: String!): MehfilType
+  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+}
+
+extend type Mutation {
+  createMehfil(name: String!, mehfilDate: String!): MehfilType
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+
+  updateMehfil(_id: String!, name: String!, mehfilDate: String): MehfilType
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+
+  removeMehfil(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+}
+
+extend type Query {
+  pagedSecurityUsers(filter: UserFilter): PagedUserType
+    @checkPermissions(permissions: [SECURITY_VIEW_USERS, SECURITY_MANAGE_USERS])
+}
+
+extend type Mutation {
+  setSecurityUserPermissions(
+    userId: String!
+    permissions: [String]!
+  ): UserType @checkPermissions(permissions: [SECURITY_MANAGE_USERS])
+}
+
+type VisitorStayType {
+  _id: String
+  visitorId: String
+  fromDate: String
+  toDate: String
+  numOfDays: Float
+  stayReason: String
+  stayAllowedBy: String
+  dutyId: String
+  shiftId: String
+  cancelledDate: String
+
+  isValid: Boolean
+  isExpired: Boolean
+  refVisitor: VisitorType
+  dutyName: String
+  shiftName: String
+  dutyShiftName: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedVisitorStayType {
+  totalResults: Int
+  data: [VisitorStayType]
+}
+
+extend type Query {
+  pagedVisitorStays(queryString: String!): PagedVisitorStayType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
+  pagedVisitorStaysByVisitorId(visitorId: String!): PagedVisitorStayType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
+  visitorStayById(_id: String!): VisitorStayType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
+  distinctStayAllowedBy: [String]
+}
+
+extend type Mutation {
+  createVisitorStay(
+    visitorId: String!
+    numOfDays: Float!
+    stayReason: String
+    stayAllowedBy: String
+    dutyId: String
+    shiftId: String
+  ): VisitorStayType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
+  updateVisitorStay(
+    _id: String!
+    fromDate: String!
+    toDate: String!
+    stayReason: String
+    stayAllowedBy: String
+    dutyId: String
+    shiftId: String
+  ): VisitorStayType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
+  fixNameSpelling(existingSpelling: String!, newSpelling: String!): Int
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
+  cancelVisitorStay(_id: String!): VisitorStayType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
+  deleteVisitorStay(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
+}
+
+extend type Query {
+  pagedSecurityVisitors(filter: VisitorFilter): PagedVisitorType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
+  securityVisitorById(_id: String!): VisitorType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
+  securityVisitorByCnic(cnicNumbers: [String]!): VisitorType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
+  securityVisitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): VisitorType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+}
+
+extend type Mutation {
+  createSecurityVisitor(
+    name: String!
+    parentName: String!
+    cnicNumber: String
+    ehadDate: String!
+    birthDate: String
+    referenceName: String!
+    contactNumber1: String
+    contactNumber2: String
+    city: String
+    country: String
+    currentAddress: String
+    permanentAddress: String
+    educationalQualification: String
+    meansOfEarning: String
+    imageData: String
+  ): VisitorType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
+  updateSecurityVisitor(
+    _id: String!
+    name: String!
+    parentName: String!
+    cnicNumber: String
+    ehadDate: String!
+    birthDate: String
+    referenceName: String!
+    contactNumber1: String
+    contactNumber2: String
+    city: String
+    country: String
+    currentAddress: String
+    permanentAddress: String
+    educationalQualification: String
+    meansOfEarning: String
+  ): VisitorType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
+  deleteSecurityVisitor(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
+
+  setSecurityVisitorImage(_id: String!, imageId: String!): VisitorType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
+  updateSecurityVisitorNotes(
+    _id: String!
+    criminalRecord: String
+    otherNotes: String
+  ): VisitorType
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+
+  importSecurityVisitorsCsvData(
+    csvData: String!
+  ): String
+  @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+}

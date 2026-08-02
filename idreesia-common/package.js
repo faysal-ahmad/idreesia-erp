@@ -9,6 +9,7 @@ Package.onUse(api => {
 
   api.versionsFrom('3.5');
   api.use('ecmascript');
+  api.use('typescript');
   api.use('accounts-password');
   api.use('aldeed:collection2', 'server');
 });

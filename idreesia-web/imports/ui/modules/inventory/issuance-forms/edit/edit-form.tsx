@@ -1,0 +1,77 @@
+import React from 'react';
+import { useQuery } from '@apollo/client/react';
+import { useParams } from 'react-router-dom';
+import { type RouteComponentProps } from 'react-router';
+import { Tabs } from 'antd';
+
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import {
+  usePhysicalStore,
+  usePhysicalStoreLocations,
+} from '/imports/ui/modules/inventory/common/hooks';
+import IssuanceDetails from './issuance-details';
+import AttachmentsList from './attachments-list';
+import { ISSUANCE_FORM_BY_ID } from '../gql';
+
+const TabPane = Tabs.TabPane;
+
+type RouteParams = {
+  formId: string;
+  physicalStoreId: string;
+};
+
+type Props = RouteComponentProps<RouteParams>;
+
+const EditForm = ({ history }: Props) => {
+  const { formId, physicalStoreId } = useParams<RouteParams>();
+  const { physicalStore, physicalStoreLoading } = usePhysicalStore(physicalStoreId);
+  const { locationsByPhysicalStoreId, locationsByPhysicalStoreIdLoading } =
+    usePhysicalStoreLocations(physicalStoreId);
+  const { data, loading } = useQuery(ISSUANCE_FORM_BY_ID, {
+    skip: !formId,
+    variables: {
+      _id: formId,
+      physicalStoreId,
+    },
+  });
+
+  useDynamicBreadcrumbs(
+    physicalStore
+      ? ['Inventory', physicalStore.name, 'Issuance Forms', 'Edit']
+      : ['Inventory', 'Issuance Forms', 'Edit']
+  );
+
+  if (
+    loading ||
+    physicalStoreLoading ||
+    locationsByPhysicalStoreIdLoading ||
+    !data?.issuanceFormById
+  ) {
+    return null;
+  }
+
+  const issuanceFormById = data.issuanceFormById;
+
+  return (
+    <Tabs defaultActiveKey="1">
+      <TabPane tab="Issuance Details" key="1">
+        <IssuanceDetails
+          history={history}
+          issuanceFormById={issuanceFormById}
+          physicalStoreId={physicalStoreId}
+          locationsByPhysicalStoreId={(locationsByPhysicalStoreId ?? []).filter(
+            (location) => location != null
+          )}
+        />
+      </TabPane>
+      <TabPane tab="Attachments" key="2">
+        <AttachmentsList
+          physicalStoreId={physicalStoreId}
+          issuanceFormById={issuanceFormById}
+        />
+      </TabPane>
+    </Tabs>
+  );
+};
+
+export default EditForm;

@@ -1,6 +1,6 @@
 {
   "name": "idreesia-web",
-  "version": "1.0.1-rc.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "start": "METEOR_PACKAGE_DIRS=../ MONGO_URL=mongodb://localhost:27017/idreesia-erp meteor run --settings ./private/env/settings.json",

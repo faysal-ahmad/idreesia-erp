@@ -129,6 +129,8 @@ jobs:
       - name: Tag Release Version
         if: ${{ github.ref_name == 'master' }}
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           tag="v${{ steps.release-version.outputs.version }}"
           if git rev-parse "$tag" >/dev/null 2>&1; then
             echo "Tag $tag already exists"

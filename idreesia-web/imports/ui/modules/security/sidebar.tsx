@@ -12,6 +12,7 @@ import {
   TeamOutlined,
   ToolOutlined,
   UnlockOutlined,
+  UnorderedListOutlined,
 } from '@ant-design/icons';
 
 import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
@@ -42,18 +43,6 @@ const menuItems = [
     ],
   },
   {
-    key: 'karkuns',
-    icon: <TeamOutlined style={IconStyle} />,
-    label: 'Karkuns',
-    children: [
-      {
-        key: 'karkun-card-verification',
-        icon: <BarcodeOutlined style={IconStyle} />,
-        label: 'Card Verification',
-      },
-    ],
-  },
-  {
     key: 'visitors',
     icon: <TeamOutlined style={IconStyle} />,
     label: 'Visitors',
@@ -62,6 +51,11 @@ const menuItems = [
         key: 'visitor-registration',
         icon: <IdcardOutlined style={IconStyle} />,
         label: 'Registration',
+      },
+      {
+        key: 'visitor-list',
+        icon: <UnorderedListOutlined style={IconStyle} />,
+        label: 'Visitor List',
       },
       {
         key: 'visitor-card-verification',
@@ -154,14 +148,14 @@ const Sidebar = ({ history }: SidebarProps) => {
         history.push(paths.mehfilCardVerificationPath);
         break;
 
-      case 'karkun-card-verification':
-        setActiveSubModuleName(SubModuleNames.karkunCardVerification);
-        history.push(paths.karkunCardVerificationPath);
-        break;
-
       case 'visitor-registration':
         setActiveSubModuleName(SubModuleNames.visitorRegistration);
         history.push(paths.visitorRegistrationPath);
+        break;
+
+      case 'visitor-list':
+        setActiveSubModuleName(SubModuleNames.visitorList);
+        history.push(paths.visitorRegistrationListPath);
         break;
 
       case 'visitor-card-verification':

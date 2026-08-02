@@ -2,7 +2,7 @@ import React, { Fragment, useRef, useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
 import InputMask from 'react-input-mask';
 import { Button, Divider, Row, Col, message } from 'antd';
-import { SearchOutlined, UnorderedListOutlined, UserAddOutlined } from '@ant-design/icons';
+import { SearchOutlined, UserAddOutlined } from '@ant-design/icons';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
@@ -27,10 +27,6 @@ const Form = ({ history }: Props) => {
     } else {
       setCnicNumbers(numbers);
     }
-  };
-
-  const handleSearch = () => {
-    history.push(paths.visitorRegistrationListPath);
   };
 
   const handleNewVisitor = () => {
@@ -73,14 +69,6 @@ const Form = ({ history }: Props) => {
           />
         </Col>
         <Col order={2}>
-          <Button
-            size="large"
-            icon={<UnorderedListOutlined />}
-            onClick={handleSearch}
-          >
-            Visitors List
-          </Button>
-          &nbsp;
           <Button
             size="large"
             icon={<UserAddOutlined />}

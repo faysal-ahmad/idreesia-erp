@@ -3,7 +3,6 @@ import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
 import { MehfilCardVerificationForm } from './mehfil-card-verification';
-import { KarkunVerificationForm } from './karkun-verification';
 import { MehfilsNewForm, MehfilsEditForm, MehfilsList } from './mehfils';
 import {
   MehfilDutiesNewForm,
@@ -64,10 +63,6 @@ const Router = () => (
     <RouterRoute
       path={paths.mehfilCardVerificationPath}
       component={MehfilCardVerificationForm}
-    />
-    <RouterRoute
-      path={paths.karkunCardVerificationPath}
-      component={KarkunVerificationForm}
     />
 
     <RouterRoute

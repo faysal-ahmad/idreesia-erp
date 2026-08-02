@@ -48,7 +48,6 @@ export default class SubModulePaths {
   // Card Verification Routes
   // *************************************************************************************
   static mehfilCardVerificationPath = `${ModulePaths.security}/mehfil-card-verification`;
-  static karkunCardVerificationPath = `${ModulePaths.security}/karkun-card-verification`;
   static visitorCardVerificationPath = `${ModulePaths.security}/visitor-card-verification`;
 
   // *************************************************************************************

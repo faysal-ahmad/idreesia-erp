@@ -1,6 +1,6 @@
 const SubModuleNames = {
-  karkunCardVerification: 'Karkun Card Verification',
   visitorRegistration: 'Visitor Registration',
+  visitorList: 'Visitor List',
   visitorCardVerification: 'Visitor Card Verification',
   mehfils: 'Mehfils',
   mehfilDuties: 'Mehfil Duties',

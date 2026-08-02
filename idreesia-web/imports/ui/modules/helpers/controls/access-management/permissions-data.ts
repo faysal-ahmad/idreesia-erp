@@ -204,10 +204,6 @@ export const SecurityPermissionsData: PermissionNode = {
       ],
     },
     {
-      title: 'Karkun Verification',
-      key: PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
-    },
-    {
       title: 'Visitor Registration',
       key: 'module-security-visitor-registration',
       children: [

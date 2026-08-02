@@ -134,7 +134,6 @@ const resolvers: ResolverMap = {
           PermissionConstants.HR_VIEW_KARKUNS,
           PermissionConstants.HR_MANAGE_KARKUNS,
           PermissionConstants.HR_DELETE_DATA,
-          PermissionConstants.SECURITY_VIEW_KARKUN_VERIFICATION,
         ])
       ) {
         return null;

@@ -164,7 +164,7 @@ jobs:
         run: meteor yarn run typecheck
 
       - name: Build Application
-        run: meteor yarn run build
+        run: meteor yarn run build-for-docker
         working-directory: ./idreesia-web
 
       - name: Build Docker Container

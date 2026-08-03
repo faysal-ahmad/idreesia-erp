@@ -1,0 +1,7 @@
+.meteor
+node_modules
+client
+imports
+server
+private
+public

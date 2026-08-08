@@ -1,8 +1,10 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": "..",
-    "tsBuildInfoFile": "../node_modules/.cache/tsbuildinfo/idreesia-common.tsbuildinfo"
+    "tsBuildInfoFile": "../node_modules/.cache/tsbuildinfo/idreesia-common.tsbuildinfo",
+    "paths": {
+      "meteor/idreesia-common/*": ["./*"]
+    }
   },
   "include": [
     "../types/**/*.d.ts",

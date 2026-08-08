@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Meteor } from 'meteor/meteor';
 
 import './main.css';
@@ -9,6 +9,6 @@ Meteor.startup(() => {
   const renderTarget = document.getElementById('render-target');
 
   if (renderTarget) {
-    render(<App />, renderTarget);
+    createRoot(renderTarget).render(<App />);
   }
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { BrowserRouter } from 'react-router-dom';
@@ -49,14 +49,18 @@ const client = new ApolloClient({
 });
 
 Meteor.startup(() => {
-  render(
+  const container = document.getElementById('render-target');
+  if (!container) {
+    return;
+  }
+
+  createRoot(container).render(
     <Router>
       <Provider store={store}>
         <ApolloProviderAny client={client}>
           <App />
         </ApolloProviderAny>
       </Provider>
-    </Router>,
-    document.getElementById('render-target') as Element
+    </Router>
   );
 });

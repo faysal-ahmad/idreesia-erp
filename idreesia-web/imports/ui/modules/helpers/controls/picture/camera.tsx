@@ -20,7 +20,7 @@ export default class Camera extends Component<Props, State> {
   video: HTMLVideoElement | null = null;
   canvas?: HTMLCanvasElement;
 
-  componentWillMount() {
+  componentDidMount() {
     if (navigator.mediaDevices) {
       navigator.mediaDevices
         .getUserMedia({ video: true, audio: false })

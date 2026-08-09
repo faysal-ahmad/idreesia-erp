@@ -1,5 +1,6 @@
 import React, { type CSSProperties } from 'react';
-import { Button, Card, Divider, Flex, Form, Input, Typography, message } from 'antd';
+import { Button, Card, Divider, Flex, Form, Input, Typography } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { useMutation } from '@apollo/client/react';
 
 import { REGISTER_USER } from '../gql';

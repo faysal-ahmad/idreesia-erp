@@ -1,7 +1,8 @@
 import React, { Fragment, useRef, useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
-import InputMask from 'react-input-mask';
-import { Button, Divider, Row, Col, message } from 'antd';
+import { InputMask } from '@react-input/mask';
+import { Button, Divider, Row, Col } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { SearchOutlined, UserAddOutlined } from '@ant-design/icons';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
@@ -46,8 +47,9 @@ const Form = ({ history }: Props) => {
             <Col order={1}>Manual CNIC</Col>
             <Col order={2}>
               <InputMask
-                mask="99999-9999999-9"
-                ref={manualCnicRef as React.Ref<never>}
+                mask="_____-_______-_"
+                replacement={{ _: /\d/ }}
+                ref={manualCnicRef}
               />
             </Col>
             <Col order={2}>

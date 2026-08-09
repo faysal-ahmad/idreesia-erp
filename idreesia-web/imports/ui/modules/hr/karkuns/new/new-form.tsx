@@ -2,8 +2,8 @@ import React, { useRef, useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
 import type { Dayjs } from 'dayjs';
-import { Divider, Form, message } from 'antd';
-
+import { Divider, Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
@@ -16,7 +16,7 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import type { FormInstance } from 'antd';
+import { FormInstance } from 'antd';
 import type { CreateHrKarkunMutation } from 'meteor/idreesia-common/types/client-operations';
 
 import { CREATE_HR_KARKUN } from '../gql';

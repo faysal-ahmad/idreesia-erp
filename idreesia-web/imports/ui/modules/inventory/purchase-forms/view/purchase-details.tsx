@@ -32,7 +32,7 @@ const PurchaseDetails = ({ history, physicalStoreId, purchaseFormById }: Props) 
       <InputTextField fieldName="receivedBy" fieldLabel="Received By" initialValue={purchaseFormById.refReceivedBy?.name ?? ''} required requiredMessage="Please input a name in received by." />
       <InputTextField fieldName="purchasedBy" fieldLabel="Purchased By" initialValue={purchaseFormById.refPurchasedBy?.name ?? ''} required requiredMessage="Please input a name in purchased by." />
       <InputTextAreaField fieldName="notes" fieldLabel="Notes" required={false} initialValue={purchaseFormById.notes ?? undefined} />
-      <Divider orientation="left">Purchased / Returned Items</Divider>
+      <Divider titlePlacement="left">Purchased / Returned Items</Divider>
       <Form.Item name="items" initialValue={purchaseFormById.items ?? []} rules={[{ required: true, message: 'Please add some items.' }]} {...formItemExtendedLayout}>
         <ItemsList readOnly defaultLabel="Purchased" inflowLabel="Purchased" outflowLabel="Returned" showPrice physicalStoreId={physicalStoreId} />
       </Form.Item>

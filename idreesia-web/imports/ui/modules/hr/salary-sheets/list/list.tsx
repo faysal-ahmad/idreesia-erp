@@ -20,12 +20,12 @@ import {
   Button,
   DatePicker,
   Dropdown,
-  Modal,
   Popconfirm,
   Select,
   Table,
   Tooltip,
 } from 'antd';
+import { modal } from '/imports/ui/antd-feedback';
 import {
   keyBy,
   memoize,
@@ -375,7 +375,7 @@ export class List extends Component<ListProps, ListState> {
     const { selectedRows } = this.state;
     const { handleDeleteSelectedSalaries } = this.props;
     if (handleDeleteSelectedSalaries) {
-      Modal.confirm({
+      modal.confirm({
         title: 'Delete Salaries',
         content: 'Are you sure you want to delete the selected salary records?',
         onOk() {
@@ -388,7 +388,7 @@ export class List extends Component<ListProps, ListState> {
   _handleDeleteAllSalaries = () => {
     const { handleDeleteAllSalaries } = this.props;
     if (handleDeleteAllSalaries) {
-      Modal.confirm({
+      modal.confirm({
         title: 'Delete All Salaries',
         content:
           'Are you sure you want to delete all salary records for the month?',

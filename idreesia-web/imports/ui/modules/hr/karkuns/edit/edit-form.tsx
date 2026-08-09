@@ -15,7 +15,6 @@ import AttachmentsList from './attachments-list';
 import EmploymentInfo from './employment-info';
 import SalarySheets from './salary-sheets';
 
-const TabPane = Tabs.TabPane;
 type Props = RouteComponentProps<{ karkunId: string }>;
 
 const EditForm = ({ match, location, history }: Props) => {
@@ -24,32 +23,59 @@ const EditForm = ({ match, location, history }: Props) => {
   useBreadcrumbs(['HR', 'Karkuns', 'Edit']);
   const activeKey = (queryParams['default-active-tab'] as string) || '1';
   return (
-    <Tabs defaultActiveKey={activeKey}>
-      <TabPane tab="General Info" key="1">
-        <GeneralInfo karkunId={karkunId} history={history} match={match} />
-      </TabPane>
-      <TabPane tab="Wazaif &amp; Raabta" key="2">
-        <WazaifAndRaabta karkunId={karkunId} history={history} />
-      </TabPane>
-      <TabPane tab="Profile Picture" key="3">
-        <ProfilePicture karkunId={karkunId} match={match} />
-      </TabPane>
-      <TabPane tab="Duty Participation" key="4">
-        <DutyParticipation karkunId={karkunId} match={match} />
-      </TabPane>
-      <TabPane tab="Attendance Sheets" key="5">
-        <AttendanceSheets karkunId={karkunId} />
-      </TabPane>
-      <TabPane tab="File Attachments" key="6">
-        <AttachmentsList karkunId={karkunId} match={match} />
-      </TabPane>
-      <TabPane tab="Employment Info" key="7">
-        <EmploymentInfo karkunId={karkunId} history={history} match={match} />
-      </TabPane>
-      <TabPane tab="Salary Sheets" key="8">
-        <SalarySheets karkunId={karkunId} />
-      </TabPane>
-    </Tabs>
+    <Tabs
+      defaultActiveKey={activeKey}
+      items={[
+        {
+          key: '1',
+          label: 'General Info',
+          children: (
+            <GeneralInfo karkunId={karkunId} history={history} match={match} />
+          ),
+        },
+        {
+          key: '2',
+          label: 'Wazaif & Raabta',
+          children: <WazaifAndRaabta karkunId={karkunId} history={history} />,
+        },
+        {
+          key: '3',
+          label: 'Profile Picture',
+          children: <ProfilePicture karkunId={karkunId} match={match} />,
+        },
+        {
+          key: '4',
+          label: 'Duty Participation',
+          children: <DutyParticipation karkunId={karkunId} match={match} />,
+        },
+        {
+          key: '5',
+          label: 'Attendance Sheets',
+          children: <AttendanceSheets karkunId={karkunId} />,
+        },
+        {
+          key: '6',
+          label: 'File Attachments',
+          children: <AttachmentsList karkunId={karkunId} match={match} />,
+        },
+        {
+          key: '7',
+          label: 'Employment Info',
+          children: (
+            <EmploymentInfo
+              karkunId={karkunId}
+              history={history}
+              match={match}
+            />
+          ),
+        },
+        {
+          key: '8',
+          label: 'Salary Sheets',
+          children: <SalarySheets karkunId={karkunId} />,
+        },
+      ]}
+    />
   );
 };
 

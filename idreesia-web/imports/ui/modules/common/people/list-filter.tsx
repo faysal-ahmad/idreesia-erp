@@ -7,8 +7,8 @@ import {
   Popover,
   Space,
   Tag,
-  message,
 } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { FilterOutlined, SyncOutlined } from '@ant-design/icons';
 
 import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';

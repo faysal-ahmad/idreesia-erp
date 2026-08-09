@@ -2,8 +2,8 @@ import React, { type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@apollo/client/react';
 import { addMonths, startOfMonth } from 'date-fns';
-import { Row, Col, Spin, message } from 'antd';
-
+import { Row, Col, Spin } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { formatDate, parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';

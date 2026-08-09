@@ -7,7 +7,8 @@ import type {
   MehfilKarkunByBarcodeIdQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
-import { Row, Spin, message } from 'antd';
+import { Row, Spin } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
 
 import { Card } from '../mehfil-karkuns/print/karkun-cards/named-cards';

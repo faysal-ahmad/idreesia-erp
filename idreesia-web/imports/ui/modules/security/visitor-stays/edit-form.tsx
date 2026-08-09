@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client/react';
-import { Form, message } from 'antd';
+import { Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import dayjs, { type Dayjs } from 'dayjs';
 
 import { useDistinctStayAllowedBy } from 'meteor/idreesia-common/hooks/security';
@@ -131,7 +132,7 @@ const EditForm = ({
       <AutoCompleteField
         fieldName="stayAllowedBy"
         fieldLabel="Stay Allowed By"
-        dataSource={distinctStayAllowedBy ?? undefined}
+        options={distinctStayAllowedBy ?? undefined}
         initialValue={visitorStayById.stayAllowedBy}
       />
       <SelectField

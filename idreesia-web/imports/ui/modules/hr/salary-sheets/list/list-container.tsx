@@ -14,7 +14,8 @@ import type {
   CreateSalariesMutation,
   UpdateSalaryMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import { Modal, message } from 'antd';
+import { Modal } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { useAllJobs } from '/imports/ui/modules/hr/common/hooks';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 

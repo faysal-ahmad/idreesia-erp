@@ -3,7 +3,8 @@ import { useMutation } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import { type History } from 'history';
 import { type CSSProperties } from 'react';
-import { Divider, Form, message } from 'antd';
+import { Divider, Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import type { InventoryPurchaseFormByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
@@ -85,7 +86,7 @@ const PurchaseDetails = ({
         <SelectField<VendorOption> data={vendorsByPhysicalStoreId as VendorOption[]} getDataValue={({ _id }) => _id ?? ''} getDataText={({ name }) => name ?? ''} fieldName="vendorId" fieldLabel="Vendor" initialValue={purchaseFormById.vendorId ?? undefined} />
         <TreeSelectField data={locationsByPhysicalStoreId as LocationOption[]} showSearch fieldName="locationId" fieldLabel="For Location" placeholder="Select a Location" initialValue={purchaseFormById.locationId ?? undefined} />
         <InputTextAreaField fieldName="notes" fieldLabel="Notes" required={false} initialValue={purchaseFormById.notes ?? undefined} />
-        <Divider orientation="left">Purchased / Returned Items</Divider>
+        <Divider titlePlacement="left">Purchased / Returned Items</Divider>
         <Form.Item name="items" initialValue={purchaseFormById.items ?? []} rules={[{ required: true, message: 'Please add some items.' }]} {...formItemExtendedLayout}>
           <ItemsList showPrice defaultLabel="Purchased" inflowLabel="Purchased" outflowLabel="Returned" physicalStoreId={physicalStoreId} refForm={formRef.current as never} />
         </Form.Item>

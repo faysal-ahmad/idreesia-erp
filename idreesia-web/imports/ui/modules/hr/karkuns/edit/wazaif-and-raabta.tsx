@@ -1,8 +1,8 @@
 import React from 'react';
+import { message } from '/imports/ui/antd-feedback';
 import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
 
-import { message } from 'antd';
 import { KarkunsWazaifAndRaabta } from '/imports/ui/modules/common';
 import type { KarkunWazaifFormValues } from '/imports/ui/modules/common/karkuns/wazaif-and-raabta';
 

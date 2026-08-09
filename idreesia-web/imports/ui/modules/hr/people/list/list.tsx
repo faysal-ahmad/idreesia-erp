@@ -18,9 +18,8 @@ import {
   Row,
   Table,
   Tooltip,
-  message,
 } from 'antd';
-
+import { message } from '/imports/ui/antd-feedback';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import type { HrPeoplePagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';

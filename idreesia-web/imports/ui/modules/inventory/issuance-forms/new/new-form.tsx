@@ -3,8 +3,8 @@ import { useMutation } from '@apollo/client/react';
 import { type History } from 'history';
 import { type CSSProperties } from 'react';
 import { useParams } from 'react-router-dom';
-import { Divider, Form, message } from 'antd';
-
+import { Divider, Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 
@@ -180,7 +180,7 @@ const NewForm = ({ history }: Props) => {
         required={false}
       />
 
-      <Divider orientation="left">Issued / Returned Items</Divider>
+      <Divider titlePlacement="left">Issued / Returned Items</Divider>
       <Form.Item name="items" rules={rules} {...formItemExtendedLayout}>
         <ItemsList
           defaultLabel="Issued"

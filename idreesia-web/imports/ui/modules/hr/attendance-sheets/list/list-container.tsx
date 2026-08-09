@@ -23,7 +23,8 @@ import type {
   UpdateAttendanceMutation,
   UpdateAttendanceMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import { Modal, message } from 'antd';
+import { Modal } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import {
   useAllJobs,
   useAllMSDuties,

@@ -9,7 +9,6 @@ import { Tabs } from 'antd';
 import GeneralInfo from './general-info';
 import DutyShifts from './duty-shifts';
 
-const TabPane = Tabs.TabPane;
 type Props = RouteComponentProps<{ dutyId: string }>;
 
 const EditForm = ({ match, location, history }: Props) => {
@@ -19,14 +18,21 @@ const EditForm = ({ match, location, history }: Props) => {
   const activeKey = (queryParams['default-active-tab'] as string) || '1';
 
   return (
-    <Tabs defaultActiveKey={activeKey}>
-      <TabPane tab="General Info" key="1">
-        <GeneralInfo dutyId={dutyId} history={history} />
-      </TabPane>
-      <TabPane tab="Shifts" key="2">
-        <DutyShifts dutyId={dutyId} />
-      </TabPane>
-    </Tabs>
+    <Tabs
+      defaultActiveKey={activeKey}
+      items={[
+        {
+          key: '1',
+          label: 'General Info',
+          children: <GeneralInfo dutyId={dutyId} history={history} />,
+        },
+        {
+          key: '2',
+          label: 'Shifts',
+          children: <DutyShifts dutyId={dutyId} />,
+        },
+      ]}
+    />
   );
 };
 

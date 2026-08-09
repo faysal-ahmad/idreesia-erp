@@ -1,7 +1,7 @@
 import React from 'react';
+import { message } from '/imports/ui/antd-feedback';
 import { type History } from 'history';
 import { useMutation } from '@apollo/client/react';
-import { message } from 'antd';
 
 import { VisitorsGeneralInfo } from '/imports/ui/modules/common';
 import type { VisitorGeneralInfoFormValues } from '/imports/ui/modules/common/visitors/general-info';

@@ -7,8 +7,8 @@ import {
   Table,
   Tooltip,
   Popconfirm,
-  message,
 } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import {
   DeleteOutlined,
   PlusCircleOutlined,

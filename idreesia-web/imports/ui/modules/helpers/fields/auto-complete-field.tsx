@@ -4,7 +4,7 @@ import { AutoComplete, Form } from "antd";
 import type { AutoCompleteProps } from "antd";
 
 interface FieldProps {
-  dataSource?: string[];
+  options?: string[];
   fieldName: string;
   fieldLabel?: string;
   placeholder?: string;
@@ -36,7 +36,7 @@ const filterOptionFunc: NonNullable<AutoCompleteProps['filterOption']> = (_input
  * requiredMessage: Message to show if the value is not entered.
  */
 const AutoCompleteField = ({
-  dataSource = [],
+  options = [],
   fieldName,
   fieldLabel,
   placeholder,
@@ -59,7 +59,7 @@ const AutoCompleteField = ({
     <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
       <AutoComplete
         placeholder={placeholder}
-        dataSource={dataSource}
+        options={options.map((value) => ({ value }))}
         backfill
         filterOption={filterOption}
       />

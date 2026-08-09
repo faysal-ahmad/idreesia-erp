@@ -7,7 +7,8 @@ import { addMonths, startOfMonth } from 'date-fns';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { formatDate, parseDate } from 'meteor/idreesia-common/utilities/date-fns';
-import { Row, Col, Spin, message } from 'antd';
+import { Row, Col, Spin } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import { ATTENDANCE_BY_BARCODE_ID } from '../gql';

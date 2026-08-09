@@ -1,9 +1,9 @@
 import React from 'react';
+import { message } from '/imports/ui/antd-feedback';
 import { type match } from 'react-router';
 import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
 
-import { message } from 'antd';
 import { KarkunsGeneralInfo } from '/imports/ui/modules/common';
 import type { KarkunGeneralInfoFormValues } from '/imports/ui/modules/common/karkuns/general-info';
 import {

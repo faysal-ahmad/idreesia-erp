@@ -18,12 +18,11 @@ import {
   Cascader,
   DatePicker,
   Dropdown,
-  Modal,
   Popconfirm,
   Table,
   Tooltip,
 } from 'antd';
-
+import { modal } from '/imports/ui/antd-feedback';
 import {
   filter,
   sortBy,
@@ -266,7 +265,7 @@ export class List extends Component<ListProps, ListState> {
     const { selectedRows } = this.state;
     const { handleDeleteSelectedAttendances } = this.props;
     if (handleDeleteSelectedAttendances) {
-      Modal.confirm({
+      modal.confirm({
         title: 'Delete Attendances',
         content:
           'Are you sure you want to delete the selected attendance records?',
@@ -280,7 +279,7 @@ export class List extends Component<ListProps, ListState> {
   _handleDeleteAllAttendances = () => {
     const { handleDeleteAllAttendances } = this.props;
     if (handleDeleteAllAttendances) {
-      Modal.confirm({
+      modal.confirm({
         title: 'Delete All Attendances',
         content:
           'Are you sure you want to delete all attendance records for the selected duty/shift/job in the month?',

@@ -3,7 +3,8 @@ import { type match } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client/react';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import { Row, Col, message } from 'antd';
+import { Row, Col } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import {
   TakePicture,
   UploadAttachment,

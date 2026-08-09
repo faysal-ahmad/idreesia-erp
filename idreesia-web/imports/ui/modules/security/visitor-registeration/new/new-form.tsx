@@ -1,7 +1,7 @@
 import React from 'react';
+import { message } from '/imports/ui/antd-feedback';
 import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
-import { message } from 'antd';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { VisitorsNewForm } from '/imports/ui/modules/common';

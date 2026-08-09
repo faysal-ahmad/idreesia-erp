@@ -1,6 +1,7 @@
 import React from 'react';
+import { message } from '/imports/ui/antd-feedback';
 import { useMutation } from '@apollo/client/react';
-import { message } from 'antd';
+
 import type { IssuanceFormByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';

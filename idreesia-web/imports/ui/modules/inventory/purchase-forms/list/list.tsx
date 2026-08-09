@@ -7,12 +7,11 @@ import {
   Button,
   Divider,
   Dropdown,
-  Modal,
   Pagination,
   Table,
   Tooltip,
-  message,
 } from 'antd';
+import { message, modal } from '/imports/ui/antd-feedback';
 import {
   CheckSquareOutlined,
   DeleteOutlined,
@@ -231,7 +230,7 @@ const List = ({ history, location }: Props) => {
                 } else if (key === 'export') {
                   window.open(`${window.location.origin}/generate-report?reportName=PurchaseForms&reportArgs=${_ids.join(',')}`, '_blank');
                 } else if (key === 'delete') {
-                  Modal.confirm({
+                  modal.confirm({
                     title: 'Delete Purchase Forms',
                     content: 'Are you sure you want to delete the selected purchase forms?',
                     onOk: () => removePurchaseForms({ variables: { _ids, physicalStoreId } })

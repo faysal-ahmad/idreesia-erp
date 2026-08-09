@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
-import { Divider, Form, message } from 'antd';
-
+import { Divider, Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {

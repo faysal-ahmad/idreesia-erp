@@ -10,7 +10,6 @@ import {
 import { MehfilKarkuns } from '../mehfil-karkuns';
 import GeneralInfo from './edit/general-info';
 
-const TabPane = Tabs.TabPane;
 type Props = RouteComponentProps<{ mehfilId: string }>;
 
 const EditForm = ({ match, location, history }: Props) => {
@@ -20,18 +19,27 @@ const EditForm = ({ match, location, history }: Props) => {
   const activeKey = (queryParams['default-active-tab'] as string) || '1';
 
   return (
-    <Tabs defaultActiveKey={activeKey}>
-      <TabPane tab="General Info" key="1">
-        <GeneralInfo mehfilId={mehfilId} history={history} />
-      </TabPane>
-      <TabPane tab="Karkuns" key="2">
-        <MehfilKarkuns
-          mehfilId={mehfilId}
-          history={history}
-          location={location}
-        />
-      </TabPane>
-    </Tabs>
+    <Tabs
+      defaultActiveKey={activeKey}
+      items={[
+        {
+          key: '1',
+          label: 'General Info',
+          children: <GeneralInfo mehfilId={mehfilId} history={history} />,
+        },
+        {
+          key: '2',
+          label: 'Karkuns',
+          children: (
+            <MehfilKarkuns
+              mehfilId={mehfilId}
+              history={history}
+              location={location}
+            />
+          ),
+        },
+      ]}
+    />
   );
 };
 

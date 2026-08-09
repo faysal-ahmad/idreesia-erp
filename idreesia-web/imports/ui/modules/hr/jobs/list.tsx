@@ -13,7 +13,8 @@ import type {
 } from 'meteor/idreesia-common/types/client-operations';
 
 const RouterLink = Link as any;
-import { Button, Table, Tooltip, message } from 'antd';
+import { Button, Table, Tooltip } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { useAllJobs } from '/imports/ui/modules/hr/common/hooks';
 

@@ -12,8 +12,6 @@ import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import GeneralInfo from './general-info';
 import { SECURITY_VISITOR_BY_ID } from '../gql';
 
-const TabPane = Tabs.TabPane;
-
 type Props = RouteComponentProps<{ visitorId: string }>;
 
 const TAB_GENERAL = 'general';
@@ -78,23 +76,32 @@ const EditForm = ({ history, location, match }: Props) => {
       onChange={(key) => {
         setPageParams({ 'default-active-tab': key });
       }}
-    >
-      <TabPane tab="General Info" key={TAB_GENERAL}>
-        <GeneralInfo
-          history={history}
-          visitorId={visitorId}
-          securityVisitorById={securityVisitorById}
-        />
-      </TabPane>
-      <TabPane tab="Stay History" key={TAB_STAYS}>
-        <VisitorStaysList
-          visitorId={visitorId}
-          showNewButton
-          showDutyColumn
-          showActionsColumn
-        />
-      </TabPane>
-    </Tabs>
+      items={[
+        {
+          key: TAB_GENERAL,
+          label: 'General Info',
+          children: (
+            <GeneralInfo
+              history={history}
+              visitorId={visitorId}
+              securityVisitorById={securityVisitorById}
+            />
+          ),
+        },
+        {
+          key: TAB_STAYS,
+          label: 'Stay History',
+          children: (
+            <VisitorStaysList
+              visitorId={visitorId}
+              showNewButton
+              showDutyColumn
+              showActionsColumn
+            />
+          ),
+        },
+      ]}
+    />
   );
 };
 

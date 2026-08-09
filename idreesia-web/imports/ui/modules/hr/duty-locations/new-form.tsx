@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
-import { Form, message } from 'antd';
+import { Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { type History } from 'history';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';

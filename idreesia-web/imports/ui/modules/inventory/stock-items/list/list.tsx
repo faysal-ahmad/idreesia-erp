@@ -5,13 +5,12 @@ import numeral from 'numeral';
 import {
   Button,
   Dropdown,
-  Modal,
   Table,
   Tooltip,
   Pagination,
   Popconfirm,
-  message,
 } from 'antd';
+import { message, modal } from '/imports/ui/antd-feedback';
 import {
   CalculatorOutlined,
   DeleteOutlined,
@@ -212,7 +211,7 @@ const List = ({
     const currentStockLevelDisplay = record.currentStockLevel
       ? numeral(record.currentStockLevel).format('0.00')
       : '0';
-    Modal.confirm({
+    modal.confirm({
       title: 'Stock Level Verification',
       content: `Have you verified that the current stock level of "${
         record.name
@@ -258,7 +257,7 @@ const List = ({
         return;
       }
 
-      Modal.confirm({
+      modal.confirm({
         title: 'Merge selected items',
         content:
           'Are you sure you want to merge these items? This cannot be undone.',

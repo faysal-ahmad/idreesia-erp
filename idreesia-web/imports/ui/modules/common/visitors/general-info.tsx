@@ -171,7 +171,7 @@ const GeneralInfo = ({
           <AutoCompleteField
             fieldName="city"
             fieldLabel="City"
-            dataSource={distinctCities ?? []}
+            options={distinctCities ?? []}
             required
             requiredMessage="Please input the city for the person."
             initialValue={visitor?.city}
@@ -180,7 +180,7 @@ const GeneralInfo = ({
           <AutoCompleteField
             fieldName="country"
             fieldLabel="Country"
-            dataSource={distinctCountries ?? []}
+            options={distinctCountries ?? []}
             required
             requiredMessage="Please input the country for the person."
             initialValue={visitor?.country}
@@ -265,7 +265,7 @@ const GeneralInfo = ({
         <>
           {hasCriminalRecord || hasOtherNotes ? (
             <Space
-              direction="vertical"
+              orientation="vertical"
               size={8}
               style={{ display: 'flex', marginBottom: 16 }}
             >
@@ -318,7 +318,7 @@ const GeneralInfo = ({
         onFinish={_handleFinish}
         onFieldsChange={handleFieldsChange}
       >
-        <Space direction="vertical" size={16} style={{ display: 'flex', width: '100%' }}>
+        <Space orientation="vertical" size={16} style={{ display: 'flex', width: '100%' }}>
           <div className={sideContent ? 'visitor-form-personal-row' : undefined}>
             <Collapse
               className="visitor-form-sections"

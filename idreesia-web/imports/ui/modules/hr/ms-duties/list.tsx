@@ -15,7 +15,8 @@ import type {
   RemoveDutyMutation,
   RemoveDutyMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import { Button, Table, Tooltip, message } from 'antd';
+import { Button, Table, Tooltip } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 const LIST_ALL_MS_DUTIES: TypedDocumentNode<

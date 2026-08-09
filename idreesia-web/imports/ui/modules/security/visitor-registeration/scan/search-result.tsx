@@ -9,8 +9,6 @@ import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 
 import { SECURITY_VISITOR_BY_CNIC } from '../gql';
 
-const TabPane = Tabs.TabPane;
-
 const LabelStyle: CSSProperties = {
   fontWeight: 'bold',
   fontSize: 22,
@@ -134,16 +132,23 @@ const SearchResult = ({ cnicNumbers }: SearchResultProps) => {
         <SearchResultRow label="Country" text={country} dataStyle={dataStyle} />
       </Col>
       <Col order={2} span={16}>
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="Stay History" key="1">
-            <VisitorStaysList
-              visitorId={_id ?? ''}
-              showDutyColumn
-              showNewButton
-              showActionsColumn
-            />
-          </TabPane>
-        </Tabs>
+        <Tabs
+          defaultActiveKey="1"
+          items={[
+            {
+              key: '1',
+              label: 'Stay History',
+              children: (
+                <VisitorStaysList
+                  visitorId={_id ?? ''}
+                  showDutyColumn
+                  showNewButton
+                  showActionsColumn
+                />
+              ),
+            },
+          ]}
+        />
       </Col>
     </Row>
   );

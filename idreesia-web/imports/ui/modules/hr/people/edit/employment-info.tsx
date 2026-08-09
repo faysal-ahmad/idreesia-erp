@@ -3,8 +3,8 @@ import { type match } from 'react-router';
 import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
 import dayjs, { type Dayjs } from 'dayjs';
-import { Form, message } from 'antd';
-
+import { Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import {
   DateField,
   SelectField,

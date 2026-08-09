@@ -10,7 +10,6 @@ import PurchaseDetails from './purchase-details';
 import { AttachmentsList } from './attachments-list';
 import { PURCHASE_FORM_BY_ID } from '../gql';
 
-const TabPane = Tabs.TabPane;
 type RouteParams = { formId: string; physicalStoreId: string };
 type Props = RouteComponentProps<RouteParams>;
 
@@ -31,14 +30,27 @@ const ViewForm = ({ history }: Props) => {
   if (loading || !data?.purchaseFormById) return null;
 
   return (
-    <Tabs defaultActiveKey="1">
-      <TabPane tab="Purchase Details" key="1">
-        <PurchaseDetails history={history} physicalStoreId={physicalStoreId} purchaseFormById={data.purchaseFormById} />
-      </TabPane>
-      <TabPane tab="Attachments" key="2">
-        <AttachmentsList purchaseFormById={data.purchaseFormById} />
-      </TabPane>
-    </Tabs>
+    <Tabs
+      defaultActiveKey="1"
+      items={[
+        {
+          key: '1',
+          label: 'Purchase Details',
+          children: (
+            <PurchaseDetails
+              history={history}
+              physicalStoreId={physicalStoreId}
+              purchaseFormById={data.purchaseFormById}
+            />
+          ),
+        },
+        {
+          key: '2',
+          label: 'Attachments',
+          children: <AttachmentsList purchaseFormById={data.purchaseFormById} />,
+        },
+      ]}
+    />
   );
 };
 

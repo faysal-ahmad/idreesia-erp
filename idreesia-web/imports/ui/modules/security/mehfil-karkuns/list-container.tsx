@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { useMutation } from '@apollo/client/react';
 import { type History, type Location } from 'history';
 
-import { Modal, Spin, message } from 'antd';
+import { Modal, Spin } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import type {
   MehfilByIdQuery,

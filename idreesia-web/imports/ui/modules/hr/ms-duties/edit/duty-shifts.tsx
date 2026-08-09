@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import { format, isValid } from 'date-fns';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusCircleOutlined,
+  SyncOutlined,
+} from '@ant-design/icons';
 import {
   Button,
   Modal,
+  Popconfirm,
+  Space,
+  Spin,
   Table,
   Tooltip,
 } from 'antd';
@@ -44,17 +52,17 @@ const List = ({ dutyId }: ListProps) => {
   const [showNewForm, setShowNewForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [dutyShift, setDutyShift] = useState<DutyShift | null>(null);
-  const { data } = useQuery(DUTY_SHIFTS_BY_DUTY_ID, {
+  const { data, loading, refetch } = useQuery(DUTY_SHIFTS_BY_DUTY_ID, {
     variables: { dutyId },
   });
   const [createDutyShift] = useMutation(CREATE_DUTY_SHIFT, {
-    refetchQueries: ['dutyShiftsByDutyId'],
+    refetchQueries: ['dutyShiftsByDutyId', 'listAllMSDuties', 'allMSDuties'],
   });
   const [updateDutyShift] = useMutation(UPDATE_DUTY_SHIFT, {
-    refetchQueries: ['dutyShiftsByDutyId'],
+    refetchQueries: ['dutyShiftsByDutyId', 'listAllMSDuties', 'allMSDuties'],
   });
   const [removeDutyShift] = useMutation(REMOVE_DUTY_SHIFT, {
-    refetchQueries: ['dutyShiftsByDutyId'],
+    refetchQueries: ['dutyShiftsByDutyId', 'listAllMSDuties', 'allMSDuties'],
   });
 
   const dutyShiftsByDutyId = (data?.dutyShiftsByDutyId ?? []).filter(
@@ -66,7 +74,12 @@ const List = ({ dutyId }: ListProps) => {
     setShowNewForm(true);
   };
 
-  const handleNewShiftSave = ({ name, startTime, endTime, attendanceSheet }: ShiftFormValues) => {
+  const handleNewShiftSave = ({
+    name,
+    startTime,
+    endTime,
+    attendanceSheet,
+  }: ShiftFormValues) => {
     setShowNewForm(false);
 
     createDutyShift({
@@ -77,9 +90,13 @@ const List = ({ dutyId }: ListProps) => {
         endTime: endTime as string | undefined,
         attendanceSheet,
       },
-    }).catch((error: Error) => {
-      message.error(error.message, 5);
-    });
+    })
+      .then(() => {
+        message.success('Shift created', 2);
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
   };
 
   const handleNewShiftCancel = () => {
@@ -111,9 +128,13 @@ const List = ({ dutyId }: ListProps) => {
         endTime: endTime as string | undefined,
         attendanceSheet,
       },
-    }).catch((error: Error) => {
-      message.error(error.message, 5);
-    });
+    })
+      .then(() => {
+        message.success('Shift updated', 2);
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
   };
 
   const handleEditShiftCancel = () => {
@@ -130,6 +151,20 @@ const List = ({ dutyId }: ListProps) => {
       message.error(error.message, 5);
     });
   };
+
+  const handleRefresh = () => {
+    refetch().then(() => {
+      message.success('Data Reloaded', 2);
+    });
+  };
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   const columns: any[] = [
     {
@@ -157,20 +192,22 @@ const List = ({ dutyId }: ListProps) => {
     },
     {
       key: 'action',
+      width: 72,
       render: (_text: unknown, record: DutyShift) => {
-        let deleteAction = null;
-        if (record.canDelete) {
-          deleteAction = (
+        const deleteAction = record.canDelete ? (
+          <Popconfirm
+            title="Are you sure you want to delete this shift?"
+            onConfirm={() => {
+              handleDeleteClicked(record);
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
             <Tooltip title="Delete">
-              <DeleteOutlined
-                className="list-actions-icon"
-                onClick={() => {
-                  handleDeleteClicked(record);
-                }}
-              />
+              <DeleteOutlined className="list-actions-icon" />
             </Tooltip>
-          );
-        }
+          </Popconfirm>
+        ) : null;
 
         return (
           <div className="list-actions-column">
@@ -191,28 +228,45 @@ const List = ({ dutyId }: ListProps) => {
 
   return (
     <>
-      <Table
-        rowKey="_id"
-        dataSource={dutyShiftsByDutyId}
-        columns={columns}
-        pagination={false}
-        bordered
-        title={() => (
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={handleNewClicked}
-          >
-            New Duty Shift
-          </Button>
-        )}
-      />
+      <div className="list-container">
+        <div className="list-table-header" style={{ marginBottom: 12 }}>
+          <Space size={12}>
+            <Button
+              type="primary"
+              icon={<PlusCircleOutlined />}
+              onClick={handleNewClicked}
+            >
+              New Duty Shift
+            </Button>
+          </Space>
+          <div className="list-table-header-utilities">
+            <Space size={8}>
+              <Button
+                icon={<SyncOutlined />}
+                onClick={handleRefresh}
+                title="Reload Data"
+              />
+            </Space>
+          </div>
+        </div>
+        <Table
+          className="list-table"
+          rowKey="_id"
+          dataSource={dutyShiftsByDutyId}
+          columns={columns}
+          pagination={false}
+          bordered
+          size="middle"
+          tableLayout="fixed"
+        />
+      </div>
       <Modal
         title="New Shift"
         open={showNewForm}
         onCancel={handleNewShiftCancel}
         width={600}
         footer={null}
+        destroyOnHidden
       >
         {showNewForm ? (
           <ShiftNewForm
@@ -227,6 +281,7 @@ const List = ({ dutyId }: ListProps) => {
         onCancel={handleEditShiftCancel}
         width={600}
         footer={null}
+        destroyOnHidden
       >
         {showEditForm && dutyShift ? (
           <ShiftEditForm

@@ -7,6 +7,7 @@ import React, {
 import { type History } from 'history';
 import {
   AuditOutlined,
+  ClusterOutlined,
   DollarOutlined,
   EnvironmentOutlined,
   LaptopOutlined,
@@ -29,7 +30,7 @@ const IconStyle: CSSProperties = {
 const menuItems = [
   {
     key: 'employee-management',
-    icon: <TeamOutlined style={IconStyle} />,
+    icon: <ClusterOutlined style={IconStyle} />,
     label: 'Employee Management',
     children: [
       {
@@ -57,29 +58,36 @@ const menuItems = [
     ],
   },
   {
-    key: 'karkuns',
-    icon: <TeamOutlined style={IconStyle} />,
-    label: 'Karkuns',
-  },
-  {
-    key: 'attendance-sheets',
-    icon: <SolutionOutlined style={IconStyle} />,
-    label: 'Attendance Sheets',
-  },
-  {
-    key: 'setup',
-    icon: <LaptopOutlined style={IconStyle} />,
-    label: 'Setup',
+    key: 'karkuns-management',
+    icon: <ClusterOutlined style={IconStyle} />,
+    label: 'Karkuns Management',
     children: [
       {
-        key: 'ms-duties',
-        icon: <TagsOutlined style={IconStyle} />,
-        label: 'Duties & Shifts',
+        key: 'karkuns',
+        icon: <TeamOutlined style={IconStyle} />,
+        label: 'Karkuns',
       },
       {
-        key: 'duty-locations',
-        icon: <EnvironmentOutlined style={IconStyle} />,
-        label: 'Duty Locations',
+        key: 'attendance-sheets',
+        icon: <SolutionOutlined style={IconStyle} />,
+        label: 'Attendance Sheets',
+      },
+      {
+        key: 'setup',
+        icon: <LaptopOutlined style={IconStyle} />,
+        label: 'Setup',
+        children: [
+          {
+            key: 'ms-duties',
+            icon: <TagsOutlined style={IconStyle} />,
+            label: 'Duties & Shifts',
+          },
+          {
+            key: 'duty-locations',
+            icon: <EnvironmentOutlined style={IconStyle} />,
+            label: 'Duty Locations',
+          },
+        ],
       },
     ],
   },
@@ -130,13 +138,13 @@ const menuRouteMatches: MenuRouteMatch[] = [
   },
   {
     key: 'karkuns',
-    openKeys: [],
+    openKeys: ['karkuns-management'],
     subModuleName: SubModuleNames.karkuns,
     matches: pathname => isPath(pathname, paths.karkunsPath),
   },
   {
     key: 'attendance-sheets',
-    openKeys: [],
+    openKeys: ['karkuns-management'],
     subModuleName: SubModuleNames.attendanceSheets,
     matches: pathname => isPath(pathname, paths.attendanceSheetsPath),
   },
@@ -148,13 +156,13 @@ const menuRouteMatches: MenuRouteMatch[] = [
   },
   {
     key: 'ms-duties',
-    openKeys: ['setup'],
+    openKeys: ['karkuns-management', 'setup'],
     subModuleName: SubModuleNames.msDuties,
     matches: pathname => isPath(pathname, paths.msDutiesPath),
   },
   {
     key: 'duty-locations',
-    openKeys: ['setup'],
+    openKeys: ['karkuns-management', 'setup'],
     subModuleName: SubModuleNames.dutyLocations,
     matches: pathname => isPath(pathname, paths.dutyLocationsPath),
   },

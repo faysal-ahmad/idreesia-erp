@@ -1,41 +1,23 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
-import { useMutation, useQuery } from '@apollo/client/react';
-import { Form } from 'antd';
+import { useMutation } from '@apollo/client/react';
+import { Collapse, Form, type CollapseProps } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import { type History } from 'history';
 
 import type {
   DutyByIdQuery,
-  DutyByIdQueryVariables,
   UpdateDutyMutation,
   UpdateDutyMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   InputTextField,
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
-
-const DUTY_BY_ID: TypedDocumentNode<
-  DutyByIdQuery,
-  DutyByIdQueryVariables
-> = gql`
-  query dutyById($id: String!) {
-    dutyById(id: $id) {
-      _id
-      name
-      description
-      attendanceSheet
-      createdAt
-      createdBy
-      updatedAt
-      updatedBy
-    }
-  }
-`;
 
 const UPDATE_DUTY: TypedDocumentNode<
   UpdateDutyMutation,
@@ -65,8 +47,11 @@ const UPDATE_DUTY: TypedDocumentNode<
   }
 `;
 
-interface EditFormProps {
+type Duty = NonNullable<DutyByIdQuery['dutyById']>;
+
+interface Props {
   dutyId: string;
+  duty: Duty;
   history: History;
 }
 
@@ -76,18 +61,14 @@ interface FormValues {
   attendanceSheet?: string;
 }
 
-const EditForm = ({ dutyId, history }: EditFormProps) => {
+const GeneralInfo = ({ dutyId, duty, history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { data, loading } = useQuery(DUTY_BY_ID, {
-    variables: { id: dutyId },
-  });
   const [updateDuty] = useMutation(UPDATE_DUTY, {
-    refetchQueries: ['allMSDuties'],
+    refetchQueries: ['listAllMSDuties', 'allMSDuties', 'dutyById'],
   });
-  const dutyById = data?.dutyById;
 
   const handleCancel = () => {
-    history.goBack();
+    history.push(paths.msDutiesPath);
   };
 
   const handleFieldsChange = () => {
@@ -95,53 +76,73 @@ const EditForm = ({ dutyId, history }: EditFormProps) => {
   };
 
   const handleFinish = ({ name, description, attendanceSheet }: FormValues) => {
-    if (!dutyById?._id) return;
     updateDuty({
       variables: {
-        id: dutyById._id,
+        id: dutyId,
         name,
         description,
         attendanceSheet,
       },
     })
       .then(() => {
-        history.goBack();
+        message.success('Duty updated', 2);
+        setIsFieldsTouched(false);
       })
       .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  if (loading || !dutyById?._id) return null;
+  const sectionItems: CollapseProps['items'] = [
+    {
+      key: 'details',
+      label: 'Duty Details',
+      forceRender: true,
+      children: (
+        <>
+          <InputTextField
+            fieldName="name"
+            fieldLabel="Duty Name"
+            initialValue={duty.name ?? undefined}
+            required
+            requiredMessage="Please input a name for the duty."
+          />
+          <InputTextAreaField
+            fieldName="description"
+            fieldLabel="Description"
+            initialValue={duty.description ?? undefined}
+          />
+          <InputTextField
+            fieldName="attendanceSheet"
+            fieldLabel="Attendance Sheet"
+            initialValue={duty.attendanceSheet ?? undefined}
+          />
+        </>
+      ),
+    },
+  ];
 
   return (
-    <Fragment>
-      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
-        <InputTextField
-          fieldName="name"
-          fieldLabel="Duty Name"
-          initialValue={dutyById.name ?? undefined}
-          required
-          requiredMessage="Please input a name for the duty."
-        />
-        <InputTextAreaField
-          fieldName="description"
-          fieldLabel="Description"
-          initialValue={dutyById.description ?? undefined}
-        />
-        <InputTextField
-          fieldName="attendanceSheet"
-          fieldLabel="Attendance Sheet"
-          initialValue={dutyById.attendanceSheet ?? undefined}
+    <div className="visitor-form">
+      <Form
+        layout="horizontal"
+        onFinish={handleFinish}
+        onFieldsChange={handleFieldsChange}
+      >
+        <Collapse
+          className="visitor-form-sections"
+          defaultActiveKey={['details']}
+          items={sectionItems}
         />
         <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
+          fullWidth
         />
       </Form>
-      <AuditInfo record={dutyById ?? {}} />
-    </Fragment>
+      <AuditInfo record={duty} />
+    </div>
   );
 };
 
-export default EditForm;
+export default GeneralInfo;

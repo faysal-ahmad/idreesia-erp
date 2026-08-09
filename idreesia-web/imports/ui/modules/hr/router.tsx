@@ -6,12 +6,8 @@ const RouterRoute = Route as any;
 
 import { default as paths } from './submodule-paths';
 import { JobsEditForm, JobsList } from './jobs';
-import { MSDutiesNewForm, MSDutiesEditForm, MSDutiesList } from './ms-duties';
-import {
-  DutyLocationsNewForm,
-  DutyLocationsEditForm,
-  DutyLocationsList,
-} from './duty-locations';
+import { MSDutiesEditForm, MSDutiesList } from './ms-duties';
+import { DutyLocationsEditForm, DutyLocationsList } from './duty-locations';
 import {
   EmployeeNewForm,
   EmployeeEditForm,
@@ -23,7 +19,6 @@ import {
   KarkunsNewForm,
   KarkunsEditForm,
   KarkunsList,
-  KarkunsScanCard,
   KarkunPrintView,
   KarkunsPrintView,
 } from './karkuns';
@@ -46,14 +41,9 @@ const Router = () => (
     <RouterRoute path={paths.jobsEditFormPath()} component={JobsEditForm} />
     <RouterRoute path={paths.jobsPath} component={JobsList} />
 
-    <RouterRoute path={paths.msDutiesNewFormPath} component={MSDutiesNewForm} />
     <RouterRoute path={paths.msDutiesEditFormPath()} component={MSDutiesEditForm} />
     <RouterRoute path={paths.msDutiesPath} component={MSDutiesList} />
 
-    <RouterRoute
-      path={paths.dutyLocationsNewFormPath}
-      component={DutyLocationsNewForm}
-    />
     <RouterRoute
       path={paths.dutyLocationsEditFormPath}
       component={DutyLocationsEditForm}
@@ -61,7 +51,6 @@ const Router = () => (
     <RouterRoute path={paths.dutyLocationsPath} component={DutyLocationsList} />
 
     <RouterRoute path={paths.karkunsNewFormPath} component={KarkunsNewForm} />
-    <RouterRoute path={paths.karkunsScanCardPath} component={KarkunsScanCard} />
     <RouterRoute path={paths.karkunsPrintListPath} component={KarkunsPrintView} />
     <RouterRoute path={paths.karkunsPrintPath()} component={KarkunPrintView} />
     <RouterRoute path={paths.karkunsEditFormPath()} component={KarkunsEditForm} />

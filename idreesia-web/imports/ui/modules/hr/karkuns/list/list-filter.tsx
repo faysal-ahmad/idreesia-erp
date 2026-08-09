@@ -1,31 +1,28 @@
-import React, { useRef, type CSSProperties } from 'react';
-import type { FormInstance } from 'antd';
-import { Button, Collapse, Form, Row } from 'antd';
+import React, { useMemo, useState, type CSSProperties } from 'react';
+import {
+  Badge,
+  Button,
+  Flex,
+  Form,
+  Popover,
+  Space,
+  Spin,
+  Tag,
+} from 'antd';
+import { message } from '/imports/ui/antd-feedback';
+import { FilterOutlined, SyncOutlined } from '@ant-design/icons';
 
 import {
-  CheckboxGroupField,
+  CascaderField,
   InputCnicField,
   InputTextField,
-  CascaderField,
   SelectField,
-  LastTarteebFilterField,
 } from '/imports/ui/modules/helpers/fields';
-import { RefreshButton } from '/imports/ui/modules/helpers/controls';
 import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
 import {
-  useAllJobs,
   useAllMSDuties,
   useAllDutyShifts,
 } from '/imports/ui/modules/hr/common/hooks';
-import type {
-  AllJobsQuery,
-  ComposerAllMsDutiesQuery,
-  AllDutyShiftsQuery,
-} from 'meteor/idreesia-common/types/client-operations';
-
-type Job = NonNullable<NonNullable<AllJobsQuery['allJobs']>[number]>;
-type MSDuty = NonNullable<NonNullable<ComposerAllMsDutiesQuery['allMSDuties']>[number]>;
-type DutyShift = NonNullable<NonNullable<AllDutyShiftsQuery['allDutyShifts']>[number]>;
 
 interface LabelValue {
   label: string;
@@ -33,17 +30,14 @@ interface LabelValue {
 }
 
 export interface PageParams {
-  pageIndex?: number;
-  pageSize?: number;
+  pageIndex?: number | string;
+  pageSize?: number | string;
   name?: string | null;
   cnicNumber?: string | null;
   phoneNumber?: string | null;
   bloodGroup?: string | null;
-  lastTarteeb?: string | null;
-  jobId?: string | null;
   dutyId?: string | null;
   dutyShiftId?: string | null;
-  karkunType?: string[];
 }
 
 interface FilterFormValues {
@@ -51,218 +45,366 @@ interface FilterFormValues {
   cnicNumber?: string;
   phoneNumber?: string;
   bloodGroup?: string;
-  lastTarteeb?: string;
-  jobId?: string;
   dutyIdShiftId?: string[];
-  karkunType?: string[];
 }
 
-interface Props {
+export interface KarkunsListFilterProps {
+  setPageParams(params: PageParams): void;
+  refreshData?: () => Promise<unknown>;
   name?: string | null;
   cnicNumber?: string | null;
   phoneNumber?: string | null;
   bloodGroup?: string | null;
-  lastTarteeb?: string | null;
-  jobId?: string | null;
   dutyId?: string | null;
   dutyShiftId?: string | null;
-  showVolunteers?: string;
-  showEmployees?: string;
-  setPageParams(params: PageParams): void;
-  refreshData?: () => Promise<unknown>;
 }
 
-const ContainerStyle: CSSProperties = {
-  width: '500px',
+type FilterChipKey =
+  | 'name'
+  | 'cnicNumber'
+  | 'phoneNumber'
+  | 'bloodGroup'
+  | 'duty';
+
+interface FilterChip {
+  key: FilterChipKey;
+  label: string;
+  value: string;
+}
+
+const FilterPanelStyle: CSSProperties = {
+  width: 640,
+  paddingTop: 4,
+  overflow: 'visible',
+};
+
+const FilterFormStyle: CSSProperties = {
+  width: '100%',
 };
 
 const formItemLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 12 },
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
 };
 
-const buttonItemLayout = {
-  wrapperCol: { span: 12, offset: 4 },
-};
+const BLOOD_GROUP_OPTIONS: LabelValue[] = [
+  { label: 'A-', value: 'A-' },
+  { label: 'A+', value: 'Aplus' },
+  { label: 'B-', value: 'B-' },
+  { label: 'B+', value: 'Bplus' },
+  { label: 'AB-', value: 'AB-' },
+  { label: 'AB+', value: 'ABplus' },
+  { label: 'O-', value: 'O-' },
+  { label: 'O+', value: 'Oplus' },
+];
 
-const ListFilter = ({
-  bloodGroup,
+const BLOOD_GROUP_LABELS = Object.fromEntries(
+  BLOOD_GROUP_OPTIONS.map(({ value, label }) => [value, label])
+) as Record<string, string>;
+
+const hasFilterValue = (value?: string | null) =>
+  value != null && String(value).trim() !== '';
+
+export const getKarkunsFilterChips = ({
+  name,
   cnicNumber,
+  phoneNumber,
+  bloodGroup,
   dutyId,
   dutyShiftId,
-  jobId,
-  lastTarteeb,
-  name,
-  phoneNumber,
-  refreshData,
-  setPageParams,
-  showEmployees,
-  showVolunteers,
-}: Props) => {
-  const formRef = useRef<FormInstance>(null);
-  const { allJobs, allJobsLoading } = useAllJobs();
-  const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
-  const { allDutyShifts, allDutyShiftsLoading } = useAllDutyShifts();
+  dutyLabel,
+}: Pick<
+  KarkunsListFilterProps,
+  'name' | 'cnicNumber' | 'phoneNumber' | 'bloodGroup' | 'dutyId' | 'dutyShiftId'
+> & {
+  dutyLabel?: string;
+}): FilterChip[] => {
+  const chips: FilterChip[] = [];
 
-  const handleReset = () => {
-    formRef.current?.resetFields();
+  if (hasFilterValue(name)) {
+    chips.push({ key: 'name', label: 'Name', value: String(name) });
+  }
+  if (hasFilterValue(cnicNumber)) {
+    chips.push({
+      key: 'cnicNumber',
+      label: 'CNIC',
+      value: String(cnicNumber),
+    });
+  }
+  if (hasFilterValue(phoneNumber)) {
+    chips.push({
+      key: 'phoneNumber',
+      label: 'Phone',
+      value: String(phoneNumber),
+    });
+  }
+  if (hasFilterValue(bloodGroup)) {
+    chips.push({
+      key: 'bloodGroup',
+      label: 'Blood Group',
+      value: BLOOD_GROUP_LABELS[String(bloodGroup)] || String(bloodGroup),
+    });
+  }
+  if (hasFilterValue(dutyId) || hasFilterValue(dutyShiftId)) {
+    chips.push({
+      key: 'duty',
+      label: 'Duty/Shift',
+      value: dutyLabel || [dutyId, dutyShiftId].filter(Boolean).join(' / '),
+    });
+  }
+
+  return chips;
+};
+
+export const KarkunsFilterChips = ({
+  setPageParams,
+  name,
+  cnicNumber,
+  phoneNumber,
+  bloodGroup,
+  dutyId,
+  dutyShiftId,
+}: KarkunsListFilterProps) => {
+  const { allMSDuties } = useAllMSDuties();
+  const { allDutyShifts } = useAllDutyShifts();
+
+  const dutyLabel = useMemo(() => {
+    if (!hasFilterValue(dutyId) && !hasFilterValue(dutyShiftId)) {
+      return undefined;
+    }
+    const dutyName =
+      (allMSDuties ?? []).find(duty => duty?._id === dutyId)?.name ?? '';
+    const shiftName =
+      (allDutyShifts ?? []).find(shift => shift?._id === dutyShiftId)?.name ??
+      '';
+    return [dutyName, shiftName].filter(Boolean).join(' / ') || undefined;
+  }, [allMSDuties, allDutyShifts, dutyId, dutyShiftId]);
+
+  const chips = useMemo(
+    () =>
+      getKarkunsFilterChips({
+        name,
+        cnicNumber,
+        phoneNumber,
+        bloodGroup,
+        dutyId,
+        dutyShiftId,
+        dutyLabel,
+      }),
+    [name, cnicNumber, phoneNumber, bloodGroup, dutyId, dutyShiftId, dutyLabel]
+  );
+
+  if (chips.length === 0) return null;
+
+  const clearChip = (key: FilterChipKey) => {
+    if (key === 'duty') {
+      setPageParams({
+        pageIndex: 0,
+        dutyId: '',
+        dutyShiftId: '',
+      });
+      return;
+    }
     setPageParams({
       pageIndex: 0,
-      name: null,
-      cnicNumber: null,
-      phoneNumber: null,
-      bloodGroup: null,
-      lastTarteeb: null,
-      jobId: null,
-      dutyId: null,
-      dutyShiftId: null,
-      karkunType: ['volunteers', 'employees'],
+      [key]: '',
     });
   };
 
-  const handleFinish = ({
+  const clearAll = () => {
+    setPageParams({
+      pageIndex: 0,
+      name: '',
+      cnicNumber: '',
+      phoneNumber: '',
+      bloodGroup: '',
+      dutyId: '',
+      dutyShiftId: '',
+    });
+  };
+
+  return (
+    <Flex
+      wrap="wrap"
+      gap={8}
+      align="center"
+      justify="flex-end"
+      className="list-filter-chips"
+    >
+      {chips.map(chip => (
+        <Tag
+          key={chip.key}
+          closable
+          onClose={event => {
+            event.preventDefault();
+            clearChip(chip.key);
+          }}
+        >
+          <span>
+            {chip.label}: {chip.value}
+          </span>
+        </Tag>
+      ))}
+      <Button type="link" size="small" onClick={clearAll}>
+        Clear all
+      </Button>
+    </Flex>
+  );
+};
+
+const ListFilter = ({
+  setPageParams,
+  refreshData,
+  name,
+  cnicNumber = '',
+  phoneNumber,
+  bloodGroup,
+  dutyId,
+  dutyShiftId,
+}: KarkunsListFilterProps) => {
+  const [form] = Form.useForm();
+  const [open, setOpen] = useState(false);
+  const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
+  const { allDutyShifts, allDutyShiftsLoading } = useAllDutyShifts();
+
+  const lookupsLoading = allMSDutiesLoading || allDutyShiftsLoading;
+
+  const activeFilterCount = getKarkunsFilterChips({
     name,
     cnicNumber,
     phoneNumber,
     bloodGroup,
-    lastTarteeb,
-    jobId,
-    dutyIdShiftId,
-    karkunType,
-  }: FilterFormValues) => {
-    setPageParams({
-      pageIndex: 0,
+    dutyId,
+    dutyShiftId,
+  }).length;
+
+  const syncFormValues = () => {
+    form.setFieldsValue({
       name,
       cnicNumber,
       phoneNumber,
       bloodGroup,
-      lastTarteeb,
-      jobId,
-      dutyId: dutyIdShiftId?.[0],
-      dutyShiftId: dutyIdShiftId?.[1],
-      karkunType,
+      dutyIdShiftId: [dutyId, dutyShiftId].filter(Boolean),
     });
   };
 
-  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
+  const handleFinish = (values: FilterFormValues) => {
+    setPageParams({
+      pageIndex: 0,
+      name: values.name,
+      cnicNumber: values.cnicNumber,
+      phoneNumber: values.phoneNumber,
+      bloodGroup: values.bloodGroup,
+      dutyId: values.dutyIdShiftId?.[0],
+      dutyShiftId: values.dutyIdShiftId?.[1],
+    });
+    setOpen(false);
+  };
 
-  if (allJobsLoading || allMSDutiesLoading || allDutyShiftsLoading)
-    return null;
+  const handleRefresh = () => {
+    if (!refreshData) return;
+    refreshData().then(() => {
+      message.success('Data Reloaded', 2);
+    });
+  };
 
-  const jobs = (allJobs ?? []).filter((job): job is Job => job != null);
-  const msDuties = (allMSDuties ?? []).filter((duty): duty is MSDuty => duty != null);
-  const dutyShifts = (allDutyShifts ?? []).filter(
-    (shift): shift is DutyShift => shift != null
+  const duties = (allMSDuties ?? []).filter(
+    (duty): duty is NonNullable<typeof duty> => duty != null
   );
-  const dutyShiftCascaderData = getDutyShiftCascaderData(msDuties, dutyShifts);
+  const shifts = (allDutyShifts ?? []).filter(
+    (shift): shift is NonNullable<typeof shift> => shift != null
+  );
+  const dutyShiftCascaderData = getDutyShiftCascaderData(duties, shifts);
 
-  const karkunTypes: string[] = [];
-  if (!showVolunteers || showVolunteers === 'true')
-    karkunTypes.push('volunteers');
-  if (!showEmployees || showEmployees === 'true') karkunTypes.push('employees');
+  const filterForm = (
+    <div className="list-filter-panel" style={FilterPanelStyle}>
+      {lookupsLoading ? (
+        <div style={{ textAlign: 'center', padding: '24px 0' }}>
+          <Spin />
+        </div>
+      ) : (
+        <Form
+          form={form}
+          layout="horizontal"
+          style={FilterFormStyle}
+          onFinish={handleFinish}
+        >
+          <InputTextField
+            fieldName="name"
+            fieldLabel="Name"
+            required={false}
+            fieldLayout={formItemLayout}
+            initialValue={name}
+          />
+          <InputCnicField
+            fieldName="cnicNumber"
+            fieldLabel="CNIC Number"
+            required={false}
+            requiredMessage="Please input a valid CNIC number."
+            fieldLayout={formItemLayout}
+            initialValue={cnicNumber}
+          />
+          <InputTextField
+            fieldName="phoneNumber"
+            fieldLabel="Phone Number"
+            required={false}
+            fieldLayout={formItemLayout}
+            initialValue={phoneNumber}
+          />
+          <SelectField<LabelValue>
+            fieldName="bloodGroup"
+            fieldLabel="Blood Group"
+            required={false}
+            data={BLOOD_GROUP_OPTIONS}
+            getDataValue={({ value }) => value}
+            getDataText={({ label }) => label}
+            fieldLayout={formItemLayout}
+            initialValue={bloodGroup}
+          />
+          <CascaderField
+            data={dutyShiftCascaderData}
+            fieldName="dutyIdShiftId"
+            fieldLabel="Duty/Shift"
+            fieldLayout={formItemLayout}
+            initialValue={[dutyId, dutyShiftId].filter(Boolean)}
+            required={false}
+          />
+          <Form.Item style={{ marginBottom: 0 }}>
+            <Flex justify="flex-end">
+              <Button type="primary" htmlType="submit">
+                Search
+              </Button>
+            </Flex>
+          </Form.Item>
+        </Form>
+      )}
+    </div>
+  );
 
   return (
-    <Collapse
-      style={ContainerStyle}
-      items={[
-        {
-          key: '1',
-          label: 'Filter',
-          extra: refreshButton(),
-          children: (
-            <Form ref={formRef} layout="horizontal" onFinish={handleFinish}>
-              <CheckboxGroupField
-                fieldName="karkunType"
-                fieldLabel="Karkun Type"
-                fieldLayout={formItemLayout}
-                options={[
-                  { label: 'Volunteers', value: 'volunteers' },
-                  { label: 'Employees', value: 'employees' },
-                ]}
-                initialValue={karkunTypes}
-              />
-              <InputTextField
-                fieldName="name"
-                fieldLabel="Name"
-                required={false}
-                fieldLayout={formItemLayout}
-                initialValue={name}
-              />
-              <InputCnicField
-                fieldName="cnicNumber"
-                fieldLabel="CNIC Number"
-                required={false}
-                requiredMessage="Please input a valid CNIC number."
-                fieldLayout={formItemLayout}
-                initialValue={cnicNumber}
-              />
-              <InputTextField
-                fieldName="phoneNumber"
-                fieldLabel="Phone Number"
-                required={false}
-                fieldLayout={formItemLayout}
-                initialValue={phoneNumber}
-              />
-              <SelectField<LabelValue>
-                fieldName="bloodGroup"
-                fieldLabel="Blood Group"
-                required={false}
-                data={[
-                  { label: 'A-', value: 'A-' },
-                  { label: 'A+', value: 'Aplus' },
-                  { label: 'B-', value: 'B-' },
-                  { label: 'B+', value: 'Bplus' },
-                  { label: 'AB-', value: 'AB-' },
-                  { label: 'AB+', value: 'ABplus' },
-                  { label: 'O-', value: 'O-' },
-                  { label: 'O+', value: 'Oplus' },
-                ]}
-                getDataValue={({ value }) => value}
-                getDataText={({ label }) => label}
-                fieldLayout={formItemLayout}
-                initialValue={bloodGroup}
-              />
-              <LastTarteebFilterField
-                fieldName="lastTarteeb"
-                fieldLabel="Last Tarteeb"
-                required={false}
-                fieldLayout={formItemLayout}
-                initialValue={lastTarteeb}
-              />
-              <SelectField<Job>
-                fieldName="jobId"
-                fieldLabel="Job"
-                required={false}
-                data={jobs}
-                getDataValue={({ _id }) => _id ?? ''}
-                getDataText={({ name: jobName }) => jobName ?? ''}
-                fieldLayout={formItemLayout}
-                initialValue={jobId}
-              />
-              <CascaderField
-                data={dutyShiftCascaderData}
-                fieldName="dutyIdShiftId"
-                fieldLabel="Duty/Shift"
-                fieldLayout={formItemLayout}
-                initialValue={[dutyId, dutyShiftId]}
-                required={false}
-              />
-              <Form.Item {...buttonItemLayout}>
-                <Row justify="end">
-                  <Button type="default" onClick={handleReset}>
-                    Reset
-                  </Button>
-                  &nbsp;
-                  <Button type="primary" htmlType="submit">
-                    Search
-                  </Button>
-                </Row>
-              </Form.Item>
-            </Form>
-          ),
-        },
-      ]}
-    />
+    <Space size={8}>
+      <Popover
+        trigger="click"
+        placement="bottomRight"
+        open={open}
+        onOpenChange={nextOpen => {
+          if (nextOpen) syncFormValues();
+          setOpen(nextOpen);
+        }}
+        content={filterForm}
+      >
+        <Badge count={activeFilterCount} size="small" offset={[-2, 2]}>
+          <Button icon={<FilterOutlined />}>Filter</Button>
+        </Badge>
+      </Popover>
+      {refreshData ? (
+        <Button
+          icon={<SyncOutlined />}
+          onClick={handleRefresh}
+          title="Reload Data"
+        />
+      ) : null}
+    </Space>
   );
 };
 

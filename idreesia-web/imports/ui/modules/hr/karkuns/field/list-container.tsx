@@ -29,10 +29,8 @@ interface ListContainerState {
   cnicNumber: string | null;
   phoneNumber: string | null;
   bloodGroup: string | null;
-  jobId: string | null;
   dutyId: string | null;
   dutyShiftId: string | null;
-  karkunType: string[];
 }
 
 export default class ListContainer extends Component<
@@ -46,14 +44,12 @@ export default class ListContainer extends Component<
     cnicNumber: null,
     phoneNumber: null,
     bloodGroup: null,
-    jobId: null,
     dutyId: null,
     dutyShiftId: null,
-    karkunType: ['volunteers', 'employees'],
   };
 
-  setPageParams = (pageParams: PageParams) => {
-    this.setState((prevState) => ({
+  setPageParams = (pageParams: Partial<ListContainerState>) => {
+    this.setState(prevState => ({
       ...prevState,
       ...pageParams,
     }));
@@ -69,32 +65,30 @@ export default class ListContainer extends Component<
       cnicNumber,
       phoneNumber,
       bloodGroup,
-      jobId,
       dutyId,
       dutyShiftId,
-      karkunType,
     } = this.state;
-
-    const showVolunteers =
-      karkunType.indexOf('volunteers') !== -1 ? 'true' : 'false';
-    const showEmployees =
-      karkunType.indexOf('employees') !== -1 ? 'true' : 'false';
 
     return (
       <List
         pageIndex={pageIndex}
         pageSize={pageSize}
-        name={name}
-        cnicNumber={cnicNumber}
-        phoneNumber={phoneNumber}
-        bloodGroup={bloodGroup}
-        jobId={jobId}
-        dutyId={dutyId}
-        dutyShiftId={dutyShiftId}
-        showVolunteers={showVolunteers}
-        showEmployees={showEmployees}
-        setPageParams={this.setPageParams}
-        handleItemSelected={setSelectedValue as (record: KarkunRow) => void}
+        name={name ?? undefined}
+        cnicNumber={cnicNumber ?? undefined}
+        phoneNumber={phoneNumber ?? undefined}
+        bloodGroup={bloodGroup ?? undefined}
+        dutyId={dutyId ?? undefined}
+        dutyShiftId={dutyShiftId ?? undefined}
+        setPageParams={this.setPageParams as (params: PageParams) => void}
+        handleItemSelected={
+          setSelectedValue
+            ? record =>
+                setSelectedValue({
+                  _id: record._id ?? undefined,
+                  name: record.name ?? undefined,
+                })
+            : undefined
+        }
         showPhoneNumbersColumn={false}
         showDutiesColumn
         showActionsColumn={false}

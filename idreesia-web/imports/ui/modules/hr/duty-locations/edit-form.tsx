@@ -1,13 +1,13 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Form } from 'antd';
+import { Collapse, Empty, Form, Spin, type CollapseProps } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import { type match } from 'react-router';
 import { type History } from 'history';
 
-import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import type {
   DutyLocationByIdQuery,
   DutyLocationByIdQueryVariables,
@@ -63,16 +63,22 @@ interface FormValues {
 }
 
 const EditForm = ({ match, history }: EditFormProps) => {
-  useBreadcrumbs(['HR', 'Duty Locations', 'Edit']);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const dutyLocationId = match.params.dutyLocationId;
   const { data, loading } = useQuery(DUTY_LOCATION_BY_ID, {
     variables: { id: dutyLocationId },
   });
   const [updateDutyLocation] = useMutation(UPDATE_DUTY_LOCATION, {
-    refetchQueries: ['allDutyLocations'],
+    refetchQueries: [
+      'listAllDutyLocations',
+      'allDutyLocations',
+      'dutyLocationById',
+    ],
   });
   const dutyLocationById = data?.dutyLocationById;
+  const locationName = dutyLocationById?.name?.trim();
+
+  useDynamicBreadcrumbs(['HR', 'Duty Locations', locationName || 'Edit']);
 
   const handleCancel = () => {
     history.push(paths.dutyLocationsPath);
@@ -91,18 +97,37 @@ const EditForm = ({ match, history }: EditFormProps) => {
       },
     })
       .then(() => {
-        history.push(paths.dutyLocationsPath);
+        message.success('Duty location updated', 2);
+        setIsFieldsTouched(false);
       })
       .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  if (loading || !dutyLocationById?._id) return null;
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
-  return (
-    <Fragment>
-      <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
+  if (!dutyLocationById?._id) {
+    return (
+      <Empty
+        description="Duty location not found"
+        style={{ padding: '80px 0' }}
+      />
+    );
+  }
+
+  const sectionItems: CollapseProps['items'] = [
+    {
+      key: 'details',
+      label: 'Location Details',
+      forceRender: true,
+      children: (
         <InputTextField
           fieldName="name"
           fieldLabel="Name"
@@ -110,13 +135,30 @@ const EditForm = ({ match, history }: EditFormProps) => {
           required
           requiredMessage="Please input a name for the duty location."
         />
+      ),
+    },
+  ];
+
+  return (
+    <div className="visitor-form">
+      <Form
+        layout="horizontal"
+        onFinish={handleFinish}
+        onFieldsChange={handleFieldsChange}
+      >
+        <Collapse
+          className="visitor-form-sections"
+          defaultActiveKey={['details']}
+          items={sectionItems}
+        />
         <FormButtonsSaveCancel
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
+          fullWidth
         />
       </Form>
-      <AuditInfo record={dutyLocationById ?? {}} />
-    </Fragment>
+      <AuditInfo record={dutyLocationById} />
+    </div>
   );
 };
 

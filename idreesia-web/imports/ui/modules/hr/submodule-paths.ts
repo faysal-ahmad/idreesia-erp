@@ -10,13 +10,11 @@ export default class SubModulePaths {
   }
 
   static msDutiesPath = `${ModulePaths.hr}/ms-duties`;
-  static msDutiesNewFormPath = `${SubModulePaths.msDutiesPath}/new`;
   static msDutiesEditFormPath(dutyId = ':dutyId') {
     return `${SubModulePaths.msDutiesPath}/${dutyId}`;
   }
 
   static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;
-  static dutyLocationsNewFormPath = `${SubModulePaths.dutyLocationsPath}/new`;
   static dutyLocationsEditFormPath = `${SubModulePaths.dutyLocationsPath}/:dutyLocationId`;
 
   // ******************************************************************************
@@ -35,7 +33,6 @@ export default class SubModulePaths {
   // ******************************************************************************
   static karkunsPath = `${ModulePaths.hr}/karkuns`;
   static karkunsNewFormPath = `${SubModulePaths.karkunsPath}/new`;
-  static karkunsScanCardPath = `${SubModulePaths.karkunsPath}/scan-card`;
   static karkunsPrintPath = (karkunId = ':karkunId') =>
     `${SubModulePaths.karkunsPath}/print/${karkunId}`;
   static karkunsPrintListPath = `${SubModulePaths.karkunsPath}/print-list`;

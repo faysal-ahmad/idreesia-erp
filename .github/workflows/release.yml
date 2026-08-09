@@ -194,3 +194,13 @@ jobs:
           for tag in "${TAGS[@]}"; do
             docker push "$IMAGE_NAME:$tag"
           done
+
+      - name: Install doctl
+        if: ${{ github.ref_name == 'master' }}
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Deploy to DigitalOcean App Platform
+        if: ${{ github.ref_name == 'master' }}
+        run: doctl apps create-deployment ${{ secrets.DIGITALOCEAN_APP_ID }} --wait

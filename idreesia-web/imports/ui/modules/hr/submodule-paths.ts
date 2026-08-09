@@ -5,7 +5,6 @@ export default class SubModulePaths {
   // Data Setup Routes
   // *************************************************************************************
   static jobsPath = `${ModulePaths.hr}/jobs`;
-  static jobsNewFormPath = `${SubModulePaths.jobsPath}/new`;
   static jobsEditFormPath(jobId = ':jobId') {
     return `${SubModulePaths.jobsPath}/${jobId}`;
   }
@@ -21,16 +20,15 @@ export default class SubModulePaths {
   static dutyLocationsEditFormPath = `${SubModulePaths.dutyLocationsPath}/:dutyLocationId`;
 
   // ******************************************************************************
-  // People
+  // Employees
   // ******************************************************************************
-  static peoplePath = `${ModulePaths.hr}/people`;
-  static personNewFormPath = `${SubModulePaths.peoplePath}/new`;
-  static personScanCardPath = `${SubModulePaths.peoplePath}/scan-card`;
-  static personPrintPath = (personId = ':personId') =>
-    `${SubModulePaths.peoplePath}/print/${personId}`;
-  static peoplePrintListPath = `${SubModulePaths.peoplePath}/print-list`;
-  static personEditFormPath = (personId = ':personId') =>
-    `${SubModulePaths.peoplePath}/${personId}`;
+  static employeesPath = `${ModulePaths.hr}/employees`;
+  static employeeNewFormPath = `${SubModulePaths.employeesPath}/new`;
+  static employeePrintPath = (employeeId = ':employeeId') =>
+    `${SubModulePaths.employeesPath}/print/${employeeId}`;
+  static employeesPrintListPath = `${SubModulePaths.employeesPath}/print-list`;
+  static employeeEditFormPath = (employeeId = ':employeeId') =>
+    `${SubModulePaths.employeesPath}/${employeeId}`;
 
   // ******************************************************************************
   // Karkuns

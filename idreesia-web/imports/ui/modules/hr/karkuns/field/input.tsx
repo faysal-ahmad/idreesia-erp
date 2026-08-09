@@ -12,8 +12,6 @@ const ContainerStyle: CSSProperties = {
   width: '100%',
 };
 
-const TabPane = Tabs.TabPane;
-
 interface SelectionValue {
   _id?: string;
   name?: string;
@@ -71,18 +69,28 @@ export default class CustomInput extends Component<
     let containersNode;
     if (predefinedFilterName) {
       containersNode = (
-        <Tabs>
-          <TabPane tab="Recently Used" key="1">
-            <ListContainer
-              setSelectedValue={this.setSelectedValue}
-              predefinedFilterName={predefinedFilterName}
-              predefinedFilterStoreId={predefinedFilterStoreId}
-            />
-          </TabPane>
-          <TabPane tab="All Karkuns" key="2">
-            <ListContainer setSelectedValue={this.setSelectedValue} />
-          </TabPane>
-        </Tabs>
+        <Tabs
+          items={[
+            {
+              key: '1',
+              label: 'Recently Used',
+              children: (
+                <ListContainer
+                  setSelectedValue={this.setSelectedValue}
+                  predefinedFilterName={predefinedFilterName}
+                  predefinedFilterStoreId={predefinedFilterStoreId}
+                />
+              ),
+            },
+            {
+              key: '2',
+              label: 'All Karkuns',
+              children: (
+                <ListContainer setSelectedValue={this.setSelectedValue} />
+              ),
+            },
+          ]}
+        />
       );
     } else {
       containersNode = (

@@ -3,7 +3,8 @@ import { useMutation } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import { type History } from 'history';
 import { type CSSProperties } from 'react';
-import { Divider, Form, message } from 'antd';
+import { Divider, Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import type { IssuanceFormByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 
@@ -189,7 +190,7 @@ const IssuanceDetails = ({
           initialValue={issuanceFormById.notes ?? undefined}
         />
 
-        <Divider orientation="left">Issued / Returned Items</Divider>
+        <Divider titlePlacement="left">Issued / Returned Items</Divider>
         <Form.Item
           name="items"
           initialValue={issuanceFormById.items ?? []}

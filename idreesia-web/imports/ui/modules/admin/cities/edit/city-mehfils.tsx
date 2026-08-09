@@ -6,9 +6,8 @@ import {
   Modal,
   Table,
   Tooltip,
-  message,
 } from 'antd';
-
+import { message } from '/imports/ui/antd-feedback';
 import type {
   CityMehfilsByCityIdQuery,
   CreateCityMehfilMutationVariables,

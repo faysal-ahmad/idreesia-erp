@@ -2,7 +2,9 @@ import React from 'react';
 
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
 import { TreeSelect, Form } from 'antd';
-import type { DataNode } from 'rc-tree-select/lib/interface';
+import type { TreeSelectProps } from 'antd';
+
+type DataNode = NonNullable<TreeSelectProps['treeData']>[number];
 
 type DefaultRecord = {
   _id?: string | number | null;

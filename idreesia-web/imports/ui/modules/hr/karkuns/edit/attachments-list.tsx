@@ -1,8 +1,9 @@
 import React from 'react';
+import { Spin } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { type match } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client/react';
 
-import { message } from 'antd';
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
 
 import {
@@ -42,7 +43,13 @@ const AttachmentsList = ({ karkunId, match }: Props) => {
     });
   };
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <AttachmentsListControl

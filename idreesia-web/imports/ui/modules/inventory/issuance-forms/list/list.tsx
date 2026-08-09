@@ -7,12 +7,11 @@ import {
   Button,
   Divider,
   Dropdown,
-  Modal,
   Pagination,
   Table,
   Tooltip,
-  message,
 } from 'antd';
+import { message, modal } from '/imports/ui/antd-feedback';
 import {
   CheckSquareOutlined,
   DeleteOutlined,
@@ -234,7 +233,7 @@ const List = ({ history, location }: Props) => {
     } else if (key === 'export') {
       handleExportSelected();
     } else if (key === 'delete') {
-      Modal.confirm({
+      modal.confirm({
         title: 'Delete Issuance Forms',
         content: 'Are you sure you want to delete the selected issuance forms?',
         onOk: () => {

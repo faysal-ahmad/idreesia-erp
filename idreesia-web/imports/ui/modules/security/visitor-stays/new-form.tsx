@@ -1,7 +1,7 @@
 import React from 'react';
 import { useMutation } from '@apollo/client/react';
-import { Form, message } from 'antd';
-
+import { Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { useDistinctStayAllowedBy } from 'meteor/idreesia-common/hooks/security';
 import {
   useAllMSDuties,
@@ -100,7 +100,7 @@ const NewForm = ({ visitorId, handleAddItem }: NewFormProps) => {
       <AutoCompleteField
         fieldName="stayAllowedBy"
         fieldLabel="Stay Allowed By"
-        dataSource={distinctStayAllowedBy ?? undefined}
+        options={distinctStayAllowedBy ?? undefined}
       />
       <SelectField
         data={StayReasons}

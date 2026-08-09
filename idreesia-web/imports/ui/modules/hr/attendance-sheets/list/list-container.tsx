@@ -23,7 +23,8 @@ import type {
   UpdateAttendanceMutation,
   UpdateAttendanceMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import { Modal, message } from 'antd';
+import { Modal, Spin } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import {
   useAllJobs,
   useAllMSDuties,
@@ -335,8 +336,13 @@ const ListContainer = ({ history, location }: ListContainerProps) => {
     history.push(`${paths.karkunsPath}/${karkun._id}`);
   };
 
-  if (allJobsLoading || allMSDutiesLoading || allDutyShiftsLoading)
-    return null;
+  if (allJobsLoading || allMSDutiesLoading || allDutyShiftsLoading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   const { selectedMonth, selectedCategoryId, selectedSubCategoryId } = pageParams;
 

@@ -1,7 +1,7 @@
 import React, { Fragment, type CSSProperties } from 'react';
 import { useMutation } from '@apollo/client/react';
-import { Row, Col, message } from 'antd';
-
+import { Row, Col } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import type { StockItemByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import {

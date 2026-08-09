@@ -14,7 +14,6 @@ import PurchaseDetails from './purchase-details';
 import AttachmentsList from './attachments-list';
 import { PURCHASE_FORM_BY_ID } from '../gql';
 
-const TabPane = Tabs.TabPane;
 type RouteParams = { formId: string; physicalStoreId: string };
 type Props = RouteComponentProps<RouteParams>;
 
@@ -41,20 +40,34 @@ const EditForm = ({ history }: Props) => {
   }
 
   return (
-    <Tabs defaultActiveKey="1">
-      <TabPane tab="Purchase Details" key="1">
-        <PurchaseDetails
-          history={history}
-          purchaseFormById={data.purchaseFormById}
-          physicalStoreId={physicalStoreId}
-          locationsByPhysicalStoreId={(locationsByPhysicalStoreId ?? []).filter((l): l is NonNullable<typeof l> => l != null)}
-          vendorsByPhysicalStoreId={(vendorsByPhysicalStoreId ?? []).filter((v): v is NonNullable<typeof v> => v != null)}
-        />
-      </TabPane>
-      <TabPane tab="Attachments" key="2">
-        <AttachmentsList physicalStoreId={physicalStoreId} purchaseFormById={data.purchaseFormById} />
-      </TabPane>
-    </Tabs>
+    <Tabs
+      defaultActiveKey="1"
+      items={[
+        {
+          key: '1',
+          label: 'Purchase Details',
+          children: (
+            <PurchaseDetails
+              history={history}
+              purchaseFormById={data.purchaseFormById}
+              physicalStoreId={physicalStoreId}
+              locationsByPhysicalStoreId={(locationsByPhysicalStoreId ?? []).filter((l): l is NonNullable<typeof l> => l != null)}
+              vendorsByPhysicalStoreId={(vendorsByPhysicalStoreId ?? []).filter((v): v is NonNullable<typeof v> => v != null)}
+            />
+          ),
+        },
+        {
+          key: '2',
+          label: 'Attachments',
+          children: (
+            <AttachmentsList
+              physicalStoreId={physicalStoreId}
+              purchaseFormById={data.purchaseFormById}
+            />
+          ),
+        },
+      ]}
+    />
   );
 };
 

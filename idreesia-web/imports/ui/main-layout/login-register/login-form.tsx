@@ -9,8 +9,8 @@ import {
   Form,
   Input,
   Typography,
-  message,
 } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { type History, type Location } from 'history';
 import { useMutation } from '@apollo/client/react';
 

@@ -14,7 +14,8 @@ import type {
   CreateSalariesMutation,
   UpdateSalaryMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import { Modal, message } from 'antd';
+import { Modal, Spin } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { useAllJobs } from '/imports/ui/modules/hr/common/hooks';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
@@ -22,8 +23,6 @@ import List, { type SalaryListRow } from './list';
 import EditForm from './edit-form';
 
 import {
-  APPROVE_SALARIES,
-  APPROVE_ALL_SALARIES,
   CREATE_SALARIES,
   DELETE_ALL_SALARIES,
   DELETE_SALARIES,
@@ -67,8 +66,6 @@ const ListContainer = ({ history, location }: ListContainerProps) => {
 
   const [createSalaries] = useMutation(CREATE_SALARIES, mutationOptions);
   const [updateSalary] = useMutation(UPDATE_SALARY, mutationOptions);
-  const [approveSalaries] = useMutation(APPROVE_SALARIES, mutationOptions);
-  const [approveAllSalaries] = useMutation(APPROVE_ALL_SALARIES, mutationOptions);
   const [deleteSalaries] = useMutation(DELETE_SALARIES, mutationOptions);
   const [deleteAllSalaries] = useMutation(DELETE_ALL_SALARIES, mutationOptions);
 
@@ -162,53 +159,6 @@ const ListContainer = ({ history, location }: ListContainerProps) => {
       });
   };
 
-  const handleApproveSelectedSalaries = (selectedSalaries: SalaryRow[]) => {
-    if (!selectedSalaries || selectedSalaries.length === 0) return;
-
-    const { selectedMonth } = pageParams;
-    const ids = selectedSalaries.map(({ _id }) => _id);
-
-    const _selectedMonth = selectedMonth
-      ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
-      : dayjs();
-
-    approveSalaries({
-      variables: {
-        ids,
-        month: _selectedMonth.format(Formats.DATE_FORMAT),
-      },
-    })
-      .then(() => {
-        message.success('Selected salary records have been approved.', 5);
-      })
-      .catch((error: Error) => {
-        message.error(error.message, 5);
-      });
-  };
-
-  const handleApproveAllSalaries = () => {
-    const { selectedMonth } = pageParams;
-
-    const _selectedMonth = selectedMonth
-      ? dayjs(`01-${selectedMonth}`, Formats.DATE_FORMAT)
-      : dayjs();
-
-    approveAllSalaries({
-      variables: {
-        month: _selectedMonth.format(Formats.DATE_FORMAT),
-      },
-    })
-      .then(() => {
-        message.success(
-          'All salary records for the month have been approved.',
-          5
-        );
-      })
-      .catch((error: Error) => {
-        message.error(error.message, 5);
-      });
-  };
-
   const handleDeleteSelectedSalaries = (selectedSalaries: SalaryRow[]) => {
     if (!selectedSalaries || selectedSalaries.length === 0) return;
 
@@ -260,7 +210,13 @@ const ListContainer = ({ history, location }: ListContainerProps) => {
     history.push(`${paths.karkunsPath}/${karkun._id}`);
   };
 
-  if (allJobsLoading) return null;
+  if (allJobsLoading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   const { selectedMonth, selectedJobId } = pageParams;
 
@@ -283,8 +239,6 @@ const ListContainer = ({ history, location }: ListContainerProps) => {
         handleViewRashanReceipts={handleViewRashanReceipts}
         handleViewEidReceipts={handleViewEidReceipts}
         handleCreateMissingSalaries={handleCreateMissingSalaries}
-        handleApproveSelectedSalaries={handleApproveSelectedSalaries}
-        handleApproveAllSalaries={handleApproveAllSalaries}
         handleDeleteSelectedSalaries={handleDeleteSelectedSalaries}
         handleDeleteAllSalaries={handleDeleteAllSalaries}
         handleItemSelected={handleItemSelected}

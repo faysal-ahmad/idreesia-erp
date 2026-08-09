@@ -2,7 +2,7 @@ const SubModuleNames = {
   jobs: 'Jobs',
   msDuties: 'Duties & Shifts',
   dutyLocations: 'Duty Locations',
-  people: 'People',
+  employees: 'Employees',
   karkuns: 'Karkuns',
   attendanceSheets: 'Attendance Sheets',
   salarySheets: 'Salary Sheets',

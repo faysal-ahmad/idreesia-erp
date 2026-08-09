@@ -1,10 +1,11 @@
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { BrowserRouter } from 'react-router-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
+import { App as AntdApp } from 'antd';
 
 import {
   ApolloLink,
@@ -28,6 +29,7 @@ import '../imports/ui/modules/common/visitors/general-info.styles.css';
 import '../imports/ui/modules/security/visitor-registeration/edit/picture.styles.css';
 
 import App from '../imports/ui/app';
+import { AntdFeedbackBridge } from '../imports/ui/antd-feedback';
 import combinedReducer from '../imports/ui/reducers/combined-reducer';
 
 const Router = BrowserRouter as any;
@@ -49,14 +51,21 @@ const client = new ApolloClient({
 });
 
 Meteor.startup(() => {
-  render(
+  const container = document.getElementById('render-target');
+  if (!container) {
+    return;
+  }
+
+  createRoot(container).render(
     <Router>
       <Provider store={store}>
         <ApolloProviderAny client={client}>
-          <App />
+          <AntdApp>
+            <AntdFeedbackBridge />
+            <App />
+          </AntdApp>
         </ApolloProviderAny>
       </Provider>
-    </Router>,
-    document.getElementById('render-target') as Element
+    </Router>
   );
 });

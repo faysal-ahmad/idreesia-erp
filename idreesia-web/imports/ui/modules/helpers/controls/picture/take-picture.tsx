@@ -3,7 +3,8 @@ import dayjs from 'dayjs';
 import { InstagramOutlined } from '@ant-design/icons';
 
 import { getUploadUrl } from 'meteor/idreesia-common/utilities';
-import { Button, Modal, message } from 'antd';
+import { Button, Modal } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import TakePictureForm from './take-picture-form';
 
 interface Props {
@@ -91,7 +92,7 @@ export default class TakePicture extends Component<Props, State> {
           title={buttonText}
           width={750}
           okText="Save"
-          destroyOnClose
+          destroyOnHidden
           onOk={this.handlePictureFormSaved}
           onCancel={this.handlePictureFormCancelled}
         >

@@ -10,8 +10,8 @@ import {
   Spin,
   Table,
   Tooltip,
-  message,
 } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import {
   EditOutlined,
   PrinterOutlined,
@@ -346,7 +346,7 @@ const List = ({
       <Table
         className="list-table"
         rowKey="_id"
-        size="middle"
+        size="medium"
         title={getTableHeader}
         columns={columns}
         rowSelection={

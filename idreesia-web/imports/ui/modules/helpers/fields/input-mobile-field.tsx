@@ -1,5 +1,5 @@
 import React from 'react';
-import InputMask from 'react-input-mask';
+import { InputMask } from '@react-input/mask';
 
 import { Input, Form } from 'antd';
 
@@ -18,6 +18,18 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 14 },
 };
+
+const MobileInputMask = ({
+  value,
+  ...rest
+}: React.ComponentProps<typeof InputMask>) => (
+  <InputMask
+    {...rest}
+    mask="____-_______"
+    replacement={{ _: /\d/ }}
+    value={value ?? ''}
+  />
+);
 
 /**
  * fieldName: Name of the property in which the form field value would be saved.
@@ -42,17 +54,16 @@ const InputMobileField = ({
     {
       required,
       message: required ? requiredMessage : '',
-      // pattern: /^[0-9+]{4}-[0-9+]{7}$/,
     },
   ];
 
   return (
-    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
+    <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue ?? ''} rules={rules} {...fieldLayout}>
       {
         disabled ? (
           <Input disabled />
         ) : (
-          <InputMask mask="9999-9999999" placeholder={placeholder} />
+          <MobileInputMask placeholder={placeholder} />
         )
       }
     </Form.Item>

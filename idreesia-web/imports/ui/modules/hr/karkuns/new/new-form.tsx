@@ -1,10 +1,15 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
-import type { Dayjs } from 'dayjs';
-import { Divider, Form, message } from 'antd';
-
-import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import dayjs, { type Dayjs } from 'dayjs';
+import {
+  Collapse,
+  Form,
+  Space,
+  type CollapseProps,
+} from 'antd';
+import { message } from '/imports/ui/antd-feedback';
+import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import {
   AgeField,
@@ -16,8 +21,6 @@ import {
   InputTextAreaField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import type { FormInstance } from 'antd';
-import type { CreateHrKarkunMutation } from 'meteor/idreesia-common/types/client-operations';
 
 import { CREATE_HR_KARKUN } from '../gql';
 
@@ -26,7 +29,7 @@ interface LabelValue {
   value: string;
 }
 
-interface FormValues {
+export interface NewKarkunFormValues {
   name?: string;
   parentName?: string;
   cnicNumber?: string;
@@ -38,187 +41,217 @@ interface FormValues {
   bloodGroup?: string;
   educationalQualification?: string;
   meansOfEarning?: string;
-  ehadDate?: Dayjs | null;
+  ehadDate?: Dayjs;
   birthDate?: Dayjs | null;
   referenceName?: string;
 }
 
+const BLOOD_GROUP_OPTIONS: LabelValue[] = [
+  { label: 'A-', value: 'A-' },
+  { label: 'A+', value: 'A+' },
+  { label: 'B-', value: 'B-' },
+  { label: 'B+', value: 'B+' },
+  { label: 'AB-', value: 'AB-' },
+  { label: 'AB+', value: 'AB+' },
+  { label: 'O-', value: 'O-' },
+  { label: 'O+', value: 'O+' },
+];
+
 type Props = RouteComponentProps;
 
 const NewForm = ({ history }: Props) => {
-  const formRef = useRef<FormInstance>(null);
+  const [form] = Form.useForm();
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  useBreadcrumbs(['HR', 'Karkuns', 'New']);
+  useDynamicBreadcrumbs(['HR', 'Karkuns', 'New']);
+
   const [createHrKarkun] = useMutation(CREATE_HR_KARKUN, {
     refetchQueries: ['pagedHrKarkuns'],
   });
 
   const handleCancel = () => {
-    history.goBack();
+    history.push(paths.karkunsPath);
   };
 
   const handleFieldsChange = () => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({
-    name,
-    parentName,
-    cnicNumber,
-    contactNumber1,
-    contactNumber2,
-    emailAddress,
-    currentAddress,
-    permanentAddress,
-    bloodGroup,
-    educationalQualification,
-    meansOfEarning,
-    ehadDate,
-    birthDate,
-    referenceName,
-  }: FormValues) => {
+  const handleFinish = async (values: NewKarkunFormValues) => {
+    const { cnicNumber, contactNumber1 } = values;
     if (!cnicNumber && !contactNumber1) {
-      formRef.current?.setFields([
+      form.setFields([
         {
           name: 'cnicNumber',
-          errors: ['Please input the CNIC or Mobile Number for the person'],
+          errors: ['Please input the CNIC or Mobile Number for the karkun'],
         },
         {
           name: 'contactNumber1',
-          errors: ['Please input the CNIC or Mobile Number for the person'],
+          errors: ['Please input the CNIC or Mobile Number for the karkun'],
         },
       ]);
-    } else {
-      createHrKarkun({
+      return;
+    }
+
+    try {
+      const { data } = await createHrKarkun({
         variables: {
-          name: name ?? '',
-          parentName,
-          cnicNumber,
-          contactNumber1,
-          contactNumber2,
-          emailAddress,
-          currentAddress,
-          permanentAddress,
-          bloodGroup,
-          educationalQualification,
-          meansOfEarning,
-          ehadDate: ehadDate as unknown as string,
-          birthDate: birthDate as unknown as string,
-          referenceName,
+          name: values.name ?? '',
+          parentName: values.parentName,
+          cnicNumber: values.cnicNumber,
+          contactNumber1: values.contactNumber1,
+          contactNumber2: values.contactNumber2,
+          emailAddress: values.emailAddress,
+          currentAddress: values.currentAddress,
+          permanentAddress: values.permanentAddress,
+          bloodGroup: values.bloodGroup,
+          educationalQualification: values.educationalQualification,
+          meansOfEarning: values.meansOfEarning,
+          ehadDate: values.ehadDate as unknown as string | null | undefined,
+          birthDate: values.birthDate as unknown as string | null | undefined,
+          referenceName: values.referenceName,
         },
-      })
-        .then(({ data }: { data?: CreateHrKarkunMutation | null }) => {
-          const newKarkun = data?.createHrKarkun;
-          if (newKarkun?._id) {
-            history.push(`${paths.karkunsPath}/${newKarkun._id}`);
-          }
-        })
-        .catch((error: Error) => {
-          message.error(error.message, 5);
-        });
+      });
+      const newKarkun = data?.createHrKarkun;
+      if (newKarkun?._id) {
+        message.success('Karkun created', 2);
+        history.push(paths.karkunsEditFormPath(newKarkun._id));
+      }
+    } catch (error) {
+      message.error((error as Error).message, 5);
     }
   };
 
+  const personalItem: NonNullable<CollapseProps['items']>[number] = {
+    key: 'personal',
+    label: 'Personal Information',
+    forceRender: true,
+    children: (
+      <>
+        <InputTextField
+          fieldName="name"
+          fieldLabel="Name"
+          required
+          requiredMessage="Please input the name for the karkun."
+        />
+        <InputTextField
+          fieldName="parentName"
+          fieldLabel="S/O"
+          required
+          requiredMessage="Please input the parent name for the karkun."
+        />
+        <AgeField fieldName="birthDate" fieldLabel="Age (years)" />
+        <InputCnicField fieldName="cnicNumber" fieldLabel="CNIC Number" />
+      </>
+    ),
+  };
+
+  const remainingItems: CollapseProps['items'] = [
+    {
+      key: 'contact',
+      label: 'Contact Information',
+      forceRender: true,
+      children: (
+        <>
+          <InputMobileField
+            fieldName="contactNumber1"
+            fieldLabel="Mobile Number"
+          />
+          <InputTextField
+            fieldName="contactNumber2"
+            fieldLabel="Home Number"
+            required={false}
+          />
+          <InputTextField
+            fieldName="emailAddress"
+            fieldLabel="Email"
+            required={false}
+          />
+          <InputTextAreaField
+            fieldName="currentAddress"
+            fieldLabel="Current Address"
+            required={false}
+          />
+          <InputTextAreaField
+            fieldName="permanentAddress"
+            fieldLabel="Permanent Address"
+            required={false}
+          />
+        </>
+      ),
+    },
+    {
+      key: 'ehad',
+      label: 'Ehad & Education',
+      forceRender: true,
+      children: (
+        <>
+          <EhadDurationField
+            fieldName="ehadDate"
+            fieldLabel="Ehad Duration"
+            required
+            requiredMessage="Please specify the Ehad duration for the karkun."
+            initialValue={dayjs()}
+          />
+          <InputTextField
+            fieldName="referenceName"
+            fieldLabel="R/O"
+            required
+            requiredMessage="Please input the reference name for the karkun."
+          />
+          <SelectField<LabelValue>
+            fieldName="bloodGroup"
+            fieldLabel="Blood Group"
+            required={false}
+            data={BLOOD_GROUP_OPTIONS}
+            getDataValue={({ value }) => value}
+            getDataText={({ label }) => label}
+          />
+          <InputTextField
+            fieldName="educationalQualification"
+            fieldLabel="Education"
+            required={false}
+          />
+          <InputTextAreaField
+            fieldName="meansOfEarning"
+            fieldLabel="Means of Earning"
+            required={false}
+          />
+        </>
+      ),
+    },
+  ];
+
   return (
-    <Form
-      ref={formRef}
-      layout="horizontal"
-      onFinish={handleFinish}
-      onFieldsChange={handleFieldsChange}
-    >
-      <InputTextField
-        fieldName="name"
-        fieldLabel="Name"
-        required
-        requiredMessage="Please input the name for the karkun."
-      />
-
-      <InputTextField
-        fieldName="parentName"
-        fieldLabel="S/O"
-        required
-        requiredMessage="Please input the parent name for the karkun."
-      />
-
-      <AgeField fieldName="birthDate" fieldLabel="Age (years)" />
-
-      <EhadDurationField
-        fieldName="ehadDate"
-        fieldLabel="Ehad Duration"
-        required
-        requiredMessage="Please specify the Ehad duration for the karkun."
-      />
-
-      <InputTextField
-        fieldName="referenceName"
-        fieldLabel="R/O"
-        required
-        requiredMessage="Please input the reference name for the karkun."
-      />
-
-      <InputCnicField fieldName="cnicNumber" fieldLabel="CNIC Number" />
-
-      <InputMobileField fieldName="contactNumber1" fieldLabel="Mobile Number" />
-
-      <Divider />
-
-      <InputTextField
-        fieldName="contactNumber2"
-        fieldLabel="Home Number"
-        required={false}
-      />
-
-      <SelectField<LabelValue>
-        fieldName="bloodGroup"
-        fieldLabel="Blood Group"
-        required={false}
-        data={[
-          { label: 'A-', value: 'A-' },
-          { label: 'A+', value: 'A+' },
-          { label: 'B-', value: 'B-' },
-          { label: 'B+', value: 'B+' },
-          { label: 'AB-', value: 'AB-' },
-          { label: 'AB+', value: 'AB+' },
-          { label: 'O-', value: 'O-' },
-          { label: 'O+', value: 'O+' },
-        ]}
-        getDataValue={({ value }) => value}
-        getDataText={({ label }) => label}
-      />
-
-      <InputTextField
-        fieldName="emailAddress"
-        fieldLabel="Email"
-        required={false}
-      />
-
-      <InputTextAreaField
-        fieldName="currentAddress"
-        fieldLabel="Current Address"
-        required={false}
-      />
-      <InputTextAreaField
-        fieldName="permanentAddress"
-        fieldLabel="Permanent Address"
-        required={false}
-      />
-
-      <InputTextField
-        fieldName="educationalQualification"
-        fieldLabel="Education"
-        required={false}
-      />
-
-      <InputTextAreaField
-        fieldName="meansOfEarning"
-        fieldLabel="Means of Earning"
-        required={false}
-      />
-      <FormButtonsSaveCancel
-        handleCancel={handleCancel}
-        isFieldsTouched={isFieldsTouched}
-      />
-    </Form>
+    <div className="visitor-form">
+      <Form
+        form={form}
+        layout="horizontal"
+        onFinish={handleFinish}
+        onFieldsChange={handleFieldsChange}
+      >
+        <Space
+          orientation="vertical"
+          size={16}
+          style={{ display: 'flex', width: '100%' }}
+        >
+          <Collapse
+            className="visitor-form-sections"
+            defaultActiveKey={['personal']}
+            items={[personalItem]}
+          />
+          <Collapse
+            className="visitor-form-sections"
+            defaultActiveKey={['contact', 'ehad']}
+            items={remainingItems}
+          />
+          <FormButtonsSaveCancel
+            handleCancel={handleCancel}
+            isFieldsTouched={isFieldsTouched}
+            fullWidth
+          />
+        </Space>
+      </Form>
+    </div>
   );
 };
 

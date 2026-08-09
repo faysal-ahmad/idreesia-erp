@@ -9,7 +9,8 @@ import type {
   StockItemsByIdQuery,
   StockItemsByIdQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import { Table, Tooltip, message } from 'antd';
+import { Table, Tooltip } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { default as ItemForm } from './item-form';
 
 type StockItemRow = NonNullable<

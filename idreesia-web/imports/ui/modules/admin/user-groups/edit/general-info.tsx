@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Form, message } from 'antd';
-
+import { Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import {
   InputTextField,
   InputTextAreaField,

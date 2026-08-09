@@ -6,8 +6,8 @@ import {
   Drawer,
   Dropdown,
   Space,
-  message,
 } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import {
   DownloadOutlined,
   UploadOutlined,

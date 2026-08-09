@@ -89,7 +89,7 @@ export const IssuanceDetails = ({
           initialValue={issuanceFormById.notes ?? undefined}
         />
 
-        <Divider orientation="left">Issued / Returned Items</Divider>
+        <Divider titlePlacement="left">Issued / Returned Items</Divider>
         <Form.Item
           name="items"
           initialValue={issuanceFormById.items ?? []}

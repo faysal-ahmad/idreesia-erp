@@ -16,7 +16,7 @@ import './migrations';
 import express from 'express';
 import cors from 'cors';
 import { ApolloServer } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
+import { expressMiddleware } from '@as-integrations/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebApp } from 'meteor/webapp';
 import { getUser } from 'meteor/apollo';

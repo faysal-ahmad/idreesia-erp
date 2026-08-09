@@ -5,9 +5,9 @@ import {
   Cascader,
   DatePicker,
   Dropdown,
-  Modal,
   Table,
 } from 'antd';
+import { modal } from '/imports/ui/antd-feedback';
 import { 
   CloseCircleOutlined,
   DeleteOutlined,
@@ -351,7 +351,7 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
     if (key === 'delete-selected') {
       const { selectedRows } = this.state;
       if (selectedRows.length === 0) return;
-      Modal.confirm({
+      modal.confirm({
         title: 'Delete Selected Attendances',
         content:
           'Are you sure you want to delete the selected attendances?',
@@ -360,7 +360,7 @@ export default class KarkunsAttendanceList extends Component<Props, State> {
         },
       });
     } else if (key === 'delete-all') {
-      Modal.confirm({
+      modal.confirm({
         title: 'Delete All Attendances',
         content:
           'Are you sure you want to delete all attendances for this month?',

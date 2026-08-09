@@ -3,8 +3,8 @@ import { useMutation } from '@apollo/client/react';
 import { type History } from 'history';
 import { type CSSProperties } from 'react';
 import { useParams } from 'react-router-dom';
-import { Divider, Form, message } from 'antd';
-
+import { Divider, Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
 import {
@@ -118,7 +118,7 @@ const NewForm = ({ history }: Props) => {
       <SelectField<VendorOption> data={(vendorsByPhysicalStoreId ?? []) as VendorOption[]} getDataValue={({ _id }) => _id ?? ''} getDataText={({ name }) => name ?? ''} fieldName="vendorId" fieldLabel="Vendor" />
       <TreeSelectField data={(locationsByPhysicalStoreId ?? []) as LocationOption[]} showSearch fieldName="locationId" fieldLabel="For Location" placeholder="Select a Location" />
       <InputTextAreaField fieldName="notes" fieldLabel="Notes" required={false} />
-      <Divider orientation="left">Purchased / Returned Items</Divider>
+      <Divider titlePlacement="left">Purchased / Returned Items</Divider>
       <Form.Item name="items" rules={[{ required: true, message: 'Please add some items.' }]} {...formItemExtendedLayout}>
         <ItemsList showPrice defaultLabel="Purchased" inflowLabel="Purchased" outflowLabel="Returned" physicalStoreId={physicalStoreId} refForm={formRef.current as never} />
       </Form.Item>

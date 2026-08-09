@@ -17,5 +17,5 @@ export async function createWorkbookBuffer(sheetData: Record<string, unknown>[],
   }
 
   const data = await workbook.xlsx.writeBuffer();
-  return Buffer.from(data as ArrayLike<number>);
+  return Buffer.from(data as Uint8Array);
 }

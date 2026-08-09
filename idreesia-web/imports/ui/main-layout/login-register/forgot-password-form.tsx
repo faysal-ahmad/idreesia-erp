@@ -8,8 +8,8 @@ import {
   Form,
   Input,
   Typography,
-  message,
 } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 
 type ShowForm = 'login' | 'register' | 'forgot';
 

@@ -13,9 +13,8 @@ import {
   Popconfirm,
   Table,
   Tooltip,
-  message,
 } from 'antd';
-
+import { message } from '/imports/ui/antd-feedback';
 import {
   DEFAULT_PAGE_INDEX_INT,
   DEFAULT_PAGE_SIZE_INT,

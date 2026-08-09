@@ -42,7 +42,7 @@ const modulePathsMapping: Record<string, string> = {
   // Items within this section would be grouped under
   // the node '381-A Operations'
   [ModuleNames.hr]: ModulePaths.hr,
-  [ModuleNames.inventory]: ModulePaths.inventory,
+  [ModuleNames.stores]: ModulePaths.stores,
   [ModuleNames.security]: ModulePaths.security,
   // ***********************************************
 };

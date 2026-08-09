@@ -1,7 +1,7 @@
 const ModuleNames = {
   admin: 'Admin',
   hr: 'HR',
-  inventory: 'Inventory',
+  stores: 'Stores',
   security: 'Security',
 };
 

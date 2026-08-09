@@ -45,6 +45,7 @@ import './41-inventory-stockitem-indexes';
 import './42-drop-accounts-collections';
 import './43-drop-companies-portals-amaanat-logs';
 import './44-drop-operations-collections';
+import './45-rename-inventory-to-stores';
 
 Migrations.config({
   log: true,

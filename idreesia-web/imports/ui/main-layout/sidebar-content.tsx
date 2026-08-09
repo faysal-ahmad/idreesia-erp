@@ -27,8 +27,8 @@ const sidebarsMap: Record<
   [ModuleNames.admin]: React.lazy(
     () => import('/imports/ui/modules/admin/sidebar')
   ),
-  [ModuleNames.inventory]: React.lazy(
-    () => import('/imports/ui/modules/inventory/sidebar')
+  [ModuleNames.stores]: React.lazy(
+    () => import('/imports/ui/modules/stores/sidebar')
   ),
   [ModuleNames.hr]: React.lazy(() => import('/imports/ui/modules/hr/sidebar')),
   [ModuleNames.security]: React.lazy(

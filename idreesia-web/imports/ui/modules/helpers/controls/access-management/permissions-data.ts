@@ -110,9 +110,9 @@ export const HrPermissionsData: PermissionNode = {
   ],
 };
 
-export const InventoryPermissionsData: PermissionNode = {
-  title: 'Inventory',
-  key: 'module-inventory',
+export const StoresPermissionsData: PermissionNode = {
+  title: 'Stores',
+  key: 'module-stores',
   children: [
     {
       title: 'Manage Setup Data',
@@ -120,7 +120,7 @@ export const InventoryPermissionsData: PermissionNode = {
     },
     {
       title: 'Stock Items',
-      key: 'module-inventory-stock-items',
+      key: 'module-stores-stock-items',
       children: [
         {
           title: 'Manage Stock Items',
@@ -130,7 +130,7 @@ export const InventoryPermissionsData: PermissionNode = {
     },
     {
       title: 'Issuance Forms',
-      key: 'module-inventory-issuance-forms',
+      key: 'module-stores-issuance-forms',
       children: [
         {
           title: 'View Issuance Forms',
@@ -148,7 +148,7 @@ export const InventoryPermissionsData: PermissionNode = {
     },
     {
       title: 'Purchase Forms',
-      key: 'module-inventory-purchase-forms',
+      key: 'module-stores-purchase-forms',
       children: [
         {
           title: 'View Purchase Forms',
@@ -166,7 +166,7 @@ export const InventoryPermissionsData: PermissionNode = {
     },
     {
       title: 'Stock Adjustments',
-      key: 'module-inventory-stock-adjustments',
+      key: 'module-stores-stock-adjustments',
       children: [
         {
           title: 'View Stock Adjustments',

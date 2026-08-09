@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Layout, Breadcrumb } from 'antd';
 import type { BreadcrumbProps } from 'antd';
@@ -20,6 +20,14 @@ export const LoggedInRoute = ({ location, history }: Props) => {
     (state: LayoutRootState) => state.breadcrumbs ?? []
   );
   const { user, userLoading } = useLoggedInUser();
+
+  useEffect(() => {
+    const { pathname, search, hash } = location;
+    if (pathname === '/inventory' || pathname.startsWith('/inventory/')) {
+      history.replace(`/stores${pathname.slice('/inventory'.length)}${search}${hash}`);
+    }
+  }, [history, location]);
+
   if (userLoading) return null;
 
   const getBreadcrumbs = () => {

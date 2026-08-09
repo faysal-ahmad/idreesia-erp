@@ -3,6 +3,6 @@ export { AllModulePermissions } from './all-module-permissions';
 export {
   AdminPermissionsData,
   HrPermissionsData,
-  InventoryPermissionsData,
+  StoresPermissionsData,
   SecurityPermissionsData,
 } from './permissions-data';

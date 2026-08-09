@@ -18,8 +18,8 @@ const routersMap: Record<
   [ModuleNames.admin]: React.lazy(
     () => import('/imports/ui/modules/admin/router')
   ),
-  [ModuleNames.inventory]: React.lazy(
-    () => import('/imports/ui/modules/inventory/router')
+  [ModuleNames.stores]: React.lazy(
+    () => import('/imports/ui/modules/stores/router')
   ),
   [ModuleNames.hr]: React.lazy(() => import('/imports/ui/modules/hr/router')),
   [ModuleNames.security]: React.lazy(

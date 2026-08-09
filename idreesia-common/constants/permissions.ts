@@ -39,22 +39,22 @@ const Permissions = {
   SECURITY_MANAGE_MEHFILS: 'security-manage-mehfils',
 
   // ****************************************************************************************
-  // Inventory Module
+  // Stores Module
   // ****************************************************************************************
-  IN_MANAGE_SETUP_DATA: 'inventory-manage-setup-data',
-  IN_MANAGE_STOCK_ITEMS: 'inventory-manage-stock-items',
+  IN_MANAGE_SETUP_DATA: 'stores-manage-setup-data',
+  IN_MANAGE_STOCK_ITEMS: 'stores-manage-stock-items',
 
-  IN_VIEW_STOCK_ADJUSTMENTS: 'inventory-view-stock-adjustments',
-  IN_MANAGE_STOCK_ADJUSTMENTS: 'inventory-manage-stock-adjustments',
-  IN_APPROVE_STOCK_ADJUSTMENTS: 'inventory-approve-stock-adjustments',
+  IN_VIEW_STOCK_ADJUSTMENTS: 'stores-view-stock-adjustments',
+  IN_MANAGE_STOCK_ADJUSTMENTS: 'stores-manage-stock-adjustments',
+  IN_APPROVE_STOCK_ADJUSTMENTS: 'stores-approve-stock-adjustments',
 
-  IN_VIEW_ISSUANCE_FORMS: 'inventory-view-issuance-forms',
-  IN_MANAGE_ISSUANCE_FORMS: 'inventory-manage-issuance-forms',
-  IN_APPROVE_ISSUANCE_FORMS: 'inventory-approve-issuance-forms',
+  IN_VIEW_ISSUANCE_FORMS: 'stores-view-issuance-forms',
+  IN_MANAGE_ISSUANCE_FORMS: 'stores-manage-issuance-forms',
+  IN_APPROVE_ISSUANCE_FORMS: 'stores-approve-issuance-forms',
 
-  IN_VIEW_PURCHASE_FORMS: 'inventory-view-purchase-forms',
-  IN_MANAGE_PURCHASE_FORMS: 'inventory-manage-purchase-forms',
-  IN_APPROVE_PURCHASE_FORMS: 'inventory-approve-purchase-forms',
+  IN_VIEW_PURCHASE_FORMS: 'stores-view-purchase-forms',
+  IN_MANAGE_PURCHASE_FORMS: 'stores-manage-purchase-forms',
+  IN_APPROVE_PURCHASE_FORMS: 'stores-approve-purchase-forms',
 };
 
 export default Permissions;

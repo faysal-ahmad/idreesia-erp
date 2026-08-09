@@ -92,7 +92,7 @@ const InstanceSelection = forwardRef<InstanceSelectionHandle, Props>(
     const accessData = [
       {
         title: 'Physical Stores',
-        key: 'module-inventory-physical-stores',
+        key: 'module-stores-physical-stores',
         children: (allPhysicalStores ?? []).map((physicalStore) => ({
           title: physicalStore.name,
           key: physicalStore._id,

@@ -13,8 +13,6 @@ import IssuanceDetails from './issuance-details';
 import AttachmentsList from './attachments-list';
 import { ISSUANCE_FORM_BY_ID } from '../gql';
 
-const TabPane = Tabs.TabPane;
-
 type RouteParams = {
   formId: string;
   physicalStoreId: string;
@@ -53,24 +51,35 @@ const EditForm = ({ history }: Props) => {
   const issuanceFormById = data.issuanceFormById;
 
   return (
-    <Tabs defaultActiveKey="1">
-      <TabPane tab="Issuance Details" key="1">
-        <IssuanceDetails
-          history={history}
-          issuanceFormById={issuanceFormById}
-          physicalStoreId={physicalStoreId}
-          locationsByPhysicalStoreId={(locationsByPhysicalStoreId ?? []).filter(
-            (location) => location != null
-          )}
-        />
-      </TabPane>
-      <TabPane tab="Attachments" key="2">
-        <AttachmentsList
-          physicalStoreId={physicalStoreId}
-          issuanceFormById={issuanceFormById}
-        />
-      </TabPane>
-    </Tabs>
+    <Tabs
+      defaultActiveKey="1"
+      items={[
+        {
+          key: '1',
+          label: 'Issuance Details',
+          children: (
+            <IssuanceDetails
+              history={history}
+              issuanceFormById={issuanceFormById}
+              physicalStoreId={physicalStoreId}
+              locationsByPhysicalStoreId={(locationsByPhysicalStoreId ?? []).filter(
+                (location) => location != null
+              )}
+            />
+          ),
+        },
+        {
+          key: '2',
+          label: 'Attachments',
+          children: (
+            <AttachmentsList
+              physicalStoreId={physicalStoreId}
+              issuanceFormById={issuanceFormById}
+            />
+          ),
+        },
+      ]}
+    />
   );
 };
 

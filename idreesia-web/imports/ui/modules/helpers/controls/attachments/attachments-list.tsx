@@ -25,8 +25,8 @@ import {
   Table,
   Tooltip,
   Popconfirm,
-  message,
 } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { type CSSProperties } from 'react';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
@@ -242,7 +242,7 @@ const AttachmentsList = ({
         title="Edit Attachment"
         okText="Save"
         width={600}
-        destroyOnClose
+        destroyOnHidden
         onOk={handleAttachmentFormSaved}
         onCancel={handleAttachmentFormCancelled}
       >

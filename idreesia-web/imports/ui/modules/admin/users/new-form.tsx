@@ -1,8 +1,9 @@
 import React, { useRef, useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
-import type { FormInstance } from 'antd';
-import { Form, message } from 'antd';
+import { FormInstance } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
+import { Form } from 'antd';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {

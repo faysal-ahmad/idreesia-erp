@@ -1,14 +1,7 @@
 import React, { Component } from 'react';
-import { Input, InputNumber, Select } from 'antd';
+import { Input, InputNumber, Select, Space } from 'antd';
 
 import { startCase } from 'meteor/idreesia-common/utilities/lodash';
-
-const ContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-};
 
 const DEFAULT_VALUE = JSON.stringify({ scale: 'months' });
 
@@ -66,38 +59,32 @@ export default class CustomInput extends Component<CustomInputProps> {
     const { value } = this.props;
     const { scale, duration } = JSON.parse(value || DEFAULT_VALUE) as FilterValue;
 
-    const scaleSelect = (
-      <Select
-        ref={this.scaleSelect}
-        style={{ width: '100px' }}
-        onChange={this.handleScaleChange}
-        value={scale}
-      >
-        {this.getScaleOptions()}
-      </Select>
-    );
-
     return (
-      <Input.Group>
-        <div style={ContainerStyle}>
-          <Input
-            style={{
-              width: 100,
-              border: 0,
-              pointerEvents: 'none',
-              backgroundColor: '#fff',
-            }}
-            placeholder="More Than"
-            disabled
-          />
-          <InputNumber
-            ref={this.durationInput}
-            value={duration}
-            onChange={this.handleDurationChange}
-          />
-          {scaleSelect}
-        </div>
-      </Input.Group>
+      <Space.Compact>
+        <Input
+          style={{
+            width: 100,
+            border: 0,
+            pointerEvents: 'none',
+            backgroundColor: '#fff',
+          }}
+          placeholder="More Than"
+          disabled
+        />
+        <InputNumber
+          ref={this.durationInput}
+          value={duration}
+          onChange={this.handleDurationChange}
+        />
+        <Select
+          ref={this.scaleSelect}
+          style={{ width: '100px' }}
+          onChange={this.handleScaleChange}
+          value={scale}
+        >
+          {this.getScaleOptions()}
+        </Select>
+      </Space.Compact>
     );
   }
 }

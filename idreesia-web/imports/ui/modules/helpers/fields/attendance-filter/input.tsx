@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 
-import { Input, InputNumber, Select } from 'antd';
-
-const ContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-};
+import { Input, InputNumber, Select, Space } from 'antd';
 
 const DEFAULT_VALUE = JSON.stringify({ criteria: 'less-than' });
 
@@ -66,33 +59,31 @@ export default class CustomInput extends Component<CustomInputProps> {
     const { criteria, percentage } = JSON.parse(value || DEFAULT_VALUE) as FilterValue;
 
     return (
-      <Input.Group>
-        <div style={ContainerStyle}>
-          <Select
-            ref={this.criteriaSelect}
-            style={{ width: '100px' }}
-            onChange={this.handleCriteriaChange}
-            value={criteria}
-          >
-            {this.getCriteriaOptions()}
-          </Select>
-          <InputNumber
-            ref={this.percentageInput}
-            value={percentage}
-            onChange={this.handlePercentageChange}
-          />
-          <Input
-            style={{
-              width: 100,
-              border: 0,
-              pointerEvents: 'none',
-              backgroundColor: '#fff',
-            }}
-            placeholder="percent"
-            disabled
-          />
-        </div>
-      </Input.Group>
+      <Space.Compact>
+        <Select
+          ref={this.criteriaSelect}
+          style={{ width: '100px' }}
+          onChange={this.handleCriteriaChange}
+          value={criteria}
+        >
+          {this.getCriteriaOptions()}
+        </Select>
+        <InputNumber
+          ref={this.percentageInput}
+          value={percentage}
+          onChange={this.handlePercentageChange}
+        />
+        <Input
+          style={{
+            width: 100,
+            border: 0,
+            pointerEvents: 'none',
+            backgroundColor: '#fff',
+          }}
+          placeholder="percent"
+          disabled
+        />
+      </Space.Compact>
     );
   }
 }

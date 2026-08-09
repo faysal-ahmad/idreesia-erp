@@ -17,8 +17,6 @@ import PurchaseForms from './purchase-forms';
 import Adjustments from './adjustments';
 import { STOCK_ITEM_BY_ID } from '../gql';
 
-const TabPane = Tabs.TabPane;
-
 type Props = RouteComponentProps;
 
 const EditForm = ({ history }: Props) => {
@@ -52,39 +50,60 @@ const EditForm = ({ history }: Props) => {
   );
 
   return (
-    <Tabs defaultActiveKey="1">
-      <TabPane tab="General Info" key="1">
-        <GeneralInfo
-          history={history}
-          stockItemById={stockItemById}
-          itemCategoriesByPhysicalStoreId={categories}
-        />
-      </TabPane>
-      <TabPane tab="Picture" key="2">
-        <Picture stockItemById={stockItemById} />
-      </TabPane>
-      <TabPane tab="Issuance Forms" key="3">
-        <IssuanceForms
-          history={history}
-          stockItemId={stockItemId}
-          physicalStoreId={physicalStoreId}
-        />
-      </TabPane>
-      <TabPane tab="Purchase Forms" key="4">
-        <PurchaseForms
-          history={history}
-          stockItemId={stockItemId}
-          physicalStoreId={physicalStoreId}
-        />
-      </TabPane>
-      <TabPane tab="Adjustments" key="5">
-        <Adjustments
-          history={history}
-          stockItemId={stockItemId}
-          physicalStoreId={physicalStoreId}
-        />
-      </TabPane>
-    </Tabs>
+    <Tabs
+      defaultActiveKey="1"
+      items={[
+        {
+          key: '1',
+          label: 'General Info',
+          children: (
+            <GeneralInfo
+              history={history}
+              stockItemById={stockItemById}
+              itemCategoriesByPhysicalStoreId={categories}
+            />
+          ),
+        },
+        {
+          key: '2',
+          label: 'Picture',
+          children: <Picture stockItemById={stockItemById} />,
+        },
+        {
+          key: '3',
+          label: 'Issuance Forms',
+          children: (
+            <IssuanceForms
+              history={history}
+              stockItemId={stockItemId}
+              physicalStoreId={physicalStoreId}
+            />
+          ),
+        },
+        {
+          key: '4',
+          label: 'Purchase Forms',
+          children: (
+            <PurchaseForms
+              history={history}
+              stockItemId={stockItemId}
+              physicalStoreId={physicalStoreId}
+            />
+          ),
+        },
+        {
+          key: '5',
+          label: 'Adjustments',
+          children: (
+            <Adjustments
+              history={history}
+              stockItemId={stockItemId}
+              physicalStoreId={physicalStoreId}
+            />
+          ),
+        },
+      ]}
+    />
   );
 };
 

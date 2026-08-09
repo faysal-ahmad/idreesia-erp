@@ -1,6 +1,7 @@
 import React from 'react';
 import { useMutation } from '@apollo/client/react';
-import { Space, message } from 'antd';
+import { Space } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { UserOutlined } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';

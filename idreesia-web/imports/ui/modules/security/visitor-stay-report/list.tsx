@@ -12,8 +12,8 @@ import {
   Modal,
   Spin,
   Table,
-  message,
 } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { VisitorName } from '/imports/ui/modules/security/common/controls';
 import { SortableColumnHeader } from '/imports/ui/modules/helpers/controls';
 
@@ -488,7 +488,7 @@ class List extends Component<ListProps, ListState> {
             title={this.getTableHeader}
             rowClassName={this.getRowClassName}
             bordered
-            size="middle"
+            size="medium"
             tableLayout="fixed"
             pagination={false}
             scroll={{ y: scrollY }}

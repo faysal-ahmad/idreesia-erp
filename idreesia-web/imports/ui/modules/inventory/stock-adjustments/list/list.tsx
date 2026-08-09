@@ -6,12 +6,11 @@ import { useParams } from 'react-router-dom';
 import {
   Button,
   Dropdown,
-  Modal,
   Pagination,
   Table,
   Tooltip,
-  message,
 } from 'antd';
+import { message, modal } from '/imports/ui/antd-feedback';
 import {
   CheckSquareOutlined,
   DeleteOutlined,
@@ -210,7 +209,7 @@ const List = ({ history, location }: Props) => {
                 } else if (key === 'export') {
                   window.open(`${window.location.origin}/generate-report?reportName=StockAdjustments&reportArgs=${_ids.join(',')}`, '_blank');
                 } else if (key === 'delete') {
-                  Modal.confirm({
+                  modal.confirm({
                     title: 'Delete Stock Adjustment Forms',
                     content: 'Are you sure you want to delete the selected stock adjustment forms?',
                     onOk: () => removeStockAdjustments({ variables: { _ids, physicalStoreId } })

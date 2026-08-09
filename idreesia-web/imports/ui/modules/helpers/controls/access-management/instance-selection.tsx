@@ -86,7 +86,7 @@ const InstanceSelection = forwardRef<InstanceSelectionHandle, Props>(
           );
         }
 
-        return <Tree.TreeNode {...item} />;
+        return <Tree.TreeNode title={item.title} key={item.key} />;
       });
 
     const accessData = [

@@ -12,8 +12,8 @@ import {
   Spin,
   Table,
   Tooltip,
-  message,
 } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import {
   DeleteOutlined,
   PlusCircleOutlined,
@@ -270,7 +270,7 @@ const List = () => {
           columns={columns}
           title={getTableHeader}
           bordered
-          size="middle"
+          size="medium"
           tableLayout="fixed"
           pagination={false}
           scroll={{ y: scrollY }}
@@ -298,7 +298,7 @@ const List = () => {
         confirmLoading={creating}
         onOk={handleCreateMehfil}
         onCancel={handleCloseNewForm}
-        destroyOnClose
+        destroyOnHidden
       >
         <NewForm form={newForm} />
       </Modal>

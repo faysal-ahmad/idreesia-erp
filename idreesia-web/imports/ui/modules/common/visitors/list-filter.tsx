@@ -8,8 +8,8 @@ import {
   Popover,
   Space,
   Tag,
-  message,
 } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { FilterOutlined, SyncOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';

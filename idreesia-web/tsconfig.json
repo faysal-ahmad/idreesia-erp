@@ -1,13 +1,12 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": "..",
     "tsBuildInfoFile": "../node_modules/.cache/tsbuildinfo/idreesia-web.tsbuildinfo",
     "paths": {
-      "/imports/*": ["idreesia-web/imports/*"],
-      "/client/*": ["idreesia-web/client/*"],
-      "/server/*": ["idreesia-web/server/*"],
-      "meteor/idreesia-common/*": ["idreesia-common/*"]
+      "/imports/*": ["./imports/*"],
+      "/client/*": ["./client/*"],
+      "/server/*": ["./server/*"],
+      "meteor/idreesia-common/*": ["../idreesia-common/*"]
     }
   },
   "include": [

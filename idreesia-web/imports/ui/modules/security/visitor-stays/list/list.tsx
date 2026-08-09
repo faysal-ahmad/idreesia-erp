@@ -10,9 +10,8 @@ import {
   Table,
   Tooltip,
   Modal,
-  message,
 } from 'antd';
-
+import { message } from '/imports/ui/antd-feedback';
 import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import type { VisitorStaysPagedVisitorStaysQuery } from 'meteor/idreesia-common/types/client-operations';
@@ -361,7 +360,7 @@ class List extends Component<ListProps, ListState> {
             columns={this.getColumns()}
             title={this.getTableHeader}
             bordered
-            size="middle"
+            size="medium"
             tableLayout="fixed"
             pagination={false}
             footer={() => (

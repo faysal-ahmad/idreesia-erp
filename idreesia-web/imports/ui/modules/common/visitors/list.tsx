@@ -384,7 +384,7 @@ export default class VisitorsList extends Component<Props, State> {
           title={listHeader}
           rowSelection={showSelectionColumn ? this.rowSelection : undefined}
           rowClassName={this.getRowClassName}
-          size="middle"
+          size="medium"
           bordered
           tableLayout="fixed"
           pagination={false}

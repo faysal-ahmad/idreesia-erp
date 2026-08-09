@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client/react';
-import { Button, Row, message } from 'antd';
+import { Button, Row } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 import { type History } from 'history';
 

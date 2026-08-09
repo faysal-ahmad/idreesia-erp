@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { EditOutlined } from '@ant-design/icons';
 
 import { Tabs, Drawer, Input } from 'antd';
+import type { TabsProps } from 'antd';
 import type { HelperPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import MSKarkunsList from './ms-karkuns-list';
 
@@ -70,14 +71,14 @@ export default class CustomInput extends Component<Props, State> {
   render() {
     const { placeholder, value, showMsKarkunsList } = this.props;
 
-    const containersNode: React.ReactNode[] = [];
+    const items: TabsProps['items'] = [];
 
     if (showMsKarkunsList) {
-      containersNode.push(
-        <Tabs.TabPane tab="MS Karkuns" key="1">
-          <MSKarkunsList handleSelectItem={this.setSelectedValue} />
-        </Tabs.TabPane>
-      );
+      items.push({
+        key: '1',
+        label: 'MS Karkuns',
+        children: <MSKarkunsList handleSelectItem={this.setSelectedValue} />,
+      });
     }
 
     return (
@@ -88,7 +89,7 @@ export default class CustomInput extends Component<Props, State> {
           onClose={this.handleClose}
           open={this.state.showSelectionForm}
         >
-          <Tabs>{containersNode}</Tabs>
+          <Tabs items={items} />
         </Drawer>
         <div style={ContainerStyle}>
           <Input

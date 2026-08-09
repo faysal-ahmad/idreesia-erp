@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 
-import { Input, Select, Row, Col } from 'antd';
+import { Select, Row, Col } from 'antd';
 
 const getYearMonthValue = (dateValue?: Dayjs | null) => {
   const currentDate = dayjs().startOf('day');
@@ -82,30 +82,28 @@ export default class CustomInput extends Component<CustomInputProps, CustomInput
 
   render() {
     return (
-      <Input.Group>
-        <Row align="middle" gutter={10}>
-          <Col span={5}>
-            <Select
-              style={{ width: '100%' }}
-              onChange={this.handleYearChange}
-              value={this.state.years}
-            >
-              {getYearOptions()}
-            </Select>
-          </Col>
-          <Col>years</Col>
-          <Col span={5}>
-            <Select
-              style={{ width: '100%' }}
-              onChange={this.handleMonthChange}
-              value={this.state.months}
-            >
-              {getMonthOptions()}
-            </Select>
-          </Col>
-          <Col>months</Col>
-        </Row>
-      </Input.Group>
+      <Row align="middle" gutter={10}>
+        <Col span={5}>
+          <Select
+            style={{ width: '100%' }}
+            onChange={this.handleYearChange}
+            value={this.state.years}
+          >
+            {getYearOptions()}
+          </Select>
+        </Col>
+        <Col>years</Col>
+        <Col span={5}>
+          <Select
+            style={{ width: '100%' }}
+            onChange={this.handleMonthChange}
+            value={this.state.months}
+          >
+            {getMonthOptions()}
+          </Select>
+        </Col>
+        <Col>months</Col>
+      </Row>
     );
   }
 }

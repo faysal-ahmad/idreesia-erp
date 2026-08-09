@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Form, message } from 'antd';
+import { Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client/react';
 import { type History } from 'history';

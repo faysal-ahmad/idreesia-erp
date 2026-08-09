@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
-import { Form, message } from 'antd';
-
+import { Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
   InputTextField,

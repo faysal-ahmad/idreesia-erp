@@ -7,7 +7,6 @@ import GeneralInfo from './general-info';
 import Permissions from './permissions';
 import InstanceAccess from './instance-access';
 
-const TabPane = Tabs.TabPane;
 type Props = RouteComponentProps<{ groupId: string }>;
 
 const EditForm = ({ match, history }: Props) => {
@@ -15,17 +14,26 @@ const EditForm = ({ match, history }: Props) => {
   useBreadcrumbs(['Admin', 'User Groups', 'Edit']);
 
   return (
-    <Tabs defaultActiveKey="1">
-      <TabPane tab="General Info" key="1">
-        <GeneralInfo groupId={groupId} history={history} />
-      </TabPane>
-      <TabPane tab="Permissions" key="2">
-        <Permissions groupId={groupId} history={history} />
-      </TabPane>
-      <TabPane tab="Instance Access" key="3">
-        <InstanceAccess groupId={groupId} history={history} />
-      </TabPane>
-    </Tabs>
+    <Tabs
+      defaultActiveKey="1"
+      items={[
+        {
+          key: '1',
+          label: 'General Info',
+          children: <GeneralInfo groupId={groupId} history={history} />,
+        },
+        {
+          key: '2',
+          label: 'Permissions',
+          children: <Permissions groupId={groupId} history={history} />,
+        },
+        {
+          key: '3',
+          label: 'Instance Access',
+          children: <InstanceAccess groupId={groupId} history={history} />,
+        },
+      ]}
+    />
   );
 };
 

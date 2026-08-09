@@ -59,35 +59,37 @@ const SidebarContent = ({ history }: Props) => {
   };
 
   return (
-    <Flex vertical className="app-shell-sidebar">
-      <Flex justify="center" style={{ flexShrink: 0 }}>
-        {sidebarCollapsed ? (
-          <div>&nbsp;</div>
-        ) : (
-          <Typography.Title ellipsis level={4}>
-            {activeModuleName}
-          </Typography.Title>
-        )}
+    <Layout.Sider
+      className="app-shell-sidebar"
+      width={220}
+      style={{ background: '#fff' }}
+      collapsible
+      trigger={null}
+      collapsed={sidebarCollapsed}
+      onCollapse={handleCollapse}
+    >
+      <Flex vertical className="app-shell-sidebar-inner">
+        <Flex justify="center" className="app-shell-sidebar-title">
+          {sidebarCollapsed ? (
+            <div>&nbsp;</div>
+          ) : (
+            <Typography.Title ellipsis level={4}>
+              {activeModuleName}
+            </Typography.Title>
+          )}
+        </Flex>
+        <div className="app-shell-sidebar-menu">{sidebar}</div>
+        <Button
+          type="link"
+          className="app-shell-sidebar-collapse"
+          icon={
+            sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
+          }
+          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          style={{ fontSize: '16px', width: 64, height: 64 }}
+        />
       </Flex>
-      <Layout.Sider
-        width={220}
-        style={{ background: '#fff', flex: '1 1 auto' }}
-        collapsible
-        trigger={null}
-        collapsed={sidebarCollapsed}
-        onCollapse={handleCollapse}
-      >
-        {sidebar}
-      </Layout.Sider>
-      <Button
-        type="link"
-        icon={
-          sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
-        }
-        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        style={{ fontSize: '16px', width: 64, height: 64, flexShrink: 0 }}
-      />
-    </Flex>
+    </Layout.Sider>
   );
 };
 

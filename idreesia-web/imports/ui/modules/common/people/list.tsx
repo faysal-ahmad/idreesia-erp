@@ -344,7 +344,7 @@ export default class PeopleList extends Component<Props, State> {
           title={listHeader}
           rowSelection={showSelectionColumn ? this.rowSelection : undefined}
           bordered
-          size="middle"
+          size="medium"
           tableLayout="fixed"
           pagination={false}
           scroll={{ y: scrollY }}

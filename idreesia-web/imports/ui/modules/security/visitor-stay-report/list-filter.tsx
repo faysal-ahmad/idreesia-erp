@@ -8,8 +8,8 @@ import {
   Popover,
   Space,
   Tag,
-  message,
 } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { FilterOutlined, SyncOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -38,7 +38,6 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-
 
 interface LabelValue {
   label: string;
@@ -298,7 +297,7 @@ const ListFilter = ({
           fieldName="city"
           fieldLabel="City"
           fieldLayout={formItemLayout}
-          dataSource={distinctCities ?? undefined}
+          options={distinctCities ?? undefined}
           initialValue={city}
           required={false}
         />

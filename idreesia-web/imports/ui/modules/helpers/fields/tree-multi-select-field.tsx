@@ -25,13 +25,6 @@ const formItemLayout = {
   wrapperCol: { span: 14 },
 };
 
-interface FilterTreeNode {
-  title?: React.ReactNode;
-  props?: {
-    title?: React.ReactNode;
-  };
-}
-
 /**
  * data: Array of objects (containing text and value)
  * fieldName: Name of the property in which the form field value would be saved.
@@ -54,8 +47,11 @@ const TreeMultiSelectField = ({
   initialValue = null,
   onChange,
 }: FieldProps) => {
-  const filterTreeNode = (inputValue: string, treeNode: FilterTreeNode) => {
-    const title = String(treeNode?.title ?? treeNode?.props?.title ?? '').toLowerCase();
+  const filterTreeNode = (inputValue: string, treeNode: any) => {
+    const rawTitle = treeNode?.title ?? treeNode?.props?.title;
+    const title = String(
+      typeof rawTitle === 'function' ? '' : (rawTitle ?? '')
+    ).toLowerCase();
     return title.includes(inputValue.toLowerCase());
   };
 

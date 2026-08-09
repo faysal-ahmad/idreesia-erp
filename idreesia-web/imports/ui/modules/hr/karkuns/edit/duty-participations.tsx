@@ -11,8 +11,8 @@ import {
   Tooltip,
   Modal,
   Popconfirm,
-  message,
 } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import {
   useAllMSDuties,
   useAllDutyShifts,
@@ -218,7 +218,7 @@ const DutyParticipation = (props: Props) => {
         title="Add Duty"
         okText="Save"
         width={600}
-        destroyOnClose
+        destroyOnHidden
         onOk={handleNewDutyFormSaved}
         onCancel={handleNewDutyFormCancelled}
       >
@@ -236,7 +236,7 @@ const DutyParticipation = (props: Props) => {
         title="Edit Duty"
         okText="Save"
         width={600}
-        destroyOnClose
+        destroyOnHidden
         onOk={handleEditDutyFormSaved}
         onCancel={handleEditDutyFormCancelled}
       >

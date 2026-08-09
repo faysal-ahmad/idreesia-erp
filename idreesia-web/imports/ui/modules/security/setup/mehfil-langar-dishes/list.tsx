@@ -16,9 +16,8 @@ import {
   Spin,
   Table,
   Tooltip,
-  message,
 } from 'antd';
-
+import { message } from '/imports/ui/antd-feedback';
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import type { AllSecurityMehfilLangarDishesQuery } from 'meteor/idreesia-common/types/client-operations';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
@@ -203,7 +202,7 @@ const List = () => {
           dataSource={pageData}
           columns={columns}
           bordered
-          size="middle"
+          size="medium"
           tableLayout="fixed"
           pagination={false}
           footer={() => (
@@ -230,7 +229,7 @@ const List = () => {
         confirmLoading={creating}
         onOk={handleCreateDish}
         onCancel={handleCloseNewForm}
-        destroyOnClose
+        destroyOnHidden
       >
         <NewForm form={newForm} />
       </Modal>

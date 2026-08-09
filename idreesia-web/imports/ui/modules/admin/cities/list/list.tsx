@@ -10,9 +10,8 @@ import {
   Pagination,
   Table,
   Tooltip,
-  message,
 } from 'antd';
-
+import { message } from '/imports/ui/antd-feedback';
 import {
   useBreadcrumbs,
   useQueryParams,

@@ -99,7 +99,7 @@ const ListFilter = (props: Props) => {
                 fieldName="region"
                 fieldLabel="Region"
                 fieldLayout={formItemLayout}
-                dataSource={distinctRegions}
+                options={distinctRegions}
                 initialValue={region}
                 required={false}
               />

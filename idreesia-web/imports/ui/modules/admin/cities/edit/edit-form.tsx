@@ -9,7 +9,6 @@ import { Tabs } from 'antd';
 import GeneralInfo from './general-info';
 import CityMehfils from './city-mehfils';
 
-const TabPane = Tabs.TabPane;
 type Props = RouteComponentProps<{ cityId: string }>;
 
 const EditForm = ({ match, location, history }: Props) => {
@@ -18,14 +17,21 @@ const EditForm = ({ match, location, history }: Props) => {
   useBreadcrumbs(['Admin', 'Locations Management', 'Cities & Mehfils', 'Edit']);
   const activeKey = (queryParams['default-active-tab'] as string) || '1';
   return (
-    <Tabs defaultActiveKey={activeKey}>
-      <TabPane tab="General Info" key="1">
-        <GeneralInfo cityId={cityId} history={history} />
-      </TabPane>
-      <TabPane tab="Mehfils" key="2">
-        <CityMehfils cityId={cityId} />
-      </TabPane>
-    </Tabs>
+    <Tabs
+      defaultActiveKey={activeKey}
+      items={[
+        {
+          key: '1',
+          label: 'General Info',
+          children: <GeneralInfo cityId={cityId} history={history} />,
+        },
+        {
+          key: '2',
+          label: 'Mehfils',
+          children: <CityMehfils cityId={cityId} />,
+        },
+      ]}
+    />
   );
 };
 

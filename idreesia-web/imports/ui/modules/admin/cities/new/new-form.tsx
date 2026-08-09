@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { type History } from 'history';
 import { useMutation } from '@apollo/client/react';
-import { Form, message } from 'antd';
-
+import { Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { filter } from 'meteor/idreesia-common/utilities/lodash';
 import {
   useBreadcrumbs,

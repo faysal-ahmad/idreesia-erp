@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client/react';
 import { Formats } from 'meteor/idreesia-common/constants';
 import { formatDate, parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 
-import { Table, Pagination } from 'antd';
+import { Table, Pagination, Spin } from 'antd';
 import {
   DEFAULT_PAGE_INDEX_INT,
   DEFAULT_PAGE_SIZE_INT,
@@ -85,7 +85,13 @@ const AttendanceSheets = ({ karkunId }: Props) => {
     setPageSize(size);
   };
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   const paged = data?.pagedAttendanceByKarkun;
   const rows = (paged?.data ?? []).filter((row): row is AttendanceRow => row != null);

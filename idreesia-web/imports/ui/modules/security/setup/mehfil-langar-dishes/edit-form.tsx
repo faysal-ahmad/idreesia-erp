@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Form, message } from 'antd';
+import { Form } from 'antd';
+import { message } from '/imports/ui/antd-feedback';
 import { type match } from 'react-router';
 import { type History } from 'history';
 

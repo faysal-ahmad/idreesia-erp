@@ -1369,10 +1369,10 @@
     "@rc-component/util" "^1.11.1"
     clsx "^2.1.1"
 
-"@rc-component/form@~1.8.5":
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/@rc-component/form/-/form-1.8.5.tgz#20571cfd401dc38c74c38cdf4722ddc6c23a9806"
-  integrity sha512-d24EYtvUOBhxEtSd/EqIu9DaMuqrWF2IRIvAFCTM6NQ/GJIYNr8DvEpUSUlv2uPxEJ0ZPwYQ+wwlGIAaiHvdrw==
+"@rc-component/form@~1.8.6":
+  version "1.8.6"
+  resolved "https://registry.yarnpkg.com/@rc-component/form/-/form-1.8.6.tgz#4db8ffb27280e92540546e8bb19e3dacfa260f4b"
+  integrity sha512-1EXVsSKPZC6kGrIqxVck7kAWM6T65b6et/n5wIcyiaIa41VrDshD0nVLHoBDEIZr2ATQsOP6icb4XQkNFMLBAw==
   dependencies:
     "@rc-component/async-validator" "^6.0.0"
     "@rc-component/util" "^1.11.1"
@@ -1477,10 +1477,10 @@
     "@rc-component/util" "^1.11.1"
     clsx "^2.1.1"
 
-"@rc-component/picker@~1.11.0":
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/@rc-component/picker/-/picker-1.11.0.tgz#ab85a2f1a3f13a55829837d29c862967e701cddd"
-  integrity sha512-6qXGKtoJvO8sUd17m5cyNEbEJub0zflCHnaZTBBmj63DPRZYc0WEHN8rp6hFSl+yMCJS/dJY5G+1fQ8bLCuD7A==
+"@rc-component/picker@~1.12.0":
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/@rc-component/picker/-/picker-1.12.0.tgz#4754d27ad31f2022d81455514871805d556ff790"
+  integrity sha512-0FZGgDiDZFMm2hcfGv4jyjm7yWIj2MiwfeTzLL0vWkO+8cCSKdiM9XhWpkn1aAsoI2EwUy48Oz2cGfvL8ZKrfw==
   dependencies:
     "@rc-component/overflow" "^1.0.0"
     "@rc-component/resize-observer" "^1.0.0"
@@ -1807,10 +1807,10 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.7.tgz#50ae4353eaaddc04044279812f52c8c65857dbcb"
   integrity sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==
 
-"@types/react-dom@17":
-  version "17.0.26"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-17.0.26.tgz#fa7891ba70fd39ddbaa7e85b6ff9175bb546bc1b"
-  integrity sha512-Z+2VcYXJwOqQ79HreLU/1fyQ88eXSSFh6I3JdrEHQIfYSI0kCQpTGvOrbE6jFGGYXKsHuwY9tBa/w5Uo6KzrEg==
+"@types/react-dom@18.3.7":
+  version "18.3.7"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.3.7.tgz#b89ddf2cd83b4feafcc4e2ea41afdfb95a0d194f"
+  integrity sha512-MEe3UeoENYVFXzoXEWsvcpg6ZvlrFNlOQ7EOsvhI3CfAXwzPfO8Qwuxd40nepsYKqyyVQnTdEfv68q91yLcKrQ==
 
 "@types/react-router-dom@^5.3.3":
   version "5.3.3"
@@ -1836,13 +1836,12 @@
   dependencies:
     csstype "^3.2.2"
 
-"@types/react@17":
-  version "17.0.93"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.93.tgz#1f8d44a7ea97fb0cbd3935235949d7fda43f64ea"
-  integrity sha512-KM4Ty/ZTLZupiYxZVAlP+InNJS3De6uBMdq0ePa6/04+eG9Y7ftnWfst1xTLQ5rwAhgHwQ4momt/O4KepdGBTw==
+"@types/react@18.3.31":
+  version "18.3.31"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.3.31.tgz#b5e95e28ffcceab8d982f33f2eb076e17653c2a4"
+  integrity sha512-vfEqpXTvwT91yhmwdfouStN2hSKwTvyRs8qpLfADyrq/kxDw0hZM7Wk9Ug1FELj8hIby+S/+kQCSRFF32nv2Qw==
   dependencies:
     "@types/prop-types" "*"
-    "@types/scheduler" "^0.16"
     csstype "^3.2.2"
 
 "@types/request@^2.48.13":
@@ -1854,11 +1853,6 @@
     "@types/node" "*"
     "@types/tough-cookie" "*"
     form-data "^2.5.5"
-
-"@types/scheduler@^0.16":
-  version "0.16.8"
-  resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.8.tgz#ce5ace04cfeabe7ef87c0091e50752e36707deff"
-  integrity sha512-WZLiwShhwLRmeV6zH+GkbOFT6Z6VklCItrDioxUnv+u4Ll+8vKeFySoFyK/0ctcRpOmwAicELfmys1sDc/Rw+A==
 
 "@types/send@*":
   version "1.2.1"
@@ -2108,10 +2102,10 @@ ansi-styles@^6.1.0, ansi-styles@^6.2.1, ansi-styles@^6.2.3:
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-6.2.3.tgz#c044d5dcc521a076413472597a1acb1f103c4041"
   integrity sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==
 
-antd@^6.5.2:
-  version "6.5.2"
-  resolved "https://registry.yarnpkg.com/antd/-/antd-6.5.2.tgz#d771211beddf539f37303f862df24e8aaf32b7c4"
-  integrity sha512-ntYx0lr4Jq192QnBkDWkDqEeoberXZ34vSE9SgiP/0J6DY8O0pzR3bVZLBsdpCSguVkwjtEAP+QNeMN7LNAvgw==
+antd@^6.5.4:
+  version "6.5.4"
+  resolved "https://registry.yarnpkg.com/antd/-/antd-6.5.4.tgz#b41665e86a5f46ca761abd3b0abef7460116ca0d"
+  integrity sha512-jchA6i0rEwHjLpgC+l6HeLHP0gL4Q4yjs6Mxqt6PlhGD5ArxCj3ZH+fKFbNquCtd6Rlzzi+emfNFpP2dGLwZzg==
   dependencies:
     "@ant-design/colors" "^8.0.1"
     "@ant-design/cssinjs" "^2.1.2"
@@ -2127,7 +2121,7 @@ antd@^6.5.2:
     "@rc-component/dialog" "~1.10.0"
     "@rc-component/drawer" "~1.4.2"
     "@rc-component/dropdown" "~1.0.3"
-    "@rc-component/form" "~1.8.5"
+    "@rc-component/form" "~1.8.6"
     "@rc-component/image" "~1.9.0"
     "@rc-component/input" "~1.3.1"
     "@rc-component/input-number" "~1.6.2"
@@ -2137,7 +2131,7 @@ antd@^6.5.2:
     "@rc-component/mutate-observer" "^2.0.1"
     "@rc-component/notification" "~2.0.7"
     "@rc-component/pagination" "~1.4.0"
-    "@rc-component/picker" "~1.11.0"
+    "@rc-component/picker" "~1.12.0"
     "@rc-component/progress" "~1.0.2"
     "@rc-component/qrcode" "~2.0.0"
     "@rc-component/rate" "~1.0.1"

@@ -3,6 +3,7 @@ import { SyncOutlined } from '@ant-design/icons';
 
 import { Tooltip } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
+
 interface Props {
   refreshData?(): Promise<unknown>;
 }

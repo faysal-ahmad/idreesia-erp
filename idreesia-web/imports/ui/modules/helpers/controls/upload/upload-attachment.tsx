@@ -5,6 +5,7 @@ import type { UploadChangeParam, UploadFile } from 'antd/es/upload';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Upload } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
+
 interface Props {
   accept?: string;
   onUploadFinish?(attachmentId: string): void;

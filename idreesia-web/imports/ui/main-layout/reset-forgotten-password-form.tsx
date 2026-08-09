@@ -3,6 +3,7 @@ import React, { type CSSProperties } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Card, Divider, Flex, Form, Input } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
+
 const FormButtonStyle: CSSProperties = {
   marginBottom: '10px',
 };

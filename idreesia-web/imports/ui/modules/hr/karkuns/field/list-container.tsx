@@ -1,14 +1,7 @@
 import React, { Component } from 'react';
 
-import type { HrKarkunsPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import List from '../list/list';
 import type { PageParams } from '../list/list-filter';
-
-type KarkunRow = NonNullable<
-  NonNullable<
-    NonNullable<HrKarkunsPagedHrKarkunsQuery['pagedHrKarkuns']>['karkuns']
-  >[number]
->;
 
 interface SelectionValue {
   _id?: string;

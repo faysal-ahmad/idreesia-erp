@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import React from 'react';
 import { Form, Input, Modal } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
+
 const itemLayout = {
   wrapperCol: { span: 14 },
 };

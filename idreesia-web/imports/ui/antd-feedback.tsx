@@ -1,4 +1,3 @@
-import React from 'react';
 import { App } from 'antd';
 import type { MessageInstance } from 'antd/es/message/interface';
 import type { ModalStaticFunctions } from 'antd/es/modal/confirm';
@@ -7,11 +6,8 @@ import type { NotificationInstance } from 'antd/es/notification/interface';
 type ModalInstance = Omit<ModalStaticFunctions, 'warn'>;
 
 // Populated by AntdFeedbackBridge once antd <App> mounts (antd global-scene pattern).
-// eslint-disable-next-line import/no-mutable-exports
 let message!: MessageInstance;
-// eslint-disable-next-line import/no-mutable-exports
 let modal!: ModalInstance;
-// eslint-disable-next-line import/no-mutable-exports
 let notification!: NotificationInstance;
 
 /**

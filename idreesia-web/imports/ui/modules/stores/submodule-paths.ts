@@ -2,13 +2,6 @@ import { ModulePaths } from 'meteor/idreesia-common/constants';
 
 export default class SubModulePaths {
   // *************************************************************************************
-  // Status Dashboard Route
-  // *************************************************************************************
-  static statusDashboardPath(physicalStoreId = ':physicalStoreId') {
-    return `${ModulePaths.stores}/${physicalStoreId}/status-dashboard`;
-  }
-
-  // *************************************************************************************
   // Reports Routes
   // *************************************************************************************
   static issuanceReportPath(physicalStoreId = ':physicalStoreId') {
@@ -24,9 +17,6 @@ export default class SubModulePaths {
   static itemCategoriesPath(physicalStoreId = ':physicalStoreId') {
     return `${ModulePaths.stores}/${physicalStoreId}/item-categories`;
   }
-  static itemCategoriesNewFormPath(physicalStoreId = ':physicalStoreId') {
-    return `${SubModulePaths.itemCategoriesPath(physicalStoreId)}/new`;
-  }
   static itemCategoriesEditFormPath(
     physicalStoreId = ':physicalStoreId',
     itemCategoryId = ':itemCategoryId'
@@ -39,9 +29,6 @@ export default class SubModulePaths {
   static locationsPath(physicalStoreId = ':physicalStoreId') {
     return `${ModulePaths.stores}/${physicalStoreId}/locations`;
   }
-  static locationsNewFormPath(physicalStoreId = ':physicalStoreId') {
-    return `${SubModulePaths.locationsPath(physicalStoreId)}/new`;
-  }
   static locationsEditFormPath(
     physicalStoreId = ':physicalStoreId',
     locationId = ':locationId'
@@ -51,9 +38,6 @@ export default class SubModulePaths {
 
   static vendorsPath(physicalStoreId = ':physicalStoreId') {
     return `${ModulePaths.stores}/${physicalStoreId}/vendors`;
-  }
-  static vendorsNewFormPath(physicalStoreId = ':physicalStoreId') {
-    return `${SubModulePaths.vendorsPath(physicalStoreId)}/new`;
   }
   static vendorsEditFormPath(
     physicalStoreId = ':physicalStoreId',

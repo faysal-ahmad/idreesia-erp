@@ -1,4 +1,4 @@
-import React, { useState, type CSSProperties } from 'react';
+import React, { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useMutation, useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
@@ -9,6 +9,8 @@ import {
   Tooltip,
   Pagination,
   Popconfirm,
+  Space,
+  Spin,
 } from 'antd';
 import { message, modal } from '/imports/ui/antd-feedback';
 import {
@@ -29,7 +31,10 @@ import {
 import { Formats } from 'meteor/idreesia-common/constants';
 import type { PagedStockItemsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { StockItemName } from '/imports/ui/modules/stores/common/controls';
-import ListFilter, { type PageParams } from './list-filter';
+import ListFilter, {
+  StockItemsFilterChips,
+  type PageParams,
+} from './list-filter';
 import {
   MERGE_ATOCK_ITEMS,
   PAGED_STOCK_ITEMS,
@@ -37,6 +42,9 @@ import {
   REMOVE_STOCK_ITEM,
   VERIFY_STOCK_ITEM,
 } from '../gql';
+
+const TABLE_HEADER_ROW_HEIGHT = 55;
+const VIEWPORT_BOTTOM_GAP = 16;
 
 const MinStockLevelStyle: CSSProperties = {
   display: 'flex',
@@ -115,7 +123,11 @@ const List = ({
   showActions,
   handleNewClicked = noop,
 }: Props) => {
-  const [selectedRows, setSelectedRows] = useState<StockItemRow[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scrollY, setScrollY] = useState(360);
+  const [selectedRowsById, setSelectedRowsById] = useState<
+    Record<string, StockItemRow>
+  >({});
 
   const { data, loading, refetch: refetchListQuery } = useQuery(
     PAGED_STOCK_ITEMS,
@@ -145,6 +157,63 @@ const List = ({
     refetchQueries: ['pagedStockItems'],
   });
 
+  const updateScrollY = () => {
+    requestAnimationFrame(() => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const table = container.querySelector('.list-table');
+      if (!table) return;
+
+      const title = table.querySelector('.ant-table-title');
+      const footer = table.querySelector('.ant-table-footer');
+      const thead = table.querySelector('.ant-table-thead');
+      const titleBottom = title
+        ? title.getBoundingClientRect().bottom
+        : table.getBoundingClientRect().top;
+      const theadHeight = thead
+        ? Math.ceil((thead as HTMLElement).getBoundingClientRect().height)
+        : TABLE_HEADER_ROW_HEIGHT;
+      const footerHeight = footer
+        ? Math.ceil((footer as HTMLElement).getBoundingClientRect().height)
+        : 64;
+
+      const contentEl = container.closest(
+        '.ant-layout-content'
+      ) as HTMLElement | null;
+      let bottomLimit = window.innerHeight;
+      if (contentEl) {
+        const paddingBottom =
+          Number.parseFloat(getComputedStyle(contentEl).paddingBottom) || 0;
+        bottomLimit =
+          contentEl.getBoundingClientRect().bottom - paddingBottom;
+      }
+
+      const nextScrollY = Math.max(
+        200,
+        Math.floor(
+          bottomLimit -
+            titleBottom -
+            theadHeight -
+            footerHeight -
+            VIEWPORT_BOTTOM_GAP
+        )
+      );
+
+      setScrollY((prev) =>
+        Math.abs(nextScrollY - prev) > 2 ? nextScrollY : prev
+      );
+    });
+  };
+
+  useEffect(() => {
+    updateScrollY();
+    window.addEventListener('resize', updateScrollY);
+    return () => window.removeEventListener('resize', updateScrollY);
+  });
+
+  const selectedRows = Object.values(selectedRowsById);
+
   const handleDeleteClicked = (stockItem: StockItemRow) => {
     if (!stockItem._id) return;
     removeStockItem({
@@ -165,7 +234,7 @@ const List = ({
     if (selectedRows.length <= 1) return;
 
     const _ids = selectedRows
-      .map(row => row._id)
+      .map((row) => row._id)
       .filter((id): id is string => Boolean(id));
     if (_ids.length <= 1) return;
 
@@ -177,6 +246,7 @@ const List = ({
       },
     })
       .then(() => {
+        setSelectedRowsById({});
         message.success('Stock items have been merged.', 5);
       })
       .catch((error: Error) => {
@@ -188,7 +258,7 @@ const List = ({
     if (selectedRows.length === 0) return;
 
     const _ids = selectedRows
-      .map(row => row._id)
+      .map((row) => row._id)
       .filter((id): id is string => Boolean(id));
     if (_ids.length === 0) return;
 
@@ -334,6 +404,7 @@ const List = ({
         title: 'Company',
         dataIndex: 'company',
         key: 'company',
+        width: 140,
         onCell: (record: TreeStockItemRow) =>
           record.isGroup ? { colSpan: 0 } : { colSpan: 1 },
       },
@@ -341,6 +412,7 @@ const List = ({
         title: 'Details',
         dataIndex: 'details',
         key: 'details',
+        width: 140,
         onCell: (record: TreeStockItemRow) =>
           record.isGroup ? { colSpan: 0 } : { colSpan: 1 },
       },
@@ -348,6 +420,7 @@ const List = ({
         title: 'Category',
         dataIndex: 'categoryName',
         key: 'categoryName',
+        width: 140,
         onCell: (record: TreeStockItemRow) =>
           record.isGroup ? { colSpan: 0 } : { colSpan: 1 },
       },
@@ -355,6 +428,7 @@ const List = ({
         title: 'Min Stock',
         dataIndex: 'minStockLevel',
         key: 'minStockLevel',
+        width: 110,
         onCell: (record: TreeStockItemRow) =>
           record.isGroup ? { colSpan: 0 } : { colSpan: 1 },
         render: (text: number, record: TreeStockItemRow) => {
@@ -370,6 +444,7 @@ const List = ({
         title: 'Current Stock',
         dataIndex: 'currentStockLevel',
         key: 'currentStockLevel',
+        width: 130,
         onCell: (record: TreeStockItemRow) =>
           record.isGroup ? { colSpan: 0 } : { colSpan: 1 },
         render: (text: number, record: TreeStockItemRow) => {
@@ -408,6 +483,7 @@ const List = ({
       columns.push({
         title: 'Actions',
         key: 'action',
+        width: 90,
         onCell: (record: TreeStockItemRow) =>
           record.isGroup ? { colSpan: 0 } : { colSpan: 1 },
         render: (_text: unknown, record: TreeStockItemRow) => {
@@ -465,16 +541,6 @@ const List = ({
     return columns;
   };
 
-  const rowSelection = {
-    checkStrictly: false,
-    onChange: (_selectedRowKeys: React.Key[], rows: TreeStockItemRow[]) => {
-      const filteredRows = rows.filter(
-        (item): item is StockItemRow => !item.isGroup && item._id != null
-      );
-      setSelectedRows(filteredRows);
-    },
-  };
-
   const getActionsMenu = () => {
     const items = [
       {
@@ -499,47 +565,18 @@ const List = ({
 
     return (
       <Dropdown menu={{ items, onClick: handleAction }}>
-        <Button icon={<SettingOutlined />} size="large" />
+        <Button icon={<SettingOutlined />} title="Actions" />
       </Dropdown>
     );
   };
 
-  const getTableHeader = () => {
-    let newButton = null;
-    if (showNewButton) {
-      newButton = (
-        <Button
-          size="large"
-          type="primary"
-          icon={<PlusCircleOutlined />}
-          onClick={handleNewClicked}
-        >
-          New Stock Item
-        </Button>
-      );
-    }
-
+  if (loading) {
     return (
-      <div className="list-table-header">
-        {newButton}
-        <div className="list-table-header-section">
-          <ListFilter
-            name={name}
-            physicalStoreId={physicalStoreId}
-            categoryId={categoryId}
-            verifyDuration={verifyDuration}
-            stockLevel={stockLevel}
-            setPageParams={setPageParams}
-            refreshData={refetchListQuery}
-          />
-          &nbsp;&nbsp;
-          {getActionsMenu()}
-        </div>
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
       </div>
     );
-  };
-
-  if (loading) return null;
+  }
 
   const pagedStockItems = data?.pagedStockItems;
   const totalResults = pagedStockItems?.totalResults ?? 0;
@@ -549,33 +586,96 @@ const List = ({
   const treeData = getTreeData(rows);
   const numPageIndex = pageIndex + 1;
 
+  const filterProps = {
+    name,
+    physicalStoreId,
+    categoryId,
+    verifyDuration,
+    stockLevel,
+    setPageParams,
+    refreshData: refetchListQuery,
+  };
+
+  const getTableHeader = () => (
+    <div className="list-table-header">
+      <Space size={12}>
+        {showNewButton ? (
+          <Button
+            type="primary"
+            icon={<PlusCircleOutlined />}
+            onClick={handleNewClicked}
+          >
+            New Stock Item
+          </Button>
+        ) : null}
+      </Space>
+      <div className="list-table-header-utilities">
+        <Space size={8}>
+          <ListFilter {...filterProps} />
+          {getActionsMenu()}
+        </Space>
+        <StockItemsFilterChips {...filterProps} />
+      </div>
+    </div>
+  );
+
   return (
-    <Table
-      rowKey="_id"
-      dataSource={treeData}
-      columns={getColumns()}
-      bordered
-      indentSize={30}
-      size="small"
-      pagination={false}
-      title={getTableHeader}
-      rowSelection={showSelectionColumn ? rowSelection : undefined}
-      footer={() => (
-        <Pagination
-          defaultCurrent={1}
-          defaultPageSize={20}
-          current={numPageIndex}
-          pageSize={pageSize}
-          showSizeChanger
-          showTotal={(total: number, range: [number, number]) =>
-            `${range[0]}-${range[1]} of ${total} items`
-          }
-          onChange={onChange}
-          onShowSizeChange={onChange}
-          total={totalResults}
-        />
-      )}
-    />
+    <div className="list-container" ref={containerRef}>
+      <Table
+        className="list-table"
+        rowKey="_id"
+        dataSource={treeData}
+        columns={getColumns()}
+        bordered
+        indentSize={30}
+        size="middle"
+        tableLayout="fixed"
+        pagination={false}
+        title={getTableHeader}
+        scroll={{ y: scrollY }}
+        rowSelection={
+          showSelectionColumn
+            ? {
+                checkStrictly: false,
+                columnWidth: 48,
+                selectedRowKeys: Object.keys(selectedRowsById),
+                onChange: (
+                  _selectedRowKeys: React.Key[],
+                  selectedTreeRows: TreeStockItemRow[]
+                ) => {
+                  const selectedOnPage = selectedTreeRows.filter(
+                    (item): item is StockItemRow =>
+                      !item.isGroup && item._id != null
+                  );
+                  setSelectedRowsById((prev) => {
+                    const next = { ...prev };
+                    rows.forEach((row) => {
+                      if (row._id) delete next[row._id];
+                    });
+                    selectedOnPage.forEach((row) => {
+                      if (row._id) next[row._id] = row;
+                    });
+                    return next;
+                  });
+                },
+              }
+            : undefined
+        }
+        footer={() => (
+          <Pagination
+            current={numPageIndex}
+            pageSize={pageSize}
+            showSizeChanger
+            showTotal={(total: number, range: [number, number]) =>
+              `${range[0]}-${range[1]} of ${total} items`
+            }
+            onChange={onChange}
+            onShowSizeChange={onChange}
+            total={totalResults}
+          />
+        )}
+      />
+    </div>
   );
 };
 

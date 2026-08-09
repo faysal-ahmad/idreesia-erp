@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
 import { type RouteComponentProps } from 'react-router';
@@ -8,6 +8,8 @@ import {
   Divider,
   Dropdown,
   Pagination,
+  Space,
+  Spin,
   Table,
   Tooltip,
 } from 'antd';
@@ -32,12 +34,15 @@ import {
   usePhysicalStoreLocations,
 } from '/imports/ui/modules/stores/common/hooks';
 
-import ListFilter from './list-filter';
+import ListFilter, { IssuanceFilterChips } from './list-filter';
 import {
   APPROVE_ISSUANCE_FORMS,
   PAGED_ISSUANCE_FORMS,
   REMOVE_ISSUANCE_FORMS,
 } from '../gql';
+
+const TABLE_HEADER_ROW_HEIGHT = 55;
+const VIEWPORT_BOTTOM_GAP = 16;
 
 type IssuanceFormRow = NonNullable<
   NonNullable<
@@ -84,7 +89,11 @@ const List = ({ history, location }: Props) => {
       endDate: '',
     },
   });
-  const [selectedRows, setSelectedRows] = useState<IssuanceFormRow[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scrollY, setScrollY] = useState(360);
+  const [selectedRowsById, setSelectedRowsById] = useState<
+    Record<string, IssuanceFormRow>
+  >({});
 
   useDynamicBreadcrumbs(
     physicalStore
@@ -108,6 +117,61 @@ const List = ({ history, location }: Props) => {
       'issuanceFormsByStockItem',
       'pagedStockItems',
     ],
+  });
+
+  const updateScrollY = () => {
+    requestAnimationFrame(() => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const table = container.querySelector('.list-table');
+      if (!table) return;
+
+      const title = table.querySelector('.ant-table-title');
+      const footer = table.querySelector('.ant-table-footer');
+      const thead = table.querySelector('.ant-table-thead');
+      const titleBottom = title
+        ? title.getBoundingClientRect().bottom
+        : table.getBoundingClientRect().top;
+      const theadHeight = thead
+        ? Math.ceil((thead as HTMLElement).getBoundingClientRect().height)
+        : TABLE_HEADER_ROW_HEIGHT;
+      const footerHeight = footer
+        ? Math.ceil((footer as HTMLElement).getBoundingClientRect().height)
+        : 64;
+
+      const contentEl = container.closest(
+        '.ant-layout-content'
+      ) as HTMLElement | null;
+      let bottomLimit = window.innerHeight;
+      if (contentEl) {
+        const paddingBottom =
+          Number.parseFloat(getComputedStyle(contentEl).paddingBottom) || 0;
+        bottomLimit =
+          contentEl.getBoundingClientRect().bottom - paddingBottom;
+      }
+
+      const nextScrollY = Math.max(
+        200,
+        Math.floor(
+          bottomLimit -
+            titleBottom -
+            theadHeight -
+            footerHeight -
+            VIEWPORT_BOTTOM_GAP
+        )
+      );
+
+      setScrollY((prev) =>
+        Math.abs(nextScrollY - prev) > 2 ? nextScrollY : prev
+      );
+    });
+  };
+
+  useEffect(() => {
+    updateScrollY();
+    window.addEventListener('resize', updateScrollY);
+    return () => window.removeEventListener('resize', updateScrollY);
   });
 
   const refreshPage = (newParams: RefreshParams) => {
@@ -187,6 +251,8 @@ const List = ({ history, location }: Props) => {
     history.push(paths.issuanceFormsPrintFormPath(physicalStoreId, record._id as string));
   };
 
+  const selectedRows = Object.values(selectedRowsById);
+
   const handleDeleteSelected = () => {
     const _ids = selectedRows.map((row) => row._id as string);
     removeIssuanceForms({
@@ -196,6 +262,7 @@ const List = ({ history, location }: Props) => {
       },
     })
       .then(() => {
+        setSelectedRowsById({});
         message.success('Issuance forms have been deleted.', 5);
       })
       .catch((error: Error) => {
@@ -212,6 +279,7 @@ const List = ({ history, location }: Props) => {
       },
     })
       .then(() => {
+        setSelectedRowsById({});
         message.success('Issuance forms have been approved.', 5);
       })
       .catch((error: Error) => {
@@ -250,11 +318,20 @@ const List = ({ history, location }: Props) => {
     });
   };
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   const pagedIssuanceForms = data?.pagedIssuanceForms ?? { totalResults: 0, data: [] };
   const { totalResults, data: tableData } = pagedIssuanceForms;
   const rows = (tableData ?? []).filter((row): row is IssuanceFormRow => row != null);
+  const allLocations = (locationsByPhysicalStoreId ?? []).filter(
+    (entry): entry is NonNullable<typeof entry> => entry != null
+  );
 
   const pageIndex = queryParams.pageIndex;
   const pageSize = queryParams.pageSize;
@@ -266,12 +343,14 @@ const List = ({ history, location }: Props) => {
       title: 'Issue Date',
       dataIndex: 'issueDate',
       key: 'issueDate',
+      width: 130,
       render: (text: string) => dayjs(Number(text)).format('DD MMM, YYYY'),
     },
     {
       title: 'Issued To',
       dataIndex: ['refIssuedTo', 'name'],
       key: 'refIssuedTo.name',
+      width: 200,
       render: (text: string, record: IssuanceFormRow) => {
         if (record.handedOverTo) {
           return `${record.handedOverTo} - [on behalf of ${text}]`;
@@ -283,6 +362,7 @@ const List = ({ history, location }: Props) => {
       title: 'For Location',
       dataIndex: ['refLocation', 'name'],
       key: 'refLocation.name',
+      width: 160,
     },
     {
       title: 'Issuance Details',
@@ -327,6 +407,7 @@ const List = ({ history, location }: Props) => {
     {
       title: 'Actions',
       key: 'action',
+      width: 90,
       render: (_text: unknown, record: IssuanceFormRow) => {
         if (!record.approvedOn) {
           return (
@@ -389,66 +470,83 @@ const List = ({ history, location }: Props) => {
 
     return (
       <Dropdown menu={{ items, onClick: handleAction }}>
-        <Button icon={<SettingOutlined />} size="large" />
+        <Button icon={<SettingOutlined />} title="Actions" />
       </Dropdown>
     );
   };
 
+  const filterProps = {
+    allLocations,
+    refreshPage,
+    queryParams,
+    refreshData: refetch,
+  };
+
   const getTableHeader = () => (
     <div className="list-table-header">
-      <Button
-        size="large"
-        type="primary"
-        icon={<PlusCircleOutlined />}
-        onClick={handleNewClicked}
-      >
-        New Issuance Form
-      </Button>
-      <div className="list-table-header-section">
-        <ListFilter
-          allLocations={(locationsByPhysicalStoreId ?? []).filter(
-            (entry): entry is NonNullable<typeof entry> => entry != null
-          )}
-          refreshPage={refreshPage}
-          queryParams={queryParams as Record<string, string | number | boolean | null | undefined | string[]>}
-          refreshData={() => {
-            refetch();
-          }}
-        />
-        &nbsp;&nbsp;
-        {getActionsMenu()}
+      <Space size={12}>
+        <Button
+          type="primary"
+          icon={<PlusCircleOutlined />}
+          onClick={handleNewClicked}
+        >
+          New Issuance Form
+        </Button>
+      </Space>
+      <div className="list-table-header-utilities">
+        <Space size={8}>
+          <ListFilter {...filterProps} />
+          {getActionsMenu()}
+        </Space>
+        <IssuanceFilterChips {...filterProps} />
       </div>
     </div>
   );
 
   return (
-    <Table
-      rowKey="_id"
-      dataSource={rows}
-      columns={columns}
-      bordered
-      title={getTableHeader}
-      rowSelection={{
-        onChange: (_selectedRowKeys, nextSelectedRows: IssuanceFormRow[]) => {
-          setSelectedRows(nextSelectedRows);
-        },
-      }}
-      size="small"
-      pagination={false}
-      footer={() => (
-        <Pagination
-          defaultCurrent={1}
-          defaultPageSize={20}
-          current={numPageIndex}
-          pageSize={numPageSize}
-          showSizeChanger
-          showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
-          onChange={onChange}
-          onShowSizeChange={onChange}
-          total={totalResults ?? 0}
-        />
-      )}
-    />
+    <div className="list-container" ref={containerRef}>
+      <Table
+        className="list-table"
+        rowKey="_id"
+        dataSource={rows}
+        columns={columns}
+        bordered
+        title={getTableHeader}
+        rowSelection={{
+          selectedRowKeys: Object.keys(selectedRowsById),
+          columnWidth: 48,
+          onChange: (_selectedRowKeys, selectedOnPage: IssuanceFormRow[]) => {
+            setSelectedRowsById((prev) => {
+              const next = { ...prev };
+              rows.forEach((row) => {
+                if (row._id) delete next[row._id];
+              });
+              selectedOnPage.forEach((row) => {
+                if (row._id) next[row._id] = row;
+              });
+              return next;
+            });
+          },
+        }}
+        size="middle"
+        tableLayout="fixed"
+        pagination={false}
+        scroll={{ y: scrollY }}
+        footer={() => (
+          <Pagination
+            current={numPageIndex}
+            pageSize={numPageSize}
+            showSizeChanger
+            showTotal={(total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`
+            }
+            onChange={onChange}
+            onShowSizeChange={onChange}
+            total={totalResults ?? 0}
+          />
+        )}
+      />
+    </div>
   );
 };
 

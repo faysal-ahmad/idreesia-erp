@@ -1,119 +1,59 @@
-import React, { useState } from 'react';
-import { Form } from 'antd';
-import { message } from '/imports/ui/antd-feedback';
-import { useParams } from 'react-router-dom';
-import { useQuery, useMutation } from '@apollo/client/react';
-import { type History } from 'history';
+import React from 'react';
+import { Form, type FormInstance } from 'antd';
 
-import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
-import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { StoresSubModulePaths as paths } from '/imports/ui/modules/stores';
+import type { LocationsByPhysicalStoreIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   InputTextField,
   InputTextAreaField,
   TreeSelectField,
-  FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
-import { usePhysicalStore } from '/imports/ui/modules/stores/common/hooks';
 
-import {
-  CREATE_LOCATION,
-  LOCATIONS_BY_PHYSICAL_STORE_ID,
-} from './gql';
-
-interface NewFormProps {
-  history: History;
-}
-
-interface LocationFormValues {
+export interface NewLocationFormValues {
   name: string;
   parentId?: string | null;
   description?: string;
 }
 
-const NewForm = ({ history }: NewFormProps) => {
-  const { physicalStoreId } = useParams<{ physicalStoreId: string }>();
-  const { physicalStore } = usePhysicalStore(physicalStoreId!);
-  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createLocation] = useMutation(CREATE_LOCATION, {
-    refetchQueries: [{
-      query: LOCATIONS_BY_PHYSICAL_STORE_ID,
-      variables: {
-        physicalStoreId,
-      },
-    }],
-  });
+type LocationOption = NonNullable<
+  NonNullable<LocationsByPhysicalStoreIdQuery['locationsByPhysicalStoreId']>[number]
+>;
 
-  useDynamicBreadcrumbs(
-    physicalStore
-      ? [ModuleNames.stores, physicalStore.name ?? '', 'Setup', 'Locations', 'New']
-      : [ModuleNames.stores, 'Setup', 'Locations', 'New']
-  );
+interface NewFormProps {
+  form: FormInstance<NewLocationFormValues>;
+  locations: LocationOption[];
+}
 
-  const { data: locationsData, loading: locationsDataLoading } = useQuery(
-    LOCATIONS_BY_PHYSICAL_STORE_ID,
-    {
-      variables: { physicalStoreId: physicalStoreId! },
-    }
-  );
-
-  if (locationsDataLoading) return null;
-  const locationsByPhysicalStoreId = (
-    locationsData?.locationsByPhysicalStoreId ?? []
-  ).filter((row) => row != null);
-
-  const handleCancel = () => {
-    history.goBack();
-  };
-
-  const handleFieldsChange = () => {
-    setIsFieldsTouched(true);
-  };
-
-  const handleFinish = ({
-    name,
-    parentId,
-    description,
-  }: LocationFormValues) => {
-    createLocation({
-      variables: { name, physicalStoreId: physicalStoreId!, parentId, description },
-    })
-      .then(() => {
-        message.success('New location was created successfully.', 5);
-        history.push(paths.locationsPath(physicalStoreId!));
-      })
-      .catch((error: Error) => {
-        message.error(error.message, 5);
-      });
-  };
-
-  return (
-    <Form
-      layout="horizontal"
-      onFinish={handleFinish}
-      onFieldsChange={handleFieldsChange}
-    >
-      <InputTextField
-        fieldName="name"
-        fieldLabel="Name"
-        required
-        requiredMessage="Please input a name for the location."
-      />
-      <TreeSelectField
-        data={locationsByPhysicalStoreId}
-        fieldName="parentId"
-        fieldLabel="Parent Location"
-      />
-      <InputTextAreaField
-        fieldName="description"
-        fieldLabel="Description"
-      />
-      <FormButtonsSaveCancel
-        handleCancel={handleCancel}
-        isFieldsTouched={isFieldsTouched}
-      />
-    </Form>
-  );
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
 };
+
+const NewForm = ({ form, locations }: NewFormProps) => (
+  <Form
+    form={form}
+    layout="horizontal"
+    style={{ width: '100%', maxWidth: '100%' }}
+    preserve={false}
+  >
+    <InputTextField
+      fieldName="name"
+      fieldLabel="Name"
+      required
+      requiredMessage="Please input a name for the location."
+      fieldLayout={formItemLayout}
+    />
+    <TreeSelectField
+      data={locations}
+      fieldName="parentId"
+      fieldLabel="Parent Location"
+      fieldLayout={formItemLayout}
+    />
+    <InputTextAreaField
+      fieldName="description"
+      fieldLabel="Description"
+      fieldLayout={formItemLayout}
+    />
+  </Form>
+);
 
 export default NewForm;

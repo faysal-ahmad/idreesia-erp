@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useParams } from 'react-router-dom';
+import { Spin } from 'antd';
 
 import { ModuleNames, Formats } from 'meteor/idreesia-common/constants';
 import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
@@ -37,7 +38,11 @@ const ReportContainer = () => {
   );
 
   if (physicalStoreLoading || locationsByPhysicalStoreIdLoading) {
-    return null;
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
   }
 
   const monthString = dayjs(month).startOf('month').format(Formats.DATE_FORMAT);

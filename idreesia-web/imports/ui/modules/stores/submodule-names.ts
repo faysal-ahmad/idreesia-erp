@@ -4,7 +4,6 @@ const SubModuleNames = {
   purchaseForms: 'Purchase Forms',
   stockAdjustments: 'Stock Adjustments',
 
-  statusDashboard: 'Status Dashboard',
   purchasingReport: 'Purchasing Report',
   issuanceReport: 'Issuance Report',
 

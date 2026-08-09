@@ -1,90 +1,36 @@
-import React, { useState } from 'react';
-import { Form } from 'antd';
-import { message } from '/imports/ui/antd-feedback';
-import { useParams } from 'react-router-dom';
-import { useMutation } from '@apollo/client/react';
-import { type History } from 'history';
+import React from 'react';
+import { Form, type FormInstance } from 'antd';
 
-import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
-import { ModuleNames } from 'meteor/idreesia-common/constants';
-import { StoresSubModulePaths as paths } from '/imports/ui/modules/stores';
-import {
-  InputTextField,
-  FormButtonsSaveCancel,
-} from '/imports/ui/modules/helpers/fields';
-import { usePhysicalStore } from '/imports/ui/modules/stores/common/hooks';
+import { InputTextField } from '/imports/ui/modules/helpers/fields';
 
-import {
-  CREATE_ITEM_CATEGORY,
-  ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID,
-} from './gql';
-
-interface NewFormProps {
-  history: History;
-}
-
-interface ItemCategoryFormValues {
+export interface NewItemCategoryFormValues {
   name: string;
 }
 
-const NewForm = ({ history }: NewFormProps) => {
-  const { physicalStoreId } = useParams<{ physicalStoreId: string }>();
-  const { physicalStore } = usePhysicalStore(physicalStoreId!);
-  const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [createItemCategory] = useMutation(CREATE_ITEM_CATEGORY, {
-    refetchQueries: [{
-      query: ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID,
-      variables: {
-        physicalStoreId,
-      },
-    }],
-  });
+interface NewFormProps {
+  form: FormInstance<NewItemCategoryFormValues>;
+}
 
-  useDynamicBreadcrumbs(
-    physicalStore
-      ? [ModuleNames.stores, physicalStore.name ?? '', 'Setup', 'Item Categories', 'New']
-      : [ModuleNames.stores, 'Setup', 'Item Categories', 'New']
-  );
-
-  const handleCancel = () => {
-    history.push(paths.itemCategoriesPath(physicalStoreId!));
-  };
-
-  const handleFieldsChange = () => {
-    setIsFieldsTouched(true);
-  };
-
-  const handleFinish = ({ name }: ItemCategoryFormValues) => {
-    createItemCategory({
-      variables: { name, physicalStoreId: physicalStoreId! },
-    })
-      .then(() => {
-        message.success('New item category was created successfully.', 5);
-        history.push(paths.itemCategoriesPath(physicalStoreId!));
-      })
-      .catch((error: Error) => {
-        message.error(error.message, 5);
-      });
-  };
-
-  return (
-    <Form
-      layout="horizontal"
-      onFinish={handleFinish}
-      onFieldsChange={handleFieldsChange}
-    >
-      <InputTextField
-        fieldName="name"
-        fieldLabel="Name"
-        required
-        requiredMessage="Please input a name for the item category."
-      />
-      <FormButtonsSaveCancel
-        handleCancel={handleCancel}
-        isFieldsTouched={isFieldsTouched}
-      />
-    </Form>
-  );
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
 };
+
+const NewForm = ({ form }: NewFormProps) => (
+  <Form
+    form={form}
+    layout="horizontal"
+    style={{ width: '100%', maxWidth: '100%' }}
+    preserve={false}
+  >
+    <InputTextField
+      fieldName="name"
+      fieldLabel="Name"
+      required
+      requiredMessage="Please input a name for the item category."
+      fieldLayout={formItemLayout}
+    />
+  </Form>
+);
 
 export default NewForm;

@@ -11,7 +11,6 @@ import {
   FolderOpenOutlined,
   FormOutlined,
   LaptopOutlined,
-  PieChartOutlined,
   ShopOutlined,
   TagsOutlined,
 } from '@ant-design/icons';
@@ -54,11 +53,6 @@ type KeyPrefixHandler = [string, string, PathBuilder];
 
 const KeyPrefixHandlers: KeyPrefixHandler[] = [
   ['stock-items', SubModuleNames.stockItems, paths.stockItemsPath],
-  [
-    'status-dashboard',
-    SubModuleNames.statusDashboard,
-    paths.statusDashboardPath,
-  ],
   ['issuance-forms', SubModuleNames.issuanceForms, paths.issuanceFormsPath],
   ['purchase-forms', SubModuleNames.purchaseForms, paths.purchaseFormsPath],
   [
@@ -108,11 +102,6 @@ const Sidebar = ({ history }: SidebarProps) => {
         key: `stock-items-${physicalStore._id}`,
         icon: <DatabaseOutlined style={IconStyle} />,
         label: 'Stock Items',
-      },
-      {
-        key: `status-dashboard-${physicalStore._id}`,
-        icon: <PieChartOutlined style={IconStyle} />,
-        label: 'Status Dashboard',
       },
       {
         key: `forms-${physicalStore._id}`,

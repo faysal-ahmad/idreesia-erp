@@ -4,23 +4,17 @@ import { Switch, Route } from 'react-router-dom';
 import { default as paths } from './submodule-paths';
 import { IssuanceReport } from './issuance-report';
 import { PurchasingReport } from './purchasing-report';
-import { StatusDashboard } from './status-dashboard';
 import {
   StockItemsNewForm,
   StockItemsEditForm,
   StockItemsList,
 } from './stock-items';
-import { VendorsNewForm, VendorsEditForm, VendorsList } from './vendors';
+import { VendorsEditForm, VendorsList } from './vendors';
 import {
-  ItemCategoriesNewForm,
   ItemCategoriesEditForm,
   ItemCategoriesList,
 } from './item-categories';
-import {
-  LocationsNewForm,
-  LocationsEditForm,
-  LocationsList,
-} from './locations';
+import { LocationsEditForm, LocationsList } from './locations';
 import {
   IssuanceFormsNewForm,
   IssuanceFormsEditForm,
@@ -49,23 +43,16 @@ const Router = () => (
   <RouterSwitch>
     <RouterRoute path={paths.issuanceReportPath()} component={IssuanceReport} />
     <RouterRoute path={paths.purchasingReportPath()} component={PurchasingReport} />
-    <RouterRoute path={paths.statusDashboardPath()} component={StatusDashboard} />
 
-    <RouterRoute
-      path={paths.itemCategoriesNewFormPath()}
-      component={ItemCategoriesNewForm}
-    />
     <RouterRoute
       path={paths.itemCategoriesEditFormPath()}
       component={ItemCategoriesEditForm}
     />
     <RouterRoute path={paths.itemCategoriesPath()} component={ItemCategoriesList} />
 
-    <RouterRoute path={paths.vendorsNewFormPath()} component={VendorsNewForm} />
     <RouterRoute path={paths.vendorsEditFormPath()} component={VendorsEditForm} />
     <RouterRoute path={paths.vendorsPath()} component={VendorsList} />
 
-    <RouterRoute path={paths.locationsNewFormPath()} component={LocationsNewForm} />
     <RouterRoute path={paths.locationsEditFormPath()} component={LocationsEditForm} />
     <RouterRoute path={paths.locationsPath()} component={LocationsList} />
 

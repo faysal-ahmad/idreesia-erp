@@ -23,6 +23,7 @@ import { message } from '/imports/ui/antd-feedback';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import type {
+  AllJobsQuery,
   CreateJobMutation,
   CreateJobMutationVariables,
   RemoveJobMutation,
@@ -61,11 +62,9 @@ const REMOVE_JOB: TypedDocumentNode<
   }
 `;
 
-type JobRow = {
+type JobRow = NonNullable<NonNullable<AllJobsQuery['allJobs']>[number]> & {
   _id: string;
   name: string;
-  description?: string | null;
-  usedCount?: number | null;
 };
 
 const List = () => {

@@ -65,7 +65,7 @@ export default class SelectionButton extends Component<
       <>
         <Drawer
           title="Select Karkuns"
-          width={720}
+          size={720}
           onClose={this.handleClose}
           open={this.state.showSelectionForm}
         >

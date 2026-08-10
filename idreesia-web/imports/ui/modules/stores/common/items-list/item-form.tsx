@@ -62,7 +62,7 @@ const ItemForm = ({
       ) : null}
       <SelectField<SelectOption>
         allowClear={false}
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         data={[
           { label: inflowLabel, value: 'inflow' },
           { label: outflowLabel, value: 'outflow' },

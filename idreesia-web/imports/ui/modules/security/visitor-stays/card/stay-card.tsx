@@ -109,8 +109,7 @@ export default class StayCard extends Component<StayCardProps> {
       <Card
         size="small"
         title={title}
-        headStyle={HeadStyle}
-        bodyStyle={BodyStyle}
+        styles={{ header: HeadStyle, body: BodyStyle }}
       >
         <h2 className="stay_card_section">Personal Information</h2>
         <div className="stay_card_item">

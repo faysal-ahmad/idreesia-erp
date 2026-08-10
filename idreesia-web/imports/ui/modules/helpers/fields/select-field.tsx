@@ -7,7 +7,7 @@ type DefaultRecord = { _id?: string | null; name?: string | null };
 
 interface FieldProps<T> {
   allowClear?: boolean;
-  dropdownMatchSelectWidth?: boolean;
+  popupMatchSelectWidth?: boolean;
   mode?: string;
   data?: T[];
   getDataValue?(data: T): OptionValue;
@@ -42,7 +42,7 @@ const formItemLayout = {
  */
 function SelectField<T = DefaultRecord>({
   allowClear = true,
-  dropdownMatchSelectWidth = true,
+  popupMatchSelectWidth = true,
   mode = 'default',
   data = [],
   getDataValue,
@@ -88,7 +88,7 @@ function SelectField<T = DefaultRecord>({
         onChange={onChange}
         allowClear={allowClear}
         mode={mode as any}
-        dropdownMatchSelectWidth={dropdownMatchSelectWidth}
+        popupMatchSelectWidth={popupMatchSelectWidth}
       >
         {options}
       </Select>

@@ -65,7 +65,7 @@ const EditForm = ({
 }: EditFormProps) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [updateVisitorStay] = useMutation(UPDATE_VISITOR_STAY, {
-    refetchQueries: ['pagedVisitorStays'],
+    refetchQueries: ['visitorStaysPagedVisitorStays'],
   });
 
   const handleFieldsChange = () => {

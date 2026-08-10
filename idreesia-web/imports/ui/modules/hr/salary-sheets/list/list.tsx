@@ -517,7 +517,7 @@ const List = ({
             style={SelectStyle}
             onChange={handleSelectionChange}
             allowClear
-            dropdownMatchSelectWidth
+            popupMatchSelectWidth
             placeholder="All jobs"
           >
             {allJobs.map(job => (

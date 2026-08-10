@@ -275,7 +275,7 @@ const List = ({ history, location }: Props) => {
       />
       <Drawer
         title="Stay History"
-        width={600}
+        size={600}
         onClose={handleStayListClose}
         open={showStayList}
       >

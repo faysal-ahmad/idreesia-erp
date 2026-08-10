@@ -46,9 +46,13 @@ const NewForm = ({ visitorId, handleAddItem }: NewFormProps) => {
   const { allDutyShifts, allDutyShiftsLoading } = useAllDutyShifts();
   const { distinctStayAllowedBy, distinctStayAllowedByLoading } =
     useDistinctStayAllowedBy();
-  const [createVisitorStay] = useMutation(CREATE_VISITOR_STAY, {
-    refetchQueries: ['pagedVisitorStays'],
-  });
+  const [createVisitorStay, { loading: creating }] = useMutation(
+    CREATE_VISITOR_STAY,
+    {
+      refetchQueries: ['visitorStaysPagedVisitorStays'],
+      awaitRefetchQueries: true,
+    }
+  );
 
   const handleFinish = ({
     numOfDays,
@@ -56,6 +60,8 @@ const NewForm = ({ visitorId, handleAddItem }: NewFormProps) => {
     stayAllowedBy,
     dutyIdShiftId,
   }: NewFormValues) => {
+    if (creating) return;
+
     createVisitorStay({
       variables: {
         visitorId,
@@ -119,6 +125,7 @@ const NewForm = ({ visitorId, handleAddItem }: NewFormProps) => {
       <FormButtonsSubmit
         text="Add Stay"
         isFieldsTouched
+        loading={creating}
       />
     </Form>
   );

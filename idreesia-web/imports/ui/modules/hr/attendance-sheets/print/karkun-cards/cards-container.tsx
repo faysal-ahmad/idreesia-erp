@@ -70,7 +70,7 @@ const CardsContainer = ({ history, location }: ContainerProps) => {
       <div style={ControlsContainer}>
         <Space size={8}>
           <ReactToPrint
-            content={() => karkunCardsRef.current}
+            content={() => karkunCardsRef.current!}
             trigger={() => (
               <Button size="large" type="primary" icon={<PrinterOutlined />}>
                 Print Cards

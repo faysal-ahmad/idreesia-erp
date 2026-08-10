@@ -102,7 +102,7 @@ export default class CustomInput extends Component<
       <Fragment>
         <Drawer
           title="Select a Karkun"
-          width={720}
+          size={720}
           onClose={this.handleClose}
           open={this.state.showSelectionForm}
         >

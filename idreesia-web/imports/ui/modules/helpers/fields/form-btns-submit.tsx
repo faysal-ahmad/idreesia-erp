@@ -5,6 +5,7 @@ import { Button, Form, Row } from 'antd';
 interface Props {
   text?: string;
   isFieldsTouched?: boolean;
+  loading?: boolean;
 }
 
 const buttonItemLayout = {
@@ -14,14 +15,19 @@ const buttonItemLayout = {
 /**
  * text: Label for the button
  */
-const FormButtonsSubmit = ({ text = 'Save', isFieldsTouched }: Props) => (
+const FormButtonsSubmit = ({
+  text = 'Save',
+  isFieldsTouched,
+  loading = false,
+}: Props) => (
   <Form.Item {...buttonItemLayout}>
     <Row justify="end">
       <Button
         size="large"
         type="primary"
         htmlType="submit"
-        disabled={!isFieldsTouched}
+        disabled={!isFieldsTouched || loading}
+        loading={loading}
       >
         {text}
       </Button>

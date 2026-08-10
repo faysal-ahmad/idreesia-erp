@@ -555,10 +555,10 @@ const ListWithData = (props: ListWithDataProps) => {
     },
   });
   const [fixCitySpelling] = useMutation(FIX_CITY_SPELLING, {
-    refetchQueries: ['pagedSecurityVisitors', 'pagedVisitorStays'],
+    refetchQueries: ['pagedSecurityVisitors', 'reportPagedVisitorStays'],
   });
   const [fixNameSpelling] = useMutation(FIX_NAME_SPELLING, {
-    refetchQueries: ['pagedSecurityVisitors', 'pagedVisitorStays'],
+    refetchQueries: ['pagedSecurityVisitors', 'reportPagedVisitorStays'],
   });
 
   const pagedData = data?.pagedVisitorStays;

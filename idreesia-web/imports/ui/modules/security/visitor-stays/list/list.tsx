@@ -389,7 +389,7 @@ class List extends Component<ListProps, ListState> {
 const ListWithData = (props: ListWithDataProps) => {
   const { visitorId, pageIndex, pageSize } = props;
   const [cancelVisitorStay] = useMutation(CANCEL_VISITOR_STAY, {
-    refetchQueries: ['pagedVisitorStays'],
+    refetchQueries: ['visitorStaysPagedVisitorStays'],
   });
   const { data, loading } = useQuery(PAGED_VISITOR_STAYS, {
     variables: {

@@ -14,8 +14,17 @@ const NameDivStyle: CSSProperties = {
   justifyContent: 'flex-start',
   alignItems: 'center',
   width: '100%',
+  minWidth: 0,
+  overflow: 'hidden',
   color: '#1890ff',
   cursor: 'pointer',
+};
+
+const NameTextStyle: CSSProperties = {
+  minWidth: 0,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
 };
 
 interface StockItem {
@@ -39,6 +48,7 @@ const StockItemName = ({
 
   const nameNode = onStockItemNameClicked ? (
     <div
+      style={NameTextStyle}
       onClick={() => {
         onStockItemNameClicked(stockItem);
       }}
@@ -47,6 +57,7 @@ const StockItemName = ({
     </div>
   ) : (
     <RouterLink
+      style={NameTextStyle}
       to={paths.stockItemsEditFormPath(
         stockItem.physicalStoreId,
         stockItem._id

@@ -373,6 +373,10 @@ const List = ({
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        // Keep room for avatar + label; without a width, fixed sibling
+        // columns crush this cell in the selection drawer.
+        width: 220,
+        ellipsis: true,
         onCell: (record: TreeStockItemRow) =>
           record.isGroup ? { colSpan: showActions ? 7 : 6 } : { colSpan: 1 },
         render: (_text: unknown, record: TreeStockItemRow) => {
@@ -382,7 +386,7 @@ const List = ({
 
           const paddingLeft = record.noParent ? 0 : 20;
           return (
-            <div style={{ paddingLeft }}>
+            <div style={{ paddingLeft, overflow: 'hidden' }}>
               <StockItemName
                 stockItem={
                   record._id
@@ -404,7 +408,8 @@ const List = ({
         title: 'Company',
         dataIndex: 'company',
         key: 'company',
-        width: 140,
+        width: 120,
+        ellipsis: true,
         onCell: (record: TreeStockItemRow) =>
           record.isGroup ? { colSpan: 0 } : { colSpan: 1 },
       },
@@ -412,7 +417,8 @@ const List = ({
         title: 'Details',
         dataIndex: 'details',
         key: 'details',
-        width: 140,
+        width: 120,
+        ellipsis: true,
         onCell: (record: TreeStockItemRow) =>
           record.isGroup ? { colSpan: 0 } : { colSpan: 1 },
       },
@@ -420,7 +426,8 @@ const List = ({
         title: 'Category',
         dataIndex: 'categoryName',
         key: 'categoryName',
-        width: 140,
+        width: 120,
+        ellipsis: true,
         onCell: (record: TreeStockItemRow) =>
           record.isGroup ? { colSpan: 0 } : { colSpan: 1 },
       },
@@ -428,7 +435,7 @@ const List = ({
         title: 'Min Stock',
         dataIndex: 'minStockLevel',
         key: 'minStockLevel',
-        width: 110,
+        width: 100,
         onCell: (record: TreeStockItemRow) =>
           record.isGroup ? { colSpan: 0 } : { colSpan: 1 },
         render: (text: number, record: TreeStockItemRow) => {
@@ -444,7 +451,7 @@ const List = ({
         title: 'Current Stock',
         dataIndex: 'currentStockLevel',
         key: 'currentStockLevel',
-        width: 130,
+        width: 120,
         onCell: (record: TreeStockItemRow) =>
           record.isGroup ? { colSpan: 0 } : { colSpan: 1 },
         render: (text: number, record: TreeStockItemRow) => {

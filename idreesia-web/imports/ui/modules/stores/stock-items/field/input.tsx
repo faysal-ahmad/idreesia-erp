@@ -47,7 +47,7 @@ const CustomInput = ({
     <Fragment>
       <Drawer
         title="Select a Stock Item"
-        size={720}
+        size={980}
         onClose={handleClose}
         open={showSelectionForm}
       >

@@ -34,20 +34,15 @@ const ContainerStyle: CSSProperties = {
 };
 
 export default class Cards extends Component<CardsProps> {
-  getCardMarkup(attendance: AttendanceRecord) {
-    const { cardHeading, cardSubHeading, showDutyInfo } = this.props;
+  getKarkunImage = (attendance: AttendanceRecord) => {
     const karkun = attendance.karkun;
-    if (!karkun?.name || !attendance.meetingCardBarcodeId) return null;
-
-    const subscribed =
-      karkun.contactNumber1Subscribed ||
-      karkun.contactNumber2Subscribed;
-    const percentageClass =
-      (attendance.percentage ?? 0) > 0 ? 'info_box' : 'info_box hidden';
-    const subscriptionClass = subscribed ? 'info_box hidden' : 'info_box';
-    const bloodGroupClass = karkun.bloodGroup
-      ? 'info_box'
-      : 'info_box hidden';
+    if (!karkun) {
+      return (
+        <div className="mehfil_card_picture">
+          <div style={{ height: '100%', width: 'auto' }} />
+        </div>
+      );
+    }
 
     const karkunImage = karkun.image ? (
       <img
@@ -59,34 +54,48 @@ export default class Cards extends Component<CardsProps> {
       <div style={{ height: '100%', width: 'auto' }} />
     );
 
-    const dutyShiftInfo = showDutyInfo ? (
-      <p className="duty_shift_job">
+    return <div className="mehfil_card_picture">{karkunImage}</div>;
+  };
+
+  getDutyShiftInfo = (attendance: AttendanceRecord) => {
+    const { showDutyInfo } = this.props;
+    if (!showDutyInfo) return null;
+
+    return (
+      <p className="mehfil_card_duty_shift_job">
         {attendance.duty ? attendance.duty.name : ''}
         {attendance.job ? attendance.job.name : ''}
         <br />
         {attendance.shift ? attendance.shift.name : ''}
       </p>
-    ) : null;
+    );
+  };
+
+  getCardMarkup(attendance: AttendanceRecord) {
+    const { cardHeading, cardSubHeading, showDutyInfo } = this.props;
+    const karkun = attendance.karkun;
+    if (!karkun?.name || !attendance.meetingCardBarcodeId) return null;
+
+    const karkunImage = this.getKarkunImage(attendance);
+    const dutyShiftInfo = this.getDutyShiftInfo(attendance);
+
+    let cardHeight = 325;
+    if (showDutyInfo) cardHeight += 30;
 
     return (
-      <div key={attendance._id ?? attendance.meetingCardBarcodeId} className="card_karkon">
-        <div className="heading_card_k">
-          <h1>{cardHeading}</h1>
-        </div>
+      <div
+        key={attendance._id ?? attendance.meetingCardBarcodeId}
+        className="mehfil_card"
+        style={{ height: cardHeight }}
+      >
+        <div className="mehfil_card_heading">{cardHeading}</div>
         {cardSubHeading ? (
-          <div className="subheading_card_k">{cardSubHeading}</div>
+          <div className="mehfil_card_subheading">{cardSubHeading}</div>
         ) : null}
-        <div className="pic_card_k">
-          {karkunImage}
-          <div className="info_container">
-            <div className={percentageClass}>{attendance.percentage}%</div>
-            <div className={bloodGroupClass}>{karkun.bloodGroup}</div>
-            <div className={subscriptionClass}>NS</div>
-          </div>
-        </div>
-        <h1 className="name_card_k">{karkun.name}</h1>
+        {karkunImage}
+        <h1 className="mehfil_card_name">{karkun.name}</h1>
         {dutyShiftInfo}
-        <div className="barcode_card_k">
+        <div className="mehfil_card_barcode">
           <Barcode
             value={attendance.meetingCardBarcodeId}
             {...barcodeOptions}
@@ -106,7 +115,7 @@ export default class Cards extends Component<CardsProps> {
     const cardContainers = [];
     const cardsCopy = [...cards];
     while (cardsCopy.length > 0) {
-      const cardsForPage = cardsCopy.splice(0, 12);
+      const cardsForPage = cardsCopy.splice(0, 9);
       cardContainers.push(
         <div key={`container_${index}`} style={ContainerStyle}>
           {cardsForPage}

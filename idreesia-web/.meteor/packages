@@ -15,16 +15,15 @@ standard-minifier-js@3.2.0    # JS minifier run for production mode
 es5-shim@4.8.1                # ECMAScript 5 compatibility for older browsers
 ecmascript@0.18.1              # Enable ECMAScript2015+ syntax in app code
 accounts-password@3.3.0
-percolate:migrations@2.0.1
 react-meteor-data
 dynamic-import@0.7.4
 
 idreesia-common
 accounts-google@1.4.1
 service-configuration@1.3.5
-apollo
 email@3.2.0
 aldeed:collection2@4.1.4
 aldeed:simple-schema
 typescript
 zodern:types
+quave:migrations

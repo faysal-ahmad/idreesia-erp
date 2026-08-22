@@ -1,4 +1,4 @@
-import { Migrations } from 'meteor/percolate:migrations';
+import { Migrations } from 'meteor/quave:migrations';
 
 import { VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 

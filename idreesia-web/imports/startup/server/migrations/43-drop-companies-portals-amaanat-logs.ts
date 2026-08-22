@@ -1,4 +1,4 @@
-import { Migrations } from 'meteor/percolate:migrations';
+import { Migrations } from 'meteor/quave:migrations';
 
 import { Companies } from 'meteor/idreesia-common/server/collections/accounts';
 import { Portals } from 'meteor/idreesia-common/server/collections/portals';

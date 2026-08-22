@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Migrations } from 'meteor/percolate:migrations';
+import { Migrations } from 'meteor/quave:migrations';
 
 import './1-create-admin-user';
 import './2-create-companies';

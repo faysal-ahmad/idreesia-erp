@@ -1,4 +1,4 @@
-import { Migrations } from 'meteor/percolate:migrations';
+import { Migrations } from 'meteor/quave:migrations';
 
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';

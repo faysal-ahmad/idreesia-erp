@@ -1,4 +1,4 @@
-import { Migrations } from 'meteor/percolate:migrations';
+import { Migrations } from 'meteor/quave:migrations';
 import { MehfilDuties as MehfilDutiesList } from 'meteor/idreesia-common/constants/security';
 import {
   MehfilDuties,

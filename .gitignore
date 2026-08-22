@@ -6,3 +6,7 @@ npm-debug.log
 .history
 .env
 graphify-out
+
+# mediamtx auto-generated TLS cert (local RTSP relay testing)
+auto.crt
+auto.key

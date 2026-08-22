@@ -1,4 +1,4 @@
-import { Migrations } from 'meteor/percolate:migrations';
+import { Migrations } from 'meteor/quave:migrations';
 // import { keyBy } from 'meteor/idreesia-common/utilities/lodash';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 // import { Cities } from 'meteor/idreesia-common/server/collections/outstation';

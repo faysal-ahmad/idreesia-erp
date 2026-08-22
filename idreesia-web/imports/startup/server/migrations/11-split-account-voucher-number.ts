@@ -1,4 +1,4 @@
-import { Migrations } from 'meteor/percolate:migrations';
+import { Migrations } from 'meteor/quave:migrations';
 import { isString, toInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Vouchers } from 'meteor/idreesia-common/server/collections/accounts';
 

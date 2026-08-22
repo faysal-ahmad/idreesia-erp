@@ -1,5 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
-import { Migrations } from 'meteor/percolate:migrations';
+import { Migrations } from 'meteor/quave:migrations';
 import { Companies } from 'meteor/idreesia-common/server/collections/accounts';
 
 const config = {

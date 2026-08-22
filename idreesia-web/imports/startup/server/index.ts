@@ -19,13 +19,13 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebApp } from 'meteor/webapp';
-import { getUser } from 'meteor/apollo';
 import { typeDefs, resolvers } from 'meteor/idreesia-common/server/graphql-api';
 import { getDataLoaders } from 'meteor/idreesia-common/server/data-loaders';
 import {
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
 } from 'meteor/idreesia-common/server/graphql-api/_directives';
+import { getUser } from './get-user';
 import { apolloErrorFormatter } from './apollo-error-formatter';
 
 // Build GraphQL schema based on SDL definitions and resolvers maps

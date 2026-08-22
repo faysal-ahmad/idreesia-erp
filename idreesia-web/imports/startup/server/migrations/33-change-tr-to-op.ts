@@ -1,4 +1,4 @@
-import { Migrations } from 'meteor/percolate:migrations';
+import { Migrations } from 'meteor/quave:migrations';
 
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';

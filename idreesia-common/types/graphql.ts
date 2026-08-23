@@ -184,6 +184,13 @@ export type DutyType = {
   usedCount?: Maybe<Scalars['Int']['output']>;
 };
 
+export type FaceVectorRecord = {
+  __typename?: 'FaceVectorRecord';
+  computedAt: Scalars['DateTime']['output'];
+  personId: Scalars['String']['output'];
+  vector: Array<Scalars['Float']['output']>;
+};
+
 export type ImdadRequestFilter = {
   cnicNumber?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;
@@ -291,6 +298,42 @@ export type ItemWithQuantityInput = {
   isInflow?: InputMaybe<Scalars['Boolean']['input']>;
   quantity?: InputMaybe<Scalars['Float']['input']>;
   stockItemId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type JobDefinitionType = {
+  __typename?: 'JobDefinitionType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  defaultSchedule?: Maybe<Scalars['String']['output']>;
+  displayName?: Maybe<Scalars['String']['output']>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  schedule?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type JobLogEntryType = {
+  __typename?: 'JobLogEntryType';
+  _id?: Maybe<Scalars['String']['output']>;
+  duration?: Maybe<Scalars['Int']['output']>;
+  error?: Maybe<Scalars['String']['output']>;
+  event?: Maybe<Scalars['String']['output']>;
+  failCount?: Maybe<Scalars['Int']['output']>;
+  jobId?: Maybe<Scalars['String']['output']>;
+  jobName?: Maybe<Scalars['String']['output']>;
+  level?: Maybe<Scalars['String']['output']>;
+  message?: Maybe<Scalars['String']['output']>;
+  retryAttempt?: Maybe<Scalars['Int']['output']>;
+  retryDelay?: Maybe<Scalars['Int']['output']>;
+  timestamp?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type JobLogsFilterType = {
+  event?: InputMaybe<Scalars['String']['input']>;
+  jobName?: InputMaybe<Scalars['String']['input']>;
+  level?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JobType = {
@@ -508,6 +551,7 @@ export type Mutation = {
   approveSalaries?: Maybe<Scalars['Int']['output']>;
   approveStockAdjustments?: Maybe<Array<Maybe<StockAdjustment>>>;
   cancelVisitorStay?: Maybe<VisitorStayType>;
+  clearJobDefinitionSchedule?: Maybe<JobDefinitionType>;
   createAttachment?: Maybe<Attachment>;
   createAttendances?: Maybe<Scalars['Int']['output']>;
   createCity?: Maybe<CityType>;
@@ -572,14 +616,19 @@ export type Mutation = {
   removeStockAdjustments?: Maybe<Scalars['Int']['output']>;
   removeStockItem?: Maybe<Scalars['Int']['output']>;
   removeVendor?: Maybe<Scalars['Int']['output']>;
+  resetJobDefinitionSchedule?: Maybe<JobDefinitionType>;
   resetPassword?: Maybe<UserType>;
+  retryFailedJob?: Maybe<Scalars['Boolean']['output']>;
+  runScheduledJobNow?: Maybe<Scalars['Boolean']['output']>;
   setDutyDetail?: Maybe<Array<Maybe<MehfilKarkunType>>>;
   setGroups?: Maybe<UserType>;
   setHrKarkunEmploymentInfo?: Maybe<KarkunType>;
   setHrKarkunProfileImage?: Maybe<KarkunType>;
   setHrKarkunWazaifAndRaabta?: Maybe<KarkunType>;
   setInstanceAccess?: Maybe<UserType>;
+  setJobDefinitionEnabled?: Maybe<JobDefinitionType>;
   setPermissions?: Maybe<UserType>;
+  setScheduledJobEnabled?: Maybe<Scalars['Boolean']['output']>;
   setSecurityUserPermissions?: Maybe<UserType>;
   setSecurityVisitorImage?: Maybe<VisitorType>;
   setStockItemImage?: Maybe<StockItem>;
@@ -596,6 +645,7 @@ export type Mutation = {
   updateIssuanceForm?: Maybe<IssuanceForm>;
   updateItemCategory?: Maybe<ItemCategory>;
   updateJob?: Maybe<JobType>;
+  updateJobDefinitionSchedule?: Maybe<JobDefinitionType>;
   updateKarkunDuty?: Maybe<KarkunDutyType>;
   updateLastActiveTime?: Maybe<Scalars['Int']['output']>;
   updateLocation?: Maybe<Location>;
@@ -676,6 +726,11 @@ export type MutationApproveStockAdjustmentsArgs = {
 
 
 export type MutationCancelVisitorStayArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationClearJobDefinitionScheduleArgs = {
   _id: Scalars['String']['input'];
 };
 
@@ -1131,8 +1186,23 @@ export type MutationRemoveVendorArgs = {
 };
 
 
+export type MutationResetJobDefinitionScheduleArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
 export type MutationResetPasswordArgs = {
   userName: Scalars['String']['input'];
+};
+
+
+export type MutationRetryFailedJobArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationRunScheduledJobNowArgs = {
+  name: Scalars['String']['input'];
 };
 
 
@@ -1178,9 +1248,21 @@ export type MutationSetInstanceAccessArgs = {
 };
 
 
+export type MutationSetJobDefinitionEnabledArgs = {
+  _id: Scalars['String']['input'];
+  enabled: Scalars['Boolean']['input'];
+};
+
+
 export type MutationSetPermissionsArgs = {
   permissions: Array<InputMaybe<Scalars['String']['input']>>;
   userId: Scalars['String']['input'];
+};
+
+
+export type MutationSetScheduledJobEnabledArgs = {
+  _id: Scalars['String']['input'];
+  enabled: Scalars['Boolean']['input'];
 };
 
 
@@ -1323,6 +1405,12 @@ export type MutationUpdateJobArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   name: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateJobDefinitionScheduleArgs = {
+  _id: Scalars['String']['input'];
+  schedule: Scalars['String']['input'];
 };
 
 
@@ -1528,6 +1616,12 @@ export type PagedIssuanceForm = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PagedJobLogsType = {
+  __typename?: 'PagedJobLogsType';
+  data?: Maybe<Array<Maybe<JobLogEntryType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
 export type PagedKarkunType = {
   __typename?: 'PagedKarkunType';
   karkuns?: Maybe<Array<Maybe<KarkunType>>>;
@@ -1549,6 +1643,12 @@ export type PagedPurchaseForm = {
 export type PagedSalaryType = {
   __typename?: 'PagedSalaryType';
   salaries?: Maybe<Array<Maybe<SalaryType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedScheduledJobsType = {
+  __typename?: 'PagedScheduledJobsType';
+  data?: Maybe<Array<Maybe<ScheduledJobType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -1596,8 +1696,10 @@ export type PagedVisitorType = {
 
 export enum Permission {
   AdminManageCities = 'ADMIN_MANAGE_CITIES',
+  AdminManageJobs = 'ADMIN_MANAGE_JOBS',
   AdminManagePhysicalStores = 'ADMIN_MANAGE_PHYSICAL_STORES',
   AdminManageUsersAndGroups = 'ADMIN_MANAGE_USERS_AND_GROUPS',
+  AdminViewJobs = 'ADMIN_VIEW_JOBS',
   AdminViewUsersAndGroups = 'ADMIN_VIEW_USERS_AND_GROUPS',
   HrApproveSalaries = 'HR_APPROVE_SALARIES',
   HrDeleteData = 'HR_DELETE_DATA',
@@ -1758,6 +1860,7 @@ export type Query = {
   allCityMehfils?: Maybe<Array<Maybe<CityMehfilType>>>;
   allDutyLocations?: Maybe<Array<Maybe<DutyLocationType>>>;
   allDutyShifts?: Maybe<Array<Maybe<DutyShiftType>>>;
+  allJobDefinitions?: Maybe<Array<Maybe<JobDefinitionType>>>;
   allJobs?: Maybe<Array<Maybe<JobType>>>;
   allMSDuties?: Maybe<Array<Maybe<DutyType>>>;
   allMehfilDuties?: Maybe<Array<Maybe<DutyType>>>;
@@ -1783,9 +1886,11 @@ export type Query = {
   dutyLocationById?: Maybe<DutyLocationType>;
   dutyShiftById?: Maybe<DutyShiftType>;
   dutyShiftsByDutyId?: Maybe<Array<Maybe<DutyShiftType>>>;
+  faceVectors: Array<FaceVectorRecord>;
   hrKarkunById?: Maybe<KarkunType>;
   hrKarkunsById?: Maybe<Array<Maybe<KarkunType>>>;
   inventoryStatistics?: Maybe<InventoryStatistics>;
+  isJobProcessorActive?: Maybe<Scalars['Boolean']['output']>;
   issuanceFormById?: Maybe<IssuanceForm>;
   issuanceFormsByMonth?: Maybe<Array<Maybe<IssuanceForm>>>;
   issuanceFormsByStockItem?: Maybe<Array<Maybe<IssuanceForm>>>;
@@ -1805,9 +1910,11 @@ export type Query = {
   pagedHrAuditLogs?: Maybe<PagedAuditLogType>;
   pagedHrKarkuns?: Maybe<PagedKarkunType>;
   pagedIssuanceForms?: Maybe<PagedIssuanceForm>;
+  pagedJobLogs?: Maybe<PagedJobLogsType>;
   pagedPeople?: Maybe<PagedPeopleType>;
   pagedPurchaseForms?: Maybe<PagedPurchaseForm>;
   pagedSalariesByKarkun?: Maybe<PagedSalaryType>;
+  pagedScheduledJobs?: Maybe<PagedScheduledJobsType>;
   pagedSecurityAuditLogs?: Maybe<PagedAuditLogType>;
   pagedSecurityUsers?: Maybe<PagedUserType>;
   pagedSecurityVisitors?: Maybe<PagedVisitorType>;
@@ -1907,6 +2014,12 @@ export type QueryDutyShiftByIdArgs = {
 
 export type QueryDutyShiftsByDutyIdArgs = {
   dutyId: Scalars['String']['input'];
+};
+
+
+export type QueryFaceVectorsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  since?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 
@@ -2027,6 +2140,11 @@ export type QueryPagedIssuanceFormsArgs = {
 };
 
 
+export type QueryPagedJobLogsArgs = {
+  filter?: InputMaybe<JobLogsFilterType>;
+};
+
+
 export type QueryPagedPeopleArgs = {
   filter?: InputMaybe<PersonFilter>;
 };
@@ -2040,6 +2158,11 @@ export type QueryPagedPurchaseFormsArgs = {
 
 export type QueryPagedSalariesByKarkunArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedScheduledJobsArgs = {
+  filter?: InputMaybe<ScheduledJobsFilterType>;
 };
 
 
@@ -2238,6 +2361,28 @@ export type SalaryType = {
   salary?: Maybe<Scalars['Int']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type ScheduledJobType = {
+  __typename?: 'ScheduledJobType';
+  _id?: Maybe<Scalars['String']['output']>;
+  disabled?: Maybe<Scalars['Boolean']['output']>;
+  failCount?: Maybe<Scalars['Int']['output']>;
+  failReason?: Maybe<Scalars['String']['output']>;
+  failedAt?: Maybe<Scalars['DateTime']['output']>;
+  lastFinishedAt?: Maybe<Scalars['DateTime']['output']>;
+  lastRunAt?: Maybe<Scalars['DateTime']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  nextRunAt?: Maybe<Scalars['DateTime']['output']>;
+  repeatInterval?: Maybe<Scalars['String']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+};
+
+export type ScheduledJobsFilterType = {
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SecurityLogFilter = {

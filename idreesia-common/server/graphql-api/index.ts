@@ -41,6 +41,12 @@ import UserResolvers from './admin/user/resolvers';
 import UserGroupSchema from './admin/user-group/user-group';
 import UserGroupResolvers from './admin/user-group/resolvers';
 
+import ScheduledJobSchema from './admin/scheduled-job/scheduled-job';
+import ScheduledJobResolvers from './admin/scheduled-job/resolvers';
+
+import JobDefinitionSchema from './admin/job-definition/job-definition';
+import JobDefinitionResolvers from './admin/job-definition/resolvers';
+
 /**
  * Schema and Resolvers for the Security module
  */
@@ -158,6 +164,8 @@ const typeDefs = [
   VisitorSchema,
   UserSchema,
   UserGroupSchema,
+  ScheduledJobSchema,
+  JobDefinitionSchema,
 
   SecurityAuditLogSchema,
   SecurityMehfilSchema,
@@ -206,6 +214,8 @@ const resolvers = merge(
   VisitorResolvers,
   UserResolvers,
   UserGroupResolvers,
+  ScheduledJobResolvers,
+  JobDefinitionResolvers,
 
   SecurityAuditLogResolvers,
   SecurityMehfilResolvers,

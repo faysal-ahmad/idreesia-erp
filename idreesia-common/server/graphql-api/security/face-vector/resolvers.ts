@@ -34,7 +34,7 @@ export default {
         limit: pageSize,
       }).fetchAsync();
 
-      return people.map(person => ({
+      return people.map((person: NonNullable<Parameters<typeof People.personToKarkun>[0]>) => ({
         personId: person._id,
         vector: person.sharedData.imageVectorData.vector,
         computedAt: person.sharedData.imageVectorData.computedAt,

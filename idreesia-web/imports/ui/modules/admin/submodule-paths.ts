@@ -30,4 +30,11 @@ export default class SubModulePaths {
   static citiesEditFormPath(cityId = ':cityId') {
     return `${SubModulePaths.citiesPath}/${cityId}`;
   }
+
+  // *************************************************************************************
+  // Jobs Routes
+  // *************************************************************************************
+  static jobsPath = `${ModulePaths.admin}/jobs`;
+  static jobLogsPath = `${ModulePaths.admin}/job-logs`;
+  static jobDefinitionsPath = `${ModulePaths.admin}/job-definitions`;
 }

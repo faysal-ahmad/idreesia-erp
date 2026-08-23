@@ -1,5 +1,28 @@
 import SimpleSchema from 'simpl-schema';
 
+import { values } from 'meteor/idreesia-common/utilities/lodash';
+import { ImageVectorStatus } from 'meteor/idreesia-common/constants';
+
+const ImageVectorData = new SimpleSchema({
+  vector: {
+    type: Array,
+    optional: true,
+  },
+  'vector.$': {
+    type: Number,
+  },
+  status: {
+    type: String,
+    allowedValues: values(ImageVectorStatus),
+  },
+  computedAt: {
+    type: Date,
+  },
+  modelVersion: {
+    type: String,
+  },
+});
+
 export default new SimpleSchema({
   name: {
     type: String,
@@ -70,6 +93,10 @@ export default new SimpleSchema({
   },
   imageId: {
     type: String,
+    optional: true,
+  },
+  imageVectorData: {
+    type: ImageVectorData,
     optional: true,
   },
 });

@@ -4,6 +4,7 @@ import {
   canDeleteKarkun,
   deleteKarkun,
 } from 'meteor/idreesia-common/server/business-logic/hr';
+import { computeImageVectorData } from 'meteor/idreesia-common/server/business-logic/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
 import { getKarkunsByPredefinedFilter } from './queries';
@@ -115,6 +116,9 @@ const resolvers: ResolverMap = {
 
     setHrKarkunProfileImage: async (obj, values, { user }) => {
       const personValues = await People.karkunToPerson(values);
+      personValues.sharedData.imageVectorData = await computeImageVectorData(
+        values.imageId
+      );
       const person = await People.updatePerson(personValues, user);
       return People.personToKarkun(person);
     },

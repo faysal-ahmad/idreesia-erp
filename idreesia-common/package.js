@@ -6,6 +6,12 @@ Package.describe({
 
 Package.onUse(api => {
   api.addFiles('private/auth/google.json', 'server', { isAsset: true });
+  api.addFiles('private/models/face_detection_yunet_2023mar.onnx', 'server', {
+    isAsset: true,
+  });
+  api.addFiles('private/models/face_recognition_sface_2021dec.onnx', 'server', {
+    isAsset: true,
+  });
 
   api.versionsFrom('3.5');
   api.use('ecmascript');

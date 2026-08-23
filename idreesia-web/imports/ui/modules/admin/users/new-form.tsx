@@ -1,9 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
 import { useMutation } from '@apollo/client/react';
-import { FormInstance } from 'antd';
+import { Collapse, Form, FormInstance, Space, type CollapseProps } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
-import { Form } from 'antd';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
@@ -12,6 +11,7 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import { CREATE_USER, PAGED_USERS } from './gql';
 
 interface KarkunValue {
@@ -37,7 +37,7 @@ const NewForm = ({ history }: Props) => {
   });
 
   const handleCancel = () => {
-    history.goBack();
+    history.push(paths.usersPath);
   };
 
   const handleFieldsChange = () => {
@@ -61,8 +61,12 @@ const NewForm = ({ history }: Props) => {
           displayName,
         },
       })
-        .then(() => {
-          history.goBack();
+        .then(result => {
+          message.success('User created', 2);
+          const newUserId = result.data?.createUser?._id;
+          history.push(
+            newUserId ? `${paths.usersPath}/${newUserId}` : paths.usersPath
+          );
         })
         .catch((error: Error) => {
           message.error(error.message, 5);
@@ -91,36 +95,56 @@ const NewForm = ({ history }: Props) => {
     }
   };
 
+  const accountItem: NonNullable<CollapseProps['items']>[number] = {
+    key: 'account',
+    label: 'Account Information',
+    forceRender: true,
+    children: (
+      <>
+        <InputTextField fieldName="userName" fieldLabel="User name" />
+
+        <InputTextField
+          fieldName="password"
+          fieldLabel="Password"
+          type="password"
+        />
+
+        <InputTextField fieldName="email" fieldLabel="Google Email" />
+
+        <InputTextField fieldName="displayName" fieldLabel="Display name" />
+
+        <KarkunSelectionInputField
+          fieldName="karkun"
+          fieldLabel="Karkun Name"
+          showMsKarkunsList
+        />
+      </>
+    ),
+  };
+
   return (
-    <Form
-      ref={formRef}
-      layout="horizontal"
-      onFinish={handleFinish}
-      onFieldsChange={handleFieldsChange}
-    >
-      <InputTextField fieldName="userName" fieldLabel="User name" />
+    <div className="visitor-form">
+      <Form
+        ref={formRef}
+        layout="horizontal"
+        onFinish={handleFinish}
+        onFieldsChange={handleFieldsChange}
+      >
+        <Space orientation="vertical" size={16} style={{ display: 'flex', width: '100%' }}>
+          <Collapse
+            className="visitor-form-sections"
+            defaultActiveKey={['account']}
+            items={[accountItem]}
+          />
 
-      <InputTextField
-        fieldName="password"
-        fieldLabel="Password"
-        type="password"
-      />
-
-      <InputTextField fieldName="email" fieldLabel="Google Email" />
-
-      <InputTextField fieldName="displayName" fieldLabel="Display name" />
-
-      <KarkunSelectionInputField
-        fieldName="karkun"
-        fieldLabel="Karkun Name"
-        showMsKarkunsList
-      />
-
-      <FormButtonsSaveCancel
-        handleCancel={handleCancel}
-        isFieldsTouched={isFieldsTouched}
-      />
-    </Form>
+          <FormButtonsSaveCancel
+            handleCancel={handleCancel}
+            isFieldsTouched={isFieldsTouched}
+            fullWidth
+          />
+        </Space>
+      </Form>
+    </div>
   );
 };
 

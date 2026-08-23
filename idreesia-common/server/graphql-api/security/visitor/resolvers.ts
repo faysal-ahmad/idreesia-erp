@@ -1,4 +1,5 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import { computeImageVectorData } from 'meteor/idreesia-common/server/business-logic/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
 import { processCsvData } from './helpers';
@@ -76,6 +77,9 @@ const resolvers: ResolverMap = {
 
     setSecurityVisitorImage: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
+      personValues.sharedData.imageVectorData = await computeImageVectorData(
+        values.imageId
+      );
       const person = await People.updatePerson(personValues, user);
       return People.personToVisitor(person);
     },

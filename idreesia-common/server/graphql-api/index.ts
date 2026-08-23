@@ -71,6 +71,9 @@ import SecurityVisitorResolvers from './security/visitor/resolvers';
 import SecurityVisitorStaySchema from './security/visitor-stay/visitor-stay';
 import SecurityVisitorStayResolvers from './security/visitor-stay/resolvers';
 
+import FaceVectorSchema from './security/face-vector/face-vector';
+import FaceVectorResolvers from './security/face-vector/resolvers';
+
 /**
  * Schema and Resolvers for the HR module
  */
@@ -165,6 +168,7 @@ const typeDefs = [
   SecurityUserSchema,
   SecurityVisitorSchema,
   SecurityVisitorStaySchema,
+  FaceVectorSchema,
 
   HRAuditLogSchema,
   DutyShiftSchema,
@@ -212,6 +216,7 @@ const resolvers = merge(
   SecurityUserResolvers,
   SecurityVisitorResolvers,
   SecurityVisitorStayResolvers,
+  FaceVectorResolvers,
 
   HRAuditLogResolvers,
   DutyShiftResolvers,

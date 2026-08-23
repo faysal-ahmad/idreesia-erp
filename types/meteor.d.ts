@@ -188,6 +188,7 @@ declare module 'meteor/mongo' {
 
   export const Assets: {
     getText(path: string): string;
+    absoluteFilePath(path: string): string;
   };
 }
 
@@ -200,6 +201,7 @@ declare module 'meteor/react-meteor-data' {
 
 declare const Assets: {
   getText(path: string): string;
+  absoluteFilePath(path: string): string;
 };
 
 declare const ServiceConfiguration: {

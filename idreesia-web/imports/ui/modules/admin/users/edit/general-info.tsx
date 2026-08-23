@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Form } from 'antd';
+import { Collapse, Form, Space, Spin, type CollapseProps } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import {
   InputTextField,
@@ -10,6 +10,7 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import { USER_BY_ID, PAGED_USERS, UPDATE_USER } from '../gql';
 
 interface Props {
@@ -30,12 +31,15 @@ const GeneralInfo = ({ userId, history }: Props) => {
     variables: { _id: userId },
   });
   const [updateUser] = useMutation(UPDATE_USER, {
-    refetchQueries: [{ query: PAGED_USERS, variables: { filter: {} } }],
+    refetchQueries: [
+      { query: PAGED_USERS, variables: { filter: {} } },
+      'adminUserById',
+    ],
   });
   const userById = data?.userById;
 
   const handleCancel = () => {
-    history.goBack();
+    history.push(paths.usersPath);
   };
 
   const handleFieldsChange = () => {
@@ -63,14 +67,21 @@ const GeneralInfo = ({ userId, history }: Props) => {
       },
     })
       .then(() => {
-        history.goBack();
+        message.success('User updated', 2);
+        setIsFieldsTouched(false);
       })
       .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  if (loading || !userById) return null;
+  if (loading || !userById) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   const karkunField = userById.personId ? (
     <InputTextField
@@ -87,50 +98,70 @@ const GeneralInfo = ({ userId, history }: Props) => {
     />
   );
 
+  const accountItem: NonNullable<CollapseProps['items']>[number] = {
+    key: 'account',
+    label: 'Account Information',
+    forceRender: true,
+    children: (
+      <>
+        <InputTextField
+          fieldName="userName"
+          fieldLabel="User name"
+          disabled
+          initialValue={userById.username}
+        />
+
+        <SwitchField
+          fieldName="locked"
+          fieldLabel="Locked"
+          initialValue={userById.locked ?? undefined}
+        />
+
+        <InputTextField
+          fieldName="password"
+          fieldLabel="Password"
+          type="password"
+        />
+
+        <InputTextField
+          fieldName="email"
+          fieldLabel="Google Email"
+          initialValue={userById.email}
+        />
+
+        <InputTextField
+          fieldName="displayName"
+          fieldLabel="Display Name"
+          initialValue={userById.displayName}
+        />
+
+        {karkunField}
+      </>
+    ),
+  };
+
   return (
-    <Form
-      layout="horizontal"
-      onFinish={handleFinish}
-      onFieldsChange={handleFieldsChange}
-    >
-      <InputTextField
-        fieldName="userName"
-        fieldLabel="User name"
-        disabled
-        initialValue={userById.username}
-      />
+    <div className="visitor-form">
+      <Form
+        layout="horizontal"
+        onFinish={handleFinish}
+        onFieldsChange={handleFieldsChange}
+      >
+        <Space orientation="vertical" size={16} style={{ display: 'flex', width: '100%' }}>
+          <Collapse
+            className="visitor-form-sections"
+            defaultActiveKey={['account']}
+            items={[accountItem]}
+          />
 
-      <SwitchField
-        fieldName="locked"
-        fieldLabel="Locked"
-        initialValue={userById.locked ?? undefined}
-      />
-
-      <InputTextField
-        fieldName="password"
-        fieldLabel="Password"
-        type="password"
-      />
-
-      <InputTextField
-        fieldName="email"
-        fieldLabel="Google Email"
-        initialValue={userById.email}
-      />
-
-      <InputTextField
-        fieldName="displayName"
-        fieldLabel="Display Name"
-        initialValue={userById.displayName}
-      />
-
-      {karkunField}
-
-      <FormButtonsSaveCancel
-        handleCancel={handleCancel}
-        isFieldsTouched={isFieldsTouched}
-      />
-    </Form>
+          <FormButtonsSaveCancel
+            handleCancel={handleCancel}
+            isFieldsTouched={isFieldsTouched}
+            fullWidth
+          />
+        </Space>
+      </Form>
+    </div>
   );
 };
 

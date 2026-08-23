@@ -2,20 +2,30 @@
 # published Linux prebuilt binaries for linux-x64 - no linux-arm64 build
 # exists, and it fails to compile from source against newer Node headers.
 # amd64 also matches what CI/production already run on, so no arch drift.
-FROM --platform=linux/amd64 node:24-bookworm-slim
+FROM --platform=linux/amd64 node:24.19.0-bookworm-slim
 EXPOSE 3000
 ENV TZ=Asia/Karachi
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # curl/ca-certificates: meteor's install script; git: npm deps fetched from
-# git urls; python3/build-essential: native module compilation (e.g. bcrypt)
+# git urls; python3/build-essential: native module compilation (e.g. bcrypt);
+# libopencv-dev/pkg-config: native module compilation for @u4/opencv4nodejs
+# (face-vector computation), same setup as idreesia-security-server
 RUN apt-get update && apt-get install -y --no-install-recommends \
   curl \
   ca-certificates \
   git \
   python3 \
   build-essential \
+  libopencv-dev \
+  pkg-config \
   && rm -rf /var/lib/apt/lists/*
+
+# Build @u4/opencv4nodejs against apt's OpenCV instead of self-building OpenCV
+# from source. OPENCV_LIB_DIR is architecture-dependent (differs amd64/arm64),
+# so it's resolved at container start (CMD below) rather than hardcoded here.
+ENV OPENCV4NODEJS_DISABLE_AUTOBUILD=1
+ENV OPENCV_INCLUDE_DIR=/usr/include/opencv4
 
 WORKDIR /app
 
@@ -43,7 +53,8 @@ RUN meteor npm install -g yarn
 # runs the idreesia-web start script (meteor run --settings ...) under
 # Meteor's managed Node/npm, matching CI's "meteor yarn <cmd>" convention, and
 # gives auto-recompile/reload on code changes.
-CMD meteor yarn install && \
+CMD export OPENCV_LIB_DIR="/usr/lib/$(gcc -print-multiarch)" && \
+  meteor yarn install && \
   cd idreesia-web && \
   meteor yarn install && \
   meteor yarn start

@@ -46,6 +46,8 @@ import './42-drop-accounts-collections';
 import './43-drop-companies-portals-amaanat-logs';
 import './44-drop-operations-collections';
 import './45-rename-inventory-to-stores';
+import './46-create-people-image-vector-index';
+import './47-create-system-user';
 
 Migrations.config({
   log: true,

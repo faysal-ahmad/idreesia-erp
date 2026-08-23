@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type RouteComponentProps } from 'react-router';
 import { useQuery } from '@apollo/client/react';
 import { LockOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { Button, Flex, Pagination, Table } from 'antd';
+import { Button, Flex, Pagination, Space, Spin, Table } from 'antd';
 
 import { noop, toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -17,10 +17,13 @@ import type { PagedUsersQuery } from 'meteor/idreesia-common/types/client-operat
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
-import ListFilter from './list-filter';
+import ListFilter, { UserFilterChips } from './list-filter';
 import { PAGED_USERS } from '../gql';
 
 const RouterLink = Link as any;
+
+const TABLE_HEADER_ROW_HEIGHT = 55;
+const VIEWPORT_BOTTOM_GAP = 16;
 
 type UserRow = NonNullable<
   NonNullable<NonNullable<PagedUsersQuery['pagedUsers']>['data']>[number]
@@ -31,6 +34,7 @@ type Props = RouteComponentProps;
 const columns: any[] = [
   {
     key: 'locked',
+    width: 40,
     render: (_text: unknown, record: UserRow) =>
       record.locked ? <LockOutlined /> : null,
   },
@@ -53,6 +57,7 @@ const columns: any[] = [
     title: 'Last Active',
     dataIndex: 'lastActiveAt',
     key: 'lastActiveAt',
+    width: 180,
     render: (text: string | number) => {
       if (!text) return '';
       return dayjs(Number(text)).format(Formats.DATE_TIME_FORMAT);
@@ -71,6 +76,9 @@ const columns: any[] = [
 ];
 
 const List = ({ history, location }: Props) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scrollY, setScrollY] = useState(360);
+
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -99,7 +107,54 @@ const List = ({ history, location }: Props) => {
     },
   });
 
-  if (loading) return null;
+  const updateScrollY = () => {
+    requestAnimationFrame(() => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const table = container.querySelector('.list-table');
+      if (!table) return;
+
+      const title = table.querySelector('.ant-table-title');
+      const footer = table.querySelector('.ant-table-footer');
+      const thead = table.querySelector('.ant-table-thead');
+      const titleBottom = title
+        ? title.getBoundingClientRect().bottom
+        : table.getBoundingClientRect().top;
+      const theadHeight = thead
+        ? Math.ceil((thead as HTMLElement).getBoundingClientRect().height)
+        : TABLE_HEADER_ROW_HEIGHT;
+      const footerHeight = footer
+        ? Math.ceil((footer as HTMLElement).getBoundingClientRect().height)
+        : 64;
+
+      const contentEl = container.closest(
+        '.ant-layout-content'
+      ) as HTMLElement | null;
+      let bottomLimit = window.innerHeight;
+      if (contentEl) {
+        const paddingBottom =
+          Number.parseFloat(getComputedStyle(contentEl).paddingBottom) || 0;
+        bottomLimit = contentEl.getBoundingClientRect().bottom - paddingBottom;
+      }
+
+      const nextScrollY = Math.max(
+        200,
+        Math.floor(
+          bottomLimit - titleBottom - theadHeight - footerHeight - VIEWPORT_BOTTOM_GAP
+        )
+      );
+
+      setScrollY(prev => (Math.abs(nextScrollY - prev) > 2 ? nextScrollY : prev));
+    });
+  };
+
+  useEffect(() => {
+    updateScrollY();
+    window.addEventListener('resize', updateScrollY);
+    return () => window.removeEventListener('resize', updateScrollY);
+  });
+
   const pagedUsers = data?.pagedUsers;
   const users = (pagedUsers?.data ?? []).filter(
     (row): row is UserRow => row != null
@@ -116,6 +171,10 @@ const List = ({ history, location }: Props) => {
     history.push(paths.usersNewFormPath);
   };
 
+  const handleRefresh = () => {
+    refetch();
+  };
+
   const {
     showLocked,
     showUnlocked,
@@ -130,51 +189,72 @@ const List = ({ history, location }: Props) => {
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
+  const filterProps = {
+    showLocked: asString(showLocked),
+    showUnlocked: asString(showUnlocked),
+    showActive: asString(showActive),
+    showInactive: asString(showInactive),
+    moduleAccess: asString(moduleAccess),
+    setPageParams,
+    refreshData: handleRefresh,
+  };
+
   const getTableHeader = () => (
     <div className="list-table-header">
-      <Button
-        size="large"
-        type="primary"
-        icon={<PlusCircleOutlined />}
-        onClick={handleNewClicked}
-      >
-        New User
-      </Button>
-      <ListFilter
-        showLocked={asString(showLocked)}
-        showUnlocked={asString(showUnlocked)}
-        showActive={asString(showActive)}
-        showInactive={asString(showInactive)}
-        moduleAccess={asString(moduleAccess)}
-        setPageParams={setPageParams}
-        refreshData={refetch}
-      />
+      <Space size={12}>
+        <Button
+          type="primary"
+          icon={<PlusCircleOutlined />}
+          onClick={handleNewClicked}
+        >
+          New User
+        </Button>
+      </Space>
+      <div className="list-table-header-utilities">
+        <Space size={8}>
+          <ListFilter {...filterProps} />
+        </Space>
+        <UserFilterChips {...filterProps} />
+      </div>
     </div>
   );
 
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
-    <Table
-      rowKey="_id"
-      dataSource={users}
-      columns={columns as any}
-      bordered
-      pagination={false}
-      size="small"
-      title={getTableHeader}
-      footer={() => (
-        <Pagination
-          current={numPageIndex + 1}
-          pageSize={numPageSize}
-          showSizeChanger
-          showTotal={(total: number, range: [number, number]) =>
-            `${range[0]}-${range[1]} of ${total} items`
-          }
-          onChange={onPaginationChange}
-          onShowSizeChange={onPaginationChange}
-          total={pagedUsers?.totalResults ?? 0}
-        />
-      )}
-    />
+    <div className="list-container" ref={containerRef}>
+      <Table
+        className="list-table"
+        rowKey="_id"
+        dataSource={users}
+        columns={columns as any}
+        bordered
+        size="middle"
+        tableLayout="fixed"
+        pagination={false}
+        scroll={{ y: scrollY }}
+        title={getTableHeader}
+        footer={() => (
+          <Pagination
+            current={numPageIndex + 1}
+            pageSize={numPageSize}
+            showSizeChanger
+            showTotal={(total: number, range: [number, number]) =>
+              `${range[0]}-${range[1]} of ${total} items`
+            }
+            onChange={onPaginationChange}
+            onShowSizeChange={onPaginationChange}
+            total={pagedUsers?.totalResults ?? 0}
+          />
+        )}
+      />
+    </div>
   );
 };
 

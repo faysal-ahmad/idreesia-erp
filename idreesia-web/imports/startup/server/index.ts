@@ -25,6 +25,7 @@ import {
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
 } from 'meteor/idreesia-common/server/graphql-api/_directives';
+import { setupAgenda } from './setup-agenda';
 import { getUser } from './get-user';
 import { apolloErrorFormatter } from './apollo-error-formatter';
 
@@ -69,3 +70,8 @@ const startServer = async () => {
 };
 
 startServer();
+
+// Registered after the migrations module's own Meteor.startup (imported
+// above), so the erp-system migration has already run by the time this
+// fires and agenda's job definitions look that user up.
+Meteor.startup(setupAgenda);

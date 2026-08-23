@@ -88,6 +88,9 @@
     "sha.js": "^2.4.12",
     "tar": "^7.5.19"
   },
+  "opencv4nodejs": {
+    "autoBuildFlags": "-DBUILD_LIST=core,imgproc,dnn"
+  },
   "engines": {
     "node": "24.x"
   }

@@ -1,6 +1,8 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 import React, { Component } from 'react';
 
+const CaptureJpegQuality = 0.95;
+
 interface Props {
   showCrop?: boolean;
   cropTop?: number;
@@ -9,6 +11,7 @@ interface Props {
   cropHeight?: number;
   width?: number;
   height?: number;
+  onCropPositionChange?(left: number, top: number): void;
 }
 
 interface State {
@@ -19,11 +22,18 @@ export default class Camera extends Component<Props, State> {
   state: State = {};
   video: HTMLVideoElement | null = null;
   canvas?: HTMLCanvasElement;
+  dragStartX = 0;
+  dragStartY = 0;
+  dragStartCropLeft = 0;
+  dragStartCropTop = 0;
 
   componentDidMount() {
     if (navigator.mediaDevices) {
       navigator.mediaDevices
-        .getUserMedia({ video: true, audio: false })
+        .getUserMedia({
+          video: { width: { ideal: 1920 }, height: { ideal: 1080 } },
+          audio: false,
+        })
         .then(mediaStream => {
           this.setState({ mediaStream });
           if (this.video) {
@@ -38,7 +48,39 @@ export default class Camera extends Component<Props, State> {
   componentWillUnmount() {
     const { mediaStream } = this.state;
     mediaStream?.getVideoTracks().forEach((track: MediaStreamTrack) => track.stop());
+    this.stopCropDrag();
   }
+
+  handleCropDragStart = (event: React.MouseEvent) => {
+    const { cropLeft, cropTop } = this.props;
+
+    this.dragStartX = event.clientX;
+    this.dragStartY = event.clientY;
+    this.dragStartCropLeft = cropLeft ?? 0;
+    this.dragStartCropTop = cropTop ?? 0;
+
+    window.addEventListener('mousemove', this.handleCropDragMove);
+    window.addEventListener('mouseup', this.handleCropDragEnd);
+    event.preventDefault();
+  };
+
+  handleCropDragMove = (event: MouseEvent) => {
+    const { onCropPositionChange } = this.props;
+
+    onCropPositionChange?.(
+      this.dragStartCropLeft + (event.clientX - this.dragStartX),
+      this.dragStartCropTop + (event.clientY - this.dragStartY)
+    );
+  };
+
+  handleCropDragEnd = () => {
+    this.stopCropDrag();
+  };
+
+  stopCropDrag = () => {
+    window.removeEventListener('mousemove', this.handleCropDragMove);
+    window.removeEventListener('mouseup', this.handleCropDragEnd);
+  };
 
   getCanvas = () => {
     if (!this.canvas) {
@@ -48,45 +90,69 @@ export default class Camera extends Component<Props, State> {
     return this.canvas;
   };
 
+  // The video preview is rendered with objectFit: 'cover', so it is scaled
+  // uniformly (never stretched) and centered within its width x height box,
+  // with any excess cropped off-center. Capturing must undo that same
+  // scale/offset, or the pixels behind the on-screen crop rect won't match
+  // what capture() reads from the source video.
+  getVideoCoverTransform() {
+    const { width = 0, height = 0 } = this.props;
+    const videoWidth = this.video?.videoWidth ?? 0;
+    const videoHeight = this.video?.videoHeight ?? 0;
+
+    if (!videoWidth || !videoHeight || !width || !height) {
+      return { scale: 1, offsetX: 0, offsetY: 0 };
+    }
+
+    const scale = Math.max(width / videoWidth, height / videoHeight);
+    return {
+      scale,
+      offsetX: (videoWidth * scale - width) / (2 * scale),
+      offsetY: (videoHeight * scale - height) / (2 * scale),
+    };
+  }
+
   capture() {
     const {
-      width,
-      height,
+      width = 0,
+      height = 0,
       showCrop,
-      cropLeft,
-      cropTop,
-      cropWidth,
-      cropHeight,
+      cropLeft = 0,
+      cropTop = 0,
+      cropWidth = width,
+      cropHeight = height,
     } = this.props;
 
     const canvas = this.getCanvas();
-    let canvas2dContext;
+    const context = canvas.getContext('2d');
+    if (!this.video || !context) return canvas.toDataURL('image/jpeg', CaptureJpegQuality);
 
-    if (!showCrop) {
-      canvas.width = width ?? 0;
-      canvas.height = height ?? 0;
-      canvas2dContext = canvas.getContext('2d');
-      if (canvas2dContext && this.video) canvas2dContext.drawImage(this.video, 0, 0, width ?? 0, height ?? 0);
-    } else {
-      const scaleX = this.video ? this.video.videoWidth / (width ?? 1) : 1;
-      const scaleY = this.video ? this.video.videoHeight / (height ?? 1) : 1;
+    const boxLeft = showCrop ? cropLeft : 0;
+    const boxTop = showCrop ? cropTop : 0;
+    const boxWidth = showCrop ? cropWidth : width;
+    const boxHeight = showCrop ? cropHeight : height;
 
-      canvas.width = cropWidth ?? 0;
-      canvas.height = cropHeight ?? 0;
-      canvas2dContext = canvas.getContext('2d');
-      if (canvas2dContext && this.video) canvas2dContext.drawImage(
-        this.video,
-        (cropLeft ?? 0) * scaleX,
-        (cropTop ?? 0) * scaleY,
-        (cropWidth ?? 0) * scaleX,
-        (cropHeight ?? 0) * scaleY,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
-    }
-    return canvas.toDataURL('image/jpeg');
+    const { scale, offsetX, offsetY } = this.getVideoCoverTransform();
+    const sourceX = offsetX + boxLeft / scale;
+    const sourceY = offsetY + boxTop / scale;
+    const sourceWidth = boxWidth / scale;
+    const sourceHeight = boxHeight / scale;
+
+    canvas.width = sourceWidth;
+    canvas.height = sourceHeight;
+    context.drawImage(
+      this.video,
+      sourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+      0,
+      0,
+      sourceWidth,
+      sourceHeight
+    );
+
+    return canvas.toDataURL('image/jpeg', CaptureJpegQuality);
   }
 
   render() {
@@ -102,6 +168,7 @@ export default class Camera extends Component<Props, State> {
 
     const cropRect = showCrop ? (
       <div
+        onMouseDown={this.handleCropDragStart}
         style={{
           position: 'absolute',
           top: cropTop,
@@ -110,6 +177,7 @@ export default class Camera extends Component<Props, State> {
           height: cropHeight,
           border: '1px dashed',
           color: '#ffffff',
+          cursor: 'move',
         }}
       />
     ) : null;
@@ -124,7 +192,7 @@ export default class Camera extends Component<Props, State> {
       >
         {cropRect}
         <video
-          style={{ height, width }}
+          style={{ height, width, objectFit: 'cover' }}
           ref={(video: HTMLVideoElement | null) => {
             this.video = video;
           }}

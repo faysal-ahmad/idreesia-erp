@@ -216,22 +216,25 @@ const List = () => {
         width={640}
         onCancel={handleCloseScheduleModal}
         destroyOnHidden
-        footer={[
-          <Button
-            key="reset"
-            disabled={editingRecord?.schedule === editingRecord?.defaultSchedule}
-            loading={resetting}
-            onClick={handleResetClicked}
-          >
-            Reset to Default
-          </Button>,
-          <Button key="cancel" onClick={handleCloseScheduleModal}>
-            Cancel
-          </Button>,
-          <Button key="save" type="primary" loading={saving} onClick={handleSaveSchedule}>
-            Save
-          </Button>,
-        ]}
+        footer={
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Button
+              disabled={editingRecord?.schedule === editingRecord?.defaultSchedule}
+              loading={resetting}
+              onClick={handleResetClicked}
+            >
+              Reset to Default
+            </Button>
+            <div>
+              <Button onClick={handleCloseScheduleModal} style={{ marginRight: 8 }}>
+                Cancel
+              </Button>
+              <Button type="primary" loading={saving} onClick={handleSaveSchedule}>
+                Save
+              </Button>
+            </div>
+          </div>
+        }
       >
         <Radio.Group
           value={scheduleMode}

@@ -2,6 +2,7 @@ import { addMonths, format, startOfMonth } from 'date-fns';
 
 import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-attendance';
 import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries';
+import { backfillImageVectorData } from 'meteor/idreesia-common/server/business-logic/common/backfill-image-vector-data';
 import { getSystemUser } from './system-user';
 
 export interface JobDefinitionSeed {
@@ -46,6 +47,15 @@ const JOB_DEFINITIONS_REGISTRY: JobDefinitionSeed[] = [
         formattedPreviousMonth,
         systemUser
       );
+    },
+  },
+  {
+    name: 'compute-face-vectors',
+    displayName: 'Compute Face Vectors',
+    // No defaultSchedule - manual-only (Run Now). The initial backlog is tens of thousands of
+    // people at ~20ms each, sequential, so this isn't something to run unattended on a cron.
+    handler: async () => {
+      await backfillImageVectorData();
     },
   },
 ];

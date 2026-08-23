@@ -2,7 +2,7 @@
 # published Linux prebuilt binaries for linux-x64 - no linux-arm64 build
 # exists, and it fails to compile from source against newer Node headers.
 # amd64 also matches what CI/production already run on, so no arch drift.
-FROM --platform=linux/amd64 node:24-bookworm-slim
+FROM --platform=linux/amd64 node:24.19.0-bookworm-slim
 EXPOSE 3000
 ENV TZ=Asia/Karachi
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

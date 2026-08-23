@@ -1,7 +1,7 @@
 import React, { Fragment, useRef } from 'react';
 import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Button, Row } from 'antd';
+import { Button, Space, Spin } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
@@ -10,6 +10,7 @@ import { useAllPhysicalStores } from 'meteor/idreesia-common/hooks/admin';
 import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
 import type { InstanceSelectionHandle } from '/imports/ui/modules/helpers/controls/access-management/instance-selection';
 
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import { USER_BY_ID, SET_INSTANCE_ACCESS } from '../gql';
 
 interface PhysicalStoreOption {
@@ -53,7 +54,7 @@ const InstanceAccess = ({ userId, history }: Props) => {
       },
     })
       .then(() => {
-        history.goBack();
+        message.success('Instance access updated', 2);
       })
       .catch((error: Error) => {
         message.error(error.message, 5);
@@ -61,11 +62,15 @@ const InstanceAccess = ({ userId, history }: Props) => {
   };
 
   const handleCancel = () => {
-    history.goBack();
+    history.push(paths.usersPath);
   };
 
   if (userLoading || allPhysicalStoresLoading) {
-    return null;
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (
@@ -76,8 +81,7 @@ const InstanceAccess = ({ userId, history }: Props) => {
         ref={instanceSelection}
       />
       <br />
-      <br />
-      <Row justify="start">
+      <Space size={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button
           size="large"
           icon={<CloseCircleOutlined />}
@@ -86,7 +90,6 @@ const InstanceAccess = ({ userId, history }: Props) => {
         >
           Cancel
         </Button>
-        &nbsp;
         <Button
           size="large"
           icon={<SaveOutlined />}
@@ -95,7 +98,7 @@ const InstanceAccess = ({ userId, history }: Props) => {
         >
           Save
         </Button>
-      </Row>
+      </Space>
     </Fragment>
   );
 };

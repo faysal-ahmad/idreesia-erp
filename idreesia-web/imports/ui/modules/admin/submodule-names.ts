@@ -3,6 +3,9 @@ const SubModuleNames = {
   userGroups: 'User Groups',
   physicalStores: 'Physical Stores',
   cities: 'Cities & Mehfils',
+  jobs: 'Jobs Dashboard',
+  jobLogs: 'Job Logs',
+  jobDefinitions: 'Job Definitions',
 };
 
 export default SubModuleNames;

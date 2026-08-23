@@ -1,0 +1,60 @@
+# accounts-password (Meteor core) pins bcrypt@5.0.1, which only ever
+# published Linux prebuilt binaries for linux-x64 - no linux-arm64 build
+# exists, and it fails to compile from source against newer Node headers.
+# amd64 also matches what CI/production already run on, so no arch drift.
+FROM --platform=linux/amd64 node:24.19.0-bookworm-slim
+EXPOSE 3000
+ENV TZ=Asia/Karachi
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# curl/ca-certificates: meteor's install script; git: npm deps fetched from
+# git urls; python3/build-essential: native module compilation (e.g. bcrypt);
+# libopencv-dev/pkg-config: native module compilation for @u4/opencv4nodejs
+# (face-vector computation), same setup as idreesia-security-server
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  curl \
+  ca-certificates \
+  git \
+  python3 \
+  build-essential \
+  libopencv-dev \
+  pkg-config \
+  && rm -rf /var/lib/apt/lists/*
+
+# Build @u4/opencv4nodejs against apt's OpenCV instead of self-building OpenCV
+# from source. OPENCV_LIB_DIR is architecture-dependent (differs amd64/arm64),
+# so it's resolved at container start (CMD below) rather than hardcoded here.
+ENV OPENCV4NODEJS_DISABLE_AUTOBUILD=1
+ENV OPENCV_INCLUDE_DIR=/usr/include/opencv4
+
+WORKDIR /app
+
+# Named volumes (see docker-compose.yml) are created empty and root-owned the
+# first time they're used; Docker seeds a fresh volume's ownership from
+# whatever already exists at that path in the image, so pre-create/chown
+# these mount points as root before switching to the non-root user below.
+RUN mkdir -p node_modules idreesia-web/node_modules idreesia-web/.meteor/local idreesia-common/node_modules \
+  && chown -R node:node /app
+
+# node:24-bookworm-slim already ships a non-root "node" user (uid/gid 1000) -
+# no need to create our own. node_modules/.meteor/local are named volumes,
+# not part of the bind-mounted repo, so whatever this container writes there
+# never touches the host filesystem's ownership.
+USER node
+# The installer can't write /usr/local/bin as a non-root user, so it installs
+# to $HOME/.meteor only, without erroring - put that on PATH ourselves.
+ENV PATH="/home/node/.meteor:${PATH}"
+RUN curl https://install.meteor.com/ | sh
+RUN meteor npm install -g yarn
+
+# node_modules/.meteor/local are volume-backed (see docker-compose.yml), so
+# dependencies are installed here at container start rather than at image
+# build time, where they'd just get shadowed by the mount. "meteor yarn start"
+# runs the idreesia-web start script (meteor run --settings ...) under
+# Meteor's managed Node/npm, matching CI's "meteor yarn <cmd>" convention, and
+# gives auto-recompile/reload on code changes.
+CMD export OPENCV_LIB_DIR="/usr/lib/$(gcc -print-multiarch)" && \
+  meteor yarn install && \
+  cd idreesia-web && \
+  meteor yarn install && \
+  meteor yarn start

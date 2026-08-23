@@ -1,12 +1,13 @@
 import React, { Fragment, useState } from 'react';
 import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Button, Row } from 'antd';
+import { Button, Space, Spin } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
 import { PermissionSelection } from '/imports/ui/modules/helpers/controls';
 
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import { USER_BY_ID, SET_PERMISSIONS } from '../gql';
 
 interface Props {
@@ -33,7 +34,7 @@ const Permissions = ({ userId, history }: Props) => {
   };
 
   const handleCancel = () => {
-    history.goBack();
+    history.push(paths.usersPath);
   };
 
   const handleSave = (e: React.MouseEvent<HTMLElement>) => {
@@ -45,14 +46,21 @@ const Permissions = ({ userId, history }: Props) => {
       },
     })
       .then(() => {
-        history.goBack();
+        message.success('Permissions updated', 2);
+        setPermissionsChanged(false);
       })
       .catch((error: Error) => {
         message.error(error.message, 5);
       });
   };
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   const securityEntity = userById
     ? {
@@ -69,8 +77,7 @@ const Permissions = ({ userId, history }: Props) => {
         onChange={handlePermissionSelectionChange}
       />
       <br />
-      <br />
-      <Row justify="start">
+      <Space size={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button
           size="large"
           icon={<CloseCircleOutlined />}
@@ -79,7 +86,6 @@ const Permissions = ({ userId, history }: Props) => {
         >
           Cancel
         </Button>
-        &nbsp;
         <Button
           size="large"
           icon={<SaveOutlined />}
@@ -89,7 +95,7 @@ const Permissions = ({ userId, history }: Props) => {
         >
           Save
         </Button>
-      </Row>
+      </Space>
     </Fragment>
   );
 };

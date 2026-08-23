@@ -41,6 +41,12 @@ import UserResolvers from './admin/user/resolvers';
 import UserGroupSchema from './admin/user-group/user-group';
 import UserGroupResolvers from './admin/user-group/resolvers';
 
+import ScheduledJobSchema from './admin/scheduled-job/scheduled-job';
+import ScheduledJobResolvers from './admin/scheduled-job/resolvers';
+
+import JobDefinitionSchema from './admin/job-definition/job-definition';
+import JobDefinitionResolvers from './admin/job-definition/resolvers';
+
 /**
  * Schema and Resolvers for the Security module
  */
@@ -70,6 +76,9 @@ import SecurityVisitorResolvers from './security/visitor/resolvers';
 
 import SecurityVisitorStaySchema from './security/visitor-stay/visitor-stay';
 import SecurityVisitorStayResolvers from './security/visitor-stay/resolvers';
+
+import FaceVectorSchema from './security/face-vector/face-vector';
+import FaceVectorResolvers from './security/face-vector/resolvers';
 
 /**
  * Schema and Resolvers for the HR module
@@ -155,6 +164,8 @@ const typeDefs = [
   VisitorSchema,
   UserSchema,
   UserGroupSchema,
+  ScheduledJobSchema,
+  JobDefinitionSchema,
 
   SecurityAuditLogSchema,
   SecurityMehfilSchema,
@@ -165,6 +176,7 @@ const typeDefs = [
   SecurityUserSchema,
   SecurityVisitorSchema,
   SecurityVisitorStaySchema,
+  FaceVectorSchema,
 
   HRAuditLogSchema,
   DutyShiftSchema,
@@ -202,6 +214,8 @@ const resolvers = merge(
   VisitorResolvers,
   UserResolvers,
   UserGroupResolvers,
+  ScheduledJobResolvers,
+  JobDefinitionResolvers,
 
   SecurityAuditLogResolvers,
   SecurityMehfilResolvers,
@@ -212,6 +226,7 @@ const resolvers = merge(
   SecurityUserResolvers,
   SecurityVisitorResolvers,
   SecurityVisitorStayResolvers,
+  FaceVectorResolvers,
 
   HRAuditLogResolvers,
   DutyShiftResolvers,

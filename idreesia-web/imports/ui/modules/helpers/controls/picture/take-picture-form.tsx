@@ -1,5 +1,4 @@
 import React, { Component, type CSSProperties } from 'react';
-import { LeftOutlined, RightOutlined, UpOutlined, DownOutlined } from '@ant-design/icons';
 import { Button, Slider } from 'antd';
 
 import Camera from './camera';
@@ -79,35 +78,14 @@ export default class TakePictureForm extends Component<object, State> {
     });
   };
 
-  moveLeft = () => {
-    const { cropLeft } = this.state;
-    this.setState({ cropLeft: cropLeft - 10 > 0 ? cropLeft - 10 : 0 });
-  };
+  handleCropPositionChange = (left: number, top: number) => {
+    const { currentZoomLevel } = this.state;
+    const maxCropLeft = currentZoomLevel * WidthStepSize;
+    const maxCropTop = currentZoomLevel * HeightStepSize;
 
-  moveRight = () => {
-    const { currentZoomLevel, cropLeft } = this.state;
-    const cameraWidth = MinCameraWidth + currentZoomLevel * WidthStepSize;
     this.setState({
-      cropLeft:
-        cropLeft + MinCameraWidth + 10 <= cameraWidth
-          ? cropLeft + 10
-          : cameraWidth - MinCameraWidth,
-    });
-  };
-
-  moveUp = () => {
-    const { cropTop } = this.state;
-    this.setState({ cropTop: cropTop - 10 > 0 ? cropTop - 10 : 0 });
-  };
-
-  moveDown = () => {
-    const { currentZoomLevel, cropTop } = this.state;
-    const cameraHeight = MinCameraHeight + currentZoomLevel * HeightStepSize;
-    this.setState({
-      cropTop:
-        cropTop + MinCameraHeight + 10 <= cameraHeight
-          ? cropTop + 10
-          : cameraHeight - MinCameraHeight,
+      cropLeft: Math.min(Math.max(left, 0), maxCropLeft),
+      cropTop: Math.min(Math.max(top, 0), maxCropTop),
     });
   };
 
@@ -127,7 +105,16 @@ export default class TakePictureForm extends Component<object, State> {
     if (imageSrc) {
       return (
         <div style={CameraContainerStyle}>
-          <img src={imageSrc} width={cropWidth} height={cropHeight} alt="captured" />
+          <img
+            src={imageSrc}
+            alt="captured"
+            style={{
+              maxWidth: MaxCameraWidth,
+              maxHeight: MaxCameraHeight,
+              width: 'auto',
+              height: 'auto',
+            }}
+          />
           <div style={{ height: '10px' }} />
           <Button type="default" onClick={this.captureAnother}>
             Capture another photo
@@ -142,7 +129,7 @@ export default class TakePictureForm extends Component<object, State> {
           <div style={{ width: '300px' }}>
             <Slider
               marks={zoomLevel}
-              step={1}
+              step={0.25}
               min={0}
               max={3}
               defaultValue={currentZoomLevel}
@@ -150,11 +137,6 @@ export default class TakePictureForm extends Component<object, State> {
               onChange={this.handleZoomLevelChange}
             />
           </div>
-          <div style={{ width: '20px' }} />
-          <Button icon={<LeftOutlined />} size="large" onClick={this.moveLeft} />
-          <Button icon={<RightOutlined />} size="large" onClick={this.moveRight} />
-          <Button icon={<UpOutlined />} size="large" onClick={this.moveUp} />
-          <Button icon={<DownOutlined />} size="large" onClick={this.moveDown} />
           <div style={{ width: '20px' }} />
           <Button type="default" onClick={this.capture}>
             Capture photo
@@ -171,6 +153,7 @@ export default class TakePictureForm extends Component<object, State> {
           cropTop={cropTop}
           cropWidth={cropWidth}
           cropHeight={cropHeight}
+          onCropPositionChange={this.handleCropPositionChange}
         />
       </div>
     );

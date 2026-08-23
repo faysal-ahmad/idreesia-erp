@@ -19,13 +19,14 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebApp } from 'meteor/webapp';
-import { getUser } from 'meteor/apollo';
 import { typeDefs, resolvers } from 'meteor/idreesia-common/server/graphql-api';
 import { getDataLoaders } from 'meteor/idreesia-common/server/data-loaders';
 import {
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
 } from 'meteor/idreesia-common/server/graphql-api/_directives';
+import { setupAgenda } from './setup-agenda';
+import { getUser } from './get-user';
 import { apolloErrorFormatter } from './apollo-error-formatter';
 
 // Build GraphQL schema based on SDL definitions and resolvers maps
@@ -69,3 +70,8 @@ const startServer = async () => {
 };
 
 startServer();
+
+// Registered after the migrations module's own Meteor.startup (imported
+// above), so the erp-system migration has already run by the time this
+// fires and agenda's job definitions look that user up.
+Meteor.startup(setupAgenda);

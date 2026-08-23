@@ -1,0 +1,20 @@
+FROM node:24.19.0-bookworm-slim
+EXPOSE 3000
+ENV TZ=Asia/Karachi
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+# libopencv-dev/pkg-config: native module compilation for @u4/opencv4nodejs
+# (face-vector computation), same setup as idreesia-security-server
+RUN apt-get update && apt-get install -y --no-install-recommends python3 build-essential libopencv-dev pkg-config && rm -rf /var/lib/apt/lists/*
+RUN npm install -g pm2
+WORKDIR /idreesia-web
+COPY ./ecosystem.config.js .
+COPY ./build .
+WORKDIR /idreesia-web/bundle/programs/server
+# Build @u4/opencv4nodejs against apt's OpenCV instead of self-building OpenCV
+# from source. OPENCV_LIB_DIR is architecture-dependent (differs amd64/arm64),
+# so it's resolved here rather than hardcoded.
+ENV OPENCV4NODEJS_DISABLE_AUTOBUILD=1
+ENV OPENCV_INCLUDE_DIR=/usr/include/opencv4
+RUN export OPENCV_LIB_DIR="/usr/lib/$(gcc -print-multiarch)" && npm install
+WORKDIR /idreesia-web
+ENTRYPOINT ["pm2-runtime", "start", "ecosystem.config.js"]

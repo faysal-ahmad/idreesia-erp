@@ -8,6 +8,9 @@ const Permissions = {
   ADMIN_MANAGE_PHYSICAL_STORES: 'admin-manage-physical-stores',
   ADMIN_MANAGE_CITIES: 'admin-manage-cities',
 
+  ADMIN_VIEW_JOBS: 'admin-view-jobs',
+  ADMIN_MANAGE_JOBS: 'admin-manage-jobs',
+
   // ****************************************************************************************
   // HR Module
   // ****************************************************************************************

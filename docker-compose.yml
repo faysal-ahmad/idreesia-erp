@@ -8,6 +8,33 @@ services:
     volumes:
       - mongo-dev:/data/db
 
+  idreesia-web:
+    build:
+      context: .
+      dockerfile: ./idreesia-web/Dockerfile.development
+    platform: linux/amd64
+    depends_on:
+      - mongo
+    environment:
+      MONGO_URL: mongodb://mongo:27017/idreesia-erp
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      # Named volumes, not part of the bind-mounted repo above, for
+      # everything this container writes to at install/build time - keeps
+      # container-owned files out of your actual working tree entirely.
+      #
+      # One volume split via subpaths was tried first, but Docker's subpath
+      # mount requires the subpath to already exist inside the volume - unlike
+      # a plain whole-volume mount, it won't auto-create/seed it, so it fails
+      # outright against a fresh volume. Separate volumes don't have that
+      # problem: each is auto-created and seeded from the image normally.
+      - idreesia-web-node-modules:/app/idreesia-web/node_modules
+      - idreesia-web-meteor-local:/app/idreesia-web/.meteor/local
+      - idreesia-common-node-modules:/app/idreesia-common/node_modules
+      - root-node-modules:/app/node_modules
+
   minio:
     image: minio/minio:RELEASE.2024-11-07T00-52-20Z
     ports:
@@ -39,3 +66,7 @@ services:
 volumes:
   minio-dev: {}
   mongo-dev: {}
+  idreesia-web-node-modules: {}
+  idreesia-web-meteor-local: {}
+  idreesia-common-node-modules: {}
+  root-node-modules: {}

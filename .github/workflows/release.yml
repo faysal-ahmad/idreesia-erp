@@ -178,7 +178,7 @@ jobs:
           for tag in "${TAGS[@]}"; do
             BUILD_ARGS+=("-t" "$IMAGE_NAME:$tag")
           done
-          docker build "${BUILD_ARGS[@]}" idreesia-web
+          docker build "${BUILD_ARGS[@]}" -f idreesia-web/Dockerfile.production idreesia-web
 
       - name: Login to GHCR
         if: ${{ github.ref_name == 'master' }}

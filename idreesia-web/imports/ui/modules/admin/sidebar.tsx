@@ -25,6 +25,15 @@ const menuItems = [
     label: 'Locations Management',
     children: [{ key: 'cities', label: 'Cities & Mehfils' }],
   },
+  {
+    key: 'monitoring',
+    label: 'Scheduled Jobs',
+    children: [
+      { key: 'job-definitions', label: 'Job Definitions' },
+      { key: 'jobs', label: 'Jobs Dashboard' },
+      { key: 'job-logs', label: 'Job Logs' },
+    ],
+  },
 ];
 
 interface SidebarProps {
@@ -58,6 +67,21 @@ const Sidebar = ({ history }: SidebarProps) => {
       case 'cities':
         setActiveSubModuleName(SubModuleNames.cities);
         history.push(paths.citiesPath);
+        break;
+
+      case 'jobs':
+        setActiveSubModuleName(SubModuleNames.jobs);
+        history.push(paths.jobsPath);
+        break;
+
+      case 'job-logs':
+        setActiveSubModuleName(SubModuleNames.jobLogs);
+        history.push(paths.jobLogsPath);
+        break;
+
+      case 'job-definitions':
+        setActiveSubModuleName(SubModuleNames.jobDefinitions);
+        history.push(paths.jobDefinitionsPath);
         break;
 
       default:

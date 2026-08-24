@@ -149,9 +149,14 @@ jobs:
       - name: Install Workspace Tooling
         run: meteor yarn install
 
+      - name: Install OpenCV
+        run: sudo apt-get update && sudo apt-get install -y libopencv-dev
+
       - name: Install Web Dependencies
         run: meteor yarn install
         working-directory: ./idreesia-web
+        env:
+          OPENCV4NODEJS_DISABLE_AUTOBUILD: "1"
 
       - name: Install Mobile Dependencies
         run: meteor yarn install

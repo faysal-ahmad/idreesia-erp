@@ -9,3 +9,7 @@ Rules:
 - If `graphify-out/wiki/index.md` exists at the repo root, use it for broad navigation instead of raw source browsing.
 - Read `graphify-out/GRAPH_REPORT.md` only for broad architecture review or when query/path/explain do not surface enough context.
 - After modifying code, from the **repository root** run `graphify update .` to keep the root graph current (AST-only, no API cost).
+
+## UI design guidelines
+
+When creating or updating any UI in `idreesia-web` (list pages, edit/new form pages, filters, tables, CSS), read and follow `docs/ui-design-guidelines.md` first. It defines the shared toolbar/table/form chrome, CSS organization, visual tokens, and anti-patterns to avoid so new pages stay consistent with existing ones.

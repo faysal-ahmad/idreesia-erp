@@ -22,6 +22,7 @@ enum Permission {
   ADMIN_MANAGE_USERS_AND_GROUPS
   ADMIN_MANAGE_PHYSICAL_STORES
   ADMIN_MANAGE_CITIES
+  ADMIN_MANAGE_PEOPLE_TAGS
   ADMIN_VIEW_JOBS
   ADMIN_MANAGE_JOBS
 
@@ -102,6 +103,39 @@ extend type Mutation {
 
   setJobDefinitionEnabled(_id: String!, enabled: Boolean!): JobDefinitionType
     @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+}
+
+type PeopleTagType {
+  _id: String
+  name: String
+  color: String
+  textColor: String
+  moduleNames: [String]
+}
+
+extend type Query {
+  allPeopleTags: [PeopleTagType]
+    @checkPermissions(permissions: [ADMIN_MANAGE_PEOPLE_TAGS])
+}
+
+extend type Mutation {
+  createPeopleTag(
+    name: String!
+    color: String!
+    textColor: String!
+    moduleNames: [String]!
+  ): PeopleTagType @checkPermissions(permissions: [ADMIN_MANAGE_PEOPLE_TAGS])
+
+  updatePeopleTag(
+    _id: String!
+    name: String!
+    color: String!
+    textColor: String!
+    moduleNames: [String]!
+  ): PeopleTagType @checkPermissions(permissions: [ADMIN_MANAGE_PEOPLE_TAGS])
+
+  deletePeopleTag(_id: String!): Int
+    @checkPermissions(permissions: [ADMIN_MANAGE_PEOPLE_TAGS])
 }
 
 type ScheduledJobType {

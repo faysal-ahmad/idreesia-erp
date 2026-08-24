@@ -566,6 +566,7 @@ export type Mutation = {
   createKarkunDuty?: Maybe<KarkunDutyType>;
   createLocation?: Maybe<Location>;
   createMehfil?: Maybe<MehfilType>;
+  createPeopleTag?: Maybe<PeopleTagType>;
   createPhysicalStore?: Maybe<PhysicalStore>;
   createPurchaseForm?: Maybe<PurchaseForm>;
   createSalaries?: Maybe<Scalars['Int']['output']>;
@@ -583,6 +584,7 @@ export type Mutation = {
   deleteAllSalaries?: Maybe<Scalars['Int']['output']>;
   deleteAttendances?: Maybe<Scalars['Int']['output']>;
   deleteHrKarkun?: Maybe<Scalars['Int']['output']>;
+  deletePeopleTag?: Maybe<Scalars['Int']['output']>;
   deleteSalaries?: Maybe<Scalars['Int']['output']>;
   deleteSecurityVisitor?: Maybe<Scalars['Int']['output']>;
   deleteUserGroup?: Maybe<Scalars['Int']['output']>;
@@ -651,6 +653,7 @@ export type Mutation = {
   updateLocation?: Maybe<Location>;
   updateLoginTime?: Maybe<Scalars['Int']['output']>;
   updateMehfil?: Maybe<MehfilType>;
+  updatePeopleTag?: Maybe<PeopleTagType>;
   updatePhysicalStore?: Maybe<PhysicalStore>;
   updatePurchaseForm?: Maybe<PurchaseForm>;
   updateSalary?: Maybe<SalaryType>;
@@ -858,6 +861,14 @@ export type MutationCreateMehfilArgs = {
 };
 
 
+export type MutationCreatePeopleTagArgs = {
+  color: Scalars['String']['input'];
+  moduleNames: Array<InputMaybe<Scalars['String']['input']>>;
+  name: Scalars['String']['input'];
+  textColor: Scalars['String']['input'];
+};
+
+
 export type MutationCreatePhysicalStoreArgs = {
   address?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -996,6 +1007,11 @@ export type MutationDeleteAttendancesArgs = {
 
 
 export type MutationDeleteHrKarkunArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationDeletePeopleTagArgs = {
   _id: Scalars['String']['input'];
 };
 
@@ -1441,6 +1457,15 @@ export type MutationUpdateMehfilArgs = {
 };
 
 
+export type MutationUpdatePeopleTagArgs = {
+  _id: Scalars['String']['input'];
+  color: Scalars['String']['input'];
+  moduleNames: Array<InputMaybe<Scalars['String']['input']>>;
+  name: Scalars['String']['input'];
+  textColor: Scalars['String']['input'];
+};
+
+
 export type MutationUpdatePhysicalStoreArgs = {
   address?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
@@ -1694,9 +1719,19 @@ export type PagedVisitorType = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PeopleTagType = {
+  __typename?: 'PeopleTagType';
+  _id?: Maybe<Scalars['String']['output']>;
+  color?: Maybe<Scalars['String']['output']>;
+  moduleNames?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  name?: Maybe<Scalars['String']['output']>;
+  textColor?: Maybe<Scalars['String']['output']>;
+};
+
 export enum Permission {
   AdminManageCities = 'ADMIN_MANAGE_CITIES',
   AdminManageJobs = 'ADMIN_MANAGE_JOBS',
+  AdminManagePeopleTags = 'ADMIN_MANAGE_PEOPLE_TAGS',
   AdminManagePhysicalStores = 'ADMIN_MANAGE_PHYSICAL_STORES',
   AdminManageUsersAndGroups = 'ADMIN_MANAGE_USERS_AND_GROUPS',
   AdminViewJobs = 'ADMIN_VIEW_JOBS',
@@ -1865,6 +1900,7 @@ export type Query = {
   allMSDuties?: Maybe<Array<Maybe<DutyType>>>;
   allMehfilDuties?: Maybe<Array<Maybe<DutyType>>>;
   allMehfils?: Maybe<Array<Maybe<MehfilType>>>;
+  allPeopleTags?: Maybe<Array<Maybe<PeopleTagType>>>;
   allPhysicalStores?: Maybe<Array<Maybe<PhysicalStore>>>;
   allSecurityMehfilDuties?: Maybe<Array<Maybe<MehfilDutyType>>>;
   allSecurityMehfilLangarDishes?: Maybe<Array<Maybe<MehfilLangarDishType>>>;

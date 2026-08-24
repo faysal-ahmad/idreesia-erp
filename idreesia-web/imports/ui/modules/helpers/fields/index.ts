@@ -22,6 +22,7 @@ export { default as BarcodeField } from './barcode-field';
 export { default as CascaderField } from './cascader-field';
 export { default as CheckboxField } from './checkbox-field';
 export { default as CheckboxGroupField } from './checkbox-group-field';
+export { default as ColorField } from './color-field';
 export { default as DateField } from './date-field';
 export { default as DateRangeField } from './date-range-field';
 export { default as InputCnicField } from './input-cnic-field';

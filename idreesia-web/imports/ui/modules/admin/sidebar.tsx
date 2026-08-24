@@ -22,8 +22,11 @@ const menuItems = [
   },
   {
     key: 'locations',
-    label: 'Locations Management',
-    children: [{ key: 'cities', label: 'Cities & Mehfils' }],
+    label: 'Reference Data',
+    children: [
+      { key: 'cities', label: 'Cities & Mehfils' },
+      { key: 'people-tags', label: 'People Tags' },
+    ],
   },
   {
     key: 'monitoring',
@@ -67,6 +70,11 @@ const Sidebar = ({ history }: SidebarProps) => {
       case 'cities':
         setActiveSubModuleName(SubModuleNames.cities);
         history.push(paths.citiesPath);
+        break;
+
+      case 'people-tags':
+        setActiveSubModuleName(SubModuleNames.peopleTags);
+        history.push(paths.peopleTagsPath);
         break;
 
       case 'jobs':

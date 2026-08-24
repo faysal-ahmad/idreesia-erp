@@ -37,4 +37,9 @@ export default class SubModulePaths {
   static jobsPath = `${ModulePaths.admin}/jobs`;
   static jobLogsPath = `${ModulePaths.admin}/job-logs`;
   static jobDefinitionsPath = `${ModulePaths.admin}/job-definitions`;
+
+  // *************************************************************************************
+  // People Tags Routes
+  // *************************************************************************************
+  static peopleTagsPath = `${ModulePaths.admin}/people-tags`;
 }

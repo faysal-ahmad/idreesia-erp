@@ -323,6 +323,39 @@ export type UpdateJobDefinitionScheduleMutationVariables = Exact<{
 
 export type UpdateJobDefinitionScheduleMutation = { updateJobDefinitionSchedule: { _id: string | null, schedule: string | null, updatedAt: unknown } | null };
 
+export type AllPeopleTagsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllPeopleTagsQuery = { allPeopleTags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null, moduleNames: Array<string | null> | null } | null> | null };
+
+export type CreatePeopleTagMutationVariables = Exact<{
+  name: string;
+  color: string;
+  textColor: string;
+  moduleNames: Array<string | null | undefined> | string;
+}>;
+
+
+export type CreatePeopleTagMutation = { createPeopleTag: { _id: string | null, name: string | null, color: string | null, textColor: string | null, moduleNames: Array<string | null> | null } | null };
+
+export type DeletePeopleTagMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type DeletePeopleTagMutation = { deletePeopleTag: number | null };
+
+export type UpdatePeopleTagMutationVariables = Exact<{
+  _id: string;
+  name: string;
+  color: string;
+  textColor: string;
+  moduleNames: Array<string | null | undefined> | string;
+}>;
+
+
+export type UpdatePeopleTagMutation = { updatePeopleTag: { _id: string | null, name: string | null, color: string | null, textColor: string | null, moduleNames: Array<string | null> | null } | null };
+
 export type AdminPhysicalStoreByIdQueryVariables = Exact<{
   id: string;
 }>;

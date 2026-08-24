@@ -41,7 +41,7 @@ export const AdminPermissionsData: PermissionNode = {
       ],
     },
     {
-      title: 'Locations Management',
+      title: 'Reference Data',
       key: 'module-admin-locations-management',
       children: [
         {
@@ -51,6 +51,16 @@ export const AdminPermissionsData: PermissionNode = {
             {
               title: 'Manage Cities & Mehfils',
               key: PermissionConstants.ADMIN_MANAGE_CITIES,
+            },
+          ],
+        },
+        {
+          title: 'People Tags',
+          key: 'module-admin-people-tags',
+          children: [
+            {
+              title: 'Manage People Tags',
+              key: PermissionConstants.ADMIN_MANAGE_PEOPLE_TAGS,
             },
           ],
         },

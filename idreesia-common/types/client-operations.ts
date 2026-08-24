@@ -75,6 +75,7 @@ export type PersonFilter = {
   pageIndex?: string | null | undefined;
   pageSize?: string | null | undefined;
   phoneNumber?: string | null | undefined;
+  tagId?: string | null | undefined;
   updatedBetween?: string | null | undefined;
 };
 
@@ -91,6 +92,7 @@ export type PersonSharedDataInput = {
   parentName: string;
   permanentAddress?: string | null | undefined;
   referenceName: string;
+  tagIds?: Array<string | null | undefined> | null | undefined;
 };
 
 export type PersonVisitorDataInput = {
@@ -1279,7 +1281,7 @@ export type PagedSecurityPeopleQueryVariables = Exact<{
 }>;
 
 
-export type PagedSecurityPeopleQuery = { pagedSecurityPeople: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
+export type PagedSecurityPeopleQuery = { pagedSecurityPeople: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
 
 export type SecurityPersonByCnicQueryVariables = Exact<{
   cnicNumbers: Array<string | null | undefined> | string;
@@ -1293,7 +1295,7 @@ export type SecurityRegistrationPersonByIdQueryVariables = Exact<{
 }>;
 
 
-export type SecurityRegistrationPersonByIdQuery = { securityPersonById: { _id: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, ehadDate: string | null, birthDate: string | null, referenceName: string | null, contactNumber1: string | null, contactNumber2: string | null, currentAddress: string | null, permanentAddress: string | null, educationalQualification: string | null, meansOfEarning: string | null, imageId: string | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null };
+export type SecurityRegistrationPersonByIdQuery = { securityPersonById: { _id: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, ehadDate: string | null, birthDate: string | null, referenceName: string | null, contactNumber1: string | null, contactNumber2: string | null, currentAddress: string | null, permanentAddress: string | null, educationalQualification: string | null, meansOfEarning: string | null, imageId: string | null, tagIds: Array<string | null> | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null };
 
 export type SetSecurityPersonImageMutationVariables = Exact<{
   _id: string;

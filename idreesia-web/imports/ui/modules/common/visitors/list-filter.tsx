@@ -34,6 +34,7 @@ interface PageParams {
   additionalInfo?: string;
   dataSource?: string;
   updatedBetween?: string;
+  tagId?: string;
 }
 
 export interface VisitorListFilterFormValues {
@@ -45,6 +46,12 @@ export interface VisitorListFilterFormValues {
   additionalInfo?: string;
   dataSource?: string;
   updatedBetween?: [Dayjs | null, Dayjs | null];
+  tagId?: string;
+}
+
+export interface VisitorFilterTagOption {
+  _id: string;
+  name?: string | null;
 }
 
 export interface VisitorListFilterProps {
@@ -58,9 +65,11 @@ export interface VisitorListFilterProps {
   additionalInfo?: string | null;
   dataSource?: string;
   updatedBetween?: string;
+  tagId?: string;
   showAdditionalInfoFilter?: boolean;
   showDataSourceFilter?: boolean;
   distinctCities?: string[];
+  tags?: VisitorFilterTagOption[];
 }
 
 interface LabelValue {
@@ -124,6 +133,8 @@ export const getVisitorFilterChips = ({
   additionalInfo,
   dataSource,
   updatedBetween,
+  tagId,
+  tags = [],
 }: Pick<
   VisitorListFilterProps,
   | 'name'
@@ -134,6 +145,8 @@ export const getVisitorFilterChips = ({
   | 'additionalInfo'
   | 'dataSource'
   | 'updatedBetween'
+  | 'tagId'
+  | 'tags'
 >): FilterChip[] => {
   const chips: FilterChip[] = [];
 
@@ -190,6 +203,15 @@ export const getVisitorFilterChips = ({
     });
   }
 
+  if (hasFilterValue(tagId)) {
+    const tag = tags.find((t) => t._id === tagId);
+    chips.push({
+      key: 'tagId',
+      label: 'Tag',
+      value: tag?.name || String(tagId),
+    });
+  }
+
   return chips;
 };
 
@@ -203,6 +225,8 @@ export const VisitorFilterChips = ({
   additionalInfo,
   dataSource,
   updatedBetween,
+  tagId,
+  tags,
 }: VisitorListFilterProps) => {
   const chips = useMemo(
     () =>
@@ -215,6 +239,8 @@ export const VisitorFilterChips = ({
         additionalInfo,
         dataSource,
         updatedBetween,
+        tagId,
+        tags,
       }),
     [
       name,
@@ -225,6 +251,8 @@ export const VisitorFilterChips = ({
       additionalInfo,
       dataSource,
       updatedBetween,
+      tagId,
+      tags,
     ]
   );
 
@@ -256,6 +284,7 @@ export const VisitorFilterChips = ({
       additionalInfo: '',
       dataSource: '',
       updatedBetween: JSON.stringify(['', '']),
+      tagId: '',
     });
   };
 
@@ -299,9 +328,11 @@ const ListFilter = ({
   additionalInfo = null,
   dataSource,
   updatedBetween,
+  tagId,
   showAdditionalInfoFilter = false,
   showDataSourceFilter = false,
   distinctCities = [],
+  tags = [],
 }: VisitorListFilterProps) => {
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
@@ -321,6 +352,8 @@ const ListFilter = ({
     additionalInfo,
     dataSource,
     updatedBetween,
+    tagId,
+    tags,
   }).length;
 
   const syncFormValues = () => {
@@ -333,6 +366,7 @@ const ListFilter = ({
       additionalInfo,
       dataSource,
       updatedBetween: updatedBetweenInitialValue,
+      tagId,
     });
   };
 
@@ -354,6 +388,7 @@ const ListFilter = ({
           ? values.updatedBetween?.[1].format(Formats.DATE_FORMAT)
           : '',
       ]),
+      tagId: values.tagId,
     });
     setOpen(false);
   };
@@ -410,6 +445,15 @@ const ListFilter = ({
           required={false}
           fieldLayout={formItemLayout}
           initialValue={ehadDuration}
+        />
+        <SelectField
+          data={tags}
+          getDataValue={(tag) => tag._id}
+          getDataText={(tag) => tag.name}
+          initialValue={tagId}
+          fieldName="tagId"
+          fieldLabel="Tag"
+          fieldLayout={formItemLayout}
         />
         {showAdditionalInfoFilter ? (
           <SelectField

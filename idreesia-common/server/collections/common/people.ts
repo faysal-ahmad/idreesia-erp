@@ -48,6 +48,8 @@ interface PersonDocument extends LooseRecord {
   createdBy?: string;
   updatedAt?: Date;
   updatedBy?: string;
+  deletedAt?: Date;
+  deletedBy?: string;
   sharedData: LooseRecord;
   visitorData?: LooseRecord | null;
   karkunData?: LooseRecord | null;
@@ -170,6 +172,43 @@ class People extends AggregatableCollection<PersonDocument> {
     );
 
     return this.findOneAsync(_id);
+  }
+
+  async removePerson(_id: string, user: UserRef) {
+    const date = new Date();
+    const result = await this.updateAsync(_id, {
+      $set: {
+        deletedAt: date,
+        deletedBy: user._id,
+        updatedAt: date,
+        updatedBy: user._id,
+      },
+    });
+
+    await AuditLogs.createAuditLog({
+      entityId: _id,
+      entityType: EntityType.PERSON,
+      operationType: OperationType.DELETE,
+      operationBy: user._id,
+      operationTime: date,
+    });
+
+    return result;
+  }
+
+  async hardRemovePerson(_id: string, user: UserRef) {
+    const date = new Date();
+    const result = await this.removeAsync(_id);
+
+    await AuditLogs.createAuditLog({
+      entityId: _id,
+      entityType: EntityType.PERSON,
+      operationType: OperationType.DELETE,
+      operationBy: user._id,
+      operationTime: date,
+    });
+
+    return result;
   }
 
   async addAttachment({ _id, attachmentId }: AttachmentInput, user: UserRef) {
@@ -310,6 +349,12 @@ class People extends AggregatableCollection<PersonDocument> {
         );
         break;
 
+      case 'tagIds':
+        isChanged =
+          [...((existingValue as string[]) ?? [])].sort().join(',') !==
+          [...((newValue as string[]) ?? [])].sort().join(',');
+        break;
+
       default:
         isChanged = existingValue !== newValue;
         break;
@@ -327,6 +372,7 @@ class People extends AggregatableCollection<PersonDocument> {
     if (cnicNumber) {
       person = await this.findOneAsync({
         'sharedData.cnicNumber': { $eq: cnicNumber },
+        deletedAt: { $exists: false },
       });
     }
 
@@ -338,6 +384,7 @@ class People extends AggregatableCollection<PersonDocument> {
           { 'sharedData.contactNumber1': contactNumber },
           { 'sharedData.contactNumber2': contactNumber },
         ],
+        deletedAt: { $exists: false },
       });
     }
 
@@ -349,6 +396,10 @@ class People extends AggregatableCollection<PersonDocument> {
   // **************************************************************
   async buildSearchPipline(params: LooseRecord = {}, flags: SearchFlags = {}) {
     const pipeline: LooseRecord[] = [];
+    pipeline.push({
+      $match: { deletedAt: { $exists: false } },
+    });
+
     const includeKarkuns = isNil(flags.includeKarkuns)
       ? false
       : flags.includeKarkuns;
@@ -370,6 +421,7 @@ class People extends AggregatableCollection<PersonDocument> {
       ehadDuration,
       dataSource,
       updatedBetween,
+      tagId,
       // visitor related fields
       city,
       cityNames,
@@ -485,6 +537,14 @@ class People extends AggregatableCollection<PersonDocument> {
       pipeline.push({
         $match: {
           dataSource: { $regex: new RegExp(`^${dataSource}`, 'i') },
+        },
+      });
+    }
+
+    if (tagId) {
+      pipeline.push({
+        $match: {
+          'sharedData.tagIds': { $eq: tagId },
         },
       });
     }
@@ -837,6 +897,7 @@ class People extends AggregatableCollection<PersonDocument> {
   async isCnicInUse(cnicNumber: string) {
     const person = await this.findOneAsync({
       'sharedData.cnicNumber': { $eq: cnicNumber },
+      deletedAt: { $exists: false },
     });
 
     if (person) return true;
@@ -846,6 +907,7 @@ class People extends AggregatableCollection<PersonDocument> {
   async checkCnicNotInUse(cnicNumber: string, personId?: string) {
     const person = await this.findOneAsync({
       'sharedData.cnicNumber': { $eq: cnicNumber },
+      deletedAt: { $exists: false },
     });
 
     if (person && (!personId || person._id !== personId)) {
@@ -861,6 +923,7 @@ class People extends AggregatableCollection<PersonDocument> {
         { 'sharedData.contactNumber1': { $eq: contactNumber } },
         { 'sharedData.contactNumber2': { $eq: contactNumber } },
       ],
+      deletedAt: { $exists: false },
     });
 
     if (person) return true;
@@ -873,6 +936,7 @@ class People extends AggregatableCollection<PersonDocument> {
         { 'sharedData.contactNumber1': { $eq: contactNumber } },
         { 'sharedData.contactNumber2': { $eq: contactNumber } },
       ],
+      deletedAt: { $exists: false },
     });
 
     if (person && (!personId || person._id !== personId)) {

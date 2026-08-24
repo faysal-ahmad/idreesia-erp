@@ -11,7 +11,6 @@ type PeopleTagType {
 
 extend type Query {
   allPeopleTags: [PeopleTagType]
-    @checkPermissions(permissions: [ADMIN_MANAGE_PEOPLE_TAGS])
 }
 
 extend type Mutation {

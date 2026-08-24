@@ -132,6 +132,8 @@ Always include **Refresh** (`SyncOutlined`) in utilities, even when the list has
 - Note: visitors `list.styles.css` currently locks selection on all `.list-table` tables; reuse that unless a page needs different widths
 - Any other column-width CSS for that page
 
+**Tag chips in a person's Name column** (list pages backed by `PersonName`, e.g. `common/visitors/list.tsx`): when a person can carry tags, render them right-aligned in the same Name column rather than as a separate column — wrap `PersonName` and the tag chips in a flex row (`justify-content: space-between`), render each tag with antd `Tag` (`variant="solid"`, `color`/`textColor` from the tag record). This is a Name-column convention specific to lists that show people, not a general list-column pattern.
+
 ### 5. Modal create (simple / setup lists)
 
 Prefer **create-in-modal on the list** when the new form is a few fields and there is no need for a full edit shell after create:
@@ -200,12 +202,13 @@ For entities with a photo / avatar:
 - Upload button label: short (**Upload**), not "Upload Picture"
 - Empty state when no image (no broken `img`)
 
-### 4. Notes / risk signals (when applicable)
+### 4. Additional Information section (notes / risk signals / tags, when applicable)
 
-- Prefer a Notes **section on the main form**, not a separate tab
+- Prefer an **"Additional Information" section on the main form**, not a separate tab — covers free-text notes/risk fields and, where relevant, a Tags multi-select
 - Badge on the section header when notes/risk fields have content (error stronger than warning)
 - Short `Alert` banners above the fields when content exists
-- Save notes with the main form save (one Save for the tab)
+- A Tags field on this section should only offer/display tags scoped to the current module (e.g. a `moduleNames` match); tags assigned via other modules are not shown or editable here — see `common/visitors/general-info.tsx` for the pattern (module-filtered options + preserving other modules' tag ids unseen on save)
+- Save notes/tags with the main form save (one Save for the tab)
 
 ### 5. Form actions & audit footer
 
@@ -224,7 +227,7 @@ When an edit tab embeds a list (e.g. Stay History), apply the same **Part A** li
 
 - Same collapse sections and `fullWidth` Save/Cancel alignment
 - Defaults as needed (e.g. Country = Pakistan for new visitors)
-- Omit notes / picture / audit until after create when those belong on edit
+- Omit picture / audit until after create when those belong on edit — but an Additional Information section (notes/tags) with no dependency on the record already existing can and should show on New too
 - Cancel → list; on successful create, toast then navigate to the edit page
 - Show `Spin` while lookup data (cities/countries) loads — not a blank page
 

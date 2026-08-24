@@ -26,6 +26,13 @@ const SECURITY_PERSON_BY_ID: TypedDocumentNode<
         educationalQualification
         meansOfEarning
         imageId
+        tagIds
+        tags {
+          _id
+          name
+          color
+          textColor
+        }
       }
       visitorData {
         city

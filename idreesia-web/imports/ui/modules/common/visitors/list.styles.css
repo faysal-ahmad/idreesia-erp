@@ -29,3 +29,18 @@
 .list-table .ant-table-tbody > tr.visitors-list-row-alert:hover > td {
   background: #ffccc7 !important;
 }
+
+.visitors-list-name-column {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.visitors-list-name-column-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+}

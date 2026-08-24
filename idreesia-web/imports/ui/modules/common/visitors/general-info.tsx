@@ -1,5 +1,6 @@
 import React, { useState, type ReactNode } from 'react';
 import dayjs, { type Dayjs } from 'dayjs';
+import { useQuery } from '@apollo/client/react';
 import {
   Alert,
   Badge,
@@ -10,11 +11,13 @@ import {
   type CollapseProps,
 } from 'antd';
 
+import { ModuleNames } from 'meteor/idreesia-common/constants';
 import {
   useDistinctCities,
   useDistinctCountries,
 } from 'meteor/idreesia-common/hooks/security';
 import type { SecurityRegistrationPersonByIdQuery } from 'meteor/idreesia-common/types/client-operations';
+import { ALL_PEOPLE_TAGS } from '/imports/ui/modules/admin/people-tags/gql';
 import {
   AgeField,
   AutoCompleteField,
@@ -23,6 +26,7 @@ import {
   InputMobileField,
   InputTextField,
   InputTextAreaField,
+  SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
@@ -46,13 +50,14 @@ export interface VisitorGeneralInfoFormValues {
   meansOfEarning?: string;
   criminalRecord?: string;
   otherNotes?: string;
+  tagIds?: string[];
 }
 
 interface Props {
   visitor?: VisitorRecord;
   handleFinish(values: VisitorGeneralInfoFormValues): void | Promise<unknown>;
   handleCancel?(): void;
-  showNotesSection?: boolean;
+  showAdditionalInfoSection?: boolean;
   showAuditInfo?: boolean;
   /** Non-collapsible content shown to the right of Personal Information */
   sideContent?: ReactNode;
@@ -64,7 +69,7 @@ const GeneralInfo = ({
   visitor,
   handleFinish,
   handleCancel,
-  showNotesSection = false,
+  showAdditionalInfoSection = false,
   showAuditInfo = true,
   sideContent,
 }: Props) => {
@@ -75,10 +80,23 @@ const GeneralInfo = ({
     distinctCountries,
     distinctCountriesLoading,
   } = useDistinctCountries();
+  const { data: peopleTagsData } = useQuery(ALL_PEOPLE_TAGS);
 
   const handleFieldsChange = () => {
     setIsFieldsTouched(true);
   };
+
+  const allTags = peopleTagsData?.allPeopleTags ?? [];
+  const securityScopedTags = allTags.filter(
+    (tag): tag is NonNullable<typeof tag> =>
+      tag != null && (tag.moduleNames ?? []).includes(ModuleNames.security)
+  );
+  const existingTagIds = (visitor?.sharedData?.tagIds ?? []).filter(
+    (tagId): tagId is string => tagId != null
+  );
+  const nonSecurityTagIds = existingTagIds.filter(
+    (tagId) => !securityScopedTags.some((tag) => tag._id === tagId)
+  );
 
   const _handleFinish = async (values: VisitorGeneralInfoFormValues) => {
     const { cnicNumber, contactNumber1 } = values;
@@ -90,7 +108,10 @@ const GeneralInfo = ({
       return;
     }
 
-    await handleFinish(values);
+    await handleFinish({
+      ...values,
+      tagIds: [...nonSecurityTagIds, ...(values.tagIds ?? [])],
+    });
     setIsFieldsTouched(false);
   };
 
@@ -145,8 +166,8 @@ const GeneralInfo = ({
   };
 
   const remainingDefaultKeys = ['contact', 'ehad'];
-  if (showNotesSection) {
-    remainingDefaultKeys.push('notes');
+  if (showAdditionalInfoSection) {
+    remainingDefaultKeys.push('additionalInfo');
   }
 
   const remainingItems: CollapseProps['items'] = [
@@ -246,12 +267,12 @@ const GeneralInfo = ({
     },
   ];
 
-  if (showNotesSection) {
+  if (showAdditionalInfoSection) {
     remainingItems?.push({
-      key: 'notes',
+      key: 'additionalInfo',
       label: (
         <span>
-          Notes
+          Additional Information
           {hasCriminalRecord || hasOtherNotes ? (
             <Badge
               status={hasCriminalRecord ? 'error' : 'warning'}
@@ -287,6 +308,19 @@ const GeneralInfo = ({
               ) : null}
             </Space>
           ) : null}
+
+          <SelectField
+            data={securityScopedTags}
+            getDataValue={(tag) => tag._id as string}
+            getDataText={(tag) => tag.name}
+            fieldName="tagIds"
+            fieldLabel="Tags"
+            mode="multiple"
+            initialValue={existingTagIds.filter((tagId) =>
+              securityScopedTags.some((tag) => tag._id === tagId)
+            )}
+            required={false}
+          />
 
           <InputTextAreaField
             fieldName="criminalRecord"

@@ -6,6 +6,7 @@ import {
   Attachments,
   People,
 } from 'meteor/idreesia-common/server/collections/common';
+import { PeopleTags } from 'meteor/idreesia-common/server/collections/admin';
 import {
   Cities,
   CityMehfils,
@@ -16,6 +17,7 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 
 interface PersonSharedDataType {
   imageId?: string;
+  tagIds?: string[];
 }
 
 interface PersonKarkunDataType {
@@ -60,6 +62,14 @@ export default {
       }
 
       return null;
+    },
+    tags: async (personSharedDataType: PersonSharedDataType) => {
+      const { tagIds } = personSharedDataType;
+      if (tagIds && tagIds.length > 0) {
+        return PeopleTags.find({ _id: { $in: tagIds } }).fetchAsync();
+      }
+
+      return [];
     },
   },
   PersonKarkunDataType: {

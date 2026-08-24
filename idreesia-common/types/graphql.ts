@@ -1701,6 +1701,7 @@ export type PersonFilter = {
   pageIndex?: InputMaybe<Scalars['String']['input']>;
   pageSize?: InputMaybe<Scalars['String']['input']>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  tagId?: InputMaybe<Scalars['String']['input']>;
   updatedBetween?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1734,6 +1735,7 @@ export type PersonSharedDataInput = {
   parentName: Scalars['String']['input'];
   permanentAddress?: InputMaybe<Scalars['String']['input']>;
   referenceName: Scalars['String']['input'];
+  tagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 export type PersonSharedDataType = {
@@ -1757,6 +1759,8 @@ export type PersonSharedDataType = {
   parentName?: Maybe<Scalars['String']['output']>;
   permanentAddress?: Maybe<Scalars['String']['output']>;
   referenceName?: Maybe<Scalars['String']['output']>;
+  tagIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  tags?: Maybe<Array<Maybe<PeopleTagType>>>;
 };
 
 export type PersonType = {

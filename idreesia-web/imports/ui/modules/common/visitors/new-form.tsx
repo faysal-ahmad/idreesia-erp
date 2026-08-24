@@ -15,7 +15,7 @@ interface Props {
 
 /**
  * New-visitor form — same sectioned layout as edit General Info,
- * without notes/picture/audit (those belong on the edit page after create).
+ * without picture/audit (those belong on the edit page after create).
  */
 const NewForm = ({ handleFinish, handleCancel }: Props) => (
   <VisitorsGeneralInfo
@@ -29,6 +29,7 @@ const NewForm = ({ handleFinish, handleCancel }: Props) => (
     }}
     handleFinish={handleFinish}
     handleCancel={handleCancel}
+    showAdditionalInfoSection
     showAuditInfo={false}
   />
 );

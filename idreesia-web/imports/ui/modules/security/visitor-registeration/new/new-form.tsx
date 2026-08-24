@@ -39,6 +39,9 @@ const NewForm = ({ history }: Props) => {
     permanentAddress,
     educationalQualification,
     meansOfEarning,
+    criminalRecord,
+    otherNotes,
+    tagIds,
   }: VisitorNewFormValues) =>
     createSecurityVisitorPerson({
       variables: {
@@ -55,10 +58,13 @@ const NewForm = ({ history }: Props) => {
           permanentAddress,
           educationalQualification,
           meansOfEarning,
+          tagIds,
         },
         visitorData: {
           city,
           country,
+          criminalRecord,
+          otherNotes,
         },
       },
     })

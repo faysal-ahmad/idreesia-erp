@@ -14,6 +14,7 @@ input PersonSharedDataInput {
   permanentAddress: String
   educationalQualification: String
   meansOfEarning: String
+  tagIds: [String]
 }
 
 input PersonVisitorDataInput {

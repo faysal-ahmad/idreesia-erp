@@ -21,6 +21,12 @@ const PAGED_SECURITY_PEOPLE: TypedDocumentNode<
           contactNumber1
           contactNumber2
           imageId
+          tags {
+            _id
+            name
+            color
+            textColor
+          }
         }
         visitorData {
           city

@@ -60,6 +60,7 @@ const GeneralInfo = ({ history, visitorId, securityVisitorById }: Props) => {
     meansOfEarning,
     criminalRecord,
     otherNotes,
+    tagIds,
   }: VisitorGeneralInfoFormValues) =>
     Promise.all([
       updateSecurityVisitorPerson({
@@ -78,6 +79,7 @@ const GeneralInfo = ({ history, visitorId, securityVisitorById }: Props) => {
             permanentAddress,
             educationalQualification,
             meansOfEarning,
+            tagIds,
           },
           visitorData: {
             city,
@@ -106,7 +108,7 @@ const GeneralInfo = ({ history, visitorId, securityVisitorById }: Props) => {
       visitor={securityVisitorById}
       handleFinish={handleFinish}
       handleCancel={handleCancel}
-      showNotesSection
+      showAdditionalInfoSection
       sideContent={
         <Picture
           visitorId={visitorId}

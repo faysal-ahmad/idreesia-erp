@@ -7,9 +7,17 @@ import {
   Popconfirm,
   Row,
   Table,
+  Tag,
   Tooltip,
 } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
+
+export interface VisitorTag {
+  _id: string;
+  name?: string | null;
+  color?: string | null;
+  textColor?: string | null;
+}
 
 export interface VisitorListItem {
   _id: string;
@@ -24,6 +32,7 @@ export interface VisitorListItem {
   criminalRecord?: string | null;
   otherNotes?: string | null;
   isKarkun?: boolean | null;
+  tags?: (VisitorTag | null)[] | null;
 }
 
 interface PagedData { totalResults: number; data: VisitorListItem[]; }
@@ -148,19 +157,41 @@ export default class VisitorsList extends Component<Props, State> {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (_text: unknown, record: VisitorListItem) => (
-      <PersonName
-        person={{
-          _id: record._id,
-          name: record.name ?? '',
-          imageId: record.imageId ?? undefined,
-          image: record.image
-            ? { data: record.image.data ?? undefined }
-            : undefined,
-        }}
-        onPersonNameClicked={this.props.handleSelectItem}
-      />
-    ),
+    render: (_text: unknown, record: VisitorListItem) => {
+      const tags = (record.tags ?? []).filter(
+        (tag): tag is VisitorTag => tag != null
+      );
+
+      return (
+        <div className="visitors-list-name-column">
+          <PersonName
+            person={{
+              _id: record._id,
+              name: record.name ?? '',
+              imageId: record.imageId ?? undefined,
+              image: record.image
+                ? { data: record.image.data ?? undefined }
+                : undefined,
+            }}
+            onPersonNameClicked={this.props.handleSelectItem}
+          />
+          {tags.length > 0 ? (
+            <div className="visitors-list-name-column-tags">
+              {tags.map((tag) => (
+                <Tag
+                  key={tag._id}
+                  color={tag.color ?? undefined}
+                  variant="solid"
+                  style={{ color: tag.textColor ?? undefined }}
+                >
+                  {tag.name}
+                </Tag>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      );
+    },
   };
 
   cnicColumn = {

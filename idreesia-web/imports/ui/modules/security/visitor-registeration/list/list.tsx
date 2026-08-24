@@ -31,6 +31,7 @@ import {
 import type { VisitorListItem } from '/imports/ui/modules/common/visitors/list';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
+import { ALL_PEOPLE_TAGS } from '/imports/ui/modules/admin/people-tags/gql';
 
 import { PAGED_SECURITY_PEOPLE, DELETE_SECURITY_PERSON } from '../gql';
 
@@ -55,6 +56,7 @@ const List = ({ history, location }: Props) => {
       'ehadDuration',
       'additionalInfo',
       'updatedBetween',
+      'tagId',
       'pageIndex',
       'pageSize',
     ],
@@ -64,6 +66,7 @@ const List = ({ history, location }: Props) => {
   const { distinctCities, distinctCitiesRefetch } = useDistinctCities(
     'cache-first'
   );
+  const { data: peopleTagsData } = useQuery(ALL_PEOPLE_TAGS);
   const { data, refetch } = useQuery(PAGED_SECURITY_PEOPLE, {
     variables: { filter: queryParams },
   });
@@ -76,9 +79,14 @@ const List = ({ history, location }: Props) => {
     ehadDuration,
     additionalInfo,
     updatedBetween,
+    tagId,
     pageIndex,
     pageSize,
   } = queryParams;
+
+  const filterTags = (peopleTagsData?.allPeopleTags ?? []).flatMap((tag) =>
+    tag?._id ? [{ _id: tag._id, name: tag.name }] : []
+  );
 
   const refreshData = async () => {
     await refetch();
@@ -94,6 +102,7 @@ const List = ({ history, location }: Props) => {
     ehadDuration?: string;
     additionalInfo?: string;
     updatedBetween?: string;
+    tagId?: string;
   }) => {
     setPageParams(params);
   };
@@ -212,8 +221,10 @@ const List = ({ history, location }: Props) => {
     ehadDuration: ehadDuration as string | undefined,
     additionalInfo: additionalInfo as string | undefined,
     updatedBetween: updatedBetween as string | undefined,
+    tagId: tagId as string | undefined,
     showAdditionalInfoFilter: true,
     distinctCities: distinctCities ?? [],
+    tags: filterTags,
     setPageParams: handleFilterSetPageParams,
     refreshData,
   };
@@ -260,6 +271,7 @@ const List = ({ history, location }: Props) => {
               criminalRecord: person.visitorData?.criminalRecord,
               otherNotes: person.visitorData?.otherNotes,
               isKarkun: person.isKarkun,
+              tags: person.sharedData?.tags,
             } as VisitorListItem,
           ]
         : []

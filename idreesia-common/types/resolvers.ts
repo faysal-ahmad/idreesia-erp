@@ -946,6 +946,8 @@ export type PersonSharedDataTypeResolvers<ContextType = any, ParentType extends 
   parentName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   permanentAddress?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   referenceName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  tagIds?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  tags?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PeopleTagType']>>>, ParentType, ContextType>;
 }>;
 
 export type PersonTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PersonType'] = ResolversParentTypes['PersonType']> = ResolversObject<{

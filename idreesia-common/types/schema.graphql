@@ -115,7 +115,6 @@ type PeopleTagType {
 
 extend type Query {
   allPeopleTags: [PeopleTagType]
-    @checkPermissions(permissions: [ADMIN_MANAGE_PEOPLE_TAGS])
 }
 
 extend type Mutation {
@@ -519,8 +518,10 @@ type PersonSharedDataType {
   deathDate: String
   referenceName: String
   imageId: String
+  tagIds: [String]
 
   image: Attachment
+  tags: [PeopleTagType]
 }
 
 type PersonVisitorDataType {
@@ -583,6 +584,7 @@ input PersonFilter {
   additionalInfo: String
   dataSource: String
   updatedBetween: String
+  tagId: String
   pageIndex: String
   pageSize: String
 }
@@ -1916,6 +1918,7 @@ input PersonSharedDataInput {
   permanentAddress: String
   educationalQualification: String
   meansOfEarning: String
+  tagIds: [String]
 }
 
 input PersonVisitorDataInput {

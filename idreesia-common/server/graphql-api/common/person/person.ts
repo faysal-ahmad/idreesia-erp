@@ -20,8 +20,10 @@ type PersonSharedDataType {
   deathDate: String
   referenceName: String
   imageId: String
+  tagIds: [String]
 
   image: Attachment
+  tags: [PeopleTagType]
 }
 
 type PersonVisitorDataType {
@@ -84,6 +86,7 @@ input PersonFilter {
   additionalInfo: String
   dataSource: String
   updatedBetween: String
+  tagId: String
   pageIndex: String
   pageSize: String
 }

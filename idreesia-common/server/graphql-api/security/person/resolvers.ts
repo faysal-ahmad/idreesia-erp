@@ -23,6 +23,7 @@ const resolvers: ResolverMap = {
       if (cnicNumbers.length > 0) {
         return People.findOneAsync({
           'sharedData.cnicNumber': { $in: cnicNumbers },
+          deletedAt: { $exists: false },
         });
       }
 
@@ -62,7 +63,8 @@ const resolvers: ResolverMap = {
         user
       ),
 
-    deleteSecurityPerson: async (obj, { _id }) => People.removeAsync(_id),
+    deleteSecurityPerson: async (obj, { _id }, { user }) =>
+      People.removePerson(_id, user),
 
     setSecurityPersonImage: async (obj, { _id, imageId }, { user }) => {
       const imageVectorData = await computeImageVectorData(imageId);

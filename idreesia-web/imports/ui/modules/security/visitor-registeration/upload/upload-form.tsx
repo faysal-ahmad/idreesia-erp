@@ -29,7 +29,7 @@ const UploadForm = ({ history }: Props) => {
   const [importSecurityVisitorsCsvData] = useMutation(
     IMPORT_SECURITY_VISITORS_CSV_DATA,
     {
-      refetchQueries: ['pagedSecurityVisitors'],
+      refetchQueries: ['pagedSecurityPeople'],
     }
   );
 

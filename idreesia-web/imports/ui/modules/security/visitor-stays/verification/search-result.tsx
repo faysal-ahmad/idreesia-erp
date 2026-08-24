@@ -78,14 +78,24 @@ const SearchResult = ({ barcode }: SearchResultProps) => {
     statusRow = <ScanStatus isError message="Card Expired" />;
   }
 
-  const visitor = visitorStayById.refVisitor;
-  if (!visitor) return null;
+  const refVisitor = visitorStayById.refVisitor;
+  if (!refVisitor) return null;
 
-  const url = getDownloadUrl(visitor.imageId);
+  const visitor = {
+    name: refVisitor.sharedData?.name,
+    parentName: refVisitor.sharedData?.parentName,
+    referenceName: refVisitor.sharedData?.referenceName,
+    cnicNumber: refVisitor.sharedData?.cnicNumber,
+    contactNumber1: refVisitor.sharedData?.contactNumber1,
+    city: refVisitor.visitorData?.city,
+    criminalRecord: refVisitor.visitorData?.criminalRecord,
+  };
+
+  const url = getDownloadUrl(refVisitor.sharedData?.imageId);
   const imageNode = url ? (
     <img src={url} style={{ width: '250px' }} alt={visitor.name ?? 'Visitor'} />
   ) : null;
-  const registerationUrl = paths.visitorRegistrationEditFormPath(visitor._id ?? '');
+  const registerationUrl = paths.visitorRegistrationEditFormPath(refVisitor._id ?? '');
 
   return (
     <Fragment>

@@ -79,6 +79,11 @@ input PersonFilter {
   cnicNumber: String
   phoneNumber: String
   city: String
+  ehadDuration: String
+  ehadDate: String
+  additionalInfo: String
+  dataSource: String
+  updatedBetween: String
   pageIndex: String
   pageSize: String
 }
@@ -90,5 +95,11 @@ type PagedPeopleType {
 
 extend type Query {
   pagedPeople(filter: PersonFilter): PagedPeopleType
+  distinctCities: [String]
+  distinctCountries: [String]
+}
+
+extend type Mutation {
+  fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
 }
 `;

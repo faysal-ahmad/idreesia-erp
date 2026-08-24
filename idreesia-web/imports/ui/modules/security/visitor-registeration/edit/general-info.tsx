@@ -5,17 +5,17 @@ import { useMutation } from '@apollo/client/react';
 
 import { VisitorsGeneralInfo } from '/imports/ui/modules/common';
 import type { VisitorGeneralInfoFormValues } from '/imports/ui/modules/common/visitors/general-info';
-import type { SecurityRegistrationVisitorByIdQuery } from 'meteor/idreesia-common/types/client-operations';
+import type { SecurityRegistrationPersonByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 import Picture from './picture';
 import {
-  UPDATE_SECURITY_VISITOR,
-  UPDATE_SECURITY_VISITOR_NOTES,
+  UPDATE_SECURITY_VISITOR_PERSON,
+  UPDATE_SECURITY_PERSON_VISITOR_DATA,
 } from '../gql';
 
 type SecurityVisitor = NonNullable<
-  SecurityRegistrationVisitorByIdQuery['securityVisitorById']
+  SecurityRegistrationPersonByIdQuery['securityPersonById']
 >;
 
 interface Props {
@@ -26,15 +26,16 @@ interface Props {
 
 const GeneralInfo = ({ history, visitorId, securityVisitorById }: Props) => {
   const refetchQueries = [
-    'pagedSecurityVisitors',
-    'securityRegistrationVisitorById',
+    'pagedSecurityPeople',
+    'securityRegistrationPersonById',
   ];
 
-  const [updateSecurityVisitor] = useMutation(UPDATE_SECURITY_VISITOR, {
-    refetchQueries,
-  });
-  const [updateSecurityVisitorNotes] = useMutation(
-    UPDATE_SECURITY_VISITOR_NOTES,
+  const [updateSecurityVisitorPerson] = useMutation(
+    UPDATE_SECURITY_VISITOR_PERSON,
+    { refetchQueries }
+  );
+  const [updateSecurityPersonVisitorData] = useMutation(
+    UPDATE_SECURITY_PERSON_VISITOR_DATA,
     { refetchQueries }
   );
 
@@ -61,26 +62,30 @@ const GeneralInfo = ({ history, visitorId, securityVisitorById }: Props) => {
     otherNotes,
   }: VisitorGeneralInfoFormValues) =>
     Promise.all([
-      updateSecurityVisitor({
+      updateSecurityVisitorPerson({
         variables: {
           _id: securityVisitorById._id ?? '',
-          name: name ?? '',
-          parentName: parentName ?? '',
-          cnicNumber: cnicNumber ?? '',
-          ehadDate: ehadDate as unknown as string,
-          birthDate: birthDate as unknown as string | null | undefined,
-          referenceName: referenceName ?? '',
-          contactNumber1,
-          contactNumber2,
-          city,
-          country,
-          currentAddress,
-          permanentAddress,
-          educationalQualification,
-          meansOfEarning,
+          sharedData: {
+            name: name ?? '',
+            parentName: parentName ?? '',
+            cnicNumber,
+            ehadDate: ehadDate as unknown as string,
+            birthDate: birthDate as unknown as string | null | undefined,
+            referenceName: referenceName ?? '',
+            contactNumber1,
+            contactNumber2,
+            currentAddress,
+            permanentAddress,
+            educationalQualification,
+            meansOfEarning,
+          },
+          visitorData: {
+            city,
+            country,
+          },
         },
       }),
-      updateSecurityVisitorNotes({
+      updateSecurityPersonVisitorData({
         variables: {
           _id: securityVisitorById._id ?? '',
           criminalRecord,

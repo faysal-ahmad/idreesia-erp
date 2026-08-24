@@ -21,26 +21,6 @@ export type Scalars = {
   UtcOffset: { input: unknown; output: unknown; }
 };
 
-export type ApprovedImdadType = {
-  __typename?: 'ApprovedImdadType';
-  fixedRecurringFuel?: Maybe<Scalars['Int']['output']>;
-  fixedRecurringHouseRent?: Maybe<Scalars['Int']['output']>;
-  fixedRecurringMedical?: Maybe<Scalars['Int']['output']>;
-  fixedRecurringMilk?: Maybe<Scalars['Int']['output']>;
-  fixedRecurringMonthlyPayment?: Maybe<Scalars['Int']['output']>;
-  fixedRecurringSchoolFee?: Maybe<Scalars['Int']['output']>;
-  fixedRecurringWeeklyPayment?: Maybe<Scalars['Int']['output']>;
-  fromMonth?: Maybe<Scalars['String']['output']>;
-  oneOffHouseConstruction?: Maybe<Scalars['Int']['output']>;
-  oneOffMarriageExpense?: Maybe<Scalars['Int']['output']>;
-  oneOffMedical?: Maybe<Scalars['Int']['output']>;
-  oneOffMiscPayment?: Maybe<Scalars['Int']['output']>;
-  ration?: Maybe<Scalars['String']['output']>;
-  toMonth?: Maybe<Scalars['String']['output']>;
-  variableRecurringMedical?: Maybe<Scalars['Int']['output']>;
-  variableRecurringUtilityBills?: Maybe<Scalars['Int']['output']>;
-};
-
 export type Attachment = {
   __typename?: 'Attachment';
   _id?: Maybe<Scalars['String']['output']>;
@@ -189,35 +169,6 @@ export type FaceVectorRecord = {
   computedAt: Scalars['DateTime']['output'];
   personId: Scalars['String']['output'];
   vector: Array<Scalars['Float']['output']>;
-};
-
-export type ImdadRequestFilter = {
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  pageIndex?: InputMaybe<Scalars['String']['input']>;
-  pageSize?: InputMaybe<Scalars['String']['input']>;
-  requestDate?: InputMaybe<Scalars['String']['input']>;
-  status?: InputMaybe<Scalars['String']['input']>;
-  updatedBetween?: InputMaybe<Scalars['String']['input']>;
-  visitorId?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type ImdadRequestType = {
-  __typename?: 'ImdadRequestType';
-  _id?: Maybe<Scalars['String']['output']>;
-  approvedImdad?: Maybe<ApprovedImdadType>;
-  attachmentIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  attachments?: Maybe<Array<Maybe<Attachment>>>;
-  createdAt?: Maybe<Scalars['String']['output']>;
-  createdBy?: Maybe<Scalars['String']['output']>;
-  dataSource?: Maybe<Scalars['String']['output']>;
-  imdadReasonId?: Maybe<Scalars['String']['output']>;
-  notes?: Maybe<Scalars['String']['output']>;
-  requestDate?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['String']['output']>;
-  updatedBy?: Maybe<Scalars['String']['output']>;
-  visitor?: Maybe<VisitorType>;
-  visitorId?: Maybe<Scalars['String']['output']>;
 };
 
 export type InventoryStatistics = {
@@ -573,7 +524,7 @@ export type Mutation = {
   createSecurityMehfilDuty?: Maybe<MehfilDutyType>;
   createSecurityMehfilLangarDish?: Maybe<MehfilLangarDishType>;
   createSecurityMehfilLangarLocation?: Maybe<MehfilLangarLocationType>;
-  createSecurityVisitor?: Maybe<VisitorType>;
+  createSecurityVisitorPerson?: Maybe<PersonType>;
   createStockAdjustment?: Maybe<StockAdjustment>;
   createStockItem?: Maybe<StockItem>;
   createUser?: Maybe<UserType>;
@@ -586,7 +537,7 @@ export type Mutation = {
   deleteHrKarkun?: Maybe<Scalars['Int']['output']>;
   deletePeopleTag?: Maybe<Scalars['Int']['output']>;
   deleteSalaries?: Maybe<Scalars['Int']['output']>;
-  deleteSecurityVisitor?: Maybe<Scalars['Int']['output']>;
+  deleteSecurityPerson?: Maybe<Scalars['Int']['output']>;
   deleteUserGroup?: Maybe<Scalars['Int']['output']>;
   deleteVisitorStay?: Maybe<Scalars['Int']['output']>;
   fixCitySpelling?: Maybe<Scalars['Int']['output']>;
@@ -631,8 +582,8 @@ export type Mutation = {
   setJobDefinitionEnabled?: Maybe<JobDefinitionType>;
   setPermissions?: Maybe<UserType>;
   setScheduledJobEnabled?: Maybe<Scalars['Boolean']['output']>;
+  setSecurityPersonImage?: Maybe<PersonType>;
   setSecurityUserPermissions?: Maybe<UserType>;
-  setSecurityVisitorImage?: Maybe<VisitorType>;
   setStockItemImage?: Maybe<StockItem>;
   setUserGroupInstanceAccess?: Maybe<UserGroupType>;
   setUserGroupPermissions?: Maybe<UserGroupType>;
@@ -660,8 +611,8 @@ export type Mutation = {
   updateSecurityMehfilDuty?: Maybe<MehfilDutyType>;
   updateSecurityMehfilLangarDish?: Maybe<MehfilLangarDishType>;
   updateSecurityMehfilLangarLocation?: Maybe<MehfilLangarLocationType>;
-  updateSecurityVisitor?: Maybe<VisitorType>;
-  updateSecurityVisitorNotes?: Maybe<VisitorType>;
+  updateSecurityPersonVisitorData?: Maybe<PersonType>;
+  updateSecurityVisitorPerson?: Maybe<PersonType>;
   updateStockAdjustment?: Maybe<StockAdjustment>;
   updateStockItem?: Maybe<StockItem>;
   updateUser?: Maybe<UserType>;
@@ -910,22 +861,9 @@ export type MutationCreateSecurityMehfilLangarLocationArgs = {
 };
 
 
-export type MutationCreateSecurityVisitorArgs = {
-  birthDate?: InputMaybe<Scalars['String']['input']>;
-  city?: InputMaybe<Scalars['String']['input']>;
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  contactNumber1?: InputMaybe<Scalars['String']['input']>;
-  contactNumber2?: InputMaybe<Scalars['String']['input']>;
-  country?: InputMaybe<Scalars['String']['input']>;
-  currentAddress?: InputMaybe<Scalars['String']['input']>;
-  educationalQualification?: InputMaybe<Scalars['String']['input']>;
-  ehadDate: Scalars['String']['input'];
-  imageData?: InputMaybe<Scalars['String']['input']>;
-  meansOfEarning?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  parentName: Scalars['String']['input'];
-  permanentAddress?: InputMaybe<Scalars['String']['input']>;
-  referenceName: Scalars['String']['input'];
+export type MutationCreateSecurityVisitorPersonArgs = {
+  sharedData: PersonSharedDataInput;
+  visitorData?: InputMaybe<PersonVisitorDataInput>;
 };
 
 
@@ -1022,7 +960,7 @@ export type MutationDeleteSalariesArgs = {
 };
 
 
-export type MutationDeleteSecurityVisitorArgs = {
+export type MutationDeleteSecurityPersonArgs = {
   _id: Scalars['String']['input'];
 };
 
@@ -1282,15 +1220,15 @@ export type MutationSetScheduledJobEnabledArgs = {
 };
 
 
-export type MutationSetSecurityUserPermissionsArgs = {
-  permissions: Array<InputMaybe<Scalars['String']['input']>>;
-  userId: Scalars['String']['input'];
+export type MutationSetSecurityPersonImageArgs = {
+  _id: Scalars['String']['input'];
+  imageId: Scalars['String']['input'];
 };
 
 
-export type MutationSetSecurityVisitorImageArgs = {
-  _id: Scalars['String']['input'];
-  imageId: Scalars['String']['input'];
+export type MutationSetSecurityUserPermissionsArgs = {
+  permissions: Array<InputMaybe<Scalars['String']['input']>>;
+  userId: Scalars['String']['input'];
 };
 
 
@@ -1519,29 +1457,17 @@ export type MutationUpdateSecurityMehfilLangarLocationArgs = {
 };
 
 
-export type MutationUpdateSecurityVisitorArgs = {
-  _id: Scalars['String']['input'];
-  birthDate?: InputMaybe<Scalars['String']['input']>;
-  city?: InputMaybe<Scalars['String']['input']>;
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  contactNumber1?: InputMaybe<Scalars['String']['input']>;
-  contactNumber2?: InputMaybe<Scalars['String']['input']>;
-  country?: InputMaybe<Scalars['String']['input']>;
-  currentAddress?: InputMaybe<Scalars['String']['input']>;
-  educationalQualification?: InputMaybe<Scalars['String']['input']>;
-  ehadDate: Scalars['String']['input'];
-  meansOfEarning?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  parentName: Scalars['String']['input'];
-  permanentAddress?: InputMaybe<Scalars['String']['input']>;
-  referenceName: Scalars['String']['input'];
-};
-
-
-export type MutationUpdateSecurityVisitorNotesArgs = {
+export type MutationUpdateSecurityPersonVisitorDataArgs = {
   _id: Scalars['String']['input'];
   criminalRecord?: InputMaybe<Scalars['String']['input']>;
   otherNotes?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationUpdateSecurityVisitorPersonArgs = {
+  _id: Scalars['String']['input'];
+  sharedData: PersonSharedDataInput;
+  visitorData?: InputMaybe<PersonVisitorDataInput>;
 };
 
 
@@ -1629,12 +1555,6 @@ export type PagedCityType = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
-export type PagedImdadRequestType = {
-  __typename?: 'PagedImdadRequestType';
-  data?: Maybe<Array<Maybe<ImdadRequestType>>>;
-  totalResults?: Maybe<Scalars['Int']['output']>;
-};
-
 export type PagedIssuanceForm = {
   __typename?: 'PagedIssuanceForm';
   data?: Maybe<Array<Maybe<IssuanceForm>>>;
@@ -1713,12 +1633,6 @@ export type PagedVisitorStayType = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
-export type PagedVisitorType = {
-  __typename?: 'PagedVisitorType';
-  data?: Maybe<Array<Maybe<VisitorType>>>;
-  totalResults?: Maybe<Scalars['Int']['output']>;
-};
-
 export type PeopleTagType = {
   __typename?: 'PeopleTagType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -1777,12 +1691,17 @@ export type PersonEmployeeDataType = {
 };
 
 export type PersonFilter = {
+  additionalInfo?: InputMaybe<Scalars['String']['input']>;
   city?: InputMaybe<Scalars['String']['input']>;
   cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  dataSource?: InputMaybe<Scalars['String']['input']>;
+  ehadDate?: InputMaybe<Scalars['String']['input']>;
+  ehadDuration?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;
   pageSize?: InputMaybe<Scalars['String']['input']>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  updatedBetween?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PersonKarkunDataType = {
@@ -1800,6 +1719,21 @@ export type PersonKarkunDataType = {
   mehfilRaabta?: Maybe<Scalars['String']['output']>;
   msLastVisitDate?: Maybe<Scalars['String']['output']>;
   msRaabta?: Maybe<Scalars['String']['output']>;
+};
+
+export type PersonSharedDataInput = {
+  birthDate?: InputMaybe<Scalars['String']['input']>;
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  contactNumber1?: InputMaybe<Scalars['String']['input']>;
+  contactNumber2?: InputMaybe<Scalars['String']['input']>;
+  currentAddress?: InputMaybe<Scalars['String']['input']>;
+  educationalQualification?: InputMaybe<Scalars['String']['input']>;
+  ehadDate: Scalars['String']['input'];
+  meansOfEarning?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  parentName: Scalars['String']['input'];
+  permanentAddress?: InputMaybe<Scalars['String']['input']>;
+  referenceName: Scalars['String']['input'];
 };
 
 export type PersonSharedDataType = {
@@ -1841,6 +1775,13 @@ export type PersonType = {
   updatedBy?: Maybe<Scalars['String']['output']>;
   userId?: Maybe<Scalars['String']['output']>;
   visitorData?: Maybe<PersonVisitorDataType>;
+};
+
+export type PersonVisitorDataInput = {
+  city?: InputMaybe<Scalars['String']['input']>;
+  country?: InputMaybe<Scalars['String']['input']>;
+  criminalRecord?: InputMaybe<Scalars['String']['input']>;
+  otherNotes?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PersonVisitorDataType = {
@@ -1952,15 +1893,14 @@ export type Query = {
   pagedSalariesByKarkun?: Maybe<PagedSalaryType>;
   pagedScheduledJobs?: Maybe<PagedScheduledJobsType>;
   pagedSecurityAuditLogs?: Maybe<PagedAuditLogType>;
+  pagedSecurityPeople?: Maybe<PagedPeopleType>;
   pagedSecurityUsers?: Maybe<PagedUserType>;
-  pagedSecurityVisitors?: Maybe<PagedVisitorType>;
   pagedStockAdjustments?: Maybe<PagedStockAdjustment>;
   pagedStockItems?: Maybe<PagedStockItem>;
   pagedUserGroups?: Maybe<PagedUserGroupType>;
   pagedUsers?: Maybe<PagedUserType>;
   pagedVisitorStays?: Maybe<PagedVisitorStayType>;
   pagedVisitorStaysByVisitorId?: Maybe<PagedVisitorStayType>;
-  pagedVisitors?: Maybe<PagedVisitorType>;
   physicalStoreById?: Maybe<PhysicalStore>;
   purchaseFormById?: Maybe<PurchaseForm>;
   purchaseFormsByMonth?: Maybe<Array<Maybe<PurchaseForm>>>;
@@ -1970,9 +1910,8 @@ export type Query = {
   securityMehfilDutyById?: Maybe<MehfilDutyType>;
   securityMehfilLangarDishById?: Maybe<MehfilLangarDishType>;
   securityMehfilLangarLocationById?: Maybe<MehfilLangarLocationType>;
-  securityVisitorByCnic?: Maybe<VisitorType>;
-  securityVisitorByCnicOrContactNumber?: Maybe<VisitorType>;
-  securityVisitorById?: Maybe<VisitorType>;
+  securityPersonByCnic?: Maybe<PersonType>;
+  securityPersonById?: Maybe<PersonType>;
   stockAdjustmentById?: Maybe<StockAdjustment>;
   stockAdjustmentsByStockItem?: Maybe<Array<Maybe<StockAdjustment>>>;
   stockItemById?: Maybe<StockItem>;
@@ -2207,13 +2146,13 @@ export type QueryPagedSecurityAuditLogsArgs = {
 };
 
 
-export type QueryPagedSecurityUsersArgs = {
-  filter?: InputMaybe<UserFilter>;
+export type QueryPagedSecurityPeopleArgs = {
+  filter?: InputMaybe<PersonFilter>;
 };
 
 
-export type QueryPagedSecurityVisitorsArgs = {
-  filter?: InputMaybe<VisitorFilter>;
+export type QueryPagedSecurityUsersArgs = {
+  filter?: InputMaybe<UserFilter>;
 };
 
 
@@ -2246,11 +2185,6 @@ export type QueryPagedVisitorStaysArgs = {
 
 export type QueryPagedVisitorStaysByVisitorIdArgs = {
   visitorId: Scalars['String']['input'];
-};
-
-
-export type QueryPagedVisitorsArgs = {
-  filter?: InputMaybe<VisitorFilter>;
 };
 
 
@@ -2303,18 +2237,12 @@ export type QuerySecurityMehfilLangarLocationByIdArgs = {
 };
 
 
-export type QuerySecurityVisitorByCnicArgs = {
+export type QuerySecurityPersonByCnicArgs = {
   cnicNumbers: Array<InputMaybe<Scalars['String']['input']>>;
 };
 
 
-export type QuerySecurityVisitorByCnicOrContactNumberArgs = {
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  contactNumber?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerySecurityVisitorByIdArgs = {
+export type QuerySecurityPersonByIdArgs = {
   _id: Scalars['String']['input'];
 };
 
@@ -2545,20 +2473,6 @@ export type Vendor = {
   usageCount?: Maybe<Scalars['Int']['output']>;
 };
 
-export type VisitorFilter = {
-  additionalInfo?: InputMaybe<Scalars['String']['input']>;
-  city?: InputMaybe<Scalars['String']['input']>;
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  dataSource?: InputMaybe<Scalars['String']['input']>;
-  ehadDate?: InputMaybe<Scalars['String']['input']>;
-  ehadDuration?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  pageIndex?: InputMaybe<Scalars['String']['input']>;
-  pageSize?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber?: InputMaybe<Scalars['String']['input']>;
-  updatedBetween?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type VisitorStayType = {
   __typename?: 'VisitorStayType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -2572,7 +2486,7 @@ export type VisitorStayType = {
   isExpired?: Maybe<Scalars['Boolean']['output']>;
   isValid?: Maybe<Scalars['Boolean']['output']>;
   numOfDays?: Maybe<Scalars['Float']['output']>;
-  refVisitor?: Maybe<VisitorType>;
+  refVisitor?: Maybe<PersonType>;
   shiftId?: Maybe<Scalars['String']['output']>;
   shiftName?: Maybe<Scalars['String']['output']>;
   stayAllowedBy?: Maybe<Scalars['String']['output']>;
@@ -2581,36 +2495,4 @@ export type VisitorStayType = {
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
   visitorId?: Maybe<Scalars['String']['output']>;
-};
-
-export type VisitorType = {
-  __typename?: 'VisitorType';
-  _id?: Maybe<Scalars['String']['output']>;
-  birthDate?: Maybe<Scalars['String']['output']>;
-  city?: Maybe<Scalars['String']['output']>;
-  cnicNumber?: Maybe<Scalars['String']['output']>;
-  contactNumber1?: Maybe<Scalars['String']['output']>;
-  contactNumber1Subscribed?: Maybe<Scalars['Boolean']['output']>;
-  contactNumber2?: Maybe<Scalars['String']['output']>;
-  contactNumber2Subscribed?: Maybe<Scalars['Boolean']['output']>;
-  country?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['String']['output']>;
-  createdBy?: Maybe<Scalars['String']['output']>;
-  criminalRecord?: Maybe<Scalars['String']['output']>;
-  currentAddress?: Maybe<Scalars['String']['output']>;
-  dataSource?: Maybe<Scalars['String']['output']>;
-  educationalQualification?: Maybe<Scalars['String']['output']>;
-  ehadDate?: Maybe<Scalars['String']['output']>;
-  image?: Maybe<Attachment>;
-  imageId?: Maybe<Scalars['String']['output']>;
-  isKarkun?: Maybe<Scalars['Boolean']['output']>;
-  karkunId?: Maybe<Scalars['String']['output']>;
-  meansOfEarning?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  otherNotes?: Maybe<Scalars['String']['output']>;
-  parentName?: Maybe<Scalars['String']['output']>;
-  permanentAddress?: Maybe<Scalars['String']['output']>;
-  referenceName?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['String']['output']>;
-  updatedBy?: Maybe<Scalars['String']['output']>;
 };

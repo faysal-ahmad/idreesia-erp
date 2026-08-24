@@ -5,16 +5,16 @@ import { message } from '/imports/ui/antd-feedback';
 import { UserOutlined } from '@ant-design/icons';
 
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
-import type { SecurityRegistrationVisitorByIdQuery } from 'meteor/idreesia-common/types/client-operations';
+import type { SecurityRegistrationPersonByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   TakePicture,
   UploadAttachment,
 } from '/imports/ui/modules/helpers/controls';
 
-import { SET_SECURITY_VISITOR_IMAGE } from '../gql';
+import { SET_SECURITY_PERSON_IMAGE } from '../gql';
 
 type SecurityVisitor = NonNullable<
-  SecurityRegistrationVisitorByIdQuery['securityVisitorById']
+  SecurityRegistrationPersonByIdQuery['securityPersonById']
 >;
 
 interface Props {
@@ -23,12 +23,12 @@ interface Props {
 }
 
 const Picture = ({ visitorId, securityVisitorById }: Props) => {
-  const [setSecurityVisitorImage] = useMutation(SET_SECURITY_VISITOR_IMAGE, {
-    refetchQueries: ['pagedSecurityVisitors', 'securityRegistrationVisitorById'],
+  const [setSecurityPersonImage] = useMutation(SET_SECURITY_PERSON_IMAGE, {
+    refetchQueries: ['pagedSecurityPeople', 'securityRegistrationPersonById'],
   });
 
   const updateImageId = (imageId: string) => {
-    setSecurityVisitorImage({
+    setSecurityPersonImage({
       variables: {
         _id: visitorId,
         imageId,
@@ -38,7 +38,7 @@ const Picture = ({ visitorId, securityVisitorById }: Props) => {
     });
   };
 
-  const url = getDownloadUrl(securityVisitorById.imageId);
+  const url = getDownloadUrl(securityVisitorById.sharedData?.imageId);
 
   return (
     <div className="security-visitor-picture">
@@ -46,7 +46,7 @@ const Picture = ({ visitorId, securityVisitorById }: Props) => {
         {url ? (
           <img
             src={url}
-            alt={securityVisitorById.name ?? 'Visitor'}
+            alt={securityVisitorById.sharedData?.name ?? 'Visitor'}
           />
         ) : (
           <div className="security-visitor-picture-empty">

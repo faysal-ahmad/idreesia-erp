@@ -5,7 +5,6 @@ import dayjs from 'dayjs';
 import { find } from 'meteor/idreesia-common/utilities/lodash';
 import { SORT_BY } from 'meteor/idreesia-common/constants/security/list-options';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
-import type { ReportPagedVisitorStaysQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   Button,
   Pagination,
@@ -48,19 +47,25 @@ const SPELLING_TYPE = {
 const TABLE_HEADER_ROW_HEIGHT = 55;
 const VIEWPORT_BOTTOM_GAP = 16;
 
-type VisitorRecord = NonNullable<
-  NonNullable<
-    NonNullable<
-      NonNullable<ReportPagedVisitorStaysQuery['pagedVisitorStays']>['data']
-    >[number]
-  >['refVisitor']
-> & { _id: string; name: string };
+interface VisitorRecord {
+  _id: string;
+  name: string;
+  imageId?: string | null;
+  city?: string | null;
+  country?: string | null;
+  criminalRecord?: string | null;
+  otherNotes?: string | null;
+}
 
-type VisitorStay = NonNullable<
-  NonNullable<
-    NonNullable<ReportPagedVisitorStaysQuery['pagedVisitorStays']>['data']
-  >[number]
-> & { _id: string; refVisitor: VisitorRecord };
+interface VisitorStay {
+  _id: string;
+  fromDate?: string | null;
+  toDate?: string | null;
+  numOfDays?: number | null;
+  stayReason?: string | null;
+  stayAllowedBy?: string | null;
+  refVisitor: VisitorRecord;
+}
 
 interface PagedVisitorStays {
   totalResults: number;
@@ -555,21 +560,41 @@ const ListWithData = (props: ListWithDataProps) => {
     },
   });
   const [fixCitySpelling] = useMutation(FIX_CITY_SPELLING, {
-    refetchQueries: ['pagedSecurityVisitors', 'reportPagedVisitorStays'],
+    refetchQueries: ['pagedSecurityPeople', 'reportPagedVisitorStays'],
   });
   const [fixNameSpelling] = useMutation(FIX_NAME_SPELLING, {
-    refetchQueries: ['pagedSecurityVisitors', 'reportPagedVisitorStays'],
+    refetchQueries: ['pagedSecurityPeople', 'reportPagedVisitorStays'],
   });
 
   const pagedData = data?.pagedVisitorStays;
-  const rows = (pagedData?.data ?? []).filter(
-    (row): row is VisitorStay =>
-      row != null &&
-      row._id != null &&
-      row.refVisitor != null &&
-      row.refVisitor._id != null &&
-      row.refVisitor.name != null
-  );
+  const rows = (pagedData?.data ?? []).flatMap((row): VisitorStay[] => {
+    if (row == null || row._id == null) return [];
+    const { refVisitor } = row;
+    const name = refVisitor?.sharedData?.name;
+    if (refVisitor == null || refVisitor._id == null || name == null) {
+      return [];
+    }
+
+    return [
+      {
+        _id: row._id,
+        fromDate: row.fromDate,
+        toDate: row.toDate,
+        numOfDays: row.numOfDays,
+        stayReason: row.stayReason,
+        stayAllowedBy: row.stayAllowedBy,
+        refVisitor: {
+          _id: refVisitor._id,
+          name,
+          imageId: refVisitor.sharedData?.imageId,
+          city: refVisitor.visitorData?.city,
+          country: refVisitor.visitorData?.country,
+          criminalRecord: refVisitor.visitorData?.criminalRecord,
+          otherNotes: refVisitor.visitorData?.otherNotes,
+        },
+      },
+    ];
+  });
   const pagedVisitorStays: PagedVisitorStays = {
     totalResults: pagedData?.totalResults ?? 0,
     data: rows,

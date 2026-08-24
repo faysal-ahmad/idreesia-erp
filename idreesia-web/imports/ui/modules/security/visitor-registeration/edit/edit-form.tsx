@@ -10,7 +10,7 @@ import {
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 
 import GeneralInfo from './general-info';
-import { SECURITY_VISITOR_BY_ID } from '../gql';
+import { SECURITY_PERSON_BY_ID } from '../gql';
 
 type Props = RouteComponentProps<{ visitorId: string }>;
 
@@ -40,12 +40,12 @@ const EditForm = ({ history, location, match }: Props) => {
     String(queryParams['default-active-tab'] || TAB_GENERAL)
   );
 
-  const { data, loading } = useQuery(SECURITY_VISITOR_BY_ID, {
+  const { data, loading } = useQuery(SECURITY_PERSON_BY_ID, {
     variables: { _id: visitorId },
   });
 
-  const securityVisitorById = data?.securityVisitorById;
-  const visitorName = securityVisitorById?.name?.trim();
+  const securityVisitorById = data?.securityPersonById;
+  const visitorName = securityVisitorById?.sharedData?.name?.trim();
 
   useDynamicBreadcrumbs([
     'Security',

@@ -8,16 +8,17 @@ import { VisitorsNewForm } from '/imports/ui/modules/common';
 import type { VisitorNewFormValues } from '/imports/ui/modules/common/visitors/new-form';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
-import { CREATE_SECURITY_VISITOR } from '../gql';
+import { CREATE_SECURITY_VISITOR_PERSON } from '../gql';
 
 type Props = RouteComponentProps;
 
 const NewForm = ({ history }: Props) => {
   useBreadcrumbs(['Security', 'Visitor Registration', 'New']);
 
-  const [createSecurityVisitor] = useMutation(CREATE_SECURITY_VISITOR, {
-    refetchQueries: ['pagedSecurityVisitors'],
-  });
+  const [createSecurityVisitorPerson] = useMutation(
+    CREATE_SECURITY_VISITOR_PERSON,
+    { refetchQueries: ['pagedSecurityPeople'] }
+  );
 
   const handleCancel = () => {
     history.push(paths.visitorRegistrationListPath);
@@ -39,26 +40,30 @@ const NewForm = ({ history }: Props) => {
     educationalQualification,
     meansOfEarning,
   }: VisitorNewFormValues) =>
-    createSecurityVisitor({
+    createSecurityVisitorPerson({
       variables: {
-        name: name ?? '',
-        parentName: parentName ?? '',
-        cnicNumber: cnicNumber ?? '',
-        ehadDate: ehadDate as unknown as string,
-        birthDate: birthDate as unknown as string | null | undefined,
-        referenceName: referenceName ?? '',
-        contactNumber1,
-        contactNumber2,
-        city,
-        country,
-        currentAddress,
-        permanentAddress,
-        educationalQualification,
-        meansOfEarning,
+        sharedData: {
+          name: name ?? '',
+          parentName: parentName ?? '',
+          cnicNumber,
+          ehadDate: ehadDate as unknown as string,
+          birthDate: birthDate as unknown as string | null | undefined,
+          referenceName: referenceName ?? '',
+          contactNumber1,
+          contactNumber2,
+          currentAddress,
+          permanentAddress,
+          educationalQualification,
+          meansOfEarning,
+        },
+        visitorData: {
+          city,
+          country,
+        },
       },
     })
       .then((response) => {
-        const newVisitor = response.data?.createSecurityVisitor;
+        const newVisitor = response.data?.createSecurityVisitorPerson;
         if (!newVisitor?._id) {
           throw new Error('Visitor was created but no id was returned');
         }

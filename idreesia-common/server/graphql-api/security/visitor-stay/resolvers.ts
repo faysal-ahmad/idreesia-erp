@@ -25,12 +25,8 @@ const resolvers: ResolverMap = {
       const toDate = dayjs(Number(visitorStay.toDate)).hour(18);
       return dayjs().isAfter(toDate);
     },
-    refVisitor: async visitorStay => {
-      const person = await People.findOneAsync({
-        _id: { $eq: visitorStay.visitorId },
-      });
-      return People.personToVisitor(person);
-    },
+    refVisitor: async visitorStay =>
+      People.findOneAsync({ _id: { $eq: visitorStay.visitorId } }),
     dutyName: async visitorStay => {
       if (!visitorStay.dutyId) return null;
       const duty = await Duties.findOneAsync(visitorStay.dutyId);

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AuditOutlined, DeleteOutlined, HistoryOutlined, PlusCircleOutlined, WalletOutlined } from '@ant-design/icons';
+import { AuditOutlined, DeleteOutlined, HistoryOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -35,14 +35,12 @@ interface Props {
   showCityCountryColumn?: boolean;
   showDeleteAction?: boolean;
   showStayHistoryAction?: boolean;
-  showImdadRequestsAction?: boolean;
   showAuditLogsAction?: boolean;
   showKarkunCreateAction?: boolean;
   listHeader?: () => React.ReactNode;
   handleSelectItem?(record: VisitorListItem): void;
   handleDeleteItem?(record: VisitorListItem): void;
   handleStayHistoryAction?(record: VisitorListItem): void;
-  handleImdadRequestsAction?(record: VisitorListItem): void;
   handleAuditLogsAction?(record: VisitorListItem): void;
   handleKarkunCreateAction?(record: VisitorListItem): void;
   setPageParams(params: { pageIndex: string; pageSize: string; }): void;
@@ -63,14 +61,12 @@ export default class VisitorsList extends Component<Props, State> {
   static defaultProps = {
     showDeleteAction: false,
     showStayHistoryAction: false,
-    showImdadRequestsAction: false,
     showAuditLogsAction: false,
     showKarkunCreateAction: false,
 
     handleSelectItem: noop,
     handleDeleteItem: noop,
     handleStayHistoryAction: noop,
-    handleImdadRequestsAction: noop,
     handleAuditLogsAction: noop,
     handleKarkunCreateAction: noop,
     listHeader: () => null,
@@ -209,12 +205,10 @@ export default class VisitorsList extends Component<Props, State> {
       const {
         showDeleteAction,
         showStayHistoryAction,
-        showImdadRequestsAction,
         showAuditLogsAction,
         showKarkunCreateAction,
         handleDeleteItem,
         handleStayHistoryAction,
-        handleImdadRequestsAction,
         handleAuditLogsAction,
         handleKarkunCreateAction,
       } = this.props;
@@ -225,17 +219,6 @@ export default class VisitorsList extends Component<Props, State> {
             className="list-actions-icon"
             onClick={() => {
               handleStayHistoryAction?.(record);
-            }}
-          />
-        </Tooltip>
-      ) : null;
-
-      const imdadRequestsAction = showImdadRequestsAction ? (
-        <Tooltip title="Imdad Requests">
-          <WalletOutlined
-            className="list-actions-icon"
-            onClick={() => {
-              handleImdadRequestsAction?.(record);
             }}
           />
         </Tooltip>
@@ -286,7 +269,6 @@ export default class VisitorsList extends Component<Props, State> {
       return (
         <div className="list-actions-column">
           {stayHistoryAction}
-          {imdadRequestsAction}
           {auditLogsAction}
           {createAction}
           {deleteAction}

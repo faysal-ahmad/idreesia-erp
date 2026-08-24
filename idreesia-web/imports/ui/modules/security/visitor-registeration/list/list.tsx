@@ -32,7 +32,7 @@ import type { VisitorListItem } from '/imports/ui/modules/common/visitors/list';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
-import { PAGED_SECURITY_VISITORS, DELETE_SECURITY_VISITOR } from '../gql';
+import { PAGED_SECURITY_PEOPLE, DELETE_SECURITY_PERSON } from '../gql';
 
 type VisitorRecord = VisitorListItem;
 
@@ -60,11 +60,11 @@ const List = ({ history, location }: Props) => {
     ],
   });
 
-  const [deleteSecurityVisitor] = useMutation(DELETE_SECURITY_VISITOR);
+  const [deleteSecurityPerson] = useMutation(DELETE_SECURITY_PERSON);
   const { distinctCities, distinctCitiesRefetch } = useDistinctCities(
     'cache-first'
   );
-  const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS, {
+  const { data, refetch } = useQuery(PAGED_SECURITY_PEOPLE, {
     variables: { filter: queryParams },
   });
 
@@ -107,7 +107,7 @@ const List = ({ history, location }: Props) => {
   };
 
   const handleDeleteItem = (record: VisitorRecord) => {
-    deleteSecurityVisitor({
+    deleteSecurityPerson({
       variables: {
         _id: record._id,
       },
@@ -242,11 +242,27 @@ const List = ({ history, location }: Props) => {
     </div>
   );
 
-  const pagedData = data?.pagedSecurityVisitors;
+  const pagedData = data?.pagedSecurityPeople;
   const pagedSecurityVisitors = {
     totalResults: pagedData?.totalResults ?? 0,
-    data: (pagedData?.data ?? []).flatMap((row) =>
-      row && row._id ? [row as VisitorListItem] : []
+    data: (pagedData?.data ?? []).flatMap((person) =>
+      person?._id
+        ? [
+            {
+              _id: person._id,
+              name: person.sharedData?.name,
+              cnicNumber: person.sharedData?.cnicNumber,
+              contactNumber1: person.sharedData?.contactNumber1,
+              contactNumber2: person.sharedData?.contactNumber2,
+              city: person.visitorData?.city,
+              country: person.visitorData?.country,
+              imageId: person.sharedData?.imageId,
+              criminalRecord: person.visitorData?.criminalRecord,
+              otherNotes: person.visitorData?.otherNotes,
+              isKarkun: person.isKarkun,
+            } as VisitorListItem,
+          ]
+        : []
     ),
   };
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;

@@ -19,7 +19,14 @@ interface Props {
  */
 const NewForm = ({ handleFinish, handleCancel }: Props) => (
   <VisitorsGeneralInfo
-    visitor={{ country: 'Pakistan' }}
+    visitor={{
+      visitorData: {
+        country: 'Pakistan',
+        city: null,
+        criminalRecord: null,
+        otherNotes: null,
+      },
+    }}
     handleFinish={handleFinish}
     handleCancel={handleCancel}
     showAuditInfo={false}

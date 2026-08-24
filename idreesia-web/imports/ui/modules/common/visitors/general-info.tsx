@@ -14,7 +14,7 @@ import {
   useDistinctCities,
   useDistinctCountries,
 } from 'meteor/idreesia-common/hooks/security';
-import type { SecurityRegistrationVisitorByIdQuery } from 'meteor/idreesia-common/types/client-operations';
+import type { SecurityRegistrationPersonByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   AgeField,
   AutoCompleteField,
@@ -27,7 +27,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
-type VisitorRecord = Partial<NonNullable<SecurityRegistrationVisitorByIdQuery['securityVisitorById']>>;
+type VisitorRecord = Partial<NonNullable<SecurityRegistrationPersonByIdQuery['securityPersonById']>>;
 
 export interface VisitorGeneralInfoFormValues {
   name?: string;
@@ -102,8 +102,8 @@ const GeneralInfo = ({
     );
   }
 
-  const hasCriminalRecord = hasText(visitor?.criminalRecord);
-  const hasOtherNotes = hasText(visitor?.otherNotes);
+  const hasCriminalRecord = hasText(visitor?.visitorData?.criminalRecord);
+  const hasOtherNotes = hasText(visitor?.visitorData?.otherNotes);
 
   const personalItem: NonNullable<CollapseProps['items']>[number] = {
     key: 'personal',
@@ -116,7 +116,7 @@ const GeneralInfo = ({
           fieldLabel="Name"
           required
           requiredMessage="Please input the name for the person."
-          initialValue={visitor?.name}
+          initialValue={visitor?.sharedData?.name}
         />
 
         <InputTextField
@@ -124,21 +124,21 @@ const GeneralInfo = ({
           fieldLabel="S/O"
           required
           requiredMessage="Please input the parent name for the person."
-          initialValue={visitor?.parentName}
+          initialValue={visitor?.sharedData?.parentName}
         />
 
         <AgeField
           fieldName="birthDate"
           fieldLabel="Age (years)"
           initialValue={
-            visitor?.birthDate ? dayjs(Number(visitor.birthDate)) : null
+            visitor?.sharedData?.birthDate ? dayjs(Number(visitor.sharedData?.birthDate)) : null
           }
         />
 
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
-          initialValue={visitor?.cnicNumber}
+          initialValue={visitor?.sharedData?.cnicNumber}
         />
       </>
     ),
@@ -159,13 +159,13 @@ const GeneralInfo = ({
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
-            initialValue={visitor?.contactNumber1}
+            initialValue={visitor?.sharedData?.contactNumber1}
           />
 
           <InputTextField
             fieldName="contactNumber2"
             fieldLabel="Home Number"
-            initialValue={visitor?.contactNumber2}
+            initialValue={visitor?.sharedData?.contactNumber2}
           />
 
           <AutoCompleteField
@@ -174,7 +174,7 @@ const GeneralInfo = ({
             options={distinctCities ?? []}
             required
             requiredMessage="Please input the city for the person."
-            initialValue={visitor?.city}
+            initialValue={visitor?.visitorData?.city}
           />
 
           <AutoCompleteField
@@ -183,21 +183,21 @@ const GeneralInfo = ({
             options={distinctCountries ?? []}
             required
             requiredMessage="Please input the country for the person."
-            initialValue={visitor?.country}
+            initialValue={visitor?.visitorData?.country}
           />
 
           <InputTextAreaField
             fieldName="currentAddress"
             fieldLabel="Current Address"
             required={false}
-            initialValue={visitor?.currentAddress}
+            initialValue={visitor?.sharedData?.currentAddress}
           />
 
           <InputTextAreaField
             fieldName="permanentAddress"
             fieldLabel="Permanent Address"
             required={false}
-            initialValue={visitor?.permanentAddress}
+            initialValue={visitor?.sharedData?.permanentAddress}
           />
         </>
       ),
@@ -214,8 +214,8 @@ const GeneralInfo = ({
             required
             requiredMessage="Please specify the Ehad duration for the person."
             initialValue={
-              visitor?.ehadDate != null && visitor.ehadDate !== ''
-                ? dayjs(Number(visitor.ehadDate))
+              visitor?.sharedData?.ehadDate != null && visitor.sharedData?.ehadDate !== ''
+                ? dayjs(Number(visitor.sharedData?.ehadDate))
                 : undefined
             }
           />
@@ -225,20 +225,20 @@ const GeneralInfo = ({
             fieldLabel="R/O"
             required
             requiredMessage="Please input the reference name for the person."
-            initialValue={visitor?.referenceName}
+            initialValue={visitor?.sharedData?.referenceName}
           />
 
           <InputTextField
             fieldName="educationalQualification"
             fieldLabel="Education"
-            initialValue={visitor?.educationalQualification}
+            initialValue={visitor?.sharedData?.educationalQualification}
             required={false}
           />
 
           <InputTextAreaField
             fieldName="meansOfEarning"
             fieldLabel="Means of Earning"
-            initialValue={visitor?.meansOfEarning}
+            initialValue={visitor?.sharedData?.meansOfEarning}
             required={false}
           />
         </>
@@ -291,14 +291,14 @@ const GeneralInfo = ({
           <InputTextAreaField
             fieldName="criminalRecord"
             fieldLabel="Criminal Record"
-            initialValue={visitor?.criminalRecord}
+            initialValue={visitor?.visitorData?.criminalRecord}
             required={false}
           />
 
           <InputTextAreaField
             fieldName="otherNotes"
             fieldLabel="Other Notes"
-            initialValue={visitor?.otherNotes}
+            initialValue={visitor?.visitorData?.otherNotes}
             required={false}
           />
         </>

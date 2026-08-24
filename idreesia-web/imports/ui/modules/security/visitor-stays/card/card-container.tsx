@@ -9,7 +9,7 @@ import StayCard from './stay-card';
 
 import {
   VISITOR_STAY_CARD_BY_ID,
-  VISITOR_STAY_CARD_SECURITY_VISITOR_BY_ID,
+  VISITOR_STAY_CARD_SECURITY_PERSON_BY_ID,
 } from '../gql';
 
 interface StayCardContainerProps {
@@ -26,8 +26,8 @@ const StayCardContainer = ({
   onCloseCard,
 }: StayCardContainerProps) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const { data: visitorData, loading: visitorLoading } = useQuery(
-    VISITOR_STAY_CARD_SECURITY_VISITOR_BY_ID,
+  const { data: personData, loading: personLoading } = useQuery(
+    VISITOR_STAY_CARD_SECURITY_PERSON_BY_ID,
     {
       variables: { _id: visitorId },
     }
@@ -38,23 +38,29 @@ const StayCardContainer = ({
       variables: { _id: visitorStayId },
     }
   );
-  const securityVisitorById = visitorData?.securityVisitorById;
+  const securityPersonById = personData?.securityPersonById;
   const visitorStayById = visitorStayData?.visitorStayById;
 
-  if (visitorLoading || visitorStayLoading) return null;
-  if (!securityVisitorById || !visitorStayById) return null;
+  if (personLoading || visitorStayLoading) return null;
+  if (!securityPersonById || !visitorStayById) return null;
+
+  const visitor = {
+    name: securityPersonById.sharedData?.name,
+    parentName: securityPersonById.sharedData?.parentName,
+    cnicNumber: securityPersonById.sharedData?.cnicNumber,
+    referenceName: securityPersonById.sharedData?.referenceName,
+    contactNumber1: securityPersonById.sharedData?.contactNumber1,
+    image: securityPersonById.sharedData?.image,
+    city: securityPersonById.visitorData?.city,
+    country: securityPersonById.visitorData?.country,
+    criminalRecord: securityPersonById.visitorData?.criminalRecord,
+  };
 
   const card =
     cardType === 'stay-card' ? (
-      <StayCard
-        visitor={securityVisitorById}
-        visitorStay={visitorStayById}
-      />
+      <StayCard visitor={visitor} visitorStay={visitorStayById} />
     ) : (
-      <DutyCard
-        visitor={securityVisitorById}
-        visitorStay={visitorStayById}
-      />
+      <DutyCard visitor={visitor} visitorStay={visitorStayById} />
     );
 
   return (

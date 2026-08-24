@@ -7,7 +7,7 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Col, Row, Spin, Tabs } from 'antd';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 
-import { SECURITY_VISITOR_BY_CNIC } from '../gql';
+import { SECURITY_PERSON_BY_CNIC } from '../gql';
 
 const LabelStyle: CSSProperties = {
   fontWeight: 'bold',
@@ -55,16 +55,16 @@ interface SearchResultProps {
 }
 
 const SearchResult = ({ cnicNumbers }: SearchResultProps) => {
-  const { data, loading } = useQuery(SECURITY_VISITOR_BY_CNIC, {
+  const { data, loading } = useQuery(SECURITY_PERSON_BY_CNIC, {
     variables: { cnicNumbers },
     fetchPolicy: 'network-only',
   });
-  const securityVisitorByCnic = data?.securityVisitorByCnic;
+  const securityPersonByCnic = data?.securityPersonByCnic;
 
   if (cnicNumbers.length === 0) return null;
   if (loading) return <Spin size="large" />;
 
-  if (!securityVisitorByCnic) {
+  if (!securityPersonByCnic) {
     return (
       <Row justify="start" align="middle" gutter={16}>
         <Col>
@@ -82,20 +82,17 @@ const SearchResult = ({ cnicNumbers }: SearchResultProps) => {
     );
   }
 
+  const { _id, sharedData, visitorData } = securityPersonByCnic;
   const {
-    _id,
     name,
     parentName,
     cnicNumber,
     ehadDate,
     referenceName,
     contactNumber1,
-    city,
-    country,
     imageId,
-    criminalRecord,
-    otherNotes,
-  } = securityVisitorByCnic;
+  } = sharedData ?? {};
+  const { city, country, criminalRecord, otherNotes } = visitorData ?? {};
 
   const url = getDownloadUrl(imageId);
   const image = url ? (

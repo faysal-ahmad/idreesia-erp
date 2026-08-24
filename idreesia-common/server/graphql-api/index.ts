@@ -22,15 +22,10 @@ import AuditLogResolvers from './common/audit-log/resolvers';
 import SecurityLogSchema from './common/security-log/security-log';
 import SecurityLogResolvers from './common/security-log/resolvers';
 
-import ImdadRequestSchema from './common/imdad-request/imdad-request';
-import ImdadRequestResolvers from './common/imdad-request/resolvers';
-
 import PersonSchema from './common/person/person';
 import PersonResolvers from './common/person/resolvers';
 import KarkunSchema from './common/karkun/karkun';
 import KarkunResolvers from './common/karkun/resolvers';
-import VisitorSchema from './common/visitor/visitor';
-import VisitorResolvers from './common/visitor/resolvers';
 
 /**
  * Schema and Resolvers for the Admin module
@@ -74,8 +69,8 @@ import SecurityMehfilLangarLocationResolvers from './security/mehfil-langar-loca
 import SecurityUserSchema from './security/security-user/security-user';
 import SecurityUserResolvers from './security/security-user/resolvers';
 
-import SecurityVisitorSchema from './security/visitor/visitor';
-import SecurityVisitorResolvers from './security/visitor/resolvers';
+import SecurityPersonSchema from './security/person/person';
+import SecurityPersonResolvers from './security/person/resolvers';
 
 import SecurityVisitorStaySchema from './security/visitor-stay/visitor-stay';
 import SecurityVisitorStayResolvers from './security/visitor-stay/resolvers';
@@ -161,10 +156,8 @@ const typeDefs = [
   AttachmentSchema,
   AuditLogSchema,
   SecurityLogSchema,
-  ImdadRequestSchema,
   KarkunSchema,
   PersonSchema,
-  VisitorSchema,
   UserSchema,
   UserGroupSchema,
   ScheduledJobSchema,
@@ -178,7 +171,7 @@ const typeDefs = [
   SecurityMehfilLangarDishSchema,
   SecurityMehfilLangarLocationSchema,
   SecurityUserSchema,
-  SecurityVisitorSchema,
+  SecurityPersonSchema,
   SecurityVisitorStaySchema,
   FaceVectorSchema,
 
@@ -212,10 +205,8 @@ const resolvers = merge(
   AttachmentResolvers,
   AuditLogResolvers,
   SecurityLogResolvers,
-  ImdadRequestResolvers,
   KarkunResolvers,
   PersonResolvers,
-  VisitorResolvers,
   UserResolvers,
   UserGroupResolvers,
   ScheduledJobResolvers,
@@ -229,7 +220,7 @@ const resolvers = merge(
   SecurityMehfilLangarDishResolvers,
   SecurityMehfilLangarLocationResolvers,
   SecurityUserResolvers,
-  SecurityVisitorResolvers,
+  SecurityPersonResolvers,
   SecurityVisitorStayResolvers,
   FaceVectorResolvers,
 

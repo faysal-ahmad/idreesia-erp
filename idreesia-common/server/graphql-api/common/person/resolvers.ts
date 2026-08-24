@@ -10,6 +10,9 @@ import {
   Cities,
   CityMehfils,
 } from 'meteor/idreesia-common/server/collections/outstation';
+import { compact } from 'meteor/idreesia-common/utilities/lodash';
+import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
+import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 interface PersonSharedDataType {
   imageId?: string;
@@ -28,6 +31,24 @@ interface PersonEmployeeDataType {
 
 interface PagedPeopleArgs {
   filter?: Record<string, unknown>;
+}
+
+interface FixCitySpellingArgs {
+  existingSpelling: string;
+  newSpelling: string;
+}
+
+interface ResolverContext {
+  user: {
+    _id: string;
+    username?: string;
+    locked?: boolean;
+    permissions?: string[];
+  };
+}
+
+interface PeopleRawCollection {
+  distinct(fieldName: string): Promise<unknown[]>;
 }
 
 export default {
@@ -77,5 +98,66 @@ export default {
         includeKarkuns: true,
         includeEmployees: true,
       }),
+
+    distinctCities: async () => {
+      const cities = await (
+        People.rawCollection() as unknown as PeopleRawCollection
+      ).distinct('visitorData.city');
+      return compact(cities);
+    },
+
+    distinctCountries: async () => {
+      const countries = await (
+        People.rawCollection() as unknown as PeopleRawCollection
+      ).distinct(
+        'visitorData.country'
+      );
+      return compact(countries);
+    },
+  },
+
+  Mutation: {
+    fixCitySpelling: async (
+      _obj: unknown,
+      { existingSpelling, newSpelling }: FixCitySpellingArgs,
+      { user }: ResolverContext
+    ) => {
+      if (
+        !hasOnePermission(user, [PermissionConstants.SECURITY_MANAGE_VISITORS])
+      ) {
+        throw new Error(
+          'You do not have permission to manage Visitors in the System.'
+        );
+      }
+
+      // If a city matching the existing spellings is present in the outstation
+      // cities list, then do not allow updating the spellings.
+      const outstationCity = await Cities.findOneAsync({
+        name: existingSpelling,
+      });
+
+      if (outstationCity) {
+        throw new Error(
+          'Spellings for this city cannot be changed as it exists in the Outstation city list.'
+        );
+      }
+
+      const date = new Date();
+      const count = await People.updateAsync(
+        {
+          'visitorData.city': { $eq: existingSpelling },
+        },
+        {
+          $set: {
+            'visitorData.city': newSpelling,
+            updatedAt: date,
+            updatedBy: user._id,
+          },
+        },
+        { multi: true }
+      );
+
+      return count;
+    },
   },
 };

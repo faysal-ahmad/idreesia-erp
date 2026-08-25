@@ -118,22 +118,23 @@ export default class Cards extends Component<CardsProps> {
     const { cardType = '' } = this.props;
     const karkun = attendance.karkun;
     if (!karkun) return null;
+    const sharedData = karkun.sharedData ?? ({} as NonNullable<typeof karkun.sharedData>);
 
     const subscribed =
-      karkun.contactNumber1Subscribed ||
-      karkun.contactNumber2Subscribed;
+      sharedData.contactNumber1Subscribed ||
+      sharedData.contactNumber2Subscribed;
     const percentageClass =
       (attendance.percentage ?? 0) > 0 ? 'info_box' : 'info_box hidden';
     const subscriptionClass = subscribed ? 'info_box hidden' : 'info_box';
-    const bloodGroupClass = karkun.bloodGroup
+    const bloodGroupClass = sharedData.bloodGroup
       ? 'info_box'
       : 'info_box hidden';
 
-    const karkunImage = karkun.image ? (
+    const karkunImage = sharedData.image ? (
       <img
-        src={`data:image/jpeg;base64,${karkun.image.data}`}
+        src={`data:image/jpeg;base64,${sharedData.image.data}`}
         style={{ maxHeight: '100%', width: 'auto' }}
-        alt={karkun.name ?? undefined}
+        alt={sharedData.name ?? undefined}
       />
     ) : (
       <div style={{ height: '100%', width: 'auto' }} />
@@ -147,7 +148,7 @@ export default class Cards extends Component<CardsProps> {
         {karkunImage}
         <div className="info_container">
           <div className={percentageClass}>{attendance.percentage}%</div>
-          <div className={bloodGroupClass}>{karkun.bloodGroup}</div>
+          <div className={bloodGroupClass}>{sharedData.bloodGroup}</div>
           <div className={subscriptionClass}>NS</div>
         </div>
       </div>
@@ -169,7 +170,7 @@ export default class Cards extends Component<CardsProps> {
   };
 
   getCardMarkup(attendance: AttendanceRecord) {
-    if (!attendance.karkun?.name || !attendance.meetingCardBarcodeId) return null;
+    if (!attendance.karkun?.sharedData?.name || !attendance.meetingCardBarcodeId) return null;
     const headingImage = this.getHeadingImage();
     const subHeading = this.getSubHeading(attendance);
     const karkunImage = this.getKarkunImage(attendance);
@@ -180,7 +181,7 @@ export default class Cards extends Component<CardsProps> {
         {headingImage}
         {subHeading}
         {karkunImage}
-        <h1 className="name_card_k">{attendance.karkun.name}</h1>
+        <h1 className="name_card_k">{attendance.karkun.sharedData.name}</h1>
         {dutyShiftInfo}
         <div className="barcode_card_k">
           <Barcode

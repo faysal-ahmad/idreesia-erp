@@ -12,7 +12,9 @@ const SET_HR_KARKUN_PROFILE_IMAGE: TypedDocumentNode<
   mutation setHrKarkunProfileImage($_id: String!, $imageId: String!) {
     setHrKarkunProfileImage(_id: $_id, imageId: $imageId) {
       _id
-      imageId
+      sharedData {
+        imageId
+      }
     }
   }
 `;

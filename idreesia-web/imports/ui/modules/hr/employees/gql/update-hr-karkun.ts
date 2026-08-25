@@ -50,30 +50,34 @@ const UPDATE_HR_KARKUN: TypedDocumentNode<
       referenceName: $referenceName
     ) {
       _id
-      name
-      parentName
-      cnicNumber
-      contactNumber1
-      contactNumber2
-      emailAddress
-      currentAddress
-      permanentAddress
-      cityId
-      cityMehfilId
-      bloodGroup
-      educationalQualification
-      meansOfEarning
-      ehadDate
-      birthDate
-      deathDate
-      lastTarteebDate
-      mehfilRaabta
-      msRaabta
-      referenceName
       createdAt
       createdBy
       updatedAt
       updatedBy
+      sharedData {
+        name
+        parentName
+        cnicNumber
+        contactNumber1
+        contactNumber2
+        emailAddress
+        currentAddress
+        permanentAddress
+        bloodGroup
+        educationalQualification
+        meansOfEarning
+        ehadDate
+        birthDate
+        deathDate
+        referenceName
+      }
+      karkunData {
+        cityId
+        cityMehfilId
+        lastTarteebDate
+        mehfilRaabta
+        msRaabta
+      }
     }
   }
 `;

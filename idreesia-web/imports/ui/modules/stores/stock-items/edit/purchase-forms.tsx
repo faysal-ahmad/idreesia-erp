@@ -58,11 +58,15 @@ const PURCHASE_FORMS_BY_STOCK_ITEM: TypedDocumentNode<
       }
       refReceivedBy {
         _id
-        name
+        sharedData {
+          name
+        }
       }
       refPurchasedBy {
         _id
-        name
+        sharedData {
+          name
+        }
       }
     }
   }
@@ -97,7 +101,7 @@ const PurchaseForms = ({ history, physicalStoreId, stockItemId }: Props) => {
     },
     {
       title: 'Purchased By',
-      dataIndex: ['refPurchasedBy', 'name'],
+      dataIndex: ['refPurchasedBy', 'sharedData', 'name'],
       key: 'refPurchasedBy.name',
     },
     {

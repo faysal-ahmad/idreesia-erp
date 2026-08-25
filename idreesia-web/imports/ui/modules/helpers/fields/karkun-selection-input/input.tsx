@@ -16,7 +16,7 @@ const ContainerStyle: React.CSSProperties = {
 
 type HrKarkunRow = NonNullable<
   NonNullable<
-    NonNullable<HelperPagedHrKarkunsQuery['pagedHrKarkuns']>['karkuns']
+    NonNullable<HelperPagedHrKarkunsQuery['pagedHrKarkuns']>['data']
   >[number]
 >;
 
@@ -63,7 +63,7 @@ export default class CustomInput extends Component<Props, State> {
     if (onChange) {
       onChange({
         _id: karkun._id ?? undefined,
-        name: karkun.name ?? undefined,
+        name: karkun.sharedData?.name ?? undefined,
       });
     }
   };

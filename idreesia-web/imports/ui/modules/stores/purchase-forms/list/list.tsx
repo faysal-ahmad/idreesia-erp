@@ -273,13 +273,13 @@ const List = ({ history, location }: Props) => {
     },
     {
       title: 'Received By',
-      dataIndex: ['refReceivedBy', 'name'],
+      dataIndex: ['refReceivedBy', 'sharedData', 'name'],
       key: 'refReceivedBy.name',
       width: 160,
     },
     {
       title: 'Purchased By',
-      dataIndex: ['refPurchasedBy', 'name'],
+      dataIndex: ['refPurchasedBy', 'sharedData', 'name'],
       key: 'refPurchasedBy.name',
       width: 160,
     },

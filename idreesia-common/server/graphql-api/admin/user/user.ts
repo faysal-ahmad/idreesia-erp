@@ -17,7 +17,7 @@ type UserType {
   groups: [String]
 
   person: PersonType
-  karkun: KarkunType
+  karkun: PersonType
 }
 
 type PagedUserType {

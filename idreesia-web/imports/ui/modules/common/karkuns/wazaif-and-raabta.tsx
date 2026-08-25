@@ -41,8 +41,8 @@ const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }: Props) => {
           fieldName="lastTarteebDate"
           fieldLabel="Last Tarteeb"
           initialValue={
-            karkun.lastTarteebDate
-              ? dayjs(Number(karkun.lastTarteebDate))
+            karkun.karkunData?.lastTarteebDate
+              ? dayjs(Number(karkun.karkunData.lastTarteebDate))
               : null
           }
         />
@@ -51,14 +51,14 @@ const WazaifAndRaabta = ({ karkun, handleFinish, handleCancel }: Props) => {
           fieldName="mehfilRaabta"
           fieldLabel="Mehfil Visits"
           placeholder="e.g. 3 days a week"
-          initialValue={karkun.mehfilRaabta}
+          initialValue={karkun.karkunData?.mehfilRaabta}
         />
 
         <InputTextField
           fieldName="msRaabta"
           fieldLabel="Multan Shareef Visits"
           placeholder="e.g. Once every month"
-          initialValue={karkun.msRaabta}
+          initialValue={karkun.karkunData?.msRaabta}
         />
 
         <DateField

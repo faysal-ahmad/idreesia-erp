@@ -53,9 +53,7 @@ export default {
 
     karkun: async (userType: UserType) => {
       if (!userType.personId) return null;
-      const person = await People.findOneAsync(userType.personId);
-      if (!person) return null;
-      return People.personToKarkun(person);
+      return People.findOneAsync(userType.personId);
     },
   },
 

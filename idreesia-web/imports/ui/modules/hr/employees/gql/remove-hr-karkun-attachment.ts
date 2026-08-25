@@ -12,11 +12,13 @@ const REMOVE_HR_KARKUN_ATTACHMENT: TypedDocumentNode<
   mutation removeHrKarkunAttachment($_id: String!, $attachmentId: String!) {
     removeHrKarkunAttachment(_id: $_id, attachmentId: $attachmentId) {
       _id
-      attachments {
-        _id
-        name
-        description
-        mimeType
+      karkunData {
+        attachments {
+          _id
+          name
+          description
+          mimeType
+        }
       }
     }
   }

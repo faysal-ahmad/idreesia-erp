@@ -1,70 +1,6 @@
 import gql from 'graphql-tag';
 
 export default gql`
-type KarkunUserType {
-  _id: String
-  username: String
-  email: String
-  emailVerified: Boolean
-  displayName: String
-  locked: Boolean
-  lastLoggedInAt: String
-  lastActiveAt: String
-  permissions: [String]
-  instances: [String]
-  groups: [String]
-}
-
-type KarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  contactNumber2: String
-  contactNumber1Subscribed: Boolean
-  contactNumber2Subscribed: Boolean
-  emailAddress: String
-  currentAddress: String
-  permanentAddress: String
-  cityId: String
-  cityMehfilId: String
-  bloodGroup: String
-  educationalQualification: String
-  meansOfEarning: String
-  ehadDate: String
-  ehadKarkun: Boolean
-  ehadPermissionDate: String
-  birthDate: String
-  deathDate: String
-  lastTarteebDate: String
-  mehfilRaabta: String
-  msRaabta: String
-  msLastVisitDate: String
-  referenceName: String
-  imageId: String
-  attachmentIds: [String]
-
-  isEmployee: Boolean
-  jobId: String
-  employmentStartDate: String
-  employmentEndDate: String
-  bankAccountDetails: String
-
-  job: JobType
-  duties: [KarkunDutyType]
-  attachments: [Attachment]
-  image: Attachment
-  city: CityType
-  cityMehfil: CityMehfilType
-  user: KarkunUserType
-
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-
 input KarkunFilter {
   name: String
   cnicNumber: String
@@ -92,6 +28,6 @@ input KarkunFilter {
 
 type PagedKarkunType {
   totalResults: Int
-  karkuns: [KarkunType]
+  data: [PersonType]
 }
 `;

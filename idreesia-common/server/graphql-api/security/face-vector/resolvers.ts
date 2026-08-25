@@ -12,6 +12,16 @@ interface FaceVectorsContext {
   } | null;
 }
 
+interface PersonWithImageVector {
+  _id: string;
+  sharedData: {
+    imageVectorData: {
+      vector?: number[];
+      computedAt: Date;
+    };
+  };
+}
+
 // Keeps a single page cheap regardless of what the caller asks for - the initial full sync and
 // every later incremental poll both page through results via `since` + `limit` rather than one
 // server ever returning its entire backlog (tens of thousands of records) in a single response.
@@ -51,7 +61,7 @@ export default {
         limit: pageSize,
       }).fetchAsync();
 
-      return people.map((person: NonNullable<Parameters<typeof People.personToKarkun>[0]>) => ({
+      return people.map((person: PersonWithImageVector) => ({
         personId: person._id,
         vector: person.sharedData.imageVectorData.vector,
         computedAt: person.sharedData.imageVectorData.computedAt,

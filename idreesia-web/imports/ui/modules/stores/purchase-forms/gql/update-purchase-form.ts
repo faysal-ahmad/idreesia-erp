@@ -48,11 +48,15 @@ export const UPDATE_PURCHASE_FORM: TypedDocumentNode<
       }
       refReceivedBy {
         _id
-        name
+        sharedData {
+          name
+        }
       }
       refPurchasedBy {
         _id
-        name
+        sharedData {
+          name
+        }
       }
       notes
     }

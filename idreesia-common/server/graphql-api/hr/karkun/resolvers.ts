@@ -16,17 +16,11 @@ interface ResolverMap {
 
 const resolvers: ResolverMap = {
   Query: {
-    hrKarkunById: async (obj, { _id }) => {
-      const person = await People.findOneAsync(_id);
-      return People.personToKarkun(person);
-    },
+    hrKarkunById: async (obj, { _id }) => People.findOneAsync(_id),
 
     hrKarkunsById: async (obj, { _ids }) => {
       const idsArray = _ids.split(',');
-      const people = await People.find({ _id: { $in: idsArray } }).fetchAsync();
-      return people.map((person: Parameters<typeof People.personToKarkun>[0]) =>
-        People.personToKarkun(person)
-      );
+      return People.find({ _id: { $in: idsArray } }).fetchAsync();
     },
 
     pagedHrKarkuns: async (obj, { filter }) => {
@@ -37,7 +31,7 @@ const resolvers: ResolverMap = {
 
       if (!multanCity) {
         return {
-          karkuns: [],
+          data: [],
           totalResults: 0,
         };
       }
@@ -58,11 +52,11 @@ const resolvers: ResolverMap = {
         }
       ).then(result => {
         const pagedResult = result as {
-          data: Parameters<typeof People.personToKarkun>[0][];
+          data: unknown[];
           totalResults: number;
         };
         return {
-          karkuns: pagedResult.data.map(person => People.personToKarkun(person)),
+          data: pagedResult.data,
           totalResults: pagedResult.totalResults,
         };
       });
@@ -84,14 +78,12 @@ const resolvers: ResolverMap = {
           country: multanCity.country,
         },
       });
-      const person = await People.createPerson(personValues, user);
-      return People.personToKarkun(person);
+      return People.createPerson(personValues, user);
     },
 
     updateHrKarkun: async (obj, values, { user }) => {
       const personValues = await People.karkunToPerson(values);
-      const person = await People.updatePerson(personValues, user);
-      return People.personToKarkun(person);
+      return People.updatePerson(personValues, user);
     },
 
     deleteHrKarkun: async (obj, { _id }) => {
@@ -104,14 +96,12 @@ const resolvers: ResolverMap = {
 
     setHrKarkunWazaifAndRaabta: async (obj, values, { user }) => {
       const personValues = await People.karkunToPerson(values);
-      const person = await People.updatePerson(personValues, user);
-      return People.personToKarkun(person);
+      return People.updatePerson(personValues, user);
     },
 
     setHrKarkunEmploymentInfo: async (obj, values, { user }) => {
       const personValues = await People.karkunToPerson(values);
-      const person = await People.updatePerson(personValues, user);
-      return People.personToKarkun(person);
+      return People.updatePerson(personValues, user);
     },
 
     setHrKarkunProfileImage: async (obj, values, { user }) => {
@@ -119,22 +109,14 @@ const resolvers: ResolverMap = {
       personValues.sharedData.imageVectorData = await computeImageVectorData(
         values.imageId
       );
-      const person = await People.updatePerson(personValues, user);
-      return People.personToKarkun(person);
+      return People.updatePerson(personValues, user);
     },
 
-    addHrKarkunAttachment: async (obj, { _id, attachmentId }, { user }) => {
-      const person = await People.addAttachment({ _id, attachmentId }, user);
-      return People.personToKarkun(person);
-    },
+    addHrKarkunAttachment: async (obj, { _id, attachmentId }, { user }) =>
+      People.addAttachment({ _id, attachmentId }, user),
 
-    removeHrKarkunAttachment: async (obj, { _id, attachmentId }, { user }) => {
-      const person = await People.removeAttachment(
-        { _id, attachmentId },
-        user
-      );
-      return People.personToKarkun(person);
-    },
+    removeHrKarkunAttachment: async (obj, { _id, attachmentId }, { user }) =>
+      People.removeAttachment({ _id, attachmentId }, user),
   },
 };
 

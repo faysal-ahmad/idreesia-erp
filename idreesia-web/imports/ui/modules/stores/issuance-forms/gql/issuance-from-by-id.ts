@@ -40,11 +40,15 @@ export const ISSUANCE_FORM_BY_ID: TypedDocumentNode<
       }
       refIssuedBy {
         _id
-        name
+        sharedData {
+          name
+        }
       }
       refIssuedTo {
         _id
-        name
+        sharedData {
+          name
+        }
       }
       notes
       attachments {

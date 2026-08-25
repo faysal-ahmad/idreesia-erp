@@ -141,6 +141,14 @@ const NewForm = ({ history }: Props) => {
         />
         <AgeField fieldName="birthDate" fieldLabel="Age (years)" />
         <InputCnicField fieldName="cnicNumber" fieldLabel="CNIC Number" />
+        <SelectField<LabelValue>
+          fieldName="bloodGroup"
+          fieldLabel="Blood Group"
+          required={false}
+          data={BLOOD_GROUP_OPTIONS}
+          getDataValue={({ value }) => value}
+          getDataText={({ label }) => label}
+        />
       </>
     ),
   };
@@ -197,14 +205,6 @@ const NewForm = ({ history }: Props) => {
             fieldLabel="R/O"
             required
             requiredMessage="Please input the reference name for the employee."
-          />
-          <SelectField<LabelValue>
-            fieldName="bloodGroup"
-            fieldLabel="Blood Group"
-            required={false}
-            data={BLOOD_GROUP_OPTIONS}
-            getDataValue={({ value }) => value}
-            getDataText={({ label }) => label}
           />
           <InputTextField
             fieldName="educationalQualification"

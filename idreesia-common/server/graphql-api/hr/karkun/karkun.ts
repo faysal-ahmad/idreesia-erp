@@ -2,10 +2,10 @@ import gql from 'graphql-tag';
 
 export default gql`
 extend type Query {
-  hrKarkunById(_id: String!): KarkunType
+  hrKarkunById(_id: String!): PersonType
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 
-  hrKarkunsById(_ids: String!): [KarkunType]
+  hrKarkunsById(_ids: String!): [PersonType]
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 
   pagedHrKarkuns(filter: KarkunFilter): PagedKarkunType
@@ -14,7 +14,7 @@ extend type Query {
     IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS,
     IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS,
     IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS
-  ], dataFieldName: "karkuns")
+  ])
 }
 
 extend type Mutation {
@@ -35,7 +35,7 @@ extend type Mutation {
     ehadDate: String
     birthDate: String
     referenceName: String
-  ): KarkunType
+  ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
   updateHrKarkun(
@@ -57,7 +57,7 @@ extend type Mutation {
     birthDate: String
     deathDate: String
     referenceName: String
-  ): KarkunType
+  ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
   deleteHrKarkun(_id: String!): Int
@@ -68,7 +68,7 @@ extend type Mutation {
     lastTarteebDate: String
     mehfilRaabta: String
     msRaabta: String
-  ): KarkunType
+  ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   setHrKarkunEmploymentInfo(
@@ -78,16 +78,16 @@ extend type Mutation {
     employmentStartDate: String
     employmentEndDate: String
     bankAccountDetails: String
-  ): KarkunType
+  ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
-  setHrKarkunProfileImage(_id: String!, imageId: String!): KarkunType
+  setHrKarkunProfileImage(_id: String!, imageId: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
-  addHrKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
+  addHrKarkunAttachment(_id: String!, attachmentId: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
-  removeHrKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
+  removeHrKarkunAttachment(_id: String!, attachmentId: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 }
 `;

@@ -25,7 +25,6 @@ import SecurityLogResolvers from './common/security-log/resolvers';
 import PersonSchema from './common/person/person';
 import PersonResolvers from './common/person/resolvers';
 import KarkunSchema from './common/karkun/karkun';
-import KarkunResolvers from './common/karkun/resolvers';
 
 /**
  * Schema and Resolvers for the Admin module
@@ -209,7 +208,6 @@ const resolvers = merge(
   AttachmentResolvers,
   AuditLogResolvers,
   SecurityLogResolvers,
-  KarkunResolvers,
   PersonResolvers,
   UserResolvers,
   UserGroupResolvers,

@@ -40,7 +40,7 @@ const VIEWPORT_BOTTOM_GAP = 16;
 
 type HrKarkunRow = NonNullable<
   NonNullable<
-    NonNullable<HrPeoplePagedHrKarkunsQuery['pagedHrKarkuns']>['karkuns']
+    NonNullable<HrPeoplePagedHrKarkunsQuery['pagedHrKarkuns']>['data']
   >[number]
 >;
 
@@ -191,17 +191,17 @@ const List = ({
 
   const nameColumn = {
     title: 'Name',
-    dataIndex: 'name',
+    dataIndex: ['sharedData', 'name'],
     key: 'name',
     render: (_text: unknown, record: HrKarkunRow) => {
-      if (!record._id || !record.name) return null;
+      if (!record._id || !record.sharedData?.name) return null;
 
       return (
         <KarkunName
           karkun={{
             _id: record._id,
-            name: record.name,
-            imageId: record.imageId ?? undefined,
+            name: record.sharedData.name,
+            imageId: record.sharedData.imageId ?? undefined,
           }}
           onKarkunNameClicked={() => handleItemSelected(record)}
         />
@@ -211,7 +211,7 @@ const List = ({
 
   const cnicColumn = {
     title: 'CNIC Number',
-    dataIndex: 'cnicNumber',
+    dataIndex: ['sharedData', 'cnicNumber'],
     key: 'cnicNumber',
     width: 170,
   };
@@ -223,31 +223,33 @@ const List = ({
     render: (_text: unknown, record: HrKarkunRow) => {
       const numbers: React.ReactNode[] = [];
       let style: CSSProperties = {};
-      if (record.contactNumber1) {
-        if (record.contactNumber1Subscribed === true) {
+      const { contactNumber1, contactNumber1Subscribed, contactNumber2, contactNumber2Subscribed } =
+        record.sharedData ?? {};
+      if (contactNumber1) {
+        if (contactNumber1Subscribed === true) {
           style = ContactNumberSubscribed;
-        } else if (record.contactNumber1Subscribed === false) {
+        } else if (contactNumber1Subscribed === false) {
           style = ContactNumberNotSubscribed;
         }
 
         numbers.push(
           <Row key="1">
-            <span style={style}>{record.contactNumber1}</span>
+            <span style={style}>{contactNumber1}</span>
           </Row>
         );
       }
 
-      if (record.contactNumber2) {
+      if (contactNumber2) {
         style = {};
-        if (record.contactNumber2Subscribed === true) {
+        if (contactNumber2Subscribed === true) {
           style = ContactNumberSubscribed;
-        } else if (record.contactNumber2Subscribed === false) {
+        } else if (contactNumber2Subscribed === false) {
           style = ContactNumberNotSubscribed;
         }
 
         numbers.push(
           <Row key="2">
-            <span style={style}>{record.contactNumber2}</span>
+            <span style={style}>{contactNumber2}</span>
           </Row>
         );
       }
@@ -259,16 +261,17 @@ const List = ({
 
   const dutiesColumn = {
     title: 'Job',
-    dataIndex: 'job',
+    dataIndex: ['employeeData', 'job'],
     key: 'job',
     render: (_text: unknown, record: HrKarkunRow) => {
-      if (!record.job?.name || !record._id) return null;
+      const job = record.employeeData?.job;
+      if (!job?.name || !record._id) return null;
 
       return (
         <RouterLink
           to={`${paths.employeeEditFormPath(record._id)}?default-active-tab=employment`}
         >
-          {record.job.name}
+          {job.name}
         </RouterLink>
       );
     },
@@ -467,7 +470,7 @@ const List = ({
     );
   }
 
-  const { totalResults, karkuns: rawKarkuns } = data.pagedHrKarkuns;
+  const { totalResults, data: rawKarkuns } = data.pagedHrKarkuns;
   const karkuns = (rawKarkuns ?? []).filter(
     (row): row is HrKarkunRow => row != null
   );

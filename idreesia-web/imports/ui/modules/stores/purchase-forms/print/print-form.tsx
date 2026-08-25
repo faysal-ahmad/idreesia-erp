@@ -48,10 +48,10 @@ export class PrintForm extends Component<PrintFormProps> {
           <Col flex={2}>
             <DisplayItem label="Store" value={physicalStore.name} />
             <DisplayItem label="Purchase Date" value={dayjs(Number(purchaseFormById.purchaseDate)).format('DD-MMM-YYYY')} />
-            <DisplayItem label="Purchased By" value={purchaseFormById.refPurchasedBy?.name ?? ''} />
+            <DisplayItem label="Purchased By" value={purchaseFormById.refPurchasedBy?.sharedData?.name ?? ''} />
             <DisplayItem label="Vendor" value={purchaseFormById.refVendor?.name ?? undefined} />
             <DisplayItem label="For Location" value={purchaseFormById.refLocation?.name ?? undefined} />
-            <DisplayItem label="Received By" value={purchaseFormById.refReceivedBy?.name ?? ''} />
+            <DisplayItem label="Received By" value={purchaseFormById.refReceivedBy?.sharedData?.name ?? ''} />
           </Col>
           <Col flex={3}>
             <DisplayItem label="Printing Time" value={dayjs().format('DD-MMM-YYYY hh:mm:ss A')} />

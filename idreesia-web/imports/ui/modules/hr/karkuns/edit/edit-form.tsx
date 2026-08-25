@@ -66,7 +66,7 @@ const EditForm = ({ match, location, history }: Props) => {
   });
 
   const karkun = data?.hrKarkunById;
-  const karkunName = karkun?.name?.trim();
+  const karkunName = karkun?.sharedData?.name?.trim();
 
   useDynamicBreadcrumbs(['HR', 'Karkuns', karkunName || 'Edit']);
 

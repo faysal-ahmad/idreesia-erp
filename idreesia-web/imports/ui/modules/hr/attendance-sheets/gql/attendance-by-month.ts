@@ -31,14 +31,16 @@ const ATTENDANCE_BY_MONTH: TypedDocumentNode<
       meetingCardBarcodeId
       karkun {
         _id
-        name
-        imageId
-        cnicNumber
-        contactNumber1
-        contactNumber2
-        image {
-          _id
-          data
+        sharedData {
+          name
+          imageId
+          cnicNumber
+          contactNumber1
+          contactNumber2
+          image {
+            _id
+            data
+          }
         }
       }
       duty {

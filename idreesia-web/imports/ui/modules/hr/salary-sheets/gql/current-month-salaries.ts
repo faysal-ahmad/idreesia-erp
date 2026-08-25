@@ -28,16 +28,22 @@ const CURRENT_MONTH_SALARIES: TypedDocumentNode<
       approvedBy
       approver {
         _id
-        name
+        sharedData {
+          name
+        }
       }
       karkun {
         _id
-        name
-        parentName
-        imageId
-        cnicNumber
-        contactNumber1
-        bankAccountDetails
+        sharedData {
+          name
+          parentName
+          imageId
+          cnicNumber
+          contactNumber1
+        }
+        employeeData {
+          bankAccountDetails
+        }
       }
       job {
         _id

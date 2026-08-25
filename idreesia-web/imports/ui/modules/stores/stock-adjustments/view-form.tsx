@@ -47,7 +47,7 @@ const ViewForm = ({ history }: Props) => {
       <Form layout="horizontal" style={FormStyle} onFinish={noop}>
         <InputTextField fieldName="stockItemId" fieldLabel="Stock Item Name" initialValue={stockAdjustmentById.refStockItem?.formattedName ?? ''} />
         <InputTextField fieldName="adjustment" fieldLabel="Adjustment" initialValue={adjustment} />
-        <InputTextField fieldName="adjustedBy" fieldLabel="Adjusted By" initialValue={stockAdjustmentById.refAdjustedBy?.name ?? ''} />
+        <InputTextField fieldName="adjustedBy" fieldLabel="Adjusted By" initialValue={stockAdjustmentById.refAdjustedBy?.sharedData?.name ?? ''} />
         <DateField fieldName="adjustedDate" fieldLabel="Adjusted Date" initialValue={dayjs(Number(stockAdjustmentById.adjustmentDate))} />
         <InputTextAreaField fieldName="adjustmentReason" fieldLabel="Adjustment Reason" initialValue={stockAdjustmentById.adjustmentReason ?? undefined} />
         <FormButtonsClose handleClose={() => history.goBack()} />

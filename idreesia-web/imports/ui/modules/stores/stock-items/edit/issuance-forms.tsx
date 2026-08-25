@@ -57,7 +57,9 @@ const ISSUANCE_FORMS_BY_STOCK_ITEM: TypedDocumentNode<
       }
       refIssuedTo {
         _id
-        name
+        sharedData {
+          name
+        }
       }
       refLocation {
         _id
@@ -96,7 +98,7 @@ const IssuanceForms = ({ history, physicalStoreId, stockItemId }: Props) => {
     },
     {
       title: 'Issued To',
-      dataIndex: ['refIssuedTo', 'name'],
+      dataIndex: ['refIssuedTo', 'sharedData', 'name'],
       key: 'refIssuedTo.name',
     },
     {

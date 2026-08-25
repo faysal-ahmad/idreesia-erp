@@ -46,7 +46,7 @@ export type AttendanceType = {
   dutyId?: Maybe<Scalars['String']['output']>;
   job?: Maybe<JobType>;
   jobId?: Maybe<Scalars['String']['output']>;
-  karkun?: Maybe<KarkunType>;
+  karkun?: Maybe<PersonType>;
   karkunId?: Maybe<Scalars['String']['output']>;
   meetingCardBarcodeId?: Maybe<Scalars['String']['output']>;
   month?: Maybe<Scalars['String']['output']>;
@@ -201,8 +201,8 @@ export type IssuanceForm = {
   locationId?: Maybe<Scalars['String']['output']>;
   notes?: Maybe<Scalars['String']['output']>;
   physicalStoreId?: Maybe<Scalars['String']['output']>;
-  refIssuedBy?: Maybe<KarkunType>;
-  refIssuedTo?: Maybe<KarkunType>;
+  refIssuedBy?: Maybe<PersonType>;
+  refIssuedTo?: Maybe<PersonType>;
   refLocation?: Maybe<Location>;
   refPhysicalStore?: Maybe<PhysicalStore>;
   updatedAt?: Maybe<Scalars['String']['output']>;
@@ -345,69 +345,6 @@ export type KarkunFilter = {
   userAccount?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type KarkunType = {
-  __typename?: 'KarkunType';
-  _id?: Maybe<Scalars['String']['output']>;
-  attachmentIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  attachments?: Maybe<Array<Maybe<Attachment>>>;
-  bankAccountDetails?: Maybe<Scalars['String']['output']>;
-  birthDate?: Maybe<Scalars['String']['output']>;
-  bloodGroup?: Maybe<Scalars['String']['output']>;
-  city?: Maybe<CityType>;
-  cityId?: Maybe<Scalars['String']['output']>;
-  cityMehfil?: Maybe<CityMehfilType>;
-  cityMehfilId?: Maybe<Scalars['String']['output']>;
-  cnicNumber?: Maybe<Scalars['String']['output']>;
-  contactNumber1?: Maybe<Scalars['String']['output']>;
-  contactNumber1Subscribed?: Maybe<Scalars['Boolean']['output']>;
-  contactNumber2?: Maybe<Scalars['String']['output']>;
-  contactNumber2Subscribed?: Maybe<Scalars['Boolean']['output']>;
-  createdAt?: Maybe<Scalars['String']['output']>;
-  createdBy?: Maybe<Scalars['String']['output']>;
-  currentAddress?: Maybe<Scalars['String']['output']>;
-  deathDate?: Maybe<Scalars['String']['output']>;
-  duties?: Maybe<Array<Maybe<KarkunDutyType>>>;
-  educationalQualification?: Maybe<Scalars['String']['output']>;
-  ehadDate?: Maybe<Scalars['String']['output']>;
-  ehadKarkun?: Maybe<Scalars['Boolean']['output']>;
-  ehadPermissionDate?: Maybe<Scalars['String']['output']>;
-  emailAddress?: Maybe<Scalars['String']['output']>;
-  employmentEndDate?: Maybe<Scalars['String']['output']>;
-  employmentStartDate?: Maybe<Scalars['String']['output']>;
-  image?: Maybe<Attachment>;
-  imageId?: Maybe<Scalars['String']['output']>;
-  isEmployee?: Maybe<Scalars['Boolean']['output']>;
-  job?: Maybe<JobType>;
-  jobId?: Maybe<Scalars['String']['output']>;
-  lastTarteebDate?: Maybe<Scalars['String']['output']>;
-  meansOfEarning?: Maybe<Scalars['String']['output']>;
-  mehfilRaabta?: Maybe<Scalars['String']['output']>;
-  msLastVisitDate?: Maybe<Scalars['String']['output']>;
-  msRaabta?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  parentName?: Maybe<Scalars['String']['output']>;
-  permanentAddress?: Maybe<Scalars['String']['output']>;
-  referenceName?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['String']['output']>;
-  updatedBy?: Maybe<Scalars['String']['output']>;
-  user?: Maybe<KarkunUserType>;
-};
-
-export type KarkunUserType = {
-  __typename?: 'KarkunUserType';
-  _id?: Maybe<Scalars['String']['output']>;
-  displayName?: Maybe<Scalars['String']['output']>;
-  email?: Maybe<Scalars['String']['output']>;
-  emailVerified?: Maybe<Scalars['Boolean']['output']>;
-  groups?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  instances?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  lastActiveAt?: Maybe<Scalars['String']['output']>;
-  lastLoggedInAt?: Maybe<Scalars['String']['output']>;
-  locked?: Maybe<Scalars['Boolean']['output']>;
-  permissions?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  username?: Maybe<Scalars['String']['output']>;
-};
-
 export type Location = {
   __typename?: 'Location';
   _id?: Maybe<Scalars['String']['output']>;
@@ -492,7 +429,7 @@ export type MehfilType = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addHrKarkunAttachment?: Maybe<KarkunType>;
+  addHrKarkunAttachment?: Maybe<PersonType>;
   addIssuanceFormAttachment?: Maybe<IssuanceForm>;
   addMehfilKarkun?: Maybe<MehfilKarkunType>;
   addPurchaseFormAttachment?: Maybe<PurchaseForm>;
@@ -510,7 +447,7 @@ export type Mutation = {
   createDuty?: Maybe<DutyType>;
   createDutyLocation?: Maybe<DutyLocationType>;
   createDutyShift?: Maybe<DutyShiftType>;
-  createHrKarkun?: Maybe<KarkunType>;
+  createHrKarkun?: Maybe<PersonType>;
   createIssuanceForm?: Maybe<IssuanceForm>;
   createItemCategory?: Maybe<ItemCategory>;
   createJob?: Maybe<JobType>;
@@ -552,7 +489,7 @@ export type Mutation = {
   removeDuty?: Maybe<Scalars['Int']['output']>;
   removeDutyLocation?: Maybe<Scalars['Int']['output']>;
   removeDutyShift?: Maybe<Scalars['Int']['output']>;
-  removeHrKarkunAttachment?: Maybe<KarkunType>;
+  removeHrKarkunAttachment?: Maybe<PersonType>;
   removeIssuanceFormAttachment?: Maybe<IssuanceForm>;
   removeIssuanceForms?: Maybe<Scalars['Int']['output']>;
   removeItemCategory?: Maybe<Scalars['Int']['output']>;
@@ -575,9 +512,9 @@ export type Mutation = {
   runScheduledJobNow?: Maybe<Scalars['Boolean']['output']>;
   setDutyDetail?: Maybe<Array<Maybe<MehfilKarkunType>>>;
   setGroups?: Maybe<UserType>;
-  setHrKarkunEmploymentInfo?: Maybe<KarkunType>;
-  setHrKarkunProfileImage?: Maybe<KarkunType>;
-  setHrKarkunWazaifAndRaabta?: Maybe<KarkunType>;
+  setHrKarkunEmploymentInfo?: Maybe<PersonType>;
+  setHrKarkunProfileImage?: Maybe<PersonType>;
+  setHrKarkunWazaifAndRaabta?: Maybe<PersonType>;
   setInstanceAccess?: Maybe<UserType>;
   setJobDefinitionEnabled?: Maybe<JobDefinitionType>;
   setPermissions?: Maybe<UserType>;
@@ -594,7 +531,7 @@ export type Mutation = {
   updateDuty?: Maybe<DutyType>;
   updateDutyLocation?: Maybe<DutyLocationType>;
   updateDutyShift?: Maybe<DutyShiftType>;
-  updateHrKarkun?: Maybe<KarkunType>;
+  updateHrKarkun?: Maybe<PersonType>;
   updateIssuanceForm?: Maybe<IssuanceForm>;
   updateItemCategory?: Maybe<ItemCategory>;
   updateJob?: Maybe<JobType>;
@@ -1569,7 +1506,7 @@ export type PagedJobLogsType = {
 
 export type PagedKarkunType = {
   __typename?: 'PagedKarkunType';
-  karkuns?: Maybe<Array<Maybe<KarkunType>>>;
+  data?: Maybe<Array<Maybe<PersonType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -1828,8 +1765,8 @@ export type PurchaseForm = {
   receivedBy?: Maybe<Scalars['String']['output']>;
   refLocation?: Maybe<Location>;
   refPhysicalStore?: Maybe<PhysicalStore>;
-  refPurchasedBy?: Maybe<KarkunType>;
-  refReceivedBy?: Maybe<KarkunType>;
+  refPurchasedBy?: Maybe<PersonType>;
+  refReceivedBy?: Maybe<PersonType>;
   refVendor?: Maybe<Vendor>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
@@ -1872,8 +1809,8 @@ export type Query = {
   dutyShiftById?: Maybe<DutyShiftType>;
   dutyShiftsByDutyId?: Maybe<Array<Maybe<DutyShiftType>>>;
   faceVectors: Array<FaceVectorRecord>;
-  hrKarkunById?: Maybe<KarkunType>;
-  hrKarkunsById?: Maybe<Array<Maybe<KarkunType>>>;
+  hrKarkunById?: Maybe<PersonType>;
+  hrKarkunsById?: Maybe<Array<Maybe<PersonType>>>;
   inventoryStatistics?: Maybe<InventoryStatistics>;
   isJobProcessorActive?: Maybe<Scalars['Boolean']['output']>;
   issuanceFormById?: Maybe<IssuanceForm>;
@@ -2325,14 +2262,14 @@ export type SalaryType = {
   _id?: Maybe<Scalars['String']['output']>;
   approvedBy?: Maybe<Scalars['String']['output']>;
   approvedOn?: Maybe<Scalars['String']['output']>;
-  approver?: Maybe<KarkunType>;
+  approver?: Maybe<PersonType>;
   arrears?: Maybe<Scalars['Int']['output']>;
   closingLoan?: Maybe<Scalars['Int']['output']>;
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
   job?: Maybe<JobType>;
   jobId?: Maybe<Scalars['String']['output']>;
-  karkun?: Maybe<KarkunType>;
+  karkun?: Maybe<PersonType>;
   karkunId?: Maybe<Scalars['String']['output']>;
   loanDeduction?: Maybe<Scalars['Int']['output']>;
   month?: Maybe<Scalars['String']['output']>;
@@ -2403,7 +2340,7 @@ export type StockAdjustment = {
   isInflow?: Maybe<Scalars['Boolean']['output']>;
   physicalStoreId?: Maybe<Scalars['String']['output']>;
   quantity?: Maybe<Scalars['Float']['output']>;
-  refAdjustedBy?: Maybe<KarkunType>;
+  refAdjustedBy?: Maybe<PersonType>;
   refPhysicalStore?: Maybe<PhysicalStore>;
   refStockItem?: Maybe<StockItem>;
   stockItemId?: Maybe<Scalars['String']['output']>;
@@ -2466,7 +2403,7 @@ export type UserType = {
   emailVerified?: Maybe<Scalars['Boolean']['output']>;
   groups?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   instances?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  karkun?: Maybe<KarkunType>;
+  karkun?: Maybe<PersonType>;
   lastActiveAt?: Maybe<Scalars['String']['output']>;
   lastLoggedInAt?: Maybe<Scalars['String']['output']>;
   locked?: Maybe<Scalars['Boolean']['output']>;

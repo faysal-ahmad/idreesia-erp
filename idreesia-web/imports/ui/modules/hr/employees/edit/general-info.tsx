@@ -164,32 +164,45 @@ const GeneralInfo = ({ history, employeeId, employee }: Props) => {
           fieldLabel="Name"
           required
           requiredMessage="Please input the name for the employee."
-          initialValue={employee.name}
+          initialValue={employee.sharedData?.name}
         />
         <InputTextField
           fieldName="parentName"
           fieldLabel="S/O"
           required
           requiredMessage="Please input the parent name for the employee."
-          initialValue={employee.parentName}
+          initialValue={employee.sharedData?.parentName}
         />
         <AgeField
           fieldName="birthDate"
           fieldLabel="Age (years)"
           initialValue={
-            employee.birthDate ? dayjs(Number(employee.birthDate)) : null
+            employee.sharedData?.birthDate
+              ? dayjs(Number(employee.sharedData.birthDate))
+              : null
           }
         />
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
-          initialValue={employee.cnicNumber || ''}
+          initialValue={employee.sharedData?.cnicNumber || ''}
+        />
+        <SelectField<LabelValue>
+          fieldName="bloodGroup"
+          fieldLabel="Blood Group"
+          required={false}
+          data={BLOOD_GROUP_OPTIONS}
+          getDataValue={({ value }) => value}
+          getDataText={({ label }) => label}
+          initialValue={employee.sharedData?.bloodGroup}
         />
         <DateField
           fieldName="deathDate"
           fieldLabel="Date of Death"
           initialValue={
-            employee.deathDate ? dayjs(Number(employee.deathDate)) : null
+            employee.sharedData?.deathDate
+              ? dayjs(Number(employee.sharedData.deathDate))
+              : null
           }
         />
       </>
@@ -206,38 +219,41 @@ const GeneralInfo = ({ history, employeeId, employee }: Props) => {
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
-            initialValue={employee.contactNumber1 || ''}
+            initialValue={employee.sharedData?.contactNumber1 || ''}
           />
           <InputTextField
             fieldName="contactNumber2"
             fieldLabel="Home Number"
-            initialValue={employee.contactNumber2}
+            initialValue={employee.sharedData?.contactNumber2}
             required={false}
           />
           <InputTextField
             fieldName="emailAddress"
             fieldLabel="Email"
-            initialValue={employee.emailAddress}
+            initialValue={employee.sharedData?.emailAddress}
             required={false}
           />
           <CascaderField
             data={getCityMehfilCascaderData(cities, cityMehfils) ?? []}
             fieldName="cityIdMehfilId"
             fieldLabel="City/Mehfil"
-            initialValue={[employee.cityId, employee.cityMehfilId]}
+            initialValue={[
+              employee.karkunData?.cityId,
+              employee.karkunData?.cityMehfilId,
+            ]}
             required
             requiredMessage="Please select a city/mehfil from the list."
           />
           <InputTextAreaField
             fieldName="currentAddress"
             fieldLabel="Current Address"
-            initialValue={employee.currentAddress}
+            initialValue={employee.sharedData?.currentAddress}
             required={false}
           />
           <InputTextAreaField
             fieldName="permanentAddress"
             fieldLabel="Permanent Address"
-            initialValue={employee.permanentAddress}
+            initialValue={employee.sharedData?.permanentAddress}
             required={false}
           />
         </>
@@ -255,8 +271,9 @@ const GeneralInfo = ({ history, employeeId, employee }: Props) => {
             required
             requiredMessage="Please specify the Ehad duration for the employee."
             initialValue={
-              employee.ehadDate != null && employee.ehadDate !== ''
-                ? dayjs(Number(employee.ehadDate))
+              employee.sharedData?.ehadDate != null &&
+              employee.sharedData.ehadDate !== ''
+                ? dayjs(Number(employee.sharedData.ehadDate))
                 : dayjs()
             }
           />
@@ -265,27 +282,18 @@ const GeneralInfo = ({ history, employeeId, employee }: Props) => {
             fieldLabel="R/O"
             required
             requiredMessage="Please input the reference name for the employee."
-            initialValue={employee.referenceName}
-          />
-          <SelectField<LabelValue>
-            fieldName="bloodGroup"
-            fieldLabel="Blood Group"
-            required={false}
-            data={BLOOD_GROUP_OPTIONS}
-            getDataValue={({ value }) => value}
-            getDataText={({ label }) => label}
-            initialValue={employee.bloodGroup}
+            initialValue={employee.sharedData?.referenceName}
           />
           <InputTextField
             fieldName="educationalQualification"
             fieldLabel="Education"
-            initialValue={employee.educationalQualification}
+            initialValue={employee.sharedData?.educationalQualification}
             required={false}
           />
           <InputTextAreaField
             fieldName="meansOfEarning"
             fieldLabel="Means of Earning"
-            initialValue={employee.meansOfEarning}
+            initialValue={employee.sharedData?.meansOfEarning}
             required={false}
           />
         </>

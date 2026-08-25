@@ -40,7 +40,9 @@ export const PAGED_ISSUANCE_FORMS: TypedDocumentNode<
         }
         refIssuedTo {
           _id
-          name
+          sharedData {
+            name
+          }
         }
         refLocation {
           _id

@@ -12,27 +12,33 @@ const PAGED_HR_KARKUNS: TypedDocumentNode<
   query hrPeoplePagedHrKarkuns($filter: KarkunFilter) {
     pagedHrKarkuns(filter: $filter) {
       totalResults
-      karkuns {
+      data {
         _id
-        name
-        cnicNumber
-        contactNumber1
-        contactNumber2
-        contactNumber1Subscribed
-        contactNumber2Subscribed
-        lastTarteebDate
-        imageId
-        job {
-          _id
+        sharedData {
           name
+          cnicNumber
+          contactNumber1
+          contactNumber2
+          contactNumber1Subscribed
+          contactNumber2Subscribed
+          imageId
         }
-        duties {
-          _id
-          dutyId
-          shiftId
-          dutyName
-          shiftName
-          role
+        karkunData {
+          lastTarteebDate
+          duties {
+            _id
+            dutyId
+            shiftId
+            dutyName
+            shiftName
+            role
+          }
+        }
+        employeeData {
+          job {
+            _id
+            name
+          }
         }
       }
     }

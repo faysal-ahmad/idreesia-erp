@@ -18,12 +18,10 @@ interface ResolverMap {
 
 const resolvers: ResolverMap = {
   SalaryType: {
-    karkun: async salaryType => {
-      const person = await People.findOneAsync({
+    karkun: async salaryType =>
+      People.findOneAsync({
         _id: { $eq: salaryType.karkunId },
-      });
-      return People.personToKarkun(person);
-    },
+      }),
     job: async salaryType => {
       if (!salaryType.jobId) return null;
       return Jobs.findOneAsync({
@@ -32,10 +30,9 @@ const resolvers: ResolverMap = {
     },
     approver: async salaryType => {
       if (!salaryType.approvedBy) return null;
-      const person = await People.findOneAsync({
+      return People.findOneAsync({
         _id: { $eq: salaryType.approvedBy },
       });
-      return People.personToKarkun(person);
     },
   },
 

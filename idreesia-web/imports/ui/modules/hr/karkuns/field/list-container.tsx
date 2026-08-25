@@ -78,7 +78,7 @@ export default class ListContainer extends Component<
             ? record =>
                 setSelectedValue({
                   _id: record._id ?? undefined,
-                  name: record.name ?? undefined,
+                  name: record.sharedData?.name ?? undefined,
                 })
             : undefined
         }

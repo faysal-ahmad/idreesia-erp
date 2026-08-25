@@ -12,54 +12,60 @@ const HR_KARKUN_BY_ID: TypedDocumentNode<
   query hrKarkunByIdForPeople($_id: String!) {
     hrKarkunById(_id: $_id) {
       _id
-      name
-      parentName
-      cnicNumber
-      imageId
-      contactNumber1
-      contactNumber2
-      contactNumber1Subscribed
-      contactNumber2Subscribed
-      emailAddress
-      currentAddress
-      permanentAddress
-      cityId
-      cityMehfilId
-      bloodGroup
-      educationalQualification
-      meansOfEarning
-      ehadDate
-      ehadKarkun
-      ehadPermissionDate
-      birthDate
-      deathDate
-      lastTarteebDate
-      mehfilRaabta
-      msRaabta
-      referenceName
       isEmployee
-      jobId
-      employmentStartDate
-      employmentEndDate
       createdAt
       createdBy
       updatedAt
       updatedBy
-      attachments {
-        _id
+      sharedData {
         name
-        description
-        mimeType
+        parentName
+        cnicNumber
+        imageId
+        contactNumber1
+        contactNumber2
+        contactNumber1Subscribed
+        contactNumber2Subscribed
+        emailAddress
+        currentAddress
+        permanentAddress
+        bloodGroup
+        educationalQualification
+        meansOfEarning
+        ehadDate
+        birthDate
+        deathDate
+        referenceName
       }
-      job {
-        _id
-        name
+      karkunData {
+        cityId
+        cityMehfilId
+        ehadKarkun
+        ehadPermissionDate
+        lastTarteebDate
+        mehfilRaabta
+        msRaabta
+        attachments {
+          _id
+          name
+          description
+          mimeType
+        }
+        duties {
+          _id
+          dutyName
+          shiftName
+          locationName
+        }
       }
-      duties {
-        _id
-        dutyName
-        shiftName
-        locationName
+      employeeData {
+        jobId
+        employmentStartDate
+        employmentEndDate
+        job {
+          _id
+          name
+        }
       }
     }
   }

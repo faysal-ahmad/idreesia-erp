@@ -7,7 +7,9 @@ import { PersonName } from '/imports/ui/modules/helpers/controls';
 type KarkunRow = NonNullable<
   NonNullable<HrKarkunsByIdQuery['hrKarkunsById']>[number]
 >;
-type KarkunDuty = NonNullable<NonNullable<KarkunRow['duties']>[number]>;
+type KarkunDuty = NonNullable<
+  NonNullable<NonNullable<KarkunRow['karkunData']>['duties']>[number]
+>;
 
 interface Props {
   karkuns?: Array<KarkunRow | null> | null;
@@ -16,11 +18,22 @@ interface Props {
 export default class KarkunsList extends Component<Props> {
   nameColumn = {
     title: 'Name',
-    dataIndex: 'name',
+    dataIndex: ['sharedData', 'name'],
     key: 'name',
     render: (_text: unknown, record: KarkunRow) => (
       <PersonName
-        person={record as Parameters<typeof PersonName>[0]['person']}
+        person={
+          record._id && record.sharedData?.name
+            ? {
+                _id: record._id,
+                name: record.sharedData.name,
+                imageId: record.sharedData.imageId ?? undefined,
+                image: record.sharedData.image?.data
+                  ? { data: record.sharedData.image.data ?? undefined }
+                  : undefined,
+              }
+            : null
+        }
         showLargeImage
       />
     ),
@@ -28,7 +41,7 @@ export default class KarkunsList extends Component<Props> {
 
   cnicColumn = {
     title: 'CNIC Number',
-    dataIndex: 'cnicNumber',
+    dataIndex: ['sharedData', 'cnicNumber'],
     key: 'cnicNumber',
   };
 
@@ -37,10 +50,9 @@ export default class KarkunsList extends Component<Props> {
     key: 'contactNumber',
     render: (_text: unknown, record: KarkunRow) => {
       const numbers: React.ReactNode[] = [];
-      if (record.contactNumber1)
-        numbers.push(<Row key="1">{record.contactNumber1}</Row>);
-      if (record.contactNumber2)
-        numbers.push(<Row key="2">{record.contactNumber2}</Row>);
+      const { contactNumber1, contactNumber2 } = record.sharedData ?? {};
+      if (contactNumber1) numbers.push(<Row key="1">{contactNumber1}</Row>);
+      if (contactNumber2) numbers.push(<Row key="2">{contactNumber2}</Row>);
 
       if (numbers.length === 0) return '';
       return <>{numbers}</>;
@@ -49,9 +61,9 @@ export default class KarkunsList extends Component<Props> {
 
   dutiesColumn = {
     title: 'Duties',
-    dataIndex: 'duties',
+    dataIndex: ['karkunData', 'duties'],
     key: 'duties',
-    render: (duties: KarkunRow['duties'], record: KarkunRow) => {
+    render: (duties: KarkunDuty[] | null | undefined, record: KarkunRow) => {
       const normalizedDuties = (duties ?? []).filter(
         (duty): duty is KarkunDuty => duty != null
       );
@@ -68,8 +80,9 @@ export default class KarkunsList extends Component<Props> {
         });
       }
 
-      if (record.job) {
-        dutyNames = ([<span key="job">{record.job.name}</span>] as React.ReactNode[]).concat(
+      const job = record.employeeData?.job;
+      if (job) {
+        dutyNames = ([<span key="job">{job.name}</span>] as React.ReactNode[]).concat(
           dutyNames
         );
       }

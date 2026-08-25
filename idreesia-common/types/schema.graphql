@@ -290,7 +290,7 @@ type UserType {
   groups: [String]
 
   person: PersonType
-  karkun: KarkunType
+  karkun: PersonType
 }
 
 type PagedUserType {
@@ -414,70 +414,6 @@ type PagedAuditLogType {
   data: [AuditLogType]
 }
 
-type KarkunUserType {
-  _id: String
-  username: String
-  email: String
-  emailVerified: Boolean
-  displayName: String
-  locked: Boolean
-  lastLoggedInAt: String
-  lastActiveAt: String
-  permissions: [String]
-  instances: [String]
-  groups: [String]
-}
-
-type KarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  contactNumber2: String
-  contactNumber1Subscribed: Boolean
-  contactNumber2Subscribed: Boolean
-  emailAddress: String
-  currentAddress: String
-  permanentAddress: String
-  cityId: String
-  cityMehfilId: String
-  bloodGroup: String
-  educationalQualification: String
-  meansOfEarning: String
-  ehadDate: String
-  ehadKarkun: Boolean
-  ehadPermissionDate: String
-  birthDate: String
-  deathDate: String
-  lastTarteebDate: String
-  mehfilRaabta: String
-  msRaabta: String
-  msLastVisitDate: String
-  referenceName: String
-  imageId: String
-  attachmentIds: [String]
-
-  isEmployee: Boolean
-  jobId: String
-  employmentStartDate: String
-  employmentEndDate: String
-  bankAccountDetails: String
-
-  job: JobType
-  duties: [KarkunDutyType]
-  attachments: [Attachment]
-  image: Attachment
-  city: CityType
-  cityMehfil: CityMehfilType
-  user: KarkunUserType
-
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-
 input KarkunFilter {
   name: String
   cnicNumber: String
@@ -505,7 +441,7 @@ input KarkunFilter {
 
 type PagedKarkunType {
   totalResults: Int
-  karkuns: [KarkunType]
+  data: [PersonType]
 }
 
 type PersonSharedDataType {
@@ -655,7 +591,7 @@ type AttendanceType {
   percentage: Float
   meetingCardBarcodeId: String
 
-  karkun: KarkunType
+  karkun: PersonType
   job: JobType
   duty: DutyType
   shift: DutyShiftType
@@ -880,10 +816,10 @@ extend type Mutation {
 }
 
 extend type Query {
-  hrKarkunById(_id: String!): KarkunType
+  hrKarkunById(_id: String!): PersonType
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 
-  hrKarkunsById(_ids: String!): [KarkunType]
+  hrKarkunsById(_ids: String!): [PersonType]
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 
   pagedHrKarkuns(filter: KarkunFilter): PagedKarkunType
@@ -892,7 +828,7 @@ extend type Query {
     IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS,
     IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS,
     IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS
-  ], dataFieldName: "karkuns")
+  ])
 }
 
 extend type Mutation {
@@ -913,7 +849,7 @@ extend type Mutation {
     ehadDate: String
     birthDate: String
     referenceName: String
-  ): KarkunType
+  ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
   updateHrKarkun(
@@ -935,7 +871,7 @@ extend type Mutation {
     birthDate: String
     deathDate: String
     referenceName: String
-  ): KarkunType
+  ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
   deleteHrKarkun(_id: String!): Int
@@ -946,7 +882,7 @@ extend type Mutation {
     lastTarteebDate: String
     mehfilRaabta: String
     msRaabta: String
-  ): KarkunType
+  ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   setHrKarkunEmploymentInfo(
@@ -956,16 +892,16 @@ extend type Mutation {
     employmentStartDate: String
     employmentEndDate: String
     bankAccountDetails: String
-  ): KarkunType
+  ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
-  setHrKarkunProfileImage(_id: String!, imageId: String!): KarkunType
+  setHrKarkunProfileImage(_id: String!, imageId: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
-  addHrKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
+  addHrKarkunAttachment(_id: String!, attachmentId: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
-  removeHrKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
+  removeHrKarkunAttachment(_id: String!, attachmentId: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 }
 
@@ -984,9 +920,9 @@ type SalaryType {
   netPayment: Int
   rashanMadad: Int
 
-  karkun: KarkunType
+  karkun: PersonType
   job: JobType
-  approver: KarkunType
+  approver: PersonType
 
   approvedOn: String
   approvedBy: String
@@ -1074,8 +1010,8 @@ type IssuanceForm {
 
   attachments: [Attachment]
   refLocation: Location
-  refIssuedBy: KarkunType
-  refIssuedTo: KarkunType
+  refIssuedBy: PersonType
+  refIssuedTo: PersonType
   refPhysicalStore: PhysicalStore
 
   createdAt: String
@@ -1296,8 +1232,8 @@ type PurchaseForm {
   attachments: [Attachment]
   refVendor: Vendor
   refLocation: Location
-  refReceivedBy: KarkunType
-  refPurchasedBy: KarkunType
+  refReceivedBy: PersonType
+  refPurchasedBy: PersonType
   refPhysicalStore: PhysicalStore
 
   createdAt: String
@@ -1407,7 +1343,7 @@ type StockAdjustment {
   adjustmentReason: String
 
   refStockItem: StockItem
-  refAdjustedBy: KarkunType
+  refAdjustedBy: PersonType
   refPhysicalStore: PhysicalStore
 
   createdAt: String

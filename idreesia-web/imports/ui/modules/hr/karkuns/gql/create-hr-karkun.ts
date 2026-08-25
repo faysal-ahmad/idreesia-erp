@@ -42,23 +42,27 @@ const CREATE_HR_KARKUN: TypedDocumentNode<
       referenceName: $referenceName
     ) {
       _id
-      name
-      parentName
-      cnicNumber
-      contactNumber1
-      contactNumber2
-      emailAddress
-      currentAddress
-      permanentAddress
-      bloodGroup
-      educationalQualification
-      meansOfEarning
-      ehadDate
-      birthDate
-      lastTarteebDate
-      mehfilRaabta
-      msRaabta
-      referenceName
+      sharedData {
+        name
+        parentName
+        cnicNumber
+        contactNumber1
+        contactNumber2
+        emailAddress
+        currentAddress
+        permanentAddress
+        bloodGroup
+        educationalQualification
+        meansOfEarning
+        ehadDate
+        birthDate
+        referenceName
+      }
+      karkunData {
+        lastTarteebDate
+        mehfilRaabta
+        msRaabta
+      }
     }
   }
 `;

@@ -950,54 +950,6 @@ class People extends AggregatableCollection<PersonDocument> {
   // **************************************************************
   // Conversion Functions
   // **************************************************************
-  personToKarkun(person: PersonDocument | null | undefined) {
-    if (!person) return null;
-    const sharedData = person.sharedData ?? {};
-    return {
-      _id: person._id,
-      dataSource: person.dataSource,
-      createdAt: person.createdAt,
-      createdBy: person.createdBy,
-      updatedAt: person.updatedAt,
-      updatedBy: person.updatedBy,
-
-      name: sharedData.name,
-      parentName: sharedData.parentName,
-      cnicNumber: sharedData.cnicNumber,
-      ehadDate: sharedData.ehadDate,
-      birthDate: sharedData.birthDate,
-      deathDate: sharedData.deathDate,
-      referenceName: sharedData.referenceName,
-      contactNumber1: sharedData.contactNumber1,
-      contactNumber2: sharedData.contactNumber2,
-      contactNumber1Subscribed: sharedData.contactNumber1Subscribed,
-      contactNumber2Subscribed: sharedData.contactNumber2Subscribed,
-      emailAddress: sharedData.emailAddress,
-      currentAddress: sharedData.currentAddress,
-      permanentAddress: sharedData.permanentAddress,
-      bloodGroup: sharedData.bloodGroup,
-      educationalQualification: sharedData.educationalQualification,
-      meansOfEarning: sharedData.meansOfEarning,
-      imageId: sharedData.imageId,
-
-      cityId: person.karkunData?.cityId,
-      cityMehfilId: person.karkunData?.cityMehfilId,
-      ehadKarkun: person.karkunData?.ehadKarkun,
-      ehadPermissionDate: person.karkunData?.ehadPermissionDate,
-      lastTarteebDate: person.karkunData?.lastTarteebDate,
-      mehfilRaabta: person.karkunData?.mehfilRaabta,
-      msRaabta: person.karkunData?.msRaabta,
-      msLastVisitDate: person.karkunData?.msLastVisitDate,
-      attachmentIds: person.karkunData?.attachmentIds,
-
-      isEmployee: person.isEmployee,
-      jobId: person.employeeData?.jobId,
-      employmentStartDate: person.employeeData?.employmentStartDate,
-      employmentEndDate: person.employeeData?.employmentEndDate,
-      bankAccountDetails: person.employeeData?.bankAccountDetails,
-    };
-  }
-
   async karkunToPerson(karkun: LooseRecord) {
     const city = karkun.cityId ? await Cities.findOneAsync(karkun.cityId) : null;
 

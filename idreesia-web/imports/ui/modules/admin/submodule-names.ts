@@ -7,6 +7,7 @@ const SubModuleNames = {
   jobLogs: 'Job Logs',
   jobDefinitions: 'Job Definitions',
   peopleTags: 'People Tags',
+  deletedPeople: 'Deleted People',
 };
 
 export default SubModuleNames;

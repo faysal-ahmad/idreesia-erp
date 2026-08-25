@@ -262,6 +262,20 @@ export type DistinctRegionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type DistinctRegionsQuery = { distinctRegions: Array<string | null> | null };
 
+export type DeletedPersonByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type DeletedPersonByIdQuery = { deletedPersonById: { _id: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, deletedAt: string | null, deletedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, ehadDate: string | null, birthDate: string | null, referenceName: string | null, contactNumber1: string | null, contactNumber2: string | null, currentAddress: string | null, permanentAddress: string | null, educationalQualification: string | null, meansOfEarning: string | null, imageId: string | null, tagIds: Array<string | null> | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null };
+
+export type PagedDeletedPeopleQueryVariables = Exact<{
+  filter?: Types.PersonFilter | null | undefined;
+}>;
+
+
+export type PagedDeletedPeopleQuery = { pagedDeletedPeople: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
+
 export type AllJobDefinitionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 

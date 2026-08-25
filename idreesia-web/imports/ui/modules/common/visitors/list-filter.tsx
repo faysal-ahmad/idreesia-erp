@@ -37,7 +37,7 @@ interface PageParams {
   tagId?: string;
 }
 
-export interface VisitorListFilterFormValues {
+export interface PersonGeneralListFilterFormValues {
   name?: string;
   cnicNumber?: string;
   phoneNumber?: string;
@@ -49,12 +49,12 @@ export interface VisitorListFilterFormValues {
   tagId?: string;
 }
 
-export interface VisitorFilterTagOption {
+export interface PersonGeneralListFilterTagOption {
   _id: string;
   name?: string | null;
 }
 
-export interface VisitorListFilterProps {
+export interface PersonGeneralListFilterProps {
   setPageParams(params: PageParams): void;
   refreshData?: () => Promise<unknown>;
   name?: string;
@@ -69,7 +69,7 @@ export interface VisitorListFilterProps {
   showAdditionalInfoFilter?: boolean;
   showDataSourceFilter?: boolean;
   distinctCities?: string[];
-  tags?: VisitorFilterTagOption[];
+  tags?: PersonGeneralListFilterTagOption[];
 }
 
 interface LabelValue {
@@ -124,7 +124,7 @@ const parseUpdatedBetween = (updatedBetween?: string) => {
   }
 };
 
-export const getVisitorFilterChips = ({
+export const getPersonGeneralListFilterChips = ({
   name,
   cnicNumber,
   phoneNumber,
@@ -136,7 +136,7 @@ export const getVisitorFilterChips = ({
   tagId,
   tags = [],
 }: Pick<
-  VisitorListFilterProps,
+  PersonGeneralListFilterProps,
   | 'name'
   | 'cnicNumber'
   | 'phoneNumber'
@@ -215,7 +215,7 @@ export const getVisitorFilterChips = ({
   return chips;
 };
 
-export const VisitorFilterChips = ({
+export const PersonGeneralListFilterChips = ({
   setPageParams,
   name,
   cnicNumber,
@@ -227,10 +227,10 @@ export const VisitorFilterChips = ({
   updatedBetween,
   tagId,
   tags,
-}: VisitorListFilterProps) => {
+}: PersonGeneralListFilterProps) => {
   const chips = useMemo(
     () =>
-      getVisitorFilterChips({
+      getPersonGeneralListFilterChips({
         name,
         cnicNumber,
         phoneNumber,
@@ -333,7 +333,7 @@ const ListFilter = ({
   showDataSourceFilter = false,
   distinctCities = [],
   tags = [],
-}: VisitorListFilterProps) => {
+}: PersonGeneralListFilterProps) => {
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
 
@@ -343,7 +343,7 @@ const ListFilter = ({
     updatedEnd ? dayjs(updatedEnd, Formats.DATE_FORMAT) : null,
   ] as [Dayjs | null, Dayjs | null];
 
-  const activeFilterCount = getVisitorFilterChips({
+  const activeFilterCount = getPersonGeneralListFilterChips({
     name,
     cnicNumber,
     phoneNumber,
@@ -370,7 +370,7 @@ const ListFilter = ({
     });
   };
 
-  const handleFinish = (values: VisitorListFilterFormValues) => {
+  const handleFinish = (values: PersonGeneralListFilterFormValues) => {
     setPageParams({
       pageIndex: 0,
       name: values.name,

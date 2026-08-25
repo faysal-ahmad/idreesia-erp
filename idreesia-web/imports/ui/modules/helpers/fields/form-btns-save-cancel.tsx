@@ -9,6 +9,8 @@ interface Props {
   isFieldsTouched?: boolean;
   /** Align buttons to the full form width (e.g. under full-width section cards). */
   fullWidth?: boolean;
+  /** Hide the Save button, leaving only Cancel. */
+  hideSave?: boolean;
 }
 
 const buttonItemLayout = {
@@ -26,6 +28,7 @@ const FormButtonsSaveCancel = ({
   handleCancel = noop,
   isFieldsTouched,
   fullWidth = false,
+  hideSave = false,
 }: Props) => (
   <Form.Item
     {...(fullWidth ? fullWidthButtonLayout : buttonItemLayout)}
@@ -40,15 +43,17 @@ const FormButtonsSaveCancel = ({
       >
         Cancel
       </Button>
-      <Button
-        size="large"
-        type="primary"
-        icon={<SaveOutlined />}
-        htmlType="submit"
-        disabled={!isFieldsTouched}
-      >
-        Save
-      </Button>
+      {hideSave ? null : (
+        <Button
+          size="large"
+          type="primary"
+          icon={<SaveOutlined />}
+          htmlType="submit"
+          disabled={!isFieldsTouched}
+        >
+          Save
+        </Button>
+      )}
     </Space>
   </Form.Item>
 );

@@ -1,10 +1,11 @@
 import React from 'react';
 
-import VisitorsGeneralInfo, {
-  type VisitorGeneralInfoFormValues,
+import { ModuleNames } from 'meteor/idreesia-common/constants';
+import PersonGeneralInfo, {
+  type PersonGeneralInfoFormValues,
 } from './general-info';
 
-export type VisitorNewFormValues = VisitorGeneralInfoFormValues;
+export type VisitorNewFormValues = PersonGeneralInfoFormValues;
 
 interface Props {
   handleFinish(
@@ -18,8 +19,8 @@ interface Props {
  * without picture/audit (those belong on the edit page after create).
  */
 const NewForm = ({ handleFinish, handleCancel }: Props) => (
-  <VisitorsGeneralInfo
-    visitor={{
+  <PersonGeneralInfo
+    person={{
       visitorData: {
         country: 'Pakistan',
         city: null,
@@ -31,6 +32,7 @@ const NewForm = ({ handleFinish, handleCancel }: Props) => (
     handleCancel={handleCancel}
     showAdditionalInfoSection
     showAuditInfo={false}
+    tagsModuleFilter={ModuleNames.security}
   />
 );
 

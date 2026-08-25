@@ -24,25 +24,25 @@ import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import {
-  VisitorsList,
-  VisitorsListFilter,
-  VisitorFilterChips,
+  PersonGeneralList,
+  PersonGeneralListFilter,
+  PersonGeneralListFilterChips,
 } from '/imports/ui/modules/common';
-import type { VisitorListItem } from '/imports/ui/modules/common/visitors/list';
+import type { PersonListItem } from '/imports/ui/modules/common/visitors/list';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import { ALL_PEOPLE_TAGS } from '/imports/ui/modules/admin/people-tags/gql';
 
 import { PAGED_SECURITY_PEOPLE, DELETE_SECURITY_PERSON } from '../gql';
 
-type VisitorRecord = VisitorListItem;
+type VisitorRecord = PersonListItem;
 
 type Props = RouteComponentProps;
 
 const List = ({ history, location }: Props) => {
   useBreadcrumbs(['Security', 'Visitor Registration', 'List']);
 
-  const visitorsList = useRef<InstanceType<typeof VisitorsList> | null>(null);
+  const visitorsList = useRef<InstanceType<typeof PersonGeneralList> | null>(null);
   const [showStayList, setShowStayList] = useState(false);
   const [visitorIdForList, setVisitorIdForList] = useState<string | null>(null);
   const { queryParams, setPageParams } = useQueryParams({
@@ -159,7 +159,7 @@ const List = ({ history, location }: Props) => {
     const selectedRows = visitorsList.current?.getSelectedRows() ?? [];
     if (selectedRows.length === 0) return;
 
-    const reportArgs = (selectedRows as VisitorListItem[]).map((row) => row._id);
+    const reportArgs = (selectedRows as PersonListItem[]).map((row) => row._id);
     const url = `${
       window.location.origin
     }/generate-report?reportName=Visitors&reportArgs=${reportArgs.join(',')}`;
@@ -245,10 +245,10 @@ const List = ({ history, location }: Props) => {
       </Space>
       <div className="list-table-header-utilities">
         <Space size={8}>
-          <VisitorsListFilter {...filterProps} />
+          <PersonGeneralListFilter {...filterProps} />
           {getActionsMenu()}
         </Space>
-        <VisitorFilterChips {...filterProps} />
+        <PersonGeneralListFilterChips {...filterProps} />
       </div>
     </div>
   );
@@ -272,7 +272,7 @@ const List = ({ history, location }: Props) => {
               otherNotes: person.visitorData?.otherNotes,
               isKarkun: person.isKarkun,
               tags: person.sharedData?.tags,
-            } as VisitorListItem,
+            } as PersonListItem,
           ]
         : []
     ),
@@ -282,8 +282,9 @@ const List = ({ history, location }: Props) => {
 
   return (
     <>
-      <VisitorsList
+      <PersonGeneralList
         ref={visitorsList}
+        itemsLabel="visitors"
         showSelectionColumn
         showCnicColumn
         showPhoneNumbersColumn

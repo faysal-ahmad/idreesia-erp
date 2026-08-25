@@ -25,6 +25,7 @@ enum Permission {
   ADMIN_MANAGE_PEOPLE_TAGS
   ADMIN_VIEW_JOBS
   ADMIN_MANAGE_JOBS
+  ADMIN_MANAGE_DELETED_DATA
 
   HR_MANAGE_SETUP_DATA
   HR_DELETE_DATA
@@ -71,6 +72,14 @@ scalar URL
 scalar Currency
 scalar JSON
 scalar JSONObject
+
+extend type Query {
+  pagedDeletedPeople(filter: PersonFilter): PagedPeopleType
+    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
+
+  deletedPersonById(_id: String!): PersonType
+    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
+}
 
 type JobDefinitionType {
   _id: String
@@ -572,6 +581,8 @@ type PersonType {
   createdBy: String
   updatedAt: String
   updatedBy: String
+  deletedAt: String
+  deletedBy: String
 }
 
 input PersonFilter {

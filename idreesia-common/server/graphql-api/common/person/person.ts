@@ -74,6 +74,8 @@ type PersonType {
   createdBy: String
   updatedAt: String
   updatedBy: String
+  deletedAt: String
+  deletedBy: String
 }
 
 input PersonFilter {

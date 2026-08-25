@@ -26,7 +26,7 @@ import './stay-cards.css';
  * makes Meteor resolve extensionless imports to the CSS object. */
 import '../imports/ui/modules/common/visitors/list.styles.css';
 import '../imports/ui/modules/common/visitors/general-info.styles.css';
-import '../imports/ui/modules/security/visitor-registeration/edit/picture.styles.css';
+import '../imports/ui/modules/common/people/picture.styles.css';
 
 import App from '../imports/ui/app';
 import { AntdFeedbackBridge } from '../imports/ui/antd-feedback';

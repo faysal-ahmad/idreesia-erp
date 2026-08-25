@@ -42,4 +42,12 @@ export default class SubModulePaths {
   // People Tags Routes
   // *************************************************************************************
   static peopleTagsPath = `${ModulePaths.admin}/people-tags`;
+
+  // *************************************************************************************
+  // Deleted Data Routes
+  // *************************************************************************************
+  static deletedPeoplePath = `${ModulePaths.admin}/deleted-people`;
+  static deletedPersonEditFormPath(personId = ':personId') {
+    return `${SubModulePaths.deletedPeoplePath}/${personId}`;
+  }
 }

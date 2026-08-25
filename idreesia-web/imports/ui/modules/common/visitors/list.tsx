@@ -12,14 +12,14 @@ import {
 } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-export interface VisitorTag {
+export interface PersonTag {
   _id: string;
   name?: string | null;
   color?: string | null;
   textColor?: string | null;
 }
 
-export interface VisitorListItem {
+export interface PersonListItem {
   _id: string;
   name?: string | null;
   cnicNumber?: string | null;
@@ -32,10 +32,10 @@ export interface VisitorListItem {
   criminalRecord?: string | null;
   otherNotes?: string | null;
   isKarkun?: boolean | null;
-  tags?: (VisitorTag | null)[] | null;
+  tags?: (PersonTag | null)[] | null;
 }
 
-interface PagedData { totalResults: number; data: VisitorListItem[]; }
+interface PagedData { totalResults: number; data: PersonListItem[]; }
 
 interface Props {
   showSelectionColumn?: boolean;
@@ -47,26 +47,28 @@ interface Props {
   showAuditLogsAction?: boolean;
   showKarkunCreateAction?: boolean;
   listHeader?: () => React.ReactNode;
-  handleSelectItem?(record: VisitorListItem): void;
-  handleDeleteItem?(record: VisitorListItem): void;
-  handleStayHistoryAction?(record: VisitorListItem): void;
-  handleAuditLogsAction?(record: VisitorListItem): void;
-  handleKarkunCreateAction?(record: VisitorListItem): void;
+  handleSelectItem?(record: PersonListItem): void;
+  handleDeleteItem?(record: PersonListItem): void;
+  handleStayHistoryAction?(record: PersonListItem): void;
+  handleAuditLogsAction?(record: PersonListItem): void;
+  handleKarkunCreateAction?(record: PersonListItem): void;
   setPageParams(params: { pageIndex: string; pageSize: string; }): void;
   pageIndex?: number;
   pageSize?: number;
   pagedData?: PagedData;
+  /** Noun used in the pagination summary, e.g. "X-Y of Z {itemsLabel}". */
+  itemsLabel?: string;
 }
 
 interface State {
-  selectedRows: VisitorListItem[];
+  selectedRows: PersonListItem[];
   scrollY: number;
 }
 
 const TABLE_HEADER_ROW_HEIGHT = 55;
 const VIEWPORT_BOTTOM_GAP = 16;
 
-export default class VisitorsList extends Component<Props, State> {
+export default class PersonGeneralList extends Component<Props, State> {
   static defaultProps = {
     showDeleteAction: false,
     showStayHistoryAction: false,
@@ -79,6 +81,7 @@ export default class VisitorsList extends Component<Props, State> {
     handleAuditLogsAction: noop,
     handleKarkunCreateAction: noop,
     listHeader: () => null,
+    itemsLabel: 'people',
   };
 
   containerRef = React.createRef<HTMLDivElement>();
@@ -157,9 +160,9 @@ export default class VisitorsList extends Component<Props, State> {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (_text: unknown, record: VisitorListItem) => {
+    render: (_text: unknown, record: PersonListItem) => {
       const tags = (record.tags ?? []).filter(
-        (tag): tag is VisitorTag => tag != null
+        (tag): tag is PersonTag => tag != null
       );
 
       return (
@@ -205,7 +208,7 @@ export default class VisitorsList extends Component<Props, State> {
     title: 'Contact Number',
     key: 'contactNumber',
     width: 160,
-    render: (_text: unknown, record: VisitorListItem) => {
+    render: (_text: unknown, record: PersonListItem) => {
       const numbers: React.ReactNode[] = [];
       if (record.contactNumber1)
         numbers.push(<Row key="1">{record.contactNumber1}</Row>);
@@ -221,7 +224,7 @@ export default class VisitorsList extends Component<Props, State> {
     title: 'City / Country',
     key: 'cityCountry',
     width: 200,
-    render: (_text: unknown, record: VisitorListItem) => {
+    render: (_text: unknown, record: PersonListItem) => {
       if (record.city) {
         return `${record.city}, ${record.country}`;
       }
@@ -232,7 +235,7 @@ export default class VisitorsList extends Component<Props, State> {
   actionsColumn = {
     key: 'action',
     width: 100,
-    render: (_text: unknown, record: VisitorListItem) => {
+    render: (_text: unknown, record: PersonListItem) => {
       const {
         showDeleteAction,
         showStayHistoryAction,
@@ -348,7 +351,7 @@ export default class VisitorsList extends Component<Props, State> {
 
   rowSelection = {
     columnWidth: 48,
-    onChange: (_selectedRowKeys: React.Key[], selectedRows: VisitorListItem[]) => {
+    onChange: (_selectedRowKeys: React.Key[], selectedRows: PersonListItem[]) => {
       this.setState({
         selectedRows,
       });
@@ -365,7 +368,7 @@ export default class VisitorsList extends Component<Props, State> {
 
   getSelectedRows = () => this.state.selectedRows;
 
-  getRowClassName = (record: VisitorListItem) => {
+  getRowClassName = (record: PersonListItem) => {
     if (record.criminalRecord) return 'visitors-list-row-alert';
     if (record.otherNotes) return 'visitors-list-row-warning';
     return '';
@@ -378,6 +381,7 @@ export default class VisitorsList extends Component<Props, State> {
       listHeader,
       showSelectionColumn,
       pagedData = { totalResults: 0, data: [] },
+      itemsLabel,
     } = this.props;
 
     const { totalResults, data } = pagedData;
@@ -408,7 +412,7 @@ export default class VisitorsList extends Component<Props, State> {
               pageSize={numPageSize}
               showSizeChanger
               showTotal={(total: number, range: [number, number]) =>
-                `${range[0]}-${range[1]} of ${total} visitors`
+                `${range[0]}-${range[1]} of ${total} ${itemsLabel}`
               }
               onChange={this.onPaginationChange}
               onShowSizeChange={this.onPaginationChange}

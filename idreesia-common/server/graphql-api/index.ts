@@ -45,6 +45,9 @@ import JobDefinitionResolvers from './admin/job-definition/resolvers';
 import PeopleTagSchema from './admin/people-tag/people-tag';
 import PeopleTagResolvers from './admin/people-tag/resolvers';
 
+import DeletedPeopleSchema from './admin/deleted-people/deleted-people';
+import DeletedPeopleResolvers from './admin/deleted-people/resolvers';
+
 /**
  * Schema and Resolvers for the Security module
  */
@@ -163,6 +166,7 @@ const typeDefs = [
   ScheduledJobSchema,
   JobDefinitionSchema,
   PeopleTagSchema,
+  DeletedPeopleSchema,
 
   SecurityAuditLogSchema,
   SecurityMehfilSchema,
@@ -212,6 +216,7 @@ const resolvers = merge(
   ScheduledJobResolvers,
   JobDefinitionResolvers,
   PeopleTagResolvers,
+  DeletedPeopleResolvers,
 
   SecurityAuditLogResolvers,
   SecurityMehfilResolvers,

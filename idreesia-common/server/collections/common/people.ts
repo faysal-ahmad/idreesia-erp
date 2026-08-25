@@ -75,6 +75,7 @@ interface SearchFlags {
   includeEmployees?: boolean;
   includeVisitors?: boolean;
   paginatedResults?: boolean;
+  onlyDeleted?: boolean;
 }
 
 interface CountResult {
@@ -397,7 +398,7 @@ class People extends AggregatableCollection<PersonDocument> {
   async buildSearchPipline(params: LooseRecord = {}, flags: SearchFlags = {}) {
     const pipeline: LooseRecord[] = [];
     pipeline.push({
-      $match: { deletedAt: { $exists: false } },
+      $match: { deletedAt: { $exists: Boolean(flags.onlyDeleted) } },
     });
 
     const includeKarkuns = isNil(flags.includeKarkuns)

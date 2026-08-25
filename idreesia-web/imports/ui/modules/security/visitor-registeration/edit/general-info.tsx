@@ -3,8 +3,9 @@ import { message } from '/imports/ui/antd-feedback';
 import { type History } from 'history';
 import { useMutation } from '@apollo/client/react';
 
-import { VisitorsGeneralInfo } from '/imports/ui/modules/common';
-import type { VisitorGeneralInfoFormValues } from '/imports/ui/modules/common/visitors/general-info';
+import { ModuleNames } from 'meteor/idreesia-common/constants';
+import { PersonGeneralInfo } from '/imports/ui/modules/common';
+import type { PersonGeneralInfoFormValues } from '/imports/ui/modules/common/visitors/general-info';
 import type { SecurityRegistrationPersonByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
@@ -61,7 +62,7 @@ const GeneralInfo = ({ history, visitorId, securityVisitorById }: Props) => {
     criminalRecord,
     otherNotes,
     tagIds,
-  }: VisitorGeneralInfoFormValues) =>
+  }: PersonGeneralInfoFormValues) =>
     Promise.all([
       updateSecurityVisitorPerson({
         variables: {
@@ -104,11 +105,12 @@ const GeneralInfo = ({ history, visitorId, securityVisitorById }: Props) => {
       });
 
   return (
-    <VisitorsGeneralInfo
-      visitor={securityVisitorById}
+    <PersonGeneralInfo
+      person={securityVisitorById}
       handleFinish={handleFinish}
       handleCancel={handleCancel}
       showAdditionalInfoSection
+      tagsModuleFilter={ModuleNames.security}
       sideContent={
         <Picture
           visitorId={visitorId}

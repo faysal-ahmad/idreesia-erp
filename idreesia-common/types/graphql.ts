@@ -1644,6 +1644,7 @@ export type PeopleTagType = {
 
 export enum Permission {
   AdminManageCities = 'ADMIN_MANAGE_CITIES',
+  AdminManageDeletedData = 'ADMIN_MANAGE_DELETED_DATA',
   AdminManageJobs = 'ADMIN_MANAGE_JOBS',
   AdminManagePeopleTags = 'ADMIN_MANAGE_PEOPLE_TAGS',
   AdminManagePhysicalStores = 'ADMIN_MANAGE_PHYSICAL_STORES',
@@ -1769,6 +1770,8 @@ export type PersonType = {
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
   dataSource?: Maybe<Scalars['String']['output']>;
+  deletedAt?: Maybe<Scalars['String']['output']>;
+  deletedBy?: Maybe<Scalars['String']['output']>;
   employeeData?: Maybe<PersonEmployeeDataType>;
   isEmployee?: Maybe<Scalars['Boolean']['output']>;
   isKarkun?: Maybe<Scalars['Boolean']['output']>;
@@ -1859,6 +1862,7 @@ export type Query = {
   cityMehfilById?: Maybe<CityMehfilType>;
   cityMehfilsByCityId?: Maybe<Array<Maybe<CityMehfilType>>>;
   currentUser?: Maybe<UserType>;
+  deletedPersonById?: Maybe<PersonType>;
   distinctCities?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctCountries?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctRegions?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -1888,6 +1892,7 @@ export type Query = {
   mehfilKarkunsByMehfilId?: Maybe<Array<Maybe<MehfilKarkunType>>>;
   pagedAttendanceByKarkun?: Maybe<PagedAttendanceType>;
   pagedCities?: Maybe<PagedCityType>;
+  pagedDeletedPeople?: Maybe<PagedPeopleType>;
   pagedHrAuditLogs?: Maybe<PagedAuditLogType>;
   pagedHrKarkuns?: Maybe<PagedKarkunType>;
   pagedIssuanceForms?: Maybe<PagedIssuanceForm>;
@@ -1973,6 +1978,11 @@ export type QueryCityMehfilByIdArgs = {
 
 export type QueryCityMehfilsByCityIdArgs = {
   cityId: Scalars['String']['input'];
+};
+
+
+export type QueryDeletedPersonByIdArgs = {
+  _id: Scalars['String']['input'];
 };
 
 
@@ -2100,6 +2110,11 @@ export type QueryPagedAttendanceByKarkunArgs = {
 
 export type QueryPagedCitiesArgs = {
   filter?: InputMaybe<CityFilter>;
+};
+
+
+export type QueryPagedDeletedPeopleArgs = {
+  filter?: InputMaybe<PersonFilter>;
 };
 
 

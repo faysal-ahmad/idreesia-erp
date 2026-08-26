@@ -71,8 +71,8 @@ import SecurityMehfilLangarLocationResolvers from './security/mehfil-langar-loca
 import SecurityUserSchema from './security/security-user/security-user';
 import SecurityUserResolvers from './security/security-user/resolvers';
 
-import SecurityPersonSchema from './security/person/person';
-import SecurityPersonResolvers from './security/person/resolvers';
+import SecurityVisitorSchema from './security/visitor/visitor';
+import SecurityVisitorResolvers from './security/visitor/resolvers';
 
 import SecurityVisitorStaySchema from './security/visitor-stay/visitor-stay';
 import SecurityVisitorStayResolvers from './security/visitor-stay/resolvers';
@@ -174,7 +174,7 @@ const typeDefs = [
   SecurityMehfilLangarDishSchema,
   SecurityMehfilLangarLocationSchema,
   SecurityUserSchema,
-  SecurityPersonSchema,
+  SecurityVisitorSchema,
   SecurityVisitorStaySchema,
   FaceVectorSchema,
 
@@ -223,7 +223,7 @@ const resolvers = merge(
   SecurityMehfilLangarDishResolvers,
   SecurityMehfilLangarLocationResolvers,
   SecurityUserResolvers,
-  SecurityPersonResolvers,
+  SecurityVisitorResolvers,
   SecurityVisitorStayResolvers,
   FaceVectorResolvers,
 

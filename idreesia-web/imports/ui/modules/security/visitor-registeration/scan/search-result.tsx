@@ -7,7 +7,7 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Col, Row, Spin, Tabs } from 'antd';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 
-import { SECURITY_PERSON_BY_CNIC } from '../gql';
+import { SECURITY_VISITOR_BY_CNIC } from '../gql';
 
 const LabelStyle: CSSProperties = {
   fontWeight: 'bold',
@@ -55,16 +55,16 @@ interface SearchResultProps {
 }
 
 const SearchResult = ({ cnicNumbers }: SearchResultProps) => {
-  const { data, loading } = useQuery(SECURITY_PERSON_BY_CNIC, {
+  const { data, loading } = useQuery(SECURITY_VISITOR_BY_CNIC, {
     variables: { cnicNumbers },
     fetchPolicy: 'network-only',
   });
-  const securityPersonByCnic = data?.securityPersonByCnic;
+  const securityVisitorByCnic = data?.securityVisitorByCnic;
 
   if (cnicNumbers.length === 0) return null;
   if (loading) return <Spin size="large" />;
 
-  if (!securityPersonByCnic) {
+  if (!securityVisitorByCnic) {
     return (
       <Row justify="start" align="middle" gutter={16}>
         <Col>
@@ -82,7 +82,7 @@ const SearchResult = ({ cnicNumbers }: SearchResultProps) => {
     );
   }
 
-  const { _id, sharedData, visitorData } = securityPersonByCnic;
+  const { _id, sharedData, visitorData } = securityVisitorByCnic;
   const {
     name,
     parentName,

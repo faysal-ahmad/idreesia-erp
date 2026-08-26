@@ -33,7 +33,7 @@ import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import { ALL_PEOPLE_TAGS } from '/imports/ui/modules/admin/people-tags/gql';
 
-import { PAGED_SECURITY_PEOPLE, DELETE_SECURITY_PERSON } from '../gql';
+import { PAGED_SECURITY_VISITORS, DELETE_SECURITY_VISITOR } from '../gql';
 
 type VisitorRecord = PersonListItem;
 
@@ -62,12 +62,12 @@ const List = ({ history, location }: Props) => {
     ],
   });
 
-  const [deleteSecurityPerson] = useMutation(DELETE_SECURITY_PERSON);
+  const [deleteSecurityVisitor] = useMutation(DELETE_SECURITY_VISITOR);
   const { distinctCities, distinctCitiesRefetch } = useDistinctCities(
     'cache-first'
   );
   const { data: peopleTagsData } = useQuery(ALL_PEOPLE_TAGS);
-  const { data, refetch } = useQuery(PAGED_SECURITY_PEOPLE, {
+  const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS, {
     variables: { filter: queryParams },
   });
 
@@ -116,7 +116,7 @@ const List = ({ history, location }: Props) => {
   };
 
   const handleDeleteItem = (record: VisitorRecord) => {
-    deleteSecurityPerson({
+    deleteSecurityVisitor({
       variables: {
         _id: record._id,
       },
@@ -253,7 +253,7 @@ const List = ({ history, location }: Props) => {
     </div>
   );
 
-  const pagedData = data?.pagedSecurityPeople;
+  const pagedData = data?.pagedSecurityVisitors;
   const pagedSecurityVisitors = {
     totalResults: pagedData?.totalResults ?? 0,
     data: (pagedData?.data ?? []).flatMap((person) =>

@@ -9,7 +9,7 @@ import StayCard from './stay-card';
 
 import {
   VISITOR_STAY_CARD_BY_ID,
-  VISITOR_STAY_CARD_SECURITY_PERSON_BY_ID,
+  VISITOR_STAY_CARD_SECURITY_VISITOR_BY_ID,
 } from '../gql';
 
 interface StayCardContainerProps {
@@ -26,8 +26,8 @@ const StayCardContainer = ({
   onCloseCard,
 }: StayCardContainerProps) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const { data: personData, loading: personLoading } = useQuery(
-    VISITOR_STAY_CARD_SECURITY_PERSON_BY_ID,
+  const { data: visitorData, loading: personLoading } = useQuery(
+    VISITOR_STAY_CARD_SECURITY_VISITOR_BY_ID,
     {
       variables: { _id: visitorId },
     }
@@ -38,22 +38,22 @@ const StayCardContainer = ({
       variables: { _id: visitorStayId },
     }
   );
-  const securityPersonById = personData?.securityPersonById;
+  const securityVisitorById = visitorData?.securityVisitorById;
   const visitorStayById = visitorStayData?.visitorStayById;
 
   if (personLoading || visitorStayLoading) return null;
-  if (!securityPersonById || !visitorStayById) return null;
+  if (!securityVisitorById || !visitorStayById) return null;
 
   const visitor = {
-    name: securityPersonById.sharedData?.name,
-    parentName: securityPersonById.sharedData?.parentName,
-    cnicNumber: securityPersonById.sharedData?.cnicNumber,
-    referenceName: securityPersonById.sharedData?.referenceName,
-    contactNumber1: securityPersonById.sharedData?.contactNumber1,
-    image: securityPersonById.sharedData?.image,
-    city: securityPersonById.visitorData?.city,
-    country: securityPersonById.visitorData?.country,
-    criminalRecord: securityPersonById.visitorData?.criminalRecord,
+    name: securityVisitorById.sharedData?.name,
+    parentName: securityVisitorById.sharedData?.parentName,
+    cnicNumber: securityVisitorById.sharedData?.cnicNumber,
+    referenceName: securityVisitorById.sharedData?.referenceName,
+    contactNumber1: securityVisitorById.sharedData?.contactNumber1,
+    image: securityVisitorById.sharedData?.image,
+    city: securityVisitorById.visitorData?.city,
+    country: securityVisitorById.visitorData?.country,
+    criminalRecord: securityVisitorById.visitorData?.criminalRecord,
   };
 
   const card =

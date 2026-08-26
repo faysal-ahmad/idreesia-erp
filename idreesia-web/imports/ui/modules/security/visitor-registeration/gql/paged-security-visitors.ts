@@ -1,16 +1,16 @@
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import type {
-  PagedSecurityPeopleQuery,
-  PagedSecurityPeopleQueryVariables,
+  PagedSecurityVisitorsQuery,
+  PagedSecurityVisitorsQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
-const PAGED_SECURITY_PEOPLE: TypedDocumentNode<
-  PagedSecurityPeopleQuery,
-  PagedSecurityPeopleQueryVariables
+const PAGED_SECURITY_VISITORS: TypedDocumentNode<
+  PagedSecurityVisitorsQuery,
+  PagedSecurityVisitorsQueryVariables
 > = gql`
-  query pagedSecurityPeople($filter: PersonFilter) {
-    pagedSecurityPeople(filter: $filter) {
+  query pagedSecurityVisitors($filter: VisitorFilter) {
+    pagedSecurityVisitors(filter: $filter) {
       totalResults
       data {
         _id
@@ -39,4 +39,4 @@ const PAGED_SECURITY_PEOPLE: TypedDocumentNode<
   }
 `;
 
-export default PAGED_SECURITY_PEOPLE;
+export default PAGED_SECURITY_VISITORS;

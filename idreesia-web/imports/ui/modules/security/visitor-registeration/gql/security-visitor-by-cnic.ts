@@ -1,16 +1,16 @@
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import type {
-  SecurityPersonByCnicQuery,
-  SecurityPersonByCnicQueryVariables,
+  SecurityVisitorByCnicQuery,
+  SecurityVisitorByCnicQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
-const SECURITY_PERSON_BY_CNIC: TypedDocumentNode<
-  SecurityPersonByCnicQuery,
-  SecurityPersonByCnicQueryVariables
+const SECURITY_VISITOR_BY_CNIC: TypedDocumentNode<
+  SecurityVisitorByCnicQuery,
+  SecurityVisitorByCnicQueryVariables
 > = gql`
-  query securityPersonByCnic($cnicNumbers: [String]!) {
-    securityPersonByCnic(cnicNumbers: $cnicNumbers) {
+  query securityVisitorByCnic($cnicNumbers: [String]!) {
+    securityVisitorByCnic(cnicNumbers: $cnicNumbers) {
       _id
       sharedData {
         name
@@ -32,4 +32,4 @@ const SECURITY_PERSON_BY_CNIC: TypedDocumentNode<
   }
 `;
 
-export default SECURITY_PERSON_BY_CNIC;
+export default SECURITY_VISITOR_BY_CNIC;

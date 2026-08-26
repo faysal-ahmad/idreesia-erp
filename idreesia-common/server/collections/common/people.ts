@@ -950,6 +950,42 @@ class People extends AggregatableCollection<PersonDocument> {
   // **************************************************************
   // Conversion Functions
   // **************************************************************
+  visitorToPerson(visitor: LooseRecord) {
+    let person: LooseRecord = {
+      _id: visitor._id,
+      isVisitor: true,
+      dataSource: visitor.dataSource,
+      sharedData: {
+        name: visitor.name,
+        parentName: visitor.parentName,
+        cnicNumber: visitor.cnicNumber,
+        ehadDate: visitor.ehadDate,
+        birthDate: visitor.birthDate,
+        referenceName: visitor.referenceName,
+        contactNumber1: visitor.contactNumber1,
+        contactNumber2: visitor.contactNumber2,
+        contactNumber1Subscribed: visitor.contactNumber1Subscribed,
+        contactNumber2Subscribed: visitor.contactNumber2Subscribed,
+        currentAddress: visitor.currentAddress,
+        permanentAddress: visitor.permanentAddress,
+        educationalQualification: visitor.educationalQualification,
+        meansOfEarning: visitor.meansOfEarning,
+        imageId: visitor.imageId,
+      },
+      visitorData: {
+        city: visitor.city,
+        country: visitor.country,
+        criminalRecord: visitor.criminalRecord,
+        otherNotes: visitor.otherNotes,
+      },
+    };
+
+    person.sharedData = omitBy(person.sharedData, isNil);
+    person.visitorData = omitBy(person.visitorData, isNil);
+    person = omitBy(person, isNil);
+    return person;
+  }
+
   async karkunToPerson(karkun: LooseRecord) {
     const city = karkun.cityId ? await Cities.findOneAsync(karkun.cityId) : null;
 

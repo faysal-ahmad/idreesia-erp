@@ -1,16 +1,16 @@
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import type {
-  VisitorStayCardSecurityPersonByIdQuery,
-  VisitorStayCardSecurityPersonByIdQueryVariables,
+  VisitorStayCardSecurityVisitorByIdQuery,
+  VisitorStayCardSecurityVisitorByIdQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
-const VISITOR_STAY_CARD_SECURITY_PERSON_BY_ID: TypedDocumentNode<
-  VisitorStayCardSecurityPersonByIdQuery,
-  VisitorStayCardSecurityPersonByIdQueryVariables
+const VISITOR_STAY_CARD_SECURITY_VISITOR_BY_ID: TypedDocumentNode<
+  VisitorStayCardSecurityVisitorByIdQuery,
+  VisitorStayCardSecurityVisitorByIdQueryVariables
 > = gql`
-  query visitorStayCardSecurityPersonById($_id: String!) {
-    securityPersonById(_id: $_id) {
+  query visitorStayCardSecurityVisitorById($_id: String!) {
+    securityVisitorById(_id: $_id) {
       _id
       sharedData {
         name
@@ -32,4 +32,4 @@ const VISITOR_STAY_CARD_SECURITY_PERSON_BY_ID: TypedDocumentNode<
   }
 `;
 
-export default VISITOR_STAY_CARD_SECURITY_PERSON_BY_ID;
+export default VISITOR_STAY_CARD_SECURITY_VISITOR_BY_ID;

@@ -15,7 +15,7 @@ import {
   useDistinctCities,
   useDistinctCountries,
 } from 'meteor/idreesia-common/hooks/security';
-import type { SecurityRegistrationPersonByIdQuery } from 'meteor/idreesia-common/types/client-operations';
+import type { SecurityRegistrationVisitorByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { ALL_PEOPLE_TAGS } from '/imports/ui/modules/admin/people-tags/gql';
 import {
   AgeField,
@@ -30,7 +30,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
-type PersonRecord = Partial<NonNullable<SecurityRegistrationPersonByIdQuery['securityPersonById']>>;
+type PersonRecord = Partial<NonNullable<SecurityRegistrationVisitorByIdQuery['securityVisitorById']>>;
 
 export interface PersonGeneralInfoFormValues {
   name?: string;

@@ -2,13 +2,13 @@ import React from 'react';
 import { useMutation } from '@apollo/client/react';
 import { message } from '/imports/ui/antd-feedback';
 
-import type { SecurityRegistrationPersonByIdQuery } from 'meteor/idreesia-common/types/client-operations';
+import type { SecurityRegistrationVisitorByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { PersonPicture } from '/imports/ui/modules/common';
 
-import { SET_SECURITY_PERSON_IMAGE } from '../gql';
+import { SET_SECURITY_VISITOR_IMAGE } from '../gql';
 
 type SecurityVisitor = NonNullable<
-  SecurityRegistrationPersonByIdQuery['securityPersonById']
+  SecurityRegistrationVisitorByIdQuery['securityVisitorById']
 >;
 
 interface Props {
@@ -17,12 +17,12 @@ interface Props {
 }
 
 const Picture = ({ visitorId, securityVisitorById }: Props) => {
-  const [setSecurityPersonImage] = useMutation(SET_SECURITY_PERSON_IMAGE, {
-    refetchQueries: ['pagedSecurityPeople', 'securityRegistrationPersonById'],
+  const [setSecurityVisitorImage] = useMutation(SET_SECURITY_VISITOR_IMAGE, {
+    refetchQueries: ['pagedSecurityVisitors', 'securityRegistrationVisitorById'],
   });
 
   const updateImageId = (imageId: string) => {
-    setSecurityPersonImage({
+    setSecurityVisitorImage({
       variables: {
         _id: visitorId,
         imageId,

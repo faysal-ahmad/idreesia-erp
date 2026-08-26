@@ -1,16 +1,16 @@
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import type {
-  SecurityRegistrationPersonByIdQuery,
-  SecurityRegistrationPersonByIdQueryVariables,
+  SecurityRegistrationVisitorByIdQuery,
+  SecurityRegistrationVisitorByIdQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
-const SECURITY_PERSON_BY_ID: TypedDocumentNode<
-  SecurityRegistrationPersonByIdQuery,
-  SecurityRegistrationPersonByIdQueryVariables
+const SECURITY_VISITOR_BY_ID: TypedDocumentNode<
+  SecurityRegistrationVisitorByIdQuery,
+  SecurityRegistrationVisitorByIdQueryVariables
 > = gql`
-  query securityRegistrationPersonById($_id: String!) {
-    securityPersonById(_id: $_id) {
+  query securityRegistrationVisitorById($_id: String!) {
+    securityVisitorById(_id: $_id) {
       _id
       sharedData {
         name
@@ -48,4 +48,4 @@ const SECURITY_PERSON_BY_ID: TypedDocumentNode<
   }
 `;
 
-export default SECURITY_PERSON_BY_ID;
+export default SECURITY_VISITOR_BY_ID;

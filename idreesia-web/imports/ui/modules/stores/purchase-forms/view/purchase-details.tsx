@@ -29,8 +29,8 @@ const PurchaseDetails = ({ history, physicalStoreId, purchaseFormById }: Props) 
     <Form layout="horizontal" style={FormStyle} onFinish={noop}>
       <DateField fieldName="purchaseDate" fieldLabel="Purchase Date" initialValue={dayjs(Number(purchaseFormById.purchaseDate))} required requiredMessage="Please input a purchase date." />
       <InputTextField fieldName="vendorId" fieldLabel="Vendor" initialValue={purchaseFormById.refVendor?.name ?? ''} />
-      <InputTextField fieldName="receivedBy" fieldLabel="Received By" initialValue={purchaseFormById.refReceivedBy?.name ?? ''} required requiredMessage="Please input a name in received by." />
-      <InputTextField fieldName="purchasedBy" fieldLabel="Purchased By" initialValue={purchaseFormById.refPurchasedBy?.name ?? ''} required requiredMessage="Please input a name in purchased by." />
+      <InputTextField fieldName="receivedBy" fieldLabel="Received By" initialValue={purchaseFormById.refReceivedBy?.sharedData?.name ?? ''} required requiredMessage="Please input a name in received by." />
+      <InputTextField fieldName="purchasedBy" fieldLabel="Purchased By" initialValue={purchaseFormById.refPurchasedBy?.sharedData?.name ?? ''} required requiredMessage="Please input a name in purchased by." />
       <InputTextAreaField fieldName="notes" fieldLabel="Notes" required={false} initialValue={purchaseFormById.notes ?? undefined} />
       <Divider titlePlacement="left">Purchased / Returned Items</Divider>
       <Form.Item name="items" initialValue={purchaseFormById.items ?? []} rules={[{ required: true, message: 'Please add some items.' }]} {...formItemExtendedLayout}>

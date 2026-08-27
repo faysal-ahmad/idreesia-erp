@@ -14,7 +14,7 @@ import { type PageParams } from './list-filter';
 
 type HrKarkunRow = NonNullable<
   NonNullable<
-    NonNullable<HrPeoplePagedHrKarkunsQuery['pagedHrKarkuns']>['karkuns']
+    NonNullable<HrPeoplePagedHrKarkunsQuery['pagedHrKarkuns']>['data']
   >[number]
 >;
 

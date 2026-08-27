@@ -2,10 +2,7 @@ import {
   PurchaseForms,
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
-import {
-  Attachments,
-  People,
-} from 'meteor/idreesia-common/server/collections/common';
+import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 
 import getPurchaseForms, {
   getPurchaseFormsByStockItemId,
@@ -68,8 +65,7 @@ const resolvers: ResolverMap = {
         },
       }
     ) => {
-      const person = await people.load(purchaseForm.receivedBy);
-      return People.personToKarkun(person);
+      return people.load(purchaseForm.receivedBy);
     },
     refPurchasedBy: async (
       purchaseForm,
@@ -79,10 +75,7 @@ const resolvers: ResolverMap = {
           common: { people },
         },
       }
-    ) => {
-      const person = await people.load(purchaseForm.purchasedBy);
-      return People.personToKarkun(person);
-    },
+    ) => people.load(purchaseForm.purchasedBy),
     refVendor: async (
       purchaseForm,
       args,

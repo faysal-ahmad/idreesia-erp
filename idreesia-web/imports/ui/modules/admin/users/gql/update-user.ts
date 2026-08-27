@@ -31,7 +31,9 @@ const UPDATE_USER: TypedDocumentNode<
       personId
       karkun {
         _id
-        name
+        sharedData {
+          name
+        }
       }
     }
   }

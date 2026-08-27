@@ -22,8 +22,10 @@ enum Permission {
   ADMIN_MANAGE_USERS_AND_GROUPS
   ADMIN_MANAGE_PHYSICAL_STORES
   ADMIN_MANAGE_CITIES
+  ADMIN_MANAGE_PEOPLE_TAGS
   ADMIN_VIEW_JOBS
   ADMIN_MANAGE_JOBS
+  ADMIN_MANAGE_DELETED_DATA
 
   HR_MANAGE_SETUP_DATA
   HR_DELETE_DATA
@@ -71,6 +73,14 @@ scalar Currency
 scalar JSON
 scalar JSONObject
 
+extend type Query {
+  pagedDeletedPeople(filter: PersonFilter): PagedPeopleType
+    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
+
+  deletedPersonById(_id: String!): PersonType
+    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
+}
+
 type JobDefinitionType {
   _id: String
   name: String
@@ -102,6 +112,38 @@ extend type Mutation {
 
   setJobDefinitionEnabled(_id: String!, enabled: Boolean!): JobDefinitionType
     @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+}
+
+type PeopleTagType {
+  _id: String
+  name: String
+  color: String
+  textColor: String
+  moduleNames: [String]
+}
+
+extend type Query {
+  allPeopleTags: [PeopleTagType]
+}
+
+extend type Mutation {
+  createPeopleTag(
+    name: String!
+    color: String!
+    textColor: String!
+    moduleNames: [String]!
+  ): PeopleTagType @checkPermissions(permissions: [ADMIN_MANAGE_PEOPLE_TAGS])
+
+  updatePeopleTag(
+    _id: String!
+    name: String!
+    color: String!
+    textColor: String!
+    moduleNames: [String]!
+  ): PeopleTagType @checkPermissions(permissions: [ADMIN_MANAGE_PEOPLE_TAGS])
+
+  deletePeopleTag(_id: String!): Int
+    @checkPermissions(permissions: [ADMIN_MANAGE_PEOPLE_TAGS])
 }
 
 type ScheduledJobType {
@@ -248,7 +290,7 @@ type UserType {
   groups: [String]
 
   person: PersonType
-  karkun: KarkunType
+  karkun: PersonType
 }
 
 type PagedUserType {
@@ -372,124 +414,6 @@ type PagedAuditLogType {
   data: [AuditLogType]
 }
 
-type ApprovedImdadType {
-  fromMonth: String
-  toMonth: String
-  oneOffMedical: Int
-  oneOffHouseConstruction: Int
-  oneOffMarriageExpense: Int
-  oneOffMiscPayment: Int
-  fixedRecurringWeeklyPayment: Int
-  fixedRecurringMonthlyPayment: Int
-  fixedRecurringHouseRent: Int
-  ration: String
-  fixedRecurringMedical: Int
-  fixedRecurringSchoolFee: Int
-  fixedRecurringMilk: Int
-  fixedRecurringFuel: Int
-  variableRecurringMedical: Int
-  variableRecurringUtilityBills: Int
-}
-
-type ImdadRequestType {
-  _id: String
-  visitorId: String
-  dataSource: String
-  requestDate: String
-  imdadReasonId: String
-  status: String
-  notes: String
-  approvedImdad: ApprovedImdadType
-  attachmentIds: [String]
-
-  visitor: VisitorType
-  attachments: [Attachment]
-
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-
-type PagedImdadRequestType {
-  totalResults: Int
-  data: [ImdadRequestType]
-}
-
-input ImdadRequestFilter {
-  visitorId: String
-  requestDate: String
-  cnicNumber: String
-  status: String
-  updatedBetween: String
-  pageIndex: String
-  pageSize: String
-}
-
-type KarkunUserType {
-  _id: String
-  username: String
-  email: String
-  emailVerified: Boolean
-  displayName: String
-  locked: Boolean
-  lastLoggedInAt: String
-  lastActiveAt: String
-  permissions: [String]
-  instances: [String]
-  groups: [String]
-}
-
-type KarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  contactNumber2: String
-  contactNumber1Subscribed: Boolean
-  contactNumber2Subscribed: Boolean
-  emailAddress: String
-  currentAddress: String
-  permanentAddress: String
-  cityId: String
-  cityMehfilId: String
-  bloodGroup: String
-  educationalQualification: String
-  meansOfEarning: String
-  ehadDate: String
-  ehadKarkun: Boolean
-  ehadPermissionDate: String
-  birthDate: String
-  deathDate: String
-  lastTarteebDate: String
-  mehfilRaabta: String
-  msRaabta: String
-  msLastVisitDate: String
-  referenceName: String
-  imageId: String
-  attachmentIds: [String]
-
-  isEmployee: Boolean
-  jobId: String
-  employmentStartDate: String
-  employmentEndDate: String
-  bankAccountDetails: String
-
-  job: JobType
-  duties: [KarkunDutyType]
-  attachments: [Attachment]
-  image: Attachment
-  city: CityType
-  cityMehfil: CityMehfilType
-  user: KarkunUserType
-
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-
 input KarkunFilter {
   name: String
   cnicNumber: String
@@ -517,7 +441,7 @@ input KarkunFilter {
 
 type PagedKarkunType {
   totalResults: Int
-  karkuns: [KarkunType]
+  data: [PersonType]
 }
 
 type PersonSharedDataType {
@@ -539,8 +463,10 @@ type PersonSharedDataType {
   deathDate: String
   referenceName: String
   imageId: String
+  tagIds: [String]
 
   image: Attachment
+  tags: [PeopleTagType]
 }
 
 type PersonVisitorDataType {
@@ -591,6 +517,8 @@ type PersonType {
   createdBy: String
   updatedAt: String
   updatedBy: String
+  deletedAt: String
+  deletedBy: String
 }
 
 input PersonFilter {
@@ -598,6 +526,12 @@ input PersonFilter {
   cnicNumber: String
   phoneNumber: String
   city: String
+  ehadDuration: String
+  ehadDate: String
+  additionalInfo: String
+  dataSource: String
+  updatedBetween: String
+  tagId: String
   pageIndex: String
   pageSize: String
 }
@@ -609,6 +543,12 @@ type PagedPeopleType {
 
 extend type Query {
   pagedPeople(filter: PersonFilter): PagedPeopleType
+  distinctCities: [String]
+  distinctCountries: [String]
+}
+
+extend type Mutation {
+  fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
 }
 
 type SecurityLogType {
@@ -638,68 +578,6 @@ type PagedSecurityLogType {
   data: [SecurityLogType]
 }
 
-type VisitorType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  ehadDate: String
-  birthDate: String
-  referenceName: String
-  contactNumber1: String
-  contactNumber2: String
-  contactNumber1Subscribed: Boolean
-  contactNumber2Subscribed: Boolean
-  city: String
-  country: String
-  currentAddress: String
-  permanentAddress: String
-  educationalQualification: String
-  meansOfEarning: String
-  imageId: String
-  dataSource: String
-  criminalRecord: String
-  otherNotes: String
-  isKarkun: Boolean
-  karkunId: String
-
-  image: Attachment
-
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-
-type PagedVisitorType {
-  totalResults: Int
-  data: [VisitorType]
-}
-
-input VisitorFilter {
-  name: String
-  cnicNumber: String
-  phoneNumber: String
-  city: String
-  ehadDuration: String
-  ehadDate: String
-  additionalInfo: String
-  dataSource: String
-  updatedBetween: String
-  pageIndex: String
-  pageSize: String
-}
-
-extend type Query {
-  distinctCities: [String]
-  distinctCountries: [String]
-  pagedVisitors(filter: VisitorFilter): PagedVisitorType
-}
-
-extend type Mutation {
-  fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
-}
-
 type AttendanceType {
   _id: String
   karkunId: String
@@ -713,7 +591,7 @@ type AttendanceType {
   percentage: Float
   meetingCardBarcodeId: String
 
-  karkun: KarkunType
+  karkun: PersonType
   job: JobType
   duty: DutyType
   shift: DutyShiftType
@@ -938,10 +816,10 @@ extend type Mutation {
 }
 
 extend type Query {
-  hrKarkunById(_id: String!): KarkunType
+  hrKarkunById(_id: String!): PersonType
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 
-  hrKarkunsById(_ids: String!): [KarkunType]
+  hrKarkunsById(_ids: String!): [PersonType]
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 
   pagedHrKarkuns(filter: KarkunFilter): PagedKarkunType
@@ -950,7 +828,7 @@ extend type Query {
     IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS,
     IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS,
     IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS
-  ], dataFieldName: "karkuns")
+  ])
 }
 
 extend type Mutation {
@@ -971,7 +849,7 @@ extend type Mutation {
     ehadDate: String
     birthDate: String
     referenceName: String
-  ): KarkunType
+  ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
   updateHrKarkun(
@@ -993,7 +871,7 @@ extend type Mutation {
     birthDate: String
     deathDate: String
     referenceName: String
-  ): KarkunType
+  ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
   deleteHrKarkun(_id: String!): Int
@@ -1004,7 +882,7 @@ extend type Mutation {
     lastTarteebDate: String
     mehfilRaabta: String
     msRaabta: String
-  ): KarkunType
+  ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   setHrKarkunEmploymentInfo(
@@ -1014,16 +892,16 @@ extend type Mutation {
     employmentStartDate: String
     employmentEndDate: String
     bankAccountDetails: String
-  ): KarkunType
+  ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
-  setHrKarkunProfileImage(_id: String!, imageId: String!): KarkunType
+  setHrKarkunProfileImage(_id: String!, imageId: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
-  addHrKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
+  addHrKarkunAttachment(_id: String!, attachmentId: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
-  removeHrKarkunAttachment(_id: String!, attachmentId: String!): KarkunType
+  removeHrKarkunAttachment(_id: String!, attachmentId: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 }
 
@@ -1042,9 +920,9 @@ type SalaryType {
   netPayment: Int
   rashanMadad: Int
 
-  karkun: KarkunType
+  karkun: PersonType
   job: JobType
-  approver: KarkunType
+  approver: PersonType
 
   approvedOn: String
   approvedBy: String
@@ -1132,8 +1010,8 @@ type IssuanceForm {
 
   attachments: [Attachment]
   refLocation: Location
-  refIssuedBy: KarkunType
-  refIssuedTo: KarkunType
+  refIssuedBy: PersonType
+  refIssuedTo: PersonType
   refPhysicalStore: PhysicalStore
 
   createdAt: String
@@ -1354,8 +1232,8 @@ type PurchaseForm {
   attachments: [Attachment]
   refVendor: Vendor
   refLocation: Location
-  refReceivedBy: KarkunType
-  refPurchasedBy: KarkunType
+  refReceivedBy: PersonType
+  refPurchasedBy: PersonType
   refPhysicalStore: PhysicalStore
 
   createdAt: String
@@ -1465,7 +1343,7 @@ type StockAdjustment {
   adjustmentReason: String
 
   refStockItem: StockItem
-  refAdjustedBy: KarkunType
+  refAdjustedBy: PersonType
   refPhysicalStore: PhysicalStore
 
   createdAt: String
@@ -2000,7 +1878,7 @@ type VisitorStayType {
 
   isValid: Boolean
   isExpired: Boolean
-  refVisitor: VisitorType
+  refVisitor: PersonType
   dutyName: String
   shiftName: String
   dutyShiftName: String
@@ -2061,17 +1939,36 @@ extend type Mutation {
   @checkPermissions(permissions: [SECURITY_DELETE_DATA])
 }
 
+input VisitorFilter {
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  city: String
+  ehadDuration: String
+  ehadDate: String
+  additionalInfo: String
+  dataSource: String
+  updatedBetween: String
+  pageIndex: String
+  pageSize: String
+}
+
+type PagedVisitorType {
+  totalResults: Int
+  data: [PersonType]
+}
+
 extend type Query {
   pagedSecurityVisitors(filter: VisitorFilter): PagedVisitorType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
-  securityVisitorById(_id: String!): VisitorType
+  securityVisitorById(_id: String!): PersonType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
-  securityVisitorByCnic(cnicNumbers: [String]!): VisitorType
+  securityVisitorByCnic(cnicNumbers: [String]!): PersonType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
-  securityVisitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): VisitorType
+  securityVisitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): PersonType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 }
 
@@ -2092,7 +1989,7 @@ extend type Mutation {
     educationalQualification: String
     meansOfEarning: String
     imageData: String
-  ): VisitorType
+  ): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   updateSecurityVisitor(
@@ -2111,20 +2008,20 @@ extend type Mutation {
     permanentAddress: String
     educationalQualification: String
     meansOfEarning: String
-  ): VisitorType
+  ): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   deleteSecurityVisitor(_id: String!): Int
   @checkPermissions(permissions: [SECURITY_DELETE_DATA])
 
-  setSecurityVisitorImage(_id: String!, imageId: String!): VisitorType
+  setSecurityVisitorImage(_id: String!, imageId: String!): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   updateSecurityVisitorNotes(
     _id: String!
     criminalRecord: String
     otherNotes: String
-  ): VisitorType
+  ): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   importSecurityVisitorsCsvData(

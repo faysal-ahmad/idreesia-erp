@@ -93,9 +93,8 @@ export async function getKarkunsByPredefinedFilter(
   const totalResults = People.aggregate<CountResult>(countingPipeline);
 
   return Promise.all([people, totalResults]).then(results => {
-    const karkuns = results[0].map(person => People.personToKarkun(person));
     return {
-      karkuns,
+      data: results[0],
       totalResults: get(results[1], ['0', 'total'], 0),
     };
   });

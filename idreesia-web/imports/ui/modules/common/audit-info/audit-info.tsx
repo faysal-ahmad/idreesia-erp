@@ -12,6 +12,8 @@ interface AuditRecord {
   updatedBy?: string | null;
   approvedOn?: string | number | null;
   approvedBy?: string | null;
+  deletedAt?: string | number | null;
+  deletedBy?: string | null;
 }
 
 interface Props {
@@ -26,14 +28,14 @@ interface QueryData {
 const AuditInfo = ({ record, className }: Props) => {
   const { data, loading } = useQuery<QueryData>(userNamesQuery, {
     variables: {
-      ids: [record.createdBy, record.updatedBy, record.approvedBy],
+      ids: [record.createdBy, record.updatedBy, record.approvedBy, record.deletedBy],
     },
   });
   const userNames = data?.userNames;
   const userNamesLoading = loading;
 
   if (userNamesLoading || !userNames || userNames.length === 0) return null;
-  const { createdAt, updatedAt, approvedOn } = record;
+  const { createdAt, updatedAt, approvedOn, deletedAt } = record;
 
   const strCreatedAt = createdAt
     ? dayjs(Number(createdAt)).format(Formats.DATE_TIME_FORMAT)
@@ -44,9 +46,22 @@ const AuditInfo = ({ record, className }: Props) => {
   const strApprovedOn = approvedOn
     ? dayjs(Number(approvedOn)).format(Formats.DATE_TIME_FORMAT)
     : null;
+  const strDeletedAt = deletedAt
+    ? dayjs(Number(deletedAt)).format(Formats.DATE_TIME_FORMAT)
+    : null;
 
   return (
     <div className={['audit-info', className].filter(Boolean).join(' ')}>
+      {strDeletedAt ? (
+        <div className="audit-info-line">
+          <span className="audit-info-label">Deleted</span>
+          <span className="audit-info-value">
+            <strong>{userNames[3]}</strong>
+            <span className="audit-info-sep">·</span>
+            {strDeletedAt}
+          </span>
+        </div>
+      ) : null}
       {strApprovedOn ? (
         <div className="audit-info-line">
           <span className="audit-info-label">Approved</span>

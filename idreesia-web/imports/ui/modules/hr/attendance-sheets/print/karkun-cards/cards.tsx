@@ -44,11 +44,11 @@ export default class Cards extends Component<CardsProps> {
       );
     }
 
-    const karkunImage = karkun.image ? (
+    const karkunImage = karkun.sharedData?.image ? (
       <img
-        src={`data:image/jpeg;base64,${karkun.image.data}`}
+        src={`data:image/jpeg;base64,${karkun.sharedData.image.data}`}
         style={{ maxHeight: '100%', width: 'auto' }}
-        alt={karkun.name ?? undefined}
+        alt={karkun.sharedData?.name ?? undefined}
       />
     ) : (
       <div style={{ height: '100%', width: 'auto' }} />
@@ -74,7 +74,7 @@ export default class Cards extends Component<CardsProps> {
   getCardMarkup(attendance: AttendanceRecord) {
     const { cardHeading, cardSubHeading, showDutyInfo } = this.props;
     const karkun = attendance.karkun;
-    if (!karkun?.name || !attendance.meetingCardBarcodeId) return null;
+    if (!karkun?.sharedData?.name || !attendance.meetingCardBarcodeId) return null;
 
     const karkunImage = this.getKarkunImage(attendance);
     const dutyShiftInfo = this.getDutyShiftInfo(attendance);
@@ -93,7 +93,7 @@ export default class Cards extends Component<CardsProps> {
           <div className="mehfil_card_subheading">{cardSubHeading}</div>
         ) : null}
         {karkunImage}
-        <h1 className="mehfil_card_name">{karkun.name}</h1>
+        <h1 className="mehfil_card_name">{karkun.sharedData.name}</h1>
         {dutyShiftInfo}
         <div className="mehfil_card_barcode">
           <Barcode

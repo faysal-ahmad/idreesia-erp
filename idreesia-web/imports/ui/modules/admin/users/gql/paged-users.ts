@@ -21,8 +21,10 @@ const PAGED_USERS: TypedDocumentNode<
         lastActiveAt
         karkun {
           _id
-          name
-          imageId
+          sharedData {
+            name
+            imageId
+          }
         }
       }
     }

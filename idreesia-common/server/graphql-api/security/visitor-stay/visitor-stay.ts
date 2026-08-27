@@ -15,7 +15,7 @@ type VisitorStayType {
 
   isValid: Boolean
   isExpired: Boolean
-  refVisitor: VisitorType
+  refVisitor: PersonType
   dutyName: String
   shiftName: String
   dutyShiftName: String

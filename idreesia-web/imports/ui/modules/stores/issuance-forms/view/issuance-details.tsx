@@ -61,14 +61,14 @@ export const IssuanceDetails = ({
         <InputTextField
           fieldName="issuedBy"
           fieldLabel="Issued By"
-          initialValue={issuanceFormById.refIssuedBy?.name ?? ''}
+          initialValue={issuanceFormById.refIssuedBy?.sharedData?.name ?? ''}
           required
           requiredMessage="Please input a name in issued by."
         />
         <InputTextField
           fieldName="issuedTo"
           fieldLabel="Issued To"
-          initialValue={issuanceFormById.refIssuedTo?.name ?? ''}
+          initialValue={issuanceFormById.refIssuedTo?.sharedData?.name ?? ''}
           required
           requiredMessage="Please input a name in issued to."
         />

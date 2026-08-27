@@ -21,7 +21,9 @@ const USER_BY_ID: TypedDocumentNode<
       personId
       karkun {
         _id
-        name
+        sharedData {
+          name
+        }
       }
     }
   }

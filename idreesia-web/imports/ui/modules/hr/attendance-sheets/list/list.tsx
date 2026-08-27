@@ -210,15 +210,16 @@ const List = ({
   const handleDownloadAsCSV = () => {
     const sortedAttendanceByMonth = sortBy(
       attendanceByMonth ?? [],
-      row => row?.karkun?.name
+      row => row?.karkun?.sharedData?.name
     );
 
     const header = 'Name, CNIC, Phone No., Present, Absent, Percetage \r\n';
     const rows = sortedAttendanceByMonth
       .map(attendance => {
         if (!attendance.karkun) return '';
-        return `${attendance.karkun.name}, ${attendance.karkun.cnicNumber ||
-          ''}, ${attendance.karkun.contactNumber1 || ''}, ${
+        const sharedData = attendance.karkun.sharedData;
+        return `${sharedData?.name}, ${sharedData?.cnicNumber ||
+          ''}, ${sharedData?.contactNumber1 || ''}, ${
           attendance.presentCount
         }, ${attendance.absentCount}, ${attendance.percentage}`;
       })
@@ -371,11 +372,19 @@ const List = ({
   const columns: any[] = [
     {
       title: 'Name',
-      dataIndex: 'karkun.name',
+      dataIndex: ['karkun', 'sharedData', 'name'],
       key: 'karkun.name',
       render: (_text: unknown, record: AttendanceListRow) => (
         <KarkunName
-          karkun={record.karkun ?? undefined}
+          karkun={
+            record.karkun?._id && record.karkun.sharedData?.name
+              ? {
+                  _id: record.karkun._id,
+                  name: record.karkun.sharedData.name,
+                  imageId: record.karkun.sharedData.imageId ?? undefined,
+                }
+              : undefined
+          }
           onKarkunNameClicked={handleItemSelected}
         />
       ),
@@ -499,7 +508,7 @@ const List = ({
   ) as AttendanceListRow[];
   const sortedAttendanceByMonth = sortBy(
     filterAttendanceByMonth,
-    row => row.karkun?.name
+    row => row.karkun?.sharedData?.name
   );
 
   const rowSelection = {

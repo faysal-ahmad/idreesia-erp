@@ -20,7 +20,10 @@ const barcodeOptions = {
 const BarcodeView = Barcode as any;
 
 type HrKarkun = NonNullable<HrKarkunByIdForKarkunsQuery['hrKarkunById']>;
-type KarkunDuty = NonNullable<NonNullable<HrKarkun['duties']>[number]>;
+type KarkunDuty = NonNullable<
+  NonNullable<NonNullable<HrKarkun['karkunData']>['duties']>[number]
+>;
+type HrKarkunJob = NonNullable<HrKarkun['employeeData']>['job'] | undefined;
 
 interface Props {
   hrKarkunById?: HrKarkun | null;
@@ -30,7 +33,7 @@ export class NonDetailedForm extends Component<Props> {
   getImageColumn = () => {
     const { hrKarkunById } = this.props;
     if (!hrKarkunById) return null;
-    const url = getDownloadUrl(hrKarkunById.imageId);
+    const url = getDownloadUrl(hrKarkunById.sharedData?.imageId);
     return url ? (
       <Col order={2}>
         <img src={url} style={{ width: '200px' }} alt="Karkun" />
@@ -39,7 +42,7 @@ export class NonDetailedForm extends Component<Props> {
   };
 
   getJobDetails = (
-    job: HrKarkun['job'],
+    job: HrKarkunJob,
     duties: KarkunDuty[] = []
   ) => {
     let jobName: React.ReactNode[] = [];
@@ -72,12 +75,13 @@ export class NonDetailedForm extends Component<Props> {
 
     const imageColumn = this.getImageColumn();
     const jobDetails = this.getJobDetails(
-      hrKarkunById.job,
-      (hrKarkunById.duties ?? []).filter(
+      hrKarkunById.employeeData?.job,
+      (hrKarkunById.karkunData?.duties ?? []).filter(
         (duty): duty is KarkunDuty => duty != null
       )
     );
     const timestamp = formatDate(new Date(), 'DD MMM, YYYY');
+    const sharedData = hrKarkunById.sharedData ?? ({} as NonNullable<typeof hrKarkunById.sharedData>);
 
     return (
       <div className="form-print-view">
@@ -85,22 +89,22 @@ export class NonDetailedForm extends Component<Props> {
           <Col order={1}>
             <BarcodeView value={hrKarkunById._id} {...barcodeOptions} />
             <DisplayItem label="Generated On" value={timestamp} />
-            <DisplayItem label="Name" value={hrKarkunById.name} />
-            <DisplayItem label="S/O" value={hrKarkunById.parentName} />
-            <DisplayItem label="CNIC" value={hrKarkunById.cnicNumber} />
+            <DisplayItem label="Name" value={sharedData.name} />
+            <DisplayItem label="S/O" value={sharedData.parentName} />
+            <DisplayItem label="CNIC" value={sharedData.cnicNumber} />
             <DisplayItem
               label="Mobile No."
-              value={`${hrKarkunById.contactNumber1} - ${
-                hrKarkunById.contactNumber1Subscribed
+              value={`${sharedData.contactNumber1} - ${
+                sharedData.contactNumber1Subscribed
                   ? '(Subscribed)'
                   : 'Not Subscribed'
               }`}
             />
-            {hrKarkunById.contactNumber2 ? (
+            {sharedData.contactNumber2 ? (
               <DisplayItem
                 label="Home No."
-                value={`${hrKarkunById.contactNumber2} - ${
-                  hrKarkunById.contactNumber2Subscribed
+                value={`${sharedData.contactNumber2} - ${
+                  sharedData.contactNumber2Subscribed
                     ? '(Subscribed)'
                     : 'Not Subscribed'
                 }`}
@@ -108,11 +112,11 @@ export class NonDetailedForm extends Component<Props> {
             ) : (
               <DisplayItem label="Home No." value="" />
             )}
-            <DisplayItem label="Email" value={hrKarkunById.emailAddress} />
-            <DisplayItem label="Blood Group" value={hrKarkunById.bloodGroup} />
+            <DisplayItem label="Email" value={sharedData.emailAddress} />
+            <DisplayItem label="Blood Group" value={sharedData.bloodGroup} />
             <DisplayItem
               label="Education"
-              value={hrKarkunById.educationalQualification}
+              value={sharedData.educationalQualification}
             />
           </Col>
           {imageColumn}
@@ -121,15 +125,15 @@ export class NonDetailedForm extends Component<Props> {
           <Col order={1}>
             <DisplayItem
               label="Means of Earning"
-              value={hrKarkunById.meansOfEarning}
+              value={sharedData.meansOfEarning}
             />
             <DisplayItem
               label="Current Address"
-              value={hrKarkunById.currentAddress}
+              value={sharedData.currentAddress}
             />
             <DisplayItem
               label="Permanent Address"
-              value={hrKarkunById.permanentAddress}
+              value={sharedData.permanentAddress}
             />
           </Col>
         </Row>

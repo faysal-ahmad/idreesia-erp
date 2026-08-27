@@ -4,3 +4,7 @@ export {
   default as JobDefinitions,
   type JobDefinitionDocument,
 } from './job-definitions';
+export {
+  default as PeopleTags,
+  type PeopleTagDocument,
+} from './people-tags';

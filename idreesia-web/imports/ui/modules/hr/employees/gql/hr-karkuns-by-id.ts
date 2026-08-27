@@ -12,25 +12,31 @@ const HR_KARKUNS_BY_ID: TypedDocumentNode<
   query hrKarkunsById($_ids: String!) {
     hrKarkunsById(_ids: $_ids) {
       _id
-      name
-      parentName
-      cnicNumber
-      imageId
-      contactNumber1
-      contactNumber2
-      image {
-        _id
-        data
-      }
-      job {
-        _id
+      sharedData {
         name
+        parentName
+        cnicNumber
+        imageId
+        contactNumber1
+        contactNumber2
+        image {
+          _id
+          data
+        }
       }
-      duties {
-        _id
-        dutyName
-        shiftName
-        locationName
+      karkunData {
+        duties {
+          _id
+          dutyName
+          shiftName
+          locationName
+        }
+      }
+      employeeData {
+        job {
+          _id
+          name
+        }
       }
     }
   }

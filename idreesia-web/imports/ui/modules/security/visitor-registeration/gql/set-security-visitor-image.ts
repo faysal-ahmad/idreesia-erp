@@ -12,7 +12,9 @@ const SET_SECURITY_VISITOR_IMAGE: TypedDocumentNode<
   mutation setSecurityVisitorImage($_id: String!, $imageId: String!) {
     setSecurityVisitorImage(_id: $_id, imageId: $imageId) {
       _id
-      imageId
+      sharedData {
+        imageId
+      }
     }
   }
 `;

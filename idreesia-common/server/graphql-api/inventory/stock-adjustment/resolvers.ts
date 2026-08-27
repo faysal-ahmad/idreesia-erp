@@ -1,5 +1,4 @@
 import type DataLoader from 'dataloader';
-import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   StockAdjustments,
   StockItems,
@@ -59,10 +58,7 @@ export default {
           common: { people },
         },
       }: ResolverContext
-    ) => {
-      const person = await people.load(stockAdjustment.adjustedBy);
-      return People.personToKarkun(person as Parameters<typeof People.personToKarkun>[0]);
-    },
+    ) => people.load(stockAdjustment.adjustedBy),
     refPhysicalStore: async (
       stockAdjustment: StockAdjustment,
       _args: unknown,

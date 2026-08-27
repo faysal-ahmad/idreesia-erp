@@ -67,7 +67,7 @@ const EditForm = ({ match, location, history }: Props) => {
   });
 
   const employee = data?.hrKarkunById;
-  const employeeName = employee?.name?.trim();
+  const employeeName = employee?.sharedData?.name?.trim();
 
   useDynamicBreadcrumbs(['HR', 'Employees', employeeName || 'Edit']);
 

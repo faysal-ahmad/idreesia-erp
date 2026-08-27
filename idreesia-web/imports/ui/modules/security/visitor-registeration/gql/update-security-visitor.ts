@@ -44,20 +44,6 @@ const UPDATE_SECURITY_VISITOR: TypedDocumentNode<
       meansOfEarning: $meansOfEarning
     ) {
       _id
-      name
-      parentName
-      cnicNumber
-      ehadDate
-      birthDate
-      referenceName
-      contactNumber1
-      contactNumber2
-      city
-      country
-      currentAddress
-      permanentAddress
-      educationalQualification
-      meansOfEarning
     }
   }
 `;

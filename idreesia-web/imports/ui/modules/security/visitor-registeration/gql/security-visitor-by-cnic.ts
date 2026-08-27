@@ -12,18 +12,22 @@ const SECURITY_VISITOR_BY_CNIC: TypedDocumentNode<
   query securityVisitorByCnic($cnicNumbers: [String]!) {
     securityVisitorByCnic(cnicNumbers: $cnicNumbers) {
       _id
-      name
-      cnicNumber
-      parentName
-      ehadDate
-      birthDate
-      referenceName
-      contactNumber1
-      city
-      country
-      imageId
-      criminalRecord
-      otherNotes
+      sharedData {
+        name
+        parentName
+        cnicNumber
+        ehadDate
+        birthDate
+        referenceName
+        contactNumber1
+        imageId
+      }
+      visitorData {
+        city
+        country
+        criminalRecord
+        otherNotes
+      }
     }
   }
 `;

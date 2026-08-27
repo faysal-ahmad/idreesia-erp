@@ -16,8 +16,8 @@ type PurchaseForm {
   attachments: [Attachment]
   refVendor: Vendor
   refLocation: Location
-  refReceivedBy: KarkunType
-  refPurchasedBy: KarkunType
+  refReceivedBy: PersonType
+  refPurchasedBy: PersonType
   refPhysicalStore: PhysicalStore
 
   createdAt: String

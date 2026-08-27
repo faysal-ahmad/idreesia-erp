@@ -15,9 +15,10 @@ type Props = RouteComponentProps;
 const NewForm = ({ history }: Props) => {
   useBreadcrumbs(['Security', 'Visitor Registration', 'New']);
 
-  const [createSecurityVisitor] = useMutation(CREATE_SECURITY_VISITOR, {
-    refetchQueries: ['pagedSecurityVisitors'],
-  });
+  const [createSecurityVisitor] = useMutation(
+    CREATE_SECURITY_VISITOR,
+    { refetchQueries: ['pagedSecurityVisitors'] }
+  );
 
   const handleCancel = () => {
     history.push(paths.visitorRegistrationListPath);
@@ -38,12 +39,14 @@ const NewForm = ({ history }: Props) => {
     permanentAddress,
     educationalQualification,
     meansOfEarning,
+    criminalRecord,
+    otherNotes,
   }: VisitorNewFormValues) =>
     createSecurityVisitor({
       variables: {
         name: name ?? '',
         parentName: parentName ?? '',
-        cnicNumber: cnicNumber ?? '',
+        cnicNumber,
         ehadDate: ehadDate as unknown as string,
         birthDate: birthDate as unknown as string | null | undefined,
         referenceName: referenceName ?? '',

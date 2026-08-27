@@ -46,7 +46,9 @@ export const UPDATE_STOCK_ADJUSTMENT: TypedDocumentNode<
       }
       refAdjustedBy {
         _id
-        name
+        sharedData {
+          name
+        }
       }
     }
   }

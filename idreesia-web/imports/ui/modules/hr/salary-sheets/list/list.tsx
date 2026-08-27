@@ -91,7 +91,7 @@ const getSortedSalaries = (
   );
   const sortedCurrentSalaries = sortBy(
     currentSalaries ?? [],
-    row => row?.karkun?.name
+    row => row?.karkun?.sharedData?.name
   );
   return sortedCurrentSalaries.map(currentSalary => {
     const prevSalary = currentSalary.karkunId
@@ -233,17 +233,21 @@ const List = ({
   };
 
   const handleDownloadAsCSV = () => {
-    const sortedSalariesByMonth = sortBy(currentSalaries ?? [], 'karkun.name');
+    const sortedSalariesByMonth = sortBy(
+      currentSalaries ?? [],
+      salary => salary.karkun?.sharedData?.name
+    );
 
     const header =
       'Name, S/O, CNIC, Phone No., Dept, Bank Account, Salary, Opening Loan, Loan Deduction, New Loan, Closing Loan, Other Deduction, Arrears, Net Payment \r\n';
     const rows = sortedSalariesByMonth
       .map(salary => {
         if (!salary.karkun || !salary.job) return '';
+        const sharedData = salary.karkun.sharedData ?? ({} as NonNullable<typeof salary.karkun.sharedData>);
         const bankAccountDetails = (
-          salary.karkun.bankAccountDetails || ''
+          salary.karkun.employeeData?.bankAccountDetails || ''
         ).replace('\n', ' - ');
-        return `${salary.karkun.name}, ${salary.karkun.parentName}, ${salary.karkun.cnicNumber}, ${salary.karkun.contactNumber1}, ${salary.job.name}, ${bankAccountDetails}, ${salary.salary}, ${salary.openingLoan}, ${salary.loanDeduction}, ${salary.newLoan}, ${salary.closingLoan}, ${salary.otherDeduction}, ${salary.arrears}, ${salary.netPayment}`;
+        return `${sharedData.name}, ${sharedData.parentName}, ${sharedData.cnicNumber}, ${sharedData.contactNumber1}, ${salary.job.name}, ${bankAccountDetails}, ${salary.salary}, ${salary.openingLoan}, ${salary.loanDeduction}, ${salary.newLoan}, ${salary.closingLoan}, ${salary.otherDeduction}, ${salary.arrears}, ${salary.netPayment}`;
       })
       .filter(Boolean);
     const csvContent = `${header}${rows.join('\r\n')}`;
@@ -286,7 +290,15 @@ const List = ({
       width: 300,
       render: (_text: unknown, record: SalaryListRow) => (
         <KarkunName
-          karkun={record.karkun ?? undefined}
+          karkun={
+            record.karkun?._id && record.karkun.sharedData?.name
+              ? {
+                  _id: record.karkun._id,
+                  name: record.karkun.sharedData.name,
+                  imageId: record.karkun.sharedData.imageId ?? undefined,
+                }
+              : undefined
+          }
           onKarkunNameClicked={handleItemSelected}
         />
       ),

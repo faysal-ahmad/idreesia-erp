@@ -14,15 +14,26 @@ const PAGED_SECURITY_VISITORS: TypedDocumentNode<
       totalResults
       data {
         _id
-        name
-        cnicNumber
-        contactNumber1
-        contactNumber2
-        city
-        country
-        imageId
-        criminalRecord
-        otherNotes
+        isKarkun
+        sharedData {
+          name
+          cnicNumber
+          contactNumber1
+          contactNumber2
+          imageId
+          tags {
+            _id
+            name
+            color
+            textColor
+          }
+        }
+        visitorData {
+          city
+          country
+          criminalRecord
+          otherNotes
+        }
       }
     }
   }

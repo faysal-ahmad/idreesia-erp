@@ -57,8 +57,8 @@ export class PrintForm extends Component<PrintFormProps> {
           <Col flex={2}>
             <DisplayItem label="Store" value={physicalStore.name} />
             <DisplayItem label="Issue Date" value={dayjs(Number(issuanceFormById.issueDate)).format('DD-MMM-YYYY')} />
-            <DisplayItem label="Issued By" value={issuanceFormById.refIssuedBy?.name ?? ''} />
-            <DisplayItem label="Issued To" value={issuanceFormById.refIssuedTo?.name ?? ''} />
+            <DisplayItem label="Issued By" value={issuanceFormById.refIssuedBy?.sharedData?.name ?? ''} />
+            <DisplayItem label="Issued To" value={issuanceFormById.refIssuedTo?.sharedData?.name ?? ''} />
             <DisplayItem label="Handed Over To" value={issuanceFormById.handedOverTo ?? undefined} />
             <DisplayItem label="For Location" value={issuanceFormById.refLocation?.name ?? undefined} />
           </Col>

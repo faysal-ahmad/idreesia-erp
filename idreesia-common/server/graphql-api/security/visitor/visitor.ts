@@ -1,17 +1,36 @@
 import gql from 'graphql-tag';
 
 export default gql`
+input VisitorFilter {
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  city: String
+  ehadDuration: String
+  ehadDate: String
+  additionalInfo: String
+  dataSource: String
+  updatedBetween: String
+  pageIndex: String
+  pageSize: String
+}
+
+type PagedVisitorType {
+  totalResults: Int
+  data: [PersonType]
+}
+
 extend type Query {
   pagedSecurityVisitors(filter: VisitorFilter): PagedVisitorType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
-  securityVisitorById(_id: String!): VisitorType
+  securityVisitorById(_id: String!): PersonType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
-  securityVisitorByCnic(cnicNumbers: [String]!): VisitorType
+  securityVisitorByCnic(cnicNumbers: [String]!): PersonType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
-  securityVisitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): VisitorType
+  securityVisitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): PersonType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 }
 
@@ -32,7 +51,7 @@ extend type Mutation {
     educationalQualification: String
     meansOfEarning: String
     imageData: String
-  ): VisitorType
+  ): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   updateSecurityVisitor(
@@ -51,20 +70,20 @@ extend type Mutation {
     permanentAddress: String
     educationalQualification: String
     meansOfEarning: String
-  ): VisitorType
+  ): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   deleteSecurityVisitor(_id: String!): Int
   @checkPermissions(permissions: [SECURITY_DELETE_DATA])
 
-  setSecurityVisitorImage(_id: String!, imageId: String!): VisitorType
+  setSecurityVisitorImage(_id: String!, imageId: String!): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   updateSecurityVisitorNotes(
     _id: String!
     criminalRecord: String
     otherNotes: String
-  ): VisitorType
+  ): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   importSecurityVisitorsCsvData(

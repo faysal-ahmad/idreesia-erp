@@ -27,12 +27,10 @@ interface ResolverMap {
 
 const resolvers: ResolverMap = {
   AttendanceType: {
-    karkun: async attendanceType => {
-      const person = await People.findOneAsync({
+    karkun: async attendanceType =>
+      People.findOneAsync({
         _id: { $eq: attendanceType.karkunId },
-      });
-      return People.personToKarkun(person);
-    },
+      }),
     job: async attendanceType => {
       if (!attendanceType.jobId) return null;
       return Jobs.findOneAsync({

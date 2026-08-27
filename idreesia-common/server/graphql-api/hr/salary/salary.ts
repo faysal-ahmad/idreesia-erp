@@ -16,9 +16,9 @@ type SalaryType {
   netPayment: Int
   rashanMadad: Int
 
-  karkun: KarkunType
+  karkun: PersonType
   job: JobType
-  approver: KarkunType
+  approver: PersonType
 
   approvedOn: String
   approvedBy: String

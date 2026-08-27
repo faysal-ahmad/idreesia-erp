@@ -20,8 +20,6 @@ const UPDATE_SECURITY_VISITOR_NOTES: TypedDocumentNode<
       otherNotes: $otherNotes
     ) {
       _id
-      criminalRecord
-      otherNotes
     }
   }
 `;

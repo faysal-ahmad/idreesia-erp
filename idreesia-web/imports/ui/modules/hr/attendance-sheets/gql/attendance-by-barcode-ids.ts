@@ -22,13 +22,15 @@ const ATTENDANCE_BY_BARCODE_IDS: TypedDocumentNode<
       meetingCardBarcodeId
       karkun {
         _id
-        name
-        bloodGroup
-        contactNumber1Subscribed
-        contactNumber2Subscribed
-        image {
-          _id
-          data
+        sharedData {
+          name
+          bloodGroup
+          contactNumber1Subscribed
+          contactNumber2Subscribed
+          image {
+            _id
+            data
+          }
         }
       }
       job {

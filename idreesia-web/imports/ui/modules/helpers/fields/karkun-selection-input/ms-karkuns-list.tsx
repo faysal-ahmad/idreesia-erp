@@ -10,7 +10,7 @@ import { PAGED_HR_KARKUNS } from './gql';
 
 type HrKarkunRow = NonNullable<
   NonNullable<
-    NonNullable<HelperPagedHrKarkunsQuery['pagedHrKarkuns']>['karkuns']
+    NonNullable<HelperPagedHrKarkunsQuery['pagedHrKarkuns']>['data']
   >[number]
 >;
 

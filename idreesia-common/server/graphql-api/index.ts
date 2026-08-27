@@ -22,15 +22,9 @@ import AuditLogResolvers from './common/audit-log/resolvers';
 import SecurityLogSchema from './common/security-log/security-log';
 import SecurityLogResolvers from './common/security-log/resolvers';
 
-import ImdadRequestSchema from './common/imdad-request/imdad-request';
-import ImdadRequestResolvers from './common/imdad-request/resolvers';
-
 import PersonSchema from './common/person/person';
 import PersonResolvers from './common/person/resolvers';
 import KarkunSchema from './common/karkun/karkun';
-import KarkunResolvers from './common/karkun/resolvers';
-import VisitorSchema from './common/visitor/visitor';
-import VisitorResolvers from './common/visitor/resolvers';
 
 /**
  * Schema and Resolvers for the Admin module
@@ -46,6 +40,12 @@ import ScheduledJobResolvers from './admin/scheduled-job/resolvers';
 
 import JobDefinitionSchema from './admin/job-definition/job-definition';
 import JobDefinitionResolvers from './admin/job-definition/resolvers';
+
+import PeopleTagSchema from './admin/people-tag/people-tag';
+import PeopleTagResolvers from './admin/people-tag/resolvers';
+
+import DeletedPeopleSchema from './admin/deleted-people/deleted-people';
+import DeletedPeopleResolvers from './admin/deleted-people/resolvers';
 
 /**
  * Schema and Resolvers for the Security module
@@ -158,14 +158,14 @@ const typeDefs = [
   AttachmentSchema,
   AuditLogSchema,
   SecurityLogSchema,
-  ImdadRequestSchema,
   KarkunSchema,
   PersonSchema,
-  VisitorSchema,
   UserSchema,
   UserGroupSchema,
   ScheduledJobSchema,
   JobDefinitionSchema,
+  PeopleTagSchema,
+  DeletedPeopleSchema,
 
   SecurityAuditLogSchema,
   SecurityMehfilSchema,
@@ -208,14 +208,13 @@ const resolvers = merge(
   AttachmentResolvers,
   AuditLogResolvers,
   SecurityLogResolvers,
-  ImdadRequestResolvers,
-  KarkunResolvers,
   PersonResolvers,
-  VisitorResolvers,
   UserResolvers,
   UserGroupResolvers,
   ScheduledJobResolvers,
   JobDefinitionResolvers,
+  PeopleTagResolvers,
+  DeletedPeopleResolvers,
 
   SecurityAuditLogResolvers,
   SecurityMehfilResolvers,

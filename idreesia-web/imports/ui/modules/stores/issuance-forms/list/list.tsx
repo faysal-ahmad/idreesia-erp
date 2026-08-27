@@ -348,7 +348,7 @@ const List = ({ history, location }: Props) => {
     },
     {
       title: 'Issued To',
-      dataIndex: ['refIssuedTo', 'name'],
+      dataIndex: ['refIssuedTo', 'sharedData', 'name'],
       key: 'refIssuedTo.name',
       width: 200,
       render: (text: string, record: IssuanceFormRow) => {

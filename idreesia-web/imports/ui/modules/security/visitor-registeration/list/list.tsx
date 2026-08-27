@@ -24,24 +24,25 @@ import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import {
-  VisitorsList,
-  VisitorsListFilter,
-  VisitorFilterChips,
+  PersonGeneralList,
+  PersonGeneralListFilter,
+  PersonGeneralListFilterChips,
 } from '/imports/ui/modules/common';
-import type { VisitorListItem } from '/imports/ui/modules/common/visitors/list';
+import type { PersonListItem } from '/imports/ui/modules/common/visitors/list';
 import { VisitorStaysList } from '/imports/ui/modules/security/visitor-stays';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
+import { ALL_PEOPLE_TAGS } from '/imports/ui/modules/admin/people-tags/gql';
 
 import { PAGED_SECURITY_VISITORS, DELETE_SECURITY_VISITOR } from '../gql';
 
-type VisitorRecord = VisitorListItem;
+type VisitorRecord = PersonListItem;
 
 type Props = RouteComponentProps;
 
 const List = ({ history, location }: Props) => {
   useBreadcrumbs(['Security', 'Visitor Registration', 'List']);
 
-  const visitorsList = useRef<InstanceType<typeof VisitorsList> | null>(null);
+  const visitorsList = useRef<InstanceType<typeof PersonGeneralList> | null>(null);
   const [showStayList, setShowStayList] = useState(false);
   const [visitorIdForList, setVisitorIdForList] = useState<string | null>(null);
   const { queryParams, setPageParams } = useQueryParams({
@@ -55,6 +56,7 @@ const List = ({ history, location }: Props) => {
       'ehadDuration',
       'additionalInfo',
       'updatedBetween',
+      'tagId',
       'pageIndex',
       'pageSize',
     ],
@@ -64,6 +66,7 @@ const List = ({ history, location }: Props) => {
   const { distinctCities, distinctCitiesRefetch } = useDistinctCities(
     'cache-first'
   );
+  const { data: peopleTagsData } = useQuery(ALL_PEOPLE_TAGS);
   const { data, refetch } = useQuery(PAGED_SECURITY_VISITORS, {
     variables: { filter: queryParams },
   });
@@ -76,9 +79,14 @@ const List = ({ history, location }: Props) => {
     ehadDuration,
     additionalInfo,
     updatedBetween,
+    tagId,
     pageIndex,
     pageSize,
   } = queryParams;
+
+  const filterTags = (peopleTagsData?.allPeopleTags ?? []).flatMap((tag) =>
+    tag?._id ? [{ _id: tag._id, name: tag.name }] : []
+  );
 
   const refreshData = async () => {
     await refetch();
@@ -94,6 +102,7 @@ const List = ({ history, location }: Props) => {
     ehadDuration?: string;
     additionalInfo?: string;
     updatedBetween?: string;
+    tagId?: string;
   }) => {
     setPageParams(params);
   };
@@ -150,7 +159,7 @@ const List = ({ history, location }: Props) => {
     const selectedRows = visitorsList.current?.getSelectedRows() ?? [];
     if (selectedRows.length === 0) return;
 
-    const reportArgs = (selectedRows as VisitorListItem[]).map((row) => row._id);
+    const reportArgs = (selectedRows as PersonListItem[]).map((row) => row._id);
     const url = `${
       window.location.origin
     }/generate-report?reportName=Visitors&reportArgs=${reportArgs.join(',')}`;
@@ -212,8 +221,10 @@ const List = ({ history, location }: Props) => {
     ehadDuration: ehadDuration as string | undefined,
     additionalInfo: additionalInfo as string | undefined,
     updatedBetween: updatedBetween as string | undefined,
+    tagId: tagId as string | undefined,
     showAdditionalInfoFilter: true,
     distinctCities: distinctCities ?? [],
+    tags: filterTags,
     setPageParams: handleFilterSetPageParams,
     refreshData,
   };
@@ -234,10 +245,10 @@ const List = ({ history, location }: Props) => {
       </Space>
       <div className="list-table-header-utilities">
         <Space size={8}>
-          <VisitorsListFilter {...filterProps} />
+          <PersonGeneralListFilter {...filterProps} />
           {getActionsMenu()}
         </Space>
-        <VisitorFilterChips {...filterProps} />
+        <PersonGeneralListFilterChips {...filterProps} />
       </div>
     </div>
   );
@@ -245,8 +256,25 @@ const List = ({ history, location }: Props) => {
   const pagedData = data?.pagedSecurityVisitors;
   const pagedSecurityVisitors = {
     totalResults: pagedData?.totalResults ?? 0,
-    data: (pagedData?.data ?? []).flatMap((row) =>
-      row && row._id ? [row as VisitorListItem] : []
+    data: (pagedData?.data ?? []).flatMap((person) =>
+      person?._id
+        ? [
+            {
+              _id: person._id,
+              name: person.sharedData?.name,
+              cnicNumber: person.sharedData?.cnicNumber,
+              contactNumber1: person.sharedData?.contactNumber1,
+              contactNumber2: person.sharedData?.contactNumber2,
+              city: person.visitorData?.city,
+              country: person.visitorData?.country,
+              imageId: person.sharedData?.imageId,
+              criminalRecord: person.visitorData?.criminalRecord,
+              otherNotes: person.visitorData?.otherNotes,
+              isKarkun: person.isKarkun,
+              tags: person.sharedData?.tags,
+            } as PersonListItem,
+          ]
+        : []
     ),
   };
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
@@ -254,8 +282,9 @@ const List = ({ history, location }: Props) => {
 
   return (
     <>
-      <VisitorsList
+      <PersonGeneralList
         ref={visitorsList}
+        itemsLabel="visitors"
         showSelectionColumn
         showCnicColumn
         showPhoneNumbersColumn

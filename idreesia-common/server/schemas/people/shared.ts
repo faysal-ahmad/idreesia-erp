@@ -99,4 +99,11 @@ export default new SimpleSchema({
     type: ImageVectorData,
     optional: true,
   },
+  tagIds: {
+    type: Array,
+    optional: true,
+  },
+  'tagIds.$': {
+    type: String,
+  },
 });

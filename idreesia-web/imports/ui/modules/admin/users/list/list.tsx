@@ -67,8 +67,15 @@ const columns: any[] = [
     title: 'Karkun Name',
     key: 'karkun.name',
     render: (_text: unknown, record: UserRow) =>
-      record.karkun ? (
-        <KarkunName karkun={record.karkun} onKarkunNameClicked={noop} />
+      record.karkun?._id && record.karkun.sharedData?.name ? (
+        <KarkunName
+          karkun={{
+            _id: record.karkun._id,
+            name: record.karkun.sharedData.name,
+            imageId: record.karkun.sharedData.imageId ?? undefined,
+          }}
+          onKarkunNameClicked={noop}
+        />
       ) : (
         ''
       ),

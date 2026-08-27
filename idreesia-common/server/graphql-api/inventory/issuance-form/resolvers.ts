@@ -2,10 +2,7 @@ import {
   IssuanceForms,
   StockItems,
 } from 'meteor/idreesia-common/server/collections/inventory';
-import {
-  Attachments,
-  People,
-} from 'meteor/idreesia-common/server/collections/common';
+import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 
 import getIssuanceForms, {
   getIssuanceFormsByMonth,
@@ -69,8 +66,7 @@ const resolvers: ResolverMap = {
       }
     ) => {
       if (issuanceForm.issuedBy) {
-        const person = await people.load(issuanceForm.issuedBy);
-        return People.personToKarkun(person);
+        return people.load(issuanceForm.issuedBy);
       }
       return null;
     },
@@ -84,8 +80,7 @@ const resolvers: ResolverMap = {
       }
     ) => {
       if (issuanceForm.issuedTo) {
-        const person = await people.load(issuanceForm.issuedTo);
-        return People.personToKarkun(person);
+        return people.load(issuanceForm.issuedTo);
       }
       return null;
     },

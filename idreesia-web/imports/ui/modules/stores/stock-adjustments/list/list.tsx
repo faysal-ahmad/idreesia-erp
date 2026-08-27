@@ -287,7 +287,7 @@ const List = ({ history, location }: Props) => {
     },
     {
       title: 'Adjusted By',
-      dataIndex: ['refAdjustedBy', 'name'],
+      dataIndex: ['refAdjustedBy', 'sharedData', 'name'],
       key: 'adjustedBy',
       width: 160,
     },

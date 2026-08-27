@@ -12,11 +12,13 @@ const ADD_HR_KARKUN_ATTACHMENT: TypedDocumentNode<
   mutation addHrKarkunAttachment($_id: String!, $attachmentId: String!) {
     addHrKarkunAttachment(_id: $_id, attachmentId: $attachmentId) {
       _id
-      attachments {
-        _id
-        name
-        description
-        mimeType
+      karkunData {
+        attachments {
+          _id
+          name
+          description
+          mimeType
+        }
       }
     }
   }

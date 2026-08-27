@@ -42,11 +42,15 @@ export const PURCHASE_FORM_BY_ID: TypedDocumentNode<
       }
       refReceivedBy {
         _id
-        name
+        sharedData {
+          name
+        }
       }
       refPurchasedBy {
         _id
-        name
+        sharedData {
+          name
+        }
       }
       refVendor {
         _id

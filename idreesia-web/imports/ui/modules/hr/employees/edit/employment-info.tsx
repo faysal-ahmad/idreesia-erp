@@ -108,15 +108,15 @@ const EmploymentInfo = ({ history, employeeId }: Props) => {
           fieldLabel="Current Job"
           required={false}
           data={allJobs}
-          initialValue={hrKarkunById.jobId}
+          initialValue={hrKarkunById.employeeData?.jobId}
         />
 
         <DateField
           fieldName="employmentStartDate"
           fieldLabel="Start Date"
           initialValue={
-            hrKarkunById.employmentStartDate
-              ? dayjs(Number(hrKarkunById.employmentStartDate))
+            hrKarkunById.employeeData?.employmentStartDate
+              ? dayjs(Number(hrKarkunById.employeeData.employmentStartDate))
               : null
           }
         />
@@ -125,8 +125,8 @@ const EmploymentInfo = ({ history, employeeId }: Props) => {
           fieldName="employmentEndDate"
           fieldLabel="End Date"
           initialValue={
-            hrKarkunById.employmentEndDate
-              ? dayjs(Number(hrKarkunById.employmentEndDate))
+            hrKarkunById.employeeData?.employmentEndDate
+              ? dayjs(Number(hrKarkunById.employeeData.employmentEndDate))
               : null
           }
         />

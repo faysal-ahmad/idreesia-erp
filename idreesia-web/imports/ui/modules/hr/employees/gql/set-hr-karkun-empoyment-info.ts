@@ -25,9 +25,11 @@ const SET_HR_KARKUN_EMPLOYMENT_INFO: TypedDocumentNode<
     ) {
       _id
       isEmployee
-      jobId
-      employmentStartDate
-      employmentEndDate
+      employeeData {
+        jobId
+        employmentStartDate
+        employmentEndDate
+      }
     }
   }
 `;

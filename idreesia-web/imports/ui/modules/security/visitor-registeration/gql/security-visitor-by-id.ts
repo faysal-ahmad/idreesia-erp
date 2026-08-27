@@ -12,23 +12,34 @@ const SECURITY_VISITOR_BY_ID: TypedDocumentNode<
   query securityRegistrationVisitorById($_id: String!) {
     securityVisitorById(_id: $_id) {
       _id
-      name
-      parentName
-      cnicNumber
-      ehadDate
-      birthDate
-      referenceName
-      contactNumber1
-      contactNumber2
-      city
-      country
-      currentAddress
-      permanentAddress
-      educationalQualification
-      meansOfEarning
-      criminalRecord
-      otherNotes
-      imageId
+      sharedData {
+        name
+        parentName
+        cnicNumber
+        ehadDate
+        birthDate
+        referenceName
+        contactNumber1
+        contactNumber2
+        currentAddress
+        permanentAddress
+        educationalQualification
+        meansOfEarning
+        imageId
+        tagIds
+        tags {
+          _id
+          name
+          color
+          textColor
+        }
+      }
+      visitorData {
+        city
+        country
+        criminalRecord
+        otherNotes
+      }
       createdAt
       createdBy
       updatedAt

@@ -88,7 +88,7 @@ const GeneralInfo = ({ userId, history }: Props) => {
       fieldName="karkunName"
       fieldLabel="Karkun Name"
       disabled
-      initialValue={userById.karkun ? userById.karkun.name : ''}
+      initialValue={userById.karkun ? userById.karkun.sharedData?.name : ''}
     />
   ) : (
     <KarkunSelectionInputField

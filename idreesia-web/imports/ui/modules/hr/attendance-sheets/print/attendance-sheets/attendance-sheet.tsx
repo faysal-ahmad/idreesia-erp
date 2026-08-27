@@ -26,15 +26,21 @@ const HeadingContainerStyle: CSSProperties = {
 export default class AttendanceSheet extends Component<AttendanceSheetProps> {
   nameColumn = {
     title: 'Name',
-    dataIndex: 'karkun.name',
+    dataIndex: ['karkun', 'sharedData', 'name'],
     key: 'karkun.name',
-    render: (_text: unknown, record: AttendanceListRow) => (
-      <PersonName
-        person={
-          record.karkun as Parameters<typeof PersonName>[0]['person']
-        }
-      />
-    ),
+    render: (_text: unknown, record: AttendanceListRow) => {
+      const karkun = record.karkun;
+      if (!karkun?._id || !karkun.sharedData?.name) return null;
+      return (
+        <PersonName
+          person={{
+            _id: karkun._id,
+            name: karkun.sharedData.name,
+            imageId: karkun.sharedData.imageId ?? undefined,
+          }}
+        />
+      );
+    },
   };
 
   phoneNumberColumn = {
@@ -42,12 +48,12 @@ export default class AttendanceSheet extends Component<AttendanceSheetProps> {
     key: 'contactNumber',
     render: (_text: unknown, record: AttendanceListRow) => {
       const numbers = [];
-      const karkun = record.karkun;
-      if (!karkun) return '';
-      if (karkun.contactNumber1)
-        numbers.push(<Row key="1">{karkun.contactNumber1}</Row>);
-      if (karkun.contactNumber2)
-        numbers.push(<Row key="2">{karkun.contactNumber2}</Row>);
+      const sharedData = record.karkun?.sharedData;
+      if (!sharedData) return '';
+      if (sharedData.contactNumber1)
+        numbers.push(<Row key="1">{sharedData.contactNumber1}</Row>);
+      if (sharedData.contactNumber2)
+        numbers.push(<Row key="2">{sharedData.contactNumber2}</Row>);
 
       if (numbers.length === 0) return '';
       return <>{numbers}</>;
@@ -89,7 +95,7 @@ export default class AttendanceSheet extends Component<AttendanceSheetProps> {
       (attendance): attendance is AttendanceListRow =>
         !!attendance?.karkun && !!attendance._id
     );
-    const sortedAttendanceByMonth = sortBy(filterAttendanceByMonth, row => row.karkun?.name);
+    const sortedAttendanceByMonth = sortBy(filterAttendanceByMonth, row => row.karkun?.sharedData?.name);
     const pages = [...sortedAttendanceByMonth];
 
     let index = 0;

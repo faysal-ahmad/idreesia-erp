@@ -17,4 +17,12 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  deletedAt: {
+    type: Date,
+    optional: true,
+  },
+  deletedBy: {
+    type: String,
+    optional: true,
+  },
 });

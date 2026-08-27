@@ -14,7 +14,7 @@ type AttendanceType {
   percentage: Float
   meetingCardBarcodeId: String
 
-  karkun: KarkunType
+  karkun: PersonType
   job: JobType
   duty: DutyType
   shift: DutyShiftType

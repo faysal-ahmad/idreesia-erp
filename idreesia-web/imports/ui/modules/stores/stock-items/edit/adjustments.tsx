@@ -48,7 +48,9 @@ const STOCK_ADJUSTMENTS_BY_STOCK_ITEM: TypedDocumentNode<
       approvedOn
       refAdjustedBy {
         _id
-        name
+        sharedData {
+          name
+        }
       }
     }
   }
@@ -94,7 +96,7 @@ const Adjustments = ({ history, physicalStoreId, stockItemId }: Props) => {
     },
     {
       title: 'Adjusted By',
-      dataIndex: ['refAdjustedBy', 'name'],
+      dataIndex: ['refAdjustedBy', 'sharedData', 'name'],
       key: 'adjustedBy',
     },
     {

@@ -1,9 +1,5 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
-import {
-  canDeleteKarkun,
-  deleteKarkun,
-} from 'meteor/idreesia-common/server/business-logic/hr';
 import { computeImageVectorData } from 'meteor/idreesia-common/server/business-logic/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
@@ -86,13 +82,8 @@ const resolvers: ResolverMap = {
       return People.updatePerson(personValues, user);
     },
 
-    deleteHrKarkun: async (obj, { _id }) => {
-      if (await canDeleteKarkun(_id)) {
-        return deleteKarkun(_id);
-      }
-
-      return 0;
-    },
+    deleteHrKarkun: async (obj, { _id }, { user }) =>
+      People.removePerson(_id, user),
 
     setHrKarkunWazaifAndRaabta: async (obj, values, { user }) => {
       const personValues = await People.karkunToPerson(values);

@@ -12,14 +12,9 @@ interface FaceVectorsContext {
   } | null;
 }
 
-interface PersonWithImageVector {
+interface PersonWithSharedData {
   _id: string;
-  sharedData: {
-    imageVectorData: {
-      vector: number[];
-      computedAt: Date;
-    };
-  };
+  sharedData: Record<string, any>;
 }
 
 // Keeps a single page cheap regardless of what the caller asks for - the initial full sync and
@@ -61,7 +56,7 @@ export default {
         limit: pageSize,
       }).fetchAsync();
 
-      return people.map((person: PersonWithImageVector) => ({
+      return people.map((person: PersonWithSharedData) => ({
         personId: person._id,
         vector: person.sharedData.imageVectorData.vector,
         computedAt: person.sharedData.imageVectorData.computedAt,

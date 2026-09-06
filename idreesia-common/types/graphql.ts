@@ -1697,9 +1697,7 @@ export type PersonSharedDataType = {
   bloodGroup?: Maybe<Scalars['String']['output']>;
   cnicNumber?: Maybe<Scalars['String']['output']>;
   contactNumber1?: Maybe<Scalars['String']['output']>;
-  contactNumber1Subscribed?: Maybe<Scalars['Boolean']['output']>;
   contactNumber2?: Maybe<Scalars['String']['output']>;
-  contactNumber2Subscribed?: Maybe<Scalars['Boolean']['output']>;
   currentAddress?: Maybe<Scalars['String']['output']>;
   deathDate?: Maybe<Scalars['String']['output']>;
   educationalQualification?: Maybe<Scalars['String']['output']>;

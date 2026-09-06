@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, type CSSProperties } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client/react';
 import {
@@ -66,14 +66,6 @@ interface Props {
   showActionsColumn?: boolean;
   predefinedFilterName?: string;
 }
-
-const ContactNumberSubscribed: CSSProperties = {
-  color: 'green',
-};
-
-const ContactNumberNotSubscribed: CSSProperties = {
-  color: 'red',
-};
 
 const List = ({
   pageIndex,
@@ -222,36 +214,13 @@ const List = ({
     width: 160,
     render: (_text: unknown, record: HrKarkunRow) => {
       const numbers: React.ReactNode[] = [];
-      let style: CSSProperties = {};
-      const { contactNumber1, contactNumber1Subscribed, contactNumber2, contactNumber2Subscribed } =
-        record.sharedData ?? {};
+      const { contactNumber1, contactNumber2 } = record.sharedData ?? {};
       if (contactNumber1) {
-        if (contactNumber1Subscribed === true) {
-          style = ContactNumberSubscribed;
-        } else if (contactNumber1Subscribed === false) {
-          style = ContactNumberNotSubscribed;
-        }
-
-        numbers.push(
-          <Row key="1">
-            <span style={style}>{contactNumber1}</span>
-          </Row>
-        );
+        numbers.push(<Row key="1">{contactNumber1}</Row>);
       }
 
       if (contactNumber2) {
-        style = {};
-        if (contactNumber2Subscribed === true) {
-          style = ContactNumberSubscribed;
-        } else if (contactNumber2Subscribed === false) {
-          style = ContactNumberNotSubscribed;
-        }
-
-        numbers.push(
-          <Row key="2">
-            <span style={style}>{contactNumber2}</span>
-          </Row>
-        );
+        numbers.push(<Row key="2">{contactNumber2}</Row>);
       }
 
       if (numbers.length === 0) return '';

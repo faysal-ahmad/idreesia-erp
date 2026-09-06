@@ -90,20 +90,12 @@ export class NonDetailedForm extends Component<Props> {
             <DisplayItem label="CNIC" value={sharedData.cnicNumber} />
             <DisplayItem
               label="Mobile No."
-              value={`${sharedData.contactNumber1} - ${
-                sharedData.contactNumber1Subscribed
-                  ? '(Subscribed)'
-                  : 'Not Subscribed'
-              }`}
+              value={sharedData.contactNumber1}
             />
             {sharedData.contactNumber2 ? (
               <DisplayItem
                 label="Home No."
-                value={`${sharedData.contactNumber2} - ${
-                  sharedData.contactNumber2Subscribed
-                    ? '(Subscribed)'
-                    : 'Not Subscribed'
-                }`}
+                value={sharedData.contactNumber2}
               />
             ) : (
               <DisplayItem label="Home No." value="" />

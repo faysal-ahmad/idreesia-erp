@@ -18,9 +18,7 @@ const PAGED_HR_KARKUNS: TypedDocumentNode<
           name
           cnicNumber
           contactNumber1
-          contactNumber1Subscribed
           contactNumber2
-          contactNumber2Subscribed
           imageId
         }
         karkunData {

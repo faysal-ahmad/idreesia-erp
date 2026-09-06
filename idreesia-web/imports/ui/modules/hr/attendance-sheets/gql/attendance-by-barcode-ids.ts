@@ -25,8 +25,6 @@ const ATTENDANCE_BY_BARCODE_IDS: TypedDocumentNode<
         sharedData {
           name
           bloodGroup
-          contactNumber1Subscribed
-          contactNumber2Subscribed
           image {
             _id
             data

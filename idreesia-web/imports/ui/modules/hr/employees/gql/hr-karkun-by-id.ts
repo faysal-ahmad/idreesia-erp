@@ -24,8 +24,6 @@ const HR_KARKUN_BY_ID: TypedDocumentNode<
         imageId
         contactNumber1
         contactNumber2
-        contactNumber1Subscribed
-        contactNumber2Subscribed
         emailAddress
         currentAddress
         permanentAddress

@@ -120,12 +120,8 @@ export default class Cards extends Component<CardsProps> {
     if (!karkun) return null;
     const sharedData = karkun.sharedData ?? ({} as NonNullable<typeof karkun.sharedData>);
 
-    const subscribed =
-      sharedData.contactNumber1Subscribed ||
-      sharedData.contactNumber2Subscribed;
     const percentageClass =
       (attendance.percentage ?? 0) > 0 ? 'info_box' : 'info_box hidden';
-    const subscriptionClass = subscribed ? 'info_box hidden' : 'info_box';
     const bloodGroupClass = sharedData.bloodGroup
       ? 'info_box'
       : 'info_box hidden';
@@ -149,7 +145,6 @@ export default class Cards extends Component<CardsProps> {
         <div className="info_container">
           <div className={percentageClass}>{attendance.percentage}%</div>
           <div className={bloodGroupClass}>{sharedData.bloodGroup}</div>
-          <div className={subscriptionClass}>NS</div>
         </div>
       </div>
     );

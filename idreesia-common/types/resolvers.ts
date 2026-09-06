@@ -871,9 +871,7 @@ export type PersonSharedDataTypeResolvers<ContextType = any, ParentType extends 
   bloodGroup?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cnicNumber?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   contactNumber1?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  contactNumber1Subscribed?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   contactNumber2?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  contactNumber2Subscribed?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   currentAddress?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   deathDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   educationalQualification?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;

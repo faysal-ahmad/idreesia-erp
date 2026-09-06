@@ -10,8 +10,6 @@ type PersonSharedDataType {
   permanentAddress: String
   contactNumber1: String
   contactNumber2: String
-  contactNumber1Subscribed: Boolean
-  contactNumber2Subscribed: Boolean
   emailAddress: String
   bloodGroup: String
   educationalQualification: String

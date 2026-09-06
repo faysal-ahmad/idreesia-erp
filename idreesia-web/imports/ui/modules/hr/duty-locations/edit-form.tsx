@@ -71,7 +71,7 @@ const EditForm = ({ match, history }: EditFormProps) => {
   const [updateDutyLocation] = useMutation(UPDATE_DUTY_LOCATION, {
     refetchQueries: [
       'listAllDutyLocations',
-      'allDutyLocations',
+      'composerAllDutyLocations',
       'dutyLocationById',
     ],
   });

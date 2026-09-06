@@ -48,7 +48,7 @@ interface ListContainerProps {
 }
 
 const mutationOptions = {
-  refetchQueries: ['salariesByMonth'],
+  refetchQueries: ['currentMonthSalaries', 'previousMonthSalaries'],
 };
 
 const ListContainer = ({ history, location }: ListContainerProps) => {

@@ -42,7 +42,7 @@ const EmploymentInfo = ({ history, employeeId }: Props) => {
   const [setHrKarkunEmploymentInfo] = useMutation(
     SET_HR_KARKUN_EMPLOYMENT_INFO,
     {
-      refetchQueries: ['pagedHrKarkuns', 'allJobs', 'hrKarkunByIdForPeople'],
+      refetchQueries: ['hrPeoplePagedHrKarkuns', 'allJobs', 'hrKarkunByIdForPeople'],
     }
   );
 

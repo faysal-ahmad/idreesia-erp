@@ -26,7 +26,7 @@ const NewForm = ({ history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   useBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'New']);
   const [createPhysicalStore] = useMutation(CREATE_PHYSICAL_STORE, {
-    refetchQueries: ['allPhysicalStores', 'allAccessiblePhysicalStores'],
+    refetchQueries: ['adminAllPhysicalStores', 'allAccessiblePhysicalStores'],
   });
 
   const handleCancel = () => {

@@ -84,7 +84,7 @@ const GeneralInfo = ({ history, employeeId, employee }: Props) => {
   const { allCities, allCitiesLoading } = useAllCities();
   const { allCityMehfils, allCityMehfilsLoading } = useAllCityMehfils();
   const [updateHrKarkun] = useMutation(UPDATE_HR_KARKUN, {
-    refetchQueries: ['pagedHrKarkuns', 'hrKarkunByIdForPeople'],
+    refetchQueries: ['hrPeoplePagedHrKarkuns', 'hrKarkunByIdForPeople'],
   });
 
   const handleCancel = () => {

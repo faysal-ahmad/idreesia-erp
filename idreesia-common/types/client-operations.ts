@@ -107,6 +107,7 @@ export type VisitorFilter = {
   pageIndex?: string | null | undefined;
   pageSize?: string | null | undefined;
   phoneNumber?: string | null | undefined;
+  tagId?: string | null | undefined;
   updatedBetween?: string | null | undefined;
 };
 
@@ -680,26 +681,6 @@ export type AddHrKarkunAttachmentMutationVariables = Exact<{
 
 export type AddHrKarkunAttachmentMutation = { addHrKarkunAttachment: { _id: string | null, karkunData: { attachments: Array<{ _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null> | null } | null } | null };
 
-export type CreateHrKarkunMutationVariables = Exact<{
-  name: string;
-  parentName?: string | null | undefined;
-  cnicNumber?: string | null | undefined;
-  contactNumber1?: string | null | undefined;
-  contactNumber2?: string | null | undefined;
-  emailAddress?: string | null | undefined;
-  currentAddress?: string | null | undefined;
-  permanentAddress?: string | null | undefined;
-  bloodGroup?: string | null | undefined;
-  educationalQualification?: string | null | undefined;
-  meansOfEarning?: string | null | undefined;
-  ehadDate?: string | null | undefined;
-  birthDate?: string | null | undefined;
-  referenceName?: string | null | undefined;
-}>;
-
-
-export type CreateHrKarkunMutation = { createHrKarkun: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, referenceName: string | null } | null, karkunData: { lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null } | null } | null };
-
 export type HrKarkunByIdForPeopleQueryVariables = Exact<{
   _id: string;
 }>;
@@ -810,6 +791,26 @@ export type RemoveJobMutationVariables = Exact<{
 
 
 export type RemoveJobMutation = { removeJob: number | null };
+
+export type CreateHrKarkunMutationVariables = Exact<{
+  name: string;
+  parentName?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  contactNumber1?: string | null | undefined;
+  contactNumber2?: string | null | undefined;
+  emailAddress?: string | null | undefined;
+  currentAddress?: string | null | undefined;
+  permanentAddress?: string | null | undefined;
+  bloodGroup?: string | null | undefined;
+  educationalQualification?: string | null | undefined;
+  meansOfEarning?: string | null | undefined;
+  ehadDate?: string | null | undefined;
+  birthDate?: string | null | undefined;
+  referenceName?: string | null | undefined;
+}>;
+
+
+export type CreateHrKarkunMutation = { createHrKarkun: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, referenceName: string | null } | null, karkunData: { lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null } | null } | null };
 
 export type CreateKarkunDutyMutationVariables = Exact<{
   karkunId: string;

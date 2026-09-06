@@ -11,6 +11,7 @@ input VisitorFilter {
   additionalInfo: String
   dataSource: String
   updatedBetween: String
+  tagId: String
   pageIndex: String
   pageSize: String
 }

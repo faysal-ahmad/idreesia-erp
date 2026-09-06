@@ -2439,6 +2439,7 @@ export type VisitorFilter = {
   pageIndex?: InputMaybe<Scalars['String']['input']>;
   pageSize?: InputMaybe<Scalars['String']['input']>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  tagId?: InputMaybe<Scalars['String']['input']>;
   updatedBetween?: InputMaybe<Scalars['String']['input']>;
 };
 

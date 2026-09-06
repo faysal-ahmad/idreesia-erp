@@ -32,7 +32,7 @@ import type {
   CurrentMonthSalariesQuery,
   PreviousMonthSalariesQuery,
 } from 'meteor/idreesia-common/types/client-operations';
-import { KarkunName } from '/imports/ui/modules/hr/common/controls';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import { PREV_MONTH_SALARIES, CURRENT_MONTH_SALARIES } from '../gql';
 import type { SalarySheetsPageParams } from './list-container';
@@ -289,8 +289,8 @@ const List = ({
       key: 'name',
       width: 300,
       render: (_text: unknown, record: SalaryListRow) => (
-        <KarkunName
-          karkun={
+        <PersonName
+          person={
             record.karkun?._id && record.karkun.sharedData?.name
               ? {
                   _id: record.karkun._id,
@@ -299,7 +299,7 @@ const List = ({
                 }
               : undefined
           }
-          onKarkunNameClicked={handleItemSelected}
+          onPersonNameClicked={handleItemSelected}
         />
       ),
     },

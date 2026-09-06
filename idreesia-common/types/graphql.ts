@@ -1660,6 +1660,11 @@ export type PersonFilter = {
   updatedBetween?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type PersonImageVectorDataType = {
+  __typename?: 'PersonImageVectorDataType';
+  status?: Maybe<Scalars['String']['output']>;
+};
+
 export type PersonKarkunDataType = {
   __typename?: 'PersonKarkunDataType';
   attachmentIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -1691,6 +1696,7 @@ export type PersonSharedDataType = {
   emailAddress?: Maybe<Scalars['String']['output']>;
   image?: Maybe<Attachment>;
   imageId?: Maybe<Scalars['String']['output']>;
+  imageVectorData?: Maybe<PersonImageVectorDataType>;
   meansOfEarning?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   parentName?: Maybe<Scalars['String']['output']>;
@@ -2293,6 +2299,7 @@ export type ScheduledJobType = {
   lastRunAt?: Maybe<Scalars['DateTime']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   nextRunAt?: Maybe<Scalars['DateTime']['output']>;
+  progress?: Maybe<Scalars['Int']['output']>;
   repeatInterval?: Maybe<Scalars['String']['output']>;
   status?: Maybe<Scalars['String']['output']>;
 };

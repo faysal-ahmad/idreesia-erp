@@ -37,7 +37,7 @@ import type {
   AttendanceByMonthQuery,
   ComposerAllMsDutiesQuery,
 } from 'meteor/idreesia-common/types/client-operations';
-import { KarkunName } from '/imports/ui/modules/hr/common/controls';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import { ATTENDANCE_BY_MONTH } from '../gql';
 import type { AttendanceSheetsPageParams } from './list-container';
@@ -375,8 +375,8 @@ const List = ({
       dataIndex: ['karkun', 'sharedData', 'name'],
       key: 'karkun.name',
       render: (_text: unknown, record: AttendanceListRow) => (
-        <KarkunName
-          karkun={
+        <PersonName
+          person={
             record.karkun?._id && record.karkun.sharedData?.name
               ? {
                   _id: record.karkun._id,
@@ -385,7 +385,7 @@ const List = ({
                 }
               : undefined
           }
-          onKarkunNameClicked={handleItemSelected}
+          onPersonNameClicked={handleItemSelected}
         />
       ),
     },

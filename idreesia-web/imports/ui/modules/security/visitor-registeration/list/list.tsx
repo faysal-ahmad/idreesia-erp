@@ -268,6 +268,7 @@ const List = ({ history, location }: Props) => {
               city: person.visitorData?.city,
               country: person.visitorData?.country,
               imageId: person.sharedData?.imageId,
+              imageVectorStatus: person.sharedData?.imageVectorData?.status,
               criminalRecord: person.visitorData?.criminalRecord,
               otherNotes: person.visitorData?.otherNotes,
               isKarkun: person.isKarkun,

@@ -4,11 +4,13 @@ import { UserOutlined } from '@ant-design/icons';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from 'antd';
+import ImageVectorStatusBadge from '../image-vector-status-badge/image-vector-status-badge';
 
 interface Person {
-  _id: string;
-  name: string;
-  imageId?: string;
+  _id?: string | null;
+  name?: string | null;
+  imageId?: string | null;
+  imageVectorStatus?: string | null;
   image?: { data?: string };
 }
 
@@ -34,7 +36,7 @@ const PersonName = ({
   showLargeImage = false,
 }: Props) => {
   const [showDialog, setShowDialog] = useState(false);
-  if (!person) return null;
+  if (!person || !person._id || !person.name) return null;
 
   const nameNode = onPersonNameClicked ? (
     <div
@@ -92,7 +94,9 @@ const PersonName = ({
   return (
     <>
       <div style={NameDivStyle}>
-        {avatarNode}
+        <ImageVectorStatusBadge status={person.imageVectorStatus}>
+          {avatarNode}
+        </ImageVectorStatusBadge>
         &nbsp;&nbsp;
         {nameNode}
       </div>

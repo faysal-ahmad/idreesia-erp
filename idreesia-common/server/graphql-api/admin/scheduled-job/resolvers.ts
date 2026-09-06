@@ -64,6 +64,7 @@ export default {
           _id: job._id,
           name: job.name,
           status: job.state,
+          progress: job.progress,
           nextRunAt: job.nextRunAt,
           lastRunAt: job.lastRunAt,
           lastFinishedAt: job.lastFinishedAt,

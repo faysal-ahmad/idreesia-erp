@@ -21,6 +21,9 @@ const PAGED_SECURITY_VISITORS: TypedDocumentNode<
           contactNumber1
           contactNumber2
           imageId
+          imageVectorData {
+            status
+          }
           tags {
             _id
             name

@@ -1,6 +1,10 @@
 import gql from 'graphql-tag';
 
 export default gql`
+type PersonImageVectorDataType {
+  status: String
+}
+
 type PersonSharedDataType {
   name: String
   parentName: String
@@ -18,6 +22,7 @@ type PersonSharedDataType {
   deathDate: String
   referenceName: String
   imageId: String
+  imageVectorData: PersonImageVectorDataType
   tagIds: [String]
 
   image: Attachment

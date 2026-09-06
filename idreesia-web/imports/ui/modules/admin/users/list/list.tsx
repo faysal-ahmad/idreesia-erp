@@ -14,7 +14,7 @@ import {
 } from 'meteor/idreesia-common/hooks/common';
 import type { PagedUsersQuery } from 'meteor/idreesia-common/types/client-operations';
 
-import { KarkunName } from '/imports/ui/modules/hr/common/controls';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
 import ListFilter, { UserFilterChips } from './list-filter';
@@ -68,13 +68,13 @@ const columns: any[] = [
     key: 'karkun.name',
     render: (_text: unknown, record: UserRow) =>
       record.karkun?._id && record.karkun.sharedData?.name ? (
-        <KarkunName
-          karkun={{
+        <PersonName
+          person={{
             _id: record.karkun._id,
             name: record.karkun.sharedData.name,
             imageId: record.karkun.sharedData.imageId ?? undefined,
           }}
-          onKarkunNameClicked={noop}
+          onPersonNameClicked={noop}
         />
       ) : (
         ''

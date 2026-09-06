@@ -297,7 +297,7 @@ export type PagedScheduledJobsQueryVariables = Exact<{
 }>;
 
 
-export type PagedScheduledJobsQuery = { pagedScheduledJobs: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, status: string | null, nextRunAt: unknown, lastRunAt: unknown, lastFinishedAt: unknown, failedAt: unknown, failReason: string | null, failCount: number | null, repeatInterval: string | null, disabled: boolean | null } | null> | null } | null };
+export type PagedScheduledJobsQuery = { pagedScheduledJobs: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, status: string | null, progress: number | null, nextRunAt: unknown, lastRunAt: unknown, lastFinishedAt: unknown, failedAt: unknown, failReason: string | null, failCount: number | null, repeatInterval: string | null, disabled: boolean | null } | null> | null } | null };
 
 export type ResetJobDefinitionScheduleMutationVariables = Exact<{
   _id: string;
@@ -1300,7 +1300,7 @@ export type PagedSecurityVisitorsQueryVariables = Exact<{
 }>;
 
 
-export type PagedSecurityVisitorsQuery = { pagedSecurityVisitors: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
+export type PagedSecurityVisitorsQuery = { pagedSecurityVisitors: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageVectorData: { status: string | null } | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
 
 export type SecurityVisitorByCnicQueryVariables = Exact<{
   cnicNumbers: Array<string | null | undefined> | string;

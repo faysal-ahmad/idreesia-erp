@@ -149,6 +149,7 @@ type ScheduledJobType {
   _id: String
   name: String
   status: String
+  progress: Int
   nextRunAt: DateTime
   lastRunAt: DateTime
   lastFinishedAt: DateTime
@@ -443,6 +444,10 @@ type PagedKarkunType {
   data: [PersonType]
 }
 
+type PersonImageVectorDataType {
+  status: String
+}
+
 type PersonSharedDataType {
   name: String
   parentName: String
@@ -460,6 +465,7 @@ type PersonSharedDataType {
   deathDate: String
   referenceName: String
   imageId: String
+  imageVectorData: PersonImageVectorDataType
   tagIds: [String]
 
   image: Attachment

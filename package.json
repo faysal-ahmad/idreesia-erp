@@ -1,6 +1,6 @@
 {
   "name": "idreesia-apps-suite",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "private": true,
   "devDependencies": {
     "@agendajs/mongo-backend": "^4.0.3",

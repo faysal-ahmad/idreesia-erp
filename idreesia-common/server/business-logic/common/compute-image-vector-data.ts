@@ -55,6 +55,7 @@ export async function computeImageVectorData(attachmentId: string): Promise<Imag
 
     return { vector, status: ImageVectorStatus.COMPUTED, computedAt, modelVersion: MODEL_VERSION };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(`computeImageVectorData failed for attachment ${attachmentId}:`, error);
     return { status: ImageVectorStatus.ERROR, computedAt, modelVersion: MODEL_VERSION };
   }

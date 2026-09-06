@@ -1,6 +1,6 @@
 {
   "name": "idreesia-apps-suite",
-  "version": "1.4.1",
+  "version": "1.5.2",
   "private": true,
   "devDependencies": {
     "@agendajs/mongo-backend": "^4.0.3",
@@ -16,6 +16,7 @@
     "@graphql-codegen/typescript": "^6.1.0",
     "@graphql-codegen/typescript-operations": "^6.1.2",
     "@graphql-codegen/typescript-resolvers": "^6.1.0",
+    "@playwright/test": "^1.62.1",
     "@types/cors": "^2.8.19",
     "@types/file-saver": "^2.0.7",
     "@types/lodash": "^4.17.24",
@@ -80,7 +81,10 @@
     "typecheck:mobile": "tsc --noEmit --project idreesia-mobile/tsconfig.json",
     "codegen": "yarn codegen:schema && graphql-codegen --config codegen.ts",
     "codegen:schema": "node scripts/extract-graphql-schema.mjs",
-    "release:resolve": "node scripts/resolve-release-version.mjs"
+    "release:resolve": "node scripts/resolve-release-version.mjs",
+    "test:e2e": "playwright test --config=e2e/playwright.config.ts",
+    "test:e2e:ui": "playwright test --config=e2e/playwright.config.ts --ui",
+    "test:e2e:report": "playwright show-report e2e/playwright-report"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

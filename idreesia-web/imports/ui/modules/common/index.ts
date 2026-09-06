@@ -9,19 +9,20 @@ export { default as KarkunsListFilter } from './karkuns/list-filter';
 export { default as KarkunsGeneralInfo } from './karkuns/general-info';
 export { default as KarkunsWazaifAndRaabta } from './karkuns/wazaif-and-raabta';
 
-export { default as VisitorsList } from './visitors/list';
+export { default as PersonGeneralList } from './visitors/list';
 export {
-  default as VisitorsListFilter,
-  VisitorFilterChips,
+  default as PersonGeneralListFilter,
+  PersonGeneralListFilterChips,
 } from './visitors/list-filter';
 export { default as VisitorsNewForm } from './visitors/new-form';
-export { default as VisitorsGeneralInfo } from './visitors/general-info';
+export { default as PersonGeneralInfo } from './visitors/general-info';
 
 export { default as PeopleList } from './people/list';
 export {
   default as PeopleListFilter,
   PeopleFilterChips,
 } from './people/list-filter';
+export { default as PersonPicture } from './people/picture';
 
 export { default as KarkunAttendancesList } from './attendance/karkun-attendances-list';
 export { default as KarkunsAttendanceList } from './attendance/karkuns-attendance-list';

@@ -46,11 +46,15 @@ export const UPDATE_ISSUANCE_FORM: TypedDocumentNode<
       }
       refIssuedBy {
         _id
-        name
+        sharedData {
+          name
+        }
       }
       refIssuedTo {
         _id
-        name
+        sharedData {
+          name
+        }
       }
       notes
     }

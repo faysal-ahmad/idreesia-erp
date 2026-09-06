@@ -12,7 +12,7 @@ const CREATE_SECURITY_VISITOR: TypedDocumentNode<
   mutation createSecurityVisitor(
     $name: String!
     $parentName: String!
-    $cnicNumber: String!
+    $cnicNumber: String
     $ehadDate: String!
     $birthDate: String
     $referenceName: String!
@@ -42,20 +42,6 @@ const CREATE_SECURITY_VISITOR: TypedDocumentNode<
       meansOfEarning: $meansOfEarning
     ) {
       _id
-      name
-      parentName
-      cnicNumber
-      ehadDate
-      birthDate
-      referenceName
-      contactNumber1
-      contactNumber2
-      city
-      country
-      currentAddress
-      permanentAddress
-      educationalQualification
-      meansOfEarning
     }
   }
 `;

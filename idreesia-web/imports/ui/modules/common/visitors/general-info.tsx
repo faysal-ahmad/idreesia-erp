@@ -1,5 +1,6 @@
 import React, { useState, type ReactNode } from 'react';
 import dayjs, { type Dayjs } from 'dayjs';
+import { useQuery } from '@apollo/client/react';
 import {
   Alert,
   Badge,
@@ -15,6 +16,7 @@ import {
   useDistinctCountries,
 } from 'meteor/idreesia-common/hooks/security';
 import type { SecurityRegistrationVisitorByIdQuery } from 'meteor/idreesia-common/types/client-operations';
+import { ALL_PEOPLE_TAGS } from '/imports/ui/modules/admin/people-tags/gql';
 import {
   AgeField,
   AutoCompleteField,
@@ -23,13 +25,14 @@ import {
   InputMobileField,
   InputTextField,
   InputTextAreaField,
+  SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
-type VisitorRecord = Partial<NonNullable<SecurityRegistrationVisitorByIdQuery['securityVisitorById']>>;
+type PersonRecord = Partial<NonNullable<SecurityRegistrationVisitorByIdQuery['securityVisitorById']>>;
 
-export interface VisitorGeneralInfoFormValues {
+export interface PersonGeneralInfoFormValues {
   name?: string;
   parentName?: string;
   cnicNumber?: string;
@@ -46,27 +49,34 @@ export interface VisitorGeneralInfoFormValues {
   meansOfEarning?: string;
   criminalRecord?: string;
   otherNotes?: string;
+  tagIds?: string[];
 }
 
 interface Props {
-  visitor?: VisitorRecord;
-  handleFinish(values: VisitorGeneralInfoFormValues): void | Promise<unknown>;
+  person?: PersonRecord;
+  handleFinish?(values: PersonGeneralInfoFormValues): void | Promise<unknown>;
   handleCancel?(): void;
-  showNotesSection?: boolean;
+  showAdditionalInfoSection?: boolean;
   showAuditInfo?: boolean;
   /** Non-collapsible content shown to the right of Personal Information */
   sideContent?: ReactNode;
+  /** Restrict the tag selector to tags scoped to this module; omit to show all tags. */
+  tagsModuleFilter?: string;
+  /** Hide the Save button, leaving only Cancel (fields remain interactive). */
+  hideSaveButton?: boolean;
 }
 
 const hasText = (value?: string | null) => Boolean(value && value.trim());
 
 const GeneralInfo = ({
-  visitor,
+  person,
   handleFinish,
   handleCancel,
-  showNotesSection = false,
+  showAdditionalInfoSection = false,
   showAuditInfo = true,
   sideContent,
+  tagsModuleFilter,
+  hideSaveButton = false,
 }: Props) => {
   const [form] = Form.useForm();
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
@@ -75,12 +85,27 @@ const GeneralInfo = ({
     distinctCountries,
     distinctCountriesLoading,
   } = useDistinctCountries();
+  const { data: peopleTagsData } = useQuery(ALL_PEOPLE_TAGS);
 
   const handleFieldsChange = () => {
     setIsFieldsTouched(true);
   };
 
-  const _handleFinish = async (values: VisitorGeneralInfoFormValues) => {
+  const allTags = peopleTagsData?.allPeopleTags ?? [];
+  const scopedTags = tagsModuleFilter
+    ? allTags.filter(
+        (tag): tag is NonNullable<typeof tag> =>
+          tag != null && (tag.moduleNames ?? []).includes(tagsModuleFilter)
+      )
+    : allTags.filter((tag): tag is NonNullable<typeof tag> => tag != null);
+  const existingTagIds = (person?.sharedData?.tagIds ?? []).filter(
+    (tagId): tagId is string => tagId != null
+  );
+  const hiddenTagIds = existingTagIds.filter(
+    (tagId) => !scopedTags.some((tag) => tag._id === tagId)
+  );
+
+  const _handleFinish = async (values: PersonGeneralInfoFormValues) => {
     const { cnicNumber, contactNumber1 } = values;
     if (!cnicNumber && !contactNumber1) {
       form.setFields([
@@ -90,7 +115,10 @@ const GeneralInfo = ({
       return;
     }
 
-    await handleFinish(values);
+    await handleFinish?.({
+      ...values,
+      tagIds: [...hiddenTagIds, ...(values.tagIds ?? [])],
+    });
     setIsFieldsTouched(false);
   };
 
@@ -102,8 +130,8 @@ const GeneralInfo = ({
     );
   }
 
-  const hasCriminalRecord = hasText(visitor?.criminalRecord);
-  const hasOtherNotes = hasText(visitor?.otherNotes);
+  const hasCriminalRecord = hasText(person?.visitorData?.criminalRecord);
+  const hasOtherNotes = hasText(person?.visitorData?.otherNotes);
 
   const personalItem: NonNullable<CollapseProps['items']>[number] = {
     key: 'personal',
@@ -116,7 +144,7 @@ const GeneralInfo = ({
           fieldLabel="Name"
           required
           requiredMessage="Please input the name for the person."
-          initialValue={visitor?.name}
+          initialValue={person?.sharedData?.name}
         />
 
         <InputTextField
@@ -124,29 +152,29 @@ const GeneralInfo = ({
           fieldLabel="S/O"
           required
           requiredMessage="Please input the parent name for the person."
-          initialValue={visitor?.parentName}
+          initialValue={person?.sharedData?.parentName}
         />
 
         <AgeField
           fieldName="birthDate"
           fieldLabel="Age (years)"
           initialValue={
-            visitor?.birthDate ? dayjs(Number(visitor.birthDate)) : null
+            person?.sharedData?.birthDate ? dayjs(Number(person.sharedData?.birthDate)) : null
           }
         />
 
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
-          initialValue={visitor?.cnicNumber}
+          initialValue={person?.sharedData?.cnicNumber}
         />
       </>
     ),
   };
 
   const remainingDefaultKeys = ['contact', 'ehad'];
-  if (showNotesSection) {
-    remainingDefaultKeys.push('notes');
+  if (showAdditionalInfoSection) {
+    remainingDefaultKeys.push('additionalInfo');
   }
 
   const remainingItems: CollapseProps['items'] = [
@@ -159,13 +187,13 @@ const GeneralInfo = ({
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
-            initialValue={visitor?.contactNumber1}
+            initialValue={person?.sharedData?.contactNumber1}
           />
 
           <InputTextField
             fieldName="contactNumber2"
             fieldLabel="Home Number"
-            initialValue={visitor?.contactNumber2}
+            initialValue={person?.sharedData?.contactNumber2}
           />
 
           <AutoCompleteField
@@ -174,7 +202,7 @@ const GeneralInfo = ({
             options={distinctCities ?? []}
             required
             requiredMessage="Please input the city for the person."
-            initialValue={visitor?.city}
+            initialValue={person?.visitorData?.city}
           />
 
           <AutoCompleteField
@@ -183,21 +211,21 @@ const GeneralInfo = ({
             options={distinctCountries ?? []}
             required
             requiredMessage="Please input the country for the person."
-            initialValue={visitor?.country}
+            initialValue={person?.visitorData?.country}
           />
 
           <InputTextAreaField
             fieldName="currentAddress"
             fieldLabel="Current Address"
             required={false}
-            initialValue={visitor?.currentAddress}
+            initialValue={person?.sharedData?.currentAddress}
           />
 
           <InputTextAreaField
             fieldName="permanentAddress"
             fieldLabel="Permanent Address"
             required={false}
-            initialValue={visitor?.permanentAddress}
+            initialValue={person?.sharedData?.permanentAddress}
           />
         </>
       ),
@@ -214,8 +242,8 @@ const GeneralInfo = ({
             required
             requiredMessage="Please specify the Ehad duration for the person."
             initialValue={
-              visitor?.ehadDate != null && visitor.ehadDate !== ''
-                ? dayjs(Number(visitor.ehadDate))
+              person?.sharedData?.ehadDate != null && person.sharedData?.ehadDate !== ''
+                ? dayjs(Number(person.sharedData?.ehadDate))
                 : undefined
             }
           />
@@ -225,20 +253,20 @@ const GeneralInfo = ({
             fieldLabel="R/O"
             required
             requiredMessage="Please input the reference name for the person."
-            initialValue={visitor?.referenceName}
+            initialValue={person?.sharedData?.referenceName}
           />
 
           <InputTextField
             fieldName="educationalQualification"
             fieldLabel="Education"
-            initialValue={visitor?.educationalQualification}
+            initialValue={person?.sharedData?.educationalQualification}
             required={false}
           />
 
           <InputTextAreaField
             fieldName="meansOfEarning"
             fieldLabel="Means of Earning"
-            initialValue={visitor?.meansOfEarning}
+            initialValue={person?.sharedData?.meansOfEarning}
             required={false}
           />
         </>
@@ -246,12 +274,12 @@ const GeneralInfo = ({
     },
   ];
 
-  if (showNotesSection) {
+  if (showAdditionalInfoSection) {
     remainingItems?.push({
-      key: 'notes',
+      key: 'additionalInfo',
       label: (
         <span>
-          Notes
+          Additional Information
           {hasCriminalRecord || hasOtherNotes ? (
             <Badge
               status={hasCriminalRecord ? 'error' : 'warning'}
@@ -288,17 +316,30 @@ const GeneralInfo = ({
             </Space>
           ) : null}
 
+          <SelectField
+            data={scopedTags}
+            getDataValue={(tag) => tag._id as string}
+            getDataText={(tag) => tag.name}
+            fieldName="tagIds"
+            fieldLabel="Tags"
+            mode="multiple"
+            initialValue={existingTagIds.filter((tagId) =>
+              scopedTags.some((tag) => tag._id === tagId)
+            )}
+            required={false}
+          />
+
           <InputTextAreaField
             fieldName="criminalRecord"
             fieldLabel="Criminal Record"
-            initialValue={visitor?.criminalRecord}
+            initialValue={person?.visitorData?.criminalRecord}
             required={false}
           />
 
           <InputTextAreaField
             fieldName="otherNotes"
             fieldLabel="Other Notes"
-            initialValue={visitor?.otherNotes}
+            initialValue={person?.visitorData?.otherNotes}
             required={false}
           />
         </>
@@ -341,11 +382,12 @@ const GeneralInfo = ({
           <FormButtonsSaveCancel
             handleCancel={handleCancel}
             isFieldsTouched={isFieldsTouched}
+            hideSave={hideSaveButton}
             fullWidth
           />
         </Space>
       </Form>
-      {showAuditInfo ? <AuditInfo record={visitor ?? {}} /> : null}
+      {showAuditInfo ? <AuditInfo record={person ?? {}} /> : null}
     </div>
   );
 };

@@ -66,11 +66,11 @@ const UserMenu = ({ history }: Props) => {
     setShowChangePasswordForm(false);
   };
 
-  const userName = user.karkun ? user.karkun.name : user.displayName;
+  const userName = user.karkun?.sharedData?.name ?? user.displayName;
 
   let avatar = <Avatar size="large" icon={<UserOutlined />} />;
-  if (user.karkun && user.karkun.imageId) {
-    const url = getDownloadUrl(user.karkun.imageId);
+  if (user.karkun?.sharedData?.imageId) {
+    const url = getDownloadUrl(user.karkun.sharedData.imageId);
     avatar = <Avatar size="large" src={url} />;
   }
 

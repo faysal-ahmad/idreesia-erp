@@ -19,14 +19,12 @@ import type { HrKarkunByIdForKarkunsQuery } from 'meteor/idreesia-common/types/c
 import {
   AgeField,
   CascaderField,
-  DateField,
   EhadDurationField,
   InputCnicField,
   InputMobileField,
   InputTextField,
   InputTextAreaField,
   SelectField,
-  SwitchField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
@@ -87,7 +85,7 @@ const GeneralInfo = ({ history, karkunId, karkun }: Props) => {
   const { allCities, allCitiesLoading } = useAllCities();
   const { allCityMehfils, allCityMehfilsLoading } = useAllCityMehfils();
   const [updateHrKarkun] = useMutation(UPDATE_HR_KARKUN, {
-    refetchQueries: ['pagedHrKarkuns', 'hrKarkunByIdForKarkuns'],
+    refetchQueries: ['hrKarkunsPagedHrKarkuns', 'hrKarkunByIdForKarkuns'],
   });
 
   const handleCancel = () => {
@@ -167,33 +165,37 @@ const GeneralInfo = ({ history, karkunId, karkun }: Props) => {
           fieldLabel="Name"
           required
           requiredMessage="Please input the name for the karkun."
-          initialValue={karkun.name}
+          initialValue={karkun.sharedData?.name}
         />
         <InputTextField
           fieldName="parentName"
           fieldLabel="S/O"
           required
           requiredMessage="Please input the parent name for the karkun."
-          initialValue={karkun.parentName}
+          initialValue={karkun.sharedData?.parentName}
         />
         <AgeField
           fieldName="birthDate"
           fieldLabel="Age (years)"
           initialValue={
-            karkun.birthDate ? dayjs(Number(karkun.birthDate)) : null
+            karkun.sharedData?.birthDate
+              ? dayjs(Number(karkun.sharedData.birthDate))
+              : null
           }
         />
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
-          initialValue={karkun.cnicNumber || ''}
+          initialValue={karkun.sharedData?.cnicNumber || ''}
         />
-        <DateField
-          fieldName="deathDate"
-          fieldLabel="Date of Death"
-          initialValue={
-            karkun.deathDate ? dayjs(Number(karkun.deathDate)) : null
-          }
+        <SelectField<LabelValue>
+          fieldName="bloodGroup"
+          fieldLabel="Blood Group"
+          required={false}
+          data={BLOOD_GROUP_OPTIONS}
+          getDataValue={({ value }) => value}
+          getDataText={({ label }) => label}
+          initialValue={karkun.sharedData?.bloodGroup}
         />
       </>
     ),
@@ -209,38 +211,41 @@ const GeneralInfo = ({ history, karkunId, karkun }: Props) => {
           <InputMobileField
             fieldName="contactNumber1"
             fieldLabel="Mobile Number"
-            initialValue={karkun.contactNumber1 || ''}
+            initialValue={karkun.sharedData?.contactNumber1 || ''}
           />
           <InputTextField
             fieldName="contactNumber2"
             fieldLabel="Home Number"
-            initialValue={karkun.contactNumber2}
+            initialValue={karkun.sharedData?.contactNumber2}
             required={false}
           />
           <InputTextField
             fieldName="emailAddress"
             fieldLabel="Email"
-            initialValue={karkun.emailAddress}
+            initialValue={karkun.sharedData?.emailAddress}
             required={false}
           />
           <CascaderField
             data={getCityMehfilCascaderData(cities, cityMehfils) ?? []}
             fieldName="cityIdMehfilId"
             fieldLabel="City/Mehfil"
-            initialValue={[karkun.cityId, karkun.cityMehfilId]}
+            initialValue={[
+              karkun.karkunData?.cityId,
+              karkun.karkunData?.cityMehfilId,
+            ]}
             required
             requiredMessage="Please select a city/mehfil from the list."
           />
           <InputTextAreaField
             fieldName="currentAddress"
             fieldLabel="Current Address"
-            initialValue={karkun.currentAddress}
+            initialValue={karkun.sharedData?.currentAddress}
             required={false}
           />
           <InputTextAreaField
             fieldName="permanentAddress"
             fieldLabel="Permanent Address"
-            initialValue={karkun.permanentAddress}
+            initialValue={karkun.sharedData?.permanentAddress}
             required={false}
           />
         </>
@@ -258,8 +263,9 @@ const GeneralInfo = ({ history, karkunId, karkun }: Props) => {
             required
             requiredMessage="Please specify the Ehad duration for the karkun."
             initialValue={
-              karkun.ehadDate != null && karkun.ehadDate !== ''
-                ? dayjs(Number(karkun.ehadDate))
+              karkun.sharedData?.ehadDate != null &&
+              karkun.sharedData.ehadDate !== ''
+                ? dayjs(Number(karkun.sharedData.ehadDate))
                 : dayjs()
             }
           />
@@ -268,41 +274,18 @@ const GeneralInfo = ({ history, karkunId, karkun }: Props) => {
             fieldLabel="R/O"
             required
             requiredMessage="Please input the reference name for the karkun."
-            initialValue={karkun.referenceName}
-          />
-          <SwitchField
-            fieldName="ehadKarkun"
-            fieldLabel="Ehad Karkun"
-            initialValue={karkun.ehadKarkun || false}
-          />
-          <DateField
-            fieldName="ehadPermissionDate"
-            fieldLabel="Ehad Permission Date"
-            initialValue={
-              karkun.ehadPermissionDate
-                ? dayjs(Number(karkun.ehadPermissionDate))
-                : null
-            }
-          />
-          <SelectField<LabelValue>
-            fieldName="bloodGroup"
-            fieldLabel="Blood Group"
-            required={false}
-            data={BLOOD_GROUP_OPTIONS}
-            getDataValue={({ value }) => value}
-            getDataText={({ label }) => label}
-            initialValue={karkun.bloodGroup}
+            initialValue={karkun.sharedData?.referenceName}
           />
           <InputTextField
             fieldName="educationalQualification"
             fieldLabel="Education"
-            initialValue={karkun.educationalQualification}
+            initialValue={karkun.sharedData?.educationalQualification}
             required={false}
           />
           <InputTextAreaField
             fieldName="meansOfEarning"
             fieldLabel="Means of Earning"
-            initialValue={karkun.meansOfEarning}
+            initialValue={karkun.sharedData?.meansOfEarning}
             required={false}
           />
         </>

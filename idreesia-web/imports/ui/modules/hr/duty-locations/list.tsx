@@ -97,11 +97,11 @@ const List = () => {
   const [createDutyLocation, { loading: creating }] = useMutation(
     CREATE_DUTY_LOCATION,
     {
-      refetchQueries: ['listAllDutyLocations', 'allDutyLocations'],
+      refetchQueries: ['listAllDutyLocations', 'composerAllDutyLocations'],
     }
   );
   const [removeDutyLocation] = useMutation(REMOVE_DUTY_LOCATION, {
-    refetchQueries: ['listAllDutyLocations', 'allDutyLocations'],
+    refetchQueries: ['listAllDutyLocations', 'composerAllDutyLocations'],
   });
 
   const updateScrollY = () => {

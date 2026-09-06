@@ -37,13 +37,15 @@ const SALARY_RECEIPT_SALARIES_BY_IDS: TypedDocumentNode<
       netPayment
       karkun {
         _id
-        name
-        parentName
-        cnicNumber
-        contactNumber1
-        image {
-          _id
-          data
+        sharedData {
+          name
+          parentName
+          cnicNumber
+          contactNumber1
+          image {
+            _id
+            data
+          }
         }
       }
       job {

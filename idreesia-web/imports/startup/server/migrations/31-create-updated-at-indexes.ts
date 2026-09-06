@@ -3,7 +3,8 @@ import { Migrations } from 'meteor/quave:migrations';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { Payments } from 'meteor/idreesia-common/server/collections/accounts';
 import { Vouchers } from 'meteor/idreesia-common/server/collections/accounts';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+// Karkuns collection has since been removed - its data now lives on People.
+// import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 
 Migrations.add({
@@ -18,7 +19,7 @@ Migrations.add({
       { updatedAt: 1 },
       { background: true }
     );
-    await Karkuns.rawCollection().createIndex({ updatedAt: 1 }, { background: true });
+    // await Karkuns.rawCollection().createIndex({ updatedAt: 1 }, { background: true });
     await Visitors.rawCollection().createIndex(
       { updatedAt: 1 },
       { background: true }

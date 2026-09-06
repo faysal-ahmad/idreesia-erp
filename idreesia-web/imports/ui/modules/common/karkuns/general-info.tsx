@@ -95,7 +95,7 @@ const GeneralInfo = ({
         <InputTextField
           fieldName="name"
           fieldLabel="Name"
-          initialValue={karkun.name}
+          initialValue={karkun.sharedData?.name}
           required
           requiredMessage="Please input the name for the karkun."
         />
@@ -103,7 +103,7 @@ const GeneralInfo = ({
         <InputTextField
           fieldName="parentName"
           fieldLabel="S/O"
-          initialValue={karkun.parentName}
+          initialValue={karkun.sharedData?.parentName}
           required
           requiredMessage="Please input the parent name for the karkun."
         />
@@ -112,7 +112,9 @@ const GeneralInfo = ({
           fieldName="birthDate"
           fieldLabel="Age (years)"
           initialValue={
-            karkun.birthDate ? dayjs(Number(karkun.birthDate)) : null
+            karkun.sharedData?.birthDate
+              ? dayjs(Number(karkun.sharedData.birthDate))
+              : null
           }
         />
 
@@ -120,7 +122,9 @@ const GeneralInfo = ({
           fieldName="ehadDate"
           fieldLabel="Ehad Duration"
           initialValue={
-            karkun.ehadDate ? dayjs(Number(karkun.ehadDate)) : dayjs()
+            karkun.sharedData?.ehadDate
+              ? dayjs(Number(karkun.sharedData.ehadDate))
+              : dayjs()
           }
           required
           requiredMessage="Please specify the Ehad duration for the karkun."
@@ -130,14 +134,16 @@ const GeneralInfo = ({
           fieldName="deathDate"
           fieldLabel="Date of Death"
           initialValue={
-            karkun.deathDate ? dayjs(Number(karkun.deathDate)) : null
+            karkun.sharedData?.deathDate
+              ? dayjs(Number(karkun.sharedData.deathDate))
+              : null
           }
         />
 
         <InputTextField
           fieldName="referenceName"
           fieldLabel="R/O"
-          initialValue={karkun.referenceName}
+          initialValue={karkun.sharedData?.referenceName}
           required
           requiredMessage="Please input the reference name for the karkun."
         />
@@ -145,13 +151,13 @@ const GeneralInfo = ({
         <InputCnicField
           fieldName="cnicNumber"
           fieldLabel="CNIC Number"
-          initialValue={karkun.cnicNumber || ''}
+          initialValue={karkun.sharedData?.cnicNumber || ''}
         />
 
         <InputMobileField
           fieldName="contactNumber1"
           fieldLabel="Mobile Number"
-          initialValue={karkun.contactNumber1 || ''}
+          initialValue={karkun.sharedData?.contactNumber1 || ''}
         />
 
         {showCityMehfilField ? (
@@ -159,7 +165,10 @@ const GeneralInfo = ({
             data={getCityMehfilCascaderData(cities, cityMehfils) ?? []}
             fieldName="cityIdMehfilId"
             fieldLabel="City/Mehfil"
-            initialValue={[karkun.cityId, karkun.cityMehfilId]}
+            initialValue={[
+              karkun.karkunData?.cityId,
+              karkun.karkunData?.cityMehfilId,
+            ]}
             required
             requiredMessage="Please select a city/mehfil from the list."
           />
@@ -171,7 +180,7 @@ const GeneralInfo = ({
           fieldName="ehadKarkun"
           fieldLabel="Ehad Karkun"
           disabled={!allowEhadInfoUpdation}
-          initialValue={karkun.ehadKarkun ?? undefined}
+          initialValue={karkun.karkunData?.ehadKarkun ?? undefined}
         />
 
         <DateField
@@ -179,8 +188,8 @@ const GeneralInfo = ({
           fieldLabel="Ehad Permission Date"
           disabled={!allowEhadInfoUpdation}
           initialValue={
-            karkun.ehadPermissionDate
-              ? dayjs(Number(karkun.ehadPermissionDate))
+            karkun.karkunData?.ehadPermissionDate
+              ? dayjs(Number(karkun.karkunData.ehadPermissionDate))
               : null
           }
         />
@@ -190,7 +199,7 @@ const GeneralInfo = ({
         <InputTextField
           fieldName="contactNumber2"
           fieldLabel="Home Number"
-          initialValue={karkun.contactNumber2}
+          initialValue={karkun.sharedData?.contactNumber2}
           required={false}
         />
 
@@ -210,41 +219,41 @@ const GeneralInfo = ({
           ]}
           getDataValue={({ value }) => value}
           getDataText={({ label }) => label}
-          initialValue={karkun.bloodGroup}
+          initialValue={karkun.sharedData?.bloodGroup}
         />
 
         <InputTextField
           fieldName="emailAddress"
           fieldLabel="Email"
-          initialValue={karkun.emailAddress}
+          initialValue={karkun.sharedData?.emailAddress}
           required={false}
         />
 
         <InputTextAreaField
           fieldName="currentAddress"
           fieldLabel="Current Address"
-          initialValue={karkun.currentAddress}
+          initialValue={karkun.sharedData?.currentAddress}
           required={false}
         />
 
         <InputTextAreaField
           fieldName="permanentAddress"
           fieldLabel="Permanent Address"
-          initialValue={karkun.permanentAddress}
+          initialValue={karkun.sharedData?.permanentAddress}
           required={false}
         />
 
         <InputTextField
           fieldName="educationalQualification"
           fieldLabel="Education"
-          initialValue={karkun.educationalQualification}
+          initialValue={karkun.sharedData?.educationalQualification}
           required={false}
         />
 
         <InputTextAreaField
           fieldName="meansOfEarning"
           fieldLabel="Means of Earning"
-          initialValue={karkun.meansOfEarning}
+          initialValue={karkun.sharedData?.meansOfEarning}
           required={false}
         />
 

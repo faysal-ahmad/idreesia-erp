@@ -22,15 +22,16 @@ const PAGED_VISITOR_STAYS: TypedDocumentNode<
         stayAllowedBy
         refVisitor {
           _id
-          name
-          cnicNumber
-          contactNumber1
-          contactNumber2
-          city
-          country
-          imageId
-          criminalRecord
-          otherNotes
+          sharedData {
+            name
+            imageId
+          }
+          visitorData {
+            city
+            country
+            criminalRecord
+            otherNotes
+          }
         }
       }
     }

@@ -60,7 +60,7 @@ const AttachmentsList = ({ employeeId }: Props) => {
     <AttachmentsListControl
       canUploadDocument
       canEditAttachments
-      attachments={(data?.hrKarkunById?.attachments ?? []) as any}
+      attachments={(data?.hrKarkunById?.karkunData?.attachments ?? []) as any}
       handleAttachmentAdded={handleAttachmentAdded}
       handleAttachmentRemoved={handleAttachmentRemoved}
     />

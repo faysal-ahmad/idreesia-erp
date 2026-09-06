@@ -18,12 +18,10 @@ interface ResolverMap {
 
 const resolvers: ResolverMap = {
   SalaryType: {
-    karkun: async salaryType => {
-      const person = await People.findOneAsync({
+    karkun: async salaryType =>
+      People.findOneAsync({
         _id: { $eq: salaryType.karkunId },
-      });
-      return People.personToKarkun(person);
-    },
+      }),
     job: async salaryType => {
       if (!salaryType.jobId) return null;
       return Jobs.findOneAsync({
@@ -32,10 +30,9 @@ const resolvers: ResolverMap = {
     },
     approver: async salaryType => {
       if (!salaryType.approvedBy) return null;
-      const person = await People.findOneAsync({
+      return People.findOneAsync({
         _id: { $eq: salaryType.approvedBy },
       });
-      return People.personToKarkun(person);
     },
   },
 
@@ -174,61 +171,6 @@ const resolvers: ResolverMap = {
       });
 
       return Salaries.findOneAsync(_id);
-    },
-
-    approveSalaries: async (obj, { month, ids }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.HR_APPROVE_SALARIES])) {
-        throw new Error(
-          'You do not have permission to approve salaries in the System.'
-        );
-      }
-
-      const formattedMonth = format(
-        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
-        'MM-yyyy'
-      );
-
-      const date = new Date();
-      return Salaries.updateAsync(
-        {
-          _id: { $in: ids },
-          month: formattedMonth,
-        },
-        {
-          $set: {
-            approvedOn: date,
-            approvedBy: user._id,
-          },
-        },
-        { multi: true }
-      );
-    },
-
-    approveAllSalaries: async (obj, { month }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.HR_APPROVE_SALARIES])) {
-        throw new Error(
-          'You do not have permission to approve salaries in the System.'
-        );
-      }
-
-      const formattedMonth = format(
-        startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
-        'MM-yyyy'
-      );
-
-      const date = new Date();
-      return Salaries.updateAsync(
-        {
-          month: formattedMonth,
-        },
-        {
-          $set: {
-            approvedOn: date,
-            approvedBy: user._id,
-          },
-        },
-        { multi: true }
-      );
     },
 
     deleteSalaries: async (obj, { month, ids }, { user }) => {

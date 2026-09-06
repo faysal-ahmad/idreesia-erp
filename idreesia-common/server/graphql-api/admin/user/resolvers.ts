@@ -1,5 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
-import { compact, values } from 'meteor/idreesia-common/utilities/lodash';
+import { values } from 'meteor/idreesia-common/utilities/lodash';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
@@ -53,9 +53,7 @@ export default {
 
     karkun: async (userType: UserType) => {
       if (!userType.personId) return null;
-      const person = await People.findOneAsync(userType.personId);
-      if (!person) return null;
-      return People.personToKarkun(person);
+      return People.findOneAsync(userType.personId);
     },
   },
 
@@ -94,8 +92,12 @@ export default {
       const names: Array<string | undefined> = [];
       if (!ids) return names;
 
-      const idsToSearch = compact(ids);
-      for (const _id of idsToSearch) {
+      for (const _id of ids) {
+        if (!_id) {
+          names.push(undefined);
+          continue;
+        }
+
         const user = await Users.findOneAsync(_id);
         if (!user) {
           names.push(undefined);

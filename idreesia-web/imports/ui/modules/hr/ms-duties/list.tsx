@@ -113,10 +113,10 @@ const List = () => {
   );
 
   const [createDuty, { loading: creating }] = useMutation(CREATE_DUTY, {
-    refetchQueries: ['listAllMSDuties', 'allMSDuties'],
+    refetchQueries: ['listAllMSDuties', 'composerAllMSDuties'],
   });
   const [removeDuty] = useMutation(REMOVE_DUTY, {
-    refetchQueries: ['listAllMSDuties', 'allMSDuties'],
+    refetchQueries: ['listAllMSDuties', 'composerAllMSDuties'],
   });
 
   const updateScrollY = () => {

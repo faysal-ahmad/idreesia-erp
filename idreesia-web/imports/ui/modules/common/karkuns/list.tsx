@@ -18,7 +18,7 @@ import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 type HrKarkunRow = NonNullable<
   NonNullable<
-    NonNullable<HelperPagedHrKarkunsQuery['pagedHrKarkuns']>['karkuns']
+    NonNullable<HelperPagedHrKarkunsQuery['pagedHrKarkuns']>['data']
   >[number]
 >;
 
@@ -29,7 +29,7 @@ interface KarkunListItem extends HrKarkunRow {
 
 interface PagedData {
   totalResults?: number | null;
-  karkuns?: Array<KarkunListItem | null> | null;
+  data?: Array<KarkunListItem | null> | null;
 }
 
 interface PageParams {
@@ -74,7 +74,7 @@ export default class KarkunsList extends Component<Props, State> {
     listHeader: () => null,
     pagedData: {
       totalResults: 0,
-      karkuns: [],
+      data: [],
     }
   };
 
@@ -84,19 +84,26 @@ export default class KarkunsList extends Component<Props, State> {
 
   nameColumn = {
     title: 'Name',
-    dataIndex: 'name',
+    dataIndex: ['sharedData', 'name'],
     key: 'name',
-    render: (_text: unknown, record: KarkunListItem) => (
-      <PersonName
-        person={record as Parameters<typeof PersonName>[0]['person']}
-        onPersonNameClicked={this.props.handleSelectItem as Parameters<typeof PersonName>[0]['onPersonNameClicked']}
-      />
-    ),
+    render: (_text: unknown, record: KarkunListItem) => {
+      if (!record._id || !record.sharedData?.name) return null;
+      return (
+        <PersonName
+          person={{
+            _id: record._id,
+            name: record.sharedData.name,
+            imageId: record.sharedData.imageId ?? undefined,
+          }}
+          onPersonNameClicked={this.props.handleSelectItem as Parameters<typeof PersonName>[0]['onPersonNameClicked']}
+        />
+      );
+    },
   };
 
   cnicColumn = {
     title: 'CNIC Number',
-    dataIndex: 'cnicNumber',
+    dataIndex: ['sharedData', 'cnicNumber'],
     key: 'cnicNumber',
   };
 
@@ -105,18 +112,19 @@ export default class KarkunsList extends Component<Props, State> {
     key: 'contactNumber',
     render: (_text: unknown, record: KarkunListItem) => {
       const numbers: React.ReactNode[] = [];
-      if (record.contactNumber1) {
+      const { contactNumber1, contactNumber2 } = record.sharedData ?? {};
+      if (contactNumber1) {
         numbers.push(
           <Row key="1">
-            <span>{record.contactNumber1}</span>
+            <span>{contactNumber1}</span>
           </Row>
         );
       }
 
-      if (record.contactNumber2) {
+      if (contactNumber2) {
         numbers.push(
           <Row key="2">
-            <span>{record.contactNumber2}</span>
+            <span>{contactNumber2}</span>
           </Row>
         );
       }
@@ -149,9 +157,9 @@ export default class KarkunsList extends Component<Props, State> {
 
   dutiesColumn = {
     title: 'Duties',
-    dataIndex: 'duties',
+    dataIndex: ['karkunData', 'duties'],
     key: 'duties',
-    render: (duties: KarkunListItem['duties'] = []) => {
+    render: (duties: NonNullable<KarkunListItem['karkunData']>['duties'] = []) => {
       let dutyNames: React.ReactNode[] = [];
       if (duties && duties.length > 0) {
         dutyNames = duties.map((duty) => {
@@ -297,10 +305,10 @@ export default class KarkunsList extends Component<Props, State> {
       pageSize,
       listHeader,
       showSelectionColumn,
-      pagedData = { totalResults: 0, karkuns: [] },
+      pagedData = { totalResults: 0, data: [] },
     } = this.props;
 
-    const { totalResults, karkuns } = pagedData;
+    const { totalResults, data: karkuns } = pagedData;
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;

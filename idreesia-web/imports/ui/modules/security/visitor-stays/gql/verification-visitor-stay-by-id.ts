@@ -24,17 +24,21 @@ const VERIFICATION_VISITOR_STAY_BY_ID: TypedDocumentNode<
       isValid
       refVisitor {
         _id
-        name
-        parentName
-        referenceName
-        cnicNumber
-        contactNumber1
-        contactNumber2
-        city
-        country
-        imageId
-        criminalRecord
-        otherNotes
+        sharedData {
+          name
+          parentName
+          referenceName
+          cnicNumber
+          contactNumber1
+          contactNumber2
+          imageId
+        }
+        visitorData {
+          city
+          country
+          criminalRecord
+          otherNotes
+        }
       }
     }
   }

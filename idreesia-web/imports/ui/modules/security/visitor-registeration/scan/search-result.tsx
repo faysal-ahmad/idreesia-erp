@@ -82,20 +82,17 @@ const SearchResult = ({ cnicNumbers }: SearchResultProps) => {
     );
   }
 
+  const { _id, sharedData, visitorData } = securityVisitorByCnic;
   const {
-    _id,
     name,
     parentName,
     cnicNumber,
     ehadDate,
     referenceName,
     contactNumber1,
-    city,
-    country,
     imageId,
-    criminalRecord,
-    otherNotes,
-  } = securityVisitorByCnic;
+  } = sharedData ?? {};
+  const { city, country, criminalRecord, otherNotes } = visitorData ?? {};
 
   const url = getDownloadUrl(imageId);
   const image = url ? (

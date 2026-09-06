@@ -12,17 +12,21 @@ const VISITOR_STAY_CARD_SECURITY_VISITOR_BY_ID: TypedDocumentNode<
   query visitorStayCardSecurityVisitorById($_id: String!) {
     securityVisitorById(_id: $_id) {
       _id
-      name
-      parentName
-      cnicNumber
-      referenceName
-      contactNumber1
-      city
-      country
-      criminalRecord
-      image {
-        _id
-        data
+      sharedData {
+        name
+        parentName
+        cnicNumber
+        referenceName
+        contactNumber1
+        image {
+          _id
+          data
+        }
+      }
+      visitorData {
+        city
+        country
+        criminalRecord
       }
     }
   }

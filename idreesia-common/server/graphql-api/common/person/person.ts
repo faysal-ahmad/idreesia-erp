@@ -10,8 +10,6 @@ type PersonSharedDataType {
   permanentAddress: String
   contactNumber1: String
   contactNumber2: String
-  contactNumber1Subscribed: Boolean
-  contactNumber2Subscribed: Boolean
   emailAddress: String
   bloodGroup: String
   educationalQualification: String
@@ -20,8 +18,10 @@ type PersonSharedDataType {
   deathDate: String
   referenceName: String
   imageId: String
+  tagIds: [String]
 
   image: Attachment
+  tags: [PeopleTagType]
 }
 
 type PersonVisitorDataType {
@@ -72,6 +72,8 @@ type PersonType {
   createdBy: String
   updatedAt: String
   updatedBy: String
+  deletedAt: String
+  deletedBy: String
 }
 
 input PersonFilter {
@@ -79,6 +81,12 @@ input PersonFilter {
   cnicNumber: String
   phoneNumber: String
   city: String
+  ehadDuration: String
+  ehadDate: String
+  additionalInfo: String
+  dataSource: String
+  updatedBetween: String
+  tagId: String
   pageIndex: String
   pageSize: String
 }
@@ -90,5 +98,11 @@ type PagedPeopleType {
 
 extend type Query {
   pagedPeople(filter: PersonFilter): PagedPeopleType
+  distinctCities: [String]
+  distinctCountries: [String]
+}
+
+extend type Mutation {
+  fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
 }
 `;

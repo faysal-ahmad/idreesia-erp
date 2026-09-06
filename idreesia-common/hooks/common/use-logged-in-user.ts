@@ -25,8 +25,10 @@ const formQuery: TypedDocumentNode<
       instances
       karkun {
         _id
-        name
-        imageId
+        sharedData {
+          name
+          imageId
+        }
       }
     }
   }

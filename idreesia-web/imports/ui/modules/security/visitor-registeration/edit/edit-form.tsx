@@ -45,7 +45,7 @@ const EditForm = ({ history, location, match }: Props) => {
   });
 
   const securityVisitorById = data?.securityVisitorById;
-  const visitorName = securityVisitorById?.name?.trim();
+  const visitorName = securityVisitorById?.sharedData?.name?.trim();
 
   useDynamicBreadcrumbs([
     'Security',

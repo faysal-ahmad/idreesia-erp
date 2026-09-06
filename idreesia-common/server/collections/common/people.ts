@@ -48,6 +48,8 @@ interface PersonDocument extends LooseRecord {
   createdBy?: string;
   updatedAt?: Date;
   updatedBy?: string;
+  deletedAt?: Date;
+  deletedBy?: string;
   sharedData: LooseRecord;
   visitorData?: LooseRecord | null;
   karkunData?: LooseRecord | null;
@@ -73,6 +75,7 @@ interface SearchFlags {
   includeEmployees?: boolean;
   includeVisitors?: boolean;
   paginatedResults?: boolean;
+  onlyDeleted?: boolean;
 }
 
 interface CountResult {
@@ -170,6 +173,43 @@ class People extends AggregatableCollection<PersonDocument> {
     );
 
     return this.findOneAsync(_id);
+  }
+
+  async removePerson(_id: string, user: UserRef) {
+    const date = new Date();
+    const result = await this.updateAsync(_id, {
+      $set: {
+        deletedAt: date,
+        deletedBy: user._id,
+        updatedAt: date,
+        updatedBy: user._id,
+      },
+    });
+
+    await AuditLogs.createAuditLog({
+      entityId: _id,
+      entityType: EntityType.PERSON,
+      operationType: OperationType.DELETE,
+      operationBy: user._id,
+      operationTime: date,
+    });
+
+    return result;
+  }
+
+  async hardRemovePerson(_id: string, user: UserRef) {
+    const date = new Date();
+    const result = await this.removeAsync(_id);
+
+    await AuditLogs.createAuditLog({
+      entityId: _id,
+      entityType: EntityType.PERSON,
+      operationType: OperationType.DELETE,
+      operationBy: user._id,
+      operationTime: date,
+    });
+
+    return result;
   }
 
   async addAttachment({ _id, attachmentId }: AttachmentInput, user: UserRef) {
@@ -310,6 +350,12 @@ class People extends AggregatableCollection<PersonDocument> {
         );
         break;
 
+      case 'tagIds':
+        isChanged =
+          [...((existingValue as string[]) ?? [])].sort().join(',') !==
+          [...((newValue as string[]) ?? [])].sort().join(',');
+        break;
+
       default:
         isChanged = existingValue !== newValue;
         break;
@@ -327,6 +373,7 @@ class People extends AggregatableCollection<PersonDocument> {
     if (cnicNumber) {
       person = await this.findOneAsync({
         'sharedData.cnicNumber': { $eq: cnicNumber },
+        deletedAt: { $exists: false },
       });
     }
 
@@ -338,6 +385,7 @@ class People extends AggregatableCollection<PersonDocument> {
           { 'sharedData.contactNumber1': contactNumber },
           { 'sharedData.contactNumber2': contactNumber },
         ],
+        deletedAt: { $exists: false },
       });
     }
 
@@ -349,12 +397,13 @@ class People extends AggregatableCollection<PersonDocument> {
   // **************************************************************
   async buildSearchPipline(params: LooseRecord = {}, flags: SearchFlags = {}) {
     const pipeline: LooseRecord[] = [];
+    pipeline.push({
+      $match: { deletedAt: { $exists: Boolean(flags.onlyDeleted) } },
+    });
+
     const includeKarkuns = isNil(flags.includeKarkuns)
       ? false
       : flags.includeKarkuns;
-    const includeEmployees = isNil(flags.includeEmployees)
-      ? false
-      : flags.includeEmployees;
     const includeVisitors = isNil(flags.includeVisitors)
       ? false
       : flags.includeVisitors;
@@ -370,6 +419,7 @@ class People extends AggregatableCollection<PersonDocument> {
       ehadDuration,
       dataSource,
       updatedBetween,
+      tagId,
       // visitor related fields
       city,
       cityNames,
@@ -485,6 +535,14 @@ class People extends AggregatableCollection<PersonDocument> {
       pipeline.push({
         $match: {
           dataSource: { $regex: new RegExp(`^${dataSource}`, 'i') },
+        },
+      });
+    }
+
+    if (tagId) {
+      pipeline.push({
+        $match: {
+          'sharedData.tagIds': { $eq: tagId },
         },
       });
     }
@@ -764,28 +822,43 @@ class People extends AggregatableCollection<PersonDocument> {
 
     // ************************************
     // Add filters against passed flags
+    // Each flag is tri-state: true ORs the tag into the match, false
+    // excludes it (AND NOT), and undefined/omitted ignores it entirely.
     // ************************************
-    const conditions = [];
-    if (includeKarkuns) {
-      conditions.push({ isKarkun: true });
+    const orConditions: LooseRecord[] = [];
+    const notConditions: LooseRecord[] = [];
+
+    if (flags.includeKarkuns === true) {
+      orConditions.push({ isKarkun: true });
+    } else if (flags.includeKarkuns === false) {
+      notConditions.push({ isKarkun: { $ne: true } });
     }
-    if (includeEmployees) {
-      conditions.push({ isEmployee: true });
+    if (flags.includeEmployees === true) {
+      orConditions.push({ isEmployee: true });
+    } else if (flags.includeEmployees === false) {
+      notConditions.push({ isEmployee: { $ne: true } });
     }
-    if (includeVisitors) {
-      conditions.push({ isVisitor: true });
+    if (flags.includeVisitors === true) {
+      orConditions.push({ isVisitor: true });
+    } else if (flags.includeVisitors === false) {
+      notConditions.push({ isVisitor: { $ne: true } });
     }
 
-    if (conditions.length === 1) {
-      pipeline.push({
-        $match: conditions[0],
-      });
-    } else if (conditions.length > 1) {
-      pipeline.push({
-        $match: {
-          $or: conditions,
-        },
-      });
+    let matchStage: LooseRecord | undefined;
+    if (orConditions.length === 1) {
+      matchStage = orConditions[0];
+    } else if (orConditions.length > 1) {
+      matchStage = { $or: orConditions };
+    }
+
+    if (notConditions.length > 0) {
+      const notStage =
+        notConditions.length === 1 ? notConditions[0] : { $and: notConditions };
+      matchStage = matchStage ? { $and: [matchStage, notStage] } : notStage;
+    }
+
+    if (matchStage) {
+      pipeline.push({ $match: matchStage });
     }
 
     return pipeline;
@@ -837,6 +910,7 @@ class People extends AggregatableCollection<PersonDocument> {
   async isCnicInUse(cnicNumber: string) {
     const person = await this.findOneAsync({
       'sharedData.cnicNumber': { $eq: cnicNumber },
+      deletedAt: { $exists: false },
     });
 
     if (person) return true;
@@ -846,6 +920,7 @@ class People extends AggregatableCollection<PersonDocument> {
   async checkCnicNotInUse(cnicNumber: string, personId?: string) {
     const person = await this.findOneAsync({
       'sharedData.cnicNumber': { $eq: cnicNumber },
+      deletedAt: { $exists: false },
     });
 
     if (person && (!personId || person._id !== personId)) {
@@ -861,6 +936,7 @@ class People extends AggregatableCollection<PersonDocument> {
         { 'sharedData.contactNumber1': { $eq: contactNumber } },
         { 'sharedData.contactNumber2': { $eq: contactNumber } },
       ],
+      deletedAt: { $exists: false },
     });
 
     if (person) return true;
@@ -873,6 +949,7 @@ class People extends AggregatableCollection<PersonDocument> {
         { 'sharedData.contactNumber1': { $eq: contactNumber } },
         { 'sharedData.contactNumber2': { $eq: contactNumber } },
       ],
+      deletedAt: { $exists: false },
     });
 
     if (person && (!personId || person._id !== personId)) {
@@ -885,43 +962,6 @@ class People extends AggregatableCollection<PersonDocument> {
   // **************************************************************
   // Conversion Functions
   // **************************************************************
-  personToVisitor(person: PersonDocument | null | undefined) {
-    if (!person) return null;
-    const sharedData = person.sharedData ?? {};
-    return {
-      _id: person._id,
-      dataSource: person.dataSource,
-      createdAt: person.createdAt,
-      createdBy: person.createdBy,
-      updatedAt: person.updatedAt,
-      updatedBy: person.updatedBy,
-
-      name: sharedData.name,
-      parentName: sharedData.parentName,
-      cnicNumber: sharedData.cnicNumber,
-      ehadDate: sharedData.ehadDate,
-      birthDate: sharedData.birthDate,
-      referenceName: sharedData.referenceName,
-      contactNumber1: sharedData.contactNumber1,
-      contactNumber2: sharedData.contactNumber2,
-      contactNumber1Subscribed: sharedData.contactNumber1Subscribed,
-      contactNumber2Subscribed: sharedData.contactNumber2Subscribed,
-      currentAddress: sharedData.currentAddress,
-      permanentAddress: sharedData.permanentAddress,
-      educationalQualification: sharedData.educationalQualification,
-      meansOfEarning: sharedData.meansOfEarning,
-      imageId: sharedData.imageId,
-
-      city: person.visitorData?.city,
-      country: person.visitorData?.country,
-      criminalRecord: person.visitorData?.criminalRecord,
-      otherNotes: person.visitorData?.otherNotes,
-
-      karkunId: person.karkunData?.karkunId,
-      isKarkun: person.isKarkun,
-    };
-  }
-
   visitorToPerson(visitor: LooseRecord) {
     let person: LooseRecord = {
       _id: visitor._id,
@@ -936,8 +976,6 @@ class People extends AggregatableCollection<PersonDocument> {
         referenceName: visitor.referenceName,
         contactNumber1: visitor.contactNumber1,
         contactNumber2: visitor.contactNumber2,
-        contactNumber1Subscribed: visitor.contactNumber1Subscribed,
-        contactNumber2Subscribed: visitor.contactNumber2Subscribed,
         currentAddress: visitor.currentAddress,
         permanentAddress: visitor.permanentAddress,
         educationalQualification: visitor.educationalQualification,
@@ -958,54 +996,6 @@ class People extends AggregatableCollection<PersonDocument> {
     return person;
   }
 
-  personToKarkun(person: PersonDocument | null | undefined) {
-    if (!person) return null;
-    const sharedData = person.sharedData ?? {};
-    return {
-      _id: person._id,
-      dataSource: person.dataSource,
-      createdAt: person.createdAt,
-      createdBy: person.createdBy,
-      updatedAt: person.updatedAt,
-      updatedBy: person.updatedBy,
-
-      name: sharedData.name,
-      parentName: sharedData.parentName,
-      cnicNumber: sharedData.cnicNumber,
-      ehadDate: sharedData.ehadDate,
-      birthDate: sharedData.birthDate,
-      deathDate: sharedData.deathDate,
-      referenceName: sharedData.referenceName,
-      contactNumber1: sharedData.contactNumber1,
-      contactNumber2: sharedData.contactNumber2,
-      contactNumber1Subscribed: sharedData.contactNumber1Subscribed,
-      contactNumber2Subscribed: sharedData.contactNumber2Subscribed,
-      emailAddress: sharedData.emailAddress,
-      currentAddress: sharedData.currentAddress,
-      permanentAddress: sharedData.permanentAddress,
-      bloodGroup: sharedData.bloodGroup,
-      educationalQualification: sharedData.educationalQualification,
-      meansOfEarning: sharedData.meansOfEarning,
-      imageId: sharedData.imageId,
-
-      cityId: person.karkunData?.cityId,
-      cityMehfilId: person.karkunData?.cityMehfilId,
-      ehadKarkun: person.karkunData?.ehadKarkun,
-      ehadPermissionDate: person.karkunData?.ehadPermissionDate,
-      lastTarteebDate: person.karkunData?.lastTarteebDate,
-      mehfilRaabta: person.karkunData?.mehfilRaabta,
-      msRaabta: person.karkunData?.msRaabta,
-      msLastVisitDate: person.karkunData?.msLastVisitDate,
-      attachmentIds: person.karkunData?.attachmentIds,
-
-      isEmployee: person.isEmployee,
-      jobId: person.employeeData?.jobId,
-      employmentStartDate: person.employeeData?.employmentStartDate,
-      employmentEndDate: person.employeeData?.employmentEndDate,
-      bankAccountDetails: person.employeeData?.bankAccountDetails,
-    };
-  }
-
   async karkunToPerson(karkun: LooseRecord) {
     const city = karkun.cityId ? await Cities.findOneAsync(karkun.cityId) : null;
 
@@ -1024,8 +1014,6 @@ class People extends AggregatableCollection<PersonDocument> {
         referenceName: karkun.referenceName,
         contactNumber1: karkun.contactNumber1,
         contactNumber2: karkun.contactNumber2,
-        contactNumber1Subscribed: karkun.contactNumber1Subscribed,
-        contactNumber2Subscribed: karkun.contactNumber2Subscribed,
         emailAddress: karkun.emailAddress,
         currentAddress: karkun.currentAddress,
         permanentAddress: karkun.permanentAddress,

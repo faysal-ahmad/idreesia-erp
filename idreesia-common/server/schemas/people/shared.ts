@@ -55,14 +55,6 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  contactNumber1Subscribed: {
-    type: Boolean,
-    optional: true,
-  },
-  contactNumber2Subscribed: {
-    type: Boolean,
-    optional: true,
-  },
   emailAddress: {
     type: String,
     optional: true,
@@ -98,5 +90,12 @@ export default new SimpleSchema({
   imageVectorData: {
     type: ImageVectorData,
     optional: true,
+  },
+  tagIds: {
+    type: Array,
+    optional: true,
+  },
+  'tagIds.$': {
+    type: String,
   },
 });

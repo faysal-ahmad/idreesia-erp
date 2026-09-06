@@ -50,6 +50,7 @@ export async function createMonthlySalaries(
   const people = await People.find({
     isEmployee: true,
     'employeeData.jobId': { $exists: true, $ne: null },
+    deletedAt: { $exists: false },
   }).fetchAsync();
 
   const date = new Date();

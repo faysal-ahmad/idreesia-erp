@@ -15,6 +15,8 @@ import {
 } from './physical-stores';
 import { CitiesNewForm, CitiesEditForm, CitiesList } from './cities';
 import { JobsList, JobLogsList, JobDefinitionsList } from './jobs';
+import { PeopleTagsList } from './people-tags';
+import { DeletedPeopleList, DeletedPersonEditForm } from './deleted-people';
 
 const RouterSwitch = Switch as any;
 const RouterRoute = Route as any;
@@ -46,6 +48,14 @@ const Router = () => (
     <RouterRoute path={paths.jobsPath} component={JobsList} />
     <RouterRoute path={paths.jobLogsPath} component={JobLogsList} />
     <RouterRoute path={paths.jobDefinitionsPath} component={JobDefinitionsList} />
+
+    <RouterRoute path={paths.peopleTagsPath} component={PeopleTagsList} />
+
+    <RouterRoute
+      path={paths.deletedPersonEditFormPath()}
+      component={DeletedPersonEditForm}
+    />
+    <RouterRoute path={paths.deletedPeoplePath} component={DeletedPeopleList} />
   </RouterSwitch>
 );
 

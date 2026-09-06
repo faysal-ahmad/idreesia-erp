@@ -11,6 +11,7 @@ export async function createMonthlyAttendance(formattedMonth: string, user: { _i
   const people = await People.find({
     isEmployee: true,
     'employeeData.jobId': { $exists: true, $ne: null },
+    deletedAt: { $exists: false },
   }).fetchAsync();
 
   const date = new Date();

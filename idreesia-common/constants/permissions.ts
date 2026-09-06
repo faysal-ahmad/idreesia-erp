@@ -7,9 +7,11 @@ const Permissions = {
 
   ADMIN_MANAGE_PHYSICAL_STORES: 'admin-manage-physical-stores',
   ADMIN_MANAGE_CITIES: 'admin-manage-cities',
+  ADMIN_MANAGE_PEOPLE_TAGS: 'admin-manage-people-tags',
 
   ADMIN_VIEW_JOBS: 'admin-view-jobs',
   ADMIN_MANAGE_JOBS: 'admin-manage-jobs',
+  ADMIN_MANAGE_DELETED_DATA: 'admin-manage-deleted-data',
 
   // ****************************************************************************************
   // HR Module
@@ -23,7 +25,6 @@ const Permissions = {
 
   HR_VIEW_EMPLOYEES: 'hr-view-employees',
   HR_MANAGE_EMPLOYEES: 'hr-manage-employees',
-  HR_APPROVE_SALARIES: 'hr-approve-salaries',
 
   // ****************************************************************************************
   // Security Module

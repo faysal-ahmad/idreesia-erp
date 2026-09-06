@@ -26,7 +26,7 @@ const StayCardContainer = ({
   onCloseCard,
 }: StayCardContainerProps) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const { data: visitorData, loading: visitorLoading } = useQuery(
+  const { data: visitorData, loading: personLoading } = useQuery(
     VISITOR_STAY_CARD_SECURITY_VISITOR_BY_ID,
     {
       variables: { _id: visitorId },
@@ -41,20 +41,26 @@ const StayCardContainer = ({
   const securityVisitorById = visitorData?.securityVisitorById;
   const visitorStayById = visitorStayData?.visitorStayById;
 
-  if (visitorLoading || visitorStayLoading) return null;
+  if (personLoading || visitorStayLoading) return null;
   if (!securityVisitorById || !visitorStayById) return null;
+
+  const visitor = {
+    name: securityVisitorById.sharedData?.name,
+    parentName: securityVisitorById.sharedData?.parentName,
+    cnicNumber: securityVisitorById.sharedData?.cnicNumber,
+    referenceName: securityVisitorById.sharedData?.referenceName,
+    contactNumber1: securityVisitorById.sharedData?.contactNumber1,
+    image: securityVisitorById.sharedData?.image,
+    city: securityVisitorById.visitorData?.city,
+    country: securityVisitorById.visitorData?.country,
+    criminalRecord: securityVisitorById.visitorData?.criminalRecord,
+  };
 
   const card =
     cardType === 'stay-card' ? (
-      <StayCard
-        visitor={securityVisitorById}
-        visitorStay={visitorStayById}
-      />
+      <StayCard visitor={visitor} visitorStay={visitorStayById} />
     ) : (
-      <DutyCard
-        visitor={securityVisitorById}
-        visitorStay={visitorStayById}
-      />
+      <DutyCard visitor={visitor} visitorStay={visitorStayById} />
     );
 
   return (

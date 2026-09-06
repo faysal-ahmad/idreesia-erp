@@ -31,12 +31,12 @@ const HeaderStyle: CSSProperties = {
 
 export default class RashanReceipts extends Component<ReceiptsProps> {
   getImageColumn = (karkun: NonNullable<RashanReceiptRecord['karkun']>) =>
-    karkun.image ? (
+    karkun.sharedData?.image ? (
       <Col order={1}>
         <img
-          src={`data:image/jpeg;base64,${karkun.image.data}`}
+          src={`data:image/jpeg;base64,${karkun.sharedData.image.data}`}
           style={{ width: '100px' }}
-          alt={karkun.name ?? undefined}
+          alt={karkun.sharedData?.name ?? undefined}
         />
       </Col>
     ) : null;
@@ -45,6 +45,7 @@ export default class RashanReceipts extends Component<ReceiptsProps> {
     const { karkun, job } = salary;
     if (!karkun || !job || !salary._id || !salary.month) return null;
     const imageColumn = this.getImageColumn(karkun);
+    const sharedData = karkun.sharedData ?? ({} as NonNullable<typeof karkun.sharedData>);
     const displayMonth = formatDate(
       parseDate(`01-${salary.month}`, Formats.DATE_FORMAT),
       'MMM, YYYY'
@@ -58,10 +59,10 @@ export default class RashanReceipts extends Component<ReceiptsProps> {
         <Row justify="start" gutter={10}>
           {imageColumn}
           <Col order={2} style={{ minWidth: '200px' }}>
-            <Item label="Name" value={karkun.name} />
-            <Item label="S/O" value={karkun.parentName} />
-            <Item label="CNIC" value={karkun.cnicNumber || ''} />
-            <Item label="Phone" value={karkun.contactNumber1 || ''} />
+            <Item label="Name" value={sharedData.name} />
+            <Item label="S/O" value={sharedData.parentName} />
+            <Item label="CNIC" value={sharedData.cnicNumber || ''} />
+            <Item label="Phone" value={sharedData.contactNumber1 || ''} />
             <Item label="Dept." value={job.name} />
           </Col>
           <Col order={3} style={{ minWidth: '200px' }}>
@@ -80,7 +81,10 @@ export default class RashanReceipts extends Component<ReceiptsProps> {
       salariesByIds ?? [],
       (salary: RashanReceiptRecord) => salary.rashanMadad !== 0
     );
-    const sortedSalariesByMonth = sortBy(filteredSalaries, 'karkun.name');
+    const sortedSalariesByMonth = sortBy(
+      filteredSalaries,
+      (salary: RashanReceiptRecord) => salary.karkun?.sharedData?.name
+    );
 
     const receipts = sortedSalariesByMonth
       .map((salary: RashanReceiptRecord) => this.getRashanReceipts(salary))

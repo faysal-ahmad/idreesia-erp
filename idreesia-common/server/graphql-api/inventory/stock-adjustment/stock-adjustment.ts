@@ -12,7 +12,7 @@ type StockAdjustment {
   adjustmentReason: String
 
   refStockItem: StockItem
-  refAdjustedBy: KarkunType
+  refAdjustedBy: PersonType
   refPhysicalStore: PhysicalStore
 
   createdAt: String

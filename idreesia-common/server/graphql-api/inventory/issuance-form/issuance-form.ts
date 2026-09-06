@@ -15,8 +15,8 @@ type IssuanceForm {
 
   attachments: [Attachment]
   refLocation: Location
-  refIssuedBy: KarkunType
-  refIssuedTo: KarkunType
+  refIssuedBy: PersonType
+  refIssuedTo: PersonType
   refPhysicalStore: PhysicalStore
 
   createdAt: String

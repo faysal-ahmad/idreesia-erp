@@ -38,11 +38,15 @@ export const PAGED_PURCHASE_FORMS: TypedDocumentNode<
         }
         refReceivedBy {
           _id
-          name
+          sharedData {
+            name
+          }
         }
         refPurchasedBy {
           _id
-          name
+          sharedData {
+            name
+          }
         }
         refLocation {
           _id

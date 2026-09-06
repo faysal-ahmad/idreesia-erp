@@ -21,7 +21,6 @@ export default class SubModulePaths {
   // Employees
   // ******************************************************************************
   static employeesPath = `${ModulePaths.hr}/employees`;
-  static employeeNewFormPath = `${SubModulePaths.employeesPath}/new`;
   static employeePrintPath = (employeeId = ':employeeId') =>
     `${SubModulePaths.employeesPath}/print/${employeeId}`;
   static employeesPrintListPath = `${SubModulePaths.employeesPath}/print-list`;

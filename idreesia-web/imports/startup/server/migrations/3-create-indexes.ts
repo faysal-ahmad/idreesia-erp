@@ -1,6 +1,7 @@
 import { Migrations } from 'meteor/quave:migrations';
 import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
-import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
+// Karkuns collection has since been removed - its data now lives on People.
+// import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
 import {
   AccountHeads,
   Vouchers,
@@ -15,11 +16,11 @@ Migrations.add({
     await stockItems.createIndex({ name: 'text', company: 'text', details: 'text' });
     await stockItems.createIndex({ categoryId: 1 }, { background: true });
 
-    // HR Indexes
-    await Karkuns.rawCollection().createIndex({
-      firstName: 'text',
-      lastName: 'text',
-    });
+    // HR Indexes - Karkuns collection has since been removed.
+    // await Karkuns.rawCollection().createIndex({
+    //   firstName: 'text',
+    //   lastName: 'text',
+    // });
 
     // Accounts Indexes
     const accountHeads = AccountHeads.rawCollection();

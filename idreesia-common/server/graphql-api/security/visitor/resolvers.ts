@@ -15,28 +15,15 @@ const resolvers: ResolverMap = {
       People.searchPeople(filter, {
         includeVisitors: true,
         includeKarkuns: true,
-      }).then(result => {
-        const pagedResult = result as {
-          data: Parameters<typeof People.personToVisitor>[0][];
-          totalResults: number;
-        };
-        return {
-          data: pagedResult.data.map(person => People.personToVisitor(person)),
-          totalResults: pagedResult.totalResults,
-        };
       }),
 
-    securityVisitorById: async (obj, { _id }) => {
-      const person = await People.findOneAsync(_id);
-      return People.personToVisitor(person);
-    },
+    securityVisitorById: async (obj, { _id }) => People.findOneAsync(_id),
 
     securityVisitorByCnic: async (obj, { cnicNumbers }) => {
       if (cnicNumbers.length > 0) {
-        const person = await People.findOneAsync({
+        return People.findOneAsync({
           'sharedData.cnicNumber': { $in: cnicNumbers },
         });
-        return People.personToVisitor(person);
       }
 
       return null;
@@ -45,49 +32,40 @@ const resolvers: ResolverMap = {
     securityVisitorByCnicOrContactNumber: async (
       obj,
       { cnicNumber, contactNumber }
-    ) => {
-      const person = await People.findByCnicOrContactNumber(
-        cnicNumber,
-        contactNumber
-      );
-      return People.personToVisitor(person);
-    },
+    ) => People.findByCnicOrContactNumber(cnicNumber, contactNumber),
   },
 
   Mutation: {
     createSecurityVisitor: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
-      const person = await People.createPerson(
+      return People.createPerson(
         {
           ...personValues,
           dataSource: DataSource.SECURITY,
         },
         user
       );
-      return People.personToVisitor(person);
     },
 
     updateSecurityVisitor: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
-      const person = await People.updatePerson(personValues, user);
-      return People.personToVisitor(person);
+      return People.updatePerson(personValues, user);
     },
 
-    deleteSecurityVisitor: async (obj, { _id }) => People.removeAsync(_id),
+    deleteSecurityVisitor: async (obj, { _id }, { user }) =>
+      People.removePerson(_id, user),
 
     setSecurityVisitorImage: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
       personValues.sharedData.imageVectorData = await computeImageVectorData(
         values.imageId
       );
-      const person = await People.updatePerson(personValues, user);
-      return People.personToVisitor(person);
+      return People.updatePerson(personValues, user);
     },
 
     updateSecurityVisitorNotes: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);
-      const person = await People.updatePerson(personValues, user);
-      return People.personToVisitor(person);
+      return People.updatePerson(personValues, user);
     },
 
     importSecurityVisitorsCsvData: async (obj, { csvData }, { user }) =>

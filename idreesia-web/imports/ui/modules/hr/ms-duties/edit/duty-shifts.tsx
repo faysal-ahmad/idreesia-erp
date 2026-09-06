@@ -56,13 +56,13 @@ const List = ({ dutyId }: ListProps) => {
     variables: { dutyId },
   });
   const [createDutyShift] = useMutation(CREATE_DUTY_SHIFT, {
-    refetchQueries: ['dutyShiftsByDutyId', 'listAllMSDuties', 'allMSDuties'],
+    refetchQueries: ['dutyShiftsByDutyId', 'listAllMSDuties', 'composerAllMSDuties'],
   });
   const [updateDutyShift] = useMutation(UPDATE_DUTY_SHIFT, {
-    refetchQueries: ['dutyShiftsByDutyId', 'listAllMSDuties', 'allMSDuties'],
+    refetchQueries: ['dutyShiftsByDutyId', 'listAllMSDuties', 'composerAllMSDuties'],
   });
   const [removeDutyShift] = useMutation(REMOVE_DUTY_SHIFT, {
-    refetchQueries: ['dutyShiftsByDutyId', 'listAllMSDuties', 'allMSDuties'],
+    refetchQueries: ['dutyShiftsByDutyId', 'listAllMSDuties', 'composerAllMSDuties'],
   });
 
   const dutyShiftsByDutyId = (data?.dutyShiftsByDutyId ?? []).filter(

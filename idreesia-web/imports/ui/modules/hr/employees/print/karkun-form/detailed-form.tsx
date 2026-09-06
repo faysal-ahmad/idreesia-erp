@@ -23,8 +23,9 @@ const DataStyle: CSSProperties = {
 
 type HrKarkun = NonNullable<HrKarkunByIdForPeopleQuery['hrKarkunById']>;
 type HrKarkunDuty = NonNullable<
-  NonNullable<HrKarkun['duties']>[number]
+  NonNullable<NonNullable<HrKarkun['karkunData']>['duties']>[number]
 >;
+type HrKarkunJob = NonNullable<HrKarkun['employeeData']>['job'] | undefined;
 
 interface Props {
   hrKarkunById: HrKarkun;
@@ -33,7 +34,7 @@ interface Props {
 export class DetailedForm extends Component<Props> {
   getImageColumn = () => {
     const { hrKarkunById } = this.props;
-    const url = getDownloadUrl(hrKarkunById.imageId);
+    const url = getDownloadUrl(hrKarkunById.sharedData?.imageId);
     return url ? (
       <Col order={2}>
         <img src={url} style={{ width: '200px' }} alt="Karkun" />
@@ -42,7 +43,7 @@ export class DetailedForm extends Component<Props> {
   };
 
   getJobDetails = (
-    job: HrKarkun['job'],
+    job: HrKarkunJob,
     duties: HrKarkunDuty[] = []
   ) => {
     let jobName: React.ReactNode[] = [];
@@ -74,12 +75,13 @@ export class DetailedForm extends Component<Props> {
 
     const imageColumn = this.getImageColumn();
     const jobDetails = this.getJobDetails(
-      hrKarkunById.job,
-      (hrKarkunById.duties ?? []).filter(
+      hrKarkunById.employeeData?.job,
+      (hrKarkunById.karkunData?.duties ?? []).filter(
         (duty): duty is HrKarkunDuty => duty != null
       )
     );
     const timestamp = dayjs().format('DD MMM, YYYY');
+    const sharedData = hrKarkunById.sharedData ?? ({} as NonNullable<typeof hrKarkunById.sharedData>);
 
     return (
       <div className="form-print-view">
@@ -87,25 +89,17 @@ export class DetailedForm extends Component<Props> {
           <Col order={1}>
             <Barcode value={hrKarkunById._id ?? ''} {...barcodeOptions} />
             <DisplayItem label="Generated On" value={timestamp} />
-            <DisplayItem label="Name" value={hrKarkunById.name} />
-            <DisplayItem label="S/O" value={hrKarkunById.parentName} />
-            <DisplayItem label="CNIC" value={hrKarkunById.cnicNumber} />
+            <DisplayItem label="Name" value={sharedData.name} />
+            <DisplayItem label="S/O" value={sharedData.parentName} />
+            <DisplayItem label="CNIC" value={sharedData.cnicNumber} />
             <DisplayItem
               label="Mobile No."
-              value={`${hrKarkunById.contactNumber1} - ${
-                hrKarkunById.contactNumber1Subscribed
-                  ? '(Subscribed)'
-                  : 'Not Subscribed'
-              }`}
+              value={sharedData.contactNumber1}
             />
-            {hrKarkunById.contactNumber2 ? (
+            {sharedData.contactNumber2 ? (
               <DisplayItem
                 label="Other Contact No."
-                value={`${hrKarkunById.contactNumber2} - ${
-                  hrKarkunById.contactNumber2Subscribed
-                    ? '(Subscribed)'
-                    : 'Not Subscribed'
-                }`}
+                value={sharedData.contactNumber2}
               />
             ) : (
               <DisplayItem label="Other Contact No." value="" />
@@ -115,10 +109,10 @@ export class DetailedForm extends Component<Props> {
         </Row>
         <Row justify="start" gutter={20}>
           <Col order={1} span={11}>
-            <DisplayItem label="Email" value={hrKarkunById.emailAddress} />
+            <DisplayItem label="Email" value={sharedData.emailAddress} />
           </Col>
           <Col order={2}>
-            <DisplayItem label="Blood Group" value={hrKarkunById.bloodGroup} />
+            <DisplayItem label="Blood Group" value={sharedData.bloodGroup} />
           </Col>
         </Row>
         <Row justify="start" gutter={20}>
@@ -126,8 +120,8 @@ export class DetailedForm extends Component<Props> {
             <DisplayItem label="Ehad Duration">
               <EhadDurationDisplay
                 value={
-                  hrKarkunById.ehadDate
-                    ? dayjs(Number(hrKarkunById.ehadDate))
+                  sharedData.ehadDate
+                    ? dayjs(Number(sharedData.ehadDate))
                     : dayjs()
                 }
               />
@@ -136,7 +130,7 @@ export class DetailedForm extends Component<Props> {
           <Col order={2}>
             <DisplayItem
               label="Ehad Reference"
-              value={hrKarkunById.referenceName}
+              value={sharedData.referenceName}
             />
           </Col>
         </Row>
@@ -144,11 +138,11 @@ export class DetailedForm extends Component<Props> {
           <Col order={1}>
             <DisplayItem
               label="Current Address"
-              value={hrKarkunById.currentAddress}
+              value={sharedData.currentAddress}
             />
             <DisplayItem
               label="Permanent Address"
-              value={hrKarkunById.permanentAddress}
+              value={sharedData.permanentAddress}
             />
             <DisplayItem label="381-A Job / Duties" value={jobDetails} />
           </Col>
@@ -158,7 +152,7 @@ export class DetailedForm extends Component<Props> {
           <Col order={1}>
             <DisplayItem
               label="Education"
-              value={hrKarkunById.educationalQualification}
+              value={sharedData.educationalQualification}
             />
             <DisplayItem label="Means of Earning">
               <Checkbox style={DataStyle}>Job</Checkbox>

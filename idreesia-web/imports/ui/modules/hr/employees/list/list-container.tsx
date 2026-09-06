@@ -82,10 +82,6 @@ const ListContainer = ({ history, location }: Props) => {
     history.push(path);
   };
 
-  const handleNewClicked = () => {
-    history.push(paths.employeeNewFormPath);
-  };
-
   const handlePrintClicked = (employee: HrKarkunRow) => {
     if (!employee._id) return;
     history.push(paths.employeePrintPath(employee._id));
@@ -134,13 +130,12 @@ const ListContainer = ({ history, location }: Props) => {
       jobId={String(jobId || '')}
       setPageParams={setPageParams}
       handleItemSelected={handleItemSelected}
-      showNewButton
+      showAddEmployeeButton
       showDownloadButton
       showSelectionColumn
       showPhoneNumbersColumn
       showDutiesColumn
       showActionsColumn
-      handleNewClicked={handleNewClicked}
       handlePrintClicked={handlePrintClicked}
       handleAuditLogClicked={handleAuditLogClicked}
       handlePrintSelected={handlePrintSelected}

@@ -34,7 +34,6 @@ enum Permission {
   HR_MANAGE_KARKUNS
   HR_VIEW_EMPLOYEES
   HR_MANAGE_EMPLOYEES
-  HR_APPROVE_SALARIES
 
   IN_MANAGE_SETUP_DATA
   IN_MANAGE_STOCK_ITEMS
@@ -421,7 +420,9 @@ input KarkunFilter {
   bloodGroup: String
   lastTarteeb: String
   attendance: String
+  isKarkun: Boolean
   isEmployee: Boolean
+  isVisitor: Boolean
   jobId: String
   dutyId: String
   userAccount: String
@@ -433,8 +434,6 @@ input KarkunFilter {
   updatedBetween: String
   predefinedFilterName: String
   predefinedFilterStoreId: String
-  showVolunteers: String
-  showEmployees: String
   pageIndex: String
   pageSize: String
 }
@@ -958,8 +957,6 @@ extend type Mutation {
     rashanMadad: Int
   ): SalaryType
 
-  approveSalaries(month: String!, ids: [String]!): Int
-  approveAllSalaries(month: String!): Int
   deleteSalaries(month: String!, ids: [String]!): Int
   deleteAllSalaries(month: String!): Int
 }

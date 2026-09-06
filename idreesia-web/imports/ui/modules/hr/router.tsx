@@ -9,7 +9,6 @@ import { JobsEditForm, JobsList } from './jobs';
 import { MSDutiesEditForm, MSDutiesList } from './ms-duties';
 import { DutyLocationsEditForm, DutyLocationsList } from './duty-locations';
 import {
-  EmployeeNewForm,
   EmployeeEditForm,
   EmployeesList,
   EmployeePrintView,
@@ -56,7 +55,6 @@ const Router = () => (
     <RouterRoute path={paths.karkunsEditFormPath()} component={KarkunsEditForm} />
     <RouterRoute path={paths.karkunsPath} component={KarkunsList} />
 
-    <RouterRoute path={paths.employeeNewFormPath} component={EmployeeNewForm} />
     <RouterRoute path={paths.employeesPrintListPath} component={EmployeesPrintView} />
     <RouterRoute path={paths.employeePrintPath()} component={EmployeePrintView} />
     <RouterRoute path={paths.employeeEditFormPath()} component={EmployeeEditForm} />

@@ -64,7 +64,7 @@ interface FormValues {
 const GeneralInfo = ({ dutyId, duty, history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [updateDuty] = useMutation(UPDATE_DUTY, {
-    refetchQueries: ['listAllMSDuties', 'allMSDuties', 'dutyById'],
+    refetchQueries: ['listAllMSDuties', 'composerAllMSDuties', 'dutyById'],
   });
 
   const handleCancel = () => {

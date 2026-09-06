@@ -85,7 +85,7 @@ const GeneralInfo = ({ history, karkunId, karkun }: Props) => {
   const { allCities, allCitiesLoading } = useAllCities();
   const { allCityMehfils, allCityMehfilsLoading } = useAllCityMehfils();
   const [updateHrKarkun] = useMutation(UPDATE_HR_KARKUN, {
-    refetchQueries: ['pagedHrKarkuns', 'hrKarkunByIdForKarkuns'],
+    refetchQueries: ['hrKarkunsPagedHrKarkuns', 'hrKarkunByIdForKarkuns'],
   });
 
   const handleCancel = () => {

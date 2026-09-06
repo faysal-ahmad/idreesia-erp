@@ -50,9 +50,9 @@ const DutyParticipation = (props: Props) => {
   });
   const [removeKarkunDuty] = useMutation(REMOVE_KARKUN_DUTY, {
     refetchQueries: [
-      'pagedHrKarkuns',
+      'hrKarkunsPagedHrKarkuns',
       'karkunDutiesByKarkunId',
-      'allMSDuties',
+      'composerAllMSDuties',
     ],
   });
   const { allMSDuties } = useAllMSDuties();

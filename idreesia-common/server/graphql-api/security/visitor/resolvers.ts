@@ -52,7 +52,8 @@ const resolvers: ResolverMap = {
       return People.updatePerson(personValues, user);
     },
 
-    deleteSecurityVisitor: async (obj, { _id }) => People.removeAsync(_id),
+    deleteSecurityVisitor: async (obj, { _id }, { user }) =>
+      People.removePerson(_id, user),
 
     setSecurityVisitorImage: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);

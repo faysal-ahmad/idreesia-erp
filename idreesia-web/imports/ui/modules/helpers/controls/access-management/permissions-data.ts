@@ -111,10 +111,6 @@ export const HrPermissionsData: PermissionNode = {
           title: 'Manage Employees Data',
           key: PermissionConstants.HR_MANAGE_EMPLOYEES,
         },
-        {
-          title: 'Approve Salaries Data',
-          key: PermissionConstants.HR_APPROVE_SALARIES,
-        },
       ],
     },
   ],

@@ -16,7 +16,7 @@ interface Props {
 
 const Picture = ({ employeeId, employee }: Props) => {
   const [setHrKarkunProfileImage] = useMutation(SET_HR_KARKUN_PROFILE_IMAGE, {
-    refetchQueries: ['pagedHrKarkuns', 'hrKarkunByIdForPeople'],
+    refetchQueries: ['hrPeoplePagedHrKarkuns', 'hrKarkunByIdForPeople'],
   });
 
   const updateImageId = (imageId: string) => {

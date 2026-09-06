@@ -33,6 +33,8 @@ const PAGED_HR_KARKUNS: TypedDocumentNode<
           }
         }
         employeeData {
+          jobId
+          employmentStartDate
           job {
             _id
             name

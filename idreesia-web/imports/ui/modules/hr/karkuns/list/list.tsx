@@ -113,8 +113,9 @@ const List = ({
         bloodGroup,
         dutyId,
         dutyShiftId,
-        showVolunteers: 'true',
-        showEmployees: 'true',
+        isKarkun: true,
+        isEmployee: true,
+        isVisitor: true,
         predefinedFilterName,
         predefinedFilterStoreId,
         pageIndex: pageIndex.toString(),
@@ -123,7 +124,7 @@ const List = ({
     },
   });
   const [deleteHrKarkun] = useMutation(DELETE_HR_KARKUN, {
-    refetchQueries: ['pagedHrKarkuns'],
+    refetchQueries: ['hrKarkunsPagedHrKarkuns'],
   });
 
   const updateScrollY = () => {

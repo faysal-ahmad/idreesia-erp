@@ -6,6 +6,7 @@ import { Form, Spin } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import {
   DateField,
+  InputTextAreaField,
   SelectField,
   SwitchField,
   FormButtonsSaveCancel,
@@ -28,6 +29,7 @@ interface FormValues {
   jobId?: string | null;
   employmentStartDate?: Dayjs | null;
   employmentEndDate?: Dayjs | null;
+  bankAccountDetails?: string | null;
 }
 
 const EmploymentInfo = ({ history, employeeId }: Props) => {
@@ -57,6 +59,7 @@ const EmploymentInfo = ({ history, employeeId }: Props) => {
     jobId,
     employmentStartDate,
     employmentEndDate,
+    bankAccountDetails,
   }: FormValues) => {
     setHrKarkunEmploymentInfo({
       variables: {
@@ -67,6 +70,7 @@ const EmploymentInfo = ({ history, employeeId }: Props) => {
           employmentStartDate as unknown as string | null | undefined,
         employmentEndDate:
           employmentEndDate as unknown as string | null | undefined,
+        bankAccountDetails: bankAccountDetails || null,
       },
     })
       .then(() => {
@@ -129,6 +133,13 @@ const EmploymentInfo = ({ history, employeeId }: Props) => {
               ? dayjs(Number(hrKarkunById.employeeData.employmentEndDate))
               : null
           }
+        />
+
+        <InputTextAreaField
+          fieldName="bankAccountDetails"
+          fieldLabel="Bank Account Details"
+          initialValue={hrKarkunById.employeeData?.bankAccountDetails}
+          required={false}
         />
 
         <FormButtonsSaveCancel

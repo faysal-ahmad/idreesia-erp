@@ -60,6 +60,7 @@ const HR_KARKUN_BY_ID: TypedDocumentNode<
         jobId
         employmentStartDate
         employmentEndDate
+        bankAccountDetails
         job {
           _id
           name

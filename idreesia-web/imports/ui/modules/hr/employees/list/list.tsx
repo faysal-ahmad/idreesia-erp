@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client/react';
 import {
   AuditOutlined,
-  DeleteOutlined,
+  UserDeleteOutlined,
   DownloadOutlined,
   PrinterOutlined,
   SettingOutlined,
-  PlusCircleOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
 import {
@@ -26,12 +25,13 @@ import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import type { HrPeoplePagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { KarkunName } from '/imports/ui/modules/hr/common/controls';
+import AddEmployeeButton from './add-employee-button';
 import ListFilter, {
   EmployeesFilterChips,
   type PageParams,
 } from './list-filter';
 
-import { PAGED_HR_KARKUNS, DELETE_HR_KARKUN } from '../gql';
+import { PAGED_HR_KARKUNS, SET_HR_KARKUN_EMPLOYMENT_INFO } from '../gql';
 
 const RouterLink = Link as any;
 
@@ -56,15 +56,15 @@ interface Props {
   handleItemSelected?(record: HrKarkunRow): void;
   handlePrintClicked?(record: HrKarkunRow): void;
   handleAuditLogClicked?(record: HrKarkunRow): void;
-  handleNewClicked?(): void;
   handlePrintSelected?(records: HrKarkunRow[]): void;
-  showNewButton?: boolean;
+  showAddEmployeeButton?: boolean;
   showDownloadButton?: boolean;
   showSelectionColumn?: boolean;
   showPhoneNumbersColumn?: boolean;
   showDutiesColumn?: boolean;
   showActionsColumn?: boolean;
   predefinedFilterName?: string;
+  mode?: 'employees' | 'candidates';
 }
 
 const List = ({
@@ -77,17 +77,17 @@ const List = ({
   jobId,
   setPageParams,
   handleItemSelected = noop,
-  handleNewClicked = noop,
   handlePrintClicked = noop,
   handleAuditLogClicked,
   handlePrintSelected,
-  showNewButton,
+  showAddEmployeeButton,
   showDownloadButton,
   showSelectionColumn,
   showPhoneNumbersColumn,
   showDutiesColumn,
   showActionsColumn,
   predefinedFilterName,
+  mode = 'employees',
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(360);
@@ -104,17 +104,20 @@ const List = ({
         phoneNumber,
         bloodGroup,
         jobId,
-        showVolunteers: 'false',
-        showEmployees: 'true',
+        isKarkun: mode === 'candidates' ? true : undefined,
+        isEmployee: mode !== 'candidates',
         predefinedFilterName,
         pageIndex: pageIndex.toString(),
         pageSize: pageSize.toString(),
       },
     },
   });
-  const [deleteHrKarkun] = useMutation(DELETE_HR_KARKUN, {
-    refetchQueries: ['pagedHrKarkuns'],
-  });
+  const [setHrKarkunEmploymentInfo] = useMutation(
+    SET_HR_KARKUN_EMPLOYMENT_INFO,
+    {
+      refetchQueries: ['hrPeoplePagedHrKarkuns'],
+    }
+  );
 
   const updateScrollY = () => {
     requestAnimationFrame(() => {
@@ -169,12 +172,20 @@ const List = ({
     return () => window.removeEventListener('resize', updateScrollY);
   });
 
-  const handleDeleteClicked = (record: HrKarkunRow) => {
+  const handleRemoveEmployeeClicked = (record: HrKarkunRow) => {
     if (!record._id) return;
 
-    deleteHrKarkun({
+    const { employmentStartDate } = record.employeeData ?? {};
+
+    setHrKarkunEmploymentInfo({
       variables: {
         _id: record._id,
+        isEmployee: false,
+        jobId: record.employeeData?.jobId ?? null,
+        employmentStartDate: employmentStartDate
+          ? new Date(Number(employmentStartDate)).toISOString()
+          : null,
+        employmentEndDate: new Date().toISOString(),
       },
     }).catch((error: Error) => {
       message.error(error.message, 5);
@@ -268,15 +279,15 @@ const List = ({
           />
         </Tooltip>
         <Popconfirm
-          title="Are you sure you want to delete this employee?"
+          title="Are you sure you want to remove this employee? This will end their employment as of today."
           onConfirm={() => {
-            handleDeleteClicked(record);
+            handleRemoveEmployeeClicked(record);
           }}
           okText="Yes"
           cancelText="No"
         >
-          <Tooltip title="Delete">
-            <DeleteOutlined className="list-actions-icon" />
+          <Tooltip title="Remove Employee">
+            <UserDeleteOutlined className="list-actions-icon" />
           </Tooltip>
         </Popconfirm>
       </div>
@@ -392,15 +403,7 @@ const List = ({
     return (
       <div className="list-table-header">
         <Space size={12}>
-          {showNewButton ? (
-            <Button
-              type="primary"
-              icon={<PlusCircleOutlined />}
-              onClick={handleNewClicked}
-            >
-              New Employee
-            </Button>
-          ) : null}
+          {showAddEmployeeButton ? <AddEmployeeButton /> : null}
         </Space>
         <div className="list-table-header-utilities">
           <Space size={8}>

@@ -56,8 +56,6 @@ extend type Mutation {
     rashanMadad: Int
   ): SalaryType
 
-  approveSalaries(month: String!, ids: [String]!): Int
-  approveAllSalaries(month: String!): Int
   deleteSalaries(month: String!, ids: [String]!): Int
   deleteAllSalaries(month: String!): Int
 }

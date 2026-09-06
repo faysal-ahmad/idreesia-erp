@@ -15,6 +15,7 @@ const SET_HR_KARKUN_EMPLOYMENT_INFO: TypedDocumentNode<
     $jobId: String
     $employmentStartDate: String
     $employmentEndDate: String
+    $bankAccountDetails: String
   ) {
     setHrKarkunEmploymentInfo(
       _id: $_id
@@ -22,6 +23,7 @@ const SET_HR_KARKUN_EMPLOYMENT_INFO: TypedDocumentNode<
       jobId: $jobId
       employmentStartDate: $employmentStartDate
       employmentEndDate: $employmentEndDate
+      bankAccountDetails: $bankAccountDetails
     ) {
       _id
       isEmployee
@@ -29,6 +31,7 @@ const SET_HR_KARKUN_EMPLOYMENT_INFO: TypedDocumentNode<
         jobId
         employmentStartDate
         employmentEndDate
+        bankAccountDetails
       }
     }
   }

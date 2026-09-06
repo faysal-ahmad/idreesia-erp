@@ -404,9 +404,6 @@ class People extends AggregatableCollection<PersonDocument> {
     const includeKarkuns = isNil(flags.includeKarkuns)
       ? false
       : flags.includeKarkuns;
-    const includeEmployees = isNil(flags.includeEmployees)
-      ? false
-      : flags.includeEmployees;
     const includeVisitors = isNil(flags.includeVisitors)
       ? false
       : flags.includeVisitors;
@@ -825,28 +822,43 @@ class People extends AggregatableCollection<PersonDocument> {
 
     // ************************************
     // Add filters against passed flags
+    // Each flag is tri-state: true ORs the tag into the match, false
+    // excludes it (AND NOT), and undefined/omitted ignores it entirely.
     // ************************************
-    const conditions = [];
-    if (includeKarkuns) {
-      conditions.push({ isKarkun: true });
+    const orConditions: LooseRecord[] = [];
+    const notConditions: LooseRecord[] = [];
+
+    if (flags.includeKarkuns === true) {
+      orConditions.push({ isKarkun: true });
+    } else if (flags.includeKarkuns === false) {
+      notConditions.push({ isKarkun: { $ne: true } });
     }
-    if (includeEmployees) {
-      conditions.push({ isEmployee: true });
+    if (flags.includeEmployees === true) {
+      orConditions.push({ isEmployee: true });
+    } else if (flags.includeEmployees === false) {
+      notConditions.push({ isEmployee: { $ne: true } });
     }
-    if (includeVisitors) {
-      conditions.push({ isVisitor: true });
+    if (flags.includeVisitors === true) {
+      orConditions.push({ isVisitor: true });
+    } else if (flags.includeVisitors === false) {
+      notConditions.push({ isVisitor: { $ne: true } });
     }
 
-    if (conditions.length === 1) {
-      pipeline.push({
-        $match: conditions[0],
-      });
-    } else if (conditions.length > 1) {
-      pipeline.push({
-        $match: {
-          $or: conditions,
-        },
-      });
+    let matchStage: LooseRecord | undefined;
+    if (orConditions.length === 1) {
+      matchStage = orConditions[0];
+    } else if (orConditions.length > 1) {
+      matchStage = { $or: orConditions };
+    }
+
+    if (notConditions.length > 0) {
+      const notStage =
+        notConditions.length === 1 ? notConditions[0] : { $and: notConditions };
+      matchStage = matchStage ? { $and: [matchStage, notStage] } : notStage;
+    }
+
+    if (matchStage) {
+      pipeline.push({ $match: matchStage });
     }
 
     return pipeline;

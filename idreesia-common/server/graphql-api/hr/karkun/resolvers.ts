@@ -46,9 +46,9 @@ const resolvers: ResolverMap = {
           cityId: multanCity._id,
         },
         {
-          includeVisitors: filter.showVolunteers === 'true',
-          includeKarkuns: filter.showVolunteers === 'true',
-          includeEmployees: filter.showEmployees === 'true',
+          includeKarkuns: filter.isKarkun,
+          includeEmployees: filter.isEmployee,
+          includeVisitors: filter.isVisitor,
         }
       ).then(result => {
         const pagedResult = result as {

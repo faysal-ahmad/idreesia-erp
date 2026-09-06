@@ -330,6 +330,8 @@ export type KarkunFilter = {
   dutyShiftId?: InputMaybe<Scalars['String']['input']>;
   ehadKarkun?: InputMaybe<Scalars['String']['input']>;
   isEmployee?: InputMaybe<Scalars['Boolean']['input']>;
+  isKarkun?: InputMaybe<Scalars['Boolean']['input']>;
+  isVisitor?: InputMaybe<Scalars['Boolean']['input']>;
   jobId?: InputMaybe<Scalars['String']['input']>;
   lastTarteeb?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -339,8 +341,6 @@ export type KarkunFilter = {
   predefinedFilterName?: InputMaybe<Scalars['String']['input']>;
   predefinedFilterStoreId?: InputMaybe<Scalars['String']['input']>;
   region?: InputMaybe<Scalars['String']['input']>;
-  showEmployees?: InputMaybe<Scalars['String']['input']>;
-  showVolunteers?: InputMaybe<Scalars['String']['input']>;
   updatedBetween?: InputMaybe<Scalars['String']['input']>;
   userAccount?: InputMaybe<Scalars['String']['input']>;
 };
@@ -433,10 +433,8 @@ export type Mutation = {
   addIssuanceFormAttachment?: Maybe<IssuanceForm>;
   addMehfilKarkun?: Maybe<MehfilKarkunType>;
   addPurchaseFormAttachment?: Maybe<PurchaseForm>;
-  approveAllSalaries?: Maybe<Scalars['Int']['output']>;
   approveIssuanceForms?: Maybe<Array<Maybe<IssuanceForm>>>;
   approvePurchaseForms?: Maybe<Array<Maybe<PurchaseForm>>>;
-  approveSalaries?: Maybe<Scalars['Int']['output']>;
   approveStockAdjustments?: Maybe<Array<Maybe<StockAdjustment>>>;
   cancelVisitorStay?: Maybe<VisitorStayType>;
   clearJobDefinitionSchedule?: Maybe<JobDefinitionType>;
@@ -587,11 +585,6 @@ export type MutationAddPurchaseFormAttachmentArgs = {
 };
 
 
-export type MutationApproveAllSalariesArgs = {
-  month: Scalars['String']['input'];
-};
-
-
 export type MutationApproveIssuanceFormsArgs = {
   _ids: Array<InputMaybe<Scalars['String']['input']>>;
   physicalStoreId: Scalars['String']['input'];
@@ -601,12 +594,6 @@ export type MutationApproveIssuanceFormsArgs = {
 export type MutationApprovePurchaseFormsArgs = {
   _ids: Array<InputMaybe<Scalars['String']['input']>>;
   physicalStoreId: Scalars['String']['input'];
-};
-
-
-export type MutationApproveSalariesArgs = {
-  ids: Array<InputMaybe<Scalars['String']['input']>>;
-  month: Scalars['String']['input'];
 };
 
 
@@ -1619,7 +1606,6 @@ export enum Permission {
   AdminManageUsersAndGroups = 'ADMIN_MANAGE_USERS_AND_GROUPS',
   AdminViewJobs = 'ADMIN_VIEW_JOBS',
   AdminViewUsersAndGroups = 'ADMIN_VIEW_USERS_AND_GROUPS',
-  HrApproveSalaries = 'HR_APPROVE_SALARIES',
   HrDeleteData = 'HR_DELETE_DATA',
   HrManageEmployees = 'HR_MANAGE_EMPLOYEES',
   HrManageKarkuns = 'HR_MANAGE_KARKUNS',

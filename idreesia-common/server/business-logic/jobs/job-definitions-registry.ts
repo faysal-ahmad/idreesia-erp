@@ -4,6 +4,7 @@ import { addMonths, format, startOfMonth } from 'date-fns';
 import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-attendance';
 import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries';
 import { backfillImageVectorData } from 'meteor/idreesia-common/server/business-logic/common/backfill-image-vector-data';
+import { backfillImageThumbnails } from 'meteor/idreesia-common/server/business-logic/common/backfill-image-thumbnails';
 import { getSystemUser } from './system-user';
 import { createProgressReporter } from './report-progress';
 
@@ -63,6 +64,16 @@ const JOB_DEFINITIONS_REGISTRY: JobDefinitionSeed[] = [
     // people at ~20ms each, sequential, so this isn't something to run unattended on a cron.
     handler: async agendaJob => {
       await backfillImageVectorData(createProgressReporter(agendaJob));
+    },
+  },
+  {
+    name: 'create-image-thumbnails',
+    displayName: 'Create Image Thumbnails',
+    // No defaultSchedule - manual-only (Run Now). This is a one-time backlog for people who
+    // already have an image but no thumbnail; new images get a thumbnail automatically as soon
+    // as they're set (see People.updatePerson).
+    handler: async agendaJob => {
+      await backfillImageThumbnails(createProgressReporter(agendaJob));
     },
   },
 ];

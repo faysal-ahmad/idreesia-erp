@@ -22,10 +22,12 @@ type PersonSharedDataType {
   deathDate: String
   referenceName: String
   imageId: String
+  imageThumbnailId: String
   imageVectorData: PersonImageVectorDataType
   tagIds: [String]
 
   image: Attachment
+  imageThumbnail: Attachment
   tags: [PeopleTagType]
 }
 

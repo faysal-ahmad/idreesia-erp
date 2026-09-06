@@ -10,8 +10,10 @@ interface Person {
   _id?: string | null;
   name?: string | null;
   imageId?: string | null;
+  imageThumbnailId?: string | null;
   imageVectorStatus?: string | null;
   image?: { data?: string };
+  imageThumbnail?: { data?: string };
 }
 
 interface Props {
@@ -69,11 +71,13 @@ const PersonName = ({
   );
   if (person.imageId) {
     imageUrl = getDownloadUrl(person.imageId) ?? undefined;
+    const avatarSrc =
+      getDownloadUrl(person.imageThumbnailId ?? person.imageId) ?? undefined;
     avatarNode = (
       <Avatar
         shape="square"
         size="large"
-        src={imageUrl}
+        src={avatarSrc}
         onClick={() => {
           setShowDialog(true);
         }}
@@ -81,10 +85,11 @@ const PersonName = ({
     );
   }
 
-  if (person.image) {
+  const inlineImage = person.imageThumbnail ?? person.image;
+  if (inlineImage) {
     avatarNode = (
       <img
-        src={`data:image/jpeg;base64,${person.image.data}`}
+        src={`data:image/jpeg;base64,${inlineImage.data}`}
         style={imageSizeStyle}
         alt={person.name}
       />

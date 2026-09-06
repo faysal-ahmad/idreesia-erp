@@ -24,6 +24,7 @@ const PAGED_USERS: TypedDocumentNode<
           sharedData {
             name
             imageId
+            imageThumbnailId
           }
         }
       }

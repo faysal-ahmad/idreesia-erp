@@ -1,8 +1,6 @@
 export { default as AuditInfo } from './audit-info/audit-info';
 export { default as AuditLogsList } from './audit-logs/list';
 export { default as AuditLogsListFilter } from './audit-logs/list-filter';
-export { default as SecurityLogsList } from './security-logs/list';
-export { default as SecurityLogsListFilter } from './security-logs/list-filter';
 
 export { default as KarkunsList } from './karkuns/list';
 export { default as KarkunsListFilter } from './karkuns/list-filter';
@@ -25,4 +23,3 @@ export {
 export { default as PersonPicture } from './people/picture';
 
 export { default as KarkunAttendancesList } from './attendance/karkun-attendances-list';
-export { default as KarkunsAttendanceList } from './attendance/karkuns-attendance-list';

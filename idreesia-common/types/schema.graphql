@@ -400,6 +400,7 @@ type AuditLogType {
 
   operationByName: String
   operationByImageId: String
+  operationByImageThumbnailId: String
 }
 
 input AuditLogFilter {
@@ -465,10 +466,12 @@ type PersonSharedDataType {
   deathDate: String
   referenceName: String
   imageId: String
+  imageThumbnailId: String
   imageVectorData: PersonImageVectorDataType
   tagIds: [String]
 
   image: Attachment
+  imageThumbnail: Attachment
   tags: [PeopleTagType]
 }
 
@@ -566,8 +569,10 @@ type SecurityLogType {
 
   userName: String
   userImageId: String
+  userImageThumbnailId: String
   operationByName: String
   operationByImageId: String
+  operationByImageThumbnailId: String
 }
 
 input SecurityLogFilter {

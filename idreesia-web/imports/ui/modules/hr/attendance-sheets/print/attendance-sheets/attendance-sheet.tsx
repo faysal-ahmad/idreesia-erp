@@ -37,6 +37,7 @@ export default class AttendanceSheet extends Component<AttendanceSheetProps> {
             _id: karkun._id,
             name: karkun.sharedData.name,
             imageId: karkun.sharedData.imageId ?? undefined,
+            imageThumbnailId: karkun.sharedData.imageThumbnailId ?? undefined,
           }}
         />
       );

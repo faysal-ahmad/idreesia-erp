@@ -486,7 +486,7 @@ export type PagedUsersQueryVariables = Exact<{
 }>;
 
 
-export type PagedUsersQuery = { pagedUsers: { totalResults: number | null, data: Array<{ _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, lastActiveAt: string | null, karkun: { _id: string | null, sharedData: { name: string | null, imageId: string | null } | null } | null } | null> | null } | null };
+export type PagedUsersQuery = { pagedUsers: { totalResults: number | null, data: Array<{ _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, lastActiveAt: string | null, karkun: { _id: string | null, sharedData: { name: string | null, imageId: string | null, imageThumbnailId: string | null } | null } | null } | null> | null } | null };
 
 export type SetInstanceAccessMutationVariables = Exact<{
   userId: string;
@@ -543,14 +543,14 @@ export type PagedPeopleQueryVariables = Exact<{
 }>;
 
 
-export type PagedPeopleQuery = { pagedPeople: { totalResults: number | null, data: Array<{ _id: string | null, isVisitor: boolean | null, isKarkun: boolean | null, isEmployee: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, image: { _id: string | null, name: string | null, description: string | null, mimeType: string | null, data: string | null } | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { city: { _id: string | null, name: string | null, country: string | null } | null } | null } | null> | null } | null };
+export type PagedPeopleQuery = { pagedPeople: { totalResults: number | null, data: Array<{ _id: string | null, isVisitor: boolean | null, isKarkun: boolean | null, isEmployee: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, image: { _id: string | null, name: string | null, description: string | null, mimeType: string | null, data: string | null } | null, imageThumbnail: { _id: string | null, data: string | null } | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { city: { _id: string | null, name: string | null, country: string | null } | null } | null } | null> | null } | null };
 
 export type HelperPagedHrKarkunsQueryVariables = Exact<{
   filter?: Types.KarkunFilter | null | undefined;
 }>;
 
 
-export type HelperPagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null } | null, karkunData: { lastTarteebDate: string | null, duties: Array<{ _id: string | null, dutyId: string | null, shiftId: string | null, dutyName: string | null, shiftName: string | null, role: string | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
+export type HelperPagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null } | null, karkunData: { lastTarteebDate: string | null, duties: Array<{ _id: string | null, dutyId: string | null, shiftId: string | null, dutyName: string | null, shiftName: string | null, role: string | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
 
 export type AttendanceByBarcodeIdsQueryVariables = Exact<{
   barcodeIds: string;
@@ -566,7 +566,7 @@ export type AttendanceByMonthQueryVariables = Exact<{
 }>;
 
 
-export type AttendanceByMonthQuery = { attendanceByMonth: Array<{ _id: string | null, karkunId: string | null, month: string | null, dutyId: string | null, shiftId: string | null, attendanceDetails: string | null, presentCount: number | null, absentCount: number | null, percentage: number | null, meetingCardBarcodeId: string | null, karkun: { _id: string | null, sharedData: { name: string | null, imageId: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, image: { _id: string | null, data: string | null } | null } | null } | null, duty: { _id: string | null, name: string | null } | null, shift: { _id: string | null, name: string | null } | null, job: { _id: string | null, name: string | null } | null } | null> | null };
+export type AttendanceByMonthQuery = { attendanceByMonth: Array<{ _id: string | null, karkunId: string | null, month: string | null, dutyId: string | null, shiftId: string | null, attendanceDetails: string | null, presentCount: number | null, absentCount: number | null, percentage: number | null, meetingCardBarcodeId: string | null, karkun: { _id: string | null, sharedData: { name: string | null, imageId: string | null, imageThumbnailId: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, image: { _id: string | null, data: string | null } | null } | null } | null, duty: { _id: string | null, name: string | null } | null, shift: { _id: string | null, name: string | null } | null, job: { _id: string | null, name: string | null } | null } | null> | null };
 
 export type CreateAttendancesMutationVariables = Exact<{
   month: string;
@@ -617,7 +617,7 @@ export type PagedHrAuditLogsQueryVariables = Exact<{
 }>;
 
 
-export type PagedHrAuditLogsQuery = { pagedHrAuditLogs: { totalResults: number | null, data: Array<{ _id: string | null, entityId: string | null, entityType: string | null, operationType: string | null, auditValues: Array<string | null> | null, operationTime: string | null, operationBy: string | null, operationByName: string | null, operationByImageId: string | null } | null> | null } | null };
+export type PagedHrAuditLogsQuery = { pagedHrAuditLogs: { totalResults: number | null, data: Array<{ _id: string | null, entityId: string | null, entityType: string | null, operationType: string | null, auditValues: Array<string | null> | null, operationTime: string | null, operationBy: string | null, operationByName: string | null, operationByImageId: string | null, operationByImageThumbnailId: string | null } | null> | null } | null };
 
 export type ComposerAllDutyLocationsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -693,14 +693,14 @@ export type HrKarkunsByIdQueryVariables = Exact<{
 }>;
 
 
-export type HrKarkunsByIdQuery = { hrKarkunsById: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageId: string | null, contactNumber1: string | null, contactNumber2: string | null, image: { _id: string | null, data: string | null } | null } | null, karkunData: { duties: Array<{ _id: string | null, dutyName: string | null, shiftName: string | null, locationName: string | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null };
+export type HrKarkunsByIdQuery = { hrKarkunsById: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageId: string | null, contactNumber1: string | null, contactNumber2: string | null, image: { _id: string | null, data: string | null } | null, imageThumbnail: { _id: string | null, data: string | null } | null } | null, karkunData: { duties: Array<{ _id: string | null, dutyName: string | null, shiftName: string | null, locationName: string | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null };
 
 export type HrPeoplePagedHrKarkunsQueryVariables = Exact<{
   filter?: Types.KarkunFilter | null | undefined;
 }>;
 
 
-export type HrPeoplePagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null } | null, karkunData: { lastTarteebDate: string | null, duties: Array<{ _id: string | null, dutyId: string | null, shiftId: string | null, dutyName: string | null, shiftName: string | null, role: string | null } | null> | null } | null, employeeData: { jobId: string | null, employmentStartDate: string | null, job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
+export type HrPeoplePagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null } | null, karkunData: { lastTarteebDate: string | null, duties: Array<{ _id: string | null, dutyId: string | null, shiftId: string | null, dutyName: string | null, shiftName: string | null, role: string | null } | null> | null } | null, employeeData: { jobId: string | null, employmentStartDate: string | null, job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
 
 export type PagedSalariesByKarkunQueryVariables = Exact<{
   queryString?: string | null | undefined;
@@ -857,7 +857,7 @@ export type HrKarkunsPagedHrKarkunsQueryVariables = Exact<{
 }>;
 
 
-export type HrKarkunsPagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null } | null, karkunData: { lastTarteebDate: string | null, duties: Array<{ _id: string | null, dutyId: string | null, shiftId: string | null, dutyName: string | null, shiftName: string | null, role: string | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
+export type HrKarkunsPagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null } | null, karkunData: { lastTarteebDate: string | null, duties: Array<{ _id: string | null, dutyId: string | null, shiftId: string | null, dutyName: string | null, shiftName: string | null, role: string | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
 
 export type RemoveKarkunDutyMutationVariables = Exact<{
   _id: string;
@@ -968,7 +968,7 @@ export type CurrentMonthSalariesQueryVariables = Exact<{
 }>;
 
 
-export type CurrentMonthSalariesQuery = { salariesByMonth: Array<{ _id: string | null, karkunId: string | null, month: string | null, jobId: string | null, salary: number | null, openingLoan: number | null, loanDeduction: number | null, newLoan: number | null, closingLoan: number | null, otherDeduction: number | null, arrears: number | null, netPayment: number | null, rashanMadad: number | null, approvedOn: string | null, approvedBy: string | null, approver: { _id: string | null, sharedData: { name: string | null } | null } | null, karkun: { _id: string | null, sharedData: { name: string | null, parentName: string | null, imageId: string | null, cnicNumber: string | null, contactNumber1: string | null } | null, employeeData: { bankAccountDetails: string | null } | null } | null, job: { _id: string | null, name: string | null } | null } | null> | null };
+export type CurrentMonthSalariesQuery = { salariesByMonth: Array<{ _id: string | null, karkunId: string | null, month: string | null, jobId: string | null, salary: number | null, openingLoan: number | null, loanDeduction: number | null, newLoan: number | null, closingLoan: number | null, otherDeduction: number | null, arrears: number | null, netPayment: number | null, rashanMadad: number | null, approvedOn: string | null, approvedBy: string | null, approver: { _id: string | null, sharedData: { name: string | null } | null } | null, karkun: { _id: string | null, sharedData: { name: string | null, parentName: string | null, imageId: string | null, imageThumbnailId: string | null, cnicNumber: string | null, contactNumber1: string | null } | null, employeeData: { bankAccountDetails: string | null } | null } | null, job: { _id: string | null, name: string | null } | null } | null> | null };
 
 export type DeleteAllSalariesMutationVariables = Exact<{
   month: string;
@@ -1033,7 +1033,7 @@ export type PagedSecurityAuditLogsQueryVariables = Exact<{
 }>;
 
 
-export type PagedSecurityAuditLogsQuery = { pagedSecurityAuditLogs: { totalResults: number | null, data: Array<{ _id: string | null, entityId: string | null, entityType: string | null, operationType: string | null, auditValues: Array<string | null> | null, operationTime: string | null, operationBy: string | null, operationByName: string | null, operationByImageId: string | null } | null> | null } | null };
+export type PagedSecurityAuditLogsQuery = { pagedSecurityAuditLogs: { totalResults: number | null, data: Array<{ _id: string | null, entityId: string | null, entityType: string | null, operationType: string | null, auditValues: Array<string | null> | null, operationTime: string | null, operationBy: string | null, operationByName: string | null, operationByImageId: string | null, operationByImageThumbnailId: string | null } | null> | null } | null };
 
 export type ComposerAllSecurityMehfilDutiesQueryVariables = Exact<{
   mehfilId?: string | null | undefined;
@@ -1077,7 +1077,7 @@ export type MehfilKarkunsByIdsQueryVariables = Exact<{
 }>;
 
 
-export type MehfilKarkunsByIdsQuery = { mehfilKarkunsByIds: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, duty: { _id: string | null, name: string | null, urduName: string | null } | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, image: { _id: string | null, data: string | null } | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { city: { _id: string | null, name: string | null, country: string | null } | null } | null } | null } | null> | null };
+export type MehfilKarkunsByIdsQuery = { mehfilKarkunsByIds: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, duty: { _id: string | null, name: string | null, urduName: string | null } | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, image: { _id: string | null, data: string | null } | null, imageThumbnail: { _id: string | null, data: string | null } | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { city: { _id: string | null, name: string | null, country: string | null } | null } | null } | null } | null> | null };
 
 export type MehfilKarkunsByMehfilIdQueryVariables = Exact<{
   mehfilId: string;
@@ -1085,7 +1085,7 @@ export type MehfilKarkunsByMehfilIdQueryVariables = Exact<{
 }>;
 
 
-export type MehfilKarkunsByMehfilIdQuery = { mehfilKarkunsByMehfilId: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, imageId: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { city: { _id: string | null, name: string | null, country: string | null } | null } | null } | null } | null> | null };
+export type MehfilKarkunsByMehfilIdQuery = { mehfilKarkunsByMehfilId: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, imageId: string | null, imageThumbnailId: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { city: { _id: string | null, name: string | null, country: string | null } | null } | null } | null } | null> | null };
 
 export type RemoveMehfilKarkunMutationVariables = Exact<{
   _id: string;
@@ -1136,7 +1136,7 @@ export type PagedSecurityUsersQueryVariables = Exact<{
 }>;
 
 
-export type PagedSecurityUsersQuery = { pagedSecurityUsers: { totalResults: number | null, data: Array<{ _id: string | null, username: string | null, locked: boolean | null, lastActiveAt: string | null, permissions: Array<string | null> | null, person: { _id: string | null, sharedData: { name: string | null, imageId: string | null } | null } | null } | null> | null } | null };
+export type PagedSecurityUsersQuery = { pagedSecurityUsers: { totalResults: number | null, data: Array<{ _id: string | null, username: string | null, locked: boolean | null, lastActiveAt: string | null, permissions: Array<string | null> | null, person: { _id: string | null, sharedData: { name: string | null, imageId: string | null, imageThumbnailId: string | null } | null } | null } | null> | null } | null };
 
 export type SetSecurityUserPermissionsMutationVariables = Exact<{
   userId: string;
@@ -1300,7 +1300,7 @@ export type PagedSecurityVisitorsQueryVariables = Exact<{
 }>;
 
 
-export type PagedSecurityVisitorsQuery = { pagedSecurityVisitors: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageVectorData: { status: string | null } | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
+export type PagedSecurityVisitorsQuery = { pagedSecurityVisitors: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null, imageVectorData: { status: string | null } | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
 
 export type SecurityVisitorByCnicQueryVariables = Exact<{
   cnicNumbers: Array<string | null | undefined> | string;

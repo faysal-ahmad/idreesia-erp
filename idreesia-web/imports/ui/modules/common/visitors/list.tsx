@@ -28,6 +28,7 @@ export interface PersonListItem {
   city?: string | null;
   country?: string | null;
   imageId?: string | null;
+  imageThumbnailId?: string | null;
   imageVectorStatus?: string | null;
   image?: { data?: string | null } | null;
   criminalRecord?: string | null;
@@ -173,6 +174,7 @@ export default class PersonGeneralList extends Component<Props, State> {
               _id: record._id,
               name: record.name ?? '',
               imageId: record.imageId ?? undefined,
+              imageThumbnailId: record.imageThumbnailId ?? undefined,
               imageVectorStatus: record.imageVectorStatus,
               image: record.image
                 ? { data: record.image.data ?? undefined }

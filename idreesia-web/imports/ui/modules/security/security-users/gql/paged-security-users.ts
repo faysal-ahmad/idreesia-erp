@@ -23,6 +23,7 @@ const PAGED_SECURITY_USERS: TypedDocumentNode<
           sharedData {
             name
             imageId
+            imageThumbnailId
           }
         }
       }

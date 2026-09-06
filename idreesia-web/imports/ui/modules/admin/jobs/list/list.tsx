@@ -158,25 +158,16 @@ const List = ({ history, location }: ListProps) => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      width: 130,
-      render: (statusValue: string) => (
-        <Tag color={StatusColors[statusValue]}>{statusValue}</Tag>
-      ),
-    },
-    {
-      title: 'Progress',
-      dataIndex: 'progress',
-      key: 'progress',
-      width: 150,
-      render: (progress: number | null | undefined, record: JobRow) =>
-        progress == null ? (
-          '-'
-        ) : (
+      width: 180,
+      render: (statusValue: string, record: JobRow) =>
+        statusValue === 'running' && record.progress != null ? (
           <Progress
-            percent={progress}
+            percent={record.progress}
             size="small"
-            status={getProgressStatus(record.status ?? '')}
+            status={getProgressStatus(statusValue)}
           />
+        ) : (
+          <Tag color={StatusColors[statusValue]}>{statusValue}</Tag>
         ),
     },
     {

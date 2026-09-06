@@ -40,6 +40,17 @@ function requireActiveProcessor() {
   }
 }
 
+// Lower sorts first - scheduled/waiting/in-progress jobs ahead of finished ones.
+const STATE_SORT_PRIORITY: Record<JobState, number> = {
+  running: 0,
+  queued: 1,
+  scheduled: 2,
+  repeating: 3,
+  paused: 4,
+  failed: 5,
+  completed: 6,
+};
+
 export default {
   Query: {
     pagedScheduledJobs: async (
@@ -50,17 +61,29 @@ export default {
       const nPageIndex = parseInt(pageIndex, 10);
       const nPageSize = parseInt(pageSize, 10);
 
+      // Fetched unpaginated (no skip/limit) so active jobs can be grouped ahead
+      // of completed ones across the whole result set, not just within a
+      // single page - state is only computed after queryJobs() runs, so a
+      // DB-level skip/limit would slice the data before state is even known.
       const { jobs, total } = await agenda.queryJobs({
         name: name || undefined,
         state: (status || undefined) as JobState | undefined,
         sort: { nextRunAt: 'desc' },
-        skip: nPageIndex * nPageSize,
-        limit: nPageSize,
       });
+
+      const sortedJobs = [...jobs].sort((a, b) => {
+        const priorityDiff =
+          STATE_SORT_PRIORITY[a.state] - STATE_SORT_PRIORITY[b.state];
+        if (priorityDiff !== 0) return priorityDiff;
+        return (b.nextRunAt?.getTime() ?? 0) - (a.nextRunAt?.getTime() ?? 0);
+      });
+
+      const pageStart = nPageIndex * nPageSize;
+      const pageJobs = sortedJobs.slice(pageStart, pageStart + nPageSize);
 
       return {
         totalResults: total,
-        data: jobs.map(job => ({
+        data: pageJobs.map(job => ({
           _id: job._id,
           name: job.name,
           status: job.state,

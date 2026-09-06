@@ -30,6 +30,10 @@ const PAGED_PEOPLE: TypedDocumentNode<
             mimeType
             data
           }
+          imageThumbnail {
+            _id
+            data
+          }
         }
         visitorData {
           city

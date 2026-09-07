@@ -249,7 +249,7 @@ const List = ({ history, location }: ListProps) => {
           style={{ marginBottom: 12 }}
           message="Job processing is disabled"
           description={
-            'Meteor.settings.private.jobs.enabled is off on this server, so scheduled and queued jobs will not run - including anything triggered from "Retry" below or "Run Now" on the Job Definitions page. Enable it and restart the server.'
+            'The JOBS_ENABLED environment variable is off on this server, so scheduled and queued jobs will not run - including anything triggered from "Retry" below or "Run Now" on the Job Definitions page. Enable it and restart the server.'
           }
         />
       ) : null}

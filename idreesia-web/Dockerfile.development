@@ -50,7 +50,7 @@ RUN meteor npm install -g yarn
 # node_modules/.meteor/local are volume-backed (see docker-compose.yml), so
 # dependencies are installed here at container start rather than at image
 # build time, where they'd just get shadowed by the mount. "meteor yarn start"
-# runs the idreesia-web start script (meteor run --settings ...) under
+# runs the idreesia-web start script (meteor run) under
 # Meteor's managed Node/npm, matching CI's "meteor yarn <cmd>" convention, and
 # gives auto-recompile/reload on code changes.
 CMD export OPENCV_LIB_DIR="/usr/lib/$(gcc -print-multiarch)" && \

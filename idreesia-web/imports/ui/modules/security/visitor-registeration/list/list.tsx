@@ -44,7 +44,7 @@ const List = ({ history, location }: Props) => {
 
   const visitorsList = useRef<InstanceType<typeof PersonGeneralList> | null>(null);
   const [showStayList, setShowStayList] = useState(false);
-  const [visitorIdForList, setVisitorIdForList] = useState<string | null>(null);
+  const [visitorForStayList, setVisitorForStayList] = useState<VisitorRecord | null>(null);
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -147,12 +147,12 @@ const List = ({ history, location }: Props) => {
 
   const handleStayHistoryAction = (visitor: VisitorRecord) => {
     setShowStayList(true);
-    setVisitorIdForList(visitor._id);
+    setVisitorForStayList(visitor);
   };
 
   const handleStayListClose = () => {
     setShowStayList(false);
-    setVisitorIdForList(null);
+    setVisitorForStayList(null);
   };
 
   const handleDownloadSelectedAsCSV = () => {
@@ -262,6 +262,8 @@ const List = ({ history, location }: Props) => {
             {
               _id: person._id,
               name: person.sharedData?.name,
+              parentName: person.sharedData?.parentName,
+              referenceName: person.sharedData?.referenceName,
               cnicNumber: person.sharedData?.cnicNumber,
               contactNumber1: person.sharedData?.contactNumber1,
               contactNumber2: person.sharedData?.contactNumber2,
@@ -310,11 +312,22 @@ const List = ({ history, location }: Props) => {
         onClose={handleStayListClose}
         open={showStayList}
       >
-        {visitorIdForList ? (
+        {visitorForStayList ? (
           <VisitorStaysList
             showNewButton
             showActionsColumn
-            visitorId={visitorIdForList}
+            visitorId={visitorForStayList._id}
+            visitor={{
+              name: visitorForStayList.name,
+              parentName: visitorForStayList.parentName,
+              cnicNumber: visitorForStayList.cnicNumber,
+              referenceName: visitorForStayList.referenceName,
+              contactNumber1: visitorForStayList.contactNumber1,
+              imageId: visitorForStayList.imageId,
+              city: visitorForStayList.city,
+              country: visitorForStayList.country,
+              criminalRecord: visitorForStayList.criminalRecord,
+            }}
           />
         ) : null}
       </Drawer>

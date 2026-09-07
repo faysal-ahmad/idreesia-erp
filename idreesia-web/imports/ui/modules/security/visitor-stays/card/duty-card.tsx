@@ -3,6 +3,7 @@ import Barcode from 'react-barcode';
 import dayjs from 'dayjs';
 
 import { find } from 'meteor/idreesia-common/utilities/lodash';
+import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import { Col, Row } from 'antd';
 
@@ -23,7 +24,7 @@ interface Visitor {
   parentName?: string | null;
   city?: string | null;
   country?: string | null;
-  image?: { data?: string | null } | null;
+  imageId?: string | null;
 }
 
 interface VisitorStay {
@@ -41,9 +42,10 @@ interface DutyCardProps {
 export default class DutyCard extends Component<DutyCardProps> {
   getVisitorImage = () => {
     const { visitor } = this.props;
-    const visitorImage = visitor.image?.data ? (
+    const downloadUrl = getDownloadUrl(visitor.imageId);
+    const visitorImage = downloadUrl ? (
       <img
-        src={`data:image/jpeg;base64,${visitor.image.data}`}
+        src={downloadUrl}
         style={{ height: 'auto', width: '100%' }}
         alt={visitor.name ?? 'Visitor'}
       />

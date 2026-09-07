@@ -1300,7 +1300,7 @@ export type PagedSecurityVisitorsQueryVariables = Exact<{
 }>;
 
 
-export type PagedSecurityVisitorsQuery = { pagedSecurityVisitors: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null, imageVectorData: { status: string | null } | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
+export type PagedSecurityVisitorsQuery = { pagedSecurityVisitors: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, parentName: string | null, referenceName: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null, imageVectorData: { status: string | null } | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
 
 export type SecurityVisitorByCnicQueryVariables = Exact<{
   cnicNumbers: Array<string | null | undefined> | string;
@@ -1408,7 +1408,7 @@ export type VisitorStaysPagedVisitorStaysQueryVariables = Exact<{
 }>;
 
 
-export type VisitorStaysPagedVisitorStaysQuery = { pagedVisitorStays: { totalResults: number | null, data: Array<{ _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, dutyShiftName: string | null, cancelledDate: string | null } | null> | null } | null };
+export type VisitorStaysPagedVisitorStaysQuery = { pagedVisitorStays: { totalResults: number | null, data: Array<{ _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, dutyName: string | null, shiftName: string | null, dutyShiftName: string | null, cancelledDate: string | null } | null> | null } | null };
 
 export type UpdateVisitorStayMutationVariables = Exact<{
   _id: string;
@@ -1436,20 +1436,6 @@ export type ViewVisitorStayByIdQueryVariables = Exact<{
 
 
 export type ViewVisitorStayByIdQuery = { visitorStayById: { _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, dutyShiftName: string | null } | null };
-
-export type VisitorStayCardByIdQueryVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type VisitorStayCardByIdQuery = { visitorStayById: { _id: string | null, fromDate: string | null, toDate: string | null, stayReason: string | null, stayAllowedBy: string | null, dutyName: string | null, shiftName: string | null } | null };
-
-export type VisitorStayCardSecurityVisitorByIdQueryVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type VisitorStayCardSecurityVisitorByIdQuery = { securityVisitorById: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, referenceName: string | null, contactNumber1: string | null, image: { _id: string | null, data: string | null } | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null } | null } | null };
 
 export type ItemCategoriesByPhysicalStoreIdQueryVariables = Exact<{
   physicalStoreId: string;

@@ -18,7 +18,7 @@ import type { VisitorStaysPagedVisitorStaysQuery } from 'meteor/idreesia-common/
 
 import NewForm from '../new-form';
 import EditForm from '../edit-form';
-import CardContainer from '../card/card-container';
+import CardContainer, { type CardVisitor } from '../card/card-container';
 import { CANCEL_VISITOR_STAY, PAGED_VISITOR_STAYS } from '../gql';
 
 type VisitorStay = NonNullable<
@@ -43,6 +43,9 @@ interface ListProps {
   cancelVisitorStay(args: { variables: { _id: string } }): Promise<unknown>;
   loading?: boolean;
   pagedVisitorStays?: PagedVisitorStays;
+  // Already-loaded visitor data from whichever parent screen has it (the
+  // print card is prop-driven only; it runs no queries of its own).
+  visitor: CardVisitor;
 }
 
 interface ListState {
@@ -288,6 +291,7 @@ class List extends Component<ListProps, ListState> {
       pageIndex,
       pageSize,
       visitorId,
+      visitor,
       pagedVisitorStays = emptyPagedVisitorStays,
     } = this.props;
     const { totalResults, data } = pagedVisitorStays;
@@ -301,9 +305,10 @@ class List extends Component<ListProps, ListState> {
 
     const numPageIndex = pageIndex ? pageIndex + 1 : 1;
     const numPageSize = pageSize || 20;
+    const cardVisitorStay = data.find(({ _id }) => _id === visitorStayId);
 
     const card =
-      showCard && visitorStayId ? (
+      showCard && visitorStayId && cardVisitorStay ? (
         <Modal
           closable={false}
           open={showCard}
@@ -311,10 +316,10 @@ class List extends Component<ListProps, ListState> {
           footer={null}
         >
           <CardContainer
-            visitorId={visitorId}
-            visitorStayId={visitorStayId}
             cardType={cardType ?? 'stay-card'}
             onCloseCard={this.handleCloseViewCard}
+            visitor={visitor}
+            visitorStay={cardVisitorStay}
           />
         </Modal>
       ) : null;

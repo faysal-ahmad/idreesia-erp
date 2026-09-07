@@ -22,6 +22,8 @@ export interface PersonTag {
 export interface PersonListItem {
   _id: string;
   name?: string | null;
+  parentName?: string | null;
+  referenceName?: string | null;
   cnicNumber?: string | null;
   contactNumber1?: string | null;
   contactNumber2?: string | null;

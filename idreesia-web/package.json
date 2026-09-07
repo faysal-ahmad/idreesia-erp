@@ -1,14 +1,14 @@
 {
   "name": "idreesia-web",
-  "version": "1.6.0",
+  "version": "1.6.2",
   "private": true,
   "scripts": {
     "postinstall": "node ../scripts/meteor-fix-rc-component-exports.js",
-    "start": "METEOR_PACKAGE_DIRS=../ MONGO_URL=${MONGO_URL:-mongodb://localhost:27017/idreesia-erp} meteor run --settings ./private/env/settings.json",
+    "start": "METEOR_PACKAGE_DIRS=../ MONGO_URL=${MONGO_URL:-mongodb://localhost:27017/idreesia-erp} meteor run",
     "build": "METEOR_PACKAGE_DIRS=../ meteor build --directory ../build/idreesia-web",
     "build-for-docker": "METEOR_PACKAGE_DIRS=../ meteor build --directory ./build",
     "typecheck": "../node_modules/.bin/tsc --noEmit --project tsconfig.json",
-    "visualize": "METEOR_PACKAGE_DIRS=../ MONGO_URL=mongodb://localhost:27017/idreesia-erp meteor --production --extra-packages bundle-visualizer --settings ./private/env/settings.json"
+    "visualize": "METEOR_PACKAGE_DIRS=../ MONGO_URL=mongodb://localhost:27017/idreesia-erp meteor --production --extra-packages bundle-visualizer"
   },
   "dependencies": {
     "@ant-design/icons": "6.3.2",

@@ -1,13 +1,9 @@
 import agenda from 'meteor/idreesia-common/server/business-logic/jobs/agenda-instance';
 import { setupJobDefinitions } from 'meteor/idreesia-common/server/business-logic/jobs/setup-job-definitions';
 import { scheduleRecurringJobs } from 'meteor/idreesia-common/server/business-logic/jobs/recurring-schedule';
+import { startJobProcessorHeartbeat } from 'meteor/idreesia-common/server/business-logic/jobs/job-processor-heartbeat';
 
-const privateSettings = Meteor.settings.private as {
-  jobs?: {
-    enabled?: boolean;
-  };
-};
-const jobsEnabled = privateSettings.jobs?.enabled ?? false;
+const jobsEnabled = process.env.JOBS_ENABLED === 'true';
 
 export async function setupAgenda() {
   // Registers handlers (agenda.define()) and seeds/prunes JobDefinitions
@@ -21,9 +17,11 @@ export async function setupAgenda() {
 
   await agenda.start();
   await scheduleRecurringJobs();
+  const stopHeartbeat = startJobProcessorHeartbeat();
 
   ['SIGTERM', 'SIGINT'].forEach(signal => {
     process.on(signal, async () => {
+      stopHeartbeat();
       await agenda.stop();
       process.exit(0);
     });

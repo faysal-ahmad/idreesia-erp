@@ -21,6 +21,7 @@ import {
   Attachments,
 } from 'meteor/idreesia-common/server/collections/common';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
+import { generateImageThumbnail } from 'meteor/idreesia-common/server/business-logic/common/generate-image-thumbnail';
 import {
   forOwn,
   get,
@@ -149,6 +150,16 @@ class People extends AggregatableCollection<PersonDocument> {
     if (imageId) {
       if (existingPerson?.sharedData.imageId) {
         await Attachments.removeAttachment(existingPerson.sharedData.imageId);
+      }
+      if (existingPerson?.sharedData.imageThumbnailId) {
+        await Attachments.removeAttachment(
+          existingPerson.sharedData.imageThumbnailId
+        );
+      }
+
+      const thumbnailId = await generateImageThumbnail(imageId);
+      if (thumbnailId) {
+        changedValues['sharedData.imageThumbnailId'] = thumbnailId;
       }
     }
 

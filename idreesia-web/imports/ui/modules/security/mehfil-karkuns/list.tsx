@@ -205,6 +205,8 @@ const List = ({
             _id: record._id ?? '',
             name: record.karkun?.sharedData?.name ?? '',
             imageId: record.karkun?.sharedData?.imageId ?? undefined,
+            imageThumbnailId:
+              record.karkun?.sharedData?.imageThumbnailId ?? undefined,
           }}
           onPersonNameClicked={() => {}}
         />

@@ -34,6 +34,7 @@ const ATTENDANCE_BY_MONTH: TypedDocumentNode<
         sharedData {
           name
           imageId
+          imageThumbnailId
           cnicNumber
           contactNumber1
           contactNumber2

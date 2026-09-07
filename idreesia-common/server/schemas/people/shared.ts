@@ -87,6 +87,10 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  imageThumbnailId: {
+    type: String,
+    optional: true,
+  },
   imageVectorData: {
     type: ImageVectorData,
     optional: true,

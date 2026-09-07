@@ -32,6 +32,9 @@ export default class KarkunsList extends Component<Props> {
             image: record.sharedData.image?.data
               ? { data: record.sharedData.image.data ?? undefined }
               : undefined,
+            imageThumbnail: record.sharedData.imageThumbnail?.data
+              ? { data: record.sharedData.imageThumbnail.data ?? undefined }
+              : undefined,
           }}
           showLargeImage
         />

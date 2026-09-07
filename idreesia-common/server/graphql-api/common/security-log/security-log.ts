@@ -13,8 +13,10 @@ type SecurityLogType {
 
   userName: String
   userImageId: String
+  userImageThumbnailId: String
   operationByName: String
   operationByImageId: String
+  operationByImageThumbnailId: String
 }
 
 input SecurityLogFilter {

@@ -22,12 +22,16 @@ export interface PersonTag {
 export interface PersonListItem {
   _id: string;
   name?: string | null;
+  parentName?: string | null;
+  referenceName?: string | null;
   cnicNumber?: string | null;
   contactNumber1?: string | null;
   contactNumber2?: string | null;
   city?: string | null;
   country?: string | null;
   imageId?: string | null;
+  imageThumbnailId?: string | null;
+  imageVectorStatus?: string | null;
   image?: { data?: string | null } | null;
   criminalRecord?: string | null;
   otherNotes?: string | null;
@@ -172,11 +176,13 @@ export default class PersonGeneralList extends Component<Props, State> {
               _id: record._id,
               name: record.name ?? '',
               imageId: record.imageId ?? undefined,
+              imageThumbnailId: record.imageThumbnailId ?? undefined,
+              imageVectorStatus: record.imageVectorStatus,
               image: record.image
                 ? { data: record.image.data ?? undefined }
                 : undefined,
             }}
-            onPersonNameClicked={this.props.handleSelectItem}
+            onPersonNameClicked={() => this.props.handleSelectItem?.(record)}
           />
           {tags.length > 0 ? (
             <div className="visitors-list-name-column-tags">

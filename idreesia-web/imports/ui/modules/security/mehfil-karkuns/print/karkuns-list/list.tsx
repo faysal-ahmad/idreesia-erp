@@ -18,10 +18,14 @@ export class List extends Component<ListProps> {
     key: 'name',
     render: (_text: unknown, record: MehfilKarkun) => {
       const image = record.karkun?.sharedData?.image;
+      const imageThumbnail = record.karkun?.sharedData?.imageThumbnail;
       const personNameData = {
         _id: record._id ?? '',
         name: record.karkun?.sharedData?.name ?? '',
         ...(image?.data ? { image: { data: image.data } } : {}),
+        ...(imageThumbnail?.data
+          ? { imageThumbnail: { data: imageThumbnail.data } }
+          : {}),
       };
 
       return (

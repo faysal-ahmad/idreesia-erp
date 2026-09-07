@@ -5,6 +5,7 @@ type ScheduledJobType {
   _id: String
   name: String
   status: String
+  progress: Int
   nextRunAt: DateTime
   lastRunAt: DateTime
   lastFinishedAt: DateTime

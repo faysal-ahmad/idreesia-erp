@@ -1,7 +1,8 @@
 import { Migrations } from 'meteor/quave:migrations';
 
-import { Companies } from 'meteor/idreesia-common/server/collections/accounts';
-import { Portals } from 'meteor/idreesia-common/server/collections/portals';
+// Companies, Portals collections were dropped by this migration and their
+// classes have since been removed from the codebase.
+import { PaymentsHistory } from 'meteor/idreesia-common/server/collections/accounts';
 
 const NamespaceNotFound = 26;
 
@@ -16,10 +17,10 @@ async function dropIfExists(db: { dropCollection(name: string): Promise<unknown>
 Migrations.add({
   version: 43,
   async up() {
-    const db = Companies.rawDatabase();
+    const db = PaymentsHistory.rawDatabase();
 
-    await dropIfExists(db, Companies.rawCollection().collectionName);
-    await dropIfExists(db, Portals.rawCollection().collectionName);
+    await dropIfExists(db, 'accounts-companies');
+    await dropIfExists(db, 'portals');
     await dropIfExists(db, 'accounts-amaanat-logs');
   },
 });

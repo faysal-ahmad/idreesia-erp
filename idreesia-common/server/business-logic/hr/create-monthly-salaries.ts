@@ -1,6 +1,7 @@
 import { differenceInCalendarDays, startOfDay, startOfMonth } from 'date-fns';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Salaries } from 'meteor/idreesia-common/server/collections/hr';
+import type { ProgressReporter } from 'meteor/idreesia-common/server/business-logic/jobs/report-progress';
 
 export function getMonthlySalaryValues(prevMonthSalary?: Record<string, number> | null) {
   if (!prevMonthSalary) {
@@ -43,7 +44,8 @@ export function getMonthlySalaryValues(prevMonthSalary?: Record<string, number> 
 export async function createMonthlySalaries(
   formattedCurrentMonth: string,
   formattedPreviousMonth: string,
-  user: { _id: string }
+  user: { _id: string },
+  reportProgress?: ProgressReporter
 ) {
   let counter = 0;
   // Get all the people who are employees and have a job assigned to them
@@ -54,7 +56,11 @@ export async function createMonthlySalaries(
   }).fetchAsync();
 
   const date = new Date();
+  let processed = 0;
   for (const { _id, employeeData } of people) {
+    processed++;
+    await reportProgress?.(processed / people.length);
+
     const jobId = employeeData?.jobId;
     if (!jobId) {
       continue;

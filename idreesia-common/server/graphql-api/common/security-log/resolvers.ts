@@ -10,6 +10,7 @@ interface PersonRecord {
   sharedData?: {
     name?: string;
     imageId?: string;
+    imageThumbnailId?: string;
   };
 }
 
@@ -36,6 +37,12 @@ export default {
       return null;
     },
 
+    userImageThumbnailId: async (securityLogType: SecurityLogType) => {
+      const { person } = await getUserPerson(securityLogType.userId);
+      if (person) return person.sharedData?.imageThumbnailId;
+      return null;
+    },
+
     operationByName: async (securityLogType: SecurityLogType) => {
       const { user, person } = await getUserPerson(securityLogType.operationBy);
       if (person) return person.sharedData?.name;
@@ -45,6 +52,12 @@ export default {
     operationByImageId: async (securityLogType: SecurityLogType) => {
       const { person } = await getUserPerson(securityLogType.operationBy);
       if (person) return person.sharedData?.imageId;
+      return null;
+    },
+
+    operationByImageThumbnailId: async (securityLogType: SecurityLogType) => {
+      const { person } = await getUserPerson(securityLogType.operationBy);
+      if (person) return person.sharedData?.imageThumbnailId;
       return null;
     },
   },

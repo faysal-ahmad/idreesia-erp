@@ -163,6 +163,7 @@ export default class PeopleList extends Component<Props, State> {
         name: record.sharedData?.name,
         imageId: record.sharedData?.imageId,
         image: record.sharedData?.image,
+        imageThumbnail: record.sharedData?.imageThumbnail,
       };
 
       return (

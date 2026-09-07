@@ -4,12 +4,16 @@ import { UserOutlined } from '@ant-design/icons';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from 'antd';
+import ImageVectorStatusBadge from '../image-vector-status-badge/image-vector-status-badge';
 
 interface Person {
-  _id: string;
-  name: string;
-  imageId?: string;
+  _id?: string | null;
+  name?: string | null;
+  imageId?: string | null;
+  imageThumbnailId?: string | null;
+  imageVectorStatus?: string | null;
   image?: { data?: string };
+  imageThumbnail?: { data?: string };
 }
 
 interface Props {
@@ -34,7 +38,7 @@ const PersonName = ({
   showLargeImage = false,
 }: Props) => {
   const [showDialog, setShowDialog] = useState(false);
-  if (!person) return null;
+  if (!person || !person._id || !person.name) return null;
 
   const nameNode = onPersonNameClicked ? (
     <div
@@ -67,11 +71,13 @@ const PersonName = ({
   );
   if (person.imageId) {
     imageUrl = getDownloadUrl(person.imageId) ?? undefined;
+    const avatarSrc =
+      getDownloadUrl(person.imageThumbnailId ?? person.imageId) ?? undefined;
     avatarNode = (
       <Avatar
         shape="square"
         size="large"
-        src={imageUrl}
+        src={avatarSrc}
         onClick={() => {
           setShowDialog(true);
         }}
@@ -79,10 +85,11 @@ const PersonName = ({
     );
   }
 
-  if (person.image) {
+  const inlineImage = person.imageThumbnail ?? person.image;
+  if (inlineImage) {
     avatarNode = (
       <img
-        src={`data:image/jpeg;base64,${person.image.data}`}
+        src={`data:image/jpeg;base64,${inlineImage.data}`}
         style={imageSizeStyle}
         alt={person.name}
       />
@@ -92,7 +99,9 @@ const PersonName = ({
   return (
     <>
       <div style={NameDivStyle}>
-        {avatarNode}
+        <ImageVectorStatusBadge status={person.imageVectorStatus}>
+          {avatarNode}
+        </ImageVectorStatusBadge>
         &nbsp;&nbsp;
         {nameNode}
       </div>

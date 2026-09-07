@@ -19,6 +19,9 @@ const PAGED_VISITOR_STAYS: TypedDocumentNode<
         toDate
         numOfDays
         stayReason
+        stayAllowedBy
+        dutyName
+        shiftName
         dutyShiftName
         cancelledDate
       }

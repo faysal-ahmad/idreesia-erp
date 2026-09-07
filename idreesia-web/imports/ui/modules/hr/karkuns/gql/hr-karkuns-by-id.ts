@@ -23,6 +23,10 @@ const HR_KARKUNS_BY_ID: TypedDocumentNode<
           _id
           data
         }
+        imageThumbnail {
+          _id
+          data
+        }
       }
       karkunData {
         duties {

@@ -72,6 +72,7 @@ export default class AuditLogsList extends Component<Props> {
             _id: record.operationBy,
             name: record.operationByName,
             imageId: record.operationByImageId,
+            imageThumbnailId: record.operationByImageThumbnailId ?? undefined,
           } as Parameters<typeof PersonName>[0]['person']}
         />
       ),

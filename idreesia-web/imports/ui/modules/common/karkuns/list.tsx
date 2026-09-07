@@ -94,6 +94,7 @@ export default class KarkunsList extends Component<Props, State> {
             _id: record._id,
             name: record.sharedData.name,
             imageId: record.sharedData.imageId ?? undefined,
+            imageThumbnailId: record.sharedData.imageThumbnailId ?? undefined,
           }}
           onPersonNameClicked={this.props.handleSelectItem as Parameters<typeof PersonName>[0]['onPersonNameClicked']}
         />

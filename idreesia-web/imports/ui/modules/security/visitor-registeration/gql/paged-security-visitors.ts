@@ -17,10 +17,16 @@ const PAGED_SECURITY_VISITORS: TypedDocumentNode<
         isKarkun
         sharedData {
           name
+          parentName
+          referenceName
           cnicNumber
           contactNumber1
           contactNumber2
           imageId
+          imageThumbnailId
+          imageVectorData {
+            status
+          }
           tags {
             _id
             name

@@ -1,6 +1,6 @@
 {
   "name": "idreesia-web",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "private": true,
   "scripts": {
     "postinstall": "node ../scripts/meteor-fix-rc-component-exports.js",
@@ -58,6 +58,7 @@
     "redux": "^4.2.0",
     "request": "^2.88.2",
     "rxjs": "^7.8.2",
+    "sharp": "^0.34.4",
     "simpl-schema": "^3.2.0"
   },
   "resolutions": {

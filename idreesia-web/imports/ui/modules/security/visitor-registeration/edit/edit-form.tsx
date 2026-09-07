@@ -70,6 +70,18 @@ const EditForm = ({ history, location, match }: Props) => {
     );
   }
 
+  const cardVisitor = {
+    name: securityVisitorById.sharedData?.name,
+    parentName: securityVisitorById.sharedData?.parentName,
+    cnicNumber: securityVisitorById.sharedData?.cnicNumber,
+    referenceName: securityVisitorById.sharedData?.referenceName,
+    contactNumber1: securityVisitorById.sharedData?.contactNumber1,
+    imageId: securityVisitorById.sharedData?.imageId,
+    city: securityVisitorById.visitorData?.city,
+    country: securityVisitorById.visitorData?.country,
+    criminalRecord: securityVisitorById.visitorData?.criminalRecord,
+  };
+
   return (
     <Tabs
       activeKey={activeKey}
@@ -97,6 +109,7 @@ const EditForm = ({ history, location, match }: Props) => {
               showNewButton
               showDutyColumn
               showActionsColumn
+              visitor={cardVisitor}
             />
           ),
         },

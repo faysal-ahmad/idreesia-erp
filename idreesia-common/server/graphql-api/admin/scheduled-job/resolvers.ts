@@ -35,7 +35,7 @@ function requireUser(user: ResolverContext['user']) {
 function requireActiveProcessor() {
   if (!agenda.isActiveJobProcessor()) {
     throw new Error(
-      'The job processor is not running (Meteor.settings.private.jobs.enabled is off), so this would never actually run. Enable it and restart the server first.'
+      'The job processor is not running (JOBS_ENABLED is off), so this would never actually run. Enable it and restart the server first.'
     );
   }
 }

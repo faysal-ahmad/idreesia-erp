@@ -2,12 +2,7 @@ import agenda from 'meteor/idreesia-common/server/business-logic/jobs/agenda-ins
 import { setupJobDefinitions } from 'meteor/idreesia-common/server/business-logic/jobs/setup-job-definitions';
 import { scheduleRecurringJobs } from 'meteor/idreesia-common/server/business-logic/jobs/recurring-schedule';
 
-const privateSettings = Meteor.settings.private as {
-  jobs?: {
-    enabled?: boolean;
-  };
-};
-const jobsEnabled = privateSettings.jobs?.enabled ?? false;
+const jobsEnabled = process.env.JOBS_ENABLED === 'true';
 
 export async function setupAgenda() {
   // Registers handlers (agenda.define()) and seeds/prunes JobDefinitions

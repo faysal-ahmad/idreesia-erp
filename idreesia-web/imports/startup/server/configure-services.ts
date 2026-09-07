@@ -9,12 +9,13 @@ Accounts.urls.enrollAccount = function enroll(token) {
   return Meteor.absoluteUrl(`set-initial-password/${token}`);
 };
 
-const privateSettings = Meteor.settings.private as {
-  oAuth?: {
-    google?: Record<string, unknown>;
-  };
+// Google client ID/secret come from the environment (.env locally, an
+// Encrypted App Platform var in production) rather than Meteor.settings, so
+// they never end up committed to source control.
+const googleService = {
+  clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
+  secret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
 };
-const googleService = privateSettings.oAuth?.google ?? {};
 
 ServiceConfiguration.configurations
   .upsertAsync(

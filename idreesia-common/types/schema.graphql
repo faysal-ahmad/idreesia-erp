@@ -207,7 +207,7 @@ extend type Query {
   pagedJobLogs(filter: JobLogsFilterType): PagedJobLogsType
     @checkPermissions(permissions: [ADMIN_VIEW_JOBS, ADMIN_MANAGE_JOBS])
 
-  # False when Meteor.settings.private.jobs.enabled is off (or the server
+  # False when the JOBS_ENABLED env var is off (or the server
   # hasn't finished starting up yet) - queued/scheduled jobs will never run
   # while this is false, even though they can still be created.
   isJobProcessorActive: Boolean

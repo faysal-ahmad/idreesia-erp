@@ -51,165 +51,167 @@ interface AccountsPrivateApi {
 }
 const AccountsPrivate = Accounts as unknown as AccountsPrivateApi;
 
-Meteor.startup(() => {
-  const app = express();
-  const storage = multer.memoryStorage();
-  const upload = multer({ storage });
+export function setupRestEndpoints() {
+  Meteor.startup(() => {
+    const app = express();
+    const storage = multer.memoryStorage();
+    const upload = multer({ storage });
 
-  /**
-   * Endpoint for reports generation
-   */
-  app.get(
-    '/generate-report',
-    bodyParser.urlencoded({ extended: false }),
-    Meteor.bindEnvironment(async (req: Request, res: Response) => {
-      const { reportName, reportArgs } = req.query;
-      const reportGenerator =
-        typeof reportName === 'string'
-          ? ReportGenerators[reportName as ReportName]
-          : undefined;
-      const normalizedReportArgs = Array.isArray(reportArgs)
-        ? String(reportArgs[0] ?? '')
-        : String(reportArgs ?? '');
-      if (reportGenerator) {
-        const report = await reportGenerator(normalizedReportArgs);
-        res.writeHead(200, {
-          'Content-Type': 'application/vnd.ms-excel',
-          'Content-Disposition': `attachment; filename=${kebabCase(
-            String(reportName)
-          )}.xlsx`,
-        });
-        res.end(report);
-      } else {
-        // eslint-disable-next-line no-console
-        console.warn(`Report generator not found for ${reportName}`);
-        res.writeHead(404);
-        res.end();
-      }
-    })
-  );
-
-  /**
-   * Endpoint for file downloads
-   */
-  app.get(
-    '/download-file',
-    bodyParser.urlencoded({ extended: false }),
-    Meteor.bindEnvironment(async (req: Request, res: Response) => {
-      const { attachmentId } = req.query;
-      if (typeof attachmentId === 'string') {
-        const attachment = await Attachments.findOneAsync(attachmentId);
-        if (attachment) {
-          const imgData = Buffer.from(attachment.data, 'base64');
-          res.removeHeader('Pragma');
-          res.removeHeader('Expires');
+    /**
+     * Endpoint for reports generation
+     */
+    app.get(
+      '/generate-report',
+      bodyParser.urlencoded({ extended: false }),
+      Meteor.bindEnvironment(async (req: Request, res: Response) => {
+        const { reportName, reportArgs } = req.query;
+        const reportGenerator =
+          typeof reportName === 'string'
+            ? ReportGenerators[reportName as ReportName]
+            : undefined;
+        const normalizedReportArgs = Array.isArray(reportArgs)
+          ? String(reportArgs[0] ?? '')
+          : String(reportArgs ?? '');
+        if (reportGenerator) {
+          const report = await reportGenerator(normalizedReportArgs);
           res.writeHead(200, {
-            'Content-Type': attachment.mimeType,
-            'Cache-Control': `max-age=${365 * 24 * 60 * 60}`,
+            'Content-Type': 'application/vnd.ms-excel',
+            'Content-Disposition': `attachment; filename=${kebabCase(
+              String(reportName)
+            )}.xlsx`,
           });
-          res.end(imgData);
+          res.end(report);
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn(`Report generator not found for ${reportName}`);
+          res.writeHead(404);
+          res.end();
+        }
+      })
+    );
+
+    /**
+     * Endpoint for file downloads
+     */
+    app.get(
+      '/download-file',
+      bodyParser.urlencoded({ extended: false }),
+      Meteor.bindEnvironment(async (req: Request, res: Response) => {
+        const { attachmentId } = req.query;
+        if (typeof attachmentId === 'string') {
+          const attachment = await Attachments.findOneAsync(attachmentId);
+          if (attachment) {
+            const imgData = Buffer.from(attachment.data, 'base64');
+            res.removeHeader('Pragma');
+            res.removeHeader('Expires');
+            res.writeHead(200, {
+              'Content-Type': attachment.mimeType,
+              'Cache-Control': `max-age=${365 * 24 * 60 * 60}`,
+            });
+            res.end(imgData);
+          } else {
+            res.writeHead(404);
+            res.end();
+          }
         } else {
           res.writeHead(404);
           res.end();
         }
-      } else {
-        res.writeHead(404);
-        res.end();
-      }
-    })
-  );
+      })
+    );
 
-  /**
-   * Endpoint for file uploads
-   */
-  app.post(
-    '/upload-file',
-    upload.single('file') as any,
-    Meteor.bindEnvironment(async (req: Request, res: Response) => {
-      const { file } = req as Request & {
-        file: Express.Multer.File;
-      };
-      const attachment = {
-        name: file.originalname,
-        mimeType: file.mimetype,
-        data: file.buffer.toString('base64'),
-      };
-      const attachmentId = await Attachments.insertAsync(attachment);
-      res.writeHead(200);
-      res.end(attachmentId);
-    })
-  );
+    /**
+     * Endpoint for file uploads
+     */
+    app.post(
+      '/upload-file',
+      upload.single('file') as any,
+      Meteor.bindEnvironment(async (req: Request, res: Response) => {
+        const { file } = req as Request & {
+          file: Express.Multer.File;
+        };
+        const attachment = {
+          name: file.originalname,
+          mimeType: file.mimetype,
+          data: file.buffer.toString('base64'),
+        };
+        const attachmentId = await Attachments.insertAsync(attachment);
+        res.writeHead(200);
+        res.end(attachmentId);
+      })
+    );
 
-  /**
-   * Endpoint for external (non-Meteor) clients to exchange a username/email
-   * and password for a Meteor login token, for use as the GraphQL API's
-   * `Authorization` header.
-   */
-  app.post(
-    '/login',
-    bodyParser.json(),
-    Meteor.bindEnvironment(async (req: Request, res: Response) => {
-      const { username, email, password } = req.body ?? {};
-      if ((!username && !email) || typeof password !== 'string') {
-        res.writeHead(400);
-        res.end();
-        return;
-      }
+    /**
+     * Endpoint for external (non-Meteor) clients to exchange a username/email
+     * and password for a Meteor login token, for use as the GraphQL API's
+     * `Authorization` header.
+     */
+    app.post(
+      '/login',
+      bodyParser.json(),
+      Meteor.bindEnvironment(async (req: Request, res: Response) => {
+        const { username, email, password } = req.body ?? {};
+        if ((!username && !email) || typeof password !== 'string') {
+          res.writeHead(400);
+          res.end();
+          return;
+        }
 
-      const user = await AccountsPrivate._findUserByQuery(
-        username ? { username } : { email },
-        { fields: { services: 1 } }
-      );
+        const user = await AccountsPrivate._findUserByQuery(
+          username ? { username } : { email },
+          { fields: { services: 1 } }
+        );
 
-      if (!user || !user.services?.password) {
-        res.writeHead(401);
-        res.end();
-        return;
-      }
+        if (!user || !user.services?.password) {
+          res.writeHead(401);
+          res.end();
+          return;
+        }
 
-      const { error, userId } = await AccountsPrivate._checkPasswordAsync(
-        user,
-        password
-      );
-      if (error) {
-        res.writeHead(401);
-        res.end();
-        return;
-      }
+        const { error, userId } = await AccountsPrivate._checkPasswordAsync(
+          user,
+          password
+        );
+        if (error) {
+          res.writeHead(401);
+          res.end();
+          return;
+        }
 
-      const stampedLoginToken = AccountsPrivate._generateStampedLoginToken();
-      await AccountsPrivate._insertLoginToken(userId, stampedLoginToken);
+        const stampedLoginToken = AccountsPrivate._generateStampedLoginToken();
+        await AccountsPrivate._insertLoginToken(userId, stampedLoginToken);
 
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(
-        JSON.stringify({
-          userId,
-          token: stampedLoginToken.token,
-          tokenExpires: AccountsPrivate._tokenExpiration(
-            stampedLoginToken.when
-          ),
-        })
-      );
-    })
-  );
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(
+          JSON.stringify({
+            userId,
+            token: stampedLoginToken.token,
+            tokenExpires: AccountsPrivate._tokenExpiration(
+              stampedLoginToken.when
+            ),
+          })
+        );
+      })
+    );
 
-  /**
-   * Endpoint for base64 image uploads
-   */
-  app.post(
-    '/upload-base64-file',
-    bodyParser.json({ limit: '5mb' }),
-    Meteor.bindEnvironment(async (req: Request, res: Response) => {
-      const { name, mimeType, data } = req.body;
-      const attachment = {
-        name,
-        mimeType,
-        data,
-      };
-      const attachmentId = await Attachments.insertAsync(attachment);
-      res.send(JSON.stringify({ attachmentId }));
-    })
-  );
+    /**
+     * Endpoint for base64 image uploads
+     */
+    app.post(
+      '/upload-base64-file',
+      bodyParser.json({ limit: '5mb' }),
+      Meteor.bindEnvironment(async (req: Request, res: Response) => {
+        const { name, mimeType, data } = req.body;
+        const attachment = {
+          name,
+          mimeType,
+          data,
+        };
+        const attachmentId = await Attachments.insertAsync(attachment);
+        res.send(JSON.stringify({ attachmentId }));
+      })
+    );
 
-  WebApp.connectHandlers.use(app as any);
-});
+    WebApp.connectHandlers.use(app as any);
+  });
+}

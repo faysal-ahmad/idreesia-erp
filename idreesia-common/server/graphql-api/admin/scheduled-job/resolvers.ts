@@ -1,6 +1,7 @@
 import type { JobState, LogLevel, JobLogEvent } from 'agenda';
 
 import agenda from 'meteor/idreesia-common/server/business-logic/jobs/agenda-instance';
+import { isJobProcessorAlive } from 'meteor/idreesia-common/server/business-logic/jobs/job-processor-heartbeat';
 import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 import { EntityType, OperationType } from 'meteor/idreesia-common/constants/audit';
 
@@ -32,8 +33,8 @@ function requireUser(user: ResolverContext['user']) {
   return user;
 }
 
-function requireActiveProcessor() {
-  if (!agenda.isActiveJobProcessor()) {
+async function requireActiveProcessor() {
+  if (!(await isJobProcessorAlive())) {
     throw new Error(
       'The job processor is not running (JOBS_ENABLED is off), so this would never actually run. Enable it and restart the server first.'
     );
@@ -129,7 +130,7 @@ export default {
       };
     },
 
-    isJobProcessorActive: () => agenda.isActiveJobProcessor(),
+    isJobProcessorActive: () => isJobProcessorAlive(),
   },
 
   Mutation: {
@@ -139,7 +140,7 @@ export default {
       { user }: ResolverContext
     ) => {
       const _user = requireUser(user);
-      requireActiveProcessor();
+      await requireActiveProcessor();
 
       // Creates a NEW job document - this does not re-run any specific
       // existing row from the list, it enqueues a fresh immediate run of
@@ -163,7 +164,7 @@ export default {
       { user }: ResolverContext
     ) => {
       const _user = requireUser(user);
-      requireActiveProcessor();
+      await requireActiveProcessor();
       const job = await agenda.db.getJobById(_id);
       if (!job) {
         throw new Error('Job not found.');

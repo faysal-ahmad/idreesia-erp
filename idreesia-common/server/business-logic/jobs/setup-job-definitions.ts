@@ -14,25 +14,40 @@ import JOB_DEFINITIONS_REGISTRY from './job-definitions-registry';
 export async function setupJobDefinitions() {
   const registryNames = new Set(JOB_DEFINITIONS_REGISTRY.map(def => def.name));
 
+  // Enforces at the database level what the upsert below relies on: without
+  // a unique index, two processes racing an upsert on a non-_id filter can
+  // each decide "no match" and both insert - createIndex is a no-op once the
+  // index already exists, so safe to call on every boot.
+  await JobDefinitions.rawCollection().createIndex({ name: 1 }, { unique: true });
+
   for (const def of JOB_DEFINITIONS_REGISTRY) {
     agenda.define(def.name, def.handler);
 
-    const existing = await JobDefinitions.findOneAsync({ name: def.name });
-    if (!existing) {
-      const date = new Date();
-      await JobDefinitions.insertAsync({
-        name: def.name,
-        displayName: def.displayName,
-        // Omitted (not null) for a manual-only job, matching the optional
-        // schema fields - see JobDefinitionDocument.
-        ...(def.defaultSchedule
-          ? { defaultSchedule: def.defaultSchedule, schedule: def.defaultSchedule }
-          : {}),
-        enabled: true,
-        createdAt: date,
-        updatedAt: date,
-      });
-    }
+    // Atomic upsert (not read-then-insert) - the web and jobs pm2 processes
+    // both call setupJobDefinitions() on boot. bypassCollection2 is required
+    // here: collection2's updateAsync refuses a non-_id selector ("ID is
+    // required in job-definitions updateAsync"), so schema validation is
+    // skipped for this internal seed write - every field below is already
+    // set explicitly, matching what the schema would otherwise fill in.
+    const date = new Date();
+    await JobDefinitions.updateAsync(
+      { name: def.name },
+      {
+        $setOnInsert: {
+          name: def.name,
+          displayName: def.displayName,
+          // Omitted (not null) for a manual-only job, matching the optional
+          // schema fields - see JobDefinitionDocument.
+          ...(def.defaultSchedule
+            ? { defaultSchedule: def.defaultSchedule, schedule: def.defaultSchedule }
+            : {}),
+          enabled: true,
+          createdAt: date,
+          updatedAt: date,
+        },
+      },
+      { upsert: true, bypassCollection2: true }
+    );
   }
 
   const existingDefs: JobDefinitionDocument[] = await JobDefinitions.find().fetchAsync();

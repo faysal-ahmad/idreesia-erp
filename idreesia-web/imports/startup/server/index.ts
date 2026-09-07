@@ -10,7 +10,6 @@ config({
 });
 
 import './configure-services';
-import './setup-rest-endpoints';
 import './migrations';
 
 import express from 'express';
@@ -26,50 +25,61 @@ import {
   CheckInstanceAccessDirective,
 } from 'meteor/idreesia-common/server/graphql-api/_directives';
 import { setupAgenda } from './setup-agenda';
+import { setupRestEndpoints } from './setup-rest-endpoints';
 import { getUser } from './get-user';
 import { apolloErrorFormatter } from './apollo-error-formatter';
 
-// Build GraphQL schema based on SDL definitions and resolvers maps
-let schema: any = makeExecutableSchema({
-  typeDefs: typeDefs as any,
-  resolvers: resolvers as any,
-});
+// The jobs-only pm2 process (see ecosystem.config.js) never receives HTTP
+// traffic on its unexposed port, so mounting GraphQL/REST there is pure
+// waste - skip it entirely for that role. Defaults to true so local dev and
+// the web pm2 process are unaffected.
+const webServerEnabled = process.env.WEB_SERVER_ENABLED !== 'false';
 
-schema = CheckPermissionsDirective(schema) as any;
-schema = CheckInstanceAccessDirective(schema) as any;
+if (webServerEnabled) {
+  setupRestEndpoints();
 
-const server = new ApolloServer({
-  schema: schema as any,
-  formatError: apolloErrorFormatter as any,
-});
-
-const startServer = async () => {
-  await server.start();
-
-  const app = express();
-
-  // Preserve prior behavior: a bare GET to /graphql (e.g. a health check)
-  // gets an empty 200 instead of falling into Apollo's operation handling.
-  app.get('/graphql', (req, res) => {
-    res.end();
+  // Build GraphQL schema based on SDL definitions and resolvers maps
+  let schema: any = makeExecutableSchema({
+    typeDefs: typeDefs as any,
+    resolvers: resolvers as any,
   });
 
-  app.use(
-    '/graphql',
-    cors(),
-    express.json(),
-    expressMiddleware(server, {
-      context: async ({ req }) => ({
-        user: await getUser(req.headers.authorization),
-        loaders: getDataLoaders(),
-      }),
-    })
-  );
+  schema = CheckPermissionsDirective(schema) as any;
+  schema = CheckInstanceAccessDirective(schema) as any;
 
-  WebApp.connectHandlers.use(app);
-};
+  const server = new ApolloServer({
+    schema: schema as any,
+    formatError: apolloErrorFormatter as any,
+  });
 
-startServer();
+  const startServer = async () => {
+    await server.start();
+
+    const app = express();
+
+    // Preserve prior behavior: a bare GET to /graphql (e.g. a health check)
+    // gets an empty 200 instead of falling into Apollo's operation handling.
+    app.get('/graphql', (req, res) => {
+      res.end();
+    });
+
+    app.use(
+      '/graphql',
+      cors(),
+      express.json(),
+      expressMiddleware(server, {
+        context: async ({ req }) => ({
+          user: await getUser(req.headers.authorization),
+          loaders: getDataLoaders(),
+        }),
+      })
+    );
+
+    WebApp.connectHandlers.use(app);
+  };
+
+  startServer();
+}
 
 // Registered after the migrations module's own Meteor.startup (imported
 // above), so the erp-system migration has already run by the time this

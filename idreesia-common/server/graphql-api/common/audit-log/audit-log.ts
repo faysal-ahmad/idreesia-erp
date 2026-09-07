@@ -12,6 +12,7 @@ type AuditLogType {
 
   operationByName: String
   operationByImageId: String
+  operationByImageThumbnailId: String
 }
 
 input AuditLogFilter {

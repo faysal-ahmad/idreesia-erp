@@ -22,6 +22,7 @@ const PAGED_HR_AUDIT_LOGS: TypedDocumentNode<
         operationBy
         operationByName
         operationByImageId
+        operationByImageThumbnailId
       }
     }
   }

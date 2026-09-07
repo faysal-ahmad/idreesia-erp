@@ -137,6 +137,7 @@ export type ResolversTypes = ResolversObject<{
   Permission: Types.Permission;
   PersonEmployeeDataType: ResolverTypeWrapper<Types.PersonEmployeeDataType>;
   PersonFilter: Types.PersonFilter;
+  PersonImageVectorDataType: ResolverTypeWrapper<Types.PersonImageVectorDataType>;
   PersonKarkunDataType: ResolverTypeWrapper<Types.PersonKarkunDataType>;
   PersonSharedDataType: ResolverTypeWrapper<Types.PersonSharedDataType>;
   PersonType: ResolverTypeWrapper<Types.PersonType>;
@@ -228,6 +229,7 @@ export type ResolversParentTypes = ResolversObject<{
   PeopleTagType: Types.PeopleTagType;
   PersonEmployeeDataType: Types.PersonEmployeeDataType;
   PersonFilter: Types.PersonFilter;
+  PersonImageVectorDataType: Types.PersonImageVectorDataType;
   PersonKarkunDataType: Types.PersonKarkunDataType;
   PersonSharedDataType: Types.PersonSharedDataType;
   PersonType: Types.PersonType;
@@ -315,6 +317,7 @@ export type AuditLogTypeResolvers<ContextType = any, ParentType extends Resolver
   entityType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   operationBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   operationByImageId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  operationByImageThumbnailId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   operationByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   operationTime?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   operationType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -848,6 +851,10 @@ export type PersonEmployeeDataTypeResolvers<ContextType = any, ParentType extend
   jobId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
+export type PersonImageVectorDataTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PersonImageVectorDataType'] = ResolversParentTypes['PersonImageVectorDataType']> = ResolversObject<{
+  status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
 export type PersonKarkunDataTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PersonKarkunDataType'] = ResolversParentTypes['PersonKarkunDataType']> = ResolversObject<{
   attachmentIds?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   attachments?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['Attachment']>>>, ParentType, ContextType>;
@@ -877,6 +884,9 @@ export type PersonSharedDataTypeResolvers<ContextType = any, ParentType extends 
   emailAddress?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   image?: Resolver<Types.Maybe<ResolversTypes['Attachment']>, ParentType, ContextType>;
   imageId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  imageThumbnail?: Resolver<Types.Maybe<ResolversTypes['Attachment']>, ParentType, ContextType>;
+  imageThumbnailId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  imageVectorData?: Resolver<Types.Maybe<ResolversTypes['PersonImageVectorDataType']>, ParentType, ContextType>;
   meansOfEarning?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   parentName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1087,6 +1097,7 @@ export type ScheduledJobTypeResolvers<ContextType = any, ParentType extends Reso
   lastRunAt?: Resolver<Types.Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   nextRunAt?: Resolver<Types.Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  progress?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   repeatInterval?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
@@ -1097,12 +1108,14 @@ export type SecurityLogTypeResolvers<ContextType = any, ParentType extends Resol
   dataSourceDetail?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   operationBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   operationByImageId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  operationByImageThumbnailId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   operationByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   operationDetails?: Resolver<Types.Maybe<ResolversTypes['JSONObject']>, ParentType, ContextType>;
   operationTime?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   operationType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   userId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   userImageId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userImageThumbnailId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   userName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
@@ -1283,6 +1296,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PagedVisitorType?: PagedVisitorTypeResolvers<ContextType>;
   PeopleTagType?: PeopleTagTypeResolvers<ContextType>;
   PersonEmployeeDataType?: PersonEmployeeDataTypeResolvers<ContextType>;
+  PersonImageVectorDataType?: PersonImageVectorDataTypeResolvers<ContextType>;
   PersonKarkunDataType?: PersonKarkunDataTypeResolvers<ContextType>;
   PersonSharedDataType?: PersonSharedDataTypeResolvers<ContextType>;
   PersonType?: PersonTypeResolvers<ContextType>;

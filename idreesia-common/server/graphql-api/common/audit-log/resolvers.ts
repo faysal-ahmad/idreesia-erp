@@ -9,6 +9,7 @@ interface PersonRecord {
   sharedData?: {
     name?: string;
     imageId?: string;
+    imageThumbnailId?: string;
   };
 }
 
@@ -29,6 +30,15 @@ export default {
         ? ((await People.findOneAsync(user.personId)) as PersonRecord | null)
         : null;
       if (person) return person.sharedData?.imageId;
+      return null;
+    },
+
+    operationByImageThumbnailId: async (auditLogType: AuditLogType) => {
+      const user = await Users.findOneUser(auditLogType.operationBy);
+      const person = user.personId
+        ? ((await People.findOneAsync(user.personId)) as PersonRecord | null)
+        : null;
+      if (person) return person.sharedData?.imageThumbnailId;
       return null;
     },
   },

@@ -29,6 +29,7 @@ interface Person {
 
 interface PersonSharedDataType {
   imageId?: string;
+  imageThumbnailId?: string;
   tagIds?: string[];
 }
 
@@ -80,6 +81,18 @@ export default {
       const { imageId } = personSharedDataType;
       if (imageId) {
         return loaders.common.attachments.load(imageId);
+      }
+
+      return null;
+    },
+    imageThumbnail: async (
+      personSharedDataType: PersonSharedDataType,
+      _args: unknown,
+      { loaders }: ResolverContext
+    ) => {
+      const { imageThumbnailId } = personSharedDataType;
+      if (imageThumbnailId) {
+        return loaders.common.attachments.load(imageThumbnailId);
       }
 
       return null;

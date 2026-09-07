@@ -20,6 +20,7 @@ const PAGED_HR_KARKUNS: TypedDocumentNode<
           contactNumber1
           contactNumber2
           imageId
+          imageThumbnailId
         }
         karkunData {
           lastTarteebDate

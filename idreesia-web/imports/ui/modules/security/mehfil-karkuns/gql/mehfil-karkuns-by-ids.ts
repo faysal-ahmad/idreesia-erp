@@ -34,6 +34,10 @@ export const MEHFIL_KARKUNS_BY_IDS: TypedDocumentNode<
             _id
             data
           }
+          imageThumbnail {
+            _id
+            data
+          }
         }
         visitorData {
           city

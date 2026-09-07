@@ -141,6 +141,17 @@ const SearchResult = ({ cnicNumbers }: SearchResultProps) => {
                   showDutyColumn
                   showNewButton
                   showActionsColumn
+                  visitor={{
+                    name,
+                    parentName,
+                    cnicNumber,
+                    referenceName,
+                    contactNumber1,
+                    imageId,
+                    city,
+                    country,
+                    criminalRecord,
+                  }}
                 />
               ),
             },

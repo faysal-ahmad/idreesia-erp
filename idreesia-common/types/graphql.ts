@@ -74,6 +74,7 @@ export type AuditLogType = {
   entityType?: Maybe<Scalars['String']['output']>;
   operationBy?: Maybe<Scalars['String']['output']>;
   operationByImageId?: Maybe<Scalars['String']['output']>;
+  operationByImageThumbnailId?: Maybe<Scalars['String']['output']>;
   operationByName?: Maybe<Scalars['String']['output']>;
   operationTime?: Maybe<Scalars['String']['output']>;
   operationType?: Maybe<Scalars['String']['output']>;
@@ -1660,6 +1661,11 @@ export type PersonFilter = {
   updatedBetween?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type PersonImageVectorDataType = {
+  __typename?: 'PersonImageVectorDataType';
+  status?: Maybe<Scalars['String']['output']>;
+};
+
 export type PersonKarkunDataType = {
   __typename?: 'PersonKarkunDataType';
   attachmentIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -1691,6 +1697,9 @@ export type PersonSharedDataType = {
   emailAddress?: Maybe<Scalars['String']['output']>;
   image?: Maybe<Attachment>;
   imageId?: Maybe<Scalars['String']['output']>;
+  imageThumbnail?: Maybe<Attachment>;
+  imageThumbnailId?: Maybe<Scalars['String']['output']>;
+  imageVectorData?: Maybe<PersonImageVectorDataType>;
   meansOfEarning?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   parentName?: Maybe<Scalars['String']['output']>;
@@ -2293,6 +2302,7 @@ export type ScheduledJobType = {
   lastRunAt?: Maybe<Scalars['DateTime']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   nextRunAt?: Maybe<Scalars['DateTime']['output']>;
+  progress?: Maybe<Scalars['Int']['output']>;
   repeatInterval?: Maybe<Scalars['String']['output']>;
   status?: Maybe<Scalars['String']['output']>;
 };
@@ -2317,12 +2327,14 @@ export type SecurityLogType = {
   dataSourceDetail?: Maybe<Scalars['String']['output']>;
   operationBy?: Maybe<Scalars['String']['output']>;
   operationByImageId?: Maybe<Scalars['String']['output']>;
+  operationByImageThumbnailId?: Maybe<Scalars['String']['output']>;
   operationByName?: Maybe<Scalars['String']['output']>;
   operationDetails?: Maybe<Scalars['JSONObject']['output']>;
   operationTime?: Maybe<Scalars['String']['output']>;
   operationType?: Maybe<Scalars['String']['output']>;
   userId?: Maybe<Scalars['String']['output']>;
   userImageId?: Maybe<Scalars['String']['output']>;
+  userImageThumbnailId?: Maybe<Scalars['String']['output']>;
   userName?: Maybe<Scalars['String']['output']>;
 };
 

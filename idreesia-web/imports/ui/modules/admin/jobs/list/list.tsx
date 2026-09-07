@@ -2,7 +2,7 @@ import React from 'react';
 import dayjs from 'dayjs';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { type History } from 'history';
-import { Alert, Button, Pagination, Popconfirm, Space, Spin, Table, Tag } from 'antd';
+import { Alert, Button, Pagination, Popconfirm, Progress, Space, Spin, Table, Tag } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import { useBreadcrumbs, useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
@@ -30,6 +30,12 @@ const StatusColors: Record<string, string> = {
   repeating: 'purple',
   paused: 'default',
 };
+
+const ProgressStatuses: Record<string, 'exception' | 'active' | 'normal'> = {
+  failed: 'exception',
+  running: 'active',
+};
+const getProgressStatus = (status: string) => ProgressStatuses[status] ?? 'normal';
 
 // nextRunAt/lastRunAt/lastFinishedAt arrive as ISO-8601 UTC strings (the
 // DateTime scalar) - dayjs parses that and formats in the browser's local
@@ -152,10 +158,17 @@ const List = ({ history, location }: ListProps) => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      width: 130,
-      render: (statusValue: string) => (
-        <Tag color={StatusColors[statusValue]}>{statusValue}</Tag>
-      ),
+      width: 180,
+      render: (statusValue: string, record: JobRow) =>
+        statusValue === 'running' && record.progress != null ? (
+          <Progress
+            percent={record.progress}
+            size="small"
+            status={getProgressStatus(statusValue)}
+          />
+        ) : (
+          <Tag color={StatusColors[statusValue]}>{statusValue}</Tag>
+        ),
     },
     {
       title: 'Next Run At',

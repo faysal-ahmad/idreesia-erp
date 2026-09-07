@@ -16,6 +16,7 @@ const PAGED_SCHEDULED_JOBS: TypedDocumentNode<
         _id
         name
         status
+        progress
         nextRunAt
         lastRunAt
         lastFinishedAt

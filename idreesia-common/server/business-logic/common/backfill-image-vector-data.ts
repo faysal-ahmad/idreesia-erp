@@ -1,11 +1,14 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import type { ProgressReporter } from 'meteor/idreesia-common/server/business-logic/jobs/report-progress';
 import { computeImageVectorData } from './compute-image-vector-data';
 
 // Sequential/blocking by design - these OpenCV calls aren't parallelizable without worker
 // threads, and this is only ever run manually (no defaultSchedule - see job-definitions-registry.ts)
 // precisely because of how long the initial backlog takes; see the "Backfill" section of the
 // computing-face-vectors-in-idreesia-erp plan doc for the measured ~13-22 minute one-time cost.
-export async function backfillImageVectorData(): Promise<number> {
+export async function backfillImageVectorData(
+  reportProgress?: ProgressReporter
+): Promise<number> {
   let counter = 0;
 
   // A person only ever lacks `imageVectorData` entirely if it's never been attempted -
@@ -26,6 +29,7 @@ export async function backfillImageVectorData(): Promise<number> {
       $set: { 'sharedData.imageVectorData': imageVectorData },
     });
     counter++;
+    await reportProgress?.(counter / people.length);
   }
 
   return counter;

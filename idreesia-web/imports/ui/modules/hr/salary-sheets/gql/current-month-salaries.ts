@@ -38,6 +38,7 @@ const CURRENT_MONTH_SALARIES: TypedDocumentNode<
           name
           parentName
           imageId
+          imageThumbnailId
           cnicNumber
           contactNumber1
         }

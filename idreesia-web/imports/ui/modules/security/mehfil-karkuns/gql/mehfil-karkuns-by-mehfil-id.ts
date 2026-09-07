@@ -23,6 +23,7 @@ export const MEHFIL_KARKUNS_BY_MEHFIL_ID: TypedDocumentNode<
         sharedData {
           name
           imageId
+          imageThumbnailId
           cnicNumber
           contactNumber1
           contactNumber2

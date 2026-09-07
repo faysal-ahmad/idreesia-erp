@@ -58,6 +58,7 @@
     "redux": "^4.2.0",
     "request": "^2.88.2",
     "rxjs": "^7.8.2",
+    "sharp": "^0.34.4",
     "simpl-schema": "^3.2.0"
   },
   "resolutions": {

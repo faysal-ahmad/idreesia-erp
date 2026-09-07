@@ -149,6 +149,7 @@ type ScheduledJobType {
   _id: String
   name: String
   status: String
+  progress: Int
   nextRunAt: DateTime
   lastRunAt: DateTime
   lastFinishedAt: DateTime
@@ -399,6 +400,7 @@ type AuditLogType {
 
   operationByName: String
   operationByImageId: String
+  operationByImageThumbnailId: String
 }
 
 input AuditLogFilter {
@@ -443,6 +445,10 @@ type PagedKarkunType {
   data: [PersonType]
 }
 
+type PersonImageVectorDataType {
+  status: String
+}
+
 type PersonSharedDataType {
   name: String
   parentName: String
@@ -460,9 +466,12 @@ type PersonSharedDataType {
   deathDate: String
   referenceName: String
   imageId: String
+  imageThumbnailId: String
+  imageVectorData: PersonImageVectorDataType
   tagIds: [String]
 
   image: Attachment
+  imageThumbnail: Attachment
   tags: [PeopleTagType]
 }
 
@@ -560,8 +569,10 @@ type SecurityLogType {
 
   userName: String
   userImageId: String
+  userImageThumbnailId: String
   operationByName: String
   operationByImageId: String
+  operationByImageThumbnailId: String
 }
 
 input SecurityLogFilter {

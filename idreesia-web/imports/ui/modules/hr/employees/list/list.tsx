@@ -24,7 +24,7 @@ import { message } from '/imports/ui/antd-feedback';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import type { HrPeoplePagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
-import { KarkunName } from '/imports/ui/modules/hr/common/controls';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
 import AddEmployeeButton from './add-employee-button';
 import ListFilter, {
   EmployeesFilterChips,
@@ -200,13 +200,14 @@ const List = ({
       if (!record._id || !record.sharedData?.name) return null;
 
       return (
-        <KarkunName
-          karkun={{
+        <PersonName
+          person={{
             _id: record._id,
             name: record.sharedData.name,
             imageId: record.sharedData.imageId ?? undefined,
+            imageThumbnailId: record.sharedData.imageThumbnailId ?? undefined,
           }}
-          onKarkunNameClicked={() => handleItemSelected(record)}
+          onPersonNameClicked={() => handleItemSelected(record)}
         />
       );
     },

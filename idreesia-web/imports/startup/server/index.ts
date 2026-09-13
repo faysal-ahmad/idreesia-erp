@@ -66,7 +66,9 @@ if (webServerEnabled) {
     app.use(
       '/graphql',
       cors(),
-      express.json(),
+      // Face search posts a captured photo as a base64 variable, which blows past the 100kb
+      // default at higher zoom levels. Matches the limit on /upload-base64-file.
+      express.json({ limit: '5mb' }),
       expressMiddleware(server, {
         context: async ({ req }) => ({
           user: await getUser(req.headers.authorization),

@@ -136,24 +136,35 @@ function getSimilarityTransformMatrix(
     [m[1][0] * n[0][0] + m[1][1] * n[1][0], m[1][0] * n[0][1] + m[1][1] * n[1][1]],
   ];
 
+  // svd2x2 returns V with the right singular vectors as its COLUMNS, i.e. A = U * S * V^T.
+  // Umeyama's rotation is U * diag(d) * V^T, so V has to be transposed here. Without this the
+  // estimate is wrong for every input - even landmarks already sitting exactly on DST_POINTS came
+  // back ~54px out in a 112x112 crop, so no face was ever actually aligned.
+  const transpose2 = (
+    m: [[number, number], [number, number]]
+  ): [[number, number], [number, number]] => [
+    [m[0][0], m[1][0]],
+    [m[0][1], m[1][1]],
+  ];
+
   let t: [[number, number], [number, number]];
   if (rank === 1) {
     if (detU * detVt > 0) {
-      t = matMul2(U, V);
+      t = matMul2(U, transpose2(V));
     } else {
       const d1 = -1;
       const ud: [[number, number], [number, number]] = [
         [U[0][0], U[0][1] * d1],
         [U[1][0], U[1][1] * d1],
       ];
-      t = matMul2(ud, V);
+      t = matMul2(ud, transpose2(V));
     }
   } else {
     const ud: [[number, number], [number, number]] = [
       [U[0][0] * d[0], U[0][1] * d[1]],
       [U[1][0] * d[0], U[1][1] * d[1]],
     ];
-    t = matMul2(ud, V);
+    t = matMul2(ud, transpose2(V));
   }
 
   let var1 = 0;

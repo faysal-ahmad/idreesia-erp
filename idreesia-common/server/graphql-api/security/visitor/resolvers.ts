@@ -1,8 +1,18 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import { computeImageVectorData } from 'meteor/idreesia-common/server/business-logic/common';
-import { DataSource } from 'meteor/idreesia-common/constants';
+import {
+  computeImageVectorData,
+  computeVectorFromImageBuffer,
+  searchPeopleByFaceVector,
+} from 'meteor/idreesia-common/server/business-logic/common';
+import { DataSource, ImageVectorStatus } from 'meteor/idreesia-common/constants';
 
 import { processCsvData } from './helpers';
+
+// The capture control sends a canvas data URL; tolerate it with or without the prefix.
+const stripDataUrlPrefix = (imageData: string) =>
+  imageData.replace(/^data:image\/[a-zA-Z+]+;base64,/, '');
+
+const DEFAULT_FACE_SEARCH_LIMIT = 5;
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -33,6 +43,22 @@ const resolvers: ResolverMap = {
       obj,
       { cnicNumber, contactNumber }
     ) => People.findByCnicOrContactNumber(cnicNumber, contactNumber),
+
+    securityFaceVectorFromImage: async (obj, { imageData }) => {
+      const { vector, status } = computeVectorFromImageBuffer(
+        Buffer.from(stripDataUrlPrefix(imageData), 'base64')
+      );
+
+      // Only hand back a vector the caller can actually search with - every other status is a
+      // reason for the dialog to ask for a different photo.
+      return {
+        status,
+        vector: status === ImageVectorStatus.COMPUTED ? vector : null,
+      };
+    },
+
+    securityVisitorsByFaceVector: async (obj, { vector, limit }) =>
+      searchPeopleByFaceVector(vector, limit ?? DEFAULT_FACE_SEARCH_LIMIT),
   },
 
   Mutation: {

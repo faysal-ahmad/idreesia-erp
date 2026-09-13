@@ -3,6 +3,21 @@ import React, { Component } from 'react';
 import { debounce } from 'meteor/idreesia-common/utilities/lodash';
 import { Col, Input, Row } from 'antd';
 
+// A scanned cnic is always a long sequence of key presses. Anything shorter is
+// a stray key press and is ignored instead of being reported as a failed scan.
+const MIN_SCAN_LENGTH = 10;
+
+const isEditableTarget = (target: EventTarget | null) => {
+  if (!(target instanceof HTMLElement)) return false;
+  const tagName = target.tagName;
+  return (
+    tagName === 'INPUT' ||
+    tagName === 'TEXTAREA' ||
+    tagName === 'SELECT' ||
+    target.isContentEditable
+  );
+};
+
 interface Props {
   onCnicCaptured?(codes: string[]): void;
 }
@@ -82,7 +97,7 @@ export default class ScanCnic extends Component<Props, State> {
           this.setState({ codes: barcodes });
           onCnicCaptured?.(barcodes);
         }
-      } else {
+      } else if (scannedInput.length >= MIN_SCAN_LENGTH) {
         onCnicCaptured?.([]);
       }
     },
@@ -91,6 +106,9 @@ export default class ScanCnic extends Component<Props, State> {
   );
 
   handleKeyPress = (event: KeyboardEvent) => {
+    // Key presses made while typing into an input (like the manual cnic field)
+    // are not coming from the scanner, so they should not be buffered.
+    if (isEditableTarget(event.target)) return;
     this.keyBuffer.push(event.key);
     this.sendBarcode();
   };

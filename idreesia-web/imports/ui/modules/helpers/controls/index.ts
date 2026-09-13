@@ -9,6 +9,7 @@ export {
   default as AttendanceDetail,
 } from './attendance-detail/attendance-detail';
 export { default as TakePicture } from './picture/take-picture';
+export { default as SearchByPicture } from './picture/search-by-picture';
 export { default as UploadAttachment } from './upload/upload-attachment';
 export { default as AttachmentsList } from './attachments/attachments-list';
 export { default as PersonName } from './person-name/person-name';

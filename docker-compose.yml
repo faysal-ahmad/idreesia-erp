@@ -1,12 +1,29 @@
-version: "3"
 services:
   mongo:
     build:
       context: ./containers/mongo
+    # The atlas-local runner names the replica set after the container
+    # hostname and starts mongod with --replSet <hostname>. Left to Docker's
+    # random per-container hostname, every recreate invalidates the replica
+    # set config stored in /data/db ("our replica set config is invalid or we
+    # are not a member of it"), so the hostname is pinned here.
+    hostname: mongo
     ports:
       - "27017:27017"
     volumes:
       - mongo-dev:/data/db
+      # The atlas-local runner generates the replica-set keyfile into
+      # /data/configdb on first start only - once /data/db is initialised it
+      # never regenerates it. That path is an anonymous volume in the image,
+      # so a container recreate that drops it leaves mongod starting with
+      # --keyFile pointing at nothing ("Unable to acquire security key[s]").
+      # Naming the volume keeps the keyfile alongside the data it belongs to.
+      - mongo-config-dev:/data/configdb
+      # mongot keeps the search/vector index data here, and unlike /data/db
+      # and /data/configdb the image does not declare it as a volume - so
+      # without this the search indexes are thrown away on every recreate
+      # while the migration that created them stays marked as applied.
+      - mongo-search-dev:/data/mongot
 
   idreesia-web:
     build:
@@ -15,8 +32,8 @@ services:
     platform: linux/amd64
     depends_on:
       - mongo
-    environment:
-      MONGO_URL: mongodb://mongo:27017/idreesia-erp
+    env_file:
+      - ./idreesia-web/.env
     ports:
       - "3000:3000"
     volumes:
@@ -24,12 +41,6 @@ services:
       # Named volumes, not part of the bind-mounted repo above, for
       # everything this container writes to at install/build time - keeps
       # container-owned files out of your actual working tree entirely.
-      #
-      # One volume split via subpaths was tried first, but Docker's subpath
-      # mount requires the subpath to already exist inside the volume - unlike
-      # a plain whole-volume mount, it won't auto-create/seed it, so it fails
-      # outright against a fresh volume. Separate volumes don't have that
-      # problem: each is auto-created and seeded from the image normally.
       - idreesia-web-node-modules:/app/idreesia-web/node_modules
       - idreesia-web-meteor-local:/app/idreesia-web/.meteor/local
       - idreesia-common-node-modules:/app/idreesia-common/node_modules
@@ -66,6 +77,8 @@ services:
 volumes:
   minio-dev: {}
   mongo-dev: {}
+  mongo-config-dev: {}
+  mongo-search-dev: {}
   idreesia-web-node-modules: {}
   idreesia-web-meteor-local: {}
   idreesia-common-node-modules: {}

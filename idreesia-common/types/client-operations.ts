@@ -1302,12 +1302,19 @@ export type PagedSecurityVisitorsQueryVariables = Exact<{
 
 export type PagedSecurityVisitorsQuery = { pagedSecurityVisitors: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, parentName: string | null, referenceName: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null, imageVectorData: { status: string | null } | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
 
+export type SecurityFaceVectorFromImageQueryVariables = Exact<{
+  imageData: string;
+}>;
+
+
+export type SecurityFaceVectorFromImageQuery = { securityFaceVectorFromImage: { status: string | null, vector: Array<number> | null } | null };
+
 export type SecurityVisitorByCnicQueryVariables = Exact<{
   cnicNumbers: Array<string | null | undefined> | string;
 }>;
 
 
-export type SecurityVisitorByCnicQuery = { securityVisitorByCnic: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, ehadDate: string | null, birthDate: string | null, referenceName: string | null, contactNumber1: string | null, imageId: string | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null };
+export type SecurityVisitorByCnicQuery = { securityVisitorByCnic: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageId: string | null } | null, visitorData: { city: string | null } | null } | null };
 
 export type SecurityRegistrationVisitorByIdQueryVariables = Exact<{
   _id: string;
@@ -1315,6 +1322,14 @@ export type SecurityRegistrationVisitorByIdQueryVariables = Exact<{
 
 
 export type SecurityRegistrationVisitorByIdQuery = { securityVisitorById: { _id: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, ehadDate: string | null, birthDate: string | null, referenceName: string | null, contactNumber1: string | null, contactNumber2: string | null, currentAddress: string | null, permanentAddress: string | null, educationalQualification: string | null, meansOfEarning: string | null, imageId: string | null, tagIds: Array<string | null> | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null };
+
+export type SecurityVisitorsByFaceVectorQueryVariables = Exact<{
+  vector: Array<number> | number;
+  limit?: number | null | undefined;
+}>;
+
+
+export type SecurityVisitorsByFaceVectorQuery = { securityVisitorsByFaceVector: Array<{ score: number | null, person: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageId: string | null } | null, visitorData: { city: string | null } | null } | null } | null> | null };
 
 export type SetSecurityVisitorImageMutationVariables = Exact<{
   _id: string;

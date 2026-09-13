@@ -92,6 +92,7 @@ export type ResolversTypes = ResolversObject<{
   DutyType: ResolverTypeWrapper<Types.DutyType>;
   EmailAddress: ResolverTypeWrapper<Types.Scalars['EmailAddress']['output']>;
   FaceVectorRecord: ResolverTypeWrapper<Types.FaceVectorRecord>;
+  FaceVectorResultType: ResolverTypeWrapper<Types.FaceVectorResultType>;
   Float: ResolverTypeWrapper<Types.Scalars['Float']['output']>;
   Int: ResolverTypeWrapper<Types.Scalars['Int']['output']>;
   InventoryStatistics: ResolverTypeWrapper<Types.InventoryStatistics>;
@@ -163,6 +164,7 @@ export type ResolversTypes = ResolversObject<{
   UserType: ResolverTypeWrapper<Types.UserType>;
   UtcOffset: ResolverTypeWrapper<Types.Scalars['UtcOffset']['output']>;
   Vendor: ResolverTypeWrapper<Types.Vendor>;
+  VisitorFaceMatchType: ResolverTypeWrapper<Types.VisitorFaceMatchType>;
   VisitorFilter: Types.VisitorFilter;
   VisitorStayType: ResolverTypeWrapper<Types.VisitorStayType>;
 }>;
@@ -185,6 +187,7 @@ export type ResolversParentTypes = ResolversObject<{
   DutyType: Types.DutyType;
   EmailAddress: Types.Scalars['EmailAddress']['output'];
   FaceVectorRecord: Types.FaceVectorRecord;
+  FaceVectorResultType: Types.FaceVectorResultType;
   Float: Types.Scalars['Float']['output'];
   Int: Types.Scalars['Int']['output'];
   InventoryStatistics: Types.InventoryStatistics;
@@ -255,6 +258,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserType: Types.UserType;
   UtcOffset: Types.Scalars['UtcOffset']['output'];
   Vendor: Types.Vendor;
+  VisitorFaceMatchType: Types.VisitorFaceMatchType;
   VisitorFilter: Types.VisitorFilter;
   VisitorStayType: Types.VisitorStayType;
 }>;
@@ -416,6 +420,11 @@ export type FaceVectorRecordResolvers<ContextType = any, ParentType extends Reso
   computedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   personId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   vector?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType>;
+}>;
+
+export type FaceVectorResultTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['FaceVectorResultType'] = ResolversParentTypes['FaceVectorResultType']> = ResolversObject<{
+  status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  vector?: Resolver<Types.Maybe<Array<ResolversTypes['Float']>>, ParentType, ContextType>;
 }>;
 
 export type InventoryStatisticsResolvers<ContextType = any, ParentType extends ResolversParentTypes['InventoryStatistics'] = ResolversParentTypes['InventoryStatistics']> = ResolversObject<{
@@ -1044,12 +1053,14 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   purchaseFormsByStockItem?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchaseForm']>>>, ParentType, ContextType, RequireFields<Types.QueryPurchaseFormsByStockItemArgs, 'physicalStoreId' | 'stockItemId'>>;
   salariesByIds?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['SalaryType']>>>, ParentType, ContextType, RequireFields<Types.QuerySalariesByIdsArgs, 'ids'>>;
   salariesByMonth?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['SalaryType']>>>, ParentType, ContextType, RequireFields<Types.QuerySalariesByMonthArgs, 'month'>>;
+  securityFaceVectorFromImage?: Resolver<Types.Maybe<ResolversTypes['FaceVectorResultType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityFaceVectorFromImageArgs, 'imageData'>>;
   securityMehfilDutyById?: Resolver<Types.Maybe<ResolversTypes['MehfilDutyType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityMehfilDutyByIdArgs, 'id'>>;
   securityMehfilLangarDishById?: Resolver<Types.Maybe<ResolversTypes['MehfilLangarDishType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityMehfilLangarDishByIdArgs, 'id'>>;
   securityMehfilLangarLocationById?: Resolver<Types.Maybe<ResolversTypes['MehfilLangarLocationType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityMehfilLangarLocationByIdArgs, 'id'>>;
   securityVisitorByCnic?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityVisitorByCnicArgs, 'cnicNumbers'>>;
   securityVisitorByCnicOrContactNumber?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, Partial<Types.QuerySecurityVisitorByCnicOrContactNumberArgs>>;
   securityVisitorById?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityVisitorByIdArgs, '_id'>>;
+  securityVisitorsByFaceVector?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['VisitorFaceMatchType']>>>, ParentType, ContextType, RequireFields<Types.QuerySecurityVisitorsByFaceVectorArgs, 'vector'>>;
   stockAdjustmentById?: Resolver<Types.Maybe<ResolversTypes['StockAdjustment']>, ParentType, ContextType, RequireFields<Types.QueryStockAdjustmentByIdArgs, '_id' | 'physicalStoreId'>>;
   stockAdjustmentsByStockItem?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StockAdjustment']>>>, ParentType, ContextType, RequireFields<Types.QueryStockAdjustmentsByStockItemArgs, 'physicalStoreId' | 'stockItemId'>>;
   stockItemById?: Resolver<Types.Maybe<ResolversTypes['StockItem']>, ParentType, ContextType, RequireFields<Types.QueryStockItemByIdArgs, '_id' | 'physicalStoreId'>>;
@@ -1222,6 +1233,11 @@ export type VendorResolvers<ContextType = any, ParentType extends ResolversParen
   usageCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
+export type VisitorFaceMatchTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['VisitorFaceMatchType'] = ResolversParentTypes['VisitorFaceMatchType']> = ResolversObject<{
+  person?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType>;
+  score?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+}>;
+
 export type VisitorStayTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['VisitorStayType'] = ResolversParentTypes['VisitorStayType']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cancelledDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1259,6 +1275,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   DutyType?: DutyTypeResolvers<ContextType>;
   EmailAddress?: GraphQLScalarType;
   FaceVectorRecord?: FaceVectorRecordResolvers<ContextType>;
+  FaceVectorResultType?: FaceVectorResultTypeResolvers<ContextType>;
   InventoryStatistics?: InventoryStatisticsResolvers<ContextType>;
   IssuanceForm?: IssuanceFormResolvers<ContextType>;
   ItemCategory?: ItemCategoryResolvers<ContextType>;
@@ -1318,6 +1335,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   UserType?: UserTypeResolvers<ContextType>;
   UtcOffset?: GraphQLScalarType;
   Vendor?: VendorResolvers<ContextType>;
+  VisitorFaceMatchType?: VisitorFaceMatchTypeResolvers<ContextType>;
   VisitorStayType?: VisitorStayTypeResolvers<ContextType>;
 }>;
 

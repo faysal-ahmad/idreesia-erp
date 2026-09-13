@@ -142,6 +142,14 @@ declare module 'meteor/mongo' {
       };
       createIndex(keys: unknown, options?: unknown): Promise<string>;
       dropIndex(indexName: string): Promise<unknown>;
+      // Atlas Search / Vector Search index management. Distinct from createIndex above: these are
+      // served by mongot, and are only available on Atlas (or the atlas-local image). Listing goes
+      // through aggregate([{ $listSearchIndexes: {} }]) rather than a dedicated method.
+      createSearchIndex(description: {
+        name: string;
+        type?: string;
+        definition: Record<string, unknown>;
+      }): Promise<string>;
       distinct<TResult = unknown>(
         fieldName: string,
         query?: unknown

@@ -27,6 +27,7 @@ import './stay-cards.css';
 import '../imports/ui/modules/common/visitors/list.styles.css';
 import '../imports/ui/modules/common/visitors/general-info.styles.css';
 import '../imports/ui/modules/common/people/picture.styles.css';
+import '../imports/ui/modules/security/visitor-registeration/scan/result-grid.styles.css';
 
 import App from '../imports/ui/app';
 import { AntdFeedbackBridge } from '../imports/ui/antd-feedback';

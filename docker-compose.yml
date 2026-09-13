@@ -2,10 +2,28 @@ services:
   mongo:
     build:
       context: ./containers/mongo
+    # The atlas-local runner names the replica set after the container
+    # hostname and starts mongod with --replSet <hostname>. Left to Docker's
+    # random per-container hostname, every recreate invalidates the replica
+    # set config stored in /data/db ("our replica set config is invalid or we
+    # are not a member of it"), so the hostname is pinned here.
+    hostname: mongo
     ports:
       - "27017:27017"
     volumes:
       - mongo-dev:/data/db
+      # The atlas-local runner generates the replica-set keyfile into
+      # /data/configdb on first start only - once /data/db is initialised it
+      # never regenerates it. That path is an anonymous volume in the image,
+      # so a container recreate that drops it leaves mongod starting with
+      # --keyFile pointing at nothing ("Unable to acquire security key[s]").
+      # Naming the volume keeps the keyfile alongside the data it belongs to.
+      - mongo-config-dev:/data/configdb
+      # mongot keeps the search/vector index data here, and unlike /data/db
+      # and /data/configdb the image does not declare it as a volume - so
+      # without this the search indexes are thrown away on every recreate
+      # while the migration that created them stays marked as applied.
+      - mongo-search-dev:/data/mongot
 
   idreesia-web:
     build:
@@ -59,6 +77,8 @@ services:
 volumes:
   minio-dev: {}
   mongo-dev: {}
+  mongo-config-dev: {}
+  mongo-search-dev: {}
   idreesia-web-node-modules: {}
   idreesia-web-meteor-local: {}
   idreesia-common-node-modules: {}

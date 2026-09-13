@@ -15,3 +15,9 @@ export {
 export {
   default as IMPORT_SECURITY_VISITORS_CSV_DATA,
 } from './import-security-visitors-csv-data';
+export {
+  default as SECURITY_FACE_VECTOR_FROM_IMAGE,
+} from './security-face-vector-from-image';
+export {
+  default as SECURITY_VISITORS_BY_FACE_VECTOR,
+} from './security-visitors-by-face-vector';

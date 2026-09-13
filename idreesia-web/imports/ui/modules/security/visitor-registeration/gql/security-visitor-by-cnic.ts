@@ -16,17 +16,13 @@ const SECURITY_VISITOR_BY_CNIC: TypedDocumentNode<
         name
         parentName
         cnicNumber
-        ehadDate
-        birthDate
-        referenceName
         contactNumber1
+        contactNumber2
         imageId
       }
       visitorData {
         city
         country
-        criminalRecord
-        otherNotes
       }
     }
   }

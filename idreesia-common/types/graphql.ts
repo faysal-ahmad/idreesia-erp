@@ -172,6 +172,12 @@ export type FaceVectorRecord = {
   vector: Array<Scalars['Float']['output']>;
 };
 
+export type FaceVectorResultType = {
+  __typename?: 'FaceVectorResultType';
+  status?: Maybe<Scalars['String']['output']>;
+  vector?: Maybe<Array<Scalars['Float']['output']>>;
+};
+
 export type InventoryStatistics = {
   __typename?: 'InventoryStatistics';
   itemsVerifiedLessThanThreeMonthsAgo?: Maybe<Scalars['Int']['output']>;
@@ -1854,12 +1860,14 @@ export type Query = {
   purchaseFormsByStockItem?: Maybe<Array<Maybe<PurchaseForm>>>;
   salariesByIds?: Maybe<Array<Maybe<SalaryType>>>;
   salariesByMonth?: Maybe<Array<Maybe<SalaryType>>>;
+  securityFaceVectorFromImage?: Maybe<FaceVectorResultType>;
   securityMehfilDutyById?: Maybe<MehfilDutyType>;
   securityMehfilLangarDishById?: Maybe<MehfilLangarDishType>;
   securityMehfilLangarLocationById?: Maybe<MehfilLangarLocationType>;
   securityVisitorByCnic?: Maybe<PersonType>;
   securityVisitorByCnicOrContactNumber?: Maybe<PersonType>;
   securityVisitorById?: Maybe<PersonType>;
+  securityVisitorsByFaceVector?: Maybe<Array<Maybe<VisitorFaceMatchType>>>;
   stockAdjustmentById?: Maybe<StockAdjustment>;
   stockAdjustmentsByStockItem?: Maybe<Array<Maybe<StockAdjustment>>>;
   stockItemById?: Maybe<StockItem>;
@@ -2180,6 +2188,11 @@ export type QuerySalariesByMonthArgs = {
 };
 
 
+export type QuerySecurityFaceVectorFromImageArgs = {
+  imageData: Scalars['String']['input'];
+};
+
+
 export type QuerySecurityMehfilDutyByIdArgs = {
   id: Scalars['String']['input'];
 };
@@ -2208,6 +2221,12 @@ export type QuerySecurityVisitorByCnicOrContactNumberArgs = {
 
 export type QuerySecurityVisitorByIdArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type QuerySecurityVisitorsByFaceVectorArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  vector: Array<Scalars['Float']['input']>;
 };
 
 
@@ -2438,6 +2457,12 @@ export type Vendor = {
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
   usageCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type VisitorFaceMatchType = {
+  __typename?: 'VisitorFaceMatchType';
+  person?: Maybe<PersonType>;
+  score?: Maybe<Scalars['Float']['output']>;
 };
 
 export type VisitorFilter = {

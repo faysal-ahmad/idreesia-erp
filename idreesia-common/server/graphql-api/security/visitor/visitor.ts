@@ -21,6 +21,19 @@ type PagedVisitorType {
   data: [PersonType]
 }
 
+type FaceVectorResultType {
+  # One of the ImageVectorStatus values: computed | no_face | multiple_faces | too_small | error
+  status: String
+  # Only populated when status is 'computed'
+  vector: [Float!]
+}
+
+type VisitorFaceMatchType {
+  person: PersonType
+  # Raw cosine similarity, not Atlas' normalised score
+  score: Float
+}
+
 extend type Query {
   pagedSecurityVisitors(filter: VisitorFilter): PagedVisitorType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
@@ -32,6 +45,16 @@ extend type Query {
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
   securityVisitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): PersonType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
+  # Step one of face search - embeds the captured photo and reports whether it is usable.
+  # Deliberately does not search, so the capture dialog can report a bad photo and let the
+  # operator retake without leaving the dialog.
+  securityFaceVectorFromImage(imageData: String!): FaceVectorResultType
+  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
+
+  # Step two - matches an already-computed vector against everyone who has one.
+  securityVisitorsByFaceVector(vector: [Float!]!, limit: Int): [VisitorFaceMatchType]
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 }
 

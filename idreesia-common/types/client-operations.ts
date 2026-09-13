@@ -1314,7 +1314,7 @@ export type SecurityVisitorByCnicQueryVariables = Exact<{
 }>;
 
 
-export type SecurityVisitorByCnicQuery = { securityVisitorByCnic: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageId: string | null } | null, visitorData: { city: string | null } | null } | null };
+export type SecurityVisitorByCnicQuery = { securityVisitorByCnic: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null } | null, visitorData: { city: string | null, country: string | null } | null } | null };
 
 export type SecurityRegistrationVisitorByIdQueryVariables = Exact<{
   _id: string;
@@ -1329,7 +1329,7 @@ export type SecurityVisitorsByFaceVectorQueryVariables = Exact<{
 }>;
 
 
-export type SecurityVisitorsByFaceVectorQuery = { securityVisitorsByFaceVector: Array<{ score: number | null, person: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageId: string | null } | null, visitorData: { city: string | null } | null } | null } | null> | null };
+export type SecurityVisitorsByFaceVectorQuery = { securityVisitorsByFaceVector: Array<{ score: number | null, person: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null } | null, visitorData: { city: string | null, country: string | null } | null } | null } | null> | null };
 
 export type SetSecurityVisitorImageMutationVariables = Exact<{
   _id: string;

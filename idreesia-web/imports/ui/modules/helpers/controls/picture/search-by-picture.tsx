@@ -25,13 +25,17 @@ const ErrorStyle = {
 
 interface Props {
   disabled?: boolean;
+  // Split from the dialog title: the button names the action ("Take Picture"), while the dialog
+  // keeps the purpose ("Search by Picture") - its own OK button is what says "Search".
   buttonText?: string;
+  title?: string;
   onVectorComputed(vector: number[]): void;
 }
 
 const SearchByPicture = ({
   disabled = false,
-  buttonText = 'Search by Picture',
+  buttonText = 'Take Picture',
+  title = 'Search by Picture',
   onVectorComputed,
 }: Props) => {
   const [showForm, setShowForm] = useState(false);
@@ -97,7 +101,7 @@ const SearchByPicture = ({
 
       <Modal
         open={showForm}
-        title={buttonText}
+        title={title}
         width={750}
         okText="Search"
         okButtonProps={{ disabled: !hasCapture }}

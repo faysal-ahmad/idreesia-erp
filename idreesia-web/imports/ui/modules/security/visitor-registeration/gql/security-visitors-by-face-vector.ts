@@ -20,10 +20,13 @@ const SECURITY_VISITORS_BY_FACE_VECTOR: TypedDocumentNode<
           name
           parentName
           cnicNumber
+          contactNumber1
+          contactNumber2
           imageId
         }
         visitorData {
           city
+          country
         }
       }
     }

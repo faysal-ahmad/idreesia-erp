@@ -16,10 +16,13 @@ const SECURITY_VISITOR_BY_CNIC: TypedDocumentNode<
         name
         parentName
         cnicNumber
+        contactNumber1
+        contactNumber2
         imageId
       }
       visitorData {
         city
+        country
       }
     }
   }

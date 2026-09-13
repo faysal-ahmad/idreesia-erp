@@ -12,10 +12,13 @@ export interface CardPerson {
     name?: string | null;
     parentName?: string | null;
     cnicNumber?: string | null;
+    contactNumber1?: string | null;
+    contactNumber2?: string | null;
     imageId?: string | null;
   } | null;
   visitorData?: {
     city?: string | null;
+    country?: string | null;
   } | null;
 }
 
@@ -26,8 +29,18 @@ interface Props {
 const VisitorCard = ({ person }: Props) => {
   const history = useHistory();
   const { _id, sharedData, visitorData } = person;
-  const { name, parentName, cnicNumber, imageId } = sharedData ?? {};
-  const { city } = visitorData ?? {};
+  const {
+    name,
+    parentName,
+    cnicNumber,
+    contactNumber1,
+    contactNumber2,
+    imageId,
+  } = sharedData ?? {};
+  const { city, country } = visitorData ?? {};
+
+  // Either half can be missing, so join rather than assuming a "City, Country" pair.
+  const location = [city, country].filter(Boolean).join(', ');
 
   // The full image rather than imageThumbnailId: thumbnails are a 160x160 centre crop, and this
   // card exists so the operator can match a face against the person standing in front of them.
@@ -58,7 +71,16 @@ const VisitorCard = ({ person }: Props) => {
       {parentName ? (
         <div className="visitor-result-card-field">S/O {parentName}</div>
       ) : null}
-      {city ? <div className="visitor-result-card-field">{city}</div> : null}
+      {/* One per line - two numbers side by side overflow the card at narrow widths. */}
+      {contactNumber1 ? (
+        <div className="visitor-result-card-field">{contactNumber1}</div>
+      ) : null}
+      {contactNumber2 ? (
+        <div className="visitor-result-card-field">{contactNumber2}</div>
+      ) : null}
+      {location ? (
+        <div className="visitor-result-card-field">{location}</div>
+      ) : null}
     </Card>
   );
 };

@@ -24,6 +24,7 @@ const CREATE_SECURITY_VISITOR: TypedDocumentNode<
     $permanentAddress: String
     $educationalQualification: String
     $meansOfEarning: String
+    $tagIds: [String]
   ) {
     createSecurityVisitor(
       name: $name
@@ -40,6 +41,7 @@ const CREATE_SECURITY_VISITOR: TypedDocumentNode<
       permanentAddress: $permanentAddress
       educationalQualification: $educationalQualification
       meansOfEarning: $meansOfEarning
+      tagIds: $tagIds
     ) {
       _id
     }

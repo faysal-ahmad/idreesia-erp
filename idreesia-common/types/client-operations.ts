@@ -1276,6 +1276,7 @@ export type CreateSecurityVisitorMutationVariables = Exact<{
   permanentAddress?: string | null | undefined;
   educationalQualification?: string | null | undefined;
   meansOfEarning?: string | null | undefined;
+  tagIds?: Array<string | null | undefined> | string | null | undefined;
 }>;
 
 
@@ -1364,6 +1365,7 @@ export type UpdateSecurityVisitorMutationVariables = Exact<{
   permanentAddress?: string | null | undefined;
   educationalQualification?: string | null | undefined;
   meansOfEarning?: string | null | undefined;
+  tagIds?: Array<string | null | undefined> | string | null | undefined;
 }>;
 
 

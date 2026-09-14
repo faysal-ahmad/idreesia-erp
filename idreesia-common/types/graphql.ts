@@ -808,6 +808,7 @@ export type MutationCreateSecurityVisitorArgs = {
   parentName: Scalars['String']['input'];
   permanentAddress?: InputMaybe<Scalars['String']['input']>;
   referenceName: Scalars['String']['input'];
+  tagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 
@@ -1417,6 +1418,7 @@ export type MutationUpdateSecurityVisitorArgs = {
   parentName: Scalars['String']['input'];
   permanentAddress?: InputMaybe<Scalars['String']['input']>;
   referenceName: Scalars['String']['input'];
+  tagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 

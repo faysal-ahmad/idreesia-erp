@@ -44,7 +44,13 @@ USER node
 # The installer can't write /usr/local/bin as a non-root user, so it installs
 # to $HOME/.meteor only, without erroring - put that on PATH ourselves.
 ENV PATH="/home/node/.meteor:${PATH}"
-RUN curl https://install.meteor.com/ | sh
+# Pinned to match idreesia-web/.meteor/release: an unpinned install grabs
+# whatever Meteor release is "latest" at build time, which drifts from the
+# project's pinned release over time. When that happens, "meteor yarn ..."
+# below auto-switches to the pinned release's tool version - one that never
+# had yarn installed into it via "meteor npm install -g yarn" - and fails
+# with "'yarn' is not a Meteor command".
+RUN curl "https://install.meteor.com/?release=3.5" | sh
 RUN meteor npm install -g yarn
 
 # node_modules/.meteor/local are volume-backed (see docker-compose.yml), so

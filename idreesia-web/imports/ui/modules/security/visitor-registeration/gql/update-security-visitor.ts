@@ -25,6 +25,7 @@ const UPDATE_SECURITY_VISITOR: TypedDocumentNode<
     $permanentAddress: String
     $educationalQualification: String
     $meansOfEarning: String
+    $tagIds: [String]
   ) {
     updateSecurityVisitor(
       _id: $_id
@@ -42,6 +43,7 @@ const UPDATE_SECURITY_VISITOR: TypedDocumentNode<
       permanentAddress: $permanentAddress
       educationalQualification: $educationalQualification
       meansOfEarning: $meansOfEarning
+      tagIds: $tagIds
     ) {
       _id
     }

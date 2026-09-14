@@ -61,6 +61,7 @@ const GeneralInfo = ({ history, visitorId, securityVisitorById }: Props) => {
     meansOfEarning,
     criminalRecord,
     otherNotes,
+    tagIds,
   }: PersonGeneralInfoFormValues) =>
     Promise.all([
       updateSecurityVisitor({
@@ -80,6 +81,7 @@ const GeneralInfo = ({ history, visitorId, securityVisitorById }: Props) => {
           permanentAddress,
           educationalQualification,
           meansOfEarning,
+          tagIds,
         },
       }),
       updateSecurityVisitorNotes({

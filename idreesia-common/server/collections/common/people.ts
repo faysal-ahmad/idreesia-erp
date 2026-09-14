@@ -992,6 +992,7 @@ class People extends AggregatableCollection<PersonDocument> {
         educationalQualification: visitor.educationalQualification,
         meansOfEarning: visitor.meansOfEarning,
         imageId: visitor.imageId,
+        tagIds: visitor.tagIds,
       },
       visitorData: {
         city: visitor.city,

@@ -75,6 +75,7 @@ extend type Mutation {
     educationalQualification: String
     meansOfEarning: String
     imageData: String
+    tagIds: [String]
   ): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
@@ -94,6 +95,7 @@ extend type Mutation {
     permanentAddress: String
     educationalQualification: String
     meansOfEarning: String
+    tagIds: [String]
   ): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 

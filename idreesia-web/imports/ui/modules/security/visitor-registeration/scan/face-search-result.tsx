@@ -20,9 +20,11 @@ const FaceSearchResult = ({ vector }: FaceSearchResultProps) => {
 
   if (vector.length === 0) return null;
 
-  // Already ordered best-first by the server; the score is not surfaced, the ordering carries it.
+  // Already ordered best-first by the server; score is carried along so each card can show it.
   const matches = data?.securityVisitorsByFaceVector ?? [];
-  const people = matches.flatMap(match => (match?.person ? [match.person] : []));
+  const people = matches.flatMap(match =>
+    match?.person ? [{ ...match.person, score: match.score }] : []
+  );
 
   return (
     <ResultGrid

@@ -8,6 +8,8 @@ import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 export interface CardPerson {
   _id?: string | null;
+  // Only set for photo-search results - the CNIC lookup has no notion of a match score.
+  score?: number | null;
   sharedData?: {
     name?: string | null;
     parentName?: string | null;
@@ -28,7 +30,7 @@ interface Props {
 
 const VisitorCard = ({ person }: Props) => {
   const history = useHistory();
-  const { _id, sharedData, visitorData } = person;
+  const { _id, score, sharedData, visitorData } = person;
   const {
     name,
     parentName,
@@ -57,13 +59,20 @@ const VisitorCard = ({ person }: Props) => {
       onClick={handleClick}
       className="visitor-result-card"
       cover={
-        url ? (
-          <img src={url} alt={name ?? 'Visitor'} />
-        ) : (
-          <div className="visitor-result-card-no-image">
-            <UserOutlined />
-          </div>
-        )
+        <div className="visitor-result-card-cover">
+          {url ? (
+            <img src={url} alt={name ?? 'Visitor'} />
+          ) : (
+            <div className="visitor-result-card-no-image">
+              <UserOutlined />
+            </div>
+          )}
+          {score != null ? (
+            <div className="visitor-result-card-match-banner">
+              {Math.round(score * 100)}% match
+            </div>
+          ) : null}
+        </div>
       }
     >
       <div className="visitor-result-card-name">{name}</div>

@@ -27,6 +27,23 @@
   object-position: top center;
 }
 
+.visitor-result-card-cover {
+  position: relative;
+}
+
+.visitor-result-card-match-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
 .visitor-result-card-no-image {
   display: flex;
   align-items: center;

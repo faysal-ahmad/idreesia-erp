@@ -86,6 +86,16 @@ export type ScheduledJobsFilterType = {
   status?: string | null | undefined;
 };
 
+export type SecurityLogFilter = {
+  dataSource?: string | null | undefined;
+  endTime?: string | null | undefined;
+  operationType?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+  startTime?: string | null | undefined;
+  userId?: string | null | undefined;
+};
+
 export type UserFilter = {
   moduleAccess?: string | null | undefined;
   pageIndex?: string | null | undefined;
@@ -261,12 +271,40 @@ export type DeletedPersonByIdQueryVariables = Exact<{
 
 export type DeletedPersonByIdQuery = { deletedPersonById: { _id: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, deletedAt: string | null, deletedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, ehadDate: string | null, birthDate: string | null, referenceName: string | null, contactNumber1: string | null, contactNumber2: string | null, currentAddress: string | null, permanentAddress: string | null, educationalQualification: string | null, meansOfEarning: string | null, imageId: string | null, tagIds: Array<string | null> | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null };
 
+export type DeletedPersonRelationCountsQueryVariables = Exact<{
+  ids: Array<string> | string;
+}>;
+
+
+export type DeletedPersonRelationCountsQuery = { deletedPersonRelationCounts: Array<{ personId: string, total: number, counts: Array<{ name: string, count: number }> }> };
+
+export type HardDeletePersonMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type HardDeletePersonMutation = { hardDeletePerson: number | null };
+
 export type PagedDeletedPeopleQueryVariables = Exact<{
   filter?: Types.PersonFilter | null | undefined;
 }>;
 
 
 export type PagedDeletedPeopleQuery = { pagedDeletedPeople: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
+
+export type RestorePersonMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type RestorePersonMutation = { restorePerson: number | null };
+
+export type DeleteDuplicatePersonMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type DeleteDuplicatePersonMutation = { deleteDuplicatePerson: number | null };
 
 export type DuplicateCnicsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -417,6 +455,21 @@ export type UpdatePhysicalStoreMutationVariables = Exact<{
 
 
 export type UpdatePhysicalStoreMutation = { updatePhysicalStore: { _id: string | null, name: string | null, address: string | null } | null };
+
+export type PagedSecurityLogsQueryVariables = Exact<{
+  filter?: Types.SecurityLogFilter | null | undefined;
+}>;
+
+
+export type PagedSecurityLogsQuery = { pagedSecurityLogs: { totalResults: number | null, data: Array<{ _id: string | null, userId: string | null, operationType: string | null, operationDetails: unknown, operationTime: string | null, operationBy: string | null, dataSource: string | null, dataSourceDetail: string | null, userName: string | null, userImageId: string | null, userImageThumbnailId: string | null, operationByName: string | null, operationByImageId: string | null, operationByImageThumbnailId: string | null } | null> | null } | null };
+
+export type SecurityLogUsersQueryVariables = Exact<{
+  search?: string | null | undefined;
+  ids?: Array<string> | string | null | undefined;
+}>;
+
+
+export type SecurityLogUsersQuery = { securityLogUsers: Array<{ _id: string, name: string }> };
 
 export type CreateUserGroupMutationVariables = Exact<{
   name: string;

@@ -27,6 +27,7 @@ enum Permission {
   ADMIN_MANAGE_JOBS
   ADMIN_MANAGE_DELETED_DATA
   ADMIN_MANAGE_DUPLICATE_DATA
+  ADMIN_VIEW_SECURITY_LOGS
 
   HR_MANAGE_SETUP_DATA
   HR_DELETE_DATA
@@ -73,11 +74,33 @@ scalar Currency
 scalar JSON
 scalar JSONObject
 
+type PersonRelationCountType {
+  name: String!
+  count: Int!
+}
+
+type PersonRelationCounts {
+  personId: String!
+  total: Int!
+  counts: [PersonRelationCountType!]!
+}
+
 extend type Query {
   pagedDeletedPeople(filter: PersonFilter): PagedPeopleType
     @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
 
   deletedPersonById(_id: String!): PersonType
+    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
+
+  deletedPersonRelationCounts(ids: [String!]!): [PersonRelationCounts!]!
+    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
+}
+
+extend type Mutation {
+  hardDeletePerson(_id: String!): Int
+    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
+
+  restorePerson(_id: String!): Int
     @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
 }
 
@@ -106,6 +129,11 @@ extend type Query {
     @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
 
   duplicatePersonById(_id: String!): PersonType
+    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
+}
+
+extend type Mutation {
+  deleteDuplicatePerson(_id: String!): Int
     @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
 }
 
@@ -252,6 +280,19 @@ extend type Mutation {
 
   setScheduledJobEnabled(_id: String!, enabled: Boolean!): Boolean
     @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+}
+
+type SecurityLogUserOption {
+  _id: String!
+  name: String!
+}
+
+extend type Query {
+  pagedSecurityLogs(filter: SecurityLogFilter): PagedSecurityLogType
+    @checkPermissions(permissions: [ADMIN_VIEW_SECURITY_LOGS])
+
+  securityLogUsers(search: String, ids: [String!]): [SecurityLogUserOption!]!
+    @checkPermissions(permissions: [ADMIN_VIEW_SECURITY_LOGS])
 }
 
 type UserGroupType {
@@ -606,6 +647,10 @@ type SecurityLogType {
 
 input SecurityLogFilter {
   dataSource: String
+  operationType: String
+  userId: String
+  startTime: String
+  endTime: String
   pageIndex: String
   pageSize: String
 }

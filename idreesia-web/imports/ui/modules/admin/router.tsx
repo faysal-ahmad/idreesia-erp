@@ -8,6 +8,7 @@ import {
   UserGroupsEditForm,
   UserGroupsList,
 } from './user-groups';
+import { SecurityLogsList } from './security-logs';
 import {
   PhysicalStoresNewForm,
   PhysicalStoresEditForm,
@@ -31,6 +32,8 @@ const Router = () => (
     <RouterRoute path={paths.userGroupsNewFormPath} component={UserGroupsNewForm} />
     <RouterRoute path={paths.userGroupsEditFormPath} component={UserGroupsEditForm} />
     <RouterRoute path={paths.userGroupsPath} component={UserGroupsList} />
+
+    <RouterRoute path={paths.securityLogsPath} component={SecurityLogsList} />
 
     <RouterRoute
       path={paths.physicalStoresNewFormPath}

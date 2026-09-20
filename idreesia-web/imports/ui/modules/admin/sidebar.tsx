@@ -13,6 +13,7 @@ const menuItems = [
     children: [
       { key: 'users', label: 'Users' },
       { key: 'user-groups', label: 'User Groups' },
+      { key: 'security-logs', label: 'Security Logs' },
     ],
   },
   {
@@ -77,6 +78,12 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['access'],
     subModuleName: SubModuleNames.userGroups,
     matches: (pathname) => isPath(pathname, paths.userGroupsPath),
+  },
+  {
+    key: 'security-logs',
+    openKeys: ['access'],
+    subModuleName: SubModuleNames.securityLogs,
+    matches: (pathname) => isPath(pathname, paths.securityLogsPath),
   },
   {
     key: 'physical-stores',
@@ -179,6 +186,10 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'user-groups':
         history.push(paths.userGroupsPath);
+        break;
+
+      case 'security-logs':
+        history.push(paths.securityLogsPath);
         break;
 
       case 'physical-stores':

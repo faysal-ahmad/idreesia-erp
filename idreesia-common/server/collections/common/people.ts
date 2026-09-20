@@ -208,6 +208,30 @@ class People extends AggregatableCollection<PersonDocument> {
     return result;
   }
 
+  async restorePerson(_id: string, user: UserRef) {
+    const date = new Date();
+    const result = await this.updateAsync(_id, {
+      $unset: {
+        deletedAt: '',
+        deletedBy: '',
+      },
+      $set: {
+        updatedAt: date,
+        updatedBy: user._id,
+      },
+    });
+
+    await AuditLogs.createAuditLog({
+      entityId: _id,
+      entityType: EntityType.PERSON,
+      operationType: OperationType.UPDATE,
+      operationBy: user._id,
+      operationTime: date,
+    });
+
+    return result;
+  }
+
   async hardRemovePerson(_id: string, user: UserRef) {
     const date = new Date();
     const result = await this.removeAsync(_id);

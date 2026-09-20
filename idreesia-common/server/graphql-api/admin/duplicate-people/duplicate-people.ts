@@ -28,4 +28,9 @@ extend type Query {
   duplicatePersonById(_id: String!): PersonType
     @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
 }
+
+extend type Mutation {
+  deleteDuplicatePerson(_id: String!): Int
+    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
+}
 `;

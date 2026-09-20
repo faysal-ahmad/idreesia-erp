@@ -16,6 +16,10 @@ interface SecurityLogDocument {
 
 interface SearchSecurityLogsParams {
   dataSources?: string[];
+  operationTypes?: string[];
+  userIds?: string[];
+  startDate?: Date;
+  endDate?: Date;
   pageIndex?: string;
   pageSize?: string;
 }
@@ -36,12 +40,35 @@ class SecurityLogs extends AggregatableCollection<SecurityLogDocument> {
   searchSecurityLogs(params: SearchSecurityLogsParams = {}) {
     const pipeline: Record<string, unknown>[] = [];
 
-    const { dataSources, pageIndex = '0', pageSize = '20' } = params;
-    pipeline.push({
-      $match: {
-        dataSource: { $in: dataSources },
-      },
-    });
+    const {
+      dataSources,
+      operationTypes,
+      userIds,
+      startDate,
+      endDate,
+      pageIndex = '0',
+      pageSize = '20',
+    } = params;
+
+    const matchStage: Record<string, unknown> = {};
+    if (dataSources && dataSources.length > 0) {
+      matchStage.dataSource = { $in: dataSources };
+    }
+    if (operationTypes && operationTypes.length > 0) {
+      matchStage.operationType = { $in: operationTypes };
+    }
+    if (userIds && userIds.length > 0) {
+      matchStage.userId = { $in: userIds };
+    }
+    if (startDate || endDate) {
+      matchStage.operationTime = {
+        ...(startDate ? { $gte: startDate } : {}),
+        ...(endDate ? { $lte: endDate } : {}),
+      };
+    }
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
+    }
 
     const countingPipeline = pipeline.concat({
       $count: 'total',

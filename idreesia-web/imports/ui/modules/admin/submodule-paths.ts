@@ -15,6 +15,8 @@ export default class SubModulePaths {
   static userGroupsNewFormPath = `${SubModulePaths.userGroupsPath}/new`;
   static userGroupsEditFormPath = `${SubModulePaths.userGroupsPath}/:groupId`;
 
+  static securityLogsPath = `${ModulePaths.admin}/security-logs`;
+
   // *************************************************************************************
   // Instance Routes
   // *************************************************************************************

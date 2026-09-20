@@ -3,7 +3,10 @@ export { default as AuditLogsList } from './audit-logs/list';
 export { default as AuditLogsListFilter } from './audit-logs/list-filter';
 
 export { default as KarkunsList } from './karkuns/list';
-export { default as KarkunsListFilter } from './karkuns/list-filter';
+export {
+  default as KarkunsListFilter,
+  KarkunsFilterChips,
+} from './karkuns/list-filter';
 export { default as KarkunsGeneralInfo } from './karkuns/general-info';
 export { default as KarkunsWazaifAndRaabta } from './karkuns/wazaif-and-raabta';
 

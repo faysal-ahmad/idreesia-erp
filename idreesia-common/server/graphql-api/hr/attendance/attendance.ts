@@ -33,20 +33,26 @@ type PagedAttendanceType {
 }
 extend type Query {
   attendanceById(_id: String!): AttendanceType
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
   pagedAttendanceByKarkun(queryString: String): PagedAttendanceType
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
   attendanceByMonth(
     month: String!
     categoryId: String
     subCategoryId: String
   ): [AttendanceType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
   attendanceByBarcodeId(barcodeId: String!): AttendanceType
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
   attendanceByBarcodeIds(barcodeIds: String!): [AttendanceType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
 }
 
 extend type Mutation {
   createAttendances(
     month: String!
   ): Int
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_DELETE_DATA])
 
   updateAttendance(
     _id: String!
@@ -55,14 +61,18 @@ extend type Mutation {
     absentCount: Int
     percentage: Int
   ): AttendanceType
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_DELETE_DATA])
 
   importAttendances(
     month: String!
     dutyId: String!
     shiftId: String
   ): Int
-   
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+
   deleteAttendances(month: String!, ids: [String]!): Int
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_DELETE_DATA])
   deleteAllAttendances(month: String!, categoryId: String, subCategoryId: String): Int
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_DELETE_DATA])
 }
 `;

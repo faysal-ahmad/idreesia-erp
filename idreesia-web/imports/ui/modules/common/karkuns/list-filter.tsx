@@ -1,9 +1,19 @@
-import React, { type CSSProperties } from 'react';
-import type { Dayjs } from 'dayjs';
-import { Collapse, Form } from 'antd';
+import React, { useMemo, useState, type CSSProperties } from 'react';
+import dayjs from 'dayjs';
+import {
+  Badge,
+  Button,
+  Flex,
+  Form,
+  Popover,
+  Space,
+  Tag,
+} from 'antd';
+import { message } from '/imports/ui/antd-feedback';
+import { FilterOutlined, SyncOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { RefreshButton } from '/imports/ui/modules/helpers/controls';
+import { startCase } from 'meteor/idreesia-common/utilities/lodash';
 
 import {
   getNameFilterField,
@@ -18,7 +28,6 @@ import {
   getUserAccountFilterField,
   getRegionFilterField,
   getUpdatedBetweenFilterField,
-  getFormButtons,
   type CityLookupItem,
   type FieldValue,
   type LookupItem,
@@ -58,10 +67,10 @@ interface FilterFormValues {
   ehadKarkun?: string;
   cityIdMehfilId?: [string, string] | null;
   region?: string;
-  updatedBetween?: [Dayjs | null, Dayjs | null] | null;
+  updatedBetween?: [dayjs.Dayjs | null, dayjs.Dayjs | null] | null;
 }
 
-interface Props {
+export interface Props {
   setPageParams(params: PageParams): void;
   refreshData?: () => Promise<unknown>;
   mehfilDuties?: LookupItem[];
@@ -95,8 +104,332 @@ interface Props {
   showUpdatedBetweenFilter?: boolean;
 }
 
-const ContainerStyle: CSSProperties = {
-  width: '500px',
+type FilterChipKey =
+  | 'name'
+  | 'cnicNumber'
+  | 'phoneNumber'
+  | 'bloodGroup'
+  | 'lastTarteeb'
+  | 'attendance'
+  | 'duty'
+  | 'userAccount'
+  | 'ehadKarkun'
+  | 'cityMehfil'
+  | 'region'
+  | 'updatedBetween';
+
+interface FilterChip {
+  key: FilterChipKey;
+  label: string;
+  value: string;
+}
+
+const FilterPanelStyle: CSSProperties = {
+  width: 640,
+  paddingTop: 4,
+  overflow: 'visible',
+};
+
+const FilterFormStyle: CSSProperties = {
+  width: '100%',
+};
+
+const BLOOD_GROUP_LABELS: Record<string, string> = {
+  'A-': 'A-',
+  Aplus: 'A+',
+  'B-': 'B-',
+  Bplus: 'B+',
+  'AB-': 'AB-',
+  ABplus: 'AB+',
+  'O-': 'O-',
+  Oplus: 'O+',
+};
+
+const hasFilterValue = (value?: string | null) =>
+  value != null && String(value).trim() !== '';
+
+const formatYesNo = (value?: string | null) => {
+  if (value === 'true') return 'Yes';
+  if (value === 'false') return 'No';
+  return String(value);
+};
+
+const formatLastTarteeb = (value?: string | null) => {
+  if (!value) return '';
+  try {
+    const { scale, duration } = JSON.parse(value) as {
+      scale?: string;
+      duration?: number | null;
+    };
+    if (duration == null) return '';
+    return `More Than ${duration} ${startCase(scale ?? '')}`;
+  } catch {
+    return '';
+  }
+};
+
+const formatAttendance = (value?: string | null) => {
+  if (!value) return '';
+  try {
+    const { criteria, percentage } = JSON.parse(value) as {
+      criteria?: string;
+      percentage?: number | null;
+    };
+    if (percentage == null) return '';
+    return `${criteria === 'more-than' ? 'More Than' : 'Less Than'} ${percentage}%`;
+  } catch {
+    return '';
+  }
+};
+
+const formatUpdatedBetween = (value?: string | null) => {
+  if (!value) return '';
+  try {
+    const [start, end] = JSON.parse(value) as [string, string];
+    if (!start && !end) return '';
+    return `${start || '...'} - ${end || '...'}`;
+  } catch {
+    return '';
+  }
+};
+
+type ChipInputs = Pick<
+  Props,
+  | 'name'
+  | 'cnicNumber'
+  | 'phoneNumber'
+  | 'bloodGroup'
+  | 'lastTarteeb'
+  | 'attendance'
+  | 'dutyId'
+  | 'userAccount'
+  | 'ehadKarkun'
+  | 'cityId'
+  | 'cityMehfilId'
+  | 'region'
+  | 'updatedBetween'
+  | 'mehfilDuties'
+  | 'cities'
+  | 'cityMehfils'
+>;
+
+export const getKarkunsFilterChips = ({
+  name,
+  cnicNumber,
+  phoneNumber,
+  bloodGroup,
+  lastTarteeb,
+  attendance,
+  dutyId,
+  userAccount,
+  ehadKarkun,
+  cityId,
+  cityMehfilId,
+  region,
+  updatedBetween,
+  mehfilDuties = [],
+  cities = [],
+  cityMehfils = [],
+}: ChipInputs): FilterChip[] => {
+  const chips: FilterChip[] = [];
+
+  if (hasFilterValue(name)) {
+    chips.push({ key: 'name', label: 'Name', value: String(name) });
+  }
+  if (hasFilterValue(cnicNumber)) {
+    chips.push({ key: 'cnicNumber', label: 'CNIC', value: String(cnicNumber) });
+  }
+  if (hasFilterValue(phoneNumber)) {
+    chips.push({ key: 'phoneNumber', label: 'Phone', value: String(phoneNumber) });
+  }
+  if (hasFilterValue(bloodGroup)) {
+    chips.push({
+      key: 'bloodGroup',
+      label: 'Blood Group',
+      value: BLOOD_GROUP_LABELS[String(bloodGroup)] || String(bloodGroup),
+    });
+  }
+  const lastTarteebLabel = formatLastTarteeb(lastTarteeb);
+  if (lastTarteebLabel) {
+    chips.push({ key: 'lastTarteeb', label: 'Last Tarteeb', value: lastTarteebLabel });
+  }
+  const attendanceLabel = formatAttendance(attendance);
+  if (attendanceLabel) {
+    chips.push({ key: 'attendance', label: 'Attendance', value: attendanceLabel });
+  }
+  if (hasFilterValue(dutyId)) {
+    const dutyName =
+      mehfilDuties.find(duty => duty._id === dutyId)?.name ?? String(dutyId);
+    chips.push({ key: 'duty', label: 'Duty', value: dutyName as string });
+  }
+  if (hasFilterValue(userAccount)) {
+    chips.push({
+      key: 'userAccount',
+      label: 'User Account',
+      value: formatYesNo(userAccount),
+    });
+  }
+  if (hasFilterValue(ehadKarkun)) {
+    chips.push({
+      key: 'ehadKarkun',
+      label: 'Ehad Karkun',
+      value: formatYesNo(ehadKarkun),
+    });
+  }
+  if (hasFilterValue(cityId) || hasFilterValue(cityMehfilId)) {
+    const cityName = cities.find(city => city._id === cityId)?.name;
+    const mehfilName = cityMehfils.find(
+      mehfil => mehfil._id === cityMehfilId
+    )?.name;
+    chips.push({
+      key: 'cityMehfil',
+      label: 'City/Mehfil',
+      value:
+        [cityName, mehfilName].filter(Boolean).join(' / ') ||
+        [cityId, cityMehfilId].filter(Boolean).join(' / '),
+    });
+  }
+  if (hasFilterValue(region)) {
+    chips.push({ key: 'region', label: 'Region', value: String(region) });
+  }
+  const updatedBetweenLabel = formatUpdatedBetween(updatedBetween);
+  if (updatedBetweenLabel) {
+    chips.push({ key: 'updatedBetween', label: 'Updated', value: updatedBetweenLabel });
+  }
+
+  return chips;
+};
+
+export const KarkunsFilterChips = (props: Props) => {
+  const {
+    setPageParams,
+    name,
+    cnicNumber,
+    phoneNumber,
+    bloodGroup,
+    lastTarteeb,
+    attendance,
+    dutyId,
+    userAccount,
+    ehadKarkun,
+    cityId,
+    cityMehfilId,
+    region,
+    updatedBetween,
+    mehfilDuties,
+    cities,
+    cityMehfils,
+  } = props;
+
+  const chips = useMemo(
+    () =>
+      getKarkunsFilterChips({
+        name,
+        cnicNumber,
+        phoneNumber,
+        bloodGroup,
+        lastTarteeb,
+        attendance,
+        dutyId,
+        userAccount,
+        ehadKarkun,
+        cityId,
+        cityMehfilId,
+        region,
+        updatedBetween,
+        mehfilDuties,
+        cities,
+        cityMehfils,
+      }),
+    [
+      name,
+      cnicNumber,
+      phoneNumber,
+      bloodGroup,
+      lastTarteeb,
+      attendance,
+      dutyId,
+      userAccount,
+      ehadKarkun,
+      cityId,
+      cityMehfilId,
+      region,
+      updatedBetween,
+      mehfilDuties,
+      cities,
+      cityMehfils,
+    ]
+  );
+
+  if (chips.length === 0) return null;
+
+  const clearChip = (key: FilterChipKey) => {
+    if (key === 'duty') {
+      setPageParams({ pageIndex: '0', dutyId: null, dutyShiftId: null });
+      return;
+    }
+    if (key === 'cityMehfil') {
+      setPageParams({ pageIndex: '0', cityId: null, cityMehfilId: null });
+      return;
+    }
+    if (key === 'updatedBetween') {
+      setPageParams({
+        pageIndex: '0',
+        updatedBetween: JSON.stringify(['', '']),
+      });
+      return;
+    }
+    setPageParams({ pageIndex: '0', [key]: null });
+  };
+
+  const clearAll = () => {
+    setPageParams({
+      pageIndex: '0',
+      name: null,
+      cnicNumber: null,
+      phoneNumber: null,
+      bloodGroup: null,
+      lastTarteeb: null,
+      attendance: null,
+      jobId: null,
+      dutyId: null,
+      dutyShiftId: null,
+      userAccount: null,
+      ehadKarkun: null,
+      cityId: null,
+      cityMehfilId: null,
+      region: null,
+      updatedBetween: JSON.stringify(['', '']),
+    });
+  };
+
+  return (
+    <Flex
+      wrap="wrap"
+      gap={8}
+      align="center"
+      justify="flex-end"
+      className="list-filter-chips"
+    >
+      {chips.map(chip => (
+        <Tag
+          key={chip.key}
+          closable
+          onClose={event => {
+            event.preventDefault();
+            clearChip(chip.key);
+          }}
+        >
+          <span>
+            {chip.label}: {chip.value}
+          </span>
+        </Tag>
+      ))}
+      <Button type="link" size="small" onClick={clearAll}>
+        Clear all
+      </Button>
+    </Flex>
+  );
 };
 
 const ListFilter = ({
@@ -135,24 +468,54 @@ const ListFilter = ({
   cityMehfils = [],
   regions = [],
 }: Props) => {
-  const handleReset = () => {
-    setPageParams({
-      pageIndex: '0',
-      name: null,
-      cnicNumber: null,
-      phoneNumber: null,
-      bloodGroup: null,
-      lastTarteeb: null,
-      attendance: null,
-      jobId: null,
-      dutyId: null,
-      dutyShiftId: null,
-      userAccount: null,
-      ehadKarkun: null,
-      cityId: null,
-      cityMehfilId: null,
-      region: null,
-      updatedBetween: JSON.stringify(['', '']),
+  const [form] = Form.useForm<FilterFormValues>();
+  const [open, setOpen] = useState(false);
+
+  const activeFilterCount = getKarkunsFilterChips({
+    name,
+    cnicNumber,
+    phoneNumber,
+    bloodGroup,
+    lastTarteeb,
+    attendance,
+    dutyId,
+    userAccount,
+    ehadKarkun,
+    cityId,
+    cityMehfilId,
+    region,
+    updatedBetween,
+    mehfilDuties,
+    cities,
+    cityMehfils,
+  }).length;
+
+  const syncFormValues = () => {
+    let updatedBetweenValue: FilterFormValues['updatedBetween'] = [null, null];
+    if (updatedBetween) {
+      const dates = JSON.parse(updatedBetween) as [string, string];
+      updatedBetweenValue = [
+        dates[0] ? dayjs(dates[0], Formats.DATE_FORMAT) : null,
+        dates[1] ? dayjs(dates[1], Formats.DATE_FORMAT) : null,
+      ];
+    }
+
+    form.setFieldsValue({
+      name: name ?? undefined,
+      cnicNumber,
+      phoneNumber: phoneNumber ?? undefined,
+      bloodGroup: bloodGroup ?? undefined,
+      lastTarteeb: lastTarteeb ?? undefined,
+      attendance: attendance ?? undefined,
+      dutyId: dutyId ?? undefined,
+      userAccount: userAccount ?? undefined,
+      ehadKarkun: ehadKarkun ?? undefined,
+      cityIdMehfilId:
+        cityId || cityMehfilId
+          ? ([cityId, cityMehfilId].filter(Boolean) as [string, string])
+          : null,
+      region: region ?? undefined,
+      updatedBetween: updatedBetweenValue,
     });
   };
 
@@ -182,65 +545,81 @@ const ListFilter = ({
           : '',
       ]),
     });
+    setOpen(false);
   };
 
-  const refreshButton = () => <RefreshButton refreshData={refreshData} />;
+  const handleRefresh = () => {
+    if (!refreshData) return;
+    refreshData().then(() => {
+      message.success('Data Reloaded', 2);
+    });
+  };
+
+  const filterForm = (
+    <div className="list-filter-panel" style={FilterPanelStyle}>
+      <Form
+        form={form}
+        layout="horizontal"
+        style={FilterFormStyle}
+        onFinish={handleFinish}
+      >
+        {showNameFilter ? getNameFilterField(name) : null}
+        {showCnicFilter ? getCnicNumberFilterField(cnicNumber) : null}
+        {showPhoneNumberFilter ? getPhoneNumberFilterField(phoneNumber) : null}
+        {showBloodGroupFilter ? getBloodGroupFilterField(bloodGroup) : null}
+        {showLastTarteebFilter ? getLastTarteebFilterField(lastTarteeb) : null}
+        {showAttendanceFilter ? getAttendanceFilterField(attendance) : null}
+        {showUserAccountFilter ? getUserAccountFilterField(userAccount) : null}
+        {showMehfilDutyFilter
+          ? getMehfilDutyFilterField(dutyId, mehfilDuties)
+          : null}
+        {showEhadKarkunFilter ? getEhadKarkunFilterField(ehadKarkun) : null}
+        {showCityMehfilFilter
+          ? getCityMehfilFilterField(
+              [cityId, cityMehfilId] as FieldValue,
+              cities,
+              cityMehfils
+            )
+          : null}
+        {showRegionFilter ? getRegionFilterField(region, regions) : null}
+        {showUpdatedBetweenFilter
+          ? getUpdatedBetweenFilterField(updatedBetween)
+          : null}
+        <Form.Item style={{ marginBottom: 0 }}>
+          <Flex justify="flex-end">
+            <Button type="primary" htmlType="submit">
+              Search
+            </Button>
+          </Flex>
+        </Form.Item>
+      </Form>
+    </div>
+  );
 
   return (
-    <Collapse
-      style={ContainerStyle}
-      items={[
-        {
-          key: '1',
-          label: 'Filter',
-          extra: refreshButton(),
-          children: (
-            <Form layout="horizontal" onFinish={handleFinish}>
-              {showNameFilter ? getNameFilterField(name) : null}
-              {showCnicFilter
-                ? getCnicNumberFilterField(cnicNumber)
-                : null}
-              {showPhoneNumberFilter
-                ? getPhoneNumberFilterField(phoneNumber)
-                : null}
-              {showBloodGroupFilter
-                ? getBloodGroupFilterField(bloodGroup)
-                : null}
-              {showLastTarteebFilter
-                ? getLastTarteebFilterField(lastTarteeb)
-                : null}
-              {showAttendanceFilter
-                ? getAttendanceFilterField(attendance)
-                : null}
-              {showUserAccountFilter
-                ? getUserAccountFilterField(userAccount)
-                : null}
-              {showMehfilDutyFilter
-                ? getMehfilDutyFilterField(dutyId, mehfilDuties)
-                : null}
-              {showEhadKarkunFilter
-                ? getEhadKarkunFilterField(ehadKarkun)
-                : null}
-              {showCityMehfilFilter
-                ? getCityMehfilFilterField(
-                    [cityId, cityMehfilId] as FieldValue,
-                    cities,
-                    cityMehfils
-                  )
-                : null}
-              {showRegionFilter
-                ? getRegionFilterField(region, regions)
-                : null}
-
-              {showUpdatedBetweenFilter
-                ? getUpdatedBetweenFilterField(updatedBetween)
-                : null}
-              {getFormButtons(handleReset)}
-            </Form>
-          ),
-        },
-      ]}
-    />
+    <Space size={8}>
+      <Popover
+        trigger="click"
+        placement="bottomRight"
+        open={open}
+        onOpenChange={nextOpen => {
+          if (nextOpen) syncFormValues();
+          setOpen(nextOpen);
+        }}
+        content={filterForm}
+      >
+        <Badge count={activeFilterCount} size="small" offset={[-2, 2]}>
+          <Button icon={<FilterOutlined />}>Filter</Button>
+        </Badge>
+      </Popover>
+      {refreshData ? (
+        <Button
+          icon={<SyncOutlined />}
+          onClick={handleRefresh}
+          title="Reload Data"
+        />
+      ) : null}
+    </Space>
   );
 };
 

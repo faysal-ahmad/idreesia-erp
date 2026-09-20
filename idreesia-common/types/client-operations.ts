@@ -689,6 +689,69 @@ export type PagedHrAuditLogsQueryVariables = Exact<{
 
 export type PagedHrAuditLogsQuery = { pagedHrAuditLogs: { totalResults: number | null, data: Array<{ _id: string | null, entityId: string | null, entityType: string | null, operationType: string | null, auditValues: Array<string | null> | null, operationTime: string | null, operationBy: string | null, operationByName: string | null, operationByImageId: string | null, operationByImageThumbnailId: string | null } | null> | null } | null };
 
+export type ListAllCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, karkunIds: Array<string | null> | null, coordinatorKarkunIds: Array<string | null> | null, members: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null> | null, coordinators: Array<{ _id: string | null, sharedData: { name: string | null } | null } | null> | null } | null> | null };
+
+export type CreateCommitteeMutationVariables = Exact<{
+  name: string;
+  color?: string | null | undefined;
+  description?: string | null | undefined;
+}>;
+
+
+export type CreateCommitteeMutation = { createCommittee: { _id: string | null, name: string | null } | null };
+
+export type UpdateCommitteeMutationVariables = Exact<{
+  id: string;
+  name: string;
+  color?: string | null | undefined;
+  description?: string | null | undefined;
+}>;
+
+
+export type UpdateCommitteeMutation = { updateCommittee: { _id: string | null, name: string | null } | null };
+
+export type RemoveCommitteeMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type RemoveCommitteeMutation = { removeCommittee: number | null };
+
+export type AddCommitteeMemberMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type AddCommitteeMemberMutation = { addCommitteeMember: { _id: string | null } | null };
+
+export type RemoveCommitteeMemberMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type RemoveCommitteeMemberMutation = { removeCommitteeMember: { _id: string | null } | null };
+
+export type AddCommitteeCoordinatorMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type AddCommitteeCoordinatorMutation = { addCommitteeCoordinator: { _id: string | null } | null };
+
+export type RemoveCommitteeCoordinatorMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type RemoveCommitteeCoordinatorMutation = { removeCommitteeCoordinator: { _id: string | null } | null };
+
 export type ComposerAllDutyLocationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1097,6 +1160,61 @@ export type SalaryReceiptSalariesByIdsQueryVariables = Exact<{
 
 
 export type SalaryReceiptSalariesByIdsQuery = { salariesByIds: Array<{ _id: string | null, karkunId: string | null, month: string | null, jobId: string | null, salary: number | null, openingLoan: number | null, loanDeduction: number | null, newLoan: number | null, closingLoan: number | null, otherDeduction: number | null, arrears: number | null, netPayment: number | null, karkun: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, image: { _id: string | null, data: string | null } | null } | null } | null, job: { _id: string | null, name: string | null } | null } | null> | null };
+
+export type ListAllTeamsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListAllTeamsQuery = { allTeams: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, karkunIds: Array<string | null> | null, coordinatorKarkunId: string | null, members: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null> | null, coordinator: { _id: string | null, sharedData: { name: string | null } | null } | null } | null> | null };
+
+export type CreateTeamMutationVariables = Exact<{
+  name: string;
+  color?: string | null | undefined;
+  description?: string | null | undefined;
+}>;
+
+
+export type CreateTeamMutation = { createTeam: { _id: string | null, name: string | null } | null };
+
+export type UpdateTeamMutationVariables = Exact<{
+  id: string;
+  name: string;
+  color?: string | null | undefined;
+  description?: string | null | undefined;
+}>;
+
+
+export type UpdateTeamMutation = { updateTeam: { _id: string | null, name: string | null } | null };
+
+export type RemoveTeamMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type RemoveTeamMutation = { removeTeam: number | null };
+
+export type AddTeamMemberMutationVariables = Exact<{
+  teamId: string;
+  karkunId: string;
+}>;
+
+
+export type AddTeamMemberMutation = { addTeamMember: { _id: string | null } | null };
+
+export type RemoveTeamMemberMutationVariables = Exact<{
+  teamId: string;
+  karkunId: string;
+}>;
+
+
+export type RemoveTeamMemberMutation = { removeTeamMember: { _id: string | null } | null };
+
+export type SetTeamCoordinatorMutationVariables = Exact<{
+  teamId: string;
+  karkunId: string;
+}>;
+
+
+export type SetTeamCoordinatorMutation = { setTeamCoordinator: { _id: string | null } | null };
 
 export type PagedSecurityAuditLogsQueryVariables = Exact<{
   filter?: Types.AuditLogFilter | null | undefined;

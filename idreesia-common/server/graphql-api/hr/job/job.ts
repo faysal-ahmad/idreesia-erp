@@ -21,7 +21,10 @@ extend type Query {
 
 extend type Mutation {
   createJob(name: String!, description: String): JobType
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   updateJob(id: String!, name: String!, description: String): JobType
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeJob(_id: String!): Int
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
 }
 `;

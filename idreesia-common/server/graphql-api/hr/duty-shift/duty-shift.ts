@@ -32,6 +32,7 @@ extend type Mutation {
     endTime: String
     attendanceSheet: String
   ): DutyShiftType
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   updateDutyShift(
     _id: String!
     name: String!
@@ -40,6 +41,8 @@ extend type Mutation {
     endTime: String
     attendanceSheet: String
   ): DutyShiftType
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeDutyShift(_id: String!): Int
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
 }
 `;

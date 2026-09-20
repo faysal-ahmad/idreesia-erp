@@ -2,8 +2,6 @@ import {
   DutyLocations,
   KarkunDuties,
 } from 'meteor/idreesia-common/server/collections/hr';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -25,12 +23,6 @@ const resolvers: ResolverMap = {
 
   Mutation: {
     createDutyLocation: async (obj, { name }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Duty Locations Setup Data in the System.'
-        );
-      }
-
       const date = new Date();
       const dutyLocationId = await DutyLocations.insertAsync({
         name,
@@ -44,12 +36,6 @@ const resolvers: ResolverMap = {
     },
 
     updateDutyLocation: async (obj, { id, name }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Duty Locations Setup Data in the System.'
-        );
-      }
-
       const date = new Date();
       await DutyLocations.updateAsync(id, {
         $set: {
@@ -62,13 +48,7 @@ const resolvers: ResolverMap = {
       return DutyLocations.findOneAsync(id);
     },
 
-    removeDutyLocation: async (obj, { _id }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Duty Locations Setup Data in the System.'
-        );
-      }
-
+    removeDutyLocation: async (obj, { _id }) => {
       const usedCount = await KarkunDuties.find({
         locationId: { $eq: _id },
       }).countAsync();

@@ -37,17 +37,7 @@ const resolvers: ResolverMap = {
   },
 
   Query: {
-    salariesByMonth: async (obj, { month, jobId }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_VIEW_EMPLOYEES,
-          PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        return [];
-      }
-
+    salariesByMonth: async (obj, { month, jobId }) => {
       const formattedMonth = format(
         startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
         'MM-yyyy'
@@ -65,53 +55,19 @@ const resolvers: ResolverMap = {
       }).fetchAsync();
     },
 
-    salariesByIds: async (obj, { ids }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_VIEW_KARKUNS,
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        return [];
-      }
-
+    salariesByIds: async (obj, { ids }) => {
       const idsArray = ids.split(',');
       return Salaries.find({
         _id: { $in: idsArray },
       }).fetchAsync();
     },
 
-    pagedSalariesByKarkun: async (obj, { queryString }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_VIEW_EMPLOYEES,
-          PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        return {
-          salaries: [],
-          totalResults: 0,
-        };
-      }
-      return getPagedSalariesByKarkun(queryString);
-    },
+    pagedSalariesByKarkun: async (obj, { queryString }) =>
+      getPagedSalariesByKarkun(queryString),
   },
 
   Mutation: {
     createSalaries: async (obj, { month }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage salaries in the System.'
-        );
-      }
-
       const currentMonth = startOfMonth(parseDate(month, Formats.DATE_FORMAT));
       const formattedCurrentMonth = format(currentMonth, 'MM-yyyy');
 
@@ -138,17 +94,6 @@ const resolvers: ResolverMap = {
       },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage salaries in the System.'
-        );
-      }
-
       const date = new Date();
       await Salaries.updateAsync(_id, {
         $set: {
@@ -177,23 +122,15 @@ const resolvers: ResolverMap = {
       const currentMonth = startOfMonth(new Date());
       const passedMonth = parseDate(month, Formats.DATE_FORMAT);
 
+      // @checkPermissions on the schema already requires HR_MANAGE_EMPLOYEES
+      // or HR_DELETE_DATA; past months additionally require HR_DELETE_DATA
+      // specifically, which the directive can't express.
       if (
         isBefore(passedMonth, currentMonth) &&
         !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove salaries for past months in the System.'
-        );
-      }
-
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to remove salaries in the System.'
         );
       }
 
@@ -206,23 +143,15 @@ const resolvers: ResolverMap = {
       const currentMonth = startOfMonth(new Date());
       const passedMonth = parseDate(month, Formats.DATE_FORMAT);
 
+      // @checkPermissions on the schema already requires HR_MANAGE_EMPLOYEES
+      // or HR_DELETE_DATA; past months additionally require HR_DELETE_DATA
+      // specifically, which the directive can't express.
       if (
         isBefore(passedMonth, currentMonth) &&
         !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove salaries for past months in the System.'
-        );
-      }
-
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_MANAGE_EMPLOYEES,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to remove salaries in the System.'
         );
       }
 

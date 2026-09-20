@@ -970,6 +970,83 @@ class People extends AggregatableCollection<PersonDocument> {
     }
   }
 
+  async findDuplicateCnics() {
+    return this.aggregate([
+      {
+        $match: {
+          deletedAt: { $exists: false },
+          'sharedData.cnicNumber': { $nin: [null, ''] },
+        },
+      },
+      {
+        $group: {
+          _id: '$sharedData.cnicNumber',
+          count: { $sum: 1 },
+          people: {
+            $push: {
+              _id: '$_id',
+              name: '$sharedData.name',
+              cnicNumber: '$sharedData.cnicNumber',
+              contactNumber1: '$sharedData.contactNumber1',
+              contactNumber2: '$sharedData.contactNumber2',
+              imageId: '$sharedData.imageId',
+              imageThumbnailId: '$sharedData.imageThumbnailId',
+              updatedAt: '$updatedAt',
+            },
+          },
+        },
+      },
+      { $match: { count: { $gt: 1 } } },
+      { $project: { _id: 0, value: '$_id', count: 1, people: 1 } },
+      { $sort: { count: -1 } },
+    ]);
+  }
+
+  async findDuplicatePhoneNumbers() {
+    return this.aggregate([
+      { $match: { deletedAt: { $exists: false } } },
+      {
+        $project: {
+          name: '$sharedData.name',
+          cnicNumber: '$sharedData.cnicNumber',
+          contactNumber1: '$sharedData.contactNumber1',
+          contactNumber2: '$sharedData.contactNumber2',
+          imageId: '$sharedData.imageId',
+          imageThumbnailId: '$sharedData.imageThumbnailId',
+          updatedAt: '$updatedAt',
+          phones: {
+            $setDifference: [
+              ['$sharedData.contactNumber1', '$sharedData.contactNumber2'],
+              [null, ''],
+            ],
+          },
+        },
+      },
+      { $unwind: '$phones' },
+      {
+        $group: {
+          _id: '$phones',
+          count: { $sum: 1 },
+          people: {
+            $addToSet: {
+              _id: '$_id',
+              name: '$name',
+              cnicNumber: '$cnicNumber',
+              contactNumber1: '$contactNumber1',
+              contactNumber2: '$contactNumber2',
+              imageId: '$imageId',
+              imageThumbnailId: '$imageThumbnailId',
+              updatedAt: '$updatedAt',
+            },
+          },
+        },
+      },
+      { $match: { count: { $gt: 1 } } },
+      { $project: { _id: 0, value: '$_id', count: 1, people: 1 } },
+      { $sort: { count: -1 } },
+    ]);
+  }
+
   // **************************************************************
   // Conversion Functions
   // **************************************************************

@@ -122,6 +122,25 @@ export type CityType = {
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
+export type DuplicatePersonGroupType = {
+  __typename?: 'DuplicatePersonGroupType';
+  count?: Maybe<Scalars['Int']['output']>;
+  people?: Maybe<Array<Maybe<DuplicatePersonSummaryType>>>;
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type DuplicatePersonSummaryType = {
+  __typename?: 'DuplicatePersonSummaryType';
+  _id?: Maybe<Scalars['String']['output']>;
+  cnicNumber?: Maybe<Scalars['String']['output']>;
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  contactNumber2?: Maybe<Scalars['String']['output']>;
+  imageId?: Maybe<Scalars['String']['output']>;
+  imageThumbnailId?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+};
+
 export type DutyLocationType = {
   __typename?: 'DutyLocationType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -1609,6 +1628,7 @@ export type PeopleTagType = {
 export enum Permission {
   AdminManageCities = 'ADMIN_MANAGE_CITIES',
   AdminManageDeletedData = 'ADMIN_MANAGE_DELETED_DATA',
+  AdminManageDuplicateData = 'ADMIN_MANAGE_DUPLICATE_DATA',
   AdminManageJobs = 'ADMIN_MANAGE_JOBS',
   AdminManagePeopleTags = 'ADMIN_MANAGE_PEOPLE_TAGS',
   AdminManagePhysicalStores = 'ADMIN_MANAGE_PHYSICAL_STORES',
@@ -1813,6 +1833,9 @@ export type Query = {
   distinctCountries?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctRegions?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctStayAllowedBy?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  duplicateCnics?: Maybe<Array<Maybe<DuplicatePersonGroupType>>>;
+  duplicatePersonById?: Maybe<PersonType>;
+  duplicatePhoneNumbers?: Maybe<Array<Maybe<DuplicatePersonGroupType>>>;
   dutyById?: Maybe<DutyType>;
   dutyLocationById?: Maybe<DutyLocationType>;
   dutyShiftById?: Maybe<DutyShiftType>;
@@ -1931,6 +1954,11 @@ export type QueryCityMehfilsByCityIdArgs = {
 
 
 export type QueryDeletedPersonByIdArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type QueryDuplicatePersonByIdArgs = {
   _id: Scalars['String']['input'];
 };
 

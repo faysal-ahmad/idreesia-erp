@@ -23,7 +23,7 @@ import { PAGED_DELETED_PEOPLE } from './gql';
 type Props = RouteComponentProps;
 
 const List = ({ history, location }: Props) => {
-  useBreadcrumbs(['Admin', 'Deleted Data', 'People']);
+  useBreadcrumbs(['Admin', 'Data Management', 'Deleted People']);
 
   const { queryParams, setPageParams } = useQueryParams({
     history,

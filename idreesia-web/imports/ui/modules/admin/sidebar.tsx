@@ -30,8 +30,11 @@ const menuItems = [
   },
   {
     key: 'deleted-data',
-    label: 'Deleted Data',
-    children: [{ key: 'deleted-people', label: 'People' }],
+    label: 'Data Management',
+    children: [
+      { key: 'deleted-people', label: 'Deleted People' },
+      { key: 'duplicate-people', label: 'Duplicate People' },
+    ],
   },
   {
     key: 'monitoring',
@@ -98,6 +101,12 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['deleted-data'],
     subModuleName: SubModuleNames.deletedPeople,
     matches: (pathname) => isPath(pathname, paths.deletedPeoplePath),
+  },
+  {
+    key: 'duplicate-people',
+    openKeys: ['deleted-data'],
+    subModuleName: SubModuleNames.duplicatePeople,
+    matches: (pathname) => isPath(pathname, paths.duplicatePeoplePath),
   },
   {
     key: 'jobs',
@@ -186,6 +195,10 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'deleted-people':
         history.push(paths.deletedPeoplePath);
+        break;
+
+      case 'duplicate-people':
+        history.push(paths.duplicatePeoplePath);
         break;
 
       case 'jobs':

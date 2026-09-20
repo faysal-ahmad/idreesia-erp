@@ -87,6 +87,8 @@ export type ResolversTypes = ResolversObject<{
   Currency: ResolverTypeWrapper<Types.Scalars['Currency']['output']>;
   Date: ResolverTypeWrapper<Types.Scalars['Date']['output']>;
   DateTime: ResolverTypeWrapper<Types.Scalars['DateTime']['output']>;
+  DuplicatePersonGroupType: ResolverTypeWrapper<Types.DuplicatePersonGroupType>;
+  DuplicatePersonSummaryType: ResolverTypeWrapper<Types.DuplicatePersonSummaryType>;
   DutyLocationType: ResolverTypeWrapper<Types.DutyLocationType>;
   DutyShiftType: ResolverTypeWrapper<Types.DutyShiftType>;
   DutyType: ResolverTypeWrapper<Types.DutyType>;
@@ -182,6 +184,8 @@ export type ResolversParentTypes = ResolversObject<{
   Currency: Types.Scalars['Currency']['output'];
   Date: Types.Scalars['Date']['output'];
   DateTime: Types.Scalars['DateTime']['output'];
+  DuplicatePersonGroupType: Types.DuplicatePersonGroupType;
+  DuplicatePersonSummaryType: Types.DuplicatePersonSummaryType;
   DutyLocationType: Types.DutyLocationType;
   DutyShiftType: Types.DutyShiftType;
   DutyType: Types.DutyType;
@@ -371,6 +375,23 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
 }
+
+export type DuplicatePersonGroupTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DuplicatePersonGroupType'] = ResolversParentTypes['DuplicatePersonGroupType']> = ResolversObject<{
+  count?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  people?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DuplicatePersonSummaryType']>>>, ParentType, ContextType>;
+  value?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type DuplicatePersonSummaryTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DuplicatePersonSummaryType'] = ResolversParentTypes['DuplicatePersonSummaryType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cnicNumber?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  contactNumber1?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  contactNumber2?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  imageId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  imageThumbnailId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
 
 export type DutyLocationTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DutyLocationType'] = ResolversParentTypes['DutyLocationType']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1004,6 +1025,9 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   distinctCountries?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   distinctRegions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   distinctStayAllowedBy?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  duplicateCnics?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DuplicatePersonGroupType']>>>, ParentType, ContextType>;
+  duplicatePersonById?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.QueryDuplicatePersonByIdArgs, '_id'>>;
+  duplicatePhoneNumbers?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DuplicatePersonGroupType']>>>, ParentType, ContextType>;
   dutyById?: Resolver<Types.Maybe<ResolversTypes['DutyType']>, ParentType, ContextType, RequireFields<Types.QueryDutyByIdArgs, 'id'>>;
   dutyLocationById?: Resolver<Types.Maybe<ResolversTypes['DutyLocationType']>, ParentType, ContextType, RequireFields<Types.QueryDutyLocationByIdArgs, 'id'>>;
   dutyShiftById?: Resolver<Types.Maybe<ResolversTypes['DutyShiftType']>, ParentType, ContextType, RequireFields<Types.QueryDutyShiftByIdArgs, 'id'>>;
@@ -1270,6 +1294,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Currency?: GraphQLScalarType;
   Date?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
+  DuplicatePersonGroupType?: DuplicatePersonGroupTypeResolvers<ContextType>;
+  DuplicatePersonSummaryType?: DuplicatePersonSummaryTypeResolvers<ContextType>;
   DutyLocationType?: DutyLocationTypeResolvers<ContextType>;
   DutyShiftType?: DutyShiftTypeResolvers<ContextType>;
   DutyType?: DutyTypeResolvers<ContextType>;

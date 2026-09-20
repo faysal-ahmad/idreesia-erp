@@ -50,4 +50,9 @@ export default class SubModulePaths {
   static deletedPersonEditFormPath(personId = ':personId') {
     return `${SubModulePaths.deletedPeoplePath}/${personId}`;
   }
+
+  static duplicatePeoplePath = `${ModulePaths.admin}/duplicate-people`;
+  static duplicatePersonEditFormPath(personId = ':personId') {
+    return `${SubModulePaths.duplicatePeoplePath}/${personId}`;
+  }
 }

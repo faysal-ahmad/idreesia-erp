@@ -17,6 +17,7 @@ import { CitiesNewForm, CitiesEditForm, CitiesList } from './cities';
 import { JobsList, JobLogsList, JobDefinitionsList } from './jobs';
 import { PeopleTagsList } from './people-tags';
 import { DeletedPeopleList, DeletedPersonEditForm } from './deleted-people';
+import { DuplicatePeopleList, DuplicatePersonEditForm } from './duplicate-people';
 
 const RouterSwitch = Switch as any;
 const RouterRoute = Route as any;
@@ -56,6 +57,12 @@ const Router = () => (
       component={DeletedPersonEditForm}
     />
     <RouterRoute path={paths.deletedPeoplePath} component={DeletedPeopleList} />
+
+    <RouterRoute
+      path={paths.duplicatePersonEditFormPath()}
+      component={DuplicatePersonEditForm}
+    />
+    <RouterRoute path={paths.duplicatePeoplePath} component={DuplicatePeopleList} />
   </RouterSwitch>
 );
 

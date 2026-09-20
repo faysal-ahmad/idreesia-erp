@@ -22,8 +22,8 @@ const EditForm = ({ history, match }: Props) => {
 
   useDynamicBreadcrumbs([
     'Admin',
-    'Deleted Data',
-    'People',
+    'Data Management',
+    'Deleted People',
     personName || 'View',
   ]);
 

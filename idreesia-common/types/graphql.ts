@@ -122,6 +122,25 @@ export type CityType = {
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
+export type DuplicatePersonGroupType = {
+  __typename?: 'DuplicatePersonGroupType';
+  count?: Maybe<Scalars['Int']['output']>;
+  people?: Maybe<Array<Maybe<DuplicatePersonSummaryType>>>;
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type DuplicatePersonSummaryType = {
+  __typename?: 'DuplicatePersonSummaryType';
+  _id?: Maybe<Scalars['String']['output']>;
+  cnicNumber?: Maybe<Scalars['String']['output']>;
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  contactNumber2?: Maybe<Scalars['String']['output']>;
+  imageId?: Maybe<Scalars['String']['output']>;
+  imageThumbnailId?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+};
+
 export type DutyLocationType = {
   __typename?: 'DutyLocationType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -476,6 +495,7 @@ export type Mutation = {
   deleteAllAttendances?: Maybe<Scalars['Int']['output']>;
   deleteAllSalaries?: Maybe<Scalars['Int']['output']>;
   deleteAttendances?: Maybe<Scalars['Int']['output']>;
+  deleteDuplicatePerson?: Maybe<Scalars['Int']['output']>;
   deleteHrKarkun?: Maybe<Scalars['Int']['output']>;
   deletePeopleTag?: Maybe<Scalars['Int']['output']>;
   deleteSalaries?: Maybe<Scalars['Int']['output']>;
@@ -484,6 +504,7 @@ export type Mutation = {
   deleteVisitorStay?: Maybe<Scalars['Int']['output']>;
   fixCitySpelling?: Maybe<Scalars['Int']['output']>;
   fixNameSpelling?: Maybe<Scalars['Int']['output']>;
+  hardDeletePerson?: Maybe<Scalars['Int']['output']>;
   importAttendances?: Maybe<Scalars['Int']['output']>;
   importSecurityVisitorsCsvData?: Maybe<Scalars['String']['output']>;
   mergeStockItems?: Maybe<StockItem>;
@@ -513,6 +534,7 @@ export type Mutation = {
   removeVendor?: Maybe<Scalars['Int']['output']>;
   resetJobDefinitionSchedule?: Maybe<JobDefinitionType>;
   resetPassword?: Maybe<UserType>;
+  restorePerson?: Maybe<Scalars['Int']['output']>;
   retryFailedJob?: Maybe<Scalars['Boolean']['output']>;
   runScheduledJobNow?: Maybe<Scalars['Boolean']['output']>;
   setDutyDetail?: Maybe<Array<Maybe<MehfilKarkunType>>>;
@@ -889,6 +911,11 @@ export type MutationDeleteAttendancesArgs = {
 };
 
 
+export type MutationDeleteDuplicatePersonArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteHrKarkunArgs = {
   _id: Scalars['String']['input'];
 };
@@ -929,6 +956,11 @@ export type MutationFixCitySpellingArgs = {
 export type MutationFixNameSpellingArgs = {
   existingSpelling: Scalars['String']['input'];
   newSpelling: Scalars['String']['input'];
+};
+
+
+export type MutationHardDeletePersonArgs = {
+  _id: Scalars['String']['input'];
 };
 
 
@@ -1092,6 +1124,11 @@ export type MutationResetJobDefinitionScheduleArgs = {
 
 export type MutationResetPasswordArgs = {
   userName: Scalars['String']['input'];
+};
+
+
+export type MutationRestorePersonArgs = {
+  _id: Scalars['String']['input'];
 };
 
 
@@ -1609,11 +1646,13 @@ export type PeopleTagType = {
 export enum Permission {
   AdminManageCities = 'ADMIN_MANAGE_CITIES',
   AdminManageDeletedData = 'ADMIN_MANAGE_DELETED_DATA',
+  AdminManageDuplicateData = 'ADMIN_MANAGE_DUPLICATE_DATA',
   AdminManageJobs = 'ADMIN_MANAGE_JOBS',
   AdminManagePeopleTags = 'ADMIN_MANAGE_PEOPLE_TAGS',
   AdminManagePhysicalStores = 'ADMIN_MANAGE_PHYSICAL_STORES',
   AdminManageUsersAndGroups = 'ADMIN_MANAGE_USERS_AND_GROUPS',
   AdminViewJobs = 'ADMIN_VIEW_JOBS',
+  AdminViewSecurityLogs = 'ADMIN_VIEW_SECURITY_LOGS',
   AdminViewUsersAndGroups = 'ADMIN_VIEW_USERS_AND_GROUPS',
   HrDeleteData = 'HR_DELETE_DATA',
   HrManageEmployees = 'HR_MANAGE_EMPLOYEES',
@@ -1689,6 +1728,19 @@ export type PersonKarkunDataType = {
   mehfilRaabta?: Maybe<Scalars['String']['output']>;
   msLastVisitDate?: Maybe<Scalars['String']['output']>;
   msRaabta?: Maybe<Scalars['String']['output']>;
+};
+
+export type PersonRelationCountType = {
+  __typename?: 'PersonRelationCountType';
+  count: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type PersonRelationCounts = {
+  __typename?: 'PersonRelationCounts';
+  counts: Array<PersonRelationCountType>;
+  personId: Scalars['String']['output'];
+  total: Scalars['Int']['output'];
 };
 
 export type PersonSharedDataType = {
@@ -1809,10 +1861,14 @@ export type Query = {
   cityMehfilsByCityId?: Maybe<Array<Maybe<CityMehfilType>>>;
   currentUser?: Maybe<UserType>;
   deletedPersonById?: Maybe<PersonType>;
+  deletedPersonRelationCounts: Array<PersonRelationCounts>;
   distinctCities?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctCountries?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctRegions?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctStayAllowedBy?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  duplicateCnics?: Maybe<Array<Maybe<DuplicatePersonGroupType>>>;
+  duplicatePersonById?: Maybe<PersonType>;
+  duplicatePhoneNumbers?: Maybe<Array<Maybe<DuplicatePersonGroupType>>>;
   dutyById?: Maybe<DutyType>;
   dutyLocationById?: Maybe<DutyLocationType>;
   dutyShiftById?: Maybe<DutyShiftType>;
@@ -1848,6 +1904,7 @@ export type Query = {
   pagedSalariesByKarkun?: Maybe<PagedSalaryType>;
   pagedScheduledJobs?: Maybe<PagedScheduledJobsType>;
   pagedSecurityAuditLogs?: Maybe<PagedAuditLogType>;
+  pagedSecurityLogs?: Maybe<PagedSecurityLogType>;
   pagedSecurityUsers?: Maybe<PagedUserType>;
   pagedSecurityVisitors?: Maybe<PagedVisitorType>;
   pagedStockAdjustments?: Maybe<PagedStockAdjustment>;
@@ -1863,6 +1920,7 @@ export type Query = {
   salariesByIds?: Maybe<Array<Maybe<SalaryType>>>;
   salariesByMonth?: Maybe<Array<Maybe<SalaryType>>>;
   securityFaceVectorFromImage?: Maybe<FaceVectorResultType>;
+  securityLogUsers: Array<SecurityLogUserOption>;
   securityMehfilDutyById?: Maybe<MehfilDutyType>;
   securityMehfilLangarDishById?: Maybe<MehfilLangarDishType>;
   securityMehfilLangarLocationById?: Maybe<MehfilLangarLocationType>;
@@ -1931,6 +1989,16 @@ export type QueryCityMehfilsByCityIdArgs = {
 
 
 export type QueryDeletedPersonByIdArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type QueryDeletedPersonRelationCountsArgs = {
+  ids: Array<Scalars['String']['input']>;
+};
+
+
+export type QueryDuplicatePersonByIdArgs = {
   _id: Scalars['String']['input'];
 };
 
@@ -2114,6 +2182,11 @@ export type QueryPagedSecurityAuditLogsArgs = {
 };
 
 
+export type QueryPagedSecurityLogsArgs = {
+  filter?: InputMaybe<SecurityLogFilter>;
+};
+
+
 export type QueryPagedSecurityUsersArgs = {
   filter?: InputMaybe<UserFilter>;
 };
@@ -2192,6 +2265,12 @@ export type QuerySalariesByMonthArgs = {
 
 export type QuerySecurityFaceVectorFromImageArgs = {
   imageData: Scalars['String']['input'];
+};
+
+
+export type QuerySecurityLogUsersArgs = {
+  ids?: InputMaybe<Array<Scalars['String']['input']>>;
+  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2337,8 +2416,12 @@ export type ScheduledJobsFilterType = {
 
 export type SecurityLogFilter = {
   dataSource?: InputMaybe<Scalars['String']['input']>;
+  endTime?: InputMaybe<Scalars['String']['input']>;
+  operationType?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;
   pageSize?: InputMaybe<Scalars['String']['input']>;
+  startTime?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SecurityLogType = {
@@ -2357,6 +2440,12 @@ export type SecurityLogType = {
   userImageId?: Maybe<Scalars['String']['output']>;
   userImageThumbnailId?: Maybe<Scalars['String']['output']>;
   userName?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityLogUserOption = {
+  __typename?: 'SecurityLogUserOption';
+  _id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type StockAdjustment = {

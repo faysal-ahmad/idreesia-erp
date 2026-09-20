@@ -47,6 +47,12 @@ import PeopleTagResolvers from './admin/people-tag/resolvers';
 import DeletedPeopleSchema from './admin/deleted-people/deleted-people';
 import DeletedPeopleResolvers from './admin/deleted-people/resolvers';
 
+import DuplicatePeopleSchema from './admin/duplicate-people/duplicate-people';
+import DuplicatePeopleResolvers from './admin/duplicate-people/resolvers';
+
+import AdminSecurityLogSchema from './admin/security-log/security-log';
+import AdminSecurityLogResolvers from './admin/security-log/resolvers';
+
 /**
  * Schema and Resolvers for the Security module
  */
@@ -166,6 +172,8 @@ const typeDefs = [
   JobDefinitionSchema,
   PeopleTagSchema,
   DeletedPeopleSchema,
+  DuplicatePeopleSchema,
+  AdminSecurityLogSchema,
 
   SecurityAuditLogSchema,
   SecurityMehfilSchema,
@@ -215,6 +223,8 @@ const resolvers = merge(
   JobDefinitionResolvers,
   PeopleTagResolvers,
   DeletedPeopleResolvers,
+  DuplicatePeopleResolvers,
+  AdminSecurityLogResolvers,
 
   SecurityAuditLogResolvers,
   SecurityMehfilResolvers,

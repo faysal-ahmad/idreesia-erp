@@ -1,13 +1,12 @@
-FROM node:24.19.0-bookworm-slim
-EXPOSE 3000
-ENV TZ=Asia/Karachi
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+# ---- Build stage --------------------------------------------------------
+# Compiles native modules (bcrypt, @u4/opencv4nodejs) against apt's OpenCV
+# and a full build toolchain. None of that toolchain is needed once the
+# addons are compiled, so it never makes it into the runtime image below.
+FROM node:24.19.0-bookworm-slim AS build
 # libopencv-dev/pkg-config: native module compilation for @u4/opencv4nodejs
 # (face-vector computation), same setup as idreesia-security-server
 RUN apt-get update && apt-get install -y --no-install-recommends python3 build-essential libopencv-dev pkg-config && rm -rf /var/lib/apt/lists/*
-RUN npm install -g pm2
 WORKDIR /idreesia-web
-COPY ./ecosystem.config.js .
 COPY ./build .
 WORKDIR /idreesia-web/bundle/programs/server
 # Build @u4/opencv4nodejs against apt's OpenCV instead of self-building OpenCV
@@ -16,5 +15,30 @@ WORKDIR /idreesia-web/bundle/programs/server
 ENV OPENCV4NODEJS_DISABLE_AUTOBUILD=1
 ENV OPENCV_INCLUDE_DIR=/usr/include/opencv4
 RUN export OPENCV_LIB_DIR="/usr/lib/$(gcc -print-multiarch)" && npm install
+# Resolve the compiled addon's actual runtime shared-library dependencies via
+# ldd/dpkg instead of hardcoding OpenCV's versioned package names (e.g.
+# libopencv-core406) - those change on every OpenCV version bump, this doesn't.
+# Note: Meteor's server bundle nests npm dependencies (and rebuilds their
+# native addons in place via npm-rebuild.js) under npm/node_modules, not the
+# top-level node_modules this WORKDIR's own package.json resolves against.
+RUN set -eu; \
+    addon=npm/node_modules/@u4/opencv4nodejs/build/Release/opencv4nodejs.node; \
+    test -f "$addon"; \
+    ldd "$addon" > /tmp/ldd.out; \
+    awk '/=>/{print $3}' /tmp/ldd.out | sort -u \
+      | xargs -r dpkg -S 2>/dev/null | cut -d: -f1 | sort -u > /tmp/runtime-packages.txt; \
+    test -s /tmp/runtime-packages.txt
+
+# ---- Runtime stage -------------------------------------------------------
+FROM node:24.19.0-bookworm-slim
+EXPOSE 3000
+ENV TZ=Asia/Karachi
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+COPY --from=build /tmp/runtime-packages.txt /tmp/runtime-packages.txt
+RUN apt-get update && apt-get install -y --no-install-recommends $(cat /tmp/runtime-packages.txt) \
+      && rm -rf /var/lib/apt/lists/* /tmp/runtime-packages.txt
+RUN npm install -g pm2
 WORKDIR /idreesia-web
+COPY ./ecosystem.config.js .
+COPY --from=build /idreesia-web/bundle ./bundle
 ENTRYPOINT ["pm2-runtime", "start", "ecosystem.config.js"]

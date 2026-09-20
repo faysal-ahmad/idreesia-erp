@@ -12,6 +12,8 @@ const Permissions = {
   ADMIN_VIEW_JOBS: 'admin-view-jobs',
   ADMIN_MANAGE_JOBS: 'admin-manage-jobs',
   ADMIN_MANAGE_DELETED_DATA: 'admin-manage-deleted-data',
+  ADMIN_MANAGE_DUPLICATE_DATA: 'admin-manage-duplicate-data',
+  ADMIN_VIEW_SECURITY_LOGS: 'admin-view-security-logs',
 
   // ****************************************************************************************
   // HR Module

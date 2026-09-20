@@ -22,6 +22,10 @@ export const AdminPermissionsData: PermissionNode = {
           title: 'Manage Users & Groups',
           key: PermissionConstants.ADMIN_MANAGE_USERS_AND_GROUPS,
         },
+        {
+          title: 'View Security Logs',
+          key: PermissionConstants.ADMIN_VIEW_SECURITY_LOGS,
+        },
       ],
     },
     {

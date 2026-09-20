@@ -6,24 +6,24 @@ import { Empty, Spin } from 'antd';
 import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 
 import GeneralInfo from './general-info';
-import { DELETED_PERSON_BY_ID } from '../gql';
+import { DUPLICATE_PERSON_BY_ID } from '../gql';
 
 type Props = RouteComponentProps<{ personId: string }>;
 
 const EditForm = ({ history, match }: Props) => {
   const personId = match.params.personId;
 
-  const { data, loading } = useQuery(DELETED_PERSON_BY_ID, {
+  const { data, loading } = useQuery(DUPLICATE_PERSON_BY_ID, {
     variables: { _id: personId },
   });
 
-  const deletedPersonById = data?.deletedPersonById;
-  const personName = deletedPersonById?.sharedData?.name?.trim();
+  const duplicatePersonById = data?.duplicatePersonById;
+  const personName = duplicatePersonById?.sharedData?.name?.trim();
 
   useDynamicBreadcrumbs([
     'Admin',
     'Data Management',
-    'Deleted People',
+    'Duplicate People',
     personName || 'View',
   ]);
 
@@ -35,7 +35,7 @@ const EditForm = ({ history, match }: Props) => {
     );
   }
 
-  if (!deletedPersonById) {
+  if (!duplicatePersonById) {
     return (
       <Empty
         description="Person not found"
@@ -44,7 +44,7 @@ const EditForm = ({ history, match }: Props) => {
     );
   }
 
-  return <GeneralInfo history={history} person={deletedPersonById} />;
+  return <GeneralInfo history={history} person={duplicatePersonById} />;
 };
 
 export default EditForm;

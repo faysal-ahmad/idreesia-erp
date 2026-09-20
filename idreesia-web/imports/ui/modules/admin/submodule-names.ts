@@ -1,6 +1,7 @@
 const SubModuleNames = {
   users: 'Users',
   userGroups: 'User Groups',
+  securityLogs: 'Security Logs',
   physicalStores: 'Physical Stores',
   cities: 'Cities & Mehfils',
   jobs: 'Jobs Dashboard',
@@ -8,6 +9,7 @@ const SubModuleNames = {
   jobDefinitions: 'Job Definitions',
   peopleTags: 'People Tags',
   deletedPeople: 'Deleted People',
+  duplicatePeople: 'Duplicate People',
 };
 
 export default SubModuleNames;

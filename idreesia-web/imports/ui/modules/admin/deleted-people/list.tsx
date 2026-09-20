@@ -1,6 +1,7 @@
 import React from 'react';
 import { type RouteComponentProps } from 'react-router';
-import { useQuery } from '@apollo/client/react';
+import { message } from 'antd';
+import { useMutation, useQuery } from '@apollo/client/react';
 
 import {
   useBreadcrumbs,
@@ -10,20 +11,26 @@ import { useDistinctCities } from 'meteor/idreesia-common/hooks/security';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 
 import {
-  PersonGeneralList,
   PersonGeneralListFilter,
   PersonGeneralListFilterChips,
 } from '/imports/ui/modules/common';
-import type { PersonListItem } from '/imports/ui/modules/common/visitors/list';
 import { ALL_PEOPLE_TAGS } from '/imports/ui/modules/admin/people-tags/gql';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
-import { PAGED_DELETED_PEOPLE } from './gql';
+import {
+  PAGED_DELETED_PEOPLE,
+  DELETED_PERSON_RELATION_COUNTS,
+  HARD_DELETE_PERSON,
+  RESTORE_PERSON,
+} from './gql';
+import DeletedPeopleList, {
+  type DeletedPersonListItem,
+} from './person-list';
 
 type Props = RouteComponentProps;
 
 const List = ({ history, location }: Props) => {
-  useBreadcrumbs(['Admin', 'Deleted Data', 'People']);
+  useBreadcrumbs(['Admin', 'Data Management', 'Deleted People']);
 
   const { queryParams, setPageParams } = useQueryParams({
     history,
@@ -48,6 +55,30 @@ const List = ({ history, location }: Props) => {
   const { data: peopleTagsData } = useQuery(ALL_PEOPLE_TAGS);
   const { data, refetch } = useQuery(PAGED_DELETED_PEOPLE, {
     variables: { filter: queryParams },
+  });
+
+  const pageIds = (data?.pagedDeletedPeople?.data ?? []).flatMap((person) =>
+    person?._id ? [person._id] : []
+  );
+  const { data: relationCountsData, loading: relationCountsLoading } = useQuery(
+    DELETED_PERSON_RELATION_COUNTS,
+    {
+      variables: { ids: pageIds },
+      skip: pageIds.length === 0,
+    }
+  );
+  const relationCountsByPersonId = Object.fromEntries(
+    (relationCountsData?.deletedPersonRelationCounts ?? []).map((item) => [
+      item.personId,
+      item,
+    ])
+  );
+
+  const [hardDeletePerson] = useMutation(HARD_DELETE_PERSON, {
+    refetchQueries: ['pagedDeletedPeople', 'deletedPersonRelationCounts'],
+  });
+  const [restorePerson] = useMutation(RESTORE_PERSON, {
+    refetchQueries: ['pagedDeletedPeople', 'deletedPersonRelationCounts'],
   });
 
   const {
@@ -90,8 +121,24 @@ const List = ({ history, location }: Props) => {
     setPageParams(params);
   };
 
-  const handleSelectItem = (person: PersonListItem) => {
+  const handleSelectItem = (person: DeletedPersonListItem) => {
     history.push(paths.deletedPersonEditFormPath(person._id));
+  };
+
+  const handleHardDeleteItem = (person: DeletedPersonListItem) => {
+    hardDeletePerson({
+      variables: { _id: person._id },
+    }).catch((error: Error) => {
+      message.error(error.message, 5);
+    });
+  };
+
+  const handleRestoreItem = (person: DeletedPersonListItem) => {
+    restorePerson({
+      variables: { _id: person._id },
+    }).catch((error: Error) => {
+      message.error(error.message, 5);
+    });
   };
 
   const filterProps = {
@@ -139,7 +186,7 @@ const List = ({ history, location }: Props) => {
               otherNotes: person.visitorData?.otherNotes,
               isKarkun: person.isKarkun,
               tags: person.sharedData?.tags,
-            } as PersonListItem,
+            } as DeletedPersonListItem,
           ]
         : []
     ),
@@ -148,16 +195,17 @@ const List = ({ history, location }: Props) => {
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
   return (
-    <PersonGeneralList
-      showCnicColumn
-      showPhoneNumbersColumn
-      showCityCountryColumn
+    <DeletedPeopleList
       listHeader={getTableHeader}
       handleSelectItem={handleSelectItem}
+      handleHardDeleteItem={handleHardDeleteItem}
+      handleRestoreItem={handleRestoreItem}
       setPageParams={handleListSetPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}
       pagedData={pagedDeletedPeople}
+      relationCountsByPersonId={relationCountsByPersonId}
+      relationCountsLoading={relationCountsLoading}
     />
   );
 };

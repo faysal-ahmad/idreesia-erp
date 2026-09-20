@@ -15,6 +15,8 @@ export default class SubModulePaths {
   static userGroupsNewFormPath = `${SubModulePaths.userGroupsPath}/new`;
   static userGroupsEditFormPath = `${SubModulePaths.userGroupsPath}/:groupId`;
 
+  static securityLogsPath = `${ModulePaths.admin}/security-logs`;
+
   // *************************************************************************************
   // Instance Routes
   // *************************************************************************************
@@ -49,5 +51,10 @@ export default class SubModulePaths {
   static deletedPeoplePath = `${ModulePaths.admin}/deleted-people`;
   static deletedPersonEditFormPath(personId = ':personId') {
     return `${SubModulePaths.deletedPeoplePath}/${personId}`;
+  }
+
+  static duplicatePeoplePath = `${ModulePaths.admin}/duplicate-people`;
+  static duplicatePersonEditFormPath(personId = ':personId') {
+    return `${SubModulePaths.duplicatePeoplePath}/${personId}`;
   }
 }

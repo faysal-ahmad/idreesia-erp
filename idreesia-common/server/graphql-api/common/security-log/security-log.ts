@@ -21,6 +21,10 @@ type SecurityLogType {
 
 input SecurityLogFilter {
   dataSource: String
+  operationType: String
+  userId: String
+  startTime: String
+  endTime: String
   pageIndex: String
   pageSize: String
 }

@@ -8,6 +8,7 @@ import {
   UserGroupsEditForm,
   UserGroupsList,
 } from './user-groups';
+import { SecurityLogsList } from './security-logs';
 import {
   PhysicalStoresNewForm,
   PhysicalStoresEditForm,
@@ -17,6 +18,7 @@ import { CitiesNewForm, CitiesEditForm, CitiesList } from './cities';
 import { JobsList, JobLogsList, JobDefinitionsList } from './jobs';
 import { PeopleTagsList } from './people-tags';
 import { DeletedPeopleList, DeletedPersonEditForm } from './deleted-people';
+import { DuplicatePeopleList, DuplicatePersonEditForm } from './duplicate-people';
 
 const RouterSwitch = Switch as any;
 const RouterRoute = Route as any;
@@ -30,6 +32,8 @@ const Router = () => (
     <RouterRoute path={paths.userGroupsNewFormPath} component={UserGroupsNewForm} />
     <RouterRoute path={paths.userGroupsEditFormPath} component={UserGroupsEditForm} />
     <RouterRoute path={paths.userGroupsPath} component={UserGroupsList} />
+
+    <RouterRoute path={paths.securityLogsPath} component={SecurityLogsList} />
 
     <RouterRoute
       path={paths.physicalStoresNewFormPath}
@@ -56,6 +60,12 @@ const Router = () => (
       component={DeletedPersonEditForm}
     />
     <RouterRoute path={paths.deletedPeoplePath} component={DeletedPeopleList} />
+
+    <RouterRoute
+      path={paths.duplicatePersonEditFormPath()}
+      component={DuplicatePersonEditForm}
+    />
+    <RouterRoute path={paths.duplicatePeoplePath} component={DuplicatePeopleList} />
   </RouterSwitch>
 );
 

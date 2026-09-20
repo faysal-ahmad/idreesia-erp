@@ -1,0 +1,26 @@
+.list-table .ant-table-tbody > tr.relation-counts-row-not-owned > td {
+  background: #fff1f0 !important;
+}
+
+.list-table .ant-table-tbody > tr.relation-counts-row-not-owned:hover > td {
+  background: #ffccc7 !important;
+}
+
+.relation-counts-table-group {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.relation-counts-table-column {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.relation-counts-table-heading {
+  margin-bottom: 8px;
+  color: #344054;
+  font-size: 14px;
+  font-weight: 600;
+}

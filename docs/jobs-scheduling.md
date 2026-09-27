@@ -65,7 +65,7 @@ Two separate modules, mirroring the Job Definition / Job Instance split above:
 - **`admin/scheduled-job`** — operates on job *instances*: `pagedScheduledJobs`, `pagedJobLogs`, `isJobProcessorActive` queries; `runScheduledJobNow`, `retryFailedJob`, `setScheduledJobEnabled` mutations.
 - **`admin/job-definition`** — operates on job *definitions*: `allJobDefinitions` query; `updateJobDefinitionSchedule`, `clearJobDefinitionSchedule`, `resetJobDefinitionSchedule`, `setJobDefinitionEnabled` mutations.
 
-Both are gated by the `ADMIN_VIEW_JOBS` / `ADMIN_MANAGE_JOBS` permissions via the standard `@checkPermissions` directive, and every mutation writes an audit log entry (`EntityType.SCHEDULED_JOB` / `EntityType.JOB_DEFINITION`).
+Both are gated by the `ADMIN_MANAGE_SCHEDULED_JOBS` permission (covers both reading and writing) via the standard `@checkPermissions` directive, and every mutation writes an audit log entry (`EntityType.SCHEDULED_JOB` / `EntityType.JOB_DEFINITION`).
 
 ### Why Agenda, not a Redis-backed queue
 

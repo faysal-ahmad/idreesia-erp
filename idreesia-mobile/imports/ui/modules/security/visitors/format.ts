@@ -31,12 +31,19 @@ export const formatAge = (value?: string | null) => {
   return date ? plural(Math.floor(monthsSince(date) / 12), 'year') : null;
 };
 
-/** DD-MM-YYYY, the app-wide date format (Formats.DATE_FORMAT). */
-export const formatDate = (value?: string | null) => {
-  const date = toDate(value);
-  if (!date) return null;
+/** DD-MM-YYYY, the app-wide date format (Formats.DATE_FORMAT), which the API also takes. */
+export const formatDateValue = (date: Date) => {
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()}`;
 };
+
+export const formatDate = (value?: string | null) => {
+  const date = toDate(value);
+  return date ? formatDateValue(date) : null;
+};
+
+/** "Sat, 27 Sep 2026", for a date the user picked. */
+export const formatLongDate = (date: Date) =>
+  date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
 export const formatDays = (days: number) => plural(days, 'day');

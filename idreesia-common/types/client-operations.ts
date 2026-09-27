@@ -174,6 +174,13 @@ export type MobileUpdateLoginTimeMutationVariables = Exact<{ [key: string]: neve
 
 export type MobileUpdateLoginTimeMutation = { updateLoginTime: number | null };
 
+export type MobilePagedVisitorStaysQueryVariables = Exact<{
+  queryString: string;
+}>;
+
+
+export type MobilePagedVisitorStaysQuery = { pagedVisitorStays: { totalResults: number | null, data: Array<{ _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, cancelledDate: string | null, refVisitor: { _id: string | null, sharedData: { name: string | null, imageId: string | null, imageThumbnailId: string | null } | null, visitorData: { city: string | null, country: string | null } | null } | null } | null> | null } | null };
+
 export type MobileSecurityFaceVectorFromImageQueryVariables = Exact<{
   imageData: string;
 }>;

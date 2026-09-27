@@ -36,7 +36,12 @@ const DetailFields = ({ fields }: { fields: Field[] }) => {
 };
 
 /** Security → Visitors → a visitor. Read-only. */
-export const VisitorDetailScreen = () => {
+interface Props {
+  /** Where the back arrow goes; the screen the visitor was opened from. */
+  backTo?: string;
+}
+
+export const VisitorDetailScreen = ({ backTo = SecurityPaths.visitors }: Props) => {
   const { visitorId } = useParams<{ visitorId: string }>();
   // Declarative rather than ImageViewer.show(), so it closes with the screen.
   const [photoOpen, setPhotoOpen] = useState(false);
@@ -46,7 +51,7 @@ export const VisitorDetailScreen = () => {
 
   const visitor = data?.securityVisitorById;
   const page = (title: string, children: ReactNode) => (
-    <Page backTo={SecurityPaths.visitors} title={title}>
+    <Page backTo={backTo} title={title}>
       {children}
     </Page>
   );

@@ -1,0 +1,47 @@
+/* Stay report (stay-report-screen.tsx). Loaded from client/main.tsx. */
+
+.stay-report-date-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stay-report-step,
+.stay-report-date {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  color: var(--app-color-text);
+  font: inherit;
+}
+
+.stay-report-step {
+  width: 40px;
+  flex-shrink: 0;
+  color: var(--app-color-primary);
+  font-size: 18px;
+}
+
+.stay-report-date {
+  flex: 1;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.stay-report-date .antd-mobile-icon {
+  color: var(--app-color-primary);
+  font-size: 18px;
+}
+
+.stay-report-cancelled .adm-list-item-content-main {
+  color: var(--app-color-text-weak);
+}
+
+.stay-report-cancelled-label {
+  color: var(--app-color-danger);
+}

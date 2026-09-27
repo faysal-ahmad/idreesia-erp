@@ -23,6 +23,7 @@ antd-mobile only ships components and theming docs. It has no guidance on page p
 | List row | `idreesia-mobile/imports/ui/modules/security/visitors/visitor-list-item.tsx` |
 | Camera capture (Cordova + browser) | `idreesia-mobile/imports/ui/utilities/capture-photo.ts` + `imports/ui/components/camera-view.tsx` |
 | Photo search screen | `idreesia-mobile/imports/ui/modules/security/visitors/photo-search-screen.tsx` |
+| Single-date report | `idreesia-mobile/imports/ui/modules/security/stay-report/stay-report-screen.tsx` |
 | Detail screen | `idreesia-mobile/imports/ui/modules/security/visitors/visitor-detail-screen.tsx` |
 | Keeping a list alive under its detail | `idreesia-mobile/imports/ui/modules/security/visitors/visitors-feature.tsx` + `imports/ui/layout/keep-alive.tsx` |
 | Paged query → infinite list | `idreesia-mobile/imports/ui/hooks/use-paged-query.ts` + `imports/ui/components/paged-list.tsx` |
@@ -73,7 +74,7 @@ Account tab (/account)
 - **Tab bar:** Modules and Account are the only top-level destinations. The tab bar shows only on their root screens. Don't add tabs per module; modules are listed on the Modules tab.
 - **Drill-down:** every screen below a tab root is full-screen, with a back arrow in the nav bar. Keep the hierarchy to at most **module → feature → list → detail → form**. If you need more levels, rethink the flow, for example with a popup or tabs inside the detail screen.
 - **Back:** set `backTo` on `Page` to the parent route. `useNavigateBack` uses `history.goBack()` when the user got there within the app, which keeps Android's hardware back button in step. On a deep link or after a reload, it replaces the current route with the parent, so the back arrow never leaves the app.
-- **Coming back keeps the screen as it was:** a list (or search) that opens a detail screen stays mounted underneath it inside `KeepAlive`, so back shows the same search, loaded pages and scroll position. The feature component decides which screens are still in the back stack; see `visitors-feature.tsx`. Don't store screen state in module variables or the URL to fake this.
+- **Coming back keeps the screen as it was:** a list (or search) that opens a detail screen stays mounted underneath it inside `KeepAlive`, so back shows the same search, loaded pages and scroll position. The feature component decides which screens are still in the back stack; see `visitors-feature.tsx`. When another feature opens a record (e.g. the stay report opening a visitor), route the detail screen under that feature's own path (`/security/stay-report/:visitorId`) and reuse the screen component with its `backTo`, so the opening screen stays alive; see `stay-report-feature.tsx`. Don't store screen state in module variables or the URL to fake this.
 - **After saving:** go back to where the user came from with `useNavigateBack(parentPath)`, not `history.push`. That way back doesn't return to the form.
 - **Routes:** use path constants (`<Module>Paths`, `AccountPaths`), never string literals. Routes use a `HashRouter` (`/#/…`), which Cordova needs.
 
@@ -118,7 +119,8 @@ A feature's entry screen is usually a list. Build it from `usePagedQuery` and `P
   - The Visitors list routes typed digits to the exact-match CNIC or phone filters, in their stored formats, and anything else to name search (`parse-search.ts`).
   - Explain partial input with a `list-toolbar-hint` instead of querying.
 - **Filters:** leave them out unless the feature needs them; one good search box usually does the job (the Visitors list has none). If a list does need filters, put them in a bottom `Popup` opened from a filter icon in the nav bar's `right` slot. Put a `Badge` with the active-filter count on that icon, and show active filters as closable `Tag`s under the search bar. Don't show inline filter forms.
-- **Paging:** paged GraphQL queries take `pageIndex` / `pageSize` in their `filter` and return `{ totalResults, data }`. Their server-side sort needs a unique tie-breaker (e.g. `_id`), or pages overlap.
+- **One date instead of a search:** for a report that shows one day (e.g. the stay report), put a date bar in the `list-toolbar`: previous / next day buttons either side of the date, and tapping the date opens a `DatePicker`. Default to today. See `stay-report-screen.tsx`.
+- **Paging:** paged GraphQL queries take `pageIndex` / `pageSize` in their `filter` and return `{ totalResults, data }`. For older queries that take a `queryString` instead (e.g. `pagedVisitorStays`), pass `toVariables` to `usePagedQuery`. Their server-side sort needs a unique tie-breaker (e.g. `_id`), or pages overlap.
 - **Photos:** `getBackendFileUrl(imageThumbnailId ?? imageId)` from `/imports/startup/backend`. The web's `getDownloadUrl` points at the app's own origin, not the backend.
 - **Loading more:** use `PullToRefresh` around the list and `InfiniteScroll` below it. Don't use numbered pages.
 - **Row actions:** tapping a row opens its detail screen. Put the one or two most common actions in `SwipeAction`; everything else goes on the detail screen.

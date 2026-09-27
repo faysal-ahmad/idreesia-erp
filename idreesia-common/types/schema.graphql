@@ -23,10 +23,9 @@ enum Permission {
   ADMIN_MANAGE_PHYSICAL_STORES
   ADMIN_MANAGE_CITIES
   ADMIN_MANAGE_PEOPLE_TAGS
-  ADMIN_VIEW_JOBS
-  ADMIN_MANAGE_JOBS
-  ADMIN_MANAGE_DELETED_DATA
-  ADMIN_MANAGE_DUPLICATE_DATA
+  ADMIN_MANAGE_SCHEDULED_JOBS
+  ADMIN_MANAGE_DELETED_PEOPLE
+  ADMIN_MANAGE_DUPLICATE_PEOPLE
   ADMIN_VIEW_SECURITY_LOGS
 
   HR_MANAGE_SETUP_DATA
@@ -87,21 +86,21 @@ type PersonRelationCounts {
 
 extend type Query {
   pagedDeletedPeople(filter: PersonFilter): PagedPeopleType
-    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
+    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_PEOPLE])
 
   deletedPersonById(_id: String!): PersonType
-    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
+    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_PEOPLE])
 
-  deletedPersonRelationCounts(ids: [String!]!): [PersonRelationCounts!]!
-    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
+  deletedPersonRelationCounts(ids: [String!]!): [PersonRelationCounts!]
+    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_PEOPLE])
 }
 
 extend type Mutation {
   hardDeletePeople(_ids: [String!]!): Int
-    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
+    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_PEOPLE])
 
   restorePerson(_id: String!): Int
-    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
+    @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_PEOPLE])
 }
 
 type DuplicatePersonSummaryType {
@@ -123,21 +122,21 @@ type DuplicatePersonGroupType {
 
 extend type Query {
   duplicateCnics: [DuplicatePersonGroupType]
-    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
+    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_PEOPLE])
 
   duplicatePhoneNumbers: [DuplicatePersonGroupType]
-    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
+    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_PEOPLE])
 
   duplicatePersonById(_id: String!): PersonType
-    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
+    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_PEOPLE])
 
-  duplicatePersonRelationCounts(ids: [String!]!): [PersonRelationCounts!]!
-    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
+  duplicatePersonRelationCounts(ids: [String!]!): [PersonRelationCounts!]
+    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_PEOPLE])
 }
 
 extend type Mutation {
   deleteDuplicatePeople(_ids: [String]!): Int
-    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
+    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_PEOPLE])
 }
 
 type JobDefinitionType {
@@ -153,24 +152,24 @@ type JobDefinitionType {
 
 extend type Query {
   allJobDefinitions: [JobDefinitionType]
-    @checkPermissions(permissions: [ADMIN_VIEW_JOBS, ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 }
 
 extend type Mutation {
   updateJobDefinitionSchedule(_id: String!, schedule: String!): JobDefinitionType
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   # Removes the recurring schedule entirely (not merely disabling it) -
   # the job goes back to manual-only, and its recurring job instance is
   # cancelled immediately.
   clearJobDefinitionSchedule(_id: String!): JobDefinitionType
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   resetJobDefinitionSchedule(_id: String!): JobDefinitionType
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   setJobDefinitionEnabled(_id: String!, enabled: Boolean!): JobDefinitionType
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 }
 
 type PeopleTagType {
@@ -262,27 +261,27 @@ input JobLogsFilterType {
 
 extend type Query {
   pagedScheduledJobs(filter: ScheduledJobsFilterType): PagedScheduledJobsType
-    @checkPermissions(permissions: [ADMIN_VIEW_JOBS, ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   pagedJobLogs(filter: JobLogsFilterType): PagedJobLogsType
-    @checkPermissions(permissions: [ADMIN_VIEW_JOBS, ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   # False when the JOBS_ENABLED env var is off (or the server
   # hasn't finished starting up yet) - queued/scheduled jobs will never run
   # while this is false, even though they can still be created.
   isJobProcessorActive: Boolean
-    @checkPermissions(permissions: [ADMIN_VIEW_JOBS, ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 }
 
 extend type Mutation {
   runScheduledJobNow(name: String!): Boolean
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   retryFailedJob(_id: String!): Boolean
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   setScheduledJobEnabled(_id: String!, enabled: Boolean!): Boolean
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 }
 
 type SecurityLogUserOption {

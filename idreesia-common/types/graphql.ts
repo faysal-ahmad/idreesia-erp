@@ -1764,13 +1764,12 @@ export type PeopleTagType = {
 
 export enum Permission {
   AdminManageCities = 'ADMIN_MANAGE_CITIES',
-  AdminManageDeletedData = 'ADMIN_MANAGE_DELETED_DATA',
-  AdminManageDuplicateData = 'ADMIN_MANAGE_DUPLICATE_DATA',
-  AdminManageJobs = 'ADMIN_MANAGE_JOBS',
+  AdminManageDeletedPeople = 'ADMIN_MANAGE_DELETED_PEOPLE',
+  AdminManageDuplicatePeople = 'ADMIN_MANAGE_DUPLICATE_PEOPLE',
   AdminManagePeopleTags = 'ADMIN_MANAGE_PEOPLE_TAGS',
   AdminManagePhysicalStores = 'ADMIN_MANAGE_PHYSICAL_STORES',
+  AdminManageScheduledJobs = 'ADMIN_MANAGE_SCHEDULED_JOBS',
   AdminManageUsersAndGroups = 'ADMIN_MANAGE_USERS_AND_GROUPS',
-  AdminViewJobs = 'ADMIN_VIEW_JOBS',
   AdminViewSecurityLogs = 'ADMIN_VIEW_SECURITY_LOGS',
   AdminViewUsersAndGroups = 'ADMIN_VIEW_USERS_AND_GROUPS',
   HrDeleteData = 'HR_DELETE_DATA',
@@ -1983,14 +1982,14 @@ export type Query = {
   committeeById?: Maybe<CommitteeType>;
   currentUser?: Maybe<UserType>;
   deletedPersonById?: Maybe<PersonType>;
-  deletedPersonRelationCounts: Array<PersonRelationCounts>;
+  deletedPersonRelationCounts?: Maybe<Array<PersonRelationCounts>>;
   distinctCities?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctCountries?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctRegions?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctStayAllowedBy?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   duplicateCnics?: Maybe<Array<Maybe<DuplicatePersonGroupType>>>;
   duplicatePersonById?: Maybe<PersonType>;
-  duplicatePersonRelationCounts: Array<PersonRelationCounts>;
+  duplicatePersonRelationCounts?: Maybe<Array<PersonRelationCounts>>;
   duplicatePhoneNumbers?: Maybe<Array<Maybe<DuplicatePersonGroupType>>>;
   dutyById?: Maybe<DutyType>;
   dutyLocationById?: Maybe<DutyLocationType>;

@@ -19,7 +19,7 @@ export default {
       People.searchPeople(filter, { onlyDeleted: true }),
 
     deletedPersonById: async (_obj: unknown, { _id }: { _id: string }) =>
-      People.findOneAsync(_id),
+      People.findOneAsync({ _id, deletedAt: { $exists: true } }),
 
     deletedPersonRelationCounts: async (_obj: unknown, { ids }: { ids: string[] }) => {
       const countsByPersonId = await getPersonRelationCounts(ids);

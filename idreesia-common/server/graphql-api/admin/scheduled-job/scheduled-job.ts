@@ -58,26 +58,26 @@ input JobLogsFilterType {
 
 extend type Query {
   pagedScheduledJobs(filter: ScheduledJobsFilterType): PagedScheduledJobsType
-    @checkPermissions(permissions: [ADMIN_VIEW_JOBS, ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   pagedJobLogs(filter: JobLogsFilterType): PagedJobLogsType
-    @checkPermissions(permissions: [ADMIN_VIEW_JOBS, ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   # False when the JOBS_ENABLED env var is off (or the server
   # hasn't finished starting up yet) - queued/scheduled jobs will never run
   # while this is false, even though they can still be created.
   isJobProcessorActive: Boolean
-    @checkPermissions(permissions: [ADMIN_VIEW_JOBS, ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 }
 
 extend type Mutation {
   runScheduledJobNow(name: String!): Boolean
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   retryFailedJob(_id: String!): Boolean
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   setScheduledJobEnabled(_id: String!, enabled: Boolean!): Boolean
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 }
 `;

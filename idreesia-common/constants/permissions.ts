@@ -9,10 +9,9 @@ const Permissions = {
   ADMIN_MANAGE_CITIES: 'admin-manage-cities',
   ADMIN_MANAGE_PEOPLE_TAGS: 'admin-manage-people-tags',
 
-  ADMIN_VIEW_JOBS: 'admin-view-jobs',
-  ADMIN_MANAGE_JOBS: 'admin-manage-jobs',
-  ADMIN_MANAGE_DELETED_DATA: 'admin-manage-deleted-data',
-  ADMIN_MANAGE_DUPLICATE_DATA: 'admin-manage-duplicate-data',
+  ADMIN_MANAGE_SCHEDULED_JOBS: 'admin-manage-scheduled-jobs',
+  ADMIN_MANAGE_DELETED_PEOPLE: 'admin-manage-deleted-people',
+  ADMIN_MANAGE_DUPLICATE_PEOPLE: 'admin-manage-duplicate-people',
   ADMIN_VIEW_SECURITY_LOGS: 'admin-view-security-logs',
 
   // ****************************************************************************************

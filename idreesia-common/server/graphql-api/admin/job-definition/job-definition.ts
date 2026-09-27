@@ -14,23 +14,23 @@ type JobDefinitionType {
 
 extend type Query {
   allJobDefinitions: [JobDefinitionType]
-    @checkPermissions(permissions: [ADMIN_VIEW_JOBS, ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 }
 
 extend type Mutation {
   updateJobDefinitionSchedule(_id: String!, schedule: String!): JobDefinitionType
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   # Removes the recurring schedule entirely (not merely disabling it) -
   # the job goes back to manual-only, and its recurring job instance is
   # cancelled immediately.
   clearJobDefinitionSchedule(_id: String!): JobDefinitionType
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   resetJobDefinitionSchedule(_id: String!): JobDefinitionType
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 
   setJobDefinitionEnabled(_id: String!, enabled: Boolean!): JobDefinitionType
-    @checkPermissions(permissions: [ADMIN_MANAGE_JOBS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 }
 `;

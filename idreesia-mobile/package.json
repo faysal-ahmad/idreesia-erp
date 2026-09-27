@@ -11,10 +11,20 @@
     "typecheck": "../node_modules/.bin/tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
+    "@apollo/client": "4.2.7",
     "@babel/runtime": "^7",
+    "antd-mobile": "^5.43.0",
+    "antd-mobile-icons": "^0.3.0",
+    "graphql": "^16.14.2",
+    "graphql-tag": "^2.10.3",
     "meteor-node-stubs": "^1.2.27",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^5.1.2",
+    "rxjs": "^7.8.2"
+  },
+  "resolutions": {
+    "react-router-dom/react-router/path-to-regexp": "^1.9.0"
   },
   "engines": {
     "node": "24.x"

@@ -722,7 +722,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteAllAttendances?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteAllAttendancesArgs, 'month'>>;
   deleteAllSalaries?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteAllSalariesArgs, 'month'>>;
   deleteAttendances?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteAttendancesArgs, 'ids' | 'month'>>;
-  deleteDuplicatePerson?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteDuplicatePersonArgs, '_id'>>;
+  deleteDuplicatePeople?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteDuplicatePeopleArgs, '_ids'>>;
   deleteHrKarkun?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteHrKarkunArgs, '_id'>>;
   deletePeopleTag?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeletePeopleTagArgs, '_id'>>;
   deleteSalaries?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteSalariesArgs, 'ids' | 'month'>>;
@@ -731,7 +731,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteVisitorStay?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteVisitorStayArgs, '_id'>>;
   fixCitySpelling?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationFixCitySpellingArgs, 'existingSpelling' | 'newSpelling'>>;
   fixNameSpelling?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationFixNameSpellingArgs, 'existingSpelling' | 'newSpelling'>>;
-  hardDeletePerson?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationHardDeletePersonArgs, '_id'>>;
+  hardDeletePeople?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationHardDeletePeopleArgs, '_ids'>>;
   importAttendances?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationImportAttendancesArgs, 'dutyId' | 'month'>>;
   importSecurityVisitorsCsvData?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<Types.MutationImportSecurityVisitorsCsvDataArgs, 'csvData'>>;
   mergeStockItems?: Resolver<Types.Maybe<ResolversTypes['StockItem']>, ParentType, ContextType, RequireFields<Types.MutationMergeStockItemsArgs, '_idToKeep' | '_idsToMerge' | 'physicalStoreId'>>;
@@ -1083,6 +1083,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   distinctStayAllowedBy?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   duplicateCnics?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DuplicatePersonGroupType']>>>, ParentType, ContextType>;
   duplicatePersonById?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.QueryDuplicatePersonByIdArgs, '_id'>>;
+  duplicatePersonRelationCounts?: Resolver<Array<ResolversTypes['PersonRelationCounts']>, ParentType, ContextType, RequireFields<Types.QueryDuplicatePersonRelationCountsArgs, 'ids'>>;
   duplicatePhoneNumbers?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DuplicatePersonGroupType']>>>, ParentType, ContextType>;
   dutyById?: Resolver<Types.Maybe<ResolversTypes['DutyType']>, ParentType, ContextType, RequireFields<Types.QueryDutyByIdArgs, 'id'>>;
   dutyLocationById?: Resolver<Types.Maybe<ResolversTypes['DutyLocationType']>, ParentType, ContextType, RequireFields<Types.QueryDutyLocationByIdArgs, 'id'>>;

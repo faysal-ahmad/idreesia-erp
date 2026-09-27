@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { DeleteOutlined, RollbackOutlined } from '@ant-design/icons';
+import { RollbackOutlined } from '@ant-design/icons';
 import { Pagination, Popconfirm, Row, Table, Tag, Tooltip } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
@@ -46,7 +46,6 @@ interface PagedData { totalResults: number; data: DeletedPersonListItem[]; }
 interface Props {
   listHeader?: () => React.ReactNode;
   handleSelectItem?(record: DeletedPersonListItem): void;
-  handleHardDeleteItem?(record: DeletedPersonListItem): void;
   handleRestoreItem?(record: DeletedPersonListItem): void;
   setPageParams(params: { pageIndex: string; pageSize: string; }): void;
   pageIndex?: number;
@@ -54,6 +53,8 @@ interface Props {
   pagedData?: PagedData;
   relationCountsByPersonId: Record<string, RelationCounts>;
   relationCountsLoading?: boolean;
+  selectedPersonIds: string[];
+  setSelectedPersonIds(updater: (prev: string[]) => string[]): void;
 }
 
 interface State {
@@ -229,16 +230,9 @@ export default class DeletedPeopleList extends Component<Props, State> {
 
   actionsColumn = {
     key: 'action',
-    width: 100,
+    width: 56,
     render: (_text: unknown, record: DeletedPersonListItem) => {
-      const {
-        relationCountsByPersonId,
-        handleHardDeleteItem,
-        handleRestoreItem,
-      } = this.props;
-      const relationCounts = relationCountsByPersonId[record._id];
-      const canHardDelete =
-        !!relationCounts && hasOnlyOwnedRelations(relationCounts.counts);
+      const { handleRestoreItem } = this.props;
 
       return (
         <div className="list-actions-column">
@@ -254,26 +248,16 @@ export default class DeletedPeopleList extends Component<Props, State> {
               <RollbackOutlined className="list-actions-icon" />
             </Tooltip>
           </Popconfirm>
-          {canHardDelete ? (
-            <Popconfirm
-              title="Are you sure you want to permanently delete this person?"
-              onConfirm={() => {
-                handleHardDeleteItem?.(record);
-              }}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Tooltip title="Delete Permanently">
-                <DeleteOutlined className="list-actions-icon" />
-              </Tooltip>
-            </Popconfirm>
-          ) : null}
         </div>
       );
     },
   };
 
+  // Antd puts the expand column before the selection column by default;
+  // place both explicitly so the checkboxes come first.
   getColumns = () => [
+    Table.SELECTION_COLUMN,
+    Table.EXPAND_COLUMN,
     this.nameColumn,
     this.cnicColumn,
     this.phoneNumberColumn,
@@ -292,6 +276,24 @@ export default class DeletedPeopleList extends Component<Props, State> {
         loading={relationCountsLoading && !relationCounts}
       />
     );
+  };
+
+  // Only people whose relations are all owned can be hard deleted, so only
+  // they get an enabled checkbox.
+  canHardDelete = (record: DeletedPersonListItem) => {
+    const relationCounts = this.props.relationCountsByPersonId[record._id];
+    return !!relationCounts && hasOnlyOwnedRelations(relationCounts.counts);
+  };
+
+  onSelectionChange = (selectedRowKeys: React.Key[]) => {
+    const { pagedData, setSelectedPersonIds } = this.props;
+    const pageIds = (pagedData?.data ?? []).map((person) => person._id);
+    // Replace only this page's selection; keep other pages' keys.
+    setSelectedPersonIds((prev) => {
+      const next = new Set(prev.filter((_id) => !pageIds.includes(_id)));
+      selectedRowKeys.forEach((key) => next.add(String(key)));
+      return Array.from(next);
+    });
   };
 
   onPaginationChange = (pageIndex: number, pageSize?: number) => {
@@ -314,6 +316,7 @@ export default class DeletedPeopleList extends Component<Props, State> {
       pageSize,
       listHeader,
       pagedData = { totalResults: 0, data: [] },
+      selectedPersonIds,
     } = this.props;
 
     const { totalResults, data } = pagedData;
@@ -338,6 +341,14 @@ export default class DeletedPeopleList extends Component<Props, State> {
           pagination={false}
           scroll={{ y: scrollY }}
           expandable={{ expandedRowRender: this.renderExpandedRow }}
+          rowSelection={{
+            columnWidth: 48,
+            selectedRowKeys: selectedPersonIds,
+            onChange: this.onSelectionChange,
+            getCheckboxProps: (record: DeletedPersonListItem) => ({
+              disabled: !this.canHardDelete(record),
+            }),
+          }}
           footer={() => (
             <Pagination
               current={numPageIndex}

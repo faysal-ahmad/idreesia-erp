@@ -1,0 +1,21 @@
+/* Visitors list rows (visitor-list-item.tsx). Loaded from client/main.tsx. */
+
+.visitor-list-item .adm-list-item-content-prefix {
+  align-self: flex-start;
+  padding-top: 14px;
+}
+
+.visitor-list-avatar {
+  --size: 48px;
+  --border-radius: var(--app-radius-medium);
+}
+
+.visitor-list-item .adm-list-item-description {
+  line-height: 1.5;
+}
+
+.visitor-list-badges {
+  --gap: 6px;
+
+  margin-top: 6px;
+}

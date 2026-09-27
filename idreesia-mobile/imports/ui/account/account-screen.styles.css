@@ -1,0 +1,51 @@
+/* Account tab (account-screen.tsx). Loaded from client/main.tsx. */
+
+.profile-card {
+  display: flex;
+  min-height: 88px;
+  align-items: center;
+  gap: 14px;
+  margin: 0 12px 12px;
+  padding: 16px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.profile-avatar {
+  display: flex;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--app-color-primary-light);
+  color: var(--app-color-primary);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.profile-text {
+  min-width: 0;
+}
+
+.profile-name {
+  margin: 0;
+  overflow: hidden;
+  font-size: 18px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-secondary {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+  color: var(--app-color-text-secondary);
+  font-size: 14px;
+}
+
+.logout-item .adm-list-item-content-main {
+  color: var(--app-color-danger);
+  text-align: center;
+}

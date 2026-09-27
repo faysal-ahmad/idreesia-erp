@@ -13,9 +13,20 @@ interface PagedFilter {
   pageSize?: string | null;
 }
 
-interface Options<TData, TFilter, TItem> {
-  /** The query's `filter` argument, without paging. */
+interface Paging {
+  pageIndex: string;
+  pageSize: string;
+}
+
+interface Options<TData, TFilter, TItem, TVariables> {
+  /** The query's `filter` argument, without paging. Changing it starts again from the first page. */
   filter: TFilter;
+  /**
+   * Builds the query's variables for a page. Leave it out for queries that
+   * take `filter: { ...filter, pageIndex, pageSize }`; set it for other
+   * shapes, e.g. the `queryString` taken by pagedVisitorStays.
+   */
+  toVariables?: (filter: TFilter, paging: Paging) => TVariables;
   /** Picks the page out of the query result. */
   getPage: (data: TData) => Page<TItem> | null | undefined;
   /** Identifies an item, so a record never shows twice. */
@@ -35,15 +46,19 @@ export const usePagedQuery = <
   TData,
   TFilter extends object,
   TItem,
-  TVariables extends OperationVariables & { filter?: (TFilter & PagedFilter) | null },
+  TVariables extends OperationVariables,
 >(
   query: TypedDocumentNode<TData, TVariables>,
-  { filter, getPage, getKey, pageSize = 20 }: Options<TData, TFilter, TItem>
+  { filter, toVariables, getPage, getKey, pageSize = 20 }: Options<TData, TFilter, TItem, TVariables>
 ) => {
   const client = useApolloClient();
   const filterKey = JSON.stringify(filter);
-  const variablesFor = (pageIndex: number) =>
-    ({ filter: { ...filter, pageIndex: String(pageIndex), pageSize: String(pageSize) } }) as TVariables;
+  const variablesFor = (pageIndex: number) => {
+    const paging = { pageIndex: String(pageIndex), pageSize: String(pageSize) };
+    return toVariables
+      ? toVariables(filter, paging)
+      : ({ filter: { ...filter, ...paging } satisfies TFilter & PagedFilter } as unknown as TVariables);
+  };
 
   const { data, loading, error, refetch } = useQuery(query, {
     variables: variablesFor(0),

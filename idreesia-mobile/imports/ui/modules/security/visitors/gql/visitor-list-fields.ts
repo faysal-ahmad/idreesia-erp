@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 export const MOBILE_VISITOR_LIST_FIELDS = gql`
   fragment MobileVisitorListFields on PersonType {
     _id
-    isKarkun
     sharedData {
       name
       parentName
@@ -22,8 +21,6 @@ export const MOBILE_VISITOR_LIST_FIELDS = gql`
     visitorData {
       city
       country
-      criminalRecord
-      otherNotes
     }
   }
 `;

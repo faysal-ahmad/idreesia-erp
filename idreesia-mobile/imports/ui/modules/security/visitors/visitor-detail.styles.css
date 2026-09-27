@@ -1,0 +1,144 @@
+/* A visitor's detail screen (visitor-detail-screen.tsx). Loaded from client/main.tsx.
+   A large photo for matching the face, then compact field rows. */
+
+.visitor-detail-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 12px 10px;
+  padding: 16px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  text-align: center;
+}
+
+.visitor-detail-photo {
+  display: block;
+  width: 160px;
+  height: 160px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--app-radius-large);
+  background: var(--app-color-surface-muted);
+  box-shadow: var(--app-elevation);
+}
+
+.visitor-detail-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.visitor-detail-no-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--app-color-text-weak);
+  font-size: 64px;
+  box-shadow: none;
+}
+
+.visitor-detail-heading {
+  min-width: 0;
+  margin-top: 12px;
+}
+
+.visitor-detail-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.visitor-detail-parent {
+  margin: 2px 0 0;
+  color: var(--app-color-text-secondary);
+  font-size: 15px;
+}
+
+.visitor-detail-tags {
+  --gap: 6px;
+
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.visitor-detail-fields {
+  margin: 0 12px;
+  padding: 2px 14px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.visitor-detail-field {
+  display: grid;
+  grid-template-columns: 7.2em 1fr;
+  gap: 10px;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--app-color-border);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.visitor-detail-field:last-child {
+  border-bottom: 0;
+}
+
+.visitor-detail-field dt {
+  color: var(--app-color-text-secondary);
+  font-size: 14px;
+}
+
+.visitor-detail-field dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.visitor-detail-nowrap dd {
+  white-space: nowrap;
+}
+
+.visitor-detail-criminal-record dt,
+.visitor-detail-criminal-record dd {
+  color: var(--app-color-danger);
+}
+
+/* Stay history (visitor-stay-history.tsx) */
+
+.visitor-stays {
+  margin-top: 14px;
+}
+
+.visitor-stays-title {
+  margin: 0 24px 6px;
+  color: var(--app-color-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.visitor-stays-status {
+  display: flex;
+  justify-content: center;
+  margin: 0 12px;
+  padding: 12px 14px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  color: var(--app-color-text-secondary);
+  font-size: 15px;
+}
+
+.visitor-stay-cancelled dd {
+  color: var(--app-color-text-weak);
+  text-decoration: line-through;
+}
+
+.visitor-stay-cancelled-label {
+  display: inline-block;
+  margin-left: 6px;
+  text-decoration: none;
+}

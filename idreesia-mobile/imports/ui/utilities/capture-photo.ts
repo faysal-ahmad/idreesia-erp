@@ -9,10 +9,14 @@ import { CameraView } from '../components/camera-view';
 // user cancels. Camera only: picking an existing image is deliberately not
 // offered.
 //
-// - Cordova builds use cordova-plugin-camera (.meteor/cordova-plugins) with
-//   the camera as the only source.
-// - The browser build shows a full-screen live camera (CameraView), since a
-//   file input would also offer the gallery and files.
+// - The browser build and the iOS app show a full-screen live camera
+//   (CameraView). In the iOS app this avoids the native camera screen, whose
+//   hand-back left the app blank for a couple of seconds; the local plugin
+//   cordova-plugins/idreesia-webview-camera stops WKWebView asking for
+//   permission again on every launch. (A file input would also offer the
+//   gallery and files, so it isn't used.)
+// - The Android app uses cordova-plugin-camera with the camera as the only
+//   source, until the in-app camera has been tested in Android's WebView.
 
 const MAX_DIMENSION = 1024;
 const JPEG_QUALITY = 0.85;
@@ -34,6 +38,9 @@ declare const Camera: {
 
 const getCordovaCamera = () =>
   (navigator as Navigator & { camera?: CordovaCamera }).camera;
+
+const cordovaPlatform = () =>
+  (window as Window & { cordova?: { platformId?: string } }).cordova?.platformId;
 
 const captureWithCordova = (camera: CordovaCamera) =>
   new Promise<string | null>((resolve, reject) => {
@@ -84,5 +91,6 @@ const captureWithCameraView = () =>
 
 export const capturePhoto = (): Promise<string | null> => {
   const camera = getCordovaCamera();
-  return camera ? captureWithCordova(camera) : captureWithCameraView();
+  if (camera && cordovaPlatform() === 'android') return captureWithCordova(camera);
+  return captureWithCameraView();
 };

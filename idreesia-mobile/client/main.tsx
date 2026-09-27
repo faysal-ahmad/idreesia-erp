@@ -10,7 +10,9 @@ import './main.css';
  * here (same rule as idreesia-web: a CSS file sharing a .tsx basename breaks
  * Meteor's extensionless imports). */
 import '../imports/ui/account/account-screen.styles.css';
+import '../imports/ui/modules/security/stay-report/stay-report.styles.css';
 import '../imports/ui/modules/security/visitors/photo-search.styles.css';
+import '../imports/ui/modules/security/visitors/visitor-detail.styles.css';
 import '../imports/ui/modules/security/visitors/visitors-list.styles.css';
 import App from '../imports/ui/app';
 import { HashRouter } from '../imports/ui/router';

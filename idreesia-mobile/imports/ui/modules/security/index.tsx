@@ -1,9 +1,10 @@
 import React from 'react';
-import { CheckShieldOutline, TeamOutline } from 'antd-mobile-icons';
+import { CalendarOutline, CheckShieldOutline, TeamOutline } from 'antd-mobile-icons';
 import { ModuleNames, ModulePaths, Permissions } from 'meteor/idreesia-common/constants';
 
 import type { ModuleDefinition } from '../types';
 import { SecurityPaths } from './paths';
+import { StayReportFeature } from './stay-report';
 import { VisitorsFeature } from './visitors';
 
 export const SecurityModule: ModuleDefinition = {
@@ -20,6 +21,15 @@ export const SecurityModule: ModuleDefinition = {
       path: SecurityPaths.visitors,
       permissions: [Permissions.SECURITY_VIEW_VISITORS, Permissions.SECURITY_MANAGE_VISITORS],
       component: VisitorsFeature,
+    },
+    {
+      key: 'stay-report',
+      title: 'Stay report',
+      description: "Visitors staying on a chosen date",
+      icon: <CalendarOutline />,
+      path: SecurityPaths.stayReport,
+      permissions: [Permissions.SECURITY_VIEW_VISITORS, Permissions.SECURITY_MANAGE_VISITORS],
+      component: StayReportFeature,
     },
   ],
 };

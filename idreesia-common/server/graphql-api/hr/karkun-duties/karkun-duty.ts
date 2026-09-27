@@ -38,6 +38,7 @@ extend type Mutation {
     role: String
     daysOfWeek: [String]
   ): KarkunDutyType
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   updateKarkunDuty(
     _id: String!
@@ -48,7 +49,9 @@ extend type Mutation {
     role: String
     daysOfWeek: [String]
   ): KarkunDutyType
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   removeKarkunDuty(_id: String!): Int
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 }
 `;

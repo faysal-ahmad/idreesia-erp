@@ -4,7 +4,11 @@ import { useQuery } from '@apollo/client/react';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import type { HelperPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { useAllMSDuties } from '/imports/ui/modules/hr/common/hooks';
-import { KarkunsList, KarkunsListFilter } from '/imports/ui/modules/common';
+import {
+  KarkunsFilterChips,
+  KarkunsList,
+  KarkunsListFilter,
+} from '/imports/ui/modules/common';
 
 import { PAGED_HR_KARKUNS } from './gql';
 
@@ -73,6 +77,7 @@ const List = ({ handleSelectItem }: Props) => {
         showMehfilDutyFilter={false}
         showCityMehfilFilter={false}
         showRegionFilter={false}
+        showUpdatedBetweenFilter={false}
         mehfilDuties={(allMSDuties ?? []).filter((item) => item != null)}
         name={name ?? undefined}
         cnicNumber={cnicNumber ?? undefined}
@@ -84,7 +89,17 @@ const List = ({ handleSelectItem }: Props) => {
   };
 
   const getTableHeader = () => (
-    <div className="list-table-header">{getListFilter()}</div>
+    <div className="list-table-header">
+      <div className="list-table-header-utilities">
+        {getListFilter()}
+        <KarkunsFilterChips
+          name={name ?? undefined}
+          cnicNumber={cnicNumber ?? undefined}
+          phoneNumber={phoneNumber ?? undefined}
+          setPageParams={setPageParams}
+        />
+      </div>
+    </div>
   );
 
   return (

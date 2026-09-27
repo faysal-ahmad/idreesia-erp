@@ -4,8 +4,6 @@ import {
   KarkunDuties,
   Attendances,
 } from 'meteor/idreesia-common/server/collections/hr';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -57,12 +55,6 @@ const resolvers: ResolverMap = {
       { name, isMehfilDuty, description, attendanceSheet },
       { user }
     ) => {
-      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Duty Setup Data in the System.'
-        );
-      }
-
       const date = new Date();
       const dutyId = await Duties.insertAsync({
         name,
@@ -83,12 +75,6 @@ const resolvers: ResolverMap = {
       { id, name, description, attendanceSheet },
       { user }
     ) => {
-      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Duty Setup Data in the System.'
-        );
-      }
-
       const date = new Date();
       await Duties.updateAsync(id, {
         $set: {
@@ -103,15 +89,7 @@ const resolvers: ResolverMap = {
       return Duties.findOneAsync(id);
     },
 
-    removeDuty: async (obj, { _id }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_SETUP_DATA])) {
-        throw new Error(
-          'You do not have permission to manage Duty Setup Data in the System.'
-        );
-      }
-
-      return Duties.removeAsync(_id);
-    },
+    removeDuty: async (obj, { _id }) => Duties.removeAsync(_id),
   },
 };
 

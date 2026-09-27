@@ -1,17 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { type History } from 'history';
 import { type RouteComponentProps } from 'react-router';
-import { useMutation, useQuery } from '@apollo/client/react';
+import {
+  useApolloClient,
+  useMutation,
+  useQuery,
+} from '@apollo/client/react';
 import { DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import {
   Button,
   Pagination,
   Popconfirm,
+  Popover,
+  Space,
   Spin,
   Table,
   Tabs,
-  Tooltip,
 } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
@@ -19,14 +24,17 @@ import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { message } from '/imports/ui/antd-feedback';
 import type {
   DuplicateCnicsQuery,
+  DuplicatePersonRelationCountsQuery,
   DuplicatePhoneNumbersQuery,
 } from 'meteor/idreesia-common/types/client-operations';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
+import RelationCountsTable from '../deleted-people/relation-counts-table';
 import {
-  DELETE_DUPLICATE_PERSON,
+  DELETE_DUPLICATE_PEOPLE,
   DUPLICATE_CNICS,
+  DUPLICATE_PERSON_RELATION_COUNTS,
   DUPLICATE_PHONE_NUMBERS,
 } from './gql';
 
@@ -44,10 +52,13 @@ type DuplicateGroup = DuplicateCnicGroup | DuplicatePhoneGroup;
 type DuplicatePersonSummary = NonNullable<
   NonNullable<DuplicateGroup['people']>[number]
 >;
+type PersonRelationCounts =
+  DuplicatePersonRelationCountsQuery['duplicatePersonRelationCounts'][number];
 
 const getMemberColumns = (
   history: History,
-  handleDeleteItem: (personId: string) => void
+  relationCountsByPersonId: Record<string, PersonRelationCounts>,
+  relationCountsLoading: boolean
 ): any[] => [
   {
     title: 'ID',
@@ -97,33 +108,106 @@ const getMemberColumns = (
     },
   },
   {
-    key: 'action',
-    width: 56,
-    render: (_text: unknown, record: DuplicatePersonSummary) => (
-      <div className="list-actions-column">
-        <Popconfirm
-          title="Are you sure you want to delete this person?"
-          onConfirm={() => {
-            if (record._id) handleDeleteItem(record._id);
-          }}
-          okText="Yes"
-          cancelText="No"
+    title: 'Relationships',
+    key: 'relationshipsCount',
+    width: 130,
+    render: (_text: unknown, record: DuplicatePersonSummary) => {
+      const relationCounts = record._id
+        ? relationCountsByPersonId[record._id]
+        : undefined;
+      if (!relationCounts) {
+        return relationCountsLoading ? <Spin size="small" /> : '-';
+      }
+
+      return (
+        <Popover
+          trigger="click"
+          placement="left"
+          content={
+            <div style={{ width: 640 }}>
+              <RelationCountsTable counts={relationCounts.counts} />
+            </div>
+          }
         >
-          <Tooltip title="Delete">
-            <DeleteOutlined className="list-actions-icon" />
-          </Tooltip>
-        </Popconfirm>
-      </div>
-    ),
+          <Button type="link" size="small">
+            {relationCounts.total}
+          </Button>
+        </Popover>
+      );
+    },
   },
 ];
+
+interface GroupMembersTableProps {
+  group: DuplicateGroup;
+  history: History;
+  selectedPersonIds: string[];
+  setSelectedPersonIds: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+// Rendered only when a group is expanded, so relation counts are fetched
+// lazily - one small query per expanded group rather than for every group.
+const GroupMembersTable = ({
+  group,
+  history,
+  selectedPersonIds,
+  setSelectedPersonIds,
+}: GroupMembersTableProps) => {
+  const people = (group.people ?? []).filter(
+    (person): person is DuplicatePersonSummary => person != null
+  );
+  const groupPersonIds = people
+    .map((person) => person._id)
+    .filter((_id): _id is string => !!_id);
+
+  const { data, loading } = useQuery(DUPLICATE_PERSON_RELATION_COUNTS, {
+    variables: { ids: groupPersonIds },
+    skip: groupPersonIds.length === 0,
+  });
+  const relationCountsByPersonId = Object.fromEntries(
+    (data?.duplicatePersonRelationCounts ?? []).map((item) => [
+      item.personId,
+      item,
+    ])
+  );
+
+  return (
+    <Table
+      className="list-table"
+      rowKey="_id"
+      dataSource={people}
+      columns={getMemberColumns(history, relationCountsByPersonId, loading)}
+      bordered
+      size="middle"
+      tableLayout="fixed"
+      pagination={false}
+      rowSelection={{
+        columnWidth: 48,
+        selectedRowKeys: selectedPersonIds.filter((_id) =>
+          groupPersonIds.includes(_id)
+        ),
+        onChange: (selectedRowKeys: React.Key[]) => {
+          // Replace only this group's selection; keep other groups' keys.
+          setSelectedPersonIds((prev) => {
+            const next = new Set(
+              prev.filter((_id) => !groupPersonIds.includes(_id))
+            );
+            selectedRowKeys.forEach((key) => next.add(String(key)));
+            return Array.from(next);
+          });
+        },
+      }}
+    />
+  );
+};
 
 interface GroupTableProps {
   groups: DuplicateGroup[];
   loading: boolean;
   valueColumnTitle: string;
   history: History;
-  handleDeleteItem: (personId: string) => void;
+  selectedPersonIds: string[];
+  setSelectedPersonIds: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const GroupTable = ({
@@ -131,7 +215,8 @@ const GroupTable = ({
   loading,
   valueColumnTitle,
   history,
-  handleDeleteItem,
+  selectedPersonIds,
+  setSelectedPersonIds,
 }: GroupTableProps) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
@@ -221,19 +306,12 @@ const GroupTable = ({
     },
   ];
 
-  const memberColumns = getMemberColumns(history, handleDeleteItem);
   const expandedRowRender = (record: DuplicateGroup) => (
-    <Table
-      className="list-table"
-      rowKey="_id"
-      dataSource={(record.people ?? []).filter(
-        (person): person is DuplicatePersonSummary => person != null
-      )}
-      columns={memberColumns}
-      bordered
-      size="middle"
-      tableLayout="fixed"
-      pagination={false}
+    <GroupMembersTable
+      group={record}
+      history={history}
+      selectedPersonIds={selectedPersonIds}
+      setSelectedPersonIds={setSelectedPersonIds}
     />
   );
 
@@ -272,6 +350,7 @@ type Props = RouteComponentProps;
 
 const List = ({ history }: Props) => {
   useBreadcrumbs(['Admin', 'Data Management', 'Duplicate People']);
+  const client = useApolloClient();
 
   const {
     data: cnicData,
@@ -291,20 +370,35 @@ const List = ({ history }: Props) => {
     phoneData?.duplicatePhoneNumbers ?? []
   ).filter((group): group is DuplicatePhoneGroup => group != null);
 
-  const [deleteDuplicatePerson] = useMutation(DELETE_DUPLICATE_PERSON, {
-    refetchQueries: ['duplicateCnics', 'duplicatePhoneNumbers'],
-  });
+  const [selectedPersonIds, setSelectedPersonIds] = useState<string[]>([]);
 
-  const handleDeleteItem = (personId: string) => {
-    deleteDuplicatePerson({
-      variables: { _id: personId },
-    }).catch((error: Error) => {
-      message.error(error.message, 5);
-    });
+  const [deleteDuplicatePeople, { loading: deletingPeople }] = useMutation(
+    DELETE_DUPLICATE_PEOPLE,
+    {
+      refetchQueries: ['duplicateCnics', 'duplicatePhoneNumbers'],
+    }
+  );
+
+  const handleDeleteSelected = () => {
+    if (selectedPersonIds.length === 0) return;
+    deleteDuplicatePeople({
+      variables: { _ids: selectedPersonIds },
+    })
+      .then(() => {
+        message.success(`Deleted ${selectedPersonIds.length} people`, 2);
+        setSelectedPersonIds([]);
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
   };
 
   const handleRefresh = () => {
-    Promise.all([refetchCnics(), refetchPhoneNumbers()]).then(() => {
+    Promise.all([
+      refetchCnics(),
+      refetchPhoneNumbers(),
+      client.refetchQueries({ include: ['duplicatePersonRelationCounts'] }),
+    ]).then(() => {
       message.success('Data Reloaded', 2);
     });
   };
@@ -312,12 +406,34 @@ const List = ({ history }: Props) => {
   return (
     <Tabs
       destroyOnHidden
+      onChange={() => setSelectedPersonIds([])}
       tabBarExtraContent={
-        <Button
-          icon={<SyncOutlined />}
-          onClick={handleRefresh}
-          title="Reload Data"
-        />
+        <Space size={8}>
+          <Button
+            icon={<SyncOutlined />}
+            onClick={handleRefresh}
+            title="Reload Data"
+          />
+          <Popconfirm
+            title={`Are you sure you want to delete ${selectedPersonIds.length} selected people?`}
+            onConfirm={handleDeleteSelected}
+            okText="Yes"
+            cancelText="No"
+            disabled={selectedPersonIds.length === 0}
+          >
+            <Button
+              danger
+              icon={<DeleteOutlined />}
+              disabled={selectedPersonIds.length === 0}
+              loading={deletingPeople}
+              title="Delete Selected"
+            >
+              {selectedPersonIds.length > 0
+                ? `Delete (${selectedPersonIds.length})`
+                : 'Delete'}
+            </Button>
+          </Popconfirm>
+        </Space>
       }
       items={[
         {
@@ -329,7 +445,8 @@ const List = ({ history }: Props) => {
               loading={cnicLoading}
               valueColumnTitle="CNIC Number"
               history={history}
-              handleDeleteItem={handleDeleteItem}
+              selectedPersonIds={selectedPersonIds}
+              setSelectedPersonIds={setSelectedPersonIds}
             />
           ),
         },
@@ -342,7 +459,8 @@ const List = ({ history }: Props) => {
               loading={phoneLoading}
               valueColumnTitle="Phone Number"
               history={history}
-              handleDeleteItem={handleDeleteItem}
+              selectedPersonIds={selectedPersonIds}
+              setSelectedPersonIds={setSelectedPersonIds}
             />
           ),
         },

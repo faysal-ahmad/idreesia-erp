@@ -2,7 +2,6 @@ import React from 'react';
 import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
-import { Button, Form, Row } from 'antd';
 import {
   CascaderField,
   DateRangeField,
@@ -29,10 +28,6 @@ export interface MehfilLookupItem extends LookupItem {
 const formItemLayout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 12 },
-};
-
-const buttonItemLayout = {
-  wrapperCol: { span: 12, offset: 4 },
 };
 
 export function getNameFilterField(fieldValue: FieldValue) {
@@ -223,21 +218,5 @@ export function getUpdatedBetweenFilterField(fieldValue: FieldValue) {
       fieldLayout={formItemLayout}
       initialValue={initialValue}
     />
-  );
-}
-
-export function getFormButtons(handleReset: () => void) {
-  return (
-    <Form.Item {...buttonItemLayout}>
-      <Row justify="end">
-        <Button type="default" onClick={handleReset}>
-          Reset
-        </Button>
-        &nbsp;
-        <Button type="primary" htmlType="submit">
-          Search
-        </Button>
-      </Row>
-    </Form.Item>
   );
 }

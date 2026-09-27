@@ -6,6 +6,7 @@ import React, {
 } from 'react';
 import { type History } from 'history';
 import {
+  ApartmentOutlined,
   AuditOutlined,
   ClusterOutlined,
   DollarOutlined,
@@ -16,6 +17,7 @@ import {
   TagsOutlined,
   TeamOutlined,
   ToolOutlined,
+  UsergroupAddOutlined,
 } from '@ant-design/icons';
 
 import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
@@ -77,6 +79,16 @@ const menuItems = [
         icon: <LaptopOutlined style={IconStyle} />,
         label: 'Setup',
         children: [
+          {
+            key: 'teams',
+            icon: <UsergroupAddOutlined style={IconStyle} />,
+            label: 'Teams',
+          },
+          {
+            key: 'committees',
+            icon: <ApartmentOutlined style={IconStyle} />,
+            label: 'Committees',
+          },
           {
             key: 'ms-duties',
             icon: <TagsOutlined style={IconStyle} />,
@@ -167,6 +179,18 @@ const menuRouteMatches: MenuRouteMatch[] = [
     matches: pathname => isPath(pathname, paths.dutyLocationsPath),
   },
   {
+    key: 'teams',
+    openKeys: ['karkuns-management', 'setup'],
+    subModuleName: SubModuleNames.teams,
+    matches: pathname => isPath(pathname, paths.teamsPath),
+  },
+  {
+    key: 'committees',
+    openKeys: ['karkuns-management', 'setup'],
+    subModuleName: SubModuleNames.committees,
+    matches: pathname => isPath(pathname, paths.committeesPath),
+  },
+  {
     key: 'audit-logs',
     openKeys: ['administration'],
     subModuleName: SubModuleNames.auditLogs,
@@ -237,6 +261,14 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'duty-locations':
         history.push(paths.dutyLocationsPath);
+        break;
+
+      case 'teams':
+        history.push(paths.teamsPath);
+        break;
+
+      case 'committees':
+        history.push(paths.committeesPath);
         break;
 
       case 'karkuns':

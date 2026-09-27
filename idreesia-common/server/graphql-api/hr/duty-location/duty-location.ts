@@ -17,8 +17,11 @@ extend type Query {
   dutyLocationById(id: String!): DutyLocationType	
 }	
 
-extend type Mutation {	
-  createDutyLocation(name: String!): DutyLocationType	
-  updateDutyLocation(id: String!, name: String!): DutyLocationType	
-  removeDutyLocation(_id: String!): Int	
+extend type Mutation {
+  createDutyLocation(name: String!): DutyLocationType
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+  updateDutyLocation(id: String!, name: String!): DutyLocationType
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+  removeDutyLocation(_id: String!): Int
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
 }`;

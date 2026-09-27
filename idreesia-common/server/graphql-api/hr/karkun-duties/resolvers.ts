@@ -4,8 +4,6 @@ import {
   DutyShifts,
   DutyLocations,
 } from 'meteor/idreesia-common/server/collections/hr';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -53,25 +51,8 @@ const resolvers: ResolverMap = {
   Mutation: {
     createKarkunDuty: async (
       obj,
-      { karkunId, dutyId, role, shiftId, locationId, daysOfWeek },
-      { user }
+      { karkunId, dutyId, role, shiftId, locationId, daysOfWeek }
     ) => {
-      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_KARKUNS])) {
-        throw new Error(
-          'You do not have permission to manage Karkun Duties in the System.'
-        );
-      }
-
-      /*
-        const existingKarkunDuty = KarkunDuties.findOne({
-          karkunId: { $eq: karkunId },
-          dutyId: { $eq: dutyId }
-        });
-        if (existingKarkunDuty) {
-          throw Error('This duty is already assigned to the karkun.');
-        }
-      */
-
       const newDuty = {
         karkunId,
         dutyId,
@@ -86,24 +67,8 @@ const resolvers: ResolverMap = {
 
     updateKarkunDuty: async (
       obj,
-      { _id, karkunId, dutyId, shiftId, locationId, role, daysOfWeek },
-      { user }
+      { _id, karkunId, dutyId, shiftId, locationId, role, daysOfWeek }
     ) => {
-      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_KARKUNS])) {
-        throw new Error(
-          'You do not have permission to manage Karkun Duties in the System.'
-        );
-      }
-      /*
-        const existingKarkunDuty = KarkunDuties.findOne({
-          karkunId: { $eq: karkunId },
-          dutyId: { $eq: dutyId }
-        });
-        if (existingKarkunDuty && existingKarkunDuty._id !== _id) {
-          throw Error('This duty is already assigned to the karkun.');
-        }
-      */
-
       await KarkunDuties.updateAsync(_id, {
         $set: {
           karkunId,
@@ -118,15 +83,7 @@ const resolvers: ResolverMap = {
       return KarkunDuties.findOneAsync(_id);
     },
 
-    removeKarkunDuty: async (obj, { _id }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_KARKUNS])) {
-        throw new Error(
-          'You do not have permission to manage Karkun Duties in the System.'
-        );
-      }
-
-      return KarkunDuties.removeAsync(_id);
-    },
+    removeKarkunDuty: async (obj, { _id }) => KarkunDuties.removeAsync(_id),
   },
 };
 

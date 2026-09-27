@@ -156,6 +156,53 @@ export type SecurityDistinctStayAllowedByQueryVariables = Exact<{ [key: string]:
 
 export type SecurityDistinctStayAllowedByQuery = { distinctStayAllowedBy: Array<string | null> | null };
 
+export type MobileCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileCurrentUserQuery = { currentUser: { _id: string | null, username: string | null, displayName: string | null, email: string | null, permissions: Array<string | null> | null, instances: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, imageId: string | null } | null } | null } | null };
+
+export type MobileRegisterUserMutationVariables = Exact<{
+  displayName: string;
+  email: string;
+}>;
+
+
+export type MobileRegisterUserMutation = { registerUser: number | null };
+
+export type MobileUpdateLoginTimeMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileUpdateLoginTimeMutation = { updateLoginTime: number | null };
+
+export type MobileAllPeopleTagsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileAllPeopleTagsQuery = { allPeopleTags: Array<{ _id: string | null, name: string | null } | null> | null };
+
+export type MobileSecurityFaceVectorFromImageQueryVariables = Exact<{
+  imageData: string;
+}>;
+
+
+export type MobileSecurityFaceVectorFromImageQuery = { securityFaceVectorFromImage: { status: string | null, vector: Array<number> | null } | null };
+
+export type MobileSecurityVisitorsByFaceVectorQueryVariables = Exact<{
+  vector: Array<number> | number;
+  limit?: number | null | undefined;
+}>;
+
+
+export type MobileSecurityVisitorsByFaceVectorQuery = { securityVisitorsByFaceVector: Array<{ score: number | null, person: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageId: string | null, imageThumbnailId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null } | null> | null };
+
+export type MobilePagedSecurityVisitorsQueryVariables = Exact<{
+  filter?: Types.VisitorFilter | null | undefined;
+}>;
+
+
+export type MobilePagedSecurityVisitorsQuery = { pagedSecurityVisitors: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageId: string | null, imageThumbnailId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
+
+export type MobileVisitorListFieldsFragment = { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageId: string | null, imageThumbnailId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null };
+
 export type RegisterUserMutationVariables = Exact<{
   displayName: string;
   email: string;
@@ -278,12 +325,12 @@ export type DeletedPersonRelationCountsQueryVariables = Exact<{
 
 export type DeletedPersonRelationCountsQuery = { deletedPersonRelationCounts: Array<{ personId: string, total: number, counts: Array<{ name: string, count: number }> }> };
 
-export type HardDeletePersonMutationVariables = Exact<{
-  _id: string;
+export type HardDeletePeopleMutationVariables = Exact<{
+  _ids: Array<string> | string;
 }>;
 
 
-export type HardDeletePersonMutation = { hardDeletePerson: number | null };
+export type HardDeletePeopleMutation = { hardDeletePeople: number | null };
 
 export type PagedDeletedPeopleQueryVariables = Exact<{
   filter?: Types.PersonFilter | null | undefined;
@@ -299,12 +346,12 @@ export type RestorePersonMutationVariables = Exact<{
 
 export type RestorePersonMutation = { restorePerson: number | null };
 
-export type DeleteDuplicatePersonMutationVariables = Exact<{
-  _id: string;
+export type DeleteDuplicatePeopleMutationVariables = Exact<{
+  _ids: Array<string | null | undefined> | string;
 }>;
 
 
-export type DeleteDuplicatePersonMutation = { deleteDuplicatePerson: number | null };
+export type DeleteDuplicatePeopleMutation = { deleteDuplicatePeople: number | null };
 
 export type DuplicateCnicsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -317,6 +364,13 @@ export type DuplicatePersonByIdQueryVariables = Exact<{
 
 
 export type DuplicatePersonByIdQuery = { duplicatePersonById: { _id: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, deletedAt: string | null, deletedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, ehadDate: string | null, birthDate: string | null, referenceName: string | null, contactNumber1: string | null, contactNumber2: string | null, currentAddress: string | null, permanentAddress: string | null, educationalQualification: string | null, meansOfEarning: string | null, imageId: string | null, tagIds: Array<string | null> | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null };
+
+export type DuplicatePersonRelationCountsQueryVariables = Exact<{
+  ids: Array<string> | string;
+}>;
+
+
+export type DuplicatePersonRelationCountsQuery = { duplicatePersonRelationCounts: Array<{ personId: string, total: number, counts: Array<{ name: string, count: number }> }> };
 
 export type DuplicatePhoneNumbersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -688,6 +742,69 @@ export type PagedHrAuditLogsQueryVariables = Exact<{
 
 
 export type PagedHrAuditLogsQuery = { pagedHrAuditLogs: { totalResults: number | null, data: Array<{ _id: string | null, entityId: string | null, entityType: string | null, operationType: string | null, auditValues: Array<string | null> | null, operationTime: string | null, operationBy: string | null, operationByName: string | null, operationByImageId: string | null, operationByImageThumbnailId: string | null } | null> | null } | null };
+
+export type ListAllCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, karkunIds: Array<string | null> | null, coordinatorKarkunIds: Array<string | null> | null, members: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null> | null, coordinators: Array<{ _id: string | null, sharedData: { name: string | null } | null } | null> | null } | null> | null };
+
+export type CreateCommitteeMutationVariables = Exact<{
+  name: string;
+  color?: string | null | undefined;
+  description?: string | null | undefined;
+}>;
+
+
+export type CreateCommitteeMutation = { createCommittee: { _id: string | null, name: string | null } | null };
+
+export type UpdateCommitteeMutationVariables = Exact<{
+  id: string;
+  name: string;
+  color?: string | null | undefined;
+  description?: string | null | undefined;
+}>;
+
+
+export type UpdateCommitteeMutation = { updateCommittee: { _id: string | null, name: string | null } | null };
+
+export type RemoveCommitteeMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type RemoveCommitteeMutation = { removeCommittee: number | null };
+
+export type AddCommitteeMemberMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type AddCommitteeMemberMutation = { addCommitteeMember: { _id: string | null } | null };
+
+export type RemoveCommitteeMemberMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type RemoveCommitteeMemberMutation = { removeCommitteeMember: { _id: string | null } | null };
+
+export type AddCommitteeCoordinatorMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type AddCommitteeCoordinatorMutation = { addCommitteeCoordinator: { _id: string | null } | null };
+
+export type RemoveCommitteeCoordinatorMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type RemoveCommitteeCoordinatorMutation = { removeCommitteeCoordinator: { _id: string | null } | null };
 
 export type ComposerAllDutyLocationsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1097,6 +1214,61 @@ export type SalaryReceiptSalariesByIdsQueryVariables = Exact<{
 
 
 export type SalaryReceiptSalariesByIdsQuery = { salariesByIds: Array<{ _id: string | null, karkunId: string | null, month: string | null, jobId: string | null, salary: number | null, openingLoan: number | null, loanDeduction: number | null, newLoan: number | null, closingLoan: number | null, otherDeduction: number | null, arrears: number | null, netPayment: number | null, karkun: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, image: { _id: string | null, data: string | null } | null } | null } | null, job: { _id: string | null, name: string | null } | null } | null> | null };
+
+export type ListAllTeamsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListAllTeamsQuery = { allTeams: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, karkunIds: Array<string | null> | null, coordinatorKarkunId: string | null, members: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null> | null, coordinator: { _id: string | null, sharedData: { name: string | null } | null } | null } | null> | null };
+
+export type CreateTeamMutationVariables = Exact<{
+  name: string;
+  color?: string | null | undefined;
+  description?: string | null | undefined;
+}>;
+
+
+export type CreateTeamMutation = { createTeam: { _id: string | null, name: string | null } | null };
+
+export type UpdateTeamMutationVariables = Exact<{
+  id: string;
+  name: string;
+  color?: string | null | undefined;
+  description?: string | null | undefined;
+}>;
+
+
+export type UpdateTeamMutation = { updateTeam: { _id: string | null, name: string | null } | null };
+
+export type RemoveTeamMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type RemoveTeamMutation = { removeTeam: number | null };
+
+export type AddTeamMemberMutationVariables = Exact<{
+  teamId: string;
+  karkunId: string;
+}>;
+
+
+export type AddTeamMemberMutation = { addTeamMember: { _id: string | null } | null };
+
+export type RemoveTeamMemberMutationVariables = Exact<{
+  teamId: string;
+  karkunId: string;
+}>;
+
+
+export type RemoveTeamMemberMutation = { removeTeamMember: { _id: string | null } | null };
+
+export type SetTeamCoordinatorMutationVariables = Exact<{
+  teamId: string;
+  karkunId: string;
+}>;
+
+
+export type SetTeamCoordinatorMutation = { setTeamCoordinator: { _id: string | null } | null };
 
 export type PagedSecurityAuditLogsQueryVariables = Exact<{
   filter?: Types.AuditLogFilter | null | undefined;

@@ -52,52 +52,13 @@ const resolvers: ResolverMap = {
   },
 
   Query: {
-    attendanceById: async (obj, { _id }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_VIEW_KARKUNS,
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        return null;
-      }
+    attendanceById: async (obj, { _id }) => Attendances.findOneAsync(_id),
 
-      return Attendances.findOneAsync(_id);
-    },
+    pagedAttendanceByKarkun: async (obj, { queryString }) =>
+      getPagedAttendanceByKarkun(queryString),
 
-    pagedAttendanceByKarkun: async (obj, { queryString }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_VIEW_KARKUNS,
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        return {
-          attendance: [],
-          totalResults: 0,
-        };
-      }
-      return getPagedAttendanceByKarkun(queryString);
-    },
-
-    attendanceByMonth: async (
-      obj,
-      { month, categoryId, subCategoryId },
-      { user }
-    ) => {
+    attendanceByMonth: async (obj, { month, categoryId, subCategoryId }) => {
       if (!categoryId) return [];
-
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_VIEW_KARKUNS,
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        return [];
-      }
 
       const formattedMonth = format(
         startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
@@ -126,33 +87,12 @@ const resolvers: ResolverMap = {
       return Attendances.find(query).fetchAsync();
     },
 
-    attendanceByBarcodeId: async (obj, { barcodeId }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_VIEW_KARKUNS,
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        return null;
-      }
-
-      return Attendances.findOneAsync({
+    attendanceByBarcodeId: async (obj, { barcodeId }) =>
+      Attendances.findOneAsync({
         meetingCardBarcodeId: { $eq: barcodeId },
-      });
-    },
+      }),
 
-    attendanceByBarcodeIds: async (obj, { barcodeIds }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_VIEW_KARKUNS,
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        return [];
-      }
-
+    attendanceByBarcodeIds: async (obj, { barcodeIds }) => {
       const barcodeIdsArray = barcodeIds.split(',');
       return Attendances.find({
         meetingCardBarcodeId: { $in: barcodeIdsArray },
@@ -162,17 +102,6 @@ const resolvers: ResolverMap = {
 
   Mutation: {
     createAttendances: async (obj, { month }, { user }) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage attendances in the System.'
-        );
-      }
-
       const formattedMonth = format(
         startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
         'MM-yyyy'
@@ -186,17 +115,6 @@ const resolvers: ResolverMap = {
       { _id, attendanceDetails, presentCount, absentCount, percentage },
       { user }
     ) => {
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to manage attendances in the System.'
-        );
-      }
-
       const date = new Date();
       await Attendances.updateAsync(_id, {
         $set: {
@@ -212,13 +130,7 @@ const resolvers: ResolverMap = {
       return Attendances.findOneAsync(_id);
     },
 
-    importAttendances: async (obj, { month, dutyId, shiftId }, { user }) => {
-      if (!hasOnePermission(user, [PermissionConstants.HR_MANAGE_KARKUNS])) {
-        throw new Error(
-          'You do not have permission to manage attendances in the System.'
-        );
-      }
-
+    importAttendances: async (obj, { month, dutyId, shiftId }) => {
       let attendanceSheetId;
       if (!shiftId) {
         // Check if we have an attendance sheet associated with the passed duty
@@ -285,23 +197,15 @@ const resolvers: ResolverMap = {
       const currentMonth = startOfMonth(new Date());
       const passedMonth = parseDate(month, Formats.DATE_FORMAT);
 
+      // @checkPermissions on the schema already requires HR_MANAGE_KARKUNS
+      // or HR_DELETE_DATA; past months additionally require HR_DELETE_DATA
+      // specifically, which the directive can't express.
       if (
         isBefore(passedMonth, currentMonth) &&
         !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove attendances for past months in the System.'
-        );
-      }
-
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to remove attendances in the System.'
         );
       }
 
@@ -318,23 +222,15 @@ const resolvers: ResolverMap = {
       const currentMonth = startOfMonth(new Date());
       const passedMonth = parseDate(month, Formats.DATE_FORMAT);
 
+      // @checkPermissions on the schema already requires HR_MANAGE_KARKUNS
+      // or HR_DELETE_DATA; past months additionally require HR_DELETE_DATA
+      // specifically, which the directive can't express.
       if (
         isBefore(passedMonth, currentMonth) &&
         !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
       ) {
         throw new Error(
           'You do not have permission to remove attendances for past months in the System.'
-        );
-      }
-
-      if (
-        !hasOnePermission(user, [
-          PermissionConstants.HR_MANAGE_KARKUNS,
-          PermissionConstants.HR_DELETE_DATA,
-        ])
-      ) {
-        throw new Error(
-          'You do not have permission to remove attendances in the System.'
         );
       }
 

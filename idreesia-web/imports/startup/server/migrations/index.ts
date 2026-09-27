@@ -49,6 +49,7 @@ import './45-rename-inventory-to-stores';
 import './46-create-people-image-vector-index';
 import './47-create-system-user';
 import './48-create-people-vector-search-index';
+import './49-create-person-reference-indexes';
 
 Migrations.config({
   log: true,

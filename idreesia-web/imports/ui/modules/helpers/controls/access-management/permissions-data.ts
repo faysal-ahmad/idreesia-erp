@@ -49,24 +49,36 @@ export const AdminPermissionsData: PermissionNode = {
       key: 'module-admin-locations-management',
       children: [
         {
-          title: 'Cities & Mehfils',
-          key: 'module-admin-cities',
-          children: [
-            {
-              title: 'Manage Cities & Mehfils',
-              key: PermissionConstants.ADMIN_MANAGE_CITIES,
-            },
-          ],
+          title: 'Manage Cities & Mehfils',
+          key: PermissionConstants.ADMIN_MANAGE_CITIES,
         },
         {
-          title: 'People Tags',
-          key: 'module-admin-people-tags',
-          children: [
-            {
-              title: 'Manage People Tags',
-              key: PermissionConstants.ADMIN_MANAGE_PEOPLE_TAGS,
-            },
-          ],
+          title: 'Manage People Tags',
+          key: PermissionConstants.ADMIN_MANAGE_PEOPLE_TAGS,
+        },
+      ],
+    },
+    {
+      title: 'Data Management',
+      key: 'module-admin-data-management',
+      children: [
+        {
+          title: 'Manage Deleted People',
+          key: PermissionConstants.ADMIN_MANAGE_DELETED_PEOPLE,
+        },
+        {
+          title: 'Manage Duplicate People',
+          key: PermissionConstants.ADMIN_MANAGE_DUPLICATE_PEOPLE,
+        },
+      ],
+    },
+    {
+      title: 'Scheduled Jobs',
+      key: 'module-admin-scheduled-jobs',
+      children: [
+        {
+          title: 'Manage Scheduled Jobs',
+          key: PermissionConstants.ADMIN_MANAGE_SCHEDULED_JOBS,
         },
       ],
     },

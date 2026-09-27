@@ -339,7 +339,7 @@ export type DeletedPersonRelationCountsQueryVariables = Exact<{
 }>;
 
 
-export type DeletedPersonRelationCountsQuery = { deletedPersonRelationCounts: Array<{ personId: string, total: number, counts: Array<{ name: string, count: number }> }> };
+export type DeletedPersonRelationCountsQuery = { deletedPersonRelationCounts: Array<{ personId: string, total: number, counts: Array<{ name: string, count: number }> }> | null };
 
 export type HardDeletePeopleMutationVariables = Exact<{
   _ids: Array<string> | string;
@@ -386,7 +386,7 @@ export type DuplicatePersonRelationCountsQueryVariables = Exact<{
 }>;
 
 
-export type DuplicatePersonRelationCountsQuery = { duplicatePersonRelationCounts: Array<{ personId: string, total: number, counts: Array<{ name: string, count: number }> }> };
+export type DuplicatePersonRelationCountsQuery = { duplicatePersonRelationCounts: Array<{ personId: string, total: number, counts: Array<{ name: string, count: number }> }> | null };
 
 export type DuplicatePhoneNumbersQueryVariables = Exact<{ [key: string]: never; }>;
 

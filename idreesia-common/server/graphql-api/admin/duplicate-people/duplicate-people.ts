@@ -20,20 +20,20 @@ type DuplicatePersonGroupType {
 
 extend type Query {
   duplicateCnics: [DuplicatePersonGroupType]
-    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
+    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_PEOPLE])
 
   duplicatePhoneNumbers: [DuplicatePersonGroupType]
-    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
+    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_PEOPLE])
 
   duplicatePersonById(_id: String!): PersonType
-    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
+    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_PEOPLE])
 
-  duplicatePersonRelationCounts(ids: [String!]!): [PersonRelationCounts!]!
-    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
+  duplicatePersonRelationCounts(ids: [String!]!): [PersonRelationCounts!]
+    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_PEOPLE])
 }
 
 extend type Mutation {
   deleteDuplicatePeople(_ids: [String]!): Int
-    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_DATA])
+    @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_PEOPLE])
 }
 `;

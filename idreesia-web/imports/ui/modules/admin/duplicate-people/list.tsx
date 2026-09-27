@@ -53,7 +53,7 @@ type DuplicatePersonSummary = NonNullable<
   NonNullable<DuplicateGroup['people']>[number]
 >;
 type PersonRelationCounts =
-  DuplicatePersonRelationCountsQuery['duplicatePersonRelationCounts'][number];
+  NonNullable<DuplicatePersonRelationCountsQuery['duplicatePersonRelationCounts']>[number];
 
 const getMemberColumns = (
   history: History,

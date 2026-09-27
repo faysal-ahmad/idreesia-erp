@@ -174,11 +174,6 @@ export type MobileUpdateLoginTimeMutationVariables = Exact<{ [key: string]: neve
 
 export type MobileUpdateLoginTimeMutation = { updateLoginTime: number | null };
 
-export type MobileAllPeopleTagsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type MobileAllPeopleTagsQuery = { allPeopleTags: Array<{ _id: string | null, name: string | null } | null> | null };
-
 export type MobileSecurityFaceVectorFromImageQueryVariables = Exact<{
   imageData: string;
 }>;
@@ -192,16 +187,30 @@ export type MobileSecurityVisitorsByFaceVectorQueryVariables = Exact<{
 }>;
 
 
-export type MobileSecurityVisitorsByFaceVectorQuery = { securityVisitorsByFaceVector: Array<{ score: number | null, person: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageId: string | null, imageThumbnailId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null } | null> | null };
+export type MobileSecurityVisitorsByFaceVectorQuery = { securityVisitorsByFaceVector: Array<{ score: number | null, person: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageId: string | null, imageThumbnailId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null } | null } | null } | null> | null };
 
 export type MobilePagedSecurityVisitorsQueryVariables = Exact<{
   filter?: Types.VisitorFilter | null | undefined;
 }>;
 
 
-export type MobilePagedSecurityVisitorsQuery = { pagedSecurityVisitors: { totalResults: number | null, data: Array<{ _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageId: string | null, imageThumbnailId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null> | null } | null };
+export type MobilePagedSecurityVisitorsQuery = { pagedSecurityVisitors: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageId: string | null, imageThumbnailId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null } | null } | null> | null } | null };
 
-export type MobileVisitorListFieldsFragment = { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageId: string | null, imageThumbnailId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null };
+export type MobileSecurityVisitorByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobileSecurityVisitorByIdQuery = { securityVisitorById: { _id: string | null, deletedAt: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, birthDate: string | null, ehadDate: string | null, referenceName: string | null, contactNumber1: string | null, contactNumber2: string | null, currentAddress: string | null, permanentAddress: string | null, educationalQualification: string | null, meansOfEarning: string | null, imageId: string | null, imageThumbnailId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null, criminalRecord: string | null, otherNotes: string | null } | null } | null };
+
+export type MobileVisitorListFieldsFragment = { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageId: string | null, imageThumbnailId: string | null, tags: Array<{ _id: string | null, name: string | null, color: string | null, textColor: string | null } | null> | null } | null, visitorData: { city: string | null, country: string | null } | null };
+
+export type MobileVisitorStaysByVisitorIdQueryVariables = Exact<{
+  visitorId: string;
+}>;
+
+
+export type MobileVisitorStaysByVisitorIdQuery = { pagedVisitorStaysByVisitorId: { totalResults: number | null, data: Array<{ _id: string | null, fromDate: string | null, numOfDays: number | null, cancelledDate: string | null } | null> | null } | null };
 
 export type RegisterUserMutationVariables = Exact<{
   displayName: string;

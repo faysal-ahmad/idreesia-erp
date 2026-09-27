@@ -23,4 +23,4 @@ export const Redirect = RouterRedirect as unknown as ComponentType<RedirectProps
 export const Route = RouterRoute as unknown as ComponentType<RouteProps>;
 export const Switch = RouterSwitch as unknown as ComponentType<SwitchProps>;
 
-export { useLocation } from 'react-router-dom';
+export { matchPath, useLocation, useParams } from 'react-router-dom';

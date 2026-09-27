@@ -1,3 +1,4 @@
+export { KeepAlive } from './keep-alive';
 export { NavigationTracker, useNavigateBack } from './navigation';
 export { Page } from './page';
 export { NoAccess, PageEmpty, PageError, PageLoading } from './status';

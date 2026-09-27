@@ -1,0 +1,23 @@
+{
+  "name": "idreesia-webview-camera",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lets the app's own pages use the camera through getUserMedia without WKWebView's extra per-launch permission prompt.",
+  "cordova": {
+    "id": "idreesia-webview-camera",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "engines": {
+    "cordovaDependencies": {
+      "1.0.0": {
+        "cordova-ios": ">=7.0.0"
+      }
+    }
+  }
+}

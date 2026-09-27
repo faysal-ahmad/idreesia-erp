@@ -21,9 +21,10 @@ antd-mobile only ships components and theming docs. It has no guidance on page p
 | Example module (Security → Visitors) | `idreesia-mobile/imports/ui/modules/security/` |
 | List screen (search, filters, paging) | `idreesia-mobile/imports/ui/modules/security/visitors/visitors-list-screen.tsx` |
 | List row | `idreesia-mobile/imports/ui/modules/security/visitors/visitor-list-item.tsx` |
-| Filters bottom sheet | `idreesia-mobile/imports/ui/modules/security/visitors/visitor-filters-popup.tsx` |
 | Camera capture (Cordova + browser) | `idreesia-mobile/imports/ui/utilities/capture-photo.ts` + `imports/ui/components/camera-view.tsx` |
 | Photo search screen | `idreesia-mobile/imports/ui/modules/security/visitors/photo-search-screen.tsx` |
+| Detail screen | `idreesia-mobile/imports/ui/modules/security/visitors/visitor-detail-screen.tsx` |
+| Keeping a list alive under its detail | `idreesia-mobile/imports/ui/modules/security/visitors/visitors-feature.tsx` + `imports/ui/layout/keep-alive.tsx` |
 | Paged query → infinite list | `idreesia-mobile/imports/ui/hooks/use-paged-query.ts` + `imports/ui/components/paged-list.tsx` |
 | Form screen | `idreesia-mobile/imports/ui/account/change-password-screen.tsx` |
 | Shared CSS | `idreesia-mobile/client/main.css` |
@@ -72,6 +73,7 @@ Account tab (/account)
 - **Tab bar:** Modules and Account are the only top-level destinations. The tab bar shows only on their root screens. Don't add tabs per module; modules are listed on the Modules tab.
 - **Drill-down:** every screen below a tab root is full-screen, with a back arrow in the nav bar. Keep the hierarchy to at most **module → feature → list → detail → form**. If you need more levels, rethink the flow, for example with a popup or tabs inside the detail screen.
 - **Back:** set `backTo` on `Page` to the parent route. `useNavigateBack` uses `history.goBack()` when the user got there within the app, which keeps Android's hardware back button in step. On a deep link or after a reload, it replaces the current route with the parent, so the back arrow never leaves the app.
+- **Coming back keeps the screen as it was:** a list (or search) that opens a detail screen stays mounted underneath it inside `KeepAlive`, so back shows the same search, loaded pages and scroll position. The feature component decides which screens are still in the back stack; see `visitors-feature.tsx`. Don't store screen state in module variables or the URL to fake this.
 - **After saving:** go back to where the user came from with `useNavigateBack(parentPath)`, not `history.push`. That way back doesn't return to the form.
 - **Routes:** use path constants (`<Module>Paths`, `AccountPaths`), never string literals. Routes use a `HashRouter` (`/#/…`), which Cordova needs.
 
@@ -115,7 +117,7 @@ A feature's entry screen is usually a list. Build it from `usePagedQuery` and `P
   - Prefer one search box over several fields.
   - The Visitors list routes typed digits to the exact-match CNIC or phone filters, in their stored formats, and anything else to name search (`parse-search.ts`).
   - Explain partial input with a `list-toolbar-hint` instead of querying.
-- **Filters:** put the filter controls in a bottom `Popup` (`filters-popup`, one tab per filter, Clear / Apply) opened from a filter icon in the nav bar's `right` slot. Put a `Badge` with the active-filter count on that icon. Show the active filters as closable `Tag`s in `list-filter-chips` under the search bar. Don't show inline filter forms.
+- **Filters:** leave them out unless the feature needs them; one good search box usually does the job (the Visitors list has none). If a list does need filters, put them in a bottom `Popup` opened from a filter icon in the nav bar's `right` slot. Put a `Badge` with the active-filter count on that icon, and show active filters as closable `Tag`s under the search bar. Don't show inline filter forms.
 - **Paging:** paged GraphQL queries take `pageIndex` / `pageSize` in their `filter` and return `{ totalResults, data }`. Their server-side sort needs a unique tie-breaker (e.g. `_id`), or pages overlap.
 - **Photos:** `getBackendFileUrl(imageThumbnailId ?? imageId)` from `/imports/startup/backend`. The web's `getDownloadUrl` points at the app's own origin, not the backend.
 - **Loading more:** use `PullToRefresh` around the list and `InfiniteScroll` below it. Don't use numbered pages.
@@ -125,7 +127,13 @@ A feature's entry screen is usually a list. Build it from `usePagedQuery` and `P
 
 ### Detail screen
 
-- **Layout:** the title is the entity's name. Start with a summary card (photo, name, key identifiers), then `List mode="card"` groups with a `header`, one group per section (e.g. "Contact", "Visits").
+- **Layout:** the title is the entity's name.
+  - A summary card with a large photo (160 px, centred, so a face can be matched), then the name, key identifiers and tags under it;
+  - then **one** compact card of label / value rows (a `<dl>`: label on the left, value on the right), in the same order and with the same labels as the web's form for that record. See `visitor-detail-screen.tsx` and its `.styles.css`.
+  - No section headers, and not one card per section; `List.Item` with a `title` stacks the label over the value and doubles the height. Leave out audit fields (created/updated) unless the feature needs them.
+- **Fields:** leave out empty fields; don't show dashes. Show dates as `DD-MM-YYYY`, and durations the way the web shows them ("5 years, 6 months").
+- **Photos:** use the full image (`imageId`), not the thumbnail, and let a tap open it in a declarative `<ImageViewer visible>`. Don't use `ImageViewer.show()`: it stays open after the user navigates away.
+- **Read-only screens** have no footer; add actions only when the feature needs them.
 - **Actions:** for up to two actions, use a pinned `footer` (primary button, plus an outline secondary button if needed). For more, use an `ActionSheet` from a "more" icon.
 - **Destructive actions:** confirm with `Dialog.confirm`, and use the danger colour for the confirm button.
 - **Related lists:** show the first few items inline, with a "View all" item that opens a full list screen.
@@ -142,8 +150,9 @@ A feature's entry screen is usually a list. Build it from `usePagedQuery` and `P
 ### Camera screens
 
 - Take photos with `capturePhoto()` (`imports/ui/utilities`). It is **camera-only**: users can't pick an existing image.
-  - In the Cordova apps it uses cordova-plugin-camera with the camera as the only source.
-  - In a browser it shows `CameraView`, a full-screen live viewfinder with a shutter button. It doesn't use a file input, which would also offer the gallery.
+  - In the browser and the iOS app it shows `CameraView`, a full-screen live viewfinder with a shutter button. In the iOS app this avoids the native camera screen, which left the app blank for about 2 seconds after each photo. The local plugin `cordova-plugins/idreesia-webview-camera` stops iOS asking for camera permission again on every launch.
+  - In the Android app it uses cordova-plugin-camera with the camera as the only source, until `CameraView` has been tested in Android's WebView.
+  - It never uses a file input, which would also offer the gallery.
   - It returns a JPEG data URL of at most 1024 px, which keeps uploads well under the 5 MB GraphQL limit.
 - Start capture from an explicit "Take photo" button rather than opening the camera on load.
 - Show the captured photo above the results, and pin a "Retake photo" button in the `footer`.

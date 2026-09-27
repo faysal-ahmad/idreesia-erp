@@ -70,6 +70,12 @@ declare module 'meteor/ddp-client' {
     status(): DDPStatus;
     reconnect(): void;
     disconnect(): void;
+    call(name: string, ...args: unknown[]): void;
+    apply(
+      name: string,
+      args: unknown[],
+      callback?: (error?: Meteor.Error | Error | null, result?: unknown) => void
+    ): void;
   }
 
   export const DDP: {
@@ -84,22 +90,37 @@ declare module 'meteor/accounts-base' {
     connection: DDPConnection | null;
   }
 
+  export interface CallLoginMethodOptions {
+    methodName?: string;
+    methodArguments: unknown[];
+    validateResult?(result: unknown): void;
+    userCallback?(error?: Meteor.Error | Error | null, result?: unknown): void;
+    _suppressLoggingIn?: boolean;
+  }
+
+  export interface HashedPassword {
+    digest: string;
+    algorithm: 'sha-256';
+  }
+
   export class AccountsClient {
     constructor(options: AccountsClientOptions);
-    createUser(
-      options: { email?: string; password?: string; username?: string },
-      callback?: MeteorCallback
-    ): void;
-    loginWithPassword(
-      user: string | { email?: string; username?: string; id?: string },
-      password: string,
-      callback?: MeteorCallback
-    ): void;
+    // Password helpers (loginWithPassword, changePassword, forgotPassword) are
+    // only attached to the global Accounts / Meteor for the default connection,
+    // so a custom-connection client has to go through callLoginMethod and
+    // connection.call itself.
+    connection: DDPConnection;
     logout(callback?: MeteorCallback): void;
+    logoutOtherClients(callback?: MeteorCallback): void;
     userId(): string | null;
+    loggingIn(): boolean;
+    callLoginMethod(options: CallLoginMethodOptions): void;
+    _setLoggingIn(value: boolean): void;
+    _storedLoginToken(): string | null;
   }
 
   export const Accounts: {
+    _hashPassword(password: string): HashedPassword;
     emailTemplates: {
       from?: string;
       [key: string]: unknown;

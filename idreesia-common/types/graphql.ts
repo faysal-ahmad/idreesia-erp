@@ -516,7 +516,7 @@ export type Mutation = {
   deleteAllAttendances?: Maybe<Scalars['Int']['output']>;
   deleteAllSalaries?: Maybe<Scalars['Int']['output']>;
   deleteAttendances?: Maybe<Scalars['Int']['output']>;
-  deleteDuplicatePerson?: Maybe<Scalars['Int']['output']>;
+  deleteDuplicatePeople?: Maybe<Scalars['Int']['output']>;
   deleteHrKarkun?: Maybe<Scalars['Int']['output']>;
   deletePeopleTag?: Maybe<Scalars['Int']['output']>;
   deleteSalaries?: Maybe<Scalars['Int']['output']>;
@@ -525,7 +525,7 @@ export type Mutation = {
   deleteVisitorStay?: Maybe<Scalars['Int']['output']>;
   fixCitySpelling?: Maybe<Scalars['Int']['output']>;
   fixNameSpelling?: Maybe<Scalars['Int']['output']>;
-  hardDeletePerson?: Maybe<Scalars['Int']['output']>;
+  hardDeletePeople?: Maybe<Scalars['Int']['output']>;
   importAttendances?: Maybe<Scalars['Int']['output']>;
   importSecurityVisitorsCsvData?: Maybe<Scalars['String']['output']>;
   mergeStockItems?: Maybe<StockItem>;
@@ -976,8 +976,8 @@ export type MutationDeleteAttendancesArgs = {
 };
 
 
-export type MutationDeleteDuplicatePersonArgs = {
-  _id: Scalars['String']['input'];
+export type MutationDeleteDuplicatePeopleArgs = {
+  _ids: Array<InputMaybe<Scalars['String']['input']>>;
 };
 
 
@@ -1024,8 +1024,8 @@ export type MutationFixNameSpellingArgs = {
 };
 
 
-export type MutationHardDeletePersonArgs = {
-  _id: Scalars['String']['input'];
+export type MutationHardDeletePeopleArgs = {
+  _ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -1990,6 +1990,7 @@ export type Query = {
   distinctStayAllowedBy?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   duplicateCnics?: Maybe<Array<Maybe<DuplicatePersonGroupType>>>;
   duplicatePersonById?: Maybe<PersonType>;
+  duplicatePersonRelationCounts: Array<PersonRelationCounts>;
   duplicatePhoneNumbers?: Maybe<Array<Maybe<DuplicatePersonGroupType>>>;
   dutyById?: Maybe<DutyType>;
   dutyLocationById?: Maybe<DutyLocationType>;
@@ -2128,6 +2129,11 @@ export type QueryDeletedPersonRelationCountsArgs = {
 
 export type QueryDuplicatePersonByIdArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type QueryDuplicatePersonRelationCountsArgs = {
+  ids: Array<Scalars['String']['input']>;
 };
 
 

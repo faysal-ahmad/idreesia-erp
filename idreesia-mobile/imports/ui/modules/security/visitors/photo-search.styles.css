@@ -1,0 +1,33 @@
+/* Search by photo (photo-search-screen.tsx). Loaded from client/main.tsx. */
+
+.photo-search-preview {
+  display: flex;
+  justify-content: center;
+  margin: 4px 12px 12px;
+}
+
+.photo-search-preview img {
+  display: block;
+  max-width: 100%;
+  max-height: 32vh;
+  border-radius: var(--app-radius-large);
+  box-shadow: var(--app-elevation);
+  object-fit: contain;
+}
+
+.photo-search-problem {
+  margin: 0 12px;
+  padding: 12px 14px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  color: var(--app-color-danger);
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.page-status .adm-button .antd-mobile-icon,
+.page-footer .adm-button .antd-mobile-icon {
+  margin-right: 6px;
+  vertical-align: -2px;
+}

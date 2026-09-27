@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
-import { message } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Button, Popconfirm, Space, message } from 'antd';
 import { useMutation, useQuery } from '@apollo/client/react';
 
 import {
@@ -20,7 +21,7 @@ import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   PAGED_DELETED_PEOPLE,
   DELETED_PERSON_RELATION_COUNTS,
-  HARD_DELETE_PERSON,
+  HARD_DELETE_PEOPLE,
   RESTORE_PERSON,
 } from './gql';
 import DeletedPeopleList, {
@@ -74,9 +75,14 @@ const List = ({ history, location }: Props) => {
     ])
   );
 
-  const [hardDeletePerson] = useMutation(HARD_DELETE_PERSON, {
-    refetchQueries: ['pagedDeletedPeople', 'deletedPersonRelationCounts'],
-  });
+  const [selectedPersonIds, setSelectedPersonIds] = useState<string[]>([]);
+
+  const [hardDeletePeople, { loading: hardDeletingPeople }] = useMutation(
+    HARD_DELETE_PEOPLE,
+    {
+      refetchQueries: ['pagedDeletedPeople', 'deletedPersonRelationCounts'],
+    }
+  );
   const [restorePerson] = useMutation(RESTORE_PERSON, {
     refetchQueries: ['pagedDeletedPeople', 'deletedPersonRelationCounts'],
   });
@@ -114,6 +120,8 @@ const List = ({ history, location }: Props) => {
     updatedBetween?: string;
     tagId?: string;
   }) => {
+    // A new filter can hide selected people, so don't carry them over.
+    setSelectedPersonIds([]);
     setPageParams(params);
   };
 
@@ -125,20 +133,42 @@ const List = ({ history, location }: Props) => {
     history.push(paths.deletedPersonEditFormPath(person._id));
   };
 
-  const handleHardDeleteItem = (person: DeletedPersonListItem) => {
-    hardDeletePerson({
-      variables: { _id: person._id },
-    }).catch((error: Error) => {
-      message.error(error.message, 5);
-    });
+  const handleHardDeleteSelected = () => {
+    if (selectedPersonIds.length === 0) return;
+    hardDeletePeople({
+      variables: { _ids: selectedPersonIds },
+    })
+      .then(({ data: result }) => {
+        const deletedCount = result?.hardDeletePeople ?? 0;
+        const skippedCount = selectedPersonIds.length - deletedCount;
+        const text = `Permanently deleted ${deletedCount} people`;
+        if (skippedCount > 0) {
+          message.warning(
+            `${text}. Skipped ${skippedCount} that could not be deleted.`,
+            5
+          );
+        } else {
+          message.success(text, 2);
+        }
+        setSelectedPersonIds([]);
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
   };
 
   const handleRestoreItem = (person: DeletedPersonListItem) => {
     restorePerson({
       variables: { _id: person._id },
-    }).catch((error: Error) => {
-      message.error(error.message, 5);
-    });
+    })
+      .then(() => {
+        setSelectedPersonIds((prev) =>
+          prev.filter((_id) => _id !== person._id)
+        );
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
   };
 
   const filterProps = {
@@ -159,7 +189,27 @@ const List = ({ history, location }: Props) => {
 
   const getTableHeader = () => (
     <div className="list-table-header">
-      <div className="list-table-header-section" />
+      <Space size={12}>
+        <Popconfirm
+          title={`Are you sure you want to permanently delete ${selectedPersonIds.length} selected people?`}
+          onConfirm={handleHardDeleteSelected}
+          okText="Yes"
+          cancelText="No"
+          disabled={selectedPersonIds.length === 0}
+        >
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            disabled={selectedPersonIds.length === 0}
+            loading={hardDeletingPeople}
+            title="Delete Selected Permanently"
+          >
+            {selectedPersonIds.length > 0
+              ? `Delete Permanently (${selectedPersonIds.length})`
+              : 'Delete Permanently'}
+          </Button>
+        </Popconfirm>
+      </Space>
       <div className="list-table-header-utilities">
         <PersonGeneralListFilter {...filterProps} />
         <PersonGeneralListFilterChips {...filterProps} />
@@ -198,7 +248,6 @@ const List = ({ history, location }: Props) => {
     <DeletedPeopleList
       listHeader={getTableHeader}
       handleSelectItem={handleSelectItem}
-      handleHardDeleteItem={handleHardDeleteItem}
       handleRestoreItem={handleRestoreItem}
       setPageParams={handleListSetPageParams}
       pageIndex={numPageIndex}
@@ -206,6 +255,8 @@ const List = ({ history, location }: Props) => {
       pagedData={pagedDeletedPeople}
       relationCountsByPersonId={relationCountsByPersonId}
       relationCountsLoading={relationCountsLoading}
+      selectedPersonIds={selectedPersonIds}
+      setSelectedPersonIds={setSelectedPersonIds}
     />
   );
 };

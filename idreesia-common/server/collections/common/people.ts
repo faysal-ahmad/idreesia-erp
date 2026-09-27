@@ -432,8 +432,13 @@ class People extends AggregatableCollection<PersonDocument> {
   // **************************************************************
   async buildSearchPipline(params: LooseRecord = {}, flags: SearchFlags = {}) {
     const pipeline: LooseRecord[] = [];
+    // A $text match is only allowed in the pipeline's first stage, so the
+    // name search goes into this one rather than a stage of its own.
     pipeline.push({
-      $match: { deletedAt: { $exists: Boolean(flags.onlyDeleted) } },
+      $match: {
+        deletedAt: { $exists: Boolean(flags.onlyDeleted) },
+        ...(params.name ? { $text: { $search: params.name } } : {}),
+      },
     });
 
     const includeKarkuns = isNil(flags.includeKarkuns)
@@ -444,7 +449,6 @@ class People extends AggregatableCollection<PersonDocument> {
       : flags.includeVisitors;
 
     const {
-      name,
       cnicNumber,
       phoneNumber,
       phoneNumbers,
@@ -479,13 +483,8 @@ class People extends AggregatableCollection<PersonDocument> {
 
     // ************************************
     // Add criteria for shared data fields
+    // (name is matched in the first stage above)
     // ************************************
-    if (name) {
-      pipeline.push({
-        $match: { $text: { $search: name } },
-      });
-    }
-
     if (cnicNumber) {
       pipeline.push({
         $match: {
@@ -921,7 +920,9 @@ class People extends AggregatableCollection<PersonDocument> {
       const nPageIndex = parseInt(pageIndex, 10);
       const nPageSize = parseInt(pageSize, 10);
       const resultsPipeline = pipeline.concat([
-        { $sort: { 'sharedData.name': 1 } },
+        // _id breaks ties so pages don't overlap: skip/limit over a
+        // non-unique sort key has no guaranteed order.
+        { $sort: { 'sharedData.name': 1, _id: 1 } },
         { $skip: nPageIndex * nPageSize },
         { $limit: nPageSize },
       ]);

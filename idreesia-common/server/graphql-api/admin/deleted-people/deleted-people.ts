@@ -24,7 +24,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  hardDeletePerson(_id: String!): Int
+  hardDeletePeople(_ids: [String!]!): Int
     @checkPermissions(permissions: [ADMIN_MANAGE_DELETED_DATA])
 
   restorePerson(_id: String!): Int

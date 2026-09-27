@@ -6,6 +6,7 @@ import { ImageVectorStatus } from 'meteor/idreesia-common/constants';
 
 import { getErrorMessage } from '../../../auth/accounts';
 import { Page, PageEmpty, PageError, PageLoading } from '../../../layout';
+import { useHistory } from '../../../router';
 import { capturePhoto } from '../../../utilities';
 import { SecurityPaths } from '../paths';
 import {
@@ -41,6 +42,7 @@ type SearchState =
 /** Security → Visitors → Search by photo. */
 export const PhotoSearchScreen = () => {
   const client = useApolloClient();
+  const history = useHistory();
   const [state, setState] = useState<SearchState>({ step: 'idle' });
 
   const search = async (photo: string) => {
@@ -129,6 +131,7 @@ export const PhotoSearchScreen = () => {
               </Tag>
             }
             visitor={visitor}
+            onClick={() => visitor._id && history.push(SecurityPaths.visitorDetail(visitor._id))}
           />
         ))}
       </List>

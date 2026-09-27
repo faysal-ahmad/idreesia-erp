@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="idreesia-webview-camera"
+        version="1.0.0">
+  <name>Idreesia WebView Camera</name>
+  <description>
+    Lets the app's own pages use the camera through getUserMedia without
+    WKWebView's extra per-launch permission prompt. iOS's normal camera
+    permission (NSCameraUsageDescription) still applies.
+  </description>
+
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="IdreesiaWebViewCamera">
+        <param name="ios-package" value="IdreesiaWebViewCamera" />
+        <param name="onload" value="true" />
+      </feature>
+    </config-file>
+    <header-file src="src/ios/IdreesiaWebViewCamera.h" />
+    <source-file src="src/ios/IdreesiaWebViewCamera.m" />
+  </platform>
+</plugin>

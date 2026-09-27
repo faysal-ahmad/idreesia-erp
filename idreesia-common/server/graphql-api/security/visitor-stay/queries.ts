@@ -52,6 +52,7 @@ export async function getVisitorStays(queryString: string) {
     visitorId,
     startDate,
     endDate,
+    stayDate,
     name,
     city,
     stayReason,
@@ -64,6 +65,7 @@ export async function getVisitorStays(queryString: string) {
   const visitorIdText = typeof visitorId === 'string' ? visitorId : '';
   const startDateText = typeof startDate === 'string' ? startDate : '';
   const endDateText = typeof endDate === 'string' ? endDate : '';
+  const stayDateText = typeof stayDate === 'string' ? stayDate : '';
   const nameText = typeof name === 'string' ? name : '';
   const cityText = typeof city === 'string' ? city : '';
   const stayReasonText = typeof stayReason === 'string' ? stayReason : '';
@@ -101,6 +103,17 @@ export async function getVisitorStays(queryString: string) {
         toDate: {
           $lte: endOfDay(parseDate(endDateText, Formats.DATE_FORMAT)),
         },
+      },
+    });
+  }
+
+  // Stays that cover this date, including ones that started before it.
+  if (stayDateText) {
+    const day = parseDate(stayDateText, Formats.DATE_FORMAT);
+    pipeline.push({
+      $match: {
+        fromDate: { $lte: endOfDay(day) },
+        toDate: { $gte: startOfDay(day) },
       },
     });
   }
@@ -192,7 +205,8 @@ export async function getVisitorStays(queryString: string) {
   const sortDirection =
     sortOrderMapping[sortOrderText as keyof typeof sortOrderMapping];
   const resultsPipeline = pipeline.concat([
-    { $sort: { [sortByColumnName]: sortDirection } },
+    // _id breaks ties, so stays with the same sort value never shift between pages.
+    { $sort: { [sortByColumnName]: sortDirection, _id: 1 } },
     { $skip: nPageIndex * nPageSize },
     { $limit: nPageSize },
   ]);

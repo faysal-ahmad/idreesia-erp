@@ -23,9 +23,13 @@ export const Page = ({ title, backTo, right, footer, children }: Props) => {
 
   return (
     <div className="page">
-      <NavBar back={backTo ? '' : null} className="page-nav-bar" right={right} onBack={navigateBack}>
-        {title}
-      </NavBar>
+      {/* The header, not the NavBar, clears the status bar / Dynamic Island:
+          antd-mobile's own NavBar padding would override ours. */}
+      <header className="page-header">
+        <NavBar back={backTo ? '' : null} className="page-nav-bar" right={right} onBack={navigateBack}>
+          {title}
+        </NavBar>
+      </header>
       <main className="page-body">{children}</main>
       {footer && <div className="page-footer">{footer}</div>}
     </div>

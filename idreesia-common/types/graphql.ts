@@ -160,8 +160,11 @@ export type DuplicatePersonSummaryType = {
 export type DutyLocationType = {
   __typename?: 'DutyLocationType';
   _id?: Maybe<Scalars['String']['output']>;
+  canDelete?: Maybe<Scalars['Boolean']['output']>;
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
+  duty?: Maybe<DutyType>;
+  dutyId?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
@@ -193,6 +196,7 @@ export type DutyType = {
   createdBy?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   isMehfilDuty?: Maybe<Scalars['Boolean']['output']>;
+  locations?: Maybe<Array<Maybe<DutyLocationType>>>;
   name?: Maybe<Scalars['String']['output']>;
   shifts?: Maybe<Array<Maybe<DutyShiftType>>>;
   updatedAt?: Maybe<Scalars['String']['output']>;
@@ -477,6 +481,7 @@ export type Mutation = {
   addIssuanceFormAttachment?: Maybe<IssuanceForm>;
   addMehfilKarkun?: Maybe<MehfilKarkunType>;
   addPurchaseFormAttachment?: Maybe<PurchaseForm>;
+  addTeamCoordinator?: Maybe<TeamType>;
   addTeamMember?: Maybe<TeamType>;
   approveIssuanceForms?: Maybe<Array<Maybe<IssuanceForm>>>;
   approvePurchaseForms?: Maybe<Array<Maybe<PurchaseForm>>>;
@@ -556,6 +561,7 @@ export type Mutation = {
   removeStockAdjustments?: Maybe<Scalars['Int']['output']>;
   removeStockItem?: Maybe<Scalars['Int']['output']>;
   removeTeam?: Maybe<Scalars['Int']['output']>;
+  removeTeamCoordinator?: Maybe<TeamType>;
   removeTeamMember?: Maybe<TeamType>;
   removeVendor?: Maybe<Scalars['Int']['output']>;
   resetJobDefinitionSchedule?: Maybe<JobDefinitionType>;
@@ -575,7 +581,6 @@ export type Mutation = {
   setSecurityUserPermissions?: Maybe<UserType>;
   setSecurityVisitorImage?: Maybe<PersonType>;
   setStockItemImage?: Maybe<StockItem>;
-  setTeamCoordinator?: Maybe<TeamType>;
   setUserGroupInstanceAccess?: Maybe<UserGroupType>;
   setUserGroupPermissions?: Maybe<UserGroupType>;
   updateAttachment?: Maybe<Attachment>;
@@ -652,6 +657,12 @@ export type MutationAddPurchaseFormAttachmentArgs = {
   _id: Scalars['String']['input'];
   attachmentId: Scalars['String']['input'];
   physicalStoreId: Scalars['String']['input'];
+};
+
+
+export type MutationAddTeamCoordinatorArgs = {
+  karkunId: Scalars['String']['input'];
+  teamId: Scalars['String']['input'];
 };
 
 
@@ -740,6 +751,7 @@ export type MutationCreateDutyArgs = {
 
 
 export type MutationCreateDutyLocationArgs = {
+  dutyId: Scalars['String']['input'];
   name: Scalars['String']['input'];
 };
 
@@ -915,8 +927,9 @@ export type MutationCreateStockItemArgs = {
 
 export type MutationCreateTeamArgs = {
   color?: InputMaybe<Scalars['String']['input']>;
-  coordinatorKarkunId?: InputMaybe<Scalars['String']['input']>;
+  coordinatorKarkunIds?: InputMaybe<Array<Scalars['String']['input']>>;
   description?: InputMaybe<Scalars['String']['input']>;
+  dutyId?: InputMaybe<Scalars['String']['input']>;
   karkunIds?: InputMaybe<Array<Scalars['String']['input']>>;
   name: Scalars['String']['input'];
 };
@@ -1198,6 +1211,12 @@ export type MutationRemoveTeamArgs = {
 };
 
 
+export type MutationRemoveTeamCoordinatorArgs = {
+  karkunId: Scalars['String']['input'];
+  teamId: Scalars['String']['input'];
+};
+
+
 export type MutationRemoveTeamMemberArgs = {
   karkunId: Scalars['String']['input'];
   teamId: Scalars['String']['input'];
@@ -1314,12 +1333,6 @@ export type MutationSetStockItemImageArgs = {
 };
 
 
-export type MutationSetTeamCoordinatorArgs = {
-  karkunId: Scalars['String']['input'];
-  teamId: Scalars['String']['input'];
-};
-
-
 export type MutationSetUserGroupInstanceAccessArgs = {
   _id: Scalars['String']['input'];
   instances: Array<InputMaybe<Scalars['String']['input']>>;
@@ -1389,6 +1402,7 @@ export type MutationUpdateDutyArgs = {
 
 
 export type MutationUpdateDutyLocationArgs = {
+  dutyId: Scalars['String']['input'];
   id: Scalars['String']['input'];
   name: Scalars['String']['input'];
 };
@@ -1600,8 +1614,9 @@ export type MutationUpdateStockItemArgs = {
 
 export type MutationUpdateTeamArgs = {
   color?: InputMaybe<Scalars['String']['input']>;
-  coordinatorKarkunId?: InputMaybe<Scalars['String']['input']>;
+  coordinatorKarkunIds?: InputMaybe<Array<Scalars['String']['input']>>;
   description?: InputMaybe<Scalars['String']['input']>;
+  dutyId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   karkunIds?: InputMaybe<Array<Scalars['String']['input']>>;
   name: Scalars['String']['input'];
@@ -1993,6 +2008,7 @@ export type Query = {
   duplicatePhoneNumbers?: Maybe<Array<Maybe<DuplicatePersonGroupType>>>;
   dutyById?: Maybe<DutyType>;
   dutyLocationById?: Maybe<DutyLocationType>;
+  dutyLocationsByDutyId?: Maybe<Array<Maybe<DutyLocationType>>>;
   dutyShiftById?: Maybe<DutyShiftType>;
   dutyShiftsByDutyId?: Maybe<Array<Maybe<DutyShiftType>>>;
   faceVectors: Array<FaceVectorRecord>;
@@ -2143,6 +2159,11 @@ export type QueryDutyByIdArgs = {
 
 export type QueryDutyLocationByIdArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryDutyLocationsByDutyIdArgs = {
+  dutyId: Scalars['String']['input'];
 };
 
 
@@ -2638,11 +2659,13 @@ export type TeamType = {
   __typename?: 'TeamType';
   _id?: Maybe<Scalars['String']['output']>;
   color?: Maybe<Scalars['String']['output']>;
-  coordinator?: Maybe<PersonType>;
-  coordinatorKarkunId?: Maybe<Scalars['String']['output']>;
+  coordinatorKarkunIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  coordinators?: Maybe<Array<Maybe<PersonType>>>;
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  duty?: Maybe<DutyType>;
+  dutyId?: Maybe<Scalars['String']['output']>;
   karkunIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   members?: Maybe<Array<Maybe<PersonType>>>;
   name?: Maybe<Scalars['String']['output']>;

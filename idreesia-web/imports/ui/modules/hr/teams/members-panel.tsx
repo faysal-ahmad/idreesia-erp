@@ -7,10 +7,12 @@ import { CrownFilled, CrownOutlined, UserDeleteOutlined } from '@ant-design/icon
 import { message } from '/imports/ui/antd-feedback';
 
 import type {
+  AddTeamCoordinatorMutation,
+  AddTeamCoordinatorMutationVariables,
+  RemoveTeamCoordinatorMutation,
+  RemoveTeamCoordinatorMutationVariables,
   RemoveTeamMemberMutation,
   RemoveTeamMemberMutationVariables,
-  SetTeamCoordinatorMutation,
-  SetTeamCoordinatorMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
 const REMOVE_TEAM_MEMBER: TypedDocumentNode<
@@ -24,12 +26,23 @@ const REMOVE_TEAM_MEMBER: TypedDocumentNode<
   }
 `;
 
-const SET_TEAM_COORDINATOR: TypedDocumentNode<
-  SetTeamCoordinatorMutation,
-  SetTeamCoordinatorMutationVariables
+const ADD_TEAM_COORDINATOR: TypedDocumentNode<
+  AddTeamCoordinatorMutation,
+  AddTeamCoordinatorMutationVariables
 > = gql`
-  mutation setTeamCoordinator($teamId: String!, $karkunId: String!) {
-    setTeamCoordinator(teamId: $teamId, karkunId: $karkunId) {
+  mutation addTeamCoordinator($teamId: String!, $karkunId: String!) {
+    addTeamCoordinator(teamId: $teamId, karkunId: $karkunId) {
+      _id
+    }
+  }
+`;
+
+const REMOVE_TEAM_COORDINATOR: TypedDocumentNode<
+  RemoveTeamCoordinatorMutation,
+  RemoveTeamCoordinatorMutationVariables
+> = gql`
+  mutation removeTeamCoordinator($teamId: String!, $karkunId: String!) {
+    removeTeamCoordinator(teamId: $teamId, karkunId: $karkunId) {
       _id
     }
   }
@@ -46,14 +59,17 @@ export interface TeamMember {
 interface Props {
   teamId: string;
   members: TeamMember[];
-  coordinatorKarkunId?: string | null;
+  coordinatorKarkunIds?: (string | null)[] | null;
 }
 
-const TeamMembersPanel = ({ teamId, members, coordinatorKarkunId }: Props) => {
+const TeamMembersPanel = ({ teamId, members, coordinatorKarkunIds }: Props) => {
   const [removeTeamMember] = useMutation(REMOVE_TEAM_MEMBER, {
     refetchQueries: ['listAllTeams'],
   });
-  const [setTeamCoordinator] = useMutation(SET_TEAM_COORDINATOR, {
+  const [addTeamCoordinator] = useMutation(ADD_TEAM_COORDINATOR, {
+    refetchQueries: ['listAllTeams'],
+  });
+  const [removeTeamCoordinator] = useMutation(REMOVE_TEAM_COORDINATOR, {
     refetchQueries: ['listAllTeams'],
   });
 
@@ -65,12 +81,14 @@ const TeamMembersPanel = ({ teamId, members, coordinatorKarkunId }: Props) => {
     );
   };
 
-  const handleSetCoordinator = (karkunId: string) => {
-    setTeamCoordinator({ variables: { teamId, karkunId } }).catch(
-      (error: Error) => {
-        message.error(error.message, 5);
-      }
-    );
+  const handleToggleCoordinator = (
+    karkunId: string,
+    isCoordinator: boolean
+  ) => {
+    const mutate = isCoordinator ? removeTeamCoordinator : addTeamCoordinator;
+    mutate({ variables: { teamId, karkunId } }).catch((error: Error) => {
+      message.error(error.message, 5);
+    });
   };
 
   const columns = [
@@ -104,19 +122,25 @@ const TeamMembersPanel = ({ teamId, members, coordinatorKarkunId }: Props) => {
       key: 'action',
       width: 80,
       render: (_text: unknown, record: TeamMember) => {
-        const isCoordinator = record._id === coordinatorKarkunId;
+        const isCoordinator = (coordinatorKarkunIds ?? []).includes(
+          record._id
+        );
         return (
           <div className="list-actions-column">
-            <Tooltip title={isCoordinator ? 'Remove as Coordinator' : 'Make Coordinator'}>
+            <Tooltip
+              title={
+                isCoordinator ? 'Remove as Coordinator' : 'Make Coordinator'
+              }
+            >
               {isCoordinator ? (
                 <CrownFilled
                   className="list-actions-icon"
-                  onClick={() => handleSetCoordinator(record._id)}
+                  onClick={() => handleToggleCoordinator(record._id, true)}
                 />
               ) : (
                 <CrownOutlined
                   className="list-actions-icon"
-                  onClick={() => handleSetCoordinator(record._id)}
+                  onClick={() => handleToggleCoordinator(record._id, false)}
                 />
               )}
             </Tooltip>

@@ -21,7 +21,14 @@ export default new SimpleSchema({
   'karkunIds.$': {
     type: String,
   },
-  coordinatorKarkunId: {
+  coordinatorKarkunIds: {
+    type: Array,
+    optional: true,
+  },
+  'coordinatorKarkunIds.$': {
+    type: String,
+  },
+  dutyId: {
     type: String,
     optional: true,
   },

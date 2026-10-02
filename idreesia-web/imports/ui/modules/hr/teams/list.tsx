@@ -56,7 +56,8 @@ const LIST_ALL_TEAMS: TypedDocumentNode<
       color
       description
       karkunIds
-      coordinatorKarkunId
+      coordinatorKarkunIds
+      dutyId
       members {
         _id
         sharedData {
@@ -66,11 +67,15 @@ const LIST_ALL_TEAMS: TypedDocumentNode<
           contactNumber2
         }
       }
-      coordinator {
+      coordinators {
         _id
         sharedData {
           name
         }
+      }
+      duty {
+        _id
+        name
       }
     }
   }
@@ -80,8 +85,18 @@ const CREATE_TEAM: TypedDocumentNode<
   CreateTeamMutation,
   CreateTeamMutationVariables
 > = gql`
-  mutation createTeam($name: String!, $color: String, $description: String) {
-    createTeam(name: $name, color: $color, description: $description) {
+  mutation createTeam(
+    $name: String!
+    $color: String
+    $description: String
+    $dutyId: String
+  ) {
+    createTeam(
+      name: $name
+      color: $color
+      description: $description
+      dutyId: $dutyId
+    ) {
       _id
       name
     }
@@ -97,8 +112,15 @@ const UPDATE_TEAM: TypedDocumentNode<
     $name: String!
     $color: String
     $description: String
+    $dutyId: String
   ) {
-    updateTeam(id: $id, name: $name, color: $color, description: $description) {
+    updateTeam(
+      id: $id
+      name: $name
+      color: $color
+      description: $description
+      dutyId: $dutyId
+    ) {
       _id
       name
     }
@@ -234,6 +256,7 @@ const List = () => {
             name: values.name,
             color: values.color,
             description: values.description,
+            dutyId: values.dutyId ?? null,
           },
         })
       )
@@ -252,6 +275,7 @@ const List = () => {
       name: record.name,
       color: record.color ?? undefined,
       description: record.description ?? undefined,
+      dutyId: record.dutyId ?? undefined,
     });
     setEditingTeamId(record._id);
   };
@@ -271,6 +295,7 @@ const List = () => {
             name: values.name,
             color: values.color,
             description: values.description,
+            dutyId: values.dutyId ?? null,
           },
         })
       )
@@ -337,7 +362,10 @@ const List = () => {
         contactNumber2: member.sharedData?.contactNumber2,
       }));
 
-  if (loading) {
+  // Member add/remove refetches this query and sets `loading` while the
+  // previous result is still here. A full-page spinner would unmount the
+  // table and collapse the open team.
+  if (loading && !data) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
         <Spin size="large" />
@@ -379,10 +407,22 @@ const List = () => {
       ),
     },
     {
-      title: 'Coordinator',
-      key: 'coordinator',
+      title: 'Coordinators',
+      key: 'coordinators',
       render: (_text: unknown, record: TeamRow) =>
-        record.coordinator?.sharedData?.name ?? '',
+        (record.coordinators ?? [])
+          .filter(
+            (coordinator): coordinator is NonNullable<typeof coordinator> =>
+              coordinator != null
+          )
+          .map(coordinator => coordinator.sharedData?.name)
+          .filter(Boolean)
+          .join(', '),
+    },
+    {
+      title: 'Duty',
+      key: 'duty',
+      render: (_text: unknown, record: TeamRow) => record.duty?.name ?? '',
     },
     {
       title: 'Members',
@@ -467,7 +507,7 @@ const List = () => {
               <TeamMembersPanel
                 teamId={record._id}
                 members={getTeamMembers(record)}
-                coordinatorKarkunId={record.coordinatorKarkunId}
+                coordinatorKarkunIds={record.coordinatorKarkunIds}
               />
             ),
           }}

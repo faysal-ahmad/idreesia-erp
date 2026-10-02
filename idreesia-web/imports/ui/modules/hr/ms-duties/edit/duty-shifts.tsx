@@ -3,7 +3,6 @@ import { format, isValid } from 'date-fns';
 import { useMutation, useQuery } from '@apollo/client/react';
 import {
   DeleteOutlined,
-  EditOutlined,
   PlusCircleOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
@@ -171,6 +170,15 @@ const List = ({ dutyId }: ListProps) => {
       title: 'Shift Name',
       dataIndex: 'name',
       key: 'name',
+      render: (text: string, record: DutyShift) => (
+        <Button
+          type="link"
+          style={{ padding: 0, height: 'auto' }}
+          onClick={() => handleEditClicked(record)}
+        >
+          {text}
+        </Button>
+      ),
     },
     {
       title: 'Start Time',
@@ -194,32 +202,22 @@ const List = ({ dutyId }: ListProps) => {
       key: 'action',
       width: 72,
       render: (_text: unknown, record: DutyShift) => {
-        const deleteAction = record.canDelete ? (
-          <Popconfirm
-            title="Are you sure you want to delete this shift?"
-            onConfirm={() => {
-              handleDeleteClicked(record);
-            }}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Tooltip title="Delete">
-              <DeleteOutlined className="list-actions-icon" />
-            </Tooltip>
-          </Popconfirm>
-        ) : null;
+        if (!record.canDelete) return null;
 
         return (
           <div className="list-actions-column">
-            <Tooltip title="Edit">
-              <EditOutlined
-                className="list-actions-icon"
-                onClick={() => {
-                  handleEditClicked(record);
-                }}
-              />
-            </Tooltip>
-            {deleteAction}
+            <Popconfirm
+              title="Are you sure you want to delete this shift?"
+              onConfirm={() => {
+                handleDeleteClicked(record);
+              }}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Tooltip title="Delete">
+                <DeleteOutlined className="list-actions-icon" />
+              </Tooltip>
+            </Popconfirm>
           </div>
         );
       },

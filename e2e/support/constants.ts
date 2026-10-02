@@ -38,7 +38,6 @@ export const AdminPaths = {
 export const HrPaths = {
   jobs: `${ModulePaths.hr}/jobs`,
   msDuties: `${ModulePaths.hr}/ms-duties`,
-  dutyLocations: `${ModulePaths.hr}/duty-locations`,
   employees: `${ModulePaths.hr}/employees`,
   karkuns: `${ModulePaths.hr}/karkuns`,
   attendanceSheets: `${ModulePaths.hr}/attendance-sheets`,

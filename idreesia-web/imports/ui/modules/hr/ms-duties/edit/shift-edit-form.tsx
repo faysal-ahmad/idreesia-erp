@@ -12,7 +12,6 @@ interface ShiftValues {
   name: string;
   startTime?: unknown;
   endTime?: unknown;
-  attendanceSheet?: string;
 }
 
 interface DutyShift {
@@ -26,7 +25,12 @@ interface DutyShift {
 
 interface EditFormProps {
   dutyShift: DutyShift;
-  handleSave(values: ShiftValues & Pick<DutyShift, '_id' | 'dutyId'>): void;
+  handleSave(
+    values: ShiftValues &
+      Pick<DutyShift, '_id' | 'dutyId'> & {
+        attendanceSheet?: string | null;
+      }
+  ): void;
   handleCancel(): void;
 }
 
@@ -37,14 +41,14 @@ const EditForm = ({ dutyShift, handleSave, handleCancel }: EditFormProps) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ name, startTime, endTime, attendanceSheet }: ShiftValues) => {
+  const handleFinish = ({ name, startTime, endTime }: ShiftValues) => {
     handleSave({
       _id: dutyShift._id,
       dutyId: dutyShift.dutyId,
       name,
       startTime,
       endTime,
-      attendanceSheet,
+      attendanceSheet: dutyShift.attendanceSheet ?? undefined,
     });
   };
 
@@ -68,11 +72,6 @@ const EditForm = ({ dutyShift, handleSave, handleCancel }: EditFormProps) => {
         fieldName="endTime"
         fieldLabel="End Time"
         initialValue={dutyShift.endTime ? dayjs(dutyShift.endTime) : null}
-      />
-      <InputTextField
-        fieldName="attendanceSheet"
-        fieldLabel="Attendance Sheet"
-        initialValue={dutyShift.attendanceSheet ?? undefined}
       />
       <FormButtonsSaveCancel
         handleCancel={handleCancel}

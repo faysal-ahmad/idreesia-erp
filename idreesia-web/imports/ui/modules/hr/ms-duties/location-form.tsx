@@ -1,12 +1,12 @@
 import React from 'react';
 import { Form, Input, type FormInstance } from 'antd';
 
-export interface NewDutyLocationFormValues {
+export interface LocationFormValues {
   name: string;
 }
 
-interface NewFormProps {
-  form: FormInstance<NewDutyLocationFormValues>;
+interface LocationFormProps {
+  form: FormInstance<LocationFormValues>;
 }
 
 const formItemLayout = {
@@ -14,7 +14,7 @@ const formItemLayout = {
   wrapperCol: { span: 18 },
 };
 
-const NewForm = ({ form }: NewFormProps) => (
+const LocationForm = ({ form }: LocationFormProps) => (
   <Form
     form={form}
     layout="horizontal"
@@ -37,4 +37,4 @@ const NewForm = ({ form }: NewFormProps) => (
   </Form>
 );
 
-export default NewForm;
+export default LocationForm;

@@ -14,9 +14,6 @@ export default class SubModulePaths {
     return `${SubModulePaths.msDutiesPath}/${dutyId}`;
   }
 
-  static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;
-  static dutyLocationsEditFormPath = `${SubModulePaths.dutyLocationsPath}/:dutyLocationId`;
-
   static teamsPath = `${ModulePaths.hr}/teams`;
 
   static committeesPath = `${ModulePaths.hr}/committees`;

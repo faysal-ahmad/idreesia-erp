@@ -1,4 +1,5 @@
 import {
+  Duties,
   DutyLocations,
   KarkunDuties,
 } from 'meteor/idreesia-common/server/collections/hr';
@@ -10,22 +11,39 @@ interface ResolverMap {
 
 const resolvers: ResolverMap = {
   DutyLocationType: {
+    duty: async dutyLocationType =>
+      Duties.findOneAsync(dutyLocationType.dutyId),
     usedCount: async dutyLocationType =>
       KarkunDuties.find({
         locationId: { $eq: dutyLocationType._id },
       }).countAsync(),
+    canDelete: async dutyLocationType => {
+      const usedCount = await KarkunDuties.find({
+        locationId: { $eq: dutyLocationType._id },
+      }).countAsync();
+      return usedCount === 0;
+    },
   },
 
   Query: {
-    allDutyLocations: async () => DutyLocations.find({}).fetchAsync(),
+    allDutyLocations: async () =>
+      DutyLocations.find({}, { sort: { dutyId: 1, name: 1 } }).fetchAsync(),
+
+    dutyLocationsByDutyId: async (obj, { dutyId }) =>
+      DutyLocations.find(
+        { dutyId: { $eq: dutyId } },
+        { sort: { name: 1 } }
+      ).fetchAsync(),
+
     dutyLocationById: async (obj, { id }) => DutyLocations.findOneAsync(id),
   },
 
   Mutation: {
-    createDutyLocation: async (obj, { name }, { user }) => {
+    createDutyLocation: async (obj, { name, dutyId }, { user }) => {
       const date = new Date();
       const dutyLocationId = await DutyLocations.insertAsync({
         name,
+        dutyId,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -35,11 +53,12 @@ const resolvers: ResolverMap = {
       return DutyLocations.findOneAsync(dutyLocationId);
     },
 
-    updateDutyLocation: async (obj, { id, name }, { user }) => {
+    updateDutyLocation: async (obj, { id, name, dutyId }, { user }) => {
       const date = new Date();
       await DutyLocations.updateAsync(id, {
         $set: {
           name,
+          dutyId,
           updatedAt: date,
           updatedBy: user._id,
         },

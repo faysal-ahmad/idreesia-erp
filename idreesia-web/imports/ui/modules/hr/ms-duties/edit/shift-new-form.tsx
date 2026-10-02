@@ -11,7 +11,6 @@ interface ShiftValues {
   name: string;
   startTime?: unknown;
   endTime?: unknown;
-  attendanceSheet?: string;
 }
 
 interface NewFormProps {
@@ -26,12 +25,11 @@ const NewForm = ({ handleSave, handleCancel }: NewFormProps) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ name, startTime, endTime, attendanceSheet }: ShiftValues) => {
+  const handleFinish = ({ name, startTime, endTime }: ShiftValues) => {
     handleSave({
       name,
       startTime,
       endTime,
-      attendanceSheet,
     });
   };
 
@@ -50,10 +48,6 @@ const NewForm = ({ handleSave, handleCancel }: NewFormProps) => {
       <TimeField
         fieldName="endTime"
         fieldLabel="End Time"
-      />
-      <InputTextField
-        fieldName="attendanceSheet"
-        fieldLabel="Attendance Sheet"
       />
       <FormButtonsSaveCancel
         handleCancel={handleCancel}

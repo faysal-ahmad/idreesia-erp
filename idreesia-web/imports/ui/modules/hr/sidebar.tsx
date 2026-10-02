@@ -10,7 +10,6 @@ import {
   AuditOutlined,
   ClusterOutlined,
   DollarOutlined,
-  EnvironmentOutlined,
   LaptopOutlined,
   SolutionOutlined,
   TagOutlined,
@@ -92,12 +91,7 @@ const menuItems = [
           {
             key: 'ms-duties',
             icon: <TagsOutlined style={IconStyle} />,
-            label: 'Duties & Shifts',
-          },
-          {
-            key: 'duty-locations',
-            icon: <EnvironmentOutlined style={IconStyle} />,
-            label: 'Duty Locations',
+            label: 'Duties',
           },
         ],
       },
@@ -171,12 +165,6 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['karkuns-management', 'setup'],
     subModuleName: SubModuleNames.msDuties,
     matches: pathname => isPath(pathname, paths.msDutiesPath),
-  },
-  {
-    key: 'duty-locations',
-    openKeys: ['karkuns-management', 'setup'],
-    subModuleName: SubModuleNames.dutyLocations,
-    matches: pathname => isPath(pathname, paths.dutyLocationsPath),
   },
   {
     key: 'teams',
@@ -257,10 +245,6 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'salary-sheets':
         history.push(paths.salarySheetsPath);
-        break;
-
-      case 'duty-locations':
-        history.push(paths.dutyLocationsPath);
         break;
 
       case 'teams':

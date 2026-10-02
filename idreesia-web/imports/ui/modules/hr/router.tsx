@@ -7,7 +7,6 @@ const RouterRoute = Route as any;
 import { default as paths } from './submodule-paths';
 import { JobsEditForm, JobsList } from './jobs';
 import { MSDutiesEditForm, MSDutiesList } from './ms-duties';
-import { DutyLocationsEditForm, DutyLocationsList } from './duty-locations';
 import { TeamsList } from './teams';
 import { CommitteesList } from './committees';
 import {
@@ -44,12 +43,6 @@ const Router = () => (
 
     <RouterRoute path={paths.msDutiesEditFormPath()} component={MSDutiesEditForm} />
     <RouterRoute path={paths.msDutiesPath} component={MSDutiesList} />
-
-    <RouterRoute
-      path={paths.dutyLocationsEditFormPath}
-      component={DutyLocationsEditForm}
-    />
-    <RouterRoute path={paths.dutyLocationsPath} component={DutyLocationsList} />
 
     <RouterRoute path={paths.teamsPath} component={TeamsList} />
 

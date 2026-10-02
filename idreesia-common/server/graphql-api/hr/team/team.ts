@@ -7,9 +7,11 @@ type TeamType {
   color: String
   description: String
   karkunIds: [String]
-  coordinatorKarkunId: String
+  coordinatorKarkunIds: [String]
+  dutyId: String
   members: [PersonType]
-  coordinator: PersonType
+  coordinators: [PersonType]
+  duty: DutyType
 
   createdAt: String
   createdBy: String
@@ -23,9 +25,9 @@ extend type Query {
 }
 
 extend type Mutation {
-  createTeam(name: String!, color: String, description: String, karkunIds: [String!], coordinatorKarkunId: String): TeamType
+  createTeam(name: String!, color: String, description: String, dutyId: String, karkunIds: [String!], coordinatorKarkunIds: [String!]): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  updateTeam(id: String!, name: String!, color: String, description: String, karkunIds: [String!], coordinatorKarkunId: String): TeamType
+  updateTeam(id: String!, name: String!, color: String, description: String, dutyId: String, karkunIds: [String!], coordinatorKarkunIds: [String!]): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeTeam(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
@@ -34,6 +36,8 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeTeamMember(teamId: String!, karkunId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  setTeamCoordinator(teamId: String!, karkunId: String!): TeamType
+  addTeamCoordinator(teamId: String!, karkunId: String!): TeamType
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+  removeTeamCoordinator(teamId: String!, karkunId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
 }`;

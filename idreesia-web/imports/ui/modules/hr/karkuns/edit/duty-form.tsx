@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form } from 'antd';
 import type { FormInstance } from 'antd/es/form';
 
@@ -42,6 +42,32 @@ const DutyForm = (props: Props) => {
   const shifts = (allDutyShifts ?? []).filter((shift): shift is DutyShift => shift != null);
   const locations = (allDutyLocations ?? []).filter((location): location is DutyLocation => location != null);
   const dutyShiftCascaderData = getDutyShiftCascaderData(duties, shifts);
+  const watchedDutyShift = Form.useWatch('dutyIdShiftId', form) as
+    | Array<string | null | undefined>
+    | undefined;
+  const selectedDutyId = Array.isArray(watchedDutyShift)
+    ? watchedDutyShift[0] ?? undefined
+    : defaultValues.dutyId ?? undefined;
+  const locationsForDuty = selectedDutyId
+    ? locations.filter(location => location.dutyId === selectedDutyId)
+    : [];
+
+  useEffect(() => {
+    if (!form || allDutyLocations == null || !selectedDutyId) return;
+    const currentLocationId = form.getFieldValue('locationId') as
+      | string
+      | undefined;
+    if (!currentLocationId) return;
+    const belongsToDuty = allDutyLocations.some(
+      location =>
+        location != null &&
+        location._id === currentLocationId &&
+        location.dutyId === selectedDutyId
+    );
+    if (!belongsToDuty) {
+      form.setFieldValue('locationId', undefined);
+    }
+  }, [form, allDutyLocations, selectedDutyId]);
 
   return (
     <Form form={form} layout="horizontal">
@@ -64,7 +90,7 @@ const DutyForm = (props: Props) => {
       />
 
       <SelectField<DutyLocation>
-        data={locations}
+        data={locationsForDuty}
         fieldName="locationId"
         fieldLabel="Location Name"
         required={false}

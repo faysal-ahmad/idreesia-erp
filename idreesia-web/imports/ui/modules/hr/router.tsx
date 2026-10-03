@@ -35,6 +35,7 @@ import {
   SalarySheetsEidReceipts,
 } from './salary-sheets';
 import { AuditLogsList } from './audit-logs';
+import { DutyRostersEditForm, DutyRostersList } from './duty-rosters';
 
 const Router = () => (
   <RouterSwitch>
@@ -68,6 +69,9 @@ const Router = () => (
       component={AttendanceSheetsPrintKarkunCards}
     />
     <RouterRoute path={paths.attendanceSheetsPrintAttendanceSheetPath} component={AttendanceSheetPrintAttendanceSheet} />
+    <RouterRoute path={paths.dutyRostersEditFormPath()} component={DutyRostersEditForm} />
+    <RouterRoute path={paths.dutyRostersPath} component={DutyRostersList} />
+
     <RouterRoute path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
 
     <RouterRoute

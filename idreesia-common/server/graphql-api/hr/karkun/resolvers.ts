@@ -77,6 +77,30 @@ const resolvers: ResolverMap = {
       return People.createPerson(personValues, user);
     },
 
+    promoteHrKarkun: async (obj, { _id }, { user }) => {
+      const existingPerson = await People.findOneAsync(_id);
+      if (!existingPerson || existingPerson.deletedAt) {
+        throw new Error('Person not found.');
+      }
+      if (existingPerson.isKarkun) {
+        throw new Error('This person is already a karkun.');
+      }
+
+      const multanCity = await Cities.getMultanCity();
+      if (!multanCity) throw new Error('Multan city is not configured.');
+
+      const personValues = await People.karkunToPerson({
+        _id,
+        cityId: existingPerson.karkunData?.cityId || multanCity._id,
+      });
+      // Keep the visitor city the person already has. karkunToPerson would
+      // replace it with the karkun city name.
+      if (existingPerson.visitorData?.city) {
+        delete personValues.visitorData;
+      }
+      return People.updatePerson(personValues, user);
+    },
+
     updateHrKarkun: async (obj, values, { user }) => {
       const personValues = await People.karkunToPerson(values);
       return People.updatePerson(personValues, user);

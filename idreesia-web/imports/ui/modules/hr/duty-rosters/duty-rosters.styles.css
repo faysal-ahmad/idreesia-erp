@@ -1,0 +1,268 @@
+.duty-roster-list-duty {
+  font-weight: 600;
+}
+
+.duty-roster-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.duty-roster-header,
+.duty-roster-day {
+  padding: 16px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.duty-roster-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.duty-roster-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.duty-roster-day-header,
+.duty-roster-day-slot-title,
+.duty-roster-karkun-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.duty-roster-day-header {
+  margin-bottom: 12px;
+}
+
+.duty-roster-day-header h3 {
+  margin: 0;
+}
+
+.duty-roster-section-note {
+  margin: 4px 0 0;
+}
+
+.duty-roster-exception {
+  margin-top: 8px;
+}
+
+.duty-roster-exception-label {
+  margin-bottom: 4px;
+  color: #344054;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.duty-roster-day-slot {
+  padding: 12px 0;
+  border-top: 1px solid #e4e7ec;
+}
+
+.duty-roster-day-slot-title {
+  margin-bottom: 8px;
+}
+
+.duty-roster-grid .duty-roster-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  min-height: 64px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.duty-roster-grid .duty-roster-cell.is-readonly {
+  cursor: default;
+}
+
+.duty-roster-karkun {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.duty-roster-muted {
+  color: #667085;
+  font-size: 12px;
+}
+
+.duty-roster-absent {
+  color: #667085;
+  text-decoration: line-through;
+}
+
+.duty-roster-karkun-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.duty-roster-days-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.duty-roster-days-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.duty-roster-days-board {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(140px, 1fr));
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.duty-roster-days-column {
+  min-width: 140px;
+  padding: 8px;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+}
+
+.duty-roster-days-column.is-today {
+  border-color: #84adff;
+  background: #f5f9ff;
+}
+
+.duty-roster-days-date {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #667085;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.duty-roster-days-weekday {
+  color: #667085;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.duty-roster-days-column .duty-roster-muted {
+  font-size: 13px;
+}
+
+.duty-roster-days-date + .duty-roster-calendar-shift,
+.duty-roster-days-date + .duty-roster-muted {
+  margin-top: 8px;
+}
+
+.duty-roster-calendar-shift + .duty-roster-calendar-shift {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #667085;
+}
+
+.duty-roster-calendar-shift-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.duty-roster-team-form {
+  width: 100%;
+  max-width: 100%;
+}
+
+.duty-roster-team-form .ant-form-item {
+  margin-bottom: 8px;
+}
+
+.duty-roster-team-form .ant-select {
+  width: 100%;
+}
+
+.duty-roster-shift-actions {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  color: #344054;
+}
+
+.duty-roster-calendar-team {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.duty-roster-calendar-person {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.duty-roster-calendar-team-member .duty-roster-calendar-person-name {
+  position: relative;
+  padding-left: 14px;
+}
+
+.duty-roster-off-mark {
+  position: absolute;
+  left: 0;
+  top: 0.25em;
+  font-size: 10px;
+  line-height: 1;
+  color: #d92d20;
+}
+
+.duty-roster-calendar-person.is-off {
+  color: #d92d20;
+}
+
+.duty-roster-person-remove {
+  flex: none;
+  width: 22px;
+  height: 22px;
+}
+
+.duty-roster-calendar-person .duty-roster-person-remove.ant-btn {
+  padding: 0;
+  color: #d92d20;
+  visibility: hidden;
+}
+
+.duty-roster-calendar-person:hover .duty-roster-person-remove.ant-btn,
+.duty-roster-calendar-person:focus-within .duty-roster-person-remove.ant-btn {
+  visibility: visible;
+}
+
+.duty-roster-calendar-person .duty-roster-person-remove.ant-btn:hover {
+  color: #b42318;
+}
+
+.duty-roster-calendar-person .duty-roster-person-remove.is-restore.ant-btn {
+  color: #079455;
+}
+
+.duty-roster-calendar-person .duty-roster-person-remove.is-restore.ant-btn:hover {
+  color: #067647;
+}

@@ -1,4 +1,5 @@
 import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -51,6 +52,10 @@ const resolvers: ResolverMap = {
       const memberKarkunIds = karkunIds ?? [];
       const memberCoordinatorKarkunIds = coordinatorKarkunIds ?? [];
       ensureCoordinatorsAreMembers(memberKarkunIds, memberCoordinatorKarkunIds);
+      await ensureKarkuns([
+        ...memberKarkunIds,
+        ...memberCoordinatorKarkunIds,
+      ]);
 
       const date = new Date();
       const committeeId = await Committees.insertAsync({
@@ -94,6 +99,10 @@ const resolvers: ResolverMap = {
           effectiveKarkunIds,
           effectiveCoordinatorKarkunIds
         );
+        await ensureKarkuns([
+          ...(karkunIds ?? []),
+          ...(coordinatorKarkunIds ?? []),
+        ]);
 
         if (karkunIds !== undefined) setFields.karkunIds = karkunIds;
         if (coordinatorKarkunIds !== undefined) {
@@ -109,6 +118,7 @@ const resolvers: ResolverMap = {
     removeCommittee: async (obj, { _id }) => Committees.removeAsync(_id),
 
     addCommitteeMember: async (obj, { committeeId, karkunId }) => {
+      await ensureKarkuns([karkunId]);
       await Committees.updateAsync(committeeId, {
         $addToSet: { karkunIds: karkunId },
       });
@@ -126,6 +136,7 @@ const resolvers: ResolverMap = {
     },
 
     addCommitteeCoordinator: async (obj, { committeeId, karkunId }) => {
+      await ensureKarkuns([karkunId]);
       await Committees.updateAsync(committeeId, {
         $addToSet: { coordinatorKarkunIds: karkunId },
       });

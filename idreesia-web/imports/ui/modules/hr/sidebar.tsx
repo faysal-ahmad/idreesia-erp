@@ -11,6 +11,7 @@ import {
   ClusterOutlined,
   DollarOutlined,
   LaptopOutlined,
+  CalendarOutlined,
   SolutionOutlined,
   TagOutlined,
   TagsOutlined,
@@ -72,6 +73,11 @@ const menuItems = [
         key: 'attendance-sheets',
         icon: <SolutionOutlined style={IconStyle} />,
         label: 'Attendance Sheets',
+      },
+      {
+        key: 'duty-rosters',
+        icon: <CalendarOutlined style={IconStyle} />,
+        label: 'Duty Rosters',
       },
       {
         key: 'setup',
@@ -153,6 +159,12 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['karkuns-management'],
     subModuleName: SubModuleNames.attendanceSheets,
     matches: pathname => isPath(pathname, paths.attendanceSheetsPath),
+  },
+  {
+    key: 'duty-rosters',
+    openKeys: ['karkuns-management'],
+    subModuleName: SubModuleNames.dutyRosters,
+    matches: pathname => isPath(pathname, paths.dutyRostersPath),
   },
   {
     key: 'jobs',
@@ -241,6 +253,10 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'attendance-sheets':
         history.push(paths.attendanceSheetsPath);
+        break;
+
+      case 'duty-rosters':
+        history.push(paths.dutyRostersPath);
         break;
 
       case 'salary-sheets':

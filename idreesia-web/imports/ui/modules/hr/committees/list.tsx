@@ -36,7 +36,7 @@ import type {
   UpdateCommitteeMutation,
   UpdateCommitteeMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import MSKarkunsList from '/imports/ui/modules/helpers/fields/karkun-selection-input/ms-karkuns-list';
+import KarkunsSelectionList from '/imports/ui/modules/hr/karkuns/field/list-container';
 
 import CommitteeForm, { type CommitteeFormValues } from './committee-form';
 import CommitteeMembersPanel, {
@@ -544,7 +544,7 @@ const List = () => {
         open={addMemberCommitteeId != null}
         destroyOnHidden
       >
-        <MSKarkunsList handleSelectItem={handleSelectKarkunForCommittee} />
+        <KarkunsSelectionList setSelectedValue={handleSelectKarkunForCommittee} />
       </Drawer>
     </>
   );

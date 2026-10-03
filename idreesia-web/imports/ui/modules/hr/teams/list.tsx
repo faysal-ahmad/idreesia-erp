@@ -36,8 +36,9 @@ import type {
   UpdateTeamMutation,
   UpdateTeamMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import MSKarkunsList from '/imports/ui/modules/helpers/fields/karkun-selection-input/ms-karkuns-list';
+import KarkunsSelectionList from '/imports/ui/modules/hr/karkuns/field/list-container';
 
+import MemberDaysModal, { TEAM_DAYS } from './member-days-modal';
 import TeamForm, { type TeamFormValues } from './team-form';
 import TeamMembersPanel, { type TeamMember } from './members-panel';
 
@@ -57,6 +58,10 @@ const LIST_ALL_TEAMS: TypedDocumentNode<
       description
       karkunIds
       coordinatorKarkunIds
+      memberSchedules {
+        karkunId
+        daysOfWeek
+      }
       dutyId
       members {
         _id
@@ -89,7 +94,7 @@ const CREATE_TEAM: TypedDocumentNode<
     $name: String!
     $color: String
     $description: String
-    $dutyId: String
+    $dutyId: String!
   ) {
     createTeam(
       name: $name
@@ -112,7 +117,7 @@ const UPDATE_TEAM: TypedDocumentNode<
     $name: String!
     $color: String
     $description: String
-    $dutyId: String
+    $dutyId: String!
   ) {
     updateTeam(
       id: $id
@@ -140,8 +145,12 @@ const ADD_TEAM_MEMBER: TypedDocumentNode<
   AddTeamMemberMutation,
   AddTeamMemberMutationVariables
 > = gql`
-  mutation addTeamMember($teamId: String!, $karkunId: String!) {
-    addTeamMember(teamId: $teamId, karkunId: $karkunId) {
+  mutation addTeamMember(
+    $teamId: String!
+    $karkunId: String!
+    $daysOfWeek: [String!]!
+  ) {
+    addTeamMember(teamId: $teamId, karkunId: $karkunId, daysOfWeek: $daysOfWeek) {
       _id
     }
   }
@@ -162,6 +171,11 @@ const List = () => {
   const [newForm] = Form.useForm<TeamFormValues>();
   const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
   const [editForm] = Form.useForm<TeamFormValues>();
+  const [pendingMember, setPendingMember] = useState<{
+    teamId: string;
+    karkunId: string;
+    name: string;
+  } | null>(null);
 
   const { data, loading, refetch } = useQuery(LIST_ALL_TEAMS);
   const allTeams = (data?.allTeams ?? []).filter(
@@ -177,9 +191,12 @@ const List = () => {
   const [removeTeam] = useMutation(REMOVE_TEAM, {
     refetchQueries: ['listAllTeams'],
   });
-  const [addTeamMember] = useMutation(ADD_TEAM_MEMBER, {
-    refetchQueries: ['listAllTeams'],
-  });
+  const [addTeamMember, { loading: addingMember }] = useMutation(
+    ADD_TEAM_MEMBER,
+    {
+      refetchQueries: ['listAllTeams'],
+    }
+  );
   const [addMemberTeamId, setAddMemberTeamId] = useState<string | null>(null);
 
   const updateScrollY = () => {
@@ -256,7 +273,7 @@ const List = () => {
             name: values.name,
             color: values.color,
             description: values.description,
-            dutyId: values.dutyId ?? null,
+            dutyId: values.dutyId,
           },
         })
       )
@@ -295,7 +312,7 @@ const List = () => {
             name: values.name,
             color: values.color,
             description: values.description,
-            dutyId: values.dutyId ?? null,
+            dutyId: values.dutyId,
           },
         })
       )
@@ -317,17 +334,38 @@ const List = () => {
     setAddMemberTeamId(null);
   };
 
-  const handleSelectKarkunForTeam = (karkun: { _id?: string | null }) => {
+  const handleSelectKarkunForTeam = (karkun: {
+    _id?: string;
+    name?: string;
+  }) => {
     const teamId = addMemberTeamId;
     const karkunId = karkun._id;
     handleCloseAddMemberDrawer();
     if (!teamId || !karkunId) return;
 
-    addTeamMember({ variables: { teamId, karkunId } }).catch(
-      (error: Error) => {
+    setPendingMember({
+      teamId,
+      karkunId,
+      name: karkun.name || 'this person',
+    });
+  };
+
+  const handleSaveMemberDays = (daysOfWeek: string[]) => {
+    if (!pendingMember) return;
+    addTeamMember({
+      variables: {
+        teamId: pendingMember.teamId,
+        karkunId: pendingMember.karkunId,
+        daysOfWeek,
+      },
+    })
+      .then(() => {
+        message.success('Member added', 2);
+        setPendingMember(null);
+      })
+      .catch((error: Error) => {
         message.error(error.message, 5);
-      }
-    );
+      });
   };
 
   const handleDeleteClicked = (record: TeamRow) => {
@@ -508,6 +546,7 @@ const List = () => {
                 teamId={record._id}
                 members={getTeamMembers(record)}
                 coordinatorKarkunIds={record.coordinatorKarkunIds}
+                memberSchedules={record.memberSchedules}
               />
             ),
           }}
@@ -560,8 +599,21 @@ const List = () => {
         open={addMemberTeamId != null}
         destroyOnHidden
       >
-        <MSKarkunsList handleSelectItem={handleSelectKarkunForTeam} />
+        <KarkunsSelectionList setSelectedValue={handleSelectKarkunForTeam} />
       </Drawer>
+
+      <MemberDaysModal
+        open={pendingMember != null}
+        title={
+          pendingMember
+            ? `Add ${pendingMember.name}`
+            : 'Available days'
+        }
+        initialDays={TEAM_DAYS}
+        confirmLoading={addingMember}
+        onCancel={() => setPendingMember(null)}
+        onSubmit={handleSaveMemberDays}
+      />
     </>
   );
 };

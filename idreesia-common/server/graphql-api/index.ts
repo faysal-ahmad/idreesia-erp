@@ -104,6 +104,9 @@ import DutyLocationResolvers from './hr/duty-location/resolvers';
 import TeamSchema from './hr/team/team';
 import TeamResolvers from './hr/team/resolvers';
 
+import DutyRosterSchema from './hr/duty-roster/duty-roster';
+import DutyRosterResolvers from './hr/duty-roster/resolvers';
+
 import CommitteeSchema from './hr/committee/committee';
 import CommitteeResolvers from './hr/committee/resolvers';
 
@@ -197,6 +200,7 @@ const typeDefs = [
   DutySchema,
   DutyLocationSchema,
   TeamSchema,
+  DutyRosterSchema,
   CommitteeSchema,
   JobSchema,
   HRKarkunSchema,
@@ -250,6 +254,7 @@ const resolvers = merge(
   DutyResolvers,
   DutyLocationResolvers,
   TeamResolvers,
+  DutyRosterResolvers,
   CommitteeResolvers,
   JobResolvers,
   HRKarkunResolvers,

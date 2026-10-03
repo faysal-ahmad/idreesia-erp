@@ -52,6 +52,7 @@ import './48-create-people-vector-search-index';
 import './49-create-person-reference-indexes';
 import './50-team-coordinator-ids';
 import './51-duty-location-duty-id';
+import './52-duty-roster-indexes';
 
 Migrations.config({
   log: true,

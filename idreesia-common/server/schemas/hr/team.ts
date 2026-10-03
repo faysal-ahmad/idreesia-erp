@@ -28,9 +28,26 @@ export default new SimpleSchema({
   'coordinatorKarkunIds.$': {
     type: String,
   },
+  memberSchedules: {
+    type: Array,
+    optional: true,
+  },
+  'memberSchedules.$': {
+    type: Object,
+  },
+  'memberSchedules.$.karkunId': {
+    type: String,
+  },
+  'memberSchedules.$.daysOfWeek': {
+    type: Array,
+    minCount: 1,
+  },
+  'memberSchedules.$.daysOfWeek.$': {
+    type: String,
+    allowedValues: ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+  },
   dutyId: {
     type: String,
-    optional: true,
   },
 })
   .extend(identifiable)

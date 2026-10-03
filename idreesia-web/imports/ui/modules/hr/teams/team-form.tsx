@@ -13,7 +13,7 @@ export interface TeamFormValues {
   name: string;
   color?: string;
   description?: string;
-  dutyId?: string | null;
+  dutyId: string;
 }
 
 interface TeamFormProps {
@@ -52,7 +52,9 @@ const TeamForm = ({ form }: TeamFormProps) => {
         fieldLabel="Duty"
         fieldLayout={formItemLayout}
         placeholder="Select a duty"
-        required={false}
+        allowClear={false}
+        required
+        requiredMessage="Please select a duty for the team."
       />
       <ColorField
         fieldName="color"

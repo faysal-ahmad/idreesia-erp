@@ -7,3 +7,7 @@ export { default as Attendance } from './attendance';
 export { default as Salary } from './salary';
 export { default as Team } from './team';
 export { default as Committee } from './committee';
+export { default as DutyRoster } from './duty-roster';
+export { default as DutyRosterAssignment } from './duty-roster-assignment';
+export { default as DutyRosterDayOverride } from './duty-roster-day-override';
+export { default as DutyRosterDaySnapshot } from './duty-roster-day-snapshot';

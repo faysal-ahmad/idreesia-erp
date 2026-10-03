@@ -1,6 +1,11 @@
 import gql from 'graphql-tag';
 
 export default gql`
+type TeamMemberScheduleType {
+  karkunId: String
+  daysOfWeek: [String]
+}
+
 type TeamType {
   _id: String
   name: String
@@ -8,6 +13,7 @@ type TeamType {
   description: String
   karkunIds: [String]
   coordinatorKarkunIds: [String]
+  memberSchedules: [TeamMemberScheduleType]
   dutyId: String
   members: [PersonType]
   coordinators: [PersonType]
@@ -25,14 +31,16 @@ extend type Query {
 }
 
 extend type Mutation {
-  createTeam(name: String!, color: String, description: String, dutyId: String, karkunIds: [String!], coordinatorKarkunIds: [String!]): TeamType
+  createTeam(name: String!, color: String, description: String, dutyId: String!, karkunIds: [String!], coordinatorKarkunIds: [String!]): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  updateTeam(id: String!, name: String!, color: String, description: String, dutyId: String, karkunIds: [String!], coordinatorKarkunIds: [String!]): TeamType
+  updateTeam(id: String!, name: String!, color: String, description: String, dutyId: String!, karkunIds: [String!], coordinatorKarkunIds: [String!]): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeTeam(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
 
-  addTeamMember(teamId: String!, karkunId: String!): TeamType
+  addTeamMember(teamId: String!, karkunId: String!, daysOfWeek: [String!]!): TeamType
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+  updateTeamMemberDays(teamId: String!, karkunId: String!, daysOfWeek: [String!]!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeTeamMember(teamId: String!, karkunId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])

@@ -26,6 +26,7 @@ import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import type { HrKarkunsPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
+import AddKarkunButton from './add-karkun-button';
 import ListFilter, {
   KarkunsFilterChips,
   type PageParams,
@@ -71,6 +72,7 @@ interface Props {
   showActionsColumn?: boolean;
   predefinedFilterName?: string;
   predefinedFilterStoreId?: string;
+  mode?: 'karkuns' | 'candidates';
 }
 
 const List = ({
@@ -96,6 +98,7 @@ const List = ({
   showActionsColumn,
   predefinedFilterName,
   predefinedFilterStoreId,
+  mode = 'karkuns',
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(360);
@@ -111,11 +114,11 @@ const List = ({
         cnicNumber,
         phoneNumber,
         bloodGroup,
-        dutyId,
-        dutyShiftId,
-        isKarkun: true,
-        isEmployee: true,
-        isVisitor: true,
+        dutyId: mode === 'candidates' ? undefined : dutyId,
+        dutyShiftId: mode === 'candidates' ? undefined : dutyShiftId,
+        isKarkun: mode === 'candidates' ? false : true,
+        isEmployee: mode === 'candidates' ? undefined : true,
+        isVisitor: mode === 'candidates' ? undefined : true,
         predefinedFilterName,
         predefinedFilterStoreId,
         pageIndex: pageIndex.toString(),
@@ -418,6 +421,7 @@ const List = ({
       bloodGroup,
       dutyId,
       dutyShiftId,
+      showDutyFilter: mode !== 'candidates',
       setPageParams,
       refreshData: refetchListQuery,
     };
@@ -434,6 +438,7 @@ const List = ({
               New Karkun
             </Button>
           ) : null}
+          {showNewButton ? <AddKarkunButton /> : null}
         </Space>
         <div className="list-table-header-utilities">
           <Space size={8}>

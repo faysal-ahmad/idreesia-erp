@@ -38,6 +38,9 @@ extend type Mutation {
   ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
+  promoteHrKarkun(_id: String!): PersonType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+
   updateHrKarkun(
     _id: String!
     name: String!

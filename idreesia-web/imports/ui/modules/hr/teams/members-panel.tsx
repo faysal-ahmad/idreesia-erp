@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
 import { Popconfirm, Row, Table, Tooltip } from 'antd';
-import { CrownFilled, CrownOutlined, UserDeleteOutlined } from '@ant-design/icons';
+import {
+  CalendarOutlined,
+  CrownFilled,
+  CrownOutlined,
+  UserDeleteOutlined,
+} from '@ant-design/icons';
 import { message } from '/imports/ui/antd-feedback';
 
 import type {
@@ -13,7 +18,14 @@ import type {
   RemoveTeamCoordinatorMutationVariables,
   RemoveTeamMemberMutation,
   RemoveTeamMemberMutationVariables,
+  UpdateTeamMemberDaysMutation,
+  UpdateTeamMemberDaysMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
+
+import MemberDaysModal, {
+  TEAM_DAYS,
+  formatMemberDays,
+} from './member-days-modal';
 
 const REMOVE_TEAM_MEMBER: TypedDocumentNode<
   RemoveTeamMemberMutation,
@@ -48,6 +60,30 @@ const REMOVE_TEAM_COORDINATOR: TypedDocumentNode<
   }
 `;
 
+const UPDATE_TEAM_MEMBER_DAYS: TypedDocumentNode<
+  UpdateTeamMemberDaysMutation,
+  UpdateTeamMemberDaysMutationVariables
+> = gql`
+  mutation updateTeamMemberDays(
+    $teamId: String!
+    $karkunId: String!
+    $daysOfWeek: [String!]!
+  ) {
+    updateTeamMemberDays(
+      teamId: $teamId
+      karkunId: $karkunId
+      daysOfWeek: $daysOfWeek
+    ) {
+      _id
+    }
+  }
+`;
+
+export interface TeamMemberSchedule {
+  karkunId?: string | null;
+  daysOfWeek?: Array<string | null> | null;
+}
+
 export interface TeamMember {
   _id: string;
   name: string;
@@ -60,12 +96,23 @@ interface Props {
   teamId: string;
   members: TeamMember[];
   coordinatorKarkunIds?: (string | null)[] | null;
+  memberSchedules?: (TeamMemberSchedule | null)[] | null;
 }
 
-const TeamMembersPanel = ({ teamId, members, coordinatorKarkunIds }: Props) => {
+const TeamMembersPanel = ({
+  teamId,
+  members,
+  coordinatorKarkunIds,
+  memberSchedules,
+}: Props) => {
+  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [removeTeamMember] = useMutation(REMOVE_TEAM_MEMBER, {
     refetchQueries: ['listAllTeams'],
   });
+  const [updateTeamMemberDays, { loading: savingDays }] = useMutation(
+    UPDATE_TEAM_MEMBER_DAYS,
+    { refetchQueries: ['listAllTeams'] }
+  );
   const [addTeamCoordinator] = useMutation(ADD_TEAM_COORDINATOR, {
     refetchQueries: ['listAllTeams'],
   });
@@ -91,11 +138,42 @@ const TeamMembersPanel = ({ teamId, members, coordinatorKarkunIds }: Props) => {
     });
   };
 
+  const scheduleFor = (karkunId: string) =>
+    (memberSchedules ?? []).find(
+      schedule => schedule?.karkunId === karkunId
+    ) ?? null;
+
+  const handleSaveDays = (daysOfWeek: string[]) => {
+    if (!editingMember) return;
+    updateTeamMemberDays({
+      variables: { teamId, karkunId: editingMember._id, daysOfWeek },
+    })
+      .then(() => {
+        message.success('Available days updated', 2);
+        setEditingMember(null);
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
+  };
+
+  const editingSchedule = editingMember
+    ? scheduleFor(editingMember._id)
+    : null;
+
   const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+    },
+    {
+      title: 'Available days',
+      key: 'days',
+      render: (_text: unknown, record: TeamMember) => {
+        const schedule = scheduleFor(record._id);
+        return formatMemberDays(schedule?.daysOfWeek, schedule != null);
+      },
     },
     {
       title: 'CNIC Number',
@@ -120,13 +198,19 @@ const TeamMembersPanel = ({ teamId, members, coordinatorKarkunIds }: Props) => {
     },
     {
       key: 'action',
-      width: 80,
+      width: 110,
       render: (_text: unknown, record: TeamMember) => {
         const isCoordinator = (coordinatorKarkunIds ?? []).includes(
           record._id
         );
         return (
           <div className="list-actions-column">
+            <Tooltip title="Available days">
+              <CalendarOutlined
+                className="list-actions-icon"
+                onClick={() => setEditingMember(record)}
+              />
+            </Tooltip>
             <Tooltip
               title={
                 isCoordinator ? 'Remove as Coordinator' : 'Make Coordinator'
@@ -160,16 +244,36 @@ const TeamMembersPanel = ({ teamId, members, coordinatorKarkunIds }: Props) => {
     },
   ];
 
+  const editingDays = editingSchedule
+    ? TEAM_DAYS.filter(day =>
+        (editingSchedule.daysOfWeek ?? []).includes(day)
+      )
+    : [...TEAM_DAYS];
+
   return (
-    <Table
-      rowKey="_id"
-      dataSource={members}
-      columns={columns}
-      size="small"
-      bordered
-      pagination={false}
-      locale={{ emptyText: 'No members added yet' }}
-    />
+    <>
+      <Table
+        rowKey="_id"
+        dataSource={members}
+        columns={columns}
+        size="small"
+        bordered
+        pagination={false}
+        locale={{ emptyText: 'No members added yet' }}
+      />
+      <MemberDaysModal
+        open={editingMember != null}
+        title={
+          editingMember
+            ? `Available days for ${editingMember.name}`
+            : 'Available days'
+        }
+        initialDays={editingDays}
+        confirmLoading={savingDays}
+        onCancel={() => setEditingMember(null)}
+        onSubmit={handleSaveDays}
+      />
+    </>
   );
 };
 

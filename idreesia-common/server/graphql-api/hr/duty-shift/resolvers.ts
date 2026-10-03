@@ -4,6 +4,7 @@ import {
   KarkunDuties,
   Attendances,
 } from 'meteor/idreesia-common/server/collections/hr';
+import { shiftUsedByActiveRoster } from 'meteor/idreesia-common/server/business-logic/hr/duty-rosters';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -25,6 +26,8 @@ const resolvers: ResolverMap = {
         shiftId: { $eq: dutyShiftType._id },
       }).countAsync();
       if (attendanceCount > 0) return false;
+
+      if (await shiftUsedByActiveRoster(dutyShiftType._id)) return false;
 
       return true;
     },
@@ -90,7 +93,7 @@ const resolvers: ResolverMap = {
         shiftId: { $eq: _id },
       }).countAsync();
 
-      if (usedCount > 0) {
+      if (usedCount > 0 || (await shiftUsedByActiveRoster(_id))) {
         throw new Error(
           'This shift cannot be deleted as it is currently in use.'
         );

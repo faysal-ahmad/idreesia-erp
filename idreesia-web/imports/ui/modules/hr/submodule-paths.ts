@@ -42,6 +42,11 @@ export default class SubModulePaths {
   // ******************************************************************************
   // Attendance Sheets
   // ******************************************************************************
+  static dutyRostersPath = `${ModulePaths.hr}/duty-rosters`;
+  static dutyRostersEditFormPath(rosterId = ':rosterId') {
+    return `${SubModulePaths.dutyRostersPath}/${rosterId}`;
+  }
+
   static attendanceSheetsPath = `${ModulePaths.hr}/attendance-sheets`;
   static attendanceSheetsUploadFormPath = `${SubModulePaths.attendanceSheetsPath}/upload`;
   static attendanceSheetsMeetingCardsPath = `${SubModulePaths.attendanceSheetsPath}/meeting-cards`;

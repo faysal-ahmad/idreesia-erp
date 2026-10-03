@@ -1,5 +1,6 @@
 export { default as PAGED_HR_KARKUNS } from './paged-hr-karkuns';
 export { default as CREATE_HR_KARKUN } from './create-hr-karkun';
+export { default as PROMOTE_HR_KARKUN } from './promote-hr-karkun';
 export { default as UPDATE_HR_KARKUN } from './update-hr-karkun';
 export { default as DELETE_HR_KARKUN } from './delete-hr-karkun';
 export { default as HR_KARKUN_BY_ID } from './hr-karkun-by-id';

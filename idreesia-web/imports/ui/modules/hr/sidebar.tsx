@@ -71,11 +71,6 @@ const menuItems = [
         label: 'Karkuns',
       },
       {
-        key: 'attendance-sheets',
-        icon: <SolutionOutlined style={IconStyle} />,
-        label: 'Attendance Sheets',
-      },
-      {
         key: 'duty-planning',
         icon: <CalendarOutlined style={IconStyle} />,
         label: 'Duty Planning',
@@ -84,6 +79,11 @@ const menuItems = [
         key: 'duty-attendance',
         icon: <CheckCircleOutlined style={IconStyle} />,
         label: 'Duty Attendance',
+      },
+      {
+        key: 'attendance-sheets',
+        icon: <SolutionOutlined style={IconStyle} />,
+        label: 'Attendance Sheets',
       },
       {
         key: 'setup',
@@ -98,7 +98,7 @@ const menuItems = [
           {
             key: 'ms-duties',
             icon: <TagsOutlined style={IconStyle} />,
-            label: 'Duties',
+            label: 'Duties & Shifts',
           },
           {
             key: 'teams',

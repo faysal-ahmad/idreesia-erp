@@ -15,7 +15,6 @@ const UPDATE_DUTY_SHIFT: TypedDocumentNode<
     $dutyId: String!
     $startTime: String
     $endTime: String
-    $attendanceSheet: String
   ) {
     updateDutyShift(
       _id: $_id
@@ -23,14 +22,12 @@ const UPDATE_DUTY_SHIFT: TypedDocumentNode<
       dutyId: $dutyId
       startTime: $startTime
       endTime: $endTime
-      attendanceSheet: $attendanceSheet
     ) {
       _id
       name
       dutyId
       startTime
       endTime
-      attendanceSheet
       createdAt
       createdBy
       updatedAt

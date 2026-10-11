@@ -1,6 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import {
   Attendances,
+  Committees,
   DutyDayAttendances,
   KarkunDuties,
   Salaries,
@@ -146,6 +147,7 @@ export async function getPersonRelationCounts(
     attendanceCounts,
     salaryCounts,
     karkunDutyCounts,
+    committeeMembershipCounts,
     teamMembershipCounts,
     dutyDayAttendanceCounts,
     visitorStayCounts,
@@ -161,6 +163,7 @@ export async function getPersonRelationCounts(
     countBySingleField(Attendances, 'karkunId', personIds),
     countBySingleField(Salaries, 'karkunId', personIds),
     countBySingleField(KarkunDuties, 'karkunId', personIds),
+    countByArrayField(Committees, 'members', 'karkunId', personIds),
     countByArrayField(Teams, 'members', 'karkunId', personIds),
     countByArrayField(DutyDayAttendances, 'karkuns', 'karkunId', personIds),
     countBySingleField(VisitorStays, 'visitorId', personIds),
@@ -178,6 +181,7 @@ export async function getPersonRelationCounts(
     { name: 'Attendance Records', countsById: attendanceCounts },
     { name: 'Salary Records', countsById: salaryCounts },
     { name: 'Duty Assignments', countsById: karkunDutyCounts },
+    { name: 'Committee Memberships', countsById: committeeMembershipCounts },
     { name: 'Team Memberships', countsById: teamMembershipCounts },
     { name: 'Duty Day Attendances', countsById: dutyDayAttendanceCounts },
     { name: 'Stay History', countsById: visitorStayCounts },

@@ -18,8 +18,6 @@ import type {
   DeleteAllAttendancesMutationVariables,
   DeleteAttendancesMutation,
   DeleteAttendancesMutationVariables,
-  ImportAttendancesMutation,
-  ImportAttendancesMutationVariables,
   UpdateAttendanceMutation,
   UpdateAttendanceMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
@@ -108,19 +106,6 @@ const DELETE_ALL_ATTENDANCES: TypedDocumentNode<
   }
 `;
 
-const IMPORT_ATTENDANCES: TypedDocumentNode<
-  ImportAttendancesMutation,
-  ImportAttendancesMutationVariables
-> = gql`
-  mutation importAttendances(
-    $month: String!
-    $dutyId: String!
-    $shiftId: String
-  ) {
-    importAttendances(month: $month, dutyId: $dutyId, shiftId: $shiftId)
-  }
-`;
-
 interface ListContainerProps {
   history: History;
   location: Location;
@@ -149,7 +134,6 @@ const ListContainer = ({ history, location }: ListContainerProps) => {
   const [updateAttendance] = useMutation(UPDATE_ATTENDANCE, mutationOptions);
   const [deleteAttendances] = useMutation(DELETE_ATTENDANCES, mutationOptions);
   const [deleteAllAttendances] = useMutation(DELETE_ALL_ATTENDANCES, mutationOptions);
-  const [importAttendances] = useMutation(IMPORT_ATTENDANCES, mutationOptions);
 
   const pageParams = queryParams as AttendanceSheetsPageParams;
 
@@ -202,22 +186,6 @@ const ListContainer = ({ history, location }: ListContainerProps) => {
     }).catch((error: Error) => {
       message.error(error.message, 5);
     });
-  };
-
-  const handleImportFromGoogleSheet = () => {
-    const { selectedMonth, selectedCategoryId, selectedSubCategoryId } = pageParams;
-
-    if (selectedCategoryId) {
-      importAttendances({
-        variables: {
-          month: selectedMonth || dayjs().format('MM-YYYY'),
-          dutyId: selectedCategoryId,
-          shiftId: selectedSubCategoryId,
-        },
-      }).catch((error: Error) => {
-        message.error(error.message, 5);
-      });
-    }
   };
 
   const handleCreateMissingAttendances = () => {
@@ -369,7 +337,6 @@ const ListContainer = ({ history, location }: ListContainerProps) => {
         setPageParams={setPageParams}
         handleEditAttendance={handleEditAttendance}
         handleCreateMissingAttendances={handleCreateMissingAttendances}
-        handleImportFromGoogleSheet={handleImportFromGoogleSheet}
         handleViewMeetingCards={handleViewMeetingCards}
         handleViewKarkunCards={handleViewKarkunCards}
         handlePrintKarkunsList={handlePrintKarkunsList}

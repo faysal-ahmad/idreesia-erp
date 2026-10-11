@@ -1,6 +1,4 @@
 import { format, isBefore, startOfMonth } from 'date-fns';
-import request from 'request';
-import { google } from 'googleapis';
 
 import { toInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { People } from 'meteor/idreesia-common/server/collections/common';
@@ -17,7 +15,6 @@ import {
 } from 'meteor/idreesia-common/constants';
 import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-attendance';
 import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
-import { processAttendanceSheet } from './helpers';
 import { getPagedAttendanceByKarkun } from './queries';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
@@ -128,69 +125,6 @@ const resolvers: ResolverMap = {
       });
 
       return Attendances.findOneAsync(_id);
-    },
-
-    importAttendances: async (obj, { month, dutyId, shiftId }) => {
-      let attendanceSheetId;
-      if (!shiftId) {
-        // Check if we have an attendance sheet associated with the passed duty
-        const duty = await Duties.findOneAsync(dutyId);
-        if (!duty) throw new Error('Could not find the selected duty.');
-        attendanceSheetId = duty.attendanceSheet;
-      } else {
-        const dutyShift = await DutyShifts.findOneAsync(shiftId);
-        if (!dutyShift) throw new Error('Could not find the selected duty shift.');
-        attendanceSheetId = dutyShift.attendanceSheet;
-      }
-
-      if (!attendanceSheetId) {
-        throw new Error(
-          'Could not find an associated google sheet for attendance.'
-        );
-      }
-
-      const authFile = JSON.parse(Assets.getText('private/auth/google.json'));
-      const scopes = [
-        'https://www.googleapis.com/auth/drive',
-        'https://www.googleapis.com/auth/drive.file',
-        'https://www.googleapis.com/auth/drive.readonly',
-      ];
-
-      const jwt = new google.auth.JWT({
-        email: authFile.client_email,
-        key: authFile.private_key,
-        scopes,
-      });
-
-      return new Promise((resolve, reject) => {
-        jwt.authorize((err, authResponse) => {
-          if (err) reject(err);
-          if (!authResponse) {
-            reject(new Error('Google authorization failed.'));
-            return;
-          }
-          const accessToken = authResponse.access_token;
-          const options = {
-            uri: `https://www.googleapis.com/drive/v3/files/${attendanceSheetId}/export?mimeType=text/csv`,
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          };
-
-          (request.get as any)(options, (
-            error: Error | null,
-            _response: unknown,
-            body: string
-          ) => {
-            if (error) reject(error);
-            // If the request is successfule, we get the csv data in the body
-
-            processAttendanceSheet(body, month, dutyId, shiftId)
-              .then(result => resolve(result))
-              .catch(e => reject(e));
-          });
-        });
-      });
     },
 
     deleteAttendances: async (obj, { month, ids }, { user }) => {

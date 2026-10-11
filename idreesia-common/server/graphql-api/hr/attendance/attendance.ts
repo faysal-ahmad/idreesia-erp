@@ -63,13 +63,6 @@ extend type Mutation {
   ): AttendanceType
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_DELETE_DATA])
 
-  importAttendances(
-    month: String!
-    dutyId: String!
-    shiftId: String
-  ): Int
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
-
   deleteAttendances(month: String!, ids: [String]!): Int
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_DELETE_DATA])
   deleteAllAttendances(month: String!, categoryId: String, subCategoryId: String): Int

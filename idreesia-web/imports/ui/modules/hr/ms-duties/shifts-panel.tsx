@@ -13,7 +13,6 @@ export interface DutyShiftRow {
   name: string;
   startTime?: string | null;
   endTime?: string | null;
-  attendanceSheet?: string | null;
   canDelete?: boolean | null;
 }
 
@@ -56,11 +55,7 @@ const formatShiftDuration = (
 
 const DutyShiftsPanel = ({ shifts, onAdd, onEdit }: Props) => {
   const [removeDutyShift] = useMutation(REMOVE_DUTY_SHIFT, {
-    refetchQueries: [
-      'listAllMSDuties',
-      'composerAllMSDuties',
-      'dutyShiftsByDutyId',
-    ],
+    refetchQueries: ['listAllMSDuties', 'composerAllMSDuties'],
   });
 
   const handleRemove = (shiftId: string) => {

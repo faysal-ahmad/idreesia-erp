@@ -724,13 +724,6 @@ extend type Mutation {
   ): AttendanceType
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_DELETE_DATA])
 
-  importAttendances(
-    month: String!
-    dutyId: String!
-    shiftId: String
-  ): Int
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
-
   deleteAttendances(month: String!, ids: [String]!): Int
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_DELETE_DATA])
   deleteAllAttendances(month: String!, categoryId: String, subCategoryId: String): Int
@@ -742,15 +735,18 @@ extend type Query {
     @checkPermissions(permissions: [HR_VIEW_AUDIT_LOGS])
 }
 
+type CommitteeMemberType {
+  karkunId: String
+  isCoordinator: Boolean
+  karkun: PersonType
+}
+
 type CommitteeType {
   _id: String
   name: String
   color: String
   description: String
-  karkunIds: [String]
-  coordinatorKarkunIds: [String]
-  members: [PersonType]
-  coordinators: [PersonType]
+  members: [CommitteeMemberType]
 
   createdAt: String
   createdBy: String
@@ -764,9 +760,9 @@ extend type Query {
 }
 
 extend type Mutation {
-  createCommittee(name: String!, color: String, description: String, karkunIds: [String!], coordinatorKarkunIds: [String!]): CommitteeType
+  createCommittee(name: String!, color: String, description: String): CommitteeType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  updateCommittee(id: String!, name: String!, color: String, description: String, karkunIds: [String!], coordinatorKarkunIds: [String!]): CommitteeType
+  updateCommittee(id: String!, name: String!, color: String, description: String): CommitteeType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeCommittee(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
@@ -900,7 +896,6 @@ type DutyShiftType {
   name: String
   startTime: String
   endTime: String
-  attendanceSheet: String
 
   duty: DutyType
   canDelete: Boolean
@@ -913,7 +908,6 @@ type DutyShiftType {
 
 extend type Query {
   allDutyShifts: [DutyShiftType]
-  dutyShiftsByDutyId(dutyId: String!): [DutyShiftType]
   dutyShiftById(id: String!): DutyShiftType
 }
 
@@ -923,7 +917,6 @@ extend type Mutation {
     dutyId: String!
     startTime: String
     endTime: String
-    attendanceSheet: String
   ): DutyShiftType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   updateDutyShift(
@@ -932,7 +925,6 @@ extend type Mutation {
     dutyId: String!
     startTime: String
     endTime: String
-    attendanceSheet: String
   ): DutyShiftType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeDutyShift(_id: String!): Int
@@ -944,8 +936,9 @@ type DutyType {
   name: String
   isMehfilDuty: Boolean
   description: String
-  attendanceSheet: String
+  committeeId: String
 
+  committee: CommitteeType
   usedCount: Int
   shifts: [DutyShiftType]
   locations: [DutyLocationType]
@@ -960,13 +953,12 @@ type DutyType {
 extend type Query {
   allMSDuties: [DutyType]
   allMehfilDuties: [DutyType]
-  dutyById(id: String!): DutyType
 }
 
 extend type Mutation {
-  createDuty(name: String!, isMehfilDuty: Boolean!, description: String, attendanceSheet: String): DutyType
+  createDuty(name: String!, isMehfilDuty: Boolean!, description: String, committeeId: String): DutyType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  updateDuty(id: String!, name: String!, description: String, attendanceSheet: String): DutyType
+  updateDuty(id: String!, name: String!, description: String, committeeId: String): DutyType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeDuty(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])

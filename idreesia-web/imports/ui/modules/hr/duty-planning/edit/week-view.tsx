@@ -180,38 +180,36 @@ const WeekView = ({
                   <div key={slot.shiftId} className="duty-roster-calendar-shift">
                     <div className="duty-roster-calendar-shift-name">
                       <span>{slot.shiftName}</span>
-                      <Dropdown
-                        trigger={['click']}
-                        menu={{
-                          items: [
-                            { key: 'team', label: 'Set team (from tomorrow)' },
-                            {
-                              key: 'karkun',
-                              label: 'Add karkun for this day',
-                              disabled: locked,
+                      {locked ? null : (
+                        <Dropdown
+                          trigger={['click']}
+                          menu={{
+                            items: [
+                              { key: 'team', label: 'Set team (from tomorrow)' },
+                              { key: 'karkun', label: 'Add karkun for this day' },
+                            ],
+                            onClick: ({ key }) => {
+                              if (key === 'team') {
+                                onSetTeam({
+                                  shiftId: slot.shiftId as string,
+                                  shiftName: slot.shiftName ?? '',
+                                });
+                              }
+                              if (key === 'karkun') {
+                                onAddKarkun(slot.shiftId as string, day.date);
+                              }
                             },
-                          ],
-                          onClick: ({ key }) => {
-                            if (key === 'team') {
-                              onSetTeam({
-                                shiftId: slot.shiftId as string,
-                                shiftName: slot.shiftName ?? '',
-                              });
-                            }
-                            if (key === 'karkun' && !locked) {
-                              onAddKarkun(slot.shiftId as string, day.date);
-                            }
-                          },
-                        }}
-                      >
-                        <Button
-                          type="text"
-                          size="small"
-                          className="duty-roster-shift-actions"
-                          icon={<SettingOutlined />}
-                          aria-label="Shift actions"
-                        />
-                      </Dropdown>
+                          }}
+                        >
+                          <Button
+                            type="text"
+                            size="small"
+                            className="duty-roster-shift-actions"
+                            icon={<SettingOutlined />}
+                            aria-label="Shift actions"
+                          />
+                        </Dropdown>
+                      )}
                     </div>
                     {slot.teamName ? (
                       <div className="duty-roster-calendar-team">

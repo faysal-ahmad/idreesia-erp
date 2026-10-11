@@ -37,18 +37,13 @@ const resolvers: ResolverMap = {
     allDutyShifts: async () =>
       DutyShifts.find({}, { sort: { dutyId: 1 } }).fetchAsync(),
 
-    dutyShiftsByDutyId: async (obj, { dutyId }) =>
-      DutyShifts.find({
-        dutyId,
-      }).fetchAsync(),
-
     dutyShiftById: async (obj, { id }) => DutyShifts.findOneAsync(id),
   },
 
   Mutation: {
     createDutyShift: async (
       obj,
-      { name, dutyId, startTime, endTime, attendanceSheet },
+      { name, dutyId, startTime, endTime },
       { user }
     ) => {
       const date = new Date();
@@ -57,7 +52,6 @@ const resolvers: ResolverMap = {
         dutyId,
         startTime,
         endTime,
-        attendanceSheet,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -69,7 +63,7 @@ const resolvers: ResolverMap = {
 
     updateDutyShift: async (
       obj,
-      { _id, name, dutyId, startTime, endTime, attendanceSheet },
+      { _id, name, dutyId, startTime, endTime },
       { user }
     ) => {
       const date = new Date();
@@ -79,7 +73,6 @@ const resolvers: ResolverMap = {
           dutyId,
           startTime,
           endTime,
-          attendanceSheet,
           updatedAt: date,
           updatedBy: user._id,
         },

@@ -6,7 +6,6 @@ import {
   DeleteOutlined,
   DownloadOutlined,
   EditOutlined,
-  ImportOutlined,
   PlusCircleOutlined,
   SettingOutlined,
   PrinterOutlined,
@@ -78,7 +77,6 @@ export interface ListProps {
   handleItemSelected(karkun: { _id: string }): void;
   handleCreateMissingAttendances(): void;
   handleEditAttendance(attendance: AttendanceListRow): void;
-  handleImportFromGoogleSheet(): void;
   handleViewMeetingCards(rows: AttendanceListRow[], cardType: string): void;
   handleViewKarkunCards(rows: AttendanceListRow[]): void;
   handlePrintKarkunsList(rows: AttendanceListRow[]): void;
@@ -102,7 +100,6 @@ const List = ({
   handleItemSelected,
   handleCreateMissingAttendances,
   handleEditAttendance,
-  handleImportFromGoogleSheet,
   handleViewMeetingCards,
   handleViewKarkunCards,
   handlePrintKarkunsList,
@@ -300,16 +297,6 @@ const List = ({
         </>
       ),
       onClick: handleDownloadAsCSV,
-    },
-    {
-      key: '4',
-      label: (
-        <>
-          <ImportOutlined />
-          &nbsp; Import from Google Sheets
-        </>
-      ),
-      onClick: handleImportFromGoogleSheet,
     },
     { type: 'divider' as const },
     {

@@ -5,7 +5,7 @@
 // private/ files aren't auto-scanned the way an app's are, so each one must be explicitly
 // registered via api.addFiles(path, 'server', { isAsset: true }) in package.js, and the asset
 // path passed to Assets.* here must match that registered path exactly, "private/" prefix
-// included (same convention already used by the 'private/auth/google.json' asset in this package).
+// included.
 export const YUNET_MODEL_PATH = Assets.absoluteFilePath(
   'private/models/face_detection_yunet_2023mar.onnx'
 );

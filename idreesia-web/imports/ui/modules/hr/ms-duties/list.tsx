@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
@@ -30,8 +29,9 @@ import type {
   ListAllMsDutiesQueryVariables,
   RemoveDutyMutation,
   RemoveDutyMutationVariables,
+  UpdateDutyMutation,
+  UpdateDutyMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import {
   CREATE_DUTY_LOCATION,
@@ -39,7 +39,7 @@ import {
   UPDATE_DUTY_LOCATION,
   UPDATE_DUTY_SHIFT,
 } from './gql';
-import NewForm, { type NewDutyFormValues } from './new-form';
+import DutyForm, { type DutyFormValues } from './duty-form';
 import LocationForm, { type LocationFormValues } from './location-form';
 import DutyLocationsPanel, { type DutyLocationRow } from './locations-panel';
 import ShiftForm, { type ShiftFormValues } from './shift-form';
@@ -58,6 +58,11 @@ const LIST_ALL_MS_DUTIES: TypedDocumentNode<
       _id
       name
       description
+      committeeId
+      committee {
+        _id
+        name
+      }
       canDelete
       shifts {
         _id
@@ -65,7 +70,6 @@ const LIST_ALL_MS_DUTIES: TypedDocumentNode<
         name
         startTime
         endTime
-        attendanceSheet
         canDelete
       }
       locations {
@@ -86,19 +90,39 @@ const CREATE_DUTY: TypedDocumentNode<
     $name: String!
     $isMehfilDuty: Boolean!
     $description: String
-    $attendanceSheet: String
+    $committeeId: String
   ) {
     createDuty(
       name: $name
       isMehfilDuty: $isMehfilDuty
       description: $description
-      attendanceSheet: $attendanceSheet
+      committeeId: $committeeId
     ) {
       _id
       name
       isMehfilDuty
       description
-      attendanceSheet
+    }
+  }
+`;
+
+const UPDATE_DUTY: TypedDocumentNode<
+  UpdateDutyMutation,
+  UpdateDutyMutationVariables
+> = gql`
+  mutation updateDuty(
+    $id: String!
+    $name: String!
+    $description: String
+    $committeeId: String
+  ) {
+    updateDuty(
+      id: $id
+      name: $name
+      description: $description
+      committeeId: $committeeId
+    ) {
+      _id
     }
   }
 `;
@@ -131,7 +155,9 @@ const List = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [showNewFormModal, setShowNewFormModal] = useState(false);
-  const [newForm] = Form.useForm<NewDutyFormValues>();
+  const [newForm] = Form.useForm<DutyFormValues>();
+  const [editingDutyId, setEditingDutyId] = useState<string | null>(null);
+  const [editForm] = Form.useForm<DutyFormValues>();
   const [shiftDutyId, setShiftDutyId] = useState<string | null>(null);
   const [editingShift, setEditingShift] = useState<DutyShiftRow | null>(null);
   const [shiftForm] = Form.useForm<ShiftFormValues>();
@@ -151,27 +177,22 @@ const List = () => {
   const [createDuty, { loading: creating }] = useMutation(CREATE_DUTY, {
     refetchQueries: ['listAllMSDuties', 'composerAllMSDuties'],
   });
+  const [updateDuty, { loading: updating }] = useMutation(UPDATE_DUTY, {
+    refetchQueries: ['listAllMSDuties', 'composerAllMSDuties'],
+  });
   const [removeDuty] = useMutation(REMOVE_DUTY, {
     refetchQueries: ['listAllMSDuties', 'composerAllMSDuties'],
   });
   const [createDutyShift, { loading: creatingShift }] = useMutation(
     CREATE_DUTY_SHIFT,
     {
-      refetchQueries: [
-        'listAllMSDuties',
-        'composerAllMSDuties',
-        'dutyShiftsByDutyId',
-      ],
+      refetchQueries: ['listAllMSDuties', 'composerAllMSDuties'],
     }
   );
   const [updateDutyShift, { loading: updatingShift }] = useMutation(
     UPDATE_DUTY_SHIFT,
     {
-      refetchQueries: [
-        'listAllMSDuties',
-        'composerAllMSDuties',
-        'dutyShiftsByDutyId',
-      ],
+      refetchQueries: ['listAllMSDuties', 'composerAllMSDuties'],
     }
   );
   const locationRefetchQueries = [
@@ -263,13 +284,51 @@ const List = () => {
             name: values.name,
             isMehfilDuty: false,
             description: values.description,
-            attendanceSheet: values.attendanceSheet,
+            committeeId: values.committeeId || null,
           },
         })
       )
       .then(() => {
         message.success('Duty created', 2);
         handleCloseNewForm();
+      })
+      .catch((error: Error) => {
+        if (error?.message) {
+          message.error(error.message, 5);
+        }
+      });
+
+  const handleEditClicked = (record: DutyRow) => {
+    editForm.setFieldsValue({
+      name: record.name,
+      description: record.description ?? undefined,
+      committeeId: record.committeeId ?? undefined,
+    });
+    setEditingDutyId(record._id);
+  };
+
+  const handleCloseEditForm = () => {
+    setEditingDutyId(null);
+    editForm.resetFields();
+  };
+
+  const handleUpdateDuty = () =>
+    editForm
+      .validateFields()
+      .then(values =>
+        updateDuty({
+          variables: {
+            id: editingDutyId as string,
+            name: values.name,
+            description: values.description,
+            // null clears the committee.
+            committeeId: values.committeeId || null,
+          },
+        })
+      )
+      .then(() => {
+        message.success('Duty updated', 2);
+        handleCloseEditForm();
       })
       .catch((error: Error) => {
         if (error?.message) {
@@ -325,7 +384,6 @@ const List = () => {
           dutyId,
           startTime: toTimeVariable(values.startTime),
           endTime: toTimeVariable(values.endTime),
-          attendanceSheet: editingShift?.attendanceSheet ?? null,
         };
 
         if (editingShift) {
@@ -446,7 +504,6 @@ const List = () => {
         name: shift.name as string,
         startTime: shift.startTime,
         endTime: shift.endTime,
-        attendanceSheet: shift.attendanceSheet,
         canDelete: shift.canDelete,
       }));
 
@@ -477,10 +534,19 @@ const List = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: DutyRow) => (
-        <Link to={paths.msDutiesEditFormPath(record._id)}>
+        <Button
+          type="link"
+          style={{ padding: 0, height: 'auto' }}
+          onClick={() => handleEditClicked(record)}
+        >
           {text}
-        </Link>
+        </Button>
       ),
+    },
+    {
+      title: 'Committee',
+      key: 'committee',
+      render: (_text: unknown, record: DutyRow) => record.committee?.name ?? '',
     },
     {
       title: 'Shifts',
@@ -608,7 +674,20 @@ const List = () => {
         onCancel={handleCloseNewForm}
         destroyOnHidden
       >
-        <NewForm form={newForm} />
+        <DutyForm form={newForm} />
+      </Modal>
+
+      <Modal
+        title="Edit Duty"
+        open={editingDutyId != null}
+        width={560}
+        okText="Save"
+        confirmLoading={updating}
+        onOk={handleUpdateDuty}
+        onCancel={handleCloseEditForm}
+        destroyOnHidden
+      >
+        <DutyForm form={editForm} />
       </Modal>
 
       <Modal

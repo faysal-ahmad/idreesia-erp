@@ -10,9 +10,6 @@ export default class SubModulePaths {
   }
 
   static msDutiesPath = `${ModulePaths.hr}/ms-duties`;
-  static msDutiesEditFormPath(dutyId = ':dutyId') {
-    return `${SubModulePaths.msDutiesPath}/${dutyId}`;
-  }
 
   static teamsPath = `${ModulePaths.hr}/teams`;
 

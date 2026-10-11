@@ -1,5 +1,6 @@
 import {
   Attendances,
+  Committees,
   DutyDayAttendances,
   KarkunDuties,
   Teams,
@@ -26,6 +27,11 @@ export async function removeOwnedPersonRelations(personId: string): Promise<void
   await Promise.all([
     Attendances.removeAsync({ karkunId: personId }),
     KarkunDuties.removeAsync({ karkunId: personId }),
+    Committees.updateAsync(
+      { 'members.karkunId': personId },
+      { $pull: { members: { karkunId: personId } } },
+      { multi: true }
+    ),
     Teams.updateAsync(
       { 'members.karkunId': personId },
       { $pull: { members: { karkunId: personId } } },

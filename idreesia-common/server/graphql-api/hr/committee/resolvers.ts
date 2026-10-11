@@ -1,4 +1,4 @@
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees, Duties } from 'meteor/idreesia-common/server/collections/hr';
 import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
@@ -6,64 +6,43 @@ interface ResolverMap {
   [key: string]: ResolverField;
 }
 
-const ensureCoordinatorsAreMembers = (
-  karkunIds: string[],
-  coordinatorKarkunIds: string[]
+// Updates one member of a committee, failing if the karkun is not a member.
+const updateMember = async (
+  committeeId: string,
+  karkunId: string,
+  modifier: Record<string, unknown>
 ) => {
-  const nonMemberCoordinatorId = coordinatorKarkunIds.find(
-    coordinatorKarkunId => !karkunIds.includes(coordinatorKarkunId)
+  const updated = await Committees.updateAsync(
+    { _id: committeeId, 'members.karkunId': karkunId },
+    modifier
   );
-  if (nonMemberCoordinatorId) {
-    throw new Error('Coordinators must be members of the committee.');
+  if (updated === 0) {
+    throw new Error('This person is not a member of the committee.');
   }
 };
 
 const resolvers: ResolverMap = {
-  CommitteeType: {
-    members: async (committee, args, { loaders }) => {
-      const people = await loaders.common.people.loadMany(
-        committee.karkunIds || []
-      );
-      return people.filter(
-        (person: unknown) => person && !(person instanceof Error)
-      );
-    },
-    coordinators: async (committee, args, { loaders }) => {
-      const people = await loaders.common.people.loadMany(
-        committee.coordinatorKarkunIds || []
-      );
-      return people.filter(
-        (person: unknown) => person && !(person instanceof Error)
-      );
+  CommitteeMemberType: {
+    karkun: async (member, args, { loaders }) => {
+      if (!member.karkunId) return null;
+      return loaders.common.people.load(member.karkunId);
     },
   },
 
   Query: {
-    allCommittees: async () => Committees.find({}).fetchAsync(),
+    allCommittees: async () =>
+      Committees.find({}, { sort: { name: 1 } }).fetchAsync(),
     committeeById: async (obj, { id }) => Committees.findOneAsync(id),
   },
 
   Mutation: {
-    createCommittee: async (
-      obj,
-      { name, color, description, karkunIds, coordinatorKarkunIds },
-      { user }
-    ) => {
-      const memberKarkunIds = karkunIds ?? [];
-      const memberCoordinatorKarkunIds = coordinatorKarkunIds ?? [];
-      ensureCoordinatorsAreMembers(memberKarkunIds, memberCoordinatorKarkunIds);
-      await ensureKarkuns([
-        ...memberKarkunIds,
-        ...memberCoordinatorKarkunIds,
-      ]);
-
+    createCommittee: async (obj, { name, color, description }, { user }) => {
       const date = new Date();
       const committeeId = await Committees.insertAsync({
         name,
         color,
         description,
-        karkunIds: memberKarkunIds,
-        coordinatorKarkunIds: memberCoordinatorKarkunIds,
+        members: [],
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -75,78 +54,66 @@ const resolvers: ResolverMap = {
 
     updateCommittee: async (
       obj,
-      { id, name, color, description, karkunIds, coordinatorKarkunIds },
+      { id, name, color, description },
       { user }
     ) => {
-      const setFields: Record<string, unknown> = {
-        name,
-        color,
-        description,
-        updatedAt: new Date(),
-        updatedBy: user._id,
-      };
-
-      // karkunIds/coordinatorKarkunIds are managed separately (from the
-      // list page); only touch them here when this call actually sends
-      // them, so a plain details save doesn't wipe out existing members.
-      if (karkunIds !== undefined || coordinatorKarkunIds !== undefined) {
-        const existingCommittee = await Committees.findOneAsync(id);
-        const effectiveKarkunIds =
-          karkunIds ?? existingCommittee?.karkunIds ?? [];
-        const effectiveCoordinatorKarkunIds =
-          coordinatorKarkunIds ?? existingCommittee?.coordinatorKarkunIds ?? [];
-        ensureCoordinatorsAreMembers(
-          effectiveKarkunIds,
-          effectiveCoordinatorKarkunIds
-        );
-        await ensureKarkuns([
-          ...(karkunIds ?? []),
-          ...(coordinatorKarkunIds ?? []),
-        ]);
-
-        if (karkunIds !== undefined) setFields.karkunIds = karkunIds;
-        if (coordinatorKarkunIds !== undefined) {
-          setFields.coordinatorKarkunIds = coordinatorKarkunIds;
-        }
-      }
-
-      await Committees.updateAsync(id, { $set: setFields });
+      await Committees.updateAsync(id, {
+        $set: {
+          name,
+          color,
+          description,
+          updatedAt: new Date(),
+          updatedBy: user._id,
+        },
+      });
 
       return Committees.findOneAsync(id);
     },
 
-    removeCommittee: async (obj, { _id }) => Committees.removeAsync(_id),
+    removeCommittee: async (obj, { _id }) => {
+      const dutyCount = await Duties.find({ committeeId: _id }).countAsync();
+      if (dutyCount > 0) {
+        throw new Error(
+          'This committee is responsible for one or more duties and cannot be deleted.'
+        );
+      }
+      return Committees.removeAsync(_id);
+    },
 
     addCommitteeMember: async (obj, { committeeId, karkunId }) => {
+      const committee = await Committees.findOneAsync(committeeId);
+      if (!committee) throw new Error('Committee not found.');
       await ensureKarkuns([karkunId]);
-      await Committees.updateAsync(committeeId, {
-        $addToSet: { karkunIds: karkunId },
-      });
+      const added = await Committees.updateAsync(
+        { _id: committeeId, 'members.karkunId': { $ne: karkunId } },
+        { $push: { members: { karkunId } } }
+      );
+      if (added === 0) {
+        throw new Error('This person is already a member of the committee.');
+      }
 
       return Committees.findOneAsync(committeeId);
     },
 
     removeCommitteeMember: async (obj, { committeeId, karkunId }) => {
-      // A karkun can't remain a coordinator once they're no longer a member.
       await Committees.updateAsync(committeeId, {
-        $pull: { karkunIds: karkunId, coordinatorKarkunIds: karkunId },
+        $pull: { members: { karkunId } },
       });
 
       return Committees.findOneAsync(committeeId);
     },
 
     addCommitteeCoordinator: async (obj, { committeeId, karkunId }) => {
-      await ensureKarkuns([karkunId]);
-      await Committees.updateAsync(committeeId, {
-        $addToSet: { coordinatorKarkunIds: karkunId },
+      await updateMember(committeeId, karkunId, {
+        $set: { 'members.$.isCoordinator': true },
       });
 
       return Committees.findOneAsync(committeeId);
     },
 
     removeCommitteeCoordinator: async (obj, { committeeId, karkunId }) => {
-      await Committees.updateAsync(committeeId, {
-        $pull: { coordinatorKarkunIds: karkunId },
+      await updateMember(committeeId, karkunId, {
+        $unset: { 'members.$.isCoordinator': '' },
       });
 
       return Committees.findOneAsync(committeeId);

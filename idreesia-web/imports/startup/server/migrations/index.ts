@@ -53,6 +53,7 @@ import './49-create-person-reference-indexes';
 import './50-team-members';
 import './51-duty-location-duty-id';
 import './52-duty-plan-indexes';
+import './53-committee-members';
 
 Migrations.config({
   log: true,

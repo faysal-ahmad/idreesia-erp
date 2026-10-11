@@ -1,15 +1,18 @@
 import gql from 'graphql-tag';
 
 export default gql`
+type CommitteeMemberType {
+  karkunId: String
+  isCoordinator: Boolean
+  karkun: PersonType
+}
+
 type CommitteeType {
   _id: String
   name: String
   color: String
   description: String
-  karkunIds: [String]
-  coordinatorKarkunIds: [String]
-  members: [PersonType]
-  coordinators: [PersonType]
+  members: [CommitteeMemberType]
 
   createdAt: String
   createdBy: String
@@ -23,9 +26,9 @@ extend type Query {
 }
 
 extend type Mutation {
-  createCommittee(name: String!, color: String, description: String, karkunIds: [String!], coordinatorKarkunIds: [String!]): CommitteeType
+  createCommittee(name: String!, color: String, description: String): CommitteeType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  updateCommittee(id: String!, name: String!, color: String, description: String, karkunIds: [String!], coordinatorKarkunIds: [String!]): CommitteeType
+  updateCommittee(id: String!, name: String!, color: String, description: String): CommitteeType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeCommittee(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])

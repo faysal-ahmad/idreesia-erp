@@ -12,6 +12,8 @@ All collections are MongoDB, so foreign keys are enforced in application code on
 
 ```mermaid
 erDiagram
+    COMMITTEE |o--o{ DUTY : "responsible for"
+    COMMITTEE }o--o{ PERSON : "members[].karkunId"
     DUTY ||--o{ DUTY_SHIFT : "has"
     DUTY ||--o{ DUTY_LOCATION : "has"
     DUTY ||--o{ TEAM : "has"
@@ -30,10 +32,17 @@ erDiagram
     DUTY_SHIFT ||--o{ DUTY_DAY_ATTENDANCE : "for"
     DUTY_DAY_ATTENDANCE }o--o{ PERSON : "karkuns[] with attendance"
 
+    COMMITTEE {
+        string _id PK
+        string name
+        string color
+        object_array members "karkunId FK, isCoordinator"
+    }
     DUTY {
         string _id PK
         string name
         bool isMehfilDuty "planning requires false"
+        string committeeId FK "optional"
     }
     DUTY_SHIFT {
         string _id PK
@@ -93,7 +102,8 @@ The planning collections store `dutyId` as well as `locationId`. That's redundan
 
 | Entity | Collection | Purpose |
 | --- | --- | --- |
-| Duty | `hr-duties` | A duty. Planning only applies to non-mehfil duties. |
+| Committee | `hr-committees` | A group of karkuns, some of them coordinators. A committee can be responsible for several duties. |
+| Duty | `hr-duties` | A duty, optionally linked to the committee responsible for it. Planning only applies to non-mehfil duties. |
 | DutyShift | `hr-duty-shifts` | Shifts belonging to a duty. |
 | DutyLocation | `hr-duty-locations` | Locations belonging to a duty. |
 | Team | `hr-teams` | A group of karkuns for one duty. Each member can be a coordinator and can be limited to certain weekdays. |
@@ -101,7 +111,9 @@ The planning collections store `dutyId` as well as `locationId`. That's redundan
 | DutyDayOverride | `hr-duty-day-overrides` | Changes for one future day: karkuns added, or team members marked absent. |
 | DutyDayAttendance | `hr-duty-day-attendances` | Who was on duty for a shift at a location on one day, with each karkun's attendance. |
 
-### Team members
+### Team and committee members
+
+Committees use the same shape as teams, without `daysOfWeek`: `members: Array<{ karkunId, isCoordinator? }>`.
 
 ```ts
 members: Array<{
@@ -154,8 +166,9 @@ Dates are `YYYY-MM-DD` strings compared in Karachi time (`todayInKarachi`).
 - **Delete guards**
   - A shift or location can't be deleted while it has a team assignment or an override dated after today.
   - A team can't be deleted, or moved to another duty, while it's assigned.
+  - A committee can't be deleted while a duty names it as responsible.
   - Day attendance records are history and don't block deletes.
-- **Person delete** removes the person from team members and from day attendance records, and counts both in the person's relation counts.
+- **Person delete** removes the person from committee members, team members and day attendance records, and counts all three in the person's relation counts.
 
 ## 4. Open points
 

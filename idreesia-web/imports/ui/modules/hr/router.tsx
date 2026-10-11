@@ -3,7 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
 import { JobsEditForm, JobsList } from './jobs';
-import { MSDutiesEditForm, MSDutiesList } from './ms-duties';
+import { MSDutiesList } from './ms-duties';
 import { TeamsList } from './teams';
 import { CommitteesList } from './committees';
 import {
@@ -39,7 +39,6 @@ const Router = () => (
     <Route path={paths.jobsEditFormPath()} component={JobsEditForm} />
     <Route path={paths.jobsPath} component={JobsList} />
 
-    <Route path={paths.msDutiesEditFormPath()} component={MSDutiesEditForm} />
     <Route path={paths.msDutiesPath} component={MSDutiesList} />
 
     <Route path={paths.teamsPath} component={TeamsList} />

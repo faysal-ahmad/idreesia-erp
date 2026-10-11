@@ -9,8 +9,6 @@ import { useAllPhysicalStores } from 'meteor/idreesia-common/hooks/admin';
 import type { AdminAllPhysicalStoresQuery } from 'meteor/idreesia-common/types/client-operations';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
-const RouterLink = Link as any;
-
 type PhysicalStoreRow = NonNullable<
   NonNullable<AdminAllPhysicalStoresQuery['allPhysicalStores']>[number]
 > & { _id: string };
@@ -33,7 +31,7 @@ const List = ({ history }: Props) => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: PhysicalStoreRow) => (
-        <RouterLink to={`${paths.physicalStoresPath}/${record._id}`}>{text}</RouterLink>
+        <Link to={`${paths.physicalStoresPath}/${record._id}`}>{text}</Link>
       ),
     },
     {

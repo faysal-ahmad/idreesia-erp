@@ -1,4 +1,4 @@
-export const ROSTER_TIME_ZONE = 'Asia/Karachi';
+export const PLANNING_TIME_ZONE = 'Asia/Karachi';
 
 export const DAYS_OF_WEEK = [
   'Sat',
@@ -34,7 +34,7 @@ export function isDayOfWeek(value: unknown): value is DayOfWeek {
 
 export function formatKarachiDate(date: Date): string {
   return new Intl.DateTimeFormat('en-CA', {
-    timeZone: ROSTER_TIME_ZONE,
+    timeZone: PLANNING_TIME_ZONE,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -53,7 +53,7 @@ export function addCalendarDays(date: string, days: number): string {
 export function dayOfWeek(date: string): DayOfWeek {
   const [year, month, day] = date.split('-').map(Number);
   const formatted = new Intl.DateTimeFormat('en-US', {
-    timeZone: ROSTER_TIME_ZONE,
+    timeZone: PLANNING_TIME_ZONE,
     weekday: 'short',
   }).format(new Date(Date.UTC(year, month - 1, day, 12)));
   return formatted as DayOfWeek;

@@ -12,6 +12,7 @@ import {
   DollarOutlined,
   LaptopOutlined,
   CalendarOutlined,
+  CheckCircleOutlined,
   SolutionOutlined,
   TagOutlined,
   TagsOutlined,
@@ -75,20 +76,20 @@ const menuItems = [
         label: 'Attendance Sheets',
       },
       {
-        key: 'duty-rosters',
+        key: 'duty-planning',
         icon: <CalendarOutlined style={IconStyle} />,
-        label: 'Duty Rosters',
+        label: 'Duty Planning',
+      },
+      {
+        key: 'duty-attendance',
+        icon: <CheckCircleOutlined style={IconStyle} />,
+        label: 'Duty Attendance',
       },
       {
         key: 'setup',
         icon: <LaptopOutlined style={IconStyle} />,
         label: 'Setup',
         children: [
-          {
-            key: 'teams',
-            icon: <UsergroupAddOutlined style={IconStyle} />,
-            label: 'Teams',
-          },
           {
             key: 'committees',
             icon: <ApartmentOutlined style={IconStyle} />,
@@ -98,6 +99,11 @@ const menuItems = [
             key: 'ms-duties',
             icon: <TagsOutlined style={IconStyle} />,
             label: 'Duties',
+          },
+          {
+            key: 'teams',
+            icon: <UsergroupAddOutlined style={IconStyle} />,
+            label: 'Teams',
           },
         ],
       },
@@ -161,10 +167,16 @@ const menuRouteMatches: MenuRouteMatch[] = [
     matches: pathname => isPath(pathname, paths.attendanceSheetsPath),
   },
   {
-    key: 'duty-rosters',
+    key: 'duty-planning',
     openKeys: ['karkuns-management'],
-    subModuleName: SubModuleNames.dutyRosters,
-    matches: pathname => isPath(pathname, paths.dutyRostersPath),
+    subModuleName: SubModuleNames.dutyPlanning,
+    matches: pathname => isPath(pathname, paths.dutyPlanningPath),
+  },
+  {
+    key: 'duty-attendance',
+    openKeys: ['karkuns-management'],
+    subModuleName: SubModuleNames.dutyAttendance,
+    matches: pathname => isPath(pathname, paths.dutyAttendancePath),
   },
   {
     key: 'jobs',
@@ -255,8 +267,12 @@ const Sidebar = ({ history }: SidebarProps) => {
         history.push(paths.attendanceSheetsPath);
         break;
 
-      case 'duty-rosters':
-        history.push(paths.dutyRostersPath);
+      case 'duty-planning':
+        history.push(paths.dutyPlanningPath);
+        break;
+
+      case 'duty-attendance':
+        history.push(paths.dutyAttendancePath);
         break;
 
       case 'salary-sheets':

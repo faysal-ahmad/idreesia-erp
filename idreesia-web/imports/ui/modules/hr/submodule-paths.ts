@@ -40,13 +40,14 @@ export default class SubModulePaths {
     `${SubModulePaths.karkunsPath}/${karkunId}`;
 
   // ******************************************************************************
+  // Duty Planning
+  // ******************************************************************************
+  static dutyPlanningPath = `${ModulePaths.hr}/duty-planning`;
+  static dutyAttendancePath = `${ModulePaths.hr}/duty-attendance`;
+
+  // ******************************************************************************
   // Attendance Sheets
   // ******************************************************************************
-  static dutyRostersPath = `${ModulePaths.hr}/duty-rosters`;
-  static dutyRostersEditFormPath(rosterId = ':rosterId') {
-    return `${SubModulePaths.dutyRostersPath}/${rosterId}`;
-  }
-
   static attendanceSheetsPath = `${ModulePaths.hr}/attendance-sheets`;
   static attendanceSheetsUploadFormPath = `${SubModulePaths.attendanceSheetsPath}/upload`;
   static attendanceSheetsMeetingCardsPath = `${SubModulePaths.attendanceSheetsPath}/meeting-cards`;

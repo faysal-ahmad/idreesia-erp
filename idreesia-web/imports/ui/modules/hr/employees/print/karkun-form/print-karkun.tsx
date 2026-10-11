@@ -5,8 +5,6 @@ import ReactToPrint from 'react-to-print';
 import { Button, Checkbox, Divider, Spin } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
 
-const ReactToPrintControl = ReactToPrint as any;
-
 import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 
 import { HR_KARKUN_BY_ID } from '../../gql';
@@ -52,8 +50,8 @@ const PrintView = ({ history, match }: Props) => {
     <>
       <div style={ControlsContainer}>
         <div>
-          <ReactToPrintControl
-            content={() => printViewRef.current}
+          <ReactToPrint
+            content={() => printViewRef.current!}
             trigger={() => (
               <Button size="large" type="primary" icon={<PrinterOutlined />}>
                 Print

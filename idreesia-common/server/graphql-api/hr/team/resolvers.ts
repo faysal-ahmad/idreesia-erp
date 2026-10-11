@@ -2,23 +2,12 @@ import { Duties, Teams } from 'meteor/idreesia-common/server/collections/hr';
 import {
   DAYS_OF_WEEK,
   isDayOfWeek,
-} from 'meteor/idreesia-common/server/business-logic/hr/duty-roster-dates';
+} from 'meteor/idreesia-common/server/business-logic/hr/duty-planning-dates';
 import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
 import {
-  ensurePastSnapshotsForTeam,
-  teamIsAssignedOnRoster,
-} from 'meteor/idreesia-common/server/business-logic/hr/duty-rosters';
-
-interface MemberSchedule {
-  karkunId: string;
-  daysOfWeek: string[];
-}
-
-interface TeamRecord {
-  karkunIds?: string[];
-  coordinatorKarkunIds?: string[];
-  memberSchedules?: MemberSchedule[];
-}
+  ensureDutyDayAttendancesForTeam,
+  teamIsAssigned,
+} from 'meteor/idreesia-common/server/business-logic/hr/duty-planning';
 
 const normalizeDaysOfWeek = (
   daysOfWeek: Array<string | null> | null | undefined
@@ -41,18 +30,6 @@ interface ResolverMap {
   [key: string]: ResolverField;
 }
 
-const ensureCoordinatorsAreMembers = (
-  karkunIds: string[],
-  coordinatorKarkunIds: string[]
-) => {
-  const nonMemberCoordinatorId = coordinatorKarkunIds.find(
-    coordinatorKarkunId => !karkunIds.includes(coordinatorKarkunId)
-  );
-  if (nonMemberCoordinatorId) {
-    throw new Error('Coordinators must be members of the team.');
-  }
-};
-
 const ensureDuty = async (dutyId: string | null | undefined) => {
   if (!dutyId) {
     throw new Error('Please select a duty for the team.');
@@ -69,36 +46,41 @@ const ensureDutyChangeIsAllowed = async (
 ) => {
   const existingTeam = await Teams.findOneAsync(teamId);
   if (!existingTeam) throw new Error('Team not found.');
-  if (existingTeam.dutyId === nextDutyId) return existingTeam;
-  if (await teamIsAssignedOnRoster(teamId)) {
+  if (existingTeam.dutyId === nextDutyId) return;
+  if (await teamIsAssigned(teamId)) {
     throw new Error(
-      'This team is assigned on a duty roster, so its duty cannot be changed.'
+      'This team is assigned in duty planning, so its duty cannot be changed.'
     );
   }
-  return existingTeam;
+};
+
+// Updates one member of a team, failing if the karkun is not a member.
+const updateMember = async (
+  teamId: string,
+  karkunId: string,
+  modifier: Record<string, unknown>
+) => {
+  const updated = await Teams.updateAsync(
+    { _id: teamId, 'members.karkunId': karkunId },
+    modifier
+  );
+  if (updated === 0) {
+    throw new Error('This person is not a member of the team.');
+  }
 };
 
 const resolvers: ResolverMap = {
   TeamType: {
-    members: async (team, args, { loaders }) => {
-      const people = await loaders.common.people.loadMany(
-        team.karkunIds || []
-      );
-      return people.filter(
-        (person: unknown) => person && !(person instanceof Error)
-      );
-    },
-    coordinators: async (team, args, { loaders }) => {
-      const people = await loaders.common.people.loadMany(
-        team.coordinatorKarkunIds || []
-      );
-      return people.filter(
-        (person: unknown) => person && !(person instanceof Error)
-      );
-    },
     duty: async team => {
       if (!team.dutyId) return null;
       return Duties.findOneAsync(team.dutyId);
+    },
+  },
+
+  TeamMemberType: {
+    karkun: async (member, args, { loaders }) => {
+      if (!member.karkunId) return null;
+      return loaders.common.people.load(member.karkunId);
     },
   },
 
@@ -108,18 +90,7 @@ const resolvers: ResolverMap = {
   },
 
   Mutation: {
-    createTeam: async (
-      obj,
-      { name, color, description, dutyId, karkunIds, coordinatorKarkunIds },
-      { user }
-    ) => {
-      const memberKarkunIds = karkunIds ?? [];
-      const memberCoordinatorKarkunIds = coordinatorKarkunIds ?? [];
-      ensureCoordinatorsAreMembers(memberKarkunIds, memberCoordinatorKarkunIds);
-      await ensureKarkuns([
-        ...memberKarkunIds,
-        ...memberCoordinatorKarkunIds,
-      ]);
+    createTeam: async (obj, { name, color, description, dutyId }, { user }) => {
       await ensureDuty(dutyId);
 
       const date = new Date();
@@ -128,8 +99,7 @@ const resolvers: ResolverMap = {
         color,
         description,
         dutyId,
-        karkunIds: memberKarkunIds,
-        coordinatorKarkunIds: memberCoordinatorKarkunIds,
+        members: [],
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -141,135 +111,85 @@ const resolvers: ResolverMap = {
 
     updateTeam: async (
       obj,
-      { id, name, color, description, dutyId, karkunIds, coordinatorKarkunIds },
+      { id, name, color, description, dutyId },
       { user }
     ) => {
       await ensureDuty(dutyId);
-      const existingTeam = await ensureDutyChangeIsAllowed(id, dutyId);
+      await ensureDutyChangeIsAllowed(id, dutyId);
 
-      const setFields: Record<string, unknown> = {
-        name,
-        color,
-        description,
-        dutyId,
-        updatedAt: new Date(),
-        updatedBy: user._id,
-      };
-
-      // karkunIds/coordinatorKarkunIds are managed separately (from the
-      // list page); only touch them here when this call actually sends
-      // them, so a plain details save doesn't wipe out existing members.
-      if (karkunIds !== undefined || coordinatorKarkunIds !== undefined) {
-        await ensurePastSnapshotsForTeam(id);
-        const effectiveKarkunIds = karkunIds ?? existingTeam?.karkunIds ?? [];
-        const effectiveCoordinatorKarkunIds =
-          coordinatorKarkunIds ?? existingTeam?.coordinatorKarkunIds ?? [];
-        ensureCoordinatorsAreMembers(
-          effectiveKarkunIds,
-          effectiveCoordinatorKarkunIds
-        );
-        await ensureKarkuns([
-          ...(karkunIds ?? []),
-          ...(coordinatorKarkunIds ?? []),
-        ]);
-
-        if (karkunIds !== undefined) {
-          setFields.karkunIds = karkunIds;
-          setFields.memberSchedules = (
-            (existingTeam as TeamRecord | undefined)?.memberSchedules ?? []
-          ).filter(schedule =>
-            (karkunIds as string[]).includes(schedule.karkunId)
-          );
-        }
-        if (coordinatorKarkunIds !== undefined) {
-          setFields.coordinatorKarkunIds = coordinatorKarkunIds;
-        }
-      }
-
-      await Teams.updateAsync(id, { $set: setFields });
+      await Teams.updateAsync(id, {
+        $set: {
+          name,
+          color,
+          description,
+          dutyId,
+          updatedAt: new Date(),
+          updatedBy: user._id,
+        },
+      });
 
       return Teams.findOneAsync(id);
     },
 
     removeTeam: async (obj, { _id }) => {
-      if (await teamIsAssignedOnRoster(_id)) {
+      if (await teamIsAssigned(_id)) {
         throw new Error(
-          'This team is assigned on a duty roster and cannot be deleted.'
+          'This team is assigned in duty planning and cannot be deleted.'
         );
       }
       return Teams.removeAsync(_id);
     },
 
     addTeamMember: async (obj, { teamId, karkunId, daysOfWeek }) => {
-      const team = (await Teams.findOneAsync(teamId)) as TeamRecord | undefined;
+      const team = await Teams.findOneAsync(teamId);
       if (!team) throw new Error('Team not found.');
-      if ((team.karkunIds ?? []).includes(karkunId)) {
-        throw new Error('This person is already a member of the team.');
-      }
       await ensureKarkuns([karkunId]);
 
       const days = normalizeDaysOfWeek(daysOfWeek);
-      await ensurePastSnapshotsForTeam(teamId);
-      await Teams.updateAsync(teamId, {
-        $addToSet: { karkunIds: karkunId },
-        $push: { memberSchedules: { karkunId, daysOfWeek: days } },
-      });
+      await ensureDutyDayAttendancesForTeam(teamId);
+      const added = await Teams.updateAsync(
+        { _id: teamId, 'members.karkunId': { $ne: karkunId } },
+        { $push: { members: { karkunId, daysOfWeek: days } } }
+      );
+      if (added === 0) {
+        throw new Error('This person is already a member of the team.');
+      }
 
       return Teams.findOneAsync(teamId);
     },
 
     updateTeamMemberDays: async (obj, { teamId, karkunId, daysOfWeek }) => {
-      const team = (await Teams.findOneAsync(teamId)) as TeamRecord | undefined;
-      if (!team) throw new Error('Team not found.');
-      if (!(team.karkunIds ?? []).includes(karkunId)) {
-        throw new Error('This person is not a member of the team.');
-      }
-
       const days = normalizeDaysOfWeek(daysOfWeek);
-      await ensurePastSnapshotsForTeam(teamId);
-      const memberSchedules = (team.memberSchedules ?? []).filter(
-        schedule => schedule.karkunId !== karkunId
-      );
-      memberSchedules.push({ karkunId, daysOfWeek: days });
-      await Teams.updateAsync(teamId, {
-        $set: { memberSchedules },
+      await ensureDutyDayAttendancesForTeam(teamId);
+      await updateMember(teamId, karkunId, {
+        $set: { 'members.$.daysOfWeek': days },
       });
 
       return Teams.findOneAsync(teamId);
     },
 
     removeTeamMember: async (obj, { teamId, karkunId }) => {
-      await ensurePastSnapshotsForTeam(teamId);
-      const team = (await Teams.findOneAsync(teamId)) as TeamRecord | undefined;
+      const team = await Teams.findOneAsync(teamId);
       if (!team) throw new Error('Team not found.');
-      // A karkun can't remain a coordinator once they're no longer a member.
+      await ensureDutyDayAttendancesForTeam(teamId);
       await Teams.updateAsync(teamId, {
-        $pull: { karkunIds: karkunId, coordinatorKarkunIds: karkunId },
-        $set: {
-          memberSchedules: (team.memberSchedules ?? []).filter(
-            schedule => schedule.karkunId !== karkunId
-          ),
-        },
+        $pull: { members: { karkunId } },
       });
 
       return Teams.findOneAsync(teamId);
     },
 
     addTeamCoordinator: async (obj, { teamId, karkunId }) => {
-      const team = (await Teams.findOneAsync(teamId)) as TeamRecord | undefined;
-      ensureCoordinatorsAreMembers(team?.karkunIds ?? [], [karkunId]);
-      await ensureKarkuns([karkunId]);
-
-      await Teams.updateAsync(teamId, {
-        $addToSet: { coordinatorKarkunIds: karkunId },
+      await updateMember(teamId, karkunId, {
+        $set: { 'members.$.isCoordinator': true },
       });
 
       return Teams.findOneAsync(teamId);
     },
 
     removeTeamCoordinator: async (obj, { teamId, karkunId }) => {
-      await Teams.updateAsync(teamId, {
-        $pull: { coordinatorKarkunIds: karkunId },
+      await updateMember(teamId, karkunId, {
+        $unset: { 'members.$.isCoordinator': '' },
       });
 
       return Teams.findOneAsync(teamId);

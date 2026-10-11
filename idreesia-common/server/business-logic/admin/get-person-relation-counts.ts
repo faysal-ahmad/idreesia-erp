@@ -1,5 +1,11 @@
 import { Mongo } from 'meteor/mongo';
-import { Attendances, KarkunDuties, Salaries } from 'meteor/idreesia-common/server/collections/hr';
+import {
+  Attendances,
+  DutyDayAttendances,
+  KarkunDuties,
+  Salaries,
+  Teams,
+} from 'meteor/idreesia-common/server/collections/hr';
 import { MehfilKarkuns, VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
 import { Messages } from 'meteor/idreesia-common/server/collections/communication';
@@ -103,6 +109,36 @@ async function countByAnyField(
   return counts;
 }
 
+// Counts documents holding an array of objects where one of the objects
+// refers to the person, e.g. Teams.members[].karkunId.
+async function countByArrayField(
+  collection: Mongo.Collection<any>,
+  arrayField: string,
+  keyField: string,
+  personIds: string[]
+): Promise<Record<string, number>> {
+  const counts = emptyCountsById(personIds);
+  const path = `${arrayField}.${keyField}`;
+  const rows = await collection
+    .find({ [path]: { $in: personIds } }, { fields: { [path]: 1 } })
+    .fetchAsync();
+
+  rows.forEach((row: Record<string, unknown>) => {
+    const items = row[arrayField];
+    if (!Array.isArray(items)) return;
+    const matchedIds = new Set<string>();
+    items.forEach(item => {
+      const value = (item as Record<string, unknown> | null)?.[keyField];
+      if (typeof value === 'string' && value in counts) matchedIds.add(value);
+    });
+    matchedIds.forEach(personId => {
+      counts[personId] += 1;
+    });
+  });
+
+  return counts;
+}
+
 export async function getPersonRelationCounts(
   personIds: string[]
 ): Promise<Record<string, PersonRelationCounts>> {
@@ -110,6 +146,8 @@ export async function getPersonRelationCounts(
     attendanceCounts,
     salaryCounts,
     karkunDutyCounts,
+    teamMembershipCounts,
+    dutyDayAttendanceCounts,
     visitorStayCounts,
     mehfilKarkunCounts,
     imdadRequestCounts,
@@ -123,6 +161,8 @@ export async function getPersonRelationCounts(
     countBySingleField(Attendances, 'karkunId', personIds),
     countBySingleField(Salaries, 'karkunId', personIds),
     countBySingleField(KarkunDuties, 'karkunId', personIds),
+    countByArrayField(Teams, 'members', 'karkunId', personIds),
+    countByArrayField(DutyDayAttendances, 'karkuns', 'karkunId', personIds),
     countBySingleField(VisitorStays, 'visitorId', personIds),
     countBySingleField(MehfilKarkuns, 'karkunId', personIds),
     countBySingleField(ImdadRequests, 'visitorId', personIds),
@@ -138,6 +178,8 @@ export async function getPersonRelationCounts(
     { name: 'Attendance Records', countsById: attendanceCounts },
     { name: 'Salary Records', countsById: salaryCounts },
     { name: 'Duty Assignments', countsById: karkunDutyCounts },
+    { name: 'Team Memberships', countsById: teamMembershipCounts },
+    { name: 'Duty Day Attendances', countsById: dutyDayAttendanceCounts },
     { name: 'Stay History', countsById: visitorStayCounts },
     { name: 'Mehfil Assignments', countsById: mehfilKarkunCounts },
     { name: 'Imdad Requests', countsById: imdadRequestCounts },

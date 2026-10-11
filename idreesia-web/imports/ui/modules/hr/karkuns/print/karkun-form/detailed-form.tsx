@@ -1,5 +1,5 @@
 import React, { Component, type CSSProperties } from 'react';
-import Barcode from 'react-barcode';
+import Barcode, { type Options as BarcodeOptions } from 'react-barcode';
 import dayjs from 'dayjs';
 import { Checkbox, Col, Divider, InputNumber, Row } from 'antd';
 
@@ -7,7 +7,7 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import type { HrKarkunByIdForKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { DisplayItem, EhadDurationDisplay } from '/imports/ui/modules/helpers/controls';
 
-const barcodeOptions = {
+const barcodeOptions: BarcodeOptions = {
   width: 1,
   height: 20,
   format: 'CODE128B',
@@ -20,8 +20,6 @@ const barcodeOptions = {
 const DataStyle: CSSProperties = {
   fontSize: 20,
 };
-
-const BarcodeView = Barcode as any;
 
 type HrKarkun = NonNullable<HrKarkunByIdForKarkunsQuery['hrKarkunById']>;
 type KarkunDuty = NonNullable<
@@ -91,7 +89,7 @@ export class DetailedForm extends Component<Props> {
       <div className="form-print-view">
         <Row justify="start" gutter={40}>
           <Col order={1}>
-            <BarcodeView value={hrKarkunById._id} {...barcodeOptions} />
+            <Barcode value={hrKarkunById._id ?? ''} {...barcodeOptions} />
             <DisplayItem label="Generated On" value={timestamp} />
             <DisplayItem label="Name" value={sharedData.name} />
             <DisplayItem label="S/O" value={sharedData.parentName} />

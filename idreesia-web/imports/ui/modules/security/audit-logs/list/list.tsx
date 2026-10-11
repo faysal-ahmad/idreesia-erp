@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/client/react';
 import { Link } from 'react-router-dom';
 
-const RouterLink = Link as any;
 import { type History, type Location } from 'history';
 
 import { setBreadcrumbs } from 'meteor/idreesia-common/action-creators';
@@ -86,9 +85,9 @@ const List = ({ history, location }: ListProps) => {
     const { entityId: _entityId, entityType, operationType } = auditLog;
     if (entityType === EntityType.VISITOR && _entityId) {
       return (
-        <RouterLink to={paths.visitorRegistrationEditFormPath(_entityId)}>
+        <Link to={paths.visitorRegistrationEditFormPath(_entityId)}>
           {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayName[operationType ?? '']}]`}
-        </RouterLink>
+        </Link>
       );
     }
 

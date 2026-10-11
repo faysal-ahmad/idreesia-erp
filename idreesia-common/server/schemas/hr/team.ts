@@ -14,35 +14,27 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  karkunIds: {
+  members: {
     type: Array,
     optional: true,
   },
-  'karkunIds.$': {
-    type: String,
-  },
-  coordinatorKarkunIds: {
-    type: Array,
-    optional: true,
-  },
-  'coordinatorKarkunIds.$': {
-    type: String,
-  },
-  memberSchedules: {
-    type: Array,
-    optional: true,
-  },
-  'memberSchedules.$': {
+  'members.$': {
     type: Object,
   },
-  'memberSchedules.$.karkunId': {
+  'members.$.karkunId': {
     type: String,
   },
-  'memberSchedules.$.daysOfWeek': {
+  'members.$.isCoordinator': {
+    type: Boolean,
+    optional: true,
+  },
+  // Missing means the member is available every day.
+  'members.$.daysOfWeek': {
     type: Array,
+    optional: true,
     minCount: 1,
   },
-  'memberSchedules.$.daysOfWeek.$': {
+  'members.$.daysOfWeek.$': {
     type: String,
     allowedValues: ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
   },

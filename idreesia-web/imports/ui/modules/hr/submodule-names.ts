@@ -6,7 +6,8 @@ const SubModuleNames = {
   employees: 'Employees',
   karkuns: 'Karkuns',
   attendanceSheets: 'Attendance Sheets',
-  dutyRosters: 'Duty Rosters',
+  dutyPlanning: 'Duty Planning',
+  dutyAttendance: 'Duty Attendance',
   salarySheets: 'Salary Sheets',
   auditLogs: 'Audit Logs',
 };

@@ -56,26 +56,19 @@ const LIST_ALL_TEAMS: TypedDocumentNode<
       name
       color
       description
-      karkunIds
-      coordinatorKarkunIds
-      memberSchedules {
-        karkunId
-        daysOfWeek
-      }
       dutyId
       members {
-        _id
-        sharedData {
-          name
-          cnicNumber
-          contactNumber1
-          contactNumber2
-        }
-      }
-      coordinators {
-        _id
-        sharedData {
-          name
+        karkunId
+        isCoordinator
+        daysOfWeek
+        karkun {
+          _id
+          sharedData {
+            name
+            cnicNumber
+            contactNumber1
+            contactNumber2
+          }
         }
       }
       duty {
@@ -391,13 +384,18 @@ const List = () => {
 
   const getTeamMembers = (record: TeamRow): TeamMember[] =>
     (record.members ?? [])
-      .filter((member): member is NonNullable<typeof member> => member != null)
+      .filter(
+        (member): member is NonNullable<typeof member> & { karkunId: string } =>
+          member?.karkunId != null
+      )
       .map(member => ({
-        _id: member._id as string,
-        name: member.sharedData?.name ?? '',
-        cnicNumber: member.sharedData?.cnicNumber,
-        contactNumber1: member.sharedData?.contactNumber1,
-        contactNumber2: member.sharedData?.contactNumber2,
+        _id: member.karkunId,
+        name: member.karkun?.sharedData?.name ?? '',
+        cnicNumber: member.karkun?.sharedData?.cnicNumber,
+        contactNumber1: member.karkun?.sharedData?.contactNumber1,
+        contactNumber2: member.karkun?.sharedData?.contactNumber2,
+        isCoordinator: !!member.isCoordinator,
+        daysOfWeek: member.daysOfWeek,
       }));
 
   // Member add/remove refetches this query and sets `loading` while the
@@ -448,12 +446,9 @@ const List = () => {
       title: 'Coordinators',
       key: 'coordinators',
       render: (_text: unknown, record: TeamRow) =>
-        (record.coordinators ?? [])
-          .filter(
-            (coordinator): coordinator is NonNullable<typeof coordinator> =>
-              coordinator != null
-          )
-          .map(coordinator => coordinator.sharedData?.name)
+        getTeamMembers(record)
+          .filter(member => member.isCoordinator)
+          .map(member => member.name)
           .filter(Boolean)
           .join(', '),
     },
@@ -545,8 +540,6 @@ const List = () => {
               <TeamMembersPanel
                 teamId={record._id}
                 members={getTeamMembers(record)}
-                coordinatorKarkunIds={record.coordinatorKarkunIds}
-                memberSchedules={record.memberSchedules}
               />
             ),
           }}

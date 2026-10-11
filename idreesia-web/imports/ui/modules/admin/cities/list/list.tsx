@@ -28,8 +28,6 @@ import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import ListFilter from './list-filter';
 import { PAGED_CITIES, REMOVE_CITY } from '../gql';
 
-const RouterLink = Link as any;
-
 const DISTINCT_REGIONS: TypedDocumentNode<
   DistinctRegionsQuery,
   DistinctRegionsQueryVariables
@@ -111,7 +109,7 @@ const List = ({ history, location }: ListProps) => {
       key: 'name',
       width: 150,
       render: (text: string, record: CityRow) => (
-        <RouterLink to={`${paths.citiesEditFormPath(record._id)}`}>{text}</RouterLink>
+        <Link to={`${paths.citiesEditFormPath(record._id)}`}>{text}</Link>
       ),
     },
     {

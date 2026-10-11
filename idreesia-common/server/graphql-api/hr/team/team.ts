@@ -1,9 +1,11 @@
 import gql from 'graphql-tag';
 
 export default gql`
-type TeamMemberScheduleType {
+type TeamMemberType {
   karkunId: String
+  isCoordinator: Boolean
   daysOfWeek: [String]
+  karkun: PersonType
 }
 
 type TeamType {
@@ -11,12 +13,8 @@ type TeamType {
   name: String
   color: String
   description: String
-  karkunIds: [String]
-  coordinatorKarkunIds: [String]
-  memberSchedules: [TeamMemberScheduleType]
   dutyId: String
-  members: [PersonType]
-  coordinators: [PersonType]
+  members: [TeamMemberType]
   duty: DutyType
 
   createdAt: String
@@ -31,9 +29,9 @@ extend type Query {
 }
 
 extend type Mutation {
-  createTeam(name: String!, color: String, description: String, dutyId: String!, karkunIds: [String!], coordinatorKarkunIds: [String!]): TeamType
+  createTeam(name: String!, color: String, description: String, dutyId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  updateTeam(id: String!, name: String!, color: String, description: String, dutyId: String!, karkunIds: [String!], coordinatorKarkunIds: [String!]): TeamType
+  updateTeam(id: String!, name: String!, color: String, description: String, dutyId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeTeam(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])

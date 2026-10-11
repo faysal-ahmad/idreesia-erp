@@ -811,152 +811,86 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
 }
 
-type DutyRosterType {
-  _id: String
-  dutyId: String
-  locationId: String
-  startDate: String
-  endDate: String
-  status: String
-  duty: DutyType
-  location: DutyLocationType
-
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-
-type PagedDutyRosterType {
-  totalResults: Int
-  data: [DutyRosterType]
-}
-
-type DutyRosterKarkunRefType {
-  karkunId: String
-  name: String
-}
-
-type DutyRosterWeekSlotType {
+type DutyPlanWeekSlotType {
   shiftId: String
   teamId: String
   teamName: String
   teamColor: String
+  startDate: String
 }
 
-type DutyRosterWeekType {
-  roster: DutyRosterType
+type DutyPlanWeekType {
   shifts: [DutyShiftType]
-  slots: [DutyRosterWeekSlotType]
+  slots: [DutyPlanWeekSlotType]
 }
 
-type DutyRosterResolvedSourceType {
-  type: String
-  teamId: String
-  teamName: String
-}
-
-type DutyRosterResolvedKarkunType {
-  karkunId: String
-  name: String
-  sources: [DutyRosterResolvedSourceType]
-}
-
-type DutyRosterDaySlotType {
-  shiftId: String
-  shiftName: String
-  startTime: String
-  endTime: String
-  karkuns: [DutyRosterResolvedKarkunType]
-  addedKarkunIds: [String]
-  absentKarkunIds: [String]
-  absentKarkuns: [DutyRosterKarkunRefType]
-  fromSnapshot: Boolean
-}
-
-type DutyRosterDayType {
-  date: String
-  dayOfWeek: String
-  inRange: Boolean
-  isPast: Boolean
-  slots: [DutyRosterDaySlotType]
-}
-
-type DutyRosterDaysKarkunType {
+type DutyPlanDaysKarkunType {
   karkunId: String
   name: String
   off: Boolean
+  imageId: String
+  imageThumbnailId: String
+  attendance: String
 }
 
-type DutyRosterDaysSlotType {
+type DutyPlanDaysSlotType {
   shiftId: String
   shiftName: String
   teamName: String
-  teamKarkuns: [DutyRosterDaysKarkunType]
-  addedKarkuns: [DutyRosterKarkunRefType]
+  teamKarkuns: [DutyPlanDaysKarkunType]
+  addedKarkuns: [DutyPlanDaysKarkunType]
   addedKarkunIds: [String]
   absentKarkunIds: [String]
 }
 
-type DutyRosterDaysDayType {
+type DutyPlanDaysDayType {
   date: String
   dayOfWeek: String
-  inRange: Boolean
-  isPast: Boolean
-  slots: [DutyRosterDaysSlotType]
+  locked: Boolean
+  slots: [DutyPlanDaysSlotType]
 }
 
-type DutyRosterDaysType {
+type DutyPlanDaysType {
   startDate: String
-  days: [DutyRosterDaysDayType]
+  days: [DutyPlanDaysDayType]
 }
 
 extend type Query {
-  pagedDutyRosters(
-    dutyId: String
-    locationId: String
-    status: String
-    pageIndex: Int
-    pageSize: Int
-  ): PagedDutyRosterType
+  dutyPlanWeek(dutyId: String!, locationId: String!): DutyPlanWeekType
     @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
-  activeDutyRosters(dutyId: String, locationId: String): [DutyRosterType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
-  dutyRosterById(id: String!): DutyRosterType
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
-  dutyRosterWeek(rosterId: String!): DutyRosterWeekType
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
-  dutyRosterDay(rosterId: String!, date: String!): DutyRosterDayType
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
-  dutyRosterDays(rosterId: String!, startDate: String!): DutyRosterDaysType
+  dutyPlanDays(
+    dutyId: String!
+    locationId: String!
+    startDate: String!
+  ): DutyPlanDaysType
     @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
 }
 
 extend type Mutation {
-  createDutyRoster(
+  setDutyShiftTeam(
     dutyId: String!
     locationId: String!
-    startDate: String!
-    endDate: String
-  ): DutyRosterType
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
-  updateDutyRoster(id: String!, endDate: String): DutyRosterType
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
-  archiveDutyRoster(id: String!): DutyRosterType
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
-  setDutyRosterShiftTeam(
-    rosterId: String!
     shiftId: String!
     teamId: String
-  ): DutyRosterWeekType
+  ): Boolean
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
-  setDutyRosterDayOverride(
-    rosterId: String!
+  setDutyDayOverride(
+    dutyId: String!
+    locationId: String!
     shiftId: String!
     date: String!
     addedKarkunIds: [String!]
     absentKarkunIds: [String!]
-  ): DutyRosterDayType
+  ): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+  setDutyAttendance(
+    dutyId: String!
+    locationId: String!
+    shiftId: String!
+    date: String!
+    karkunId: String!
+    status: String
+  ): Boolean
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 }
 
@@ -1281,9 +1215,11 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
 }
 
-type TeamMemberScheduleType {
+type TeamMemberType {
   karkunId: String
+  isCoordinator: Boolean
   daysOfWeek: [String]
+  karkun: PersonType
 }
 
 type TeamType {
@@ -1291,12 +1227,8 @@ type TeamType {
   name: String
   color: String
   description: String
-  karkunIds: [String]
-  coordinatorKarkunIds: [String]
-  memberSchedules: [TeamMemberScheduleType]
   dutyId: String
-  members: [PersonType]
-  coordinators: [PersonType]
+  members: [TeamMemberType]
   duty: DutyType
 
   createdAt: String
@@ -1311,9 +1243,9 @@ extend type Query {
 }
 
 extend type Mutation {
-  createTeam(name: String!, color: String, description: String, dutyId: String!, karkunIds: [String!], coordinatorKarkunIds: [String!]): TeamType
+  createTeam(name: String!, color: String, description: String, dutyId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  updateTeam(id: String!, name: String!, color: String, description: String, dutyId: String!, karkunIds: [String!], coordinatorKarkunIds: [String!]): TeamType
+  updateTeam(id: String!, name: String!, color: String, description: String, dutyId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeTeam(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])

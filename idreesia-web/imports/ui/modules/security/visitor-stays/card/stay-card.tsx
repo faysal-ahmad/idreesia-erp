@@ -1,14 +1,12 @@
 import React, { Component, type CSSProperties } from 'react';
-import Barcode from 'react-barcode';
+import Barcode, { type Options as BarcodeOptions } from 'react-barcode';
 import dayjs from 'dayjs';
 import { find } from 'meteor/idreesia-common/utilities/lodash';
 
 import { Card } from 'antd';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 
-const BarcodeView = Barcode as any;
-
-const barcodeOptions = {
+const barcodeOptions: BarcodeOptions = {
   width: 1,
   height: 20,
   format: 'CODE128B',
@@ -152,7 +150,7 @@ export default class StayCard extends Component<StayCardProps> {
         ) : null}
         {dutyDetails}
         <div className="stay_card_item">
-          <BarcodeView value={visitorStay._id ?? ''} {...barcodeOptions} />
+          <Barcode value={visitorStay._id ?? ''} {...barcodeOptions} />
         </div>
         <div style={FooterStyle}>
           381 A-Block, Shah Rukn-e-Alam Colony, Multan<br />

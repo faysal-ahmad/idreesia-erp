@@ -3,6 +3,7 @@ import {
   DutyLocations,
   KarkunDuties,
 } from 'meteor/idreesia-common/server/collections/hr';
+import { locationIsPlanned } from 'meteor/idreesia-common/server/business-logic/hr/duty-planning';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -21,7 +22,8 @@ const resolvers: ResolverMap = {
       const usedCount = await KarkunDuties.find({
         locationId: { $eq: dutyLocationType._id },
       }).countAsync();
-      return usedCount === 0;
+      if (usedCount > 0) return false;
+      return !(await locationIsPlanned(dutyLocationType._id));
     },
   },
 
@@ -72,7 +74,7 @@ const resolvers: ResolverMap = {
         locationId: { $eq: _id },
       }).countAsync();
 
-      if (usedCount > 0) {
+      if (usedCount > 0 || (await locationIsPlanned(_id))) {
         throw new Error(
           'This location cannot be deleted as it is currently in use.'
         );

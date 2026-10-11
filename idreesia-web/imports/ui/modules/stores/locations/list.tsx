@@ -32,7 +32,6 @@ import {
   LOCATIONS_BY_PHYSICAL_STORE_ID,
 } from './gql';
 
-const RouterLink = Link as any;
 const DEFAULT_PAGE_SIZE = 20;
 const TABLE_HEADER_ROW_HEIGHT = 55;
 const VIEWPORT_BOTTOM_GAP = 16;
@@ -224,11 +223,11 @@ const List = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: LocationRow) => (
-        <RouterLink
+        <Link
           to={paths.locationsEditFormPath(physicalStoreId!, record._id!)}
         >
           {text}
-        </RouterLink>
+        </Link>
       ),
     },
     {
@@ -239,11 +238,11 @@ const List = () => {
       render: (_text: unknown, record: LocationRow) => {
         if (!record.parentId || !record.refParent?.name) return '';
         return (
-          <RouterLink
+          <Link
             to={paths.locationsEditFormPath(physicalStoreId!, record.parentId)}
           >
             {record.refParent.name}
-          </RouterLink>
+          </Link>
         );
       },
     },

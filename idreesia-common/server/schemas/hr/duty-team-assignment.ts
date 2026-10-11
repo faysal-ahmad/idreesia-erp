@@ -9,16 +9,15 @@ export default new SimpleSchema({
   locationId: {
     type: String,
   },
+  shiftId: {
+    type: String,
+  },
+  teamId: {
+    type: String,
+  },
+  // First date (YYYY-MM-DD, Karachi) this team covers the shift.
   startDate: {
     type: String,
-  },
-  endDate: {
-    type: String,
-    optional: true,
-  },
-  status: {
-    type: String,
-    allowedValues: ['active', 'archived'],
   },
 })
   .extend(identifiable)

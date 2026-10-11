@@ -8,6 +8,42 @@
   gap: 16px;
 }
 
+.duty-roster-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #d0d5dd;
+}
+
+.duty-roster-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.duty-roster-select-label {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.duty-roster-location-select {
+  width: 360px;
+  max-width: 100%;
+}
+
+.duty-roster-start-date {
+  width: 160px;
+}
+
+.duty-roster-range {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
 .duty-roster-header,
 .duty-roster-day {
   padding: 16px;
@@ -109,19 +145,6 @@
   margin-bottom: 8px;
 }
 
-.duty-roster-days-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.duty-roster-days-header h3 {
-  margin: 0;
-  font-size: 16px;
-}
-
 .duty-roster-days-board {
   display: grid;
   grid-template-columns: repeat(7, minmax(140px, 1fr));
@@ -215,21 +238,86 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
+  gap: 8px;
   font-size: 14px;
   line-height: 1.35;
 }
 
+.duty-attendance-mark-button {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  line-height: 1;
+}
+
+button.duty-attendance-mark-button {
+  cursor: pointer;
+}
+
+button.duty-attendance-mark-button:hover .duty-attendance-mark {
+  background: #f2f4f7;
+}
+
+.duty-attendance-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.duty-attendance-mark.is-present {
+  color: #079455;
+}
+
+.duty-attendance-mark.is-late {
+  color: #b54708;
+}
+
+.duty-attendance-mark.is-absent {
+  color: #d92d20;
+}
+
+.duty-attendance-mark.is-unset {
+  color: #98a2b3;
+  font-weight: 600;
+}
+
+.duty-roster-calendar-person-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.duty-roster-calendar-person.has-photo .duty-roster-calendar-person-name > div {
+  width: 100%;
+  color: inherit !important;
+  cursor: default;
+}
+
+.duty-roster-calendar-person.has-photo.is-off .duty-roster-off-mark {
+  top: 11px;
+}
+
 .duty-roster-calendar-team-member .duty-roster-calendar-person-name {
   position: relative;
-  padding-left: 14px;
+  padding-left: 22px;
 }
 
 .duty-roster-off-mark {
   position: absolute;
   left: 0;
-  top: 0.25em;
-  font-size: 10px;
+  top: 0.1em;
+  font-size: 16px;
   line-height: 1;
   color: #d92d20;
 }
@@ -240,14 +328,22 @@
 
 .duty-roster-person-remove {
   flex: none;
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
 }
 
 .duty-roster-calendar-person .duty-roster-person-remove.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0;
+  font-size: 18px;
   color: #d92d20;
   visibility: hidden;
+}
+
+.duty-roster-calendar-person .duty-roster-person-remove.ant-btn .anticon {
+  font-size: 18px;
 }
 
 .duty-roster-calendar-person:hover .duty-roster-person-remove.ant-btn,

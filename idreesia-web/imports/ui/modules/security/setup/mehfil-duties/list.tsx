@@ -29,8 +29,6 @@ import {
   REMOVE_SECURITY_MEHFIL_DUTY,
 } from './gql';
 
-const RouterLink = Link as any;
-
 const DEFAULT_PAGE_SIZE = 20;
 
 type MehfilDutyRow = NonNullable<
@@ -135,9 +133,9 @@ const List = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: MehfilDutyRow) => (
-        <RouterLink to={`${paths.mehfilDutiesPath}/${record._id}`}>
+        <Link to={`${paths.mehfilDutiesPath}/${record._id}`}>
           {text}
-        </RouterLink>
+        </Link>
       ),
     },
     {

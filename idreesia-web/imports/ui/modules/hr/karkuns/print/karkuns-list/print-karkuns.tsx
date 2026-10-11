@@ -12,8 +12,6 @@ import { useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { HR_KARKUNS_BY_ID } from '../../gql';
 import KarkunsList from './karkuns-list';
 
-const ReactToPrintControl = ReactToPrint as any;
-
 type Props = RouteComponentProps;
 
 const PrintView = ({ history, location }: Props) => {
@@ -36,8 +34,8 @@ const PrintView = ({ history, location }: Props) => {
   const hrKarkunsById = data?.hrKarkunsById ?? [];
   return (
     <>
-      <ReactToPrintControl
-        content={() => karkunsList.current}
+      <ReactToPrint
+        content={() => karkunsList.current!}
         trigger={() => (
           <Button size="large" type="primary" icon={<PrinterOutlined />}>
             Print Data

@@ -103,6 +103,7 @@
   "resolutions": {
     "@babel/core": "^7.29.6",
     "@eslint/plugin-kit": "^0.3.4",
+    "@types/react": "18.3.31",
     "ajv": "^6.14.0",
     "flatted": "^3.4.2",
     "js-yaml": "^4.3.0",

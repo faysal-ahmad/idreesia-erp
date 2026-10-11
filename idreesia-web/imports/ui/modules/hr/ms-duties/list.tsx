@@ -45,8 +45,6 @@ import DutyLocationsPanel, { type DutyLocationRow } from './locations-panel';
 import ShiftForm, { type ShiftFormValues } from './shift-form';
 import DutyShiftsPanel, { type DutyShiftRow } from './shifts-panel';
 
-const RouterLink = Link as any;
-
 const DEFAULT_PAGE_SIZE = 20;
 const TABLE_HEADER_ROW_HEIGHT = 55;
 const VIEWPORT_BOTTOM_GAP = 16;
@@ -479,9 +477,9 @@ const List = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: DutyRow) => (
-        <RouterLink to={paths.msDutiesEditFormPath(record._id)}>
+        <Link to={paths.msDutiesEditFormPath(record._id)}>
           {text}
-        </RouterLink>
+        </Link>
       ),
     },
     {

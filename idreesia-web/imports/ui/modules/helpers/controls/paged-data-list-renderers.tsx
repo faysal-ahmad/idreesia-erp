@@ -13,8 +13,6 @@ const NameDivStyle: CSSProperties = {
   width: '100%',
 };
 
-const RouterLink = Link as any;
-
 export function getNameWithImageRenderer(
   id: string,
   imageId: string | undefined,
@@ -28,7 +26,7 @@ export function getNameWithImageRenderer(
       <div style={NameDivStyle}>
         <Avatar shape="square" size="large" src={url} />
         &nbsp;
-        <RouterLink to={path}>{name}</RouterLink>
+        <Link to={path}>{name}</Link>
       </div>
     );
   }
@@ -41,7 +39,7 @@ export function getNameWithImageRenderer(
         icon={iconToUse || <UserOutlined />}
       />
       &nbsp;
-      <RouterLink to={path}>{name}</RouterLink>
+      <Link to={path}>{name}</Link>
     </div>
   );
 }

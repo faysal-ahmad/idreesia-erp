@@ -2,10 +2,12 @@ import SimpleSchema from 'simpl-schema';
 
 import { identifiable, timestamps } from '../common';
 
+export const DUTY_ATTENDANCE_STATUSES = ['present', 'late', 'absent'] as const;
+
+// Who was on duty for one shift at one location on one date, and how each
+// karkun attended. Created at the start of the day, after which the plan for
+// that day can no longer change.
 export default new SimpleSchema({
-  rosterId: {
-    type: String,
-  },
   dutyId: {
     type: String,
   },
@@ -23,7 +25,6 @@ export default new SimpleSchema({
   },
   karkuns: {
     type: Array,
-    optional: true,
   },
   'karkuns.$': {
     type: Object,
@@ -34,21 +35,27 @@ export default new SimpleSchema({
   'karkuns.$.name': {
     type: String,
   },
-  'karkuns.$.sources': {
-    type: Array,
-  },
-  'karkuns.$.sources.$': {
-    type: Object,
-  },
-  'karkuns.$.sources.$.type': {
-    type: String,
-    allowedValues: ['team', 'direct', 'one-off'],
-  },
-  'karkuns.$.sources.$.teamId': {
+  'karkuns.$.teamId': {
     type: String,
     optional: true,
   },
-  'karkuns.$.sources.$.teamName': {
+  'karkuns.$.teamName': {
+    type: String,
+    optional: true,
+  },
+  'karkuns.$.addedForDay': {
+    type: Boolean,
+  },
+  'karkuns.$.attendance': {
+    type: String,
+    optional: true,
+    allowedValues: [...DUTY_ATTENDANCE_STATUSES],
+  },
+  'karkuns.$.attendanceUpdatedAt': {
+    type: Date,
+    optional: true,
+  },
+  'karkuns.$.attendanceUpdatedBy': {
     type: String,
     optional: true,
   },

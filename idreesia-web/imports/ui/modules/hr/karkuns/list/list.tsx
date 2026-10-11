@@ -34,8 +34,6 @@ import ListFilter, {
 
 import { PAGED_HR_KARKUNS, DELETE_HR_KARKUN } from '../gql';
 
-const RouterLink = Link as any;
-
 const TABLE_HEADER_ROW_HEIGHT = 55;
 const VIEWPORT_BOTTOM_GAP = 16;
 
@@ -264,9 +262,9 @@ const List = ({
         }
 
         return (
-          <RouterLink key={index} to={dutyTabLink}>
+          <Link key={index} to={dutyTabLink}>
             {dutyName}
-          </RouterLink>
+          </Link>
         );
       });
 

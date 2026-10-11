@@ -20,53 +20,50 @@ import { PeopleTagsList } from './people-tags';
 import { DeletedPeopleList, DeletedPersonEditForm } from './deleted-people';
 import { DuplicatePeopleList, DuplicatePersonEditForm } from './duplicate-people';
 
-const RouterSwitch = Switch as any;
-const RouterRoute = Route as any;
-
 const Router = () => (
-  <RouterSwitch>
-    <RouterRoute path={paths.usersNewFormPath} component={UsersNewForm} />
-    <RouterRoute path={paths.usersEditFormPath} component={UsersEditForm} />
-    <RouterRoute path={paths.usersPath} component={UsersList} />
+  <Switch>
+    <Route path={paths.usersNewFormPath} component={UsersNewForm} />
+    <Route path={paths.usersEditFormPath} component={UsersEditForm} />
+    <Route path={paths.usersPath} component={UsersList} />
 
-    <RouterRoute path={paths.userGroupsNewFormPath} component={UserGroupsNewForm} />
-    <RouterRoute path={paths.userGroupsEditFormPath} component={UserGroupsEditForm} />
-    <RouterRoute path={paths.userGroupsPath} component={UserGroupsList} />
+    <Route path={paths.userGroupsNewFormPath} component={UserGroupsNewForm} />
+    <Route path={paths.userGroupsEditFormPath} component={UserGroupsEditForm} />
+    <Route path={paths.userGroupsPath} component={UserGroupsList} />
 
-    <RouterRoute path={paths.securityLogsPath} component={SecurityLogsList} />
+    <Route path={paths.securityLogsPath} component={SecurityLogsList} />
 
-    <RouterRoute
+    <Route
       path={paths.physicalStoresNewFormPath}
       component={PhysicalStoresNewForm}
     />
-    <RouterRoute
+    <Route
       path={paths.physicalStoresEditFormPath}
       component={PhysicalStoresEditForm}
     />
-    <RouterRoute path={paths.physicalStoresPath} component={PhysicalStoresList} />
+    <Route path={paths.physicalStoresPath} component={PhysicalStoresList} />
 
-    <RouterRoute path={paths.citiesNewFormPath} component={CitiesNewForm} />
-    <RouterRoute path={paths.citiesEditFormPath()} component={CitiesEditForm} />
-    <RouterRoute path={paths.citiesPath} component={CitiesList} />
+    <Route path={paths.citiesNewFormPath} component={CitiesNewForm} />
+    <Route path={paths.citiesEditFormPath()} component={CitiesEditForm} />
+    <Route path={paths.citiesPath} component={CitiesList} />
 
-    <RouterRoute path={paths.jobsPath} component={JobsList} />
-    <RouterRoute path={paths.jobLogsPath} component={JobLogsList} />
-    <RouterRoute path={paths.jobDefinitionsPath} component={JobDefinitionsList} />
+    <Route path={paths.jobsPath} component={JobsList} />
+    <Route path={paths.jobLogsPath} component={JobLogsList} />
+    <Route path={paths.jobDefinitionsPath} component={JobDefinitionsList} />
 
-    <RouterRoute path={paths.peopleTagsPath} component={PeopleTagsList} />
+    <Route path={paths.peopleTagsPath} component={PeopleTagsList} />
 
-    <RouterRoute
+    <Route
       path={paths.deletedPersonEditFormPath()}
       component={DeletedPersonEditForm}
     />
-    <RouterRoute path={paths.deletedPeoplePath} component={DeletedPeopleList} />
+    <Route path={paths.deletedPeoplePath} component={DeletedPeopleList} />
 
-    <RouterRoute
+    <Route
       path={paths.duplicatePersonEditFormPath()}
       component={DuplicatePersonEditForm}
     />
-    <RouterRoute path={paths.duplicatePeoplePath} component={DuplicatePeopleList} />
-  </RouterSwitch>
+    <Route path={paths.duplicatePeoplePath} component={DuplicatePeopleList} />
+  </Switch>
 );
 
 export default Router;

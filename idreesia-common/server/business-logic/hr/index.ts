@@ -5,19 +5,15 @@ export { createMonthlyAttendance } from './create-monthly-attendance';
 export { createMonthlySalaries } from './create-monthly-salaries';
 export { exportKarkuns } from './karkuns-exporter';
 export {
-  activeDutyRosters,
-  archiveDutyRoster,
-  createDutyRoster,
-  ensureDutyRosterIndexes,
-  ensurePastSnapshotsForTeam,
-  getDutyRosterDay,
-  getDutyRosterDays,
-  getDutyRosterWeek,
-  pagedDutyRosters,
-  setDutyRosterDayOverride,
-  setDutyRosterShiftTeam,
-  shiftUsedByActiveRoster,
-  snapshotYesterdayDutyRosters,
-  teamIsAssignedOnRoster,
-  updateDutyRoster,
-} from './duty-rosters';
+  createTodayDutyDayAttendances,
+  ensureDutyDayAttendancesForTeam,
+  ensureDutyPlanIndexes,
+  getDutyPlanDays,
+  getDutyPlanWeek,
+  locationIsPlanned,
+  setDutyAttendance,
+  setDutyDayOverride,
+  setDutyShiftTeam,
+  shiftIsPlanned,
+  teamIsAssigned,
+} from './duty-planning';

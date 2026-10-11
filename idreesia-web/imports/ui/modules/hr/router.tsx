@@ -1,9 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-const RouterSwitch = Switch as any;
-const RouterRoute = Route as any;
-
 import { default as paths } from './submodule-paths';
 import { JobsEditForm, JobsList } from './jobs';
 import { MSDutiesEditForm, MSDutiesList } from './ms-duties';
@@ -35,61 +32,61 @@ import {
   SalarySheetsEidReceipts,
 } from './salary-sheets';
 import { AuditLogsList } from './audit-logs';
-import { DutyRostersEditForm, DutyRostersList } from './duty-rosters';
+import { DutyAttendanceList, DutyPlanningList } from './duty-planning';
 
 const Router = () => (
-  <RouterSwitch>
-    <RouterRoute path={paths.jobsEditFormPath()} component={JobsEditForm} />
-    <RouterRoute path={paths.jobsPath} component={JobsList} />
+  <Switch>
+    <Route path={paths.jobsEditFormPath()} component={JobsEditForm} />
+    <Route path={paths.jobsPath} component={JobsList} />
 
-    <RouterRoute path={paths.msDutiesEditFormPath()} component={MSDutiesEditForm} />
-    <RouterRoute path={paths.msDutiesPath} component={MSDutiesList} />
+    <Route path={paths.msDutiesEditFormPath()} component={MSDutiesEditForm} />
+    <Route path={paths.msDutiesPath} component={MSDutiesList} />
 
-    <RouterRoute path={paths.teamsPath} component={TeamsList} />
+    <Route path={paths.teamsPath} component={TeamsList} />
 
-    <RouterRoute path={paths.committeesPath} component={CommitteesList} />
+    <Route path={paths.committeesPath} component={CommitteesList} />
 
-    <RouterRoute path={paths.karkunsNewFormPath} component={KarkunsNewForm} />
-    <RouterRoute path={paths.karkunsPrintListPath} component={KarkunsPrintView} />
-    <RouterRoute path={paths.karkunsPrintPath()} component={KarkunPrintView} />
-    <RouterRoute path={paths.karkunsEditFormPath()} component={KarkunsEditForm} />
-    <RouterRoute path={paths.karkunsPath} component={KarkunsList} />
+    <Route path={paths.karkunsNewFormPath} component={KarkunsNewForm} />
+    <Route path={paths.karkunsPrintListPath} component={KarkunsPrintView} />
+    <Route path={paths.karkunsPrintPath()} component={KarkunPrintView} />
+    <Route path={paths.karkunsEditFormPath()} component={KarkunsEditForm} />
+    <Route path={paths.karkunsPath} component={KarkunsList} />
 
-    <RouterRoute path={paths.employeesPrintListPath} component={EmployeesPrintView} />
-    <RouterRoute path={paths.employeePrintPath()} component={EmployeePrintView} />
-    <RouterRoute path={paths.employeeEditFormPath()} component={EmployeeEditForm} />
-    <RouterRoute path={paths.employeesPath} component={EmployeesList} />
+    <Route path={paths.employeesPrintListPath} component={EmployeesPrintView} />
+    <Route path={paths.employeePrintPath()} component={EmployeePrintView} />
+    <Route path={paths.employeeEditFormPath()} component={EmployeeEditForm} />
+    <Route path={paths.employeesPath} component={EmployeesList} />
 
-    <RouterRoute
+    <Route
       path={paths.attendanceSheetsMeetingCardsPath}
       component={AttendanceSheetsPrintMeetingCards}
     />
-    <RouterRoute
+    <Route
       path={paths.attendanceSheetsKarkunCardsPath}
       component={AttendanceSheetsPrintKarkunCards}
     />
-    <RouterRoute path={paths.attendanceSheetsPrintAttendanceSheetPath} component={AttendanceSheetPrintAttendanceSheet} />
-    <RouterRoute path={paths.dutyRostersEditFormPath()} component={DutyRostersEditForm} />
-    <RouterRoute path={paths.dutyRostersPath} component={DutyRostersList} />
+    <Route path={paths.attendanceSheetsPrintAttendanceSheetPath} component={AttendanceSheetPrintAttendanceSheet} />
+    <Route path={paths.dutyPlanningPath} component={DutyPlanningList} />
+    <Route path={paths.dutyAttendancePath} component={DutyAttendanceList} />
 
-    <RouterRoute path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
+    <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
 
-    <RouterRoute
+    <Route
       path={paths.salarySheetsSalaryReceiptsPath}
       component={SalarySheetsSalaryReceipts}
     />
-    <RouterRoute
+    <Route
       path={paths.salarySheetsRashanReceiptsPath}
       component={SalarySheetsRashanReceipts}
     />
-    <RouterRoute
+    <Route
       path={paths.salarySheetsEidReceiptsPath}
       component={SalarySheetsEidReceipts}
     />
-    <RouterRoute path={paths.salarySheetsPath} component={SalarySheetsList} />
+    <Route path={paths.salarySheetsPath} component={SalarySheetsList} />
 
-    <RouterRoute path={paths.auditLogsPath} component={AuditLogsList} />
-  </RouterSwitch>
+    <Route path={paths.auditLogsPath} component={AuditLogsList} />
+  </Switch>
 );
 
 export default Router;

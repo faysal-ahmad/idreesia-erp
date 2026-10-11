@@ -29,8 +29,6 @@ import {
   REMOVE_SECURITY_MEHFIL_LANGAR_DISH,
 } from './gql';
 
-const RouterLink = Link as any;
-
 const DEFAULT_PAGE_SIZE = 20;
 
 type LangarDishRow = NonNullable<
@@ -137,9 +135,9 @@ const List = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: LangarDishRow) => (
-        <RouterLink to={`${paths.mehfilLangarDishesPath}/${record._id}`}>
+        <Link to={`${paths.mehfilLangarDishesPath}/${record._id}`}>
           {text}
-        </RouterLink>
+        </Link>
       ),
     },
     {

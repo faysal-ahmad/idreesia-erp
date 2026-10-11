@@ -79,32 +79,25 @@ const UPDATE_TEAM_MEMBER_DAYS: TypedDocumentNode<
   }
 `;
 
-export interface TeamMemberSchedule {
-  karkunId?: string | null;
-  daysOfWeek?: Array<string | null> | null;
-}
-
 export interface TeamMember {
   _id: string;
   name: string;
   cnicNumber?: string | null;
   contactNumber1?: string | null;
   contactNumber2?: string | null;
+  isCoordinator: boolean;
+  // Missing means the member is available every day.
+  daysOfWeek?: Array<string | null> | null;
 }
 
 interface Props {
   teamId: string;
   members: TeamMember[];
-  coordinatorKarkunIds?: (string | null)[] | null;
-  memberSchedules?: (TeamMemberSchedule | null)[] | null;
 }
 
-const TeamMembersPanel = ({
-  teamId,
-  members,
-  coordinatorKarkunIds,
-  memberSchedules,
-}: Props) => {
+const hasDays = (member: TeamMember) => (member.daysOfWeek ?? []).length > 0;
+
+const TeamMembersPanel = ({ teamId, members }: Props) => {
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [removeTeamMember] = useMutation(REMOVE_TEAM_MEMBER, {
     refetchQueries: ['listAllTeams'],
@@ -138,11 +131,6 @@ const TeamMembersPanel = ({
     });
   };
 
-  const scheduleFor = (karkunId: string) =>
-    (memberSchedules ?? []).find(
-      schedule => schedule?.karkunId === karkunId
-    ) ?? null;
-
   const handleSaveDays = (daysOfWeek: string[]) => {
     if (!editingMember) return;
     updateTeamMemberDays({
@@ -157,10 +145,6 @@ const TeamMembersPanel = ({
       });
   };
 
-  const editingSchedule = editingMember
-    ? scheduleFor(editingMember._id)
-    : null;
-
   const columns = [
     {
       title: 'Name',
@@ -170,10 +154,8 @@ const TeamMembersPanel = ({
     {
       title: 'Available days',
       key: 'days',
-      render: (_text: unknown, record: TeamMember) => {
-        const schedule = scheduleFor(record._id);
-        return formatMemberDays(schedule?.daysOfWeek, schedule != null);
-      },
+      render: (_text: unknown, record: TeamMember) =>
+        formatMemberDays(record.daysOfWeek, hasDays(record)),
     },
     {
       title: 'CNIC Number',
@@ -200,9 +182,7 @@ const TeamMembersPanel = ({
       key: 'action',
       width: 110,
       render: (_text: unknown, record: TeamMember) => {
-        const isCoordinator = (coordinatorKarkunIds ?? []).includes(
-          record._id
-        );
+        const { isCoordinator } = record;
         return (
           <div className="list-actions-column">
             <Tooltip title="Available days">
@@ -244,11 +224,12 @@ const TeamMembersPanel = ({
     },
   ];
 
-  const editingDays = editingSchedule
-    ? TEAM_DAYS.filter(day =>
-        (editingSchedule.daysOfWeek ?? []).includes(day)
-      )
-    : [...TEAM_DAYS];
+  const editingDays =
+    editingMember && hasDays(editingMember)
+      ? TEAM_DAYS.filter(day =>
+          (editingMember.daysOfWeek ?? []).includes(day)
+        )
+      : [...TEAM_DAYS];
 
   return (
     <>

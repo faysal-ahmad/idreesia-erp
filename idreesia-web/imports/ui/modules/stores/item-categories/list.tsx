@@ -32,7 +32,6 @@ import {
   ITEM_CATEGORIES_BY_PHYSICAL_STORE_ID,
 } from './gql';
 
-const RouterLink = Link as any;
 const DEFAULT_PAGE_SIZE = 20;
 const TABLE_HEADER_ROW_HEIGHT = 55;
 const VIEWPORT_BOTTOM_GAP = 16;
@@ -230,11 +229,11 @@ const List = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: ItemCategoryRow) => (
-        <RouterLink
+        <Link
           to={paths.itemCategoriesEditFormPath(physicalStoreId!, record._id!)}
         >
           {text}
-        </RouterLink>
+        </Link>
       ),
     },
     {

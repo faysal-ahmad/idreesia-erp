@@ -1,5 +1,5 @@
 import React, { type CSSProperties, useEffect } from 'react';
-import { Layout, Menu } from 'antd';
+import { ConfigProvider, Layout, Menu } from 'antd';
 import type { MenuProps } from 'antd';
 import { type History, type Location } from 'history';
 import { useDispatch } from 'react-redux';
@@ -34,6 +34,33 @@ const ContainerStyle: CSSProperties = {
   justifyContent: 'space-between',
   alignItems: 'center',
   width: '100%',
+};
+
+const HEADER_BG = '#4a2c6d';
+
+const HeaderStyle: CSSProperties = {
+  paddingLeft: 8,
+  paddingRight: 16,
+  background: HEADER_BG,
+};
+
+const HeaderTheme = {
+  components: {
+    Menu: {
+      fontSize: 16,
+      darkItemBg: HEADER_BG,
+      darkSubMenuItemBg: '#3b2257',
+      darkItemSelectedBg: '#7a52a8',
+      darkItemHoverBg: '#5f3d8a',
+      darkPopupBg: '#3b2257',
+    },
+  },
+};
+
+const LogoStyle: CSSProperties = {
+  height: 64,
+  marginRight: 8,
+  flexShrink: 0,
 };
 
 const modulePathsMapping: Record<string, string> = {
@@ -134,19 +161,26 @@ const HeaderContent = ({ history, location, user }: Props) => {
   }
 
   return (
-    <Layout.Header>
-      <div style={ContainerStyle}>
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={selectedMenuItemKey}
-          onSelect={handleMenuItemSelected}
-          items={menuItems}
-          style={{ width: '50%' }}
-        />
-        <UserMenu history={history} location={location} />
-      </div>
-    </Layout.Header>
+    <ConfigProvider theme={HeaderTheme}>
+      <Layout.Header style={HeaderStyle}>
+        <div style={ContainerStyle}>
+          <img
+            src="/images/ebf-logo-light.png"
+            alt="Eastern Breeze"
+            style={LogoStyle}
+          />
+          <Menu
+            theme="dark"
+            mode="horizontal"
+            defaultSelectedKeys={selectedMenuItemKey}
+            onSelect={handleMenuItemSelected}
+            items={menuItems}
+            style={{ flex: 1 }}
+          />
+          <UserMenu history={history} location={location} />
+        </div>
+      </Layout.Header>
+    </ConfigProvider>
   );
 };
 

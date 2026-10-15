@@ -43,13 +43,12 @@ export default class SubModulePaths {
   static dutyAttendancePath = `${ModulePaths.hr}/duty-attendance`;
 
   // ******************************************************************************
-  // Attendance Sheets
+  // Attendance Report
   // ******************************************************************************
-  static attendanceSheetsPath = `${ModulePaths.hr}/attendance-sheets`;
-  static attendanceSheetsUploadFormPath = `${SubModulePaths.attendanceSheetsPath}/upload`;
-  static attendanceSheetsMeetingCardsPath = `${SubModulePaths.attendanceSheetsPath}/meeting-cards`;
-  static attendanceSheetsKarkunCardsPath = `${SubModulePaths.attendanceSheetsPath}/karkun-cards`;
-  static attendanceSheetsPrintAttendanceSheetPath = `${SubModulePaths.attendanceSheetsPath}/print-attendance-sheet`;
+  static attendanceReportPath = `${ModulePaths.hr}/attendance-report`;
+  static attendanceReportMeetingCardsPath = `${SubModulePaths.attendanceReportPath}/meeting-cards`;
+  static attendanceReportKarkunCardsPath = `${SubModulePaths.attendanceReportPath}/karkun-cards`;
+  static attendanceReportPrintSheetPath = `${SubModulePaths.attendanceReportPath}/print-attendance-sheet`;
 
   // ******************************************************************************
   // Salary Sheets

@@ -24,13 +24,13 @@ const PAGED_HR_KARKUNS: TypedDocumentNode<
         }
         karkunData {
           lastTarteebDate
-          duties {
+          teams {
             _id
-            dutyId
-            shiftId
-            dutyName
-            shiftName
-            role
+            name
+            duty {
+              _id
+              name
+            }
           }
         }
         employeeData {

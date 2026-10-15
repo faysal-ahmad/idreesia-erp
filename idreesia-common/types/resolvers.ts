@@ -77,7 +77,6 @@ export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Attachment: ResolverTypeWrapper<Types.Attachment>;
-  AttendanceType: ResolverTypeWrapper<Types.AttendanceType>;
   AuditLogFilter: Types.AuditLogFilter;
   AuditLogType: ResolverTypeWrapper<Types.AuditLogType>;
   Boolean: ResolverTypeWrapper<Types.Scalars['Boolean']['output']>;
@@ -91,6 +90,8 @@ export type ResolversTypes = ResolversObject<{
   DateTime: ResolverTypeWrapper<Types.Scalars['DateTime']['output']>;
   DuplicatePersonGroupType: ResolverTypeWrapper<Types.DuplicatePersonGroupType>;
   DuplicatePersonSummaryType: ResolverTypeWrapper<Types.DuplicatePersonSummaryType>;
+  DutyAttendanceCardType: ResolverTypeWrapper<Types.DutyAttendanceCardType>;
+  DutyAttendanceSheetRowType: ResolverTypeWrapper<Types.DutyAttendanceSheetRowType>;
   DutyLocationType: ResolverTypeWrapper<Types.DutyLocationType>;
   DutyPlanDaysDayType: ResolverTypeWrapper<Types.DutyPlanDaysDayType>;
   DutyPlanDaysKarkunType: ResolverTypeWrapper<Types.DutyPlanDaysKarkunType>;
@@ -118,7 +119,6 @@ export type ResolversTypes = ResolversObject<{
   JobLogEntryType: ResolverTypeWrapper<Types.JobLogEntryType>;
   JobLogsFilterType: Types.JobLogsFilterType;
   JobType: ResolverTypeWrapper<Types.JobType>;
-  KarkunDutyType: ResolverTypeWrapper<Types.KarkunDutyType>;
   KarkunFilter: Types.KarkunFilter;
   Location: ResolverTypeWrapper<Types.Location>;
   MehfilDutyType: ResolverTypeWrapper<Types.MehfilDutyType>;
@@ -127,7 +127,6 @@ export type ResolversTypes = ResolversObject<{
   MehfilLangarLocationType: ResolverTypeWrapper<Types.MehfilLangarLocationType>;
   MehfilType: ResolverTypeWrapper<Types.MehfilType>;
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
-  PagedAttendanceType: ResolverTypeWrapper<Types.PagedAttendanceType>;
   PagedAuditLogType: ResolverTypeWrapper<Types.PagedAuditLogType>;
   PagedCityType: ResolverTypeWrapper<Types.PagedCityType>;
   PagedIssuanceForm: ResolverTypeWrapper<Types.PagedIssuanceForm>;
@@ -187,7 +186,6 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Attachment: Types.Attachment;
-  AttendanceType: Types.AttendanceType;
   AuditLogFilter: Types.AuditLogFilter;
   AuditLogType: Types.AuditLogType;
   Boolean: Types.Scalars['Boolean']['output'];
@@ -201,6 +199,8 @@ export type ResolversParentTypes = ResolversObject<{
   DateTime: Types.Scalars['DateTime']['output'];
   DuplicatePersonGroupType: Types.DuplicatePersonGroupType;
   DuplicatePersonSummaryType: Types.DuplicatePersonSummaryType;
+  DutyAttendanceCardType: Types.DutyAttendanceCardType;
+  DutyAttendanceSheetRowType: Types.DutyAttendanceSheetRowType;
   DutyLocationType: Types.DutyLocationType;
   DutyPlanDaysDayType: Types.DutyPlanDaysDayType;
   DutyPlanDaysKarkunType: Types.DutyPlanDaysKarkunType;
@@ -228,7 +228,6 @@ export type ResolversParentTypes = ResolversObject<{
   JobLogEntryType: Types.JobLogEntryType;
   JobLogsFilterType: Types.JobLogsFilterType;
   JobType: Types.JobType;
-  KarkunDutyType: Types.KarkunDutyType;
   KarkunFilter: Types.KarkunFilter;
   Location: Types.Location;
   MehfilDutyType: Types.MehfilDutyType;
@@ -237,7 +236,6 @@ export type ResolversParentTypes = ResolversObject<{
   MehfilLangarLocationType: Types.MehfilLangarLocationType;
   MehfilType: Types.MehfilType;
   Mutation: Record<PropertyKey, never>;
-  PagedAttendanceType: Types.PagedAttendanceType;
   PagedAuditLogType: Types.PagedAuditLogType;
   PagedCityType: Types.PagedCityType;
   PagedIssuanceForm: Types.PagedIssuanceForm;
@@ -318,30 +316,6 @@ export type AttachmentResolvers<ContextType = any, ParentType extends ResolversP
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-}>;
-
-export type AttendanceTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['AttendanceType'] = ResolversParentTypes['AttendanceType']> = ResolversObject<{
-  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  absentCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  attendanceDetails?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  duty?: Resolver<Types.Maybe<ResolversTypes['DutyType']>, ParentType, ContextType>;
-  dutyId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  job?: Resolver<Types.Maybe<ResolversTypes['JobType']>, ParentType, ContextType>;
-  jobId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  karkun?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType>;
-  karkunId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  meetingCardBarcodeId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  month?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  percentage?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  presentCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  shift?: Resolver<Types.Maybe<ResolversTypes['DutyShiftType']>, ParentType, ContextType>;
-  shiftId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type AuditLogTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuditLogType'] = ResolversParentTypes['AuditLogType']> = ResolversObject<{
@@ -437,6 +411,45 @@ export type DuplicatePersonSummaryTypeResolvers<ContextType = any, ParentType ex
   updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
+export type DutyAttendanceCardTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DutyAttendanceCardType'] = ResolversParentTypes['DutyAttendanceCardType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  absentCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  barcodeId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  daysOnDuty?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  duty?: Resolver<Types.Maybe<ResolversTypes['DutyType']>, ParentType, ContextType>;
+  dutyId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  karkun?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType>;
+  karkunId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lateCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  month?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  percentage?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  presentCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  shiftNames?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  unmarkedCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type DutyAttendanceSheetRowTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DutyAttendanceSheetRowType'] = ResolversParentTypes['DutyAttendanceSheetRowType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  absentCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  barcodeId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  daysOnDuty?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  duty?: Resolver<Types.Maybe<ResolversTypes['DutyType']>, ParentType, ContextType>;
+  dutyId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  karkun?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType>;
+  karkunId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lateCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  location?: Resolver<Types.Maybe<ResolversTypes['DutyLocationType']>, ParentType, ContextType>;
+  locationId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  month?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  percentage?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  presentCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  shiftId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  shiftName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  unmarkedCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
 export type DutyLocationTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DutyLocationType'] = ResolversParentTypes['DutyLocationType']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   canDelete?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -447,7 +460,6 @@ export type DutyLocationTypeResolvers<ContextType = any, ParentType extends Reso
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  usedCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
 export type DutyPlanDaysDayTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DutyPlanDaysDayType'] = ResolversParentTypes['DutyPlanDaysDayType']> = ResolversObject<{
@@ -647,26 +659,6 @@ export type JobTypeResolvers<ContextType = any, ParentType extends ResolversPare
   usedCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
-export type KarkunDutyTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['KarkunDutyType'] = ResolversParentTypes['KarkunDutyType']> = ResolversObject<{
-  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  daysOfWeek?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  duty?: Resolver<Types.Maybe<ResolversTypes['DutyType']>, ParentType, ContextType>;
-  dutyId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  dutyName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  karkunId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  location?: Resolver<Types.Maybe<ResolversTypes['DutyLocationType']>, ParentType, ContextType>;
-  locationId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  locationName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  role?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  shift?: Resolver<Types.Maybe<ResolversTypes['DutyShiftType']>, ParentType, ContextType>;
-  shiftId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  shiftName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-}>;
-
 export type LocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -758,7 +750,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   cancelVisitorStay?: Resolver<Types.Maybe<ResolversTypes['VisitorStayType']>, ParentType, ContextType, RequireFields<Types.MutationCancelVisitorStayArgs, '_id'>>;
   clearJobDefinitionSchedule?: Resolver<Types.Maybe<ResolversTypes['JobDefinitionType']>, ParentType, ContextType, RequireFields<Types.MutationClearJobDefinitionScheduleArgs, '_id'>>;
   createAttachment?: Resolver<Types.Maybe<ResolversTypes['Attachment']>, ParentType, ContextType, RequireFields<Types.MutationCreateAttachmentArgs, 'data'>>;
-  createAttendances?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationCreateAttendancesArgs, 'month'>>;
   createCity?: Resolver<Types.Maybe<ResolversTypes['CityType']>, ParentType, ContextType, RequireFields<Types.MutationCreateCityArgs, 'country' | 'name'>>;
   createCityMehfil?: Resolver<Types.Maybe<ResolversTypes['CityMehfilType']>, ParentType, ContextType, RequireFields<Types.MutationCreateCityMehfilArgs, 'cityId' | 'name'>>;
   createCommittee?: Resolver<Types.Maybe<ResolversTypes['CommitteeType']>, ParentType, ContextType, RequireFields<Types.MutationCreateCommitteeArgs, 'name'>>;
@@ -769,7 +760,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createIssuanceForm?: Resolver<Types.Maybe<ResolversTypes['IssuanceForm']>, ParentType, ContextType, RequireFields<Types.MutationCreateIssuanceFormArgs, 'issueDate' | 'issuedBy' | 'issuedTo' | 'physicalStoreId'>>;
   createItemCategory?: Resolver<Types.Maybe<ResolversTypes['ItemCategory']>, ParentType, ContextType, RequireFields<Types.MutationCreateItemCategoryArgs, 'name' | 'physicalStoreId'>>;
   createJob?: Resolver<Types.Maybe<ResolversTypes['JobType']>, ParentType, ContextType, RequireFields<Types.MutationCreateJobArgs, 'name'>>;
-  createKarkunDuty?: Resolver<Types.Maybe<ResolversTypes['KarkunDutyType']>, ParentType, ContextType, RequireFields<Types.MutationCreateKarkunDutyArgs, 'dutyId' | 'karkunId'>>;
   createLocation?: Resolver<Types.Maybe<ResolversTypes['Location']>, ParentType, ContextType, RequireFields<Types.MutationCreateLocationArgs, 'name' | 'physicalStoreId'>>;
   createMehfil?: Resolver<Types.Maybe<ResolversTypes['MehfilType']>, ParentType, ContextType, RequireFields<Types.MutationCreateMehfilArgs, 'mehfilDate' | 'name'>>;
   createPeopleTag?: Resolver<Types.Maybe<ResolversTypes['PeopleTagType']>, ParentType, ContextType, RequireFields<Types.MutationCreatePeopleTagArgs, 'color' | 'moduleNames' | 'name' | 'textColor'>>;
@@ -787,9 +777,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createUserGroup?: Resolver<Types.Maybe<ResolversTypes['UserGroupType']>, ParentType, ContextType, RequireFields<Types.MutationCreateUserGroupArgs, 'moduleName' | 'name'>>;
   createVendor?: Resolver<Types.Maybe<ResolversTypes['Vendor']>, ParentType, ContextType, RequireFields<Types.MutationCreateVendorArgs, 'name' | 'physicalStoreId'>>;
   createVisitorStay?: Resolver<Types.Maybe<ResolversTypes['VisitorStayType']>, ParentType, ContextType, RequireFields<Types.MutationCreateVisitorStayArgs, 'numOfDays' | 'visitorId'>>;
-  deleteAllAttendances?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteAllAttendancesArgs, 'month'>>;
   deleteAllSalaries?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteAllSalariesArgs, 'month'>>;
-  deleteAttendances?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteAttendancesArgs, 'ids' | 'month'>>;
   deleteDuplicatePeople?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteDuplicatePeopleArgs, '_ids'>>;
   deleteHrKarkun?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteHrKarkunArgs, '_id'>>;
   deletePeopleTag?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeletePeopleTagArgs, '_id'>>;
@@ -818,7 +806,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeIssuanceForms?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveIssuanceFormsArgs, '_ids' | 'physicalStoreId'>>;
   removeItemCategory?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveItemCategoryArgs, '_id' | 'physicalStoreId'>>;
   removeJob?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveJobArgs, '_id'>>;
-  removeKarkunDuty?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveKarkunDutyArgs, '_id'>>;
   removeLocation?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveLocationArgs, '_id' | 'physicalStoreId'>>;
   removeMehfil?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveMehfilArgs, '_id'>>;
   removeMehfilKarkun?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveMehfilKarkunArgs, '_id'>>;
@@ -856,7 +843,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   setUserGroupInstanceAccess?: Resolver<Types.Maybe<ResolversTypes['UserGroupType']>, ParentType, ContextType, RequireFields<Types.MutationSetUserGroupInstanceAccessArgs, '_id' | 'instances'>>;
   setUserGroupPermissions?: Resolver<Types.Maybe<ResolversTypes['UserGroupType']>, ParentType, ContextType, RequireFields<Types.MutationSetUserGroupPermissionsArgs, '_id' | 'permissions'>>;
   updateAttachment?: Resolver<Types.Maybe<ResolversTypes['Attachment']>, ParentType, ContextType, RequireFields<Types.MutationUpdateAttachmentArgs, '_id'>>;
-  updateAttendance?: Resolver<Types.Maybe<ResolversTypes['AttendanceType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateAttendanceArgs, '_id'>>;
   updateCity?: Resolver<Types.Maybe<ResolversTypes['CityType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateCityArgs, '_id' | 'country' | 'name'>>;
   updateCityMehfil?: Resolver<Types.Maybe<ResolversTypes['CityMehfilType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateCityMehfilArgs, '_id' | 'cityId' | 'name'>>;
   updateCommittee?: Resolver<Types.Maybe<ResolversTypes['CommitteeType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateCommitteeArgs, 'id' | 'name'>>;
@@ -868,7 +854,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateItemCategory?: Resolver<Types.Maybe<ResolversTypes['ItemCategory']>, ParentType, ContextType, RequireFields<Types.MutationUpdateItemCategoryArgs, '_id' | 'name' | 'physicalStoreId'>>;
   updateJob?: Resolver<Types.Maybe<ResolversTypes['JobType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateJobArgs, 'id' | 'name'>>;
   updateJobDefinitionSchedule?: Resolver<Types.Maybe<ResolversTypes['JobDefinitionType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateJobDefinitionScheduleArgs, '_id' | 'schedule'>>;
-  updateKarkunDuty?: Resolver<Types.Maybe<ResolversTypes['KarkunDutyType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateKarkunDutyArgs, '_id' | 'dutyId' | 'karkunId'>>;
   updateLastActiveTime?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   updateLocation?: Resolver<Types.Maybe<ResolversTypes['Location']>, ParentType, ContextType, RequireFields<Types.MutationUpdateLocationArgs, '_id' | 'name' | 'physicalStoreId'>>;
   updateLoginTime?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -891,11 +876,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateVendor?: Resolver<Types.Maybe<ResolversTypes['Vendor']>, ParentType, ContextType, RequireFields<Types.MutationUpdateVendorArgs, '_id' | 'physicalStoreId'>>;
   updateVisitorStay?: Resolver<Types.Maybe<ResolversTypes['VisitorStayType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateVisitorStayArgs, '_id' | 'fromDate' | 'toDate'>>;
   verifyStockItemLevel?: Resolver<Types.Maybe<ResolversTypes['StockItem']>, ParentType, ContextType, RequireFields<Types.MutationVerifyStockItemLevelArgs, '_id' | 'physicalStoreId'>>;
-}>;
-
-export type PagedAttendanceTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedAttendanceType'] = ResolversParentTypes['PagedAttendanceType']> = ResolversObject<{
-  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['AttendanceType']>>>, ParentType, ContextType>;
-  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
 export type PagedAuditLogTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedAuditLogType'] = ResolversParentTypes['PagedAuditLogType']> = ResolversObject<{
@@ -1005,13 +985,13 @@ export type PersonKarkunDataTypeResolvers<ContextType = any, ParentType extends 
   cityId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cityMehfil?: Resolver<Types.Maybe<ResolversTypes['CityMehfilType']>, ParentType, ContextType>;
   cityMehfilId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  duties?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['KarkunDutyType']>>>, ParentType, ContextType>;
   ehadKarkun?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   ehadPermissionDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastTarteebDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   mehfilRaabta?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   msLastVisitDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   msRaabta?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  teams?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['TeamType']>>>, ParentType, ContextType>;
 }>;
 
 export type PersonRelationCountTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PersonRelationCountType'] = ResolversParentTypes['PersonRelationCountType']> = ResolversObject<{
@@ -1138,10 +1118,6 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   allSecurityMehfilLangarLocations?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['MehfilLangarLocationType']>>>, ParentType, ContextType>;
   allTeams?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['TeamType']>>>, ParentType, ContextType>;
   attachmentsById?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['Attachment']>>>, ParentType, ContextType, RequireFields<Types.QueryAttachmentsByIdArgs, 'ids'>>;
-  attendanceByBarcodeId?: Resolver<Types.Maybe<ResolversTypes['AttendanceType']>, ParentType, ContextType, RequireFields<Types.QueryAttendanceByBarcodeIdArgs, 'barcodeId'>>;
-  attendanceByBarcodeIds?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['AttendanceType']>>>, ParentType, ContextType, RequireFields<Types.QueryAttendanceByBarcodeIdsArgs, 'barcodeIds'>>;
-  attendanceById?: Resolver<Types.Maybe<ResolversTypes['AttendanceType']>, ParentType, ContextType, RequireFields<Types.QueryAttendanceByIdArgs, '_id'>>;
-  attendanceByMonth?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['AttendanceType']>>>, ParentType, ContextType, RequireFields<Types.QueryAttendanceByMonthArgs, 'month'>>;
   cityById?: Resolver<Types.Maybe<ResolversTypes['CityType']>, ParentType, ContextType, RequireFields<Types.QueryCityByIdArgs, '_id'>>;
   cityMehfilById?: Resolver<Types.Maybe<ResolversTypes['CityMehfilType']>, ParentType, ContextType, RequireFields<Types.QueryCityMehfilByIdArgs, '_id'>>;
   cityMehfilsByCityId?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CityMehfilType']>>>, ParentType, ContextType, RequireFields<Types.QueryCityMehfilsByCityIdArgs, 'cityId'>>;
@@ -1157,6 +1133,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   duplicatePersonById?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.QueryDuplicatePersonByIdArgs, '_id'>>;
   duplicatePersonRelationCounts?: Resolver<Types.Maybe<Array<ResolversTypes['PersonRelationCounts']>>, ParentType, ContextType, RequireFields<Types.QueryDuplicatePersonRelationCountsArgs, 'ids'>>;
   duplicatePhoneNumbers?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DuplicatePersonGroupType']>>>, ParentType, ContextType>;
+  dutyAttendanceCards?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DutyAttendanceCardType']>>>, ParentType, ContextType, RequireFields<Types.QueryDutyAttendanceCardsArgs, 'dutyId' | 'karkunIds' | 'month'>>;
+  dutyAttendanceSheet?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DutyAttendanceSheetRowType']>>>, ParentType, ContextType, RequireFields<Types.QueryDutyAttendanceSheetArgs, 'dutyId' | 'month'>>;
   dutyLocationById?: Resolver<Types.Maybe<ResolversTypes['DutyLocationType']>, ParentType, ContextType, RequireFields<Types.QueryDutyLocationByIdArgs, 'id'>>;
   dutyLocationsByDutyId?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DutyLocationType']>>>, ParentType, ContextType, RequireFields<Types.QueryDutyLocationsByDutyIdArgs, 'dutyId'>>;
   dutyPlanDays?: Resolver<Types.Maybe<ResolversTypes['DutyPlanDaysType']>, ParentType, ContextType, RequireFields<Types.QueryDutyPlanDaysArgs, 'dutyId' | 'locationId' | 'startDate'>>;
@@ -1173,15 +1151,13 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   itemCategoriesByPhysicalStoreId?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['ItemCategory']>>>, ParentType, ContextType, RequireFields<Types.QueryItemCategoriesByPhysicalStoreIdArgs, 'physicalStoreId'>>;
   itemCategoryById?: Resolver<Types.Maybe<ResolversTypes['ItemCategory']>, ParentType, ContextType, RequireFields<Types.QueryItemCategoryByIdArgs, '_id' | 'physicalStoreId'>>;
   jobById?: Resolver<Types.Maybe<ResolversTypes['JobType']>, ParentType, ContextType, RequireFields<Types.QueryJobByIdArgs, 'id'>>;
-  karkunDutiesByKarkunId?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['KarkunDutyType']>>>, ParentType, ContextType, RequireFields<Types.QueryKarkunDutiesByKarkunIdArgs, 'karkunId'>>;
-  karkunDutyById?: Resolver<Types.Maybe<ResolversTypes['KarkunDutyType']>, ParentType, ContextType, RequireFields<Types.QueryKarkunDutyByIdArgs, '_id'>>;
+  karkunDutyAttendanceSheet?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DutyAttendanceSheetRowType']>>>, ParentType, ContextType, RequireFields<Types.QueryKarkunDutyAttendanceSheetArgs, 'karkunId'>>;
   locationById?: Resolver<Types.Maybe<ResolversTypes['Location']>, ParentType, ContextType, RequireFields<Types.QueryLocationByIdArgs, '_id' | 'physicalStoreId'>>;
   locationsByPhysicalStoreId?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['Location']>>>, ParentType, ContextType, RequireFields<Types.QueryLocationsByPhysicalStoreIdArgs, 'physicalStoreId'>>;
   mehfilById?: Resolver<Types.Maybe<ResolversTypes['MehfilType']>, ParentType, ContextType, RequireFields<Types.QueryMehfilByIdArgs, '_id'>>;
   mehfilKarkunByBarcodeId?: Resolver<Types.Maybe<ResolversTypes['MehfilKarkunType']>, ParentType, ContextType, RequireFields<Types.QueryMehfilKarkunByBarcodeIdArgs, 'barcode'>>;
   mehfilKarkunsByIds?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['MehfilKarkunType']>>>, ParentType, ContextType, RequireFields<Types.QueryMehfilKarkunsByIdsArgs, 'ids'>>;
   mehfilKarkunsByMehfilId?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['MehfilKarkunType']>>>, ParentType, ContextType, RequireFields<Types.QueryMehfilKarkunsByMehfilIdArgs, 'mehfilId'>>;
-  pagedAttendanceByKarkun?: Resolver<Types.Maybe<ResolversTypes['PagedAttendanceType']>, ParentType, ContextType, Partial<Types.QueryPagedAttendanceByKarkunArgs>>;
   pagedCities?: Resolver<Types.Maybe<ResolversTypes['PagedCityType']>, ParentType, ContextType, Partial<Types.QueryPagedCitiesArgs>>;
   pagedDeletedPeople?: Resolver<Types.Maybe<ResolversTypes['PagedPeopleType']>, ParentType, ContextType, Partial<Types.QueryPagedDeletedPeopleArgs>>;
   pagedHrAuditLogs?: Resolver<Types.Maybe<ResolversTypes['PagedAuditLogType']>, ParentType, ContextType, Partial<Types.QueryPagedHrAuditLogsArgs>>;
@@ -1446,7 +1422,6 @@ export type VisitorStayTypeResolvers<ContextType = any, ParentType extends Resol
 
 export type Resolvers<ContextType = any> = ResolversObject<{
   Attachment?: AttachmentResolvers<ContextType>;
-  AttendanceType?: AttendanceTypeResolvers<ContextType>;
   AuditLogType?: AuditLogTypeResolvers<ContextType>;
   CityMehfilType?: CityMehfilTypeResolvers<ContextType>;
   CityType?: CityTypeResolvers<ContextType>;
@@ -1457,6 +1432,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   DateTime?: GraphQLScalarType;
   DuplicatePersonGroupType?: DuplicatePersonGroupTypeResolvers<ContextType>;
   DuplicatePersonSummaryType?: DuplicatePersonSummaryTypeResolvers<ContextType>;
+  DutyAttendanceCardType?: DutyAttendanceCardTypeResolvers<ContextType>;
+  DutyAttendanceSheetRowType?: DutyAttendanceSheetRowTypeResolvers<ContextType>;
   DutyLocationType?: DutyLocationTypeResolvers<ContextType>;
   DutyPlanDaysDayType?: DutyPlanDaysDayTypeResolvers<ContextType>;
   DutyPlanDaysKarkunType?: DutyPlanDaysKarkunTypeResolvers<ContextType>;
@@ -1479,7 +1456,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   JobDefinitionType?: JobDefinitionTypeResolvers<ContextType>;
   JobLogEntryType?: JobLogEntryTypeResolvers<ContextType>;
   JobType?: JobTypeResolvers<ContextType>;
-  KarkunDutyType?: KarkunDutyTypeResolvers<ContextType>;
   Location?: LocationResolvers<ContextType>;
   MehfilDutyType?: MehfilDutyTypeResolvers<ContextType>;
   MehfilKarkunType?: MehfilKarkunTypeResolvers<ContextType>;
@@ -1487,7 +1463,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   MehfilLangarLocationType?: MehfilLangarLocationTypeResolvers<ContextType>;
   MehfilType?: MehfilTypeResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
-  PagedAttendanceType?: PagedAttendanceTypeResolvers<ContextType>;
   PagedAuditLogType?: PagedAuditLogTypeResolvers<ContextType>;
   PagedCityType?: PagedCityTypeResolvers<ContextType>;
   PagedIssuanceForm?: PagedIssuanceFormResolvers<ContextType>;

@@ -24,7 +24,7 @@ const pages: Array<{ path: string; breadcrumbs: string[] }> = [
   { path: HrPaths.karkuns, breadcrumbs: ['HR', 'Karkuns', 'List'] },
   { path: HrPaths.employees, breadcrumbs: ['HR', 'Employees', 'List'] },
   { path: HrPaths.msDuties, breadcrumbs: ['HR', 'Duties & Shifts'] },
-  { path: HrPaths.attendanceSheets, breadcrumbs: ['HR', 'Attendance Sheets', 'List'] },
+  { path: HrPaths.attendanceReport, breadcrumbs: ['HR', 'Attendance Report', 'List'] },
   { path: HrPaths.salarySheets, breadcrumbs: ['HR', 'Salary Sheets', 'List'] },
   { path: HrPaths.auditLogs, breadcrumbs: ['HR', 'Audit Logs', 'List'] },
 

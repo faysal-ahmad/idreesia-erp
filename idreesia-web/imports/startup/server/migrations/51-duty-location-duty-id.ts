@@ -1,10 +1,9 @@
 import { Migrations } from 'meteor/quave:migrations';
 import { Random } from 'meteor/random';
 
-import {
-  DutyLocations,
-  KarkunDuties,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { DutyLocations } from 'meteor/idreesia-common/server/collections/hr';
+
+import { LegacyKarkunDuties } from './legacy-karkun-duties';
 
 // Duty locations used to be a global list. Attach each one to the duty that
 // already uses it. A location shared by more than one duty is copied so each
@@ -13,7 +12,7 @@ Migrations.add({
   version: 51,
   async up() {
     const locations = DutyLocations.rawCollection();
-    const karkunDuties = KarkunDuties.rawCollection();
+    const karkunDuties = LegacyKarkunDuties.rawCollection();
     await locations.createIndex({ dutyId: 1 }, { background: false });
 
     const existing = await locations

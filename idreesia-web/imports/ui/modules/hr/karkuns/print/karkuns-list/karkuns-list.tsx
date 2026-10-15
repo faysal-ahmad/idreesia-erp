@@ -7,8 +7,8 @@ import { PersonName } from '/imports/ui/modules/helpers/controls';
 type KarkunRow = NonNullable<
   NonNullable<HrKarkunsByIdQuery['hrKarkunsById']>[number]
 >;
-type KarkunDuty = NonNullable<
-  NonNullable<NonNullable<KarkunRow['karkunData']>['duties']>[number]
+type KarkunTeam = NonNullable<
+  NonNullable<NonNullable<KarkunRow['karkunData']>['teams']>[number]
 >;
 
 interface Props {
@@ -64,20 +64,17 @@ export default class KarkunsList extends Component<Props> {
 
   dutiesColumn = {
     title: 'Duties',
-    dataIndex: ['karkunData', 'duties'],
+    dataIndex: ['karkunData', 'teams'],
     key: 'duties',
-    render: (duties: KarkunDuty[] | null | undefined, record: KarkunRow) => {
+    render: (duties: KarkunTeam[] | null | undefined, record: KarkunRow) => {
       const normalizedDuties = (duties ?? []).filter(
-        (duty): duty is KarkunDuty => duty != null
+        (duty): duty is KarkunTeam => duty != null
       );
       let dutyNames: React.ReactNode[] = [];
 
       if (normalizedDuties.length > 0) {
         dutyNames = normalizedDuties.map((duty, index) => {
-          let dutyName = duty.dutyName;
-          if (duty.shiftName) {
-            dutyName = `${dutyName} - ${duty.shiftName}`;
-          }
+          const dutyName = [duty.duty?.name, duty.name].filter(Boolean).join(' - ');
 
           return <span key={index}>{dutyName}</span>;
         });

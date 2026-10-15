@@ -1,8 +1,6 @@
 import {
-  Attendances,
   Committees,
   DutyDayAttendances,
-  KarkunDuties,
   Teams,
 } from 'meteor/idreesia-common/server/collections/hr';
 import { MehfilKarkuns, VisitorStays } from 'meteor/idreesia-common/server/collections/security';
@@ -25,8 +23,6 @@ import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 // runs, so that final record is unaffected by this cleanup.
 export async function removeOwnedPersonRelations(personId: string): Promise<void> {
   await Promise.all([
-    Attendances.removeAsync({ karkunId: personId }),
-    KarkunDuties.removeAsync({ karkunId: personId }),
     Committees.updateAsync(
       { 'members.karkunId': personId },
       { $pull: { members: { karkunId: personId } } },

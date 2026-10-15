@@ -170,6 +170,21 @@ Dates are `YYYY-MM-DD` strings compared in Karachi time (`todayInKarachi`).
   - Day attendance records are history and don't block deletes.
 - **Person delete** removes the person from committee members, team members and day attendance records, and counts all three in the person's relation counts.
 
-## 4. Open points
+## 4. Attendance report
+
+The Attendance Report page shows monthly totals computed from the day attendance records. Nothing monthly is stored.
+
+- **Selection:** a month and a duty, optionally narrowed to a location and then a shift.
+- **Rows:** one per karkun, location and shift. Before reading, any planned past day in the month that has no record yet gets one, so the totals don't depend on the daily job having run.
+- **Counts:**
+  - Days on duty: the days the karkun appears in a record.
+  - Present, Late, Absent, and Not marked.
+  - Percentage = round((present + late) / days on duty × 100). Unmarked days count against it.
+- **Cards:** printed cards are one per karkun. A karkun on several shifts gets their shift names joined, and a percentage over all their days. The barcode is `<karkunId>-<MMyyyy>` for the attendance month. Meeting cards are labelled for the 1st of the following month.
+- **Karkun profile:** the "Attendance Sheets" tab shows the same monthly totals for one karkun across all duties, newest month first.
+
+The old model has been removed: the monthly `hr-attendances` records, the `create-monthly-attendance` job, and `hr-karkun-duties`, which recorded each karkun's duties one by one. Migration 54 drops both collections. A karkun's duties now come from team membership. Karkun lists show "Duty - Team", and the karkun search's duty/shift filter matches team members (for a shift, members of the team assigned to it).
+
+## 5. Open points
 
 - **Editable dates differ.** The server accepts attendance for any locked date (today and earlier); the UI only edits today.

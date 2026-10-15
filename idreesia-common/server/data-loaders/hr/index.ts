@@ -1,2 +1,2 @@
 export { jobsDataLoader } from './jobs';
-export { karkunDutiesDataLoader } from './karkun-duties';
+export { karkunTeamsDataLoader } from './karkun-teams';

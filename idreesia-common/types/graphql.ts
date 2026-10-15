@@ -34,31 +34,6 @@ export type Attachment = {
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
-export type AttendanceType = {
-  __typename?: 'AttendanceType';
-  _id?: Maybe<Scalars['String']['output']>;
-  absentCount?: Maybe<Scalars['Int']['output']>;
-  attendanceDetails?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['String']['output']>;
-  createdBy?: Maybe<Scalars['String']['output']>;
-  createdByName?: Maybe<Scalars['String']['output']>;
-  duty?: Maybe<DutyType>;
-  dutyId?: Maybe<Scalars['String']['output']>;
-  job?: Maybe<JobType>;
-  jobId?: Maybe<Scalars['String']['output']>;
-  karkun?: Maybe<PersonType>;
-  karkunId?: Maybe<Scalars['String']['output']>;
-  meetingCardBarcodeId?: Maybe<Scalars['String']['output']>;
-  month?: Maybe<Scalars['String']['output']>;
-  percentage?: Maybe<Scalars['Float']['output']>;
-  presentCount?: Maybe<Scalars['Int']['output']>;
-  shift?: Maybe<DutyShiftType>;
-  shiftId?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['String']['output']>;
-  updatedBy?: Maybe<Scalars['String']['output']>;
-  updatedByName?: Maybe<Scalars['String']['output']>;
-};
-
 export type AuditLogFilter = {
   entityId?: InputMaybe<Scalars['String']['input']>;
   operationBy?: InputMaybe<Scalars['String']['input']>;
@@ -161,6 +136,47 @@ export type DuplicatePersonSummaryType = {
   updatedAt?: Maybe<Scalars['String']['output']>;
 };
 
+export type DutyAttendanceCardType = {
+  __typename?: 'DutyAttendanceCardType';
+  _id?: Maybe<Scalars['String']['output']>;
+  absentCount?: Maybe<Scalars['Int']['output']>;
+  barcodeId?: Maybe<Scalars['String']['output']>;
+  daysOnDuty?: Maybe<Scalars['Int']['output']>;
+  duty?: Maybe<DutyType>;
+  dutyId?: Maybe<Scalars['String']['output']>;
+  karkun?: Maybe<PersonType>;
+  karkunId?: Maybe<Scalars['String']['output']>;
+  lateCount?: Maybe<Scalars['Int']['output']>;
+  month?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  percentage?: Maybe<Scalars['Int']['output']>;
+  presentCount?: Maybe<Scalars['Int']['output']>;
+  shiftNames?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  unmarkedCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type DutyAttendanceSheetRowType = {
+  __typename?: 'DutyAttendanceSheetRowType';
+  _id?: Maybe<Scalars['String']['output']>;
+  absentCount?: Maybe<Scalars['Int']['output']>;
+  barcodeId?: Maybe<Scalars['String']['output']>;
+  daysOnDuty?: Maybe<Scalars['Int']['output']>;
+  duty?: Maybe<DutyType>;
+  dutyId?: Maybe<Scalars['String']['output']>;
+  karkun?: Maybe<PersonType>;
+  karkunId?: Maybe<Scalars['String']['output']>;
+  lateCount?: Maybe<Scalars['Int']['output']>;
+  location?: Maybe<DutyLocationType>;
+  locationId?: Maybe<Scalars['String']['output']>;
+  month?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  percentage?: Maybe<Scalars['Int']['output']>;
+  presentCount?: Maybe<Scalars['Int']['output']>;
+  shiftId?: Maybe<Scalars['String']['output']>;
+  shiftName?: Maybe<Scalars['String']['output']>;
+  unmarkedCount?: Maybe<Scalars['Int']['output']>;
+};
+
 export type DutyLocationType = {
   __typename?: 'DutyLocationType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -172,7 +188,6 @@ export type DutyLocationType = {
   name?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
-  usedCount?: Maybe<Scalars['Int']['output']>;
 };
 
 export type DutyPlanDaysDayType = {
@@ -399,27 +414,6 @@ export type JobType = {
   usedCount?: Maybe<Scalars['Int']['output']>;
 };
 
-export type KarkunDutyType = {
-  __typename?: 'KarkunDutyType';
-  _id?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['String']['output']>;
-  createdBy?: Maybe<Scalars['String']['output']>;
-  daysOfWeek?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  duty?: Maybe<DutyType>;
-  dutyId?: Maybe<Scalars['String']['output']>;
-  dutyName?: Maybe<Scalars['String']['output']>;
-  karkunId?: Maybe<Scalars['String']['output']>;
-  location?: Maybe<DutyLocationType>;
-  locationId?: Maybe<Scalars['String']['output']>;
-  locationName?: Maybe<Scalars['String']['output']>;
-  role?: Maybe<Scalars['String']['output']>;
-  shift?: Maybe<DutyShiftType>;
-  shiftId?: Maybe<Scalars['String']['output']>;
-  shiftName?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['String']['output']>;
-  updatedBy?: Maybe<Scalars['String']['output']>;
-};
-
 export type KarkunFilter = {
   attendance?: InputMaybe<Scalars['String']['input']>;
   bloodGroup?: InputMaybe<Scalars['String']['input']>;
@@ -543,7 +537,6 @@ export type Mutation = {
   cancelVisitorStay?: Maybe<VisitorStayType>;
   clearJobDefinitionSchedule?: Maybe<JobDefinitionType>;
   createAttachment?: Maybe<Attachment>;
-  createAttendances?: Maybe<Scalars['Int']['output']>;
   createCity?: Maybe<CityType>;
   createCityMehfil?: Maybe<CityMehfilType>;
   createCommittee?: Maybe<CommitteeType>;
@@ -554,7 +547,6 @@ export type Mutation = {
   createIssuanceForm?: Maybe<IssuanceForm>;
   createItemCategory?: Maybe<ItemCategory>;
   createJob?: Maybe<JobType>;
-  createKarkunDuty?: Maybe<KarkunDutyType>;
   createLocation?: Maybe<Location>;
   createMehfil?: Maybe<MehfilType>;
   createPeopleTag?: Maybe<PeopleTagType>;
@@ -572,9 +564,7 @@ export type Mutation = {
   createUserGroup?: Maybe<UserGroupType>;
   createVendor?: Maybe<Vendor>;
   createVisitorStay?: Maybe<VisitorStayType>;
-  deleteAllAttendances?: Maybe<Scalars['Int']['output']>;
   deleteAllSalaries?: Maybe<Scalars['Int']['output']>;
-  deleteAttendances?: Maybe<Scalars['Int']['output']>;
   deleteDuplicatePeople?: Maybe<Scalars['Int']['output']>;
   deleteHrKarkun?: Maybe<Scalars['Int']['output']>;
   deletePeopleTag?: Maybe<Scalars['Int']['output']>;
@@ -603,7 +593,6 @@ export type Mutation = {
   removeIssuanceForms?: Maybe<Scalars['Int']['output']>;
   removeItemCategory?: Maybe<Scalars['Int']['output']>;
   removeJob?: Maybe<Scalars['Int']['output']>;
-  removeKarkunDuty?: Maybe<Scalars['Int']['output']>;
   removeLocation?: Maybe<Scalars['Int']['output']>;
   removeMehfil?: Maybe<Scalars['Int']['output']>;
   removeMehfilKarkun?: Maybe<Scalars['Int']['output']>;
@@ -641,7 +630,6 @@ export type Mutation = {
   setUserGroupInstanceAccess?: Maybe<UserGroupType>;
   setUserGroupPermissions?: Maybe<UserGroupType>;
   updateAttachment?: Maybe<Attachment>;
-  updateAttendance?: Maybe<AttendanceType>;
   updateCity?: Maybe<CityType>;
   updateCityMehfil?: Maybe<CityMehfilType>;
   updateCommittee?: Maybe<CommitteeType>;
@@ -653,7 +641,6 @@ export type Mutation = {
   updateItemCategory?: Maybe<ItemCategory>;
   updateJob?: Maybe<JobType>;
   updateJobDefinitionSchedule?: Maybe<JobDefinitionType>;
-  updateKarkunDuty?: Maybe<KarkunDutyType>;
   updateLastActiveTime?: Maybe<Scalars['Int']['output']>;
   updateLocation?: Maybe<Location>;
   updateLoginTime?: Maybe<Scalars['Int']['output']>;
@@ -767,11 +754,6 @@ export type MutationCreateAttachmentArgs = {
 };
 
 
-export type MutationCreateAttendancesArgs = {
-  month: Scalars['String']['input'];
-};
-
-
 export type MutationCreateCityArgs = {
   country: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -862,16 +844,6 @@ export type MutationCreateItemCategoryArgs = {
 export type MutationCreateJobArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
-};
-
-
-export type MutationCreateKarkunDutyArgs = {
-  daysOfWeek?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  dutyId: Scalars['String']['input'];
-  karkunId: Scalars['String']['input'];
-  locationId?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['String']['input']>;
-  shiftId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1025,20 +997,7 @@ export type MutationCreateVisitorStayArgs = {
 };
 
 
-export type MutationDeleteAllAttendancesArgs = {
-  categoryId?: InputMaybe<Scalars['String']['input']>;
-  month: Scalars['String']['input'];
-  subCategoryId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
 export type MutationDeleteAllSalariesArgs = {
-  month: Scalars['String']['input'];
-};
-
-
-export type MutationDeleteAttendancesArgs = {
-  ids: Array<InputMaybe<Scalars['String']['input']>>;
   month: Scalars['String']['input'];
 };
 
@@ -1193,11 +1152,6 @@ export type MutationRemoveItemCategoryArgs = {
 
 
 export type MutationRemoveJobArgs = {
-  _id: Scalars['String']['input'];
-};
-
-
-export type MutationRemoveKarkunDutyArgs = {
   _id: Scalars['String']['input'];
 };
 
@@ -1432,15 +1386,6 @@ export type MutationUpdateAttachmentArgs = {
 };
 
 
-export type MutationUpdateAttendanceArgs = {
-  _id: Scalars['String']['input'];
-  absentCount?: InputMaybe<Scalars['Int']['input']>;
-  attendanceDetails?: InputMaybe<Scalars['String']['input']>;
-  percentage?: InputMaybe<Scalars['Int']['input']>;
-  presentCount?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
 export type MutationUpdateCityArgs = {
   _id: Scalars['String']['input'];
   country: Scalars['String']['input'];
@@ -1547,17 +1492,6 @@ export type MutationUpdateJobArgs = {
 export type MutationUpdateJobDefinitionScheduleArgs = {
   _id: Scalars['String']['input'];
   schedule: Scalars['String']['input'];
-};
-
-
-export type MutationUpdateKarkunDutyArgs = {
-  _id: Scalars['String']['input'];
-  daysOfWeek?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  dutyId: Scalars['String']['input'];
-  karkunId: Scalars['String']['input'];
-  locationId?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['String']['input']>;
-  shiftId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1748,12 +1682,6 @@ export type MutationVerifyStockItemLevelArgs = {
   physicalStoreId: Scalars['String']['input'];
 };
 
-export type PagedAttendanceType = {
-  __typename?: 'PagedAttendanceType';
-  data?: Maybe<Array<Maybe<AttendanceType>>>;
-  totalResults?: Maybe<Scalars['Int']['output']>;
-};
-
 export type PagedAuditLogType = {
   __typename?: 'PagedAuditLogType';
   data?: Maybe<Array<Maybe<AuditLogType>>>;
@@ -1936,13 +1864,13 @@ export type PersonKarkunDataType = {
   cityId?: Maybe<Scalars['String']['output']>;
   cityMehfil?: Maybe<CityMehfilType>;
   cityMehfilId?: Maybe<Scalars['String']['output']>;
-  duties?: Maybe<Array<Maybe<KarkunDutyType>>>;
   ehadKarkun?: Maybe<Scalars['Boolean']['output']>;
   ehadPermissionDate?: Maybe<Scalars['String']['output']>;
   lastTarteebDate?: Maybe<Scalars['String']['output']>;
   mehfilRaabta?: Maybe<Scalars['String']['output']>;
   msLastVisitDate?: Maybe<Scalars['String']['output']>;
   msRaabta?: Maybe<Scalars['String']['output']>;
+  teams?: Maybe<Array<Maybe<TeamType>>>;
 };
 
 export type PersonRelationCountType = {
@@ -2069,10 +1997,6 @@ export type Query = {
   allSecurityMehfilLangarLocations?: Maybe<Array<Maybe<MehfilLangarLocationType>>>;
   allTeams?: Maybe<Array<Maybe<TeamType>>>;
   attachmentsById?: Maybe<Array<Maybe<Attachment>>>;
-  attendanceByBarcodeId?: Maybe<AttendanceType>;
-  attendanceByBarcodeIds?: Maybe<Array<Maybe<AttendanceType>>>;
-  attendanceById?: Maybe<AttendanceType>;
-  attendanceByMonth?: Maybe<Array<Maybe<AttendanceType>>>;
   cityById?: Maybe<CityType>;
   cityMehfilById?: Maybe<CityMehfilType>;
   cityMehfilsByCityId?: Maybe<Array<Maybe<CityMehfilType>>>;
@@ -2088,6 +2012,8 @@ export type Query = {
   duplicatePersonById?: Maybe<PersonType>;
   duplicatePersonRelationCounts?: Maybe<Array<PersonRelationCounts>>;
   duplicatePhoneNumbers?: Maybe<Array<Maybe<DuplicatePersonGroupType>>>;
+  dutyAttendanceCards?: Maybe<Array<Maybe<DutyAttendanceCardType>>>;
+  dutyAttendanceSheet?: Maybe<Array<Maybe<DutyAttendanceSheetRowType>>>;
   dutyLocationById?: Maybe<DutyLocationType>;
   dutyLocationsByDutyId?: Maybe<Array<Maybe<DutyLocationType>>>;
   dutyPlanDays?: Maybe<DutyPlanDaysType>;
@@ -2104,15 +2030,13 @@ export type Query = {
   itemCategoriesByPhysicalStoreId?: Maybe<Array<Maybe<ItemCategory>>>;
   itemCategoryById?: Maybe<ItemCategory>;
   jobById?: Maybe<JobType>;
-  karkunDutiesByKarkunId?: Maybe<Array<Maybe<KarkunDutyType>>>;
-  karkunDutyById?: Maybe<KarkunDutyType>;
+  karkunDutyAttendanceSheet?: Maybe<Array<Maybe<DutyAttendanceSheetRowType>>>;
   locationById?: Maybe<Location>;
   locationsByPhysicalStoreId?: Maybe<Array<Maybe<Location>>>;
   mehfilById?: Maybe<MehfilType>;
   mehfilKarkunByBarcodeId?: Maybe<MehfilKarkunType>;
   mehfilKarkunsByIds?: Maybe<Array<Maybe<MehfilKarkunType>>>;
   mehfilKarkunsByMehfilId?: Maybe<Array<Maybe<MehfilKarkunType>>>;
-  pagedAttendanceByKarkun?: Maybe<PagedAttendanceType>;
   pagedCities?: Maybe<PagedCityType>;
   pagedDeletedPeople?: Maybe<PagedPeopleType>;
   pagedHrAuditLogs?: Maybe<PagedAuditLogType>;
@@ -2172,28 +2096,6 @@ export type QueryAttachmentsByIdArgs = {
 };
 
 
-export type QueryAttendanceByBarcodeIdArgs = {
-  barcodeId: Scalars['String']['input'];
-};
-
-
-export type QueryAttendanceByBarcodeIdsArgs = {
-  barcodeIds: Scalars['String']['input'];
-};
-
-
-export type QueryAttendanceByIdArgs = {
-  _id: Scalars['String']['input'];
-};
-
-
-export type QueryAttendanceByMonthArgs = {
-  categoryId?: InputMaybe<Scalars['String']['input']>;
-  month: Scalars['String']['input'];
-  subCategoryId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
 export type QueryCityByIdArgs = {
   _id: Scalars['String']['input'];
 };
@@ -2231,6 +2133,23 @@ export type QueryDuplicatePersonByIdArgs = {
 
 export type QueryDuplicatePersonRelationCountsArgs = {
   ids: Array<Scalars['String']['input']>;
+};
+
+
+export type QueryDutyAttendanceCardsArgs = {
+  dutyId: Scalars['String']['input'];
+  karkunIds: Array<Scalars['String']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  month: Scalars['String']['input'];
+  shiftId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryDutyAttendanceSheetArgs = {
+  dutyId: Scalars['String']['input'];
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  month: Scalars['String']['input'];
+  shiftId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2317,13 +2236,8 @@ export type QueryJobByIdArgs = {
 };
 
 
-export type QueryKarkunDutiesByKarkunIdArgs = {
+export type QueryKarkunDutyAttendanceSheetArgs = {
   karkunId: Scalars['String']['input'];
-};
-
-
-export type QueryKarkunDutyByIdArgs = {
-  _id: Scalars['String']['input'];
 };
 
 
@@ -2356,11 +2270,6 @@ export type QueryMehfilKarkunsByIdsArgs = {
 export type QueryMehfilKarkunsByMehfilIdArgs = {
   dutyId?: InputMaybe<Scalars['String']['input']>;
   mehfilId: Scalars['String']['input'];
-};
-
-
-export type QueryPagedAttendanceByKarkunArgs = {
-  queryString?: InputMaybe<Scalars['String']['input']>;
 };
 
 

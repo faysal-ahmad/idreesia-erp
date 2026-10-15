@@ -1,9 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import {
-  Attendances,
   Committees,
   DutyDayAttendances,
-  KarkunDuties,
   Salaries,
   Teams,
 } from 'meteor/idreesia-common/server/collections/hr';
@@ -144,9 +142,7 @@ export async function getPersonRelationCounts(
   personIds: string[]
 ): Promise<Record<string, PersonRelationCounts>> {
   const [
-    attendanceCounts,
     salaryCounts,
-    karkunDutyCounts,
     committeeMembershipCounts,
     teamMembershipCounts,
     dutyDayAttendanceCounts,
@@ -160,9 +156,7 @@ export async function getPersonRelationCounts(
     userAccountCounts,
     auditLogCounts,
   ] = await Promise.all([
-    countBySingleField(Attendances, 'karkunId', personIds),
     countBySingleField(Salaries, 'karkunId', personIds),
-    countBySingleField(KarkunDuties, 'karkunId', personIds),
     countByArrayField(Committees, 'members', 'karkunId', personIds),
     countByArrayField(Teams, 'members', 'karkunId', personIds),
     countByArrayField(DutyDayAttendances, 'karkuns', 'karkunId', personIds),
@@ -178,9 +172,7 @@ export async function getPersonRelationCounts(
   ]);
 
   const categories: { name: string; countsById: Record<string, number> }[] = [
-    { name: 'Attendance Records', countsById: attendanceCounts },
     { name: 'Salary Records', countsById: salaryCounts },
-    { name: 'Duty Assignments', countsById: karkunDutyCounts },
     { name: 'Committee Memberships', countsById: committeeMembershipCounts },
     { name: 'Team Memberships', countsById: teamMembershipCounts },
     { name: 'Duty Day Attendances', countsById: dutyDayAttendanceCounts },

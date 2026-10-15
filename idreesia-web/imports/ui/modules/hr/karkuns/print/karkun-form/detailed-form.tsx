@@ -22,8 +22,8 @@ const DataStyle: CSSProperties = {
 };
 
 type HrKarkun = NonNullable<HrKarkunByIdForKarkunsQuery['hrKarkunById']>;
-type KarkunDuty = NonNullable<
-  NonNullable<NonNullable<HrKarkun['karkunData']>['duties']>[number]
+type KarkunTeam = NonNullable<
+  NonNullable<NonNullable<HrKarkun['karkunData']>['teams']>[number]
 >;
 type HrKarkunJob = NonNullable<HrKarkun['employeeData']>['job'] | undefined;
 
@@ -45,7 +45,7 @@ export class DetailedForm extends Component<Props> {
 
   getJobDetails = (
     job: HrKarkunJob,
-    duties: KarkunDuty[] = []
+    duties: KarkunTeam[] = []
   ) => {
     let jobName: React.ReactNode[] = [];
     let dutyNames: React.ReactNode[] = [];
@@ -56,13 +56,7 @@ export class DetailedForm extends Component<Props> {
 
     if (duties.length > 0) {
       dutyNames = duties.map((duty) => {
-        let dutyName = duty.dutyName;
-        if (duty.shiftName) {
-          dutyName = `${dutyName} - ${duty.shiftName}`;
-        }
-        if (duty.locationName) {
-          dutyName = `${dutyName} - ${duty.locationName}`;
-        }
+        const dutyName = [duty.duty?.name, duty.name].filter(Boolean).join(' - ');
 
         return dutyName;
       });
@@ -78,8 +72,8 @@ export class DetailedForm extends Component<Props> {
     const imageColumn = this.getImageColumn();
     const jobDetails = this.getJobDetails(
       hrKarkunById.employeeData?.job,
-      (hrKarkunById.karkunData?.duties ?? []).filter(
-        (duty): duty is KarkunDuty => duty != null
+      (hrKarkunById.karkunData?.teams ?? []).filter(
+        (duty): duty is KarkunTeam => duty != null
       )
     );
     const timestamp = dayjs().format('DD MMM, YYYY');

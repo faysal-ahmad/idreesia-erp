@@ -43,8 +43,8 @@ type KarkunRow = NonNullable<
   >[number]
 >;
 
-type KarkunDuty = NonNullable<
-  NonNullable<NonNullable<KarkunRow['karkunData']>['duties']>[number]
+type KarkunTeam = NonNullable<
+  NonNullable<NonNullable<KarkunRow['karkunData']>['teams']>[number]
 >;
 
 interface Props {
@@ -243,26 +243,25 @@ const List = ({
 
   const dutiesColumn = {
     title: 'Duties',
-    dataIndex: ['karkunData', 'duties'],
+    dataIndex: ['karkunData', 'teams'],
     key: 'duties',
-    render: (duties: KarkunDuty[] | null | undefined, record: KarkunRow) => {
+    render: (duties: KarkunTeam[] | null | undefined, record: KarkunRow) => {
       const normalizedDuties = (duties ?? []).filter(
-        (duty): duty is KarkunDuty => duty != null
+        (duty): duty is KarkunTeam => duty != null
       );
       if (normalizedDuties.length === 0 || !record._id) return null;
 
-      const dutyTabLink = `${paths.karkunsEditFormPath(record._id)}?default-active-tab=duties`;
       const dutyNames = normalizedDuties.map((duty, index) => {
-        let dutyName = duty.dutyName ?? '';
-        if (duty.shiftName) {
-          dutyName = `${dutyName} - ${duty.shiftName}`;
-        }
-        if (duty.role === 'CO') {
+        let dutyName = [duty.duty?.name, duty.name].filter(Boolean).join(' - ');
+        const isCoordinator = duty.members?.some(
+          member => member?.karkunId === record._id && member.isCoordinator
+        );
+        if (isCoordinator) {
           dutyName = `(CO) - ${dutyName}`;
         }
 
         return (
-          <Link key={index} to={dutyTabLink}>
+          <Link key={index} to={paths.teamsPath}>
             {dutyName}
           </Link>
         );

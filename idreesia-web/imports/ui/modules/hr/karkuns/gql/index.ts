@@ -17,12 +17,5 @@ export {
 } from './remove-hr-karkun-attachment';
 
 export {
-  default as PAGED_ATTENDANCE_BY_KARKUN,
-} from './paged-attendance-by-karkun';
-
-export {
-  default as KARKUN_DUTIES_BY_KARKUN_ID,
-} from './karkun-duties-by-karkun-id';
-export { default as CREATE_KARKUN_DUTY } from './create-karkun-duty';
-export { default as UPDATE_KARKUN_DUTY } from './update-karkun-duty';
-export { default as REMOVE_KARKUN_DUTY } from './remove-karkun-duty';
+  default as KARKUN_DUTY_ATTENDANCE_SHEET,
+} from './karkun-duty-attendance-sheet';

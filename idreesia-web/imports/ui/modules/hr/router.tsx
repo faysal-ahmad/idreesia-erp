@@ -20,11 +20,11 @@ import {
   KarkunsPrintView,
 } from './karkuns';
 import {
-  AttendanceSheetsList,
-  AttendanceSheetsPrintMeetingCards,
-  AttendanceSheetsPrintKarkunCards,
-  AttendanceSheetPrintAttendanceSheet,
-} from './attendance-sheets';
+  AttendanceReportList,
+  AttendanceReportPrintMeetingCards,
+  AttendanceReportPrintKarkunCards,
+  AttendanceReportPrintSheet,
+} from './attendance-report';
 import {
   SalarySheetsList,
   SalarySheetsSalaryReceipts,
@@ -57,18 +57,18 @@ const Router = () => (
     <Route path={paths.employeesPath} component={EmployeesList} />
 
     <Route
-      path={paths.attendanceSheetsMeetingCardsPath}
-      component={AttendanceSheetsPrintMeetingCards}
+      path={paths.attendanceReportMeetingCardsPath}
+      component={AttendanceReportPrintMeetingCards}
     />
     <Route
-      path={paths.attendanceSheetsKarkunCardsPath}
-      component={AttendanceSheetsPrintKarkunCards}
+      path={paths.attendanceReportKarkunCardsPath}
+      component={AttendanceReportPrintKarkunCards}
     />
-    <Route path={paths.attendanceSheetsPrintAttendanceSheetPath} component={AttendanceSheetPrintAttendanceSheet} />
+    <Route path={paths.attendanceReportPrintSheetPath} component={AttendanceReportPrintSheet} />
     <Route path={paths.dutyPlanningPath} component={DutyPlanningList} />
     <Route path={paths.dutyAttendancePath} component={DutyAttendanceList} />
 
-    <Route path={paths.attendanceSheetsPath} component={AttendanceSheetsList} />
+    <Route path={paths.attendanceReportPath} component={AttendanceReportList} />
 
     <Route
       path={paths.salarySheetsSalaryReceiptsPath}

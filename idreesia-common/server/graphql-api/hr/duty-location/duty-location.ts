@@ -5,7 +5,6 @@ type DutyLocationType {
   _id: String
   dutyId: String
   name: String
-  usedCount: Int
 
   duty: DutyType
   canDelete: Boolean

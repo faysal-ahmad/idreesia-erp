@@ -45,6 +45,47 @@ type DutyPlanDaysType {
   days: [DutyPlanDaysDayType]
 }
 
+type DutyAttendanceSheetRowType {
+  _id: String
+  month: String
+  karkunId: String
+  name: String
+  dutyId: String
+  locationId: String
+  shiftId: String
+  shiftName: String
+  daysOnDuty: Int
+  presentCount: Int
+  lateCount: Int
+  absentCount: Int
+  unmarkedCount: Int
+  percentage: Int
+  barcodeId: String
+
+  karkun: PersonType
+  duty: DutyType
+  location: DutyLocationType
+}
+
+type DutyAttendanceCardType {
+  _id: String
+  month: String
+  karkunId: String
+  name: String
+  dutyId: String
+  shiftNames: [String]
+  daysOnDuty: Int
+  presentCount: Int
+  lateCount: Int
+  absentCount: Int
+  unmarkedCount: Int
+  percentage: Int
+  barcodeId: String
+
+  karkun: PersonType
+  duty: DutyType
+}
+
 extend type Query {
   dutyPlanWeek(dutyId: String!, locationId: String!): DutyPlanWeekType
     @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
@@ -54,6 +95,23 @@ extend type Query {
     startDate: String!
   ): DutyPlanDaysType
     @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
+  dutyAttendanceSheet(
+    month: String!
+    dutyId: String!
+    locationId: String
+    shiftId: String
+  ): [DutyAttendanceSheetRowType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+  karkunDutyAttendanceSheet(karkunId: String!): [DutyAttendanceSheetRowType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+  dutyAttendanceCards(
+    month: String!
+    dutyId: String!
+    locationId: String
+    shiftId: String
+    karkunIds: [String!]!
+  ): [DutyAttendanceCardType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
 }
 
 extend type Mutation {

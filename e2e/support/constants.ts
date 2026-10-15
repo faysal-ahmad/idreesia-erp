@@ -40,7 +40,7 @@ export const HrPaths = {
   msDuties: `${ModulePaths.hr}/ms-duties`,
   employees: `${ModulePaths.hr}/employees`,
   karkuns: `${ModulePaths.hr}/karkuns`,
-  attendanceSheets: `${ModulePaths.hr}/attendance-sheets`,
+  attendanceReport: `${ModulePaths.hr}/attendance-report`,
   salarySheets: `${ModulePaths.hr}/salary-sheets`,
   auditLogs: `${ModulePaths.hr}/audit-logs`,
 } as const;

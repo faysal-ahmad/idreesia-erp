@@ -9,7 +9,6 @@ import {
 } from 'meteor/idreesia-common/hooks/common';
 
 import GeneralInfo from './general-info';
-import DutyParticipation from './duty-participations';
 import AttendanceSheets from './attendance-sheets';
 import AttachmentsList from './attachments-list';
 import { HR_KARKUN_BY_ID } from '../gql';
@@ -17,13 +16,11 @@ import { HR_KARKUN_BY_ID } from '../gql';
 type Props = RouteComponentProps<{ karkunId: string }>;
 
 const TAB_GENERAL = 'general';
-const TAB_DUTIES = 'duties';
 const TAB_ATTENDANCE = 'attendance';
 const TAB_ATTACHMENTS = 'attachments';
 
 const VALID_TAB_KEYS = new Set([
   TAB_GENERAL,
-  TAB_DUTIES,
   TAB_ATTENDANCE,
   TAB_ATTACHMENTS,
 ]);
@@ -38,11 +35,12 @@ const normalizeTabKey = (key: string) => {
     key === 'employment' ||
     key === '7' ||
     key === 'salaries' ||
-    key === '8'
+    key === '8' ||
+    key === 'duties' ||
+    key === '4'
   ) {
     return TAB_GENERAL;
   }
-  if (key === TAB_DUTIES || key === '4') return TAB_DUTIES;
   if (key === TAB_ATTENDANCE || key === '5') return TAB_ATTENDANCE;
   if (key === TAB_ATTACHMENTS || key === '6') return TAB_ATTACHMENTS;
   return VALID_TAB_KEYS.has(key) ? key : TAB_GENERAL;
@@ -100,13 +98,6 @@ const EditForm = ({ match, location, history }: Props) => {
               karkunId={karkunId}
               karkun={karkun}
             />
-          ),
-        },
-        {
-          key: TAB_DUTIES,
-          label: 'Duty Participation',
-          children: (
-            <DutyParticipation karkunId={karkunId} match={match} />
           ),
         },
         {

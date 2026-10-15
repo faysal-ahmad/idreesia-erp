@@ -81,9 +81,9 @@ const menuItems = [
         label: 'Duty Attendance',
       },
       {
-        key: 'attendance-sheets',
+        key: 'attendance-report',
         icon: <SolutionOutlined style={IconStyle} />,
-        label: 'Attendance Sheets',
+        label: 'Attendance Report',
       },
       {
         key: 'setup',
@@ -161,10 +161,10 @@ const menuRouteMatches: MenuRouteMatch[] = [
     matches: pathname => isPath(pathname, paths.karkunsPath),
   },
   {
-    key: 'attendance-sheets',
+    key: 'attendance-report',
     openKeys: ['karkuns-management'],
-    subModuleName: SubModuleNames.attendanceSheets,
-    matches: pathname => isPath(pathname, paths.attendanceSheetsPath),
+    subModuleName: SubModuleNames.attendanceReport,
+    matches: pathname => isPath(pathname, paths.attendanceReportPath),
   },
   {
     key: 'duty-planning',
@@ -263,8 +263,8 @@ const Sidebar = ({ history }: SidebarProps) => {
         history.push(paths.msDutiesPath);
         break;
 
-      case 'attendance-sheets':
-        history.push(paths.attendanceSheetsPath);
+      case 'attendance-report':
+        history.push(paths.attendanceReportPath);
         break;
 
       case 'duty-planning':

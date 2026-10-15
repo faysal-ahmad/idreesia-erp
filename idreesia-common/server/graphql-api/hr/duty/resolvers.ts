@@ -1,10 +1,8 @@
 import {
-  Attendances,
   Committees,
   Duties,
   DutyLocations,
   DutyShifts,
-  KarkunDuties,
   Teams,
 } from 'meteor/idreesia-common/server/collections/hr';
 
@@ -36,17 +34,15 @@ const resolvers: ResolverMap = {
         { sort: { name: 1 } }
       ).fetchAsync(),
     canDelete: async dutyType => {
-      // Check if this duty is currently assigned to a karkun
-      const karkunDutiesCount = await KarkunDuties.find({
+      const shiftCount = await DutyShifts.find({
         dutyId: { $eq: dutyType._id },
       }).countAsync();
-      if (karkunDutiesCount > 0) return false;
+      if (shiftCount > 0) return false;
 
-      // Check if we have marked attendance against this duty
-      const attendanceCount = await Attendances.find({
+      const locationCount = await DutyLocations.find({
         dutyId: { $eq: dutyType._id },
       }).countAsync();
-      if (attendanceCount > 0) return false;
+      if (locationCount > 0) return false;
 
       const teamCount = await Teams.find({
         dutyId: { $eq: dutyType._id },

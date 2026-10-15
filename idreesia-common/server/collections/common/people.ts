@@ -1,9 +1,7 @@
 import {
   add,
-  addMonths,
   endOfDay,
   endOfMonth,
-  format,
   isEqual,
   startOfDay,
   startOfMonth,
@@ -21,6 +19,10 @@ import {
   Attachments,
 } from 'meteor/idreesia-common/server/collections/common';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
+import {
+  DutyTeamAssignments,
+  Teams,
+} from 'meteor/idreesia-common/server/collections/hr';
 import { generateImageThumbnail } from 'meteor/idreesia-common/server/business-logic/common/generate-image-thumbnail';
 import {
   forOwn,
@@ -465,7 +467,6 @@ class People extends AggregatableCollection<PersonDocument> {
       additionalInfo,
       // karkun related fields
       lastTarteeb,
-      attendance,
       dutyId,
       dutyIds,
       dutyShiftId,
@@ -690,55 +691,6 @@ class People extends AggregatableCollection<PersonDocument> {
         }
       }
 
-      if (attendance) {
-        const { criteria, percentage } = JSON.parse(attendance);
-        if (percentage) {
-          const month = startOfMonth(addMonths(new Date(), -1));
-
-          const criteriaCondition =
-            criteria === 'less-than'
-              ? {
-                  $lte: ['$percentage', percentage],
-                }
-              : {
-                  $gte: ['$percentage', percentage],
-                };
-
-          pipeline.push({
-            $lookup: {
-              from: 'hr-attendances',
-              let: { karkun_id: '$_id' },
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $and: [
-                        {
-                          $eq: ['$karkunId', '$$karkun_id'],
-                        },
-                        {
-                          $eq: ['$month', format(month, 'MM-yyyy')],
-                        },
-                        criteriaCondition,
-                      ],
-                    },
-                  },
-                },
-              ],
-              as: 'attendances',
-            },
-          });
-
-          pipeline.push({
-            $match: {
-              $expr: {
-                $gte: [{ $size: '$attendances' }, 1],
-              },
-            },
-          });
-        }
-      }
-
       if (cityId) {
         pipeline.push({
           $match: {
@@ -774,37 +726,28 @@ class People extends AggregatableCollection<PersonDocument> {
       }
 
       if (dutyId || (dutyIds && dutyIds.length > 0)) {
-        pipeline.push({
-          $lookup: {
-            from: 'hr-karkun-duties',
-            localField: '_id',
-            foreignField: 'karkunId',
-            as: 'duties',
-          },
-        });
-
-        const dutyIdsToSearch = dutyId ? [dutyId] : dutyIds;
+        // A karkun is on a duty through team membership; a shift narrows it
+        // to the teams assigned to that shift.
+        const teamSelector: Record<string, unknown> = {
+          dutyId: { $in: dutyId ? [dutyId] : dutyIds },
+        };
+        if (dutyShiftId) {
+          const assignments = (await DutyTeamAssignments.find({
+            shiftId: dutyShiftId,
+          }).fetchAsync()) as Array<{ teamId: string }>;
+          teamSelector._id = { $in: assignments.map(({ teamId }) => teamId) };
+        }
+        const teams = (await Teams.find(teamSelector).fetchAsync()) as Array<{
+          members?: Array<{ karkunId: string }> | null;
+        }>;
+        const memberIds = teams.flatMap(team =>
+          (team.members ?? []).map(({ karkunId }) => karkunId)
+        );
         pipeline.push({
           $match: {
-            duties: {
-              $elemMatch: {
-                dutyId: { $in: dutyIdsToSearch },
-              },
-            },
+            _id: { $in: [...new Set(memberIds)] },
           },
         });
-
-        if (dutyShiftId) {
-          pipeline.push({
-            $match: {
-              duties: {
-                $elemMatch: {
-                  shiftId: { $eq: dutyShiftId },
-                },
-              },
-            },
-          });
-        }
       }
     }
 

@@ -820,3 +820,229 @@ export async function getDutyPlanDays(
 
   return { startDate, days };
 }
+
+// Attendance sheet: monthly totals per karkun, location and shift, computed
+// from the locked day records.
+
+export interface AttendanceSheetRow {
+  _id: string;
+  month: string;
+  karkunId: string;
+  name: string;
+  dutyId: string;
+  locationId: string;
+  shiftId: string;
+  shiftName: string;
+  daysOnDuty: number;
+  presentCount: number;
+  lateCount: number;
+  absentCount: number;
+  unmarkedCount: number;
+  percentage: number;
+  barcodeId: string;
+}
+
+interface SheetRecord extends DayAttendanceDocument {
+  dutyId: string;
+  locationId: string;
+}
+
+const MONTH_PATTERN = /^(0[1-9]|1[0-2])-\d{4}$/;
+
+// 'MM-yyyy' → first and last possible calendar date strings of the month.
+function monthRange(month: string) {
+  if (!MONTH_PATTERN.test(month)) {
+    throw new Error('Please select a valid month.');
+  }
+  const [mm, yyyy] = month.split('-');
+  return { startDate: `${yyyy}-${mm}-01`, endDate: `${yyyy}-${mm}-31` };
+}
+
+// Card barcodes identify a karkun for a month.
+export function attendanceBarcodeId(karkunId: string, month: string) {
+  return `${karkunId}-${month.replace('-', '')}`;
+}
+
+function summarizeAttendance(
+  records: SheetRecord[],
+  includeKarkun: (karkunId: string) => boolean = () => true
+): AttendanceSheetRow[] {
+  const rows = new Map<string, AttendanceSheetRow>();
+  const sorted = [...records].sort((left, right) => left.date.localeCompare(right.date));
+
+  for (const record of sorted) {
+    const [yyyy, mm] = record.date.split('-');
+    const month = `${mm}-${yyyy}`;
+    for (const karkun of record.karkuns ?? []) {
+      if (!includeKarkun(karkun.karkunId)) continue;
+      const key = [month, karkun.karkunId, record.locationId, record.shiftId].join('|');
+      let row = rows.get(key);
+      if (!row) {
+        row = {
+          _id: key,
+          month,
+          karkunId: karkun.karkunId,
+          name: karkun.name,
+          dutyId: record.dutyId,
+          locationId: record.locationId,
+          shiftId: record.shiftId,
+          shiftName: record.shiftName,
+          daysOnDuty: 0,
+          presentCount: 0,
+          lateCount: 0,
+          absentCount: 0,
+          unmarkedCount: 0,
+          percentage: 0,
+          barcodeId: attendanceBarcodeId(karkun.karkunId, month),
+        };
+        rows.set(key, row);
+      }
+      // Records are sorted by date, so the latest names win.
+      row.name = karkun.name || row.name;
+      row.shiftName = record.shiftName || row.shiftName;
+      row.daysOnDuty += 1;
+      if (karkun.attendance === 'present') row.presentCount += 1;
+      else if (karkun.attendance === 'late') row.lateCount += 1;
+      else if (karkun.attendance === 'absent') row.absentCount += 1;
+      else row.unmarkedCount += 1;
+    }
+  }
+
+  return [...rows.values()].map(row => ({
+    ...row,
+    percentage: row.daysOnDuty
+      ? Math.round(((row.presentCount + row.lateCount) / row.daysOnDuty) * 100)
+      : 0,
+  }));
+}
+
+export async function getDutyAttendanceSheet(args: {
+  month: string;
+  dutyId: string;
+  locationId?: string | null;
+  shiftId?: string | null;
+}) {
+  await ensureDutyPlanIndexes();
+  const { startDate, endDate } = monthRange(args.month);
+  const duty = await Duties.findOneAsync(args.dutyId);
+  if (!duty || duty.isMehfilDuty) {
+    throw new Error('Please select a valid duty.');
+  }
+  if (args.locationId) await requireDutyAndLocation(args.dutyId, args.locationId);
+  if (args.shiftId) await requireShift(args.dutyId, args.shiftId);
+
+  // Make sure every planned past day in the month has its record.
+  const locations = (await DutyLocations.find(
+    args.locationId ? { _id: args.locationId } : { dutyId: args.dutyId }
+  ).fetchAsync()) as Array<{ _id: string }>;
+  const shifts = (await shiftsForDuty(args.dutyId)).filter(
+    shift => !args.shiftId || shift._id === args.shiftId
+  );
+  for (const location of locations) {
+    for (const shift of shifts) {
+      await lockDays(
+        { dutyId: args.dutyId, locationId: location._id },
+        shift,
+        startDate,
+        endDate
+      );
+    }
+  }
+
+  const selector: Record<string, unknown> = {
+    dutyId: args.dutyId,
+    date: { $gte: startDate, $lte: endDate },
+  };
+  if (args.locationId) selector.locationId = args.locationId;
+  if (args.shiftId) selector.shiftId = args.shiftId;
+  const records = (await DutyDayAttendances.find(selector).fetchAsync()) as SheetRecord[];
+
+  return summarizeAttendance(records).sort(
+    (left, right) =>
+      left.name.localeCompare(right.name) ||
+      left.locationId.localeCompare(right.locationId) ||
+      left.shiftName.localeCompare(right.shiftName)
+  );
+}
+
+export interface AttendanceCardRow {
+  _id: string;
+  month: string;
+  karkunId: string;
+  name: string;
+  dutyId: string;
+  shiftNames: string[];
+  daysOnDuty: number;
+  presentCount: number;
+  lateCount: number;
+  absentCount: number;
+  unmarkedCount: number;
+  percentage: number;
+  barcodeId: string;
+}
+
+// Printed cards: one per karkun, totals across all their sheet rows.
+export async function getDutyAttendanceCards(args: {
+  month: string;
+  dutyId: string;
+  locationId?: string | null;
+  shiftId?: string | null;
+  karkunIds: string[];
+}) {
+  const wanted = new Set(args.karkunIds);
+  const rows = (await getDutyAttendanceSheet(args)).filter(row =>
+    wanted.has(row.karkunId)
+  );
+
+  const cards = new Map<string, AttendanceCardRow>();
+  for (const row of rows) {
+    let card = cards.get(row.karkunId);
+    if (!card) {
+      card = {
+        _id: row.karkunId,
+        month: row.month,
+        karkunId: row.karkunId,
+        name: row.name,
+        dutyId: row.dutyId,
+        shiftNames: [],
+        daysOnDuty: 0,
+        presentCount: 0,
+        lateCount: 0,
+        absentCount: 0,
+        unmarkedCount: 0,
+        percentage: 0,
+        barcodeId: row.barcodeId,
+      };
+      cards.set(row.karkunId, card);
+    }
+    if (!card.shiftNames.includes(row.shiftName)) card.shiftNames.push(row.shiftName);
+    card.daysOnDuty += row.daysOnDuty;
+    card.presentCount += row.presentCount;
+    card.lateCount += row.lateCount;
+    card.absentCount += row.absentCount;
+    card.unmarkedCount += row.unmarkedCount;
+  }
+
+  return [...cards.values()].map(card => ({
+    ...card,
+    percentage: card.daysOnDuty
+      ? Math.round(((card.presentCount + card.lateCount) / card.daysOnDuty) * 100)
+      : 0,
+  }));
+}
+
+// A karkun's monthly duty attendance across all duties, newest month first.
+export async function getKarkunDutyAttendanceSheet(karkunId: string) {
+  await ensureDutyPlanIndexes();
+  const records = (await DutyDayAttendances.find({
+    'karkuns.karkunId': karkunId,
+  }).fetchAsync()) as SheetRecord[];
+
+  const monthKey = (month: string) => month.split('-').reverse().join('-');
+  return summarizeAttendance(records, id => id === karkunId).sort(
+    (left, right) =>
+      monthKey(right.month).localeCompare(monthKey(left.month)) ||
+      left.dutyId.localeCompare(right.dutyId) ||
+      left.shiftName.localeCompare(right.shiftName)
+  );
+}

@@ -1,7 +1,6 @@
 import type { Job } from 'agenda';
 import { addMonths, format, startOfMonth } from 'date-fns';
 
-import { createMonthlyAttendance } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-attendance';
 import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries';
 import { backfillImageVectorData } from 'meteor/idreesia-common/server/business-logic/common/backfill-image-vector-data';
 import { backfillImageThumbnails } from 'meteor/idreesia-common/server/business-logic/common/backfill-image-thumbnails';
@@ -24,20 +23,6 @@ export interface JobDefinitionSeed {
 // setupJobDefinitions(); the handler is re-registered via agenda.define()
 // from this same array on every boot.
 const JOB_DEFINITIONS_REGISTRY: JobDefinitionSeed[] = [
-  {
-    name: 'create-monthly-attendance',
-    displayName: 'Create Monthly Attendance',
-    defaultSchedule: '0 2 1 * *',
-    handler: async agendaJob => {
-      const systemUser = await getSystemUser();
-      const formattedMonth = format(startOfMonth(new Date()), 'MM-yyyy');
-      await createMonthlyAttendance(
-        formattedMonth,
-        systemUser,
-        createProgressReporter(agendaJob)
-      );
-    },
-  },
   {
     name: 'create-monthly-salaries',
     displayName: 'Create Monthly Salaries',

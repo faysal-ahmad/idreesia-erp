@@ -2,8 +2,6 @@ export { default as Job } from './job';
 export { default as Duty } from './duty';
 export { default as DutyShift } from './duty-shift';
 export { default as DutyLocation } from './duty-location';
-export { default as KarkunDuty } from './karkun-duty';
-export { default as Attendance } from './attendance';
 export { default as Salary } from './salary';
 export { default as Team } from './team';
 export { default as Committee } from './committee';

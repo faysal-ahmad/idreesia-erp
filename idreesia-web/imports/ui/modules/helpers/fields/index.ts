@@ -6,7 +6,6 @@ export {
 } from './form-btns-save-cancel-extra';
 
 export { default as AgeField } from './age/field';
-export { default as AttendanceFilterField } from './attendance-filter/field';
 export { default as EhadDurationField } from './ehad-duration/field';
 export {
   default as EhadDurationFilterField,
@@ -15,7 +14,6 @@ export { default as LastTarteebFilterField } from './last-tarteeb-filter/field';
 export {
   default as KarkunSelectionInputField,
 } from './karkun-selection-input/field';
-export { default as AttendanceDetailField } from './attendance-detail-field';
 
 export { default as AutoCompleteField } from './auto-complete-field';
 export { default as BarcodeField } from './barcode-field';

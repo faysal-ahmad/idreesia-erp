@@ -72,7 +72,6 @@ const List = ({ handleSelectItem }: Props) => {
     return (
       <KarkunsListFilter
         showBloodGroupFilter={false}
-        showAttendanceFilter={false}
         showLastTarteebFilter={false}
         showMehfilDutyFilter={false}
         showCityMehfilFilter={false}

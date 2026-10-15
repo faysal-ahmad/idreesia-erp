@@ -54,6 +54,7 @@ import './50-team-members';
 import './51-duty-location-duty-id';
 import './52-duty-plan-indexes';
 import './53-committee-members';
+import './54-drop-old-attendance';
 
 Migrations.config({
   log: true,

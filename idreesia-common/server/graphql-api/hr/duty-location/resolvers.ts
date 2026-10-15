@@ -1,7 +1,6 @@
 import {
   Duties,
   DutyLocations,
-  KarkunDuties,
 } from 'meteor/idreesia-common/server/collections/hr';
 import { locationIsPlanned } from 'meteor/idreesia-common/server/business-logic/hr/duty-planning';
 
@@ -14,17 +13,8 @@ const resolvers: ResolverMap = {
   DutyLocationType: {
     duty: async dutyLocationType =>
       Duties.findOneAsync(dutyLocationType.dutyId),
-    usedCount: async dutyLocationType =>
-      KarkunDuties.find({
-        locationId: { $eq: dutyLocationType._id },
-      }).countAsync(),
-    canDelete: async dutyLocationType => {
-      const usedCount = await KarkunDuties.find({
-        locationId: { $eq: dutyLocationType._id },
-      }).countAsync();
-      if (usedCount > 0) return false;
-      return !(await locationIsPlanned(dutyLocationType._id));
-    },
+    canDelete: async dutyLocationType =>
+      !(await locationIsPlanned(dutyLocationType._id)),
   },
 
   Query: {
@@ -70,11 +60,7 @@ const resolvers: ResolverMap = {
     },
 
     removeDutyLocation: async (obj, { _id }) => {
-      const usedCount = await KarkunDuties.find({
-        locationId: { $eq: _id },
-      }).countAsync();
-
-      if (usedCount > 0 || (await locationIsPlanned(_id))) {
+      if (await locationIsPlanned(_id)) {
         throw new Error(
           'This location cannot be deleted as it is currently in use.'
         );

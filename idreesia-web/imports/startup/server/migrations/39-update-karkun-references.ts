@@ -1,11 +1,7 @@
 import { Migrations } from 'meteor/quave:migrations';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import {
-  Attendances,
-  KarkunDuties,
-  Salaries,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { Salaries } from 'meteor/idreesia-common/server/collections/hr';
 import { MehfilKarkuns } from 'meteor/idreesia-common/server/collections/security';
 import {
   IssuanceForms,
@@ -48,8 +44,9 @@ Migrations.add({
       }
     };
 
-    await convertCollection(Attendances);
-    await convertCollection(KarkunDuties);
+    // Attendances and KarkunDuties have since been removed (migration 54 drops them).
+    // await convertCollection(Attendances);
+    // await convertCollection(KarkunDuties);
     await convertCollection(Salaries);
     await convertCollection(MehfilKarkuns);
 

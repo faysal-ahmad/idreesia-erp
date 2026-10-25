@@ -1684,7 +1684,7 @@ body-parser@1.20.3, body-parser@^1.20.6, body-parser@^2.2.2:
     type-is "~1.6.18"
     unpipe "~1.0.0"
 
-brace-expansion@^1.1.16, brace-expansion@^1.1.7:
+brace-expansion@^1.1.21, brace-expansion@^1.1.7:
   version "1.1.21"
   resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.21.tgz#edf4fab5c64d051aea5a8def49aba1c7522279f3"
   integrity sha512-9zeA+KLZNNzglF2TPKRQEDyx6Yby7daAkuy8MiPzpXPsYDWi/DRM8jmwUDxokQjYqBpv5DgPiwD4h4ZZSy1Ujw==
@@ -3150,9 +3150,9 @@ inherits@2, inherits@2.0.4, inherits@^2.0.1, inherits@^2.0.3, inherits@^2.0.4, i
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
 ip-address@^10.1.1:
-  version "10.5.0"
-  resolved "https://registry.yarnpkg.com/ip-address/-/ip-address-10.5.0.tgz#fcd6d7dfe9e68416b7cb71afe9bc960b3e38c13b"
-  integrity sha512-R5SnVLJmgYYvf2F2ZgwSBnelz5G4q5AxIC277GDfUaNbrZKNANcBC7RHqYYePlszf4kBolVkJauG0ZjHHFh55g==
+  version "10.7.5"
+  resolved "https://registry.yarnpkg.com/ip-address/-/ip-address-10.7.5.tgz#4c4c423f6477d0b0b5c2ea59ac77e93eff49003e"
+  integrity sha512-t2v0rkILYv9WXmSL7TpAaU3HXgaFYOPUcH3QHgwQ++gpJuH3bqyMy4Fvt/DJCTKwzH3Cf+bAp5W/mFL39KPLzA==
 
 ipaddr.js@1.9.1:
   version "1.9.1"

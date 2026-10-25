@@ -226,7 +226,7 @@ function datesBetween(startDate: string, endDate: string): string[] {
 }
 
 async function shiftsForDuty(dutyId: string): Promise<ShiftDocument[]> {
-  const shifts = (await DutyShifts.find({ dutyId }).fetchAsync()) as ShiftDocument[];
+  const shifts = (await DutyShifts.find({ dutyId }).fetchAsync()) as unknown as ShiftDocument[];
   return shifts.sort((left, right) => {
     const leftTime = left.startTime ? Date.parse(left.startTime) : Number.MAX_SAFE_INTEGER;
     const rightTime = right.startTime ? Date.parse(right.startTime) : Number.MAX_SAFE_INTEGER;
@@ -345,7 +345,7 @@ async function lockDays(
   const overrides = (await DutyDayOverrides.find({
     ...shiftKey,
     date: range,
-  }).fetchAsync()) as OverrideDocument[];
+  }).fetchAsync()) as unknown as OverrideDocument[];
   const overrideByDate = new Map(overrides.map(override => [override.date, override]));
 
   const pending = datesBetween(fromDate, lastDate).filter(
@@ -395,7 +395,7 @@ export async function ensureDutyDayAttendancesForTeam(teamId: string) {
   await ensureDutyPlanIndexes();
   const assignments = (await DutyTeamAssignments.find({
     teamId,
-  }).fetchAsync()) as TeamAssignmentDocument[];
+  }).fetchAsync()) as unknown as TeamAssignmentDocument[];
   const today = todayInKarachi();
 
   for (const assignment of assignments) {
@@ -420,10 +420,10 @@ export async function createTodayDutyDayAttendances(
   const today = todayInKarachi();
   const assignments = (await DutyTeamAssignments.find({
     startDate: { $lte: today },
-  }).fetchAsync()) as TeamAssignmentDocument[];
+  }).fetchAsync()) as unknown as TeamAssignmentDocument[];
   const overrides = (await DutyDayOverrides.find({
     date: today,
-  }).fetchAsync()) as Array<OverrideDocument & PlanKey>;
+  }).fetchAsync()) as unknown as Array<OverrideDocument & PlanKey>;
 
   const shiftsToLock = new Map<string, { key: PlanKey; shiftId: string }>();
   [...assignments, ...overrides].forEach(row => {
@@ -623,10 +623,10 @@ export async function getDutyPlanWeek(dutyId: string, locationId: string) {
   const shifts = await shiftsForDuty(key.dutyId);
   const assignments = (await DutyTeamAssignments.find(
     key
-  ).fetchAsync()) as TeamAssignmentDocument[];
+  ).fetchAsync()) as unknown as TeamAssignmentDocument[];
   const teams = (await Teams.find({
     _id: { $in: uniqueIds(assignments.map(assignment => assignment.teamId)) },
-  }).fetchAsync()) as TeamDocument[];
+  }).fetchAsync()) as unknown as TeamDocument[];
   const teamsById = new Map(teams.map(team => [team._id, team]));
 
   const slots: WeekSlot[] = [];
@@ -756,10 +756,10 @@ export async function getDutyPlanDays(
 
   const assignments = (await DutyTeamAssignments.find(
     key
-  ).fetchAsync()) as TeamAssignmentDocument[];
+  ).fetchAsync()) as unknown as TeamAssignmentDocument[];
   const teams = (await Teams.find({
     _id: { $in: uniqueIds(assignments.map(assignment => assignment.teamId)) },
-  }).fetchAsync()) as TeamDocument[];
+  }).fetchAsync()) as unknown as TeamDocument[];
   const teamsById = new Map(teams.map(team => [team._id, team]));
   const assignmentByShift = new Map(
     assignments.map(assignment => [assignment.shiftId, assignment])
@@ -768,14 +768,14 @@ export async function getDutyPlanDays(
   const overrides = (await DutyDayOverrides.find({
     ...key,
     date: range,
-  }).fetchAsync()) as OverrideDocument[];
+  }).fetchAsync()) as unknown as OverrideDocument[];
   const overrideByKey = new Map(
     overrides.map(override => [`${override.shiftId}:${override.date}`, override])
   );
   const records = (await DutyDayAttendances.find({
     ...key,
     date: range,
-  }).fetchAsync()) as DayAttendanceDocument[];
+  }).fetchAsync()) as unknown as DayAttendanceDocument[];
   const recordByKey = new Map(
     records.map(record => [`${record.shiftId}:${record.date}`, record])
   );
@@ -955,7 +955,7 @@ export async function getDutyAttendanceSheet(args: {
   };
   if (args.locationId) selector.locationId = args.locationId;
   if (args.shiftId) selector.shiftId = args.shiftId;
-  const records = (await DutyDayAttendances.find(selector).fetchAsync()) as SheetRecord[];
+  const records = (await DutyDayAttendances.find(selector).fetchAsync()) as unknown as SheetRecord[];
 
   return summarizeAttendance(records).sort(
     (left, right) =>
@@ -1036,7 +1036,7 @@ export async function getKarkunDutyAttendanceSheet(karkunId: string) {
   await ensureDutyPlanIndexes();
   const records = (await DutyDayAttendances.find({
     'karkuns.karkunId': karkunId,
-  }).fetchAsync()) as SheetRecord[];
+  }).fetchAsync()) as unknown as SheetRecord[];
 
   const monthKey = (month: string) => month.split('-').reverse().join('-');
   return summarizeAttendance(records, id => id === karkunId).sort(

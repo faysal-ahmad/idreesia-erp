@@ -68,7 +68,7 @@ const MemberDaysModal = ({
           fieldName="daysOfWeek"
           fieldLabel="Available days"
           fieldLayout={{ labelCol: { span: 24 }, wrapperCol: { span: 24 } }}
-          initialValue={initialDays}
+          initialValue={[...initialDays]}
           required
           requiredMessage="Please select at least one day."
         />

@@ -114,7 +114,7 @@ const List = ({
         bloodGroup,
         dutyId: mode === 'candidates' ? undefined : dutyId,
         dutyShiftId: mode === 'candidates' ? undefined : dutyShiftId,
-        isKarkun: mode === 'candidates' ? false : true,
+        isKarkun: mode !== 'candidates',
         isEmployee: mode === 'candidates' ? undefined : true,
         isVisitor: mode === 'candidates' ? undefined : true,
         predefinedFilterName,

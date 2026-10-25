@@ -3,20 +3,25 @@ import SimpleSchema from 'simpl-schema';
 import { identifiable, timestamps } from '../common';
 
 export const SecurityServerProfileImage = new SimpleSchema({
-  externalId: {
+  // Also the image id the security server sees.
+  _id: {
     type: String,
   },
   // Object storage key, under StorageFolders.SecurityServerProfileImages.
   imageKey: {
     type: String,
   },
-});
-
-// Mirror of a security-server MonitoringProfile.
-export default new SimpleSchema({
-  externalId: {
+  uploadedAt: {
+    type: Date,
+  },
+  uploadedBy: {
     type: String,
   },
+});
+
+// A person on the security server's watch list. Managed in the ERP and pulled
+// down by the security server.
+export default new SimpleSchema({
   name: {
     type: String,
   },
@@ -28,14 +33,6 @@ export default new SimpleSchema({
   },
   'images.$': {
     type: SecurityServerProfileImage,
-  },
-  externalCreatedAt: {
-    type: Date,
-    optional: true,
-  },
-  externalUpdatedAt: {
-    type: Date,
-    optional: true,
   },
 })
   .extend(identifiable)

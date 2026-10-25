@@ -9,26 +9,26 @@ export interface SyncImage {
 
 export type AlertReview = 'CORRECT' | 'FALSE_POSITIVE';
 
-export interface ChannelPayload {
+export interface ChannelConnectionValues {
+  host: string;
+  port?: number | null;
+  path?: string | null;
+  username?: string | null;
+  // Left empty on update to keep the stored password.
+  password?: string | null;
+}
+
+export interface ChannelValues {
   name: string;
   enabled: boolean;
-  similarityThreshold: number | null;
+  similarityThreshold?: number | null;
   recognitionFps: number;
+  connection: ChannelConnectionValues;
 }
 
-export interface ProfileImagePayload {
-  id: string;
-  // Only needed for images the ERP doesn't have yet; images it already holds
-  // are matched by id and never re-uploaded.
-  image: SyncImage | null;
-}
-
-export interface ProfilePayload {
+export interface ProfileValues {
   name: string;
   isTest: boolean;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  images: ProfileImagePayload[];
 }
 
 export interface AlertPayload {
@@ -36,13 +36,6 @@ export interface AlertPayload {
   channelId: string;
   timestamp: Date;
   similarityScore: number;
-  review: AlertReview | null;
-  reviewedAt: Date | null;
   // Only needed the first time an alert is pushed.
   image: SyncImage | null;
-}
-
-export interface AlertReviewPayload {
-  review: AlertReview | null;
-  reviewedAt: Date | null;
 }

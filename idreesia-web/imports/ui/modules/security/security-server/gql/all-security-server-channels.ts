@@ -16,6 +16,13 @@ const ALL_SECURITY_SERVER_CHANNELS: TypedDocumentNode<
       enabled
       similarityThreshold
       recognitionFps
+      connection {
+        host
+        port
+        path
+        username
+        hasPassword
+      }
       alertsCount
       deletedAt
     }

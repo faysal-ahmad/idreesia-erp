@@ -107,6 +107,14 @@ export type SecurityServerAlertFilter = {
   startDate?: string | null | undefined;
 };
 
+export type SecurityServerChannelConnectionInput = {
+  host: string;
+  password?: string | null | undefined;
+  path?: string | null | undefined;
+  port?: number | null | undefined;
+  username?: string | null | undefined;
+};
+
 export type SecurityServerProfileFilter = {
   includeDeleted?: string | null | undefined;
   includeTest?: string | null | undefined;
@@ -1392,12 +1400,53 @@ export type UpdateMehfilMutationVariables = Exact<{
 
 export type UpdateMehfilMutation = { updateMehfil: { _id: string | null, name: string | null, mehfilDate: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
+export type AddSecurityServerProfileImageMutationVariables = Exact<{
+  profileId: string;
+  imageData: string;
+}>;
+
+
+export type AddSecurityServerProfileImageMutation = { addSecurityServerProfileImage: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
+
 export type AllSecurityServerChannelsQueryVariables = Exact<{
   includeDeleted?: boolean | null | undefined;
 }>;
 
 
-export type AllSecurityServerChannelsQuery = { allSecurityServerChannels: Array<{ _id: string | null, name: string | null, enabled: boolean | null, similarityThreshold: number | null, recognitionFps: number | null, alertsCount: number | null, deletedAt: string | null } | null> | null };
+export type AllSecurityServerChannelsQuery = { allSecurityServerChannels: Array<{ _id: string | null, name: string | null, enabled: boolean | null, similarityThreshold: number | null, recognitionFps: number | null, alertsCount: number | null, deletedAt: string | null, connection: { host: string | null, port: number | null, path: string | null, username: string | null, hasPassword: boolean | null } | null } | null> | null };
+
+export type CreateSecurityServerChannelMutationVariables = Exact<{
+  name: string;
+  enabled: boolean;
+  similarityThreshold?: number | null | undefined;
+  recognitionFps: number;
+  connection: Types.SecurityServerChannelConnectionInput;
+}>;
+
+
+export type CreateSecurityServerChannelMutation = { createSecurityServerChannel: { _id: string | null } | null };
+
+export type CreateSecurityServerProfileMutationVariables = Exact<{
+  name: string;
+  isTest: boolean;
+}>;
+
+
+export type CreateSecurityServerProfileMutation = { createSecurityServerProfile: { _id: string | null } | null };
+
+export type DeleteSecurityServerChannelMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type DeleteSecurityServerChannelMutation = { deleteSecurityServerChannel: number | null };
+
+export type DeleteSecurityServerProfileMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type DeleteSecurityServerProfileMutation = { deleteSecurityServerProfile: number | null };
 
 export type PagedSecurityServerAlertsQueryVariables = Exact<{
   filter?: Types.SecurityServerAlertFilter | null | undefined;
@@ -1411,21 +1460,65 @@ export type PagedSecurityServerProfilesQueryVariables = Exact<{
 }>;
 
 
-export type PagedSecurityServerProfilesQuery = { pagedSecurityServerProfiles: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, externalUpdatedAt: string | null, updatedAt: string | null, deletedAt: string | null, images: Array<{ externalId: string | null, imageUrl: string | null } | null> | null } | null> | null } | null };
+export type PagedSecurityServerProfilesQuery = { pagedSecurityServerProfiles: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, updatedAt: string | null, deletedAt: string | null, images: Array<{ _id: string | null, imageUrl: string | null } | null> | null } | null> | null } | null };
+
+export type RemoveSecurityServerProfileImageMutationVariables = Exact<{
+  profileId: string;
+  imageId: string;
+}>;
+
+
+export type RemoveSecurityServerProfileImageMutation = { removeSecurityServerProfileImage: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
 
 export type SecurityServerAlertByIdQueryVariables = Exact<{
   _id: string;
 }>;
 
 
-export type SecurityServerAlertByIdQuery = { securityServerAlertById: { _id: string | null, externalId: string | null, profileId: string | null, profileName: string | null, profileIsTest: boolean | null, channelId: string | null, channelName: string | null, timestamp: string | null, similarityScore: number | null, imageUrl: string | null, review: string | null, reviewedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type SecurityServerAlertByIdQuery = { securityServerAlertById: { _id: string | null, profileId: string | null, profileName: string | null, profileIsTest: boolean | null, channelId: string | null, channelName: string | null, timestamp: string | null, similarityScore: number | null, imageUrl: string | null, review: string | null, reviewedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+
+export type SecurityServerChannelByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type SecurityServerChannelByIdQuery = { securityServerChannelById: { _id: string | null, name: string | null, enabled: boolean | null, similarityThreshold: number | null, recognitionFps: number | null, alertsCount: number | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, connection: { host: string | null, port: number | null, path: string | null, username: string | null, hasPassword: boolean | null } | null } | null };
 
 export type SecurityServerProfileByIdQueryVariables = Exact<{
   _id: string;
 }>;
 
 
-export type SecurityServerProfileByIdQuery = { securityServerProfileById: { _id: string | null, externalId: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, externalCreatedAt: string | null, externalUpdatedAt: string | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ externalId: string | null, imageUrl: string | null } | null> | null } | null };
+export type SecurityServerProfileByIdQuery = { securityServerProfileById: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
+
+export type SetSecurityServerAlertReviewMutationVariables = Exact<{
+  _id: string;
+  review?: string | null | undefined;
+}>;
+
+
+export type SetSecurityServerAlertReviewMutation = { setSecurityServerAlertReview: { _id: string | null, review: string | null, reviewedAt: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+
+export type UpdateSecurityServerChannelMutationVariables = Exact<{
+  _id: string;
+  name: string;
+  enabled: boolean;
+  similarityThreshold?: number | null | undefined;
+  recognitionFps: number;
+  connection: Types.SecurityServerChannelConnectionInput;
+}>;
+
+
+export type UpdateSecurityServerChannelMutation = { updateSecurityServerChannel: { _id: string | null, name: string | null, enabled: boolean | null, similarityThreshold: number | null, recognitionFps: number | null, updatedAt: string | null, updatedBy: string | null, connection: { host: string | null, port: number | null, path: string | null, username: string | null, hasPassword: boolean | null } | null } | null };
+
+export type UpdateSecurityServerProfileMutationVariables = Exact<{
+  _id: string;
+  name: string;
+  isTest: boolean;
+}>;
+
+
+export type UpdateSecurityServerProfileMutation = { updateSecurityServerProfile: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
 
 export type PagedSecurityUsersQueryVariables = Exact<{
   filter?: Types.UserFilter | null | undefined;

@@ -5,17 +5,16 @@ export interface SecurityServerAlertDocument {
   _id: string;
   externalId: string;
   profileId: string;
-  profileExternalId: string;
   profileName: string;
   profileIsTest: boolean;
   channelId: string;
-  channelExternalId: string;
   channelName: string;
   timestamp: Date;
   similarityScore: number;
   imageKey: string;
   review?: 'CORRECT' | 'FALSE_POSITIVE';
   reviewedAt?: Date;
+  reviewUpdatedAt?: Date;
   createdAt?: Date;
   createdBy?: string;
   updatedAt?: Date;

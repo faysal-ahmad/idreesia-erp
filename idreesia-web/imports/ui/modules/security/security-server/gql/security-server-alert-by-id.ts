@@ -12,7 +12,6 @@ const SECURITY_SERVER_ALERT_BY_ID: TypedDocumentNode<
   query securityServerAlertById($_id: String!) {
     securityServerAlertById(_id: $_id) {
       _id
-      externalId
       profileId
       profileName
       profileIsTest

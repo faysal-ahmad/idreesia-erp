@@ -12,16 +12,14 @@ const SECURITY_SERVER_PROFILE_BY_ID: TypedDocumentNode<
   query securityServerProfileById($_id: String!) {
     securityServerProfileById(_id: $_id) {
       _id
-      externalId
       name
       isTest
       alertsCount
-      externalCreatedAt
-      externalUpdatedAt
       deletedAt
       images {
-        externalId
+        _id
         imageUrl
+        uploadedAt
       }
       createdAt
       createdBy

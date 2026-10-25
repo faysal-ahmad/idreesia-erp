@@ -41,7 +41,8 @@ const useListScrollY = () => {
         if (contentEl) {
           const paddingBottom =
             Number.parseFloat(getComputedStyle(contentEl).paddingBottom) || 0;
-          bottomLimit = contentEl.getBoundingClientRect().bottom - paddingBottom;
+          bottomLimit =
+            contentEl.getBoundingClientRect().bottom - paddingBottom;
         }
 
         const nextScrollY = Math.max(

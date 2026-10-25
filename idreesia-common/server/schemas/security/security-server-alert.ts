@@ -2,16 +2,15 @@ import SimpleSchema from 'simpl-schema';
 
 import { identifiable, timestamps } from '../common';
 
-// Mirror of a security-server Alert. Profile and channel names are copied in
-// so lists need no joins and still read correctly after either is deleted.
+// An alert raised by the security server and pushed to the ERP. Profile and
+// channel names are copied in so lists need no joins and still read correctly
+// after either is deleted.
 export default new SimpleSchema({
+  // The security server's own alert id; pushes upsert on it.
   externalId: {
     type: String,
   },
   profileId: {
-    type: String,
-  },
-  profileExternalId: {
     type: String,
   },
   profileName: {
@@ -21,9 +20,6 @@ export default new SimpleSchema({
     type: Boolean,
   },
   channelId: {
-    type: String,
-  },
-  channelExternalId: {
     type: String,
   },
   channelName: {
@@ -45,6 +41,12 @@ export default new SimpleSchema({
     allowedValues: ['CORRECT', 'FALSE_POSITIVE'],
   },
   reviewedAt: {
+    type: Date,
+    optional: true,
+  },
+  // Bumped on every review change, including clearing one - the cursor the
+  // security server pages review decisions by.
+  reviewUpdatedAt: {
     type: Date,
     optional: true,
   },

@@ -67,10 +67,8 @@ export default class SubModulePaths {
   // *************************************************************************************
   static securityServerPath = `${ModulePaths.security}/security-server`;
   static securityServerChannelsPath = `${SubModulePaths.securityServerPath}/channels`;
+
   static securityServerProfilesPath = `${SubModulePaths.securityServerPath}/profiles`;
-  static securityServerProfileViewPath(profileId = ':profileId') {
-    return `${SubModulePaths.securityServerProfilesPath}/${profileId}`;
-  }
 
   static securityServerAlertsPath = `${SubModulePaths.securityServerPath}/alerts`;
   static securityServerAlertViewPath(alertId = ':alertId') {

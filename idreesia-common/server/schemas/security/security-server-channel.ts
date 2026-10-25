@@ -2,12 +2,34 @@ import SimpleSchema from 'simpl-schema';
 
 import { identifiable, timestamps } from '../common';
 
-// Mirror of a security-server VideoFeedSource. The server's connection config
-// (RTSP host and credentials) is deliberately never synced.
-export default new SimpleSchema({
-  externalId: {
+// RTSP connection details the security server needs to open the camera feed.
+// The password is only ever handed to the security server's sync endpoint -
+// never returned through GraphQL.
+export const SecurityServerChannelConnection = new SimpleSchema({
+  host: {
     type: String,
   },
+  port: {
+    type: SimpleSchema.Integer,
+    optional: true,
+  },
+  path: {
+    type: String,
+    optional: true,
+  },
+  username: {
+    type: String,
+    optional: true,
+  },
+  password: {
+    type: String,
+    optional: true,
+  },
+});
+
+// A camera feed the security server watches. Managed in the ERP and pulled
+// down by the security server.
+export default new SimpleSchema({
   name: {
     type: String,
   },
@@ -20,6 +42,9 @@ export default new SimpleSchema({
   },
   recognitionFps: {
     type: Number,
+  },
+  connection: {
+    type: SecurityServerChannelConnection,
   },
 })
   .extend(identifiable)

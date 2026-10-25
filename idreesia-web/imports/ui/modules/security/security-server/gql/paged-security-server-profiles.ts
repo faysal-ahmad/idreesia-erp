@@ -17,11 +17,10 @@ const PAGED_SECURITY_SERVER_PROFILES: TypedDocumentNode<
         name
         isTest
         alertsCount
-        externalUpdatedAt
         updatedAt
         deletedAt
         images {
-          externalId
+          _id
           imageUrl
         }
       }

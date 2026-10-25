@@ -1,118 +1,84 @@
+import sharp from 'sharp';
+import { Random } from 'meteor/random';
+
+import { ImageVectorStatus } from 'meteor/idreesia-common/constants';
+import { computeVectorFromImageBuffer } from 'meteor/idreesia-common/server/business-logic/common/compute-image-vector-data';
 import {
   SecurityServerAlerts,
   SecurityServerProfiles,
 } from 'meteor/idreesia-common/server/collections/security';
-import type { SecurityServerProfileImageDocument } from 'meteor/idreesia-common/server/collections/security/security-server-profiles';
 import {
+  deleteFile,
   deleteFiles,
   putFile,
   StorageFolders,
 } from 'meteor/idreesia-common/server/file-storage';
 
-import { SecurityServerSyncError } from './errors';
-import { getImageExtension } from './image-files';
-import type { ProfilePayload, SyncUser } from './types';
+import type { ProfileValues, SyncImage, SyncUser } from './types';
 
-const getProfileImageKey = (
-  profileExternalId: string,
-  imageExternalId: string,
-  mimeType: string
-) =>
-  `${StorageFolders.SecurityServerProfileImages}/${profileExternalId}/${imageExternalId}.${getImageExtension(mimeType)}`;
+// Profile images are normalised before storage: upright (EXIF orientation
+// applied), no larger than this on the long side, re-encoded as JPEG.
+const MAX_IMAGE_SIDE = 1280;
+const JPEG_QUALITY = 90;
 
-export async function upsertSecurityServerProfile(
+const REJECTION_MESSAGES: Record<string, string> = {
+  [ImageVectorStatus.NO_FACE]: 'No face found in the image.',
+  [ImageVectorStatus.MULTIPLE_FACES]:
+    'More than one face found. Use a photo of just one person.',
+  [ImageVectorStatus.TOO_SMALL]: 'The face is too small. Use a closer photo.',
+  [ImageVectorStatus.ERROR]:
+    'The image could not be processed. Try a different photo.',
+};
+
+const getActiveProfile = async (profileId: string) => {
+  const profile = await SecurityServerProfiles.findOneAsync({
+    _id: profileId,
+    deletedAt: { $exists: false },
+  });
+  if (!profile) throw new Error('Profile not found.');
+  return profile;
+};
+
+export async function createSecurityServerProfile(
   user: SyncUser,
-  externalId: string,
-  { name, isTest, createdAt, updatedAt, images }: ProfilePayload
+  { name, isTest }: ProfileValues
 ): Promise<string> {
-  const existing = await SecurityServerProfiles.findOneAsync({ externalId });
-  const existingImages: SecurityServerProfileImageDocument[] =
-    existing?.images ?? [];
-  const existingImagesById = new Map(
-    existingImages.map(image => [image.externalId, image])
-  );
+  const date = new Date();
+  return SecurityServerProfiles.insertAsync({
+    name: name.trim(),
+    isTest,
+    images: [],
+    createdAt: date,
+    createdBy: user._id,
+    updatedAt: date,
+    updatedBy: user._id,
+  });
+}
 
-  const newImages = images.filter(({ id }) => !existingImagesById.has(id));
-  const newImageKeys = newImages.map(({ id, image }) => {
-    if (!image) {
-      throw new SecurityServerSyncError(
-        422,
-        `Image '${id}' is not stored in the ERP yet, so its data is required.`
-      );
-    }
-    return getProfileImageKey(externalId, id, image.mimeType);
+export async function updateSecurityServerProfile(
+  user: SyncUser,
+  profileId: string,
+  { name, isTest }: ProfileValues
+): Promise<void> {
+  const existing = await getActiveProfile(profileId);
+  const trimmedName = name.trim();
+
+  await SecurityServerProfiles.updateAsync(profileId, {
+    $set: {
+      name: trimmedName,
+      isTest,
+      updatedAt: new Date(),
+      updatedBy: user._id,
+    },
   });
 
-  // Upload before writing to Mongo, and delete removed objects only after it,
-  // so a failure part-way leaves at worst an orphaned object - never a profile
-  // pointing at an object that doesn't exist.
-  await Promise.all(
-    newImages.map(({ image }, index) =>
-      putFile(newImageKeys[index], image!.data, image!.mimeType)
-    )
-  );
-
-  const newImagesById = new Map(
-    newImages.map(({ id }, index) => [
-      id,
-      { externalId: id, imageKey: newImageKeys[index] },
-    ])
-  );
-  const nextImages = images.map(
-    ({ id }) => existingImagesById.get(id) ?? newImagesById.get(id)!
-  );
-  const incomingIds = new Set(images.map(({ id }) => id));
-  const removedImageKeys = existingImages
-    .filter(image => !incomingIds.has(image.externalId))
-    .map(image => image.imageKey);
-
-  const date = new Date();
-  const externalDates = {
-    ...(createdAt ? { externalCreatedAt: createdAt } : {}),
-    ...(updatedAt ? { externalUpdatedAt: updatedAt } : {}),
-  };
-
-  let profileId: string;
-  if (!existing) {
-    profileId = await SecurityServerProfiles.insertAsync({
-      externalId,
-      name,
-      isTest,
-      images: nextImages,
-      ...externalDates,
-      createdAt: date,
-      createdBy: user._id,
-      updatedAt: date,
-      updatedBy: user._id,
-    });
-  } else {
-    profileId = existing._id;
-    await SecurityServerProfiles.updateAsync(profileId, {
-      $set: {
-        name,
-        isTest,
-        images: nextImages,
-        ...externalDates,
-        updatedAt: date,
-        updatedBy: user._id,
-      },
-      $unset: { deletedAt: '', deletedBy: '' },
-    });
-
-    if (existing.name !== name || existing.isTest !== isTest) {
-      await SecurityServerAlerts.updateAsync(
-        { profileId },
-        { $set: { profileName: name, profileIsTest: isTest } },
-        { multi: true }
-      );
-    }
+  if (existing.name !== trimmedName || existing.isTest !== isTest) {
+    await SecurityServerAlerts.updateAsync(
+      { profileId },
+      { $set: { profileName: trimmedName, profileIsTest: isTest } },
+      { multi: true }
+    );
   }
-
-  if (removedImageKeys.length > 0) {
-    await deleteFiles(removedImageKeys);
-  }
-
-  return profileId;
 }
 
 /**
@@ -121,18 +87,13 @@ export async function upsertSecurityServerProfile(
  */
 export async function deleteSecurityServerProfile(
   user: SyncUser,
-  externalId: string
+  profileId: string
 ): Promise<void> {
-  const existing = await SecurityServerProfiles.findOneAsync({
-    externalId,
-    deletedAt: { $exists: false },
-  });
-  if (!existing) return;
-
-  const imageKeys = (existing.images ?? []).map(image => image.imageKey);
+  const existing = await getActiveProfile(profileId);
+  const imageKeys = existing.images.map(image => image.imageKey);
 
   const date = new Date();
-  await SecurityServerProfiles.updateAsync(existing._id, {
+  await SecurityServerProfiles.updateAsync(profileId, {
     $set: {
       images: [],
       deletedAt: date,
@@ -145,4 +106,77 @@ export async function deleteSecurityServerProfile(
   if (imageKeys.length > 0) {
     await deleteFiles(imageKeys);
   }
+}
+
+/**
+ * Adds an enrollment photo to a profile. The photo is rejected unless it
+ * passes the same face quality gate the security server applies when it
+ * computes its embedding, so the server never pulls an image it can't use.
+ */
+export async function addSecurityServerProfileImage(
+  user: SyncUser,
+  profileId: string,
+  { data }: SyncImage
+): Promise<string> {
+  await getActiveProfile(profileId);
+
+  let normalized: Buffer;
+  try {
+    normalized = await sharp(data)
+      .rotate()
+      .resize(MAX_IMAGE_SIDE, MAX_IMAGE_SIDE, {
+        fit: 'inside',
+        withoutEnlargement: true,
+      })
+      .jpeg({ quality: JPEG_QUALITY })
+      .toBuffer();
+  } catch {
+    throw new Error(REJECTION_MESSAGES[ImageVectorStatus.ERROR]);
+  }
+
+  // Checked on the normalised image - exactly what the security server will
+  // download. The vector itself is discarded; the server computes its own.
+  const { status } = computeVectorFromImageBuffer(normalized);
+  if (status !== ImageVectorStatus.COMPUTED) {
+    throw new Error(
+      REJECTION_MESSAGES[status] ?? REJECTION_MESSAGES[ImageVectorStatus.ERROR]
+    );
+  }
+
+  const imageId = Random.id();
+  const imageKey = `${StorageFolders.SecurityServerProfileImages}/${profileId}/${imageId}.jpg`;
+  await putFile(imageKey, normalized, 'image/jpeg');
+
+  const date = new Date();
+  await SecurityServerProfiles.updateAsync(profileId, {
+    $push: {
+      images: {
+        _id: imageId,
+        imageKey,
+        uploadedAt: date,
+        uploadedBy: user._id,
+      },
+    },
+    $set: { updatedAt: date, updatedBy: user._id },
+  });
+
+  return imageId;
+}
+
+export async function removeSecurityServerProfileImage(
+  user: SyncUser,
+  profileId: string,
+  imageId: string
+): Promise<void> {
+  const profile = await getActiveProfile(profileId);
+  const image = profile.images.find(({ _id }) => _id === imageId);
+  if (!image) throw new Error('Image not found.');
+
+  // Remove the reference before the object, so a failure part-way never
+  // leaves the profile pointing at an image that doesn't exist.
+  await SecurityServerProfiles.updateAsync(profileId, {
+    $pull: { images: { _id: imageId } },
+    $set: { updatedAt: new Date(), updatedBy: user._id },
+  });
+  await deleteFile(image.imageKey);
 }

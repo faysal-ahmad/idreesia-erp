@@ -17,7 +17,8 @@ interface Props {
 
 const ReviewTag = ({ review }: Props) => {
   if (review === 'CORRECT') return <Tag color="green">Correct</Tag>;
-  if (review === 'FALSE_POSITIVE') return <Tag color="orange">False Positive</Tag>;
+  if (review === 'FALSE_POSITIVE')
+    return <Tag color="orange">False Positive</Tag>;
   return <Tag>Not Reviewed</Tag>;
 };
 

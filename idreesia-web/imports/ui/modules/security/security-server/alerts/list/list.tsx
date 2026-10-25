@@ -38,7 +38,10 @@ const FILTER_PARAM_NAMES = [
 const ALL_PROFILES_PAGE_SIZE = '1000';
 
 const toNamedOptions = (
-  rows: ReadonlyArray<{ _id?: string | null; name?: string | null } | null> | null | undefined
+  rows:
+    | ReadonlyArray<{ _id?: string | null; name?: string | null } | null>
+    | null
+    | undefined
 ): NamedOption[] =>
   (rows ?? []).flatMap(row =>
     row?._id ? [{ _id: row._id, name: row.name ?? '' }] : []

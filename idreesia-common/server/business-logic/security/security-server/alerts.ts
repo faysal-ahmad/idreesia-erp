@@ -10,7 +10,7 @@ import {
 
 import { SecurityServerSyncError } from './errors';
 import { getImageExtension } from './image-files';
-import type { AlertPayload, AlertReviewPayload, SyncUser } from './types';
+import type { AlertPayload, AlertReview, SyncUser } from './types';
 
 // Partitioned by the alert's month (UTC) so retention or cleanup can work on
 // whole prefixes later.
@@ -24,63 +24,30 @@ const getAlertImageKey = (
   return `${StorageFolders.SecurityServerAlertImages}/${year}/${month}/${alertExternalId}.${getImageExtension(mimeType)}`;
 };
 
-const getReviewModifier = (
-  { review, reviewedAt }: AlertReviewPayload,
-  user: SyncUser
-) => {
-  const date = new Date();
-  if (review) {
-    return {
-      $set: {
-        review,
-        reviewedAt: reviewedAt ?? date,
-        updatedAt: date,
-        updatedBy: user._id,
-      },
-    };
-  }
-
-  return {
-    $set: { updatedAt: date, updatedBy: user._id },
-    $unset: { review: '' as const, reviewedAt: '' as const },
-  };
-};
-
+/**
+ * Stores an alert pushed by the security server. Alerts never change once
+ * raised, so re-pushing a known alert is a no-op - the snapshot is never
+ * re-uploaded. Profiles and channels deleted in the ERP are still accepted,
+ * since the server may not have pulled the deletion yet.
+ */
 export async function upsertSecurityServerAlert(
   user: SyncUser,
   externalId: string,
-  payload: AlertPayload
+  { profileId, channelId, timestamp, similarityScore, image }: AlertPayload
 ): Promise<string> {
-  const { profileId, channelId, timestamp, similarityScore, image } = payload;
+  const existing = await SecurityServerAlerts.findOneAsync({ externalId });
+  if (existing) return existing._id;
 
   const [profile, channel] = await Promise.all([
-    SecurityServerProfiles.findOneAsync({ externalId: profileId }),
-    SecurityServerChannels.findOneAsync({ externalId: channelId }),
+    SecurityServerProfiles.findOneAsync(profileId),
+    SecurityServerChannels.findOneAsync(channelId),
   ]);
   if (!profile) {
-    throw new SecurityServerSyncError(
-      422,
-      `Profile '${profileId}' has not been pushed to the ERP.`
-    );
+    throw new SecurityServerSyncError(422, `Unknown profile '${profileId}'.`);
   }
   if (!channel) {
-    throw new SecurityServerSyncError(
-      422,
-      `Channel '${channelId}' has not been pushed to the ERP.`
-    );
+    throw new SecurityServerSyncError(422, `Unknown channel '${channelId}'.`);
   }
-
-  // Alerts never change on the server apart from their review, so a re-push
-  // of a known alert only updates that - the snapshot is never re-uploaded.
-  const existing = await SecurityServerAlerts.findOneAsync({ externalId });
-  if (existing) {
-    await SecurityServerAlerts.updateAsync(
-      existing._id,
-      getReviewModifier(payload, user)
-    );
-    return existing._id;
-  }
-
   if (!image) {
     throw new SecurityServerSyncError(
       422,
@@ -92,20 +59,16 @@ export async function upsertSecurityServerAlert(
   await putFile(imageKey, image.data, image.mimeType);
 
   const date = new Date();
-  const { review, reviewedAt } = payload;
   return SecurityServerAlerts.insertAsync({
     externalId,
-    profileId: profile._id,
-    profileExternalId: profileId,
+    profileId,
     profileName: profile.name,
     profileIsTest: profile.isTest,
-    channelId: channel._id,
-    channelExternalId: channelId,
+    channelId,
     channelName: channel.name,
     timestamp,
     similarityScore,
     imageKey,
-    ...(review ? { review, reviewedAt: reviewedAt ?? date } : {}),
     createdAt: date,
     createdBy: user._id,
     updatedAt: date,
@@ -113,21 +76,59 @@ export async function upsertSecurityServerAlert(
   });
 }
 
+/** Records (or, with null, clears) an ERP user's review of an alert. */
 export async function setSecurityServerAlertReview(
   user: SyncUser,
-  externalId: string,
-  payload: AlertReviewPayload
+  alertId: string,
+  review: AlertReview | null
 ): Promise<void> {
-  const existing = await SecurityServerAlerts.findOneAsync({ externalId });
-  if (!existing) {
-    throw new SecurityServerSyncError(
-      404,
-      `Alert '${externalId}' has not been pushed to the ERP.`
-    );
-  }
+  const alert = await SecurityServerAlerts.findOneAsync(alertId);
+  if (!alert) throw new Error('Alert not found.');
 
+  const date = new Date();
+  const audit = { reviewUpdatedAt: date, updatedAt: date, updatedBy: user._id };
   await SecurityServerAlerts.updateAsync(
-    existing._id,
-    getReviewModifier(payload, user)
+    alertId,
+    review
+      ? { $set: { review, reviewedAt: date, ...audit } }
+      : { $set: audit, $unset: { review: '', reviewedAt: '' } }
   );
+}
+
+export interface AlertReviewRecord {
+  alertId: string;
+  review: AlertReview | null;
+  reviewedAt: Date | null;
+  reviewUpdatedAt: Date;
+}
+
+const DEFAULT_REVIEWS_PAGE_SIZE = 500;
+const MAX_REVIEWS_PAGE_SIZE = 2000;
+
+/**
+ * Review decisions made in the ERP, for the security server to pull. Sorted
+ * by reviewUpdatedAt so the caller advances its cursor with the last record's
+ * value and keeps paging until a short page says it has caught up.
+ */
+export async function getSecurityServerAlertReviews(
+  since: Date | null,
+  limit: number | null
+): Promise<AlertReviewRecord[]> {
+  const pageSize = Math.min(
+    limit && limit > 0 ? limit : DEFAULT_REVIEWS_PAGE_SIZE,
+    MAX_REVIEWS_PAGE_SIZE
+  );
+  const alerts = await SecurityServerAlerts.find(
+    {
+      reviewUpdatedAt: since ? { $gt: since } : { $exists: true },
+    },
+    { sort: { reviewUpdatedAt: 1 }, limit: pageSize }
+  ).fetchAsync();
+
+  return alerts.map(alert => ({
+    alertId: alert.externalId,
+    review: alert.review ?? null,
+    reviewedAt: alert.reviewedAt ?? null,
+    reviewUpdatedAt: alert.reviewUpdatedAt!,
+  }));
 }

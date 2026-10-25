@@ -10,7 +10,9 @@ import { formatDateTime, formatScore } from './format';
 
 export type AlertRow = NonNullable<
   NonNullable<
-    NonNullable<PagedSecurityServerAlertsQuery['pagedSecurityServerAlerts']>['data']
+    NonNullable<
+      PagedSecurityServerAlertsQuery['pagedSecurityServerAlerts']
+    >['data']
   >[number]
 >;
 
@@ -22,8 +24,6 @@ interface Props {
   onPageChange(pageIndex: number, pageSize: number): void;
   title?: () => React.ReactNode;
   scrollY?: number;
-  // The profile column is redundant on a single profile's page.
-  showProfile?: boolean;
 }
 
 const AlertsTable = ({
@@ -34,7 +34,6 @@ const AlertsTable = ({
   onPageChange,
   title,
   scrollY,
-  showProfile = true,
 }: Props) => {
   const columns = [
     {
@@ -61,24 +60,22 @@ const AlertsTable = ({
         </Link>
       ),
     },
-    ...(showProfile
-      ? [
-          {
-            title: 'Profile',
-            key: 'profileName',
-            render: (_text: unknown, record: AlertRow) => (
-              <>
-                <Link to={paths.securityServerProfileViewPath(record.profileId!)}>
-                  {record.profileName}
-                </Link>
-                {record.profileIsTest ? (
-                  <Tag className="security-server-inline-tag">Test</Tag>
-                ) : null}
-              </>
-            ),
-          },
-        ]
-      : []),
+    {
+      title: 'Profile',
+      key: 'profileName',
+      render: (_text: unknown, record: AlertRow) => (
+        <>
+          <Link
+            to={`${paths.securityServerAlertsPath}?profileId=${record.profileId}`}
+          >
+            {record.profileName}
+          </Link>
+          {record.profileIsTest ? (
+            <Tag className="security-server-inline-tag">Test</Tag>
+          ) : null}
+        </>
+      ),
+    },
     {
       title: 'Channel',
       dataIndex: 'channelName',

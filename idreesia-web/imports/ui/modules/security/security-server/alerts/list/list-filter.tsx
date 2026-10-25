@@ -50,24 +50,49 @@ const findName = (options: NamedOption[], id: string) =>
   options.find(({ _id }) => _id === id)?.name ?? id;
 
 export const getAlertFilterChips = (
-  { profileId, channelId, review, startDate, endDate, includeTest }: AlertFilterParams,
+  {
+    profileId,
+    channelId,
+    review,
+    startDate,
+    endDate,
+    includeTest,
+  }: AlertFilterParams,
   profiles: NamedOption[],
   channels: NamedOption[]
 ): FilterChip[] => {
   const chips: FilterChip[] = [];
   if (profileId) {
-    chips.push({ key: 'profileId', label: 'Profile', value: findName(profiles, profileId) });
+    chips.push({
+      key: 'profileId',
+      label: 'Profile',
+      value: findName(profiles, profileId),
+    });
   }
   if (channelId) {
-    chips.push({ key: 'channelId', label: 'Channel', value: findName(channels, channelId) });
+    chips.push({
+      key: 'channelId',
+      label: 'Channel',
+      value: findName(channels, channelId),
+    });
   }
   if (review) {
-    chips.push({ key: 'review', label: 'Review', value: getReviewLabel(review) });
+    chips.push({
+      key: 'review',
+      label: 'Review',
+      value: getReviewLabel(review),
+    });
   }
-  if (startDate) chips.push({ key: 'startDate', label: 'Start Date', value: startDate });
-  if (endDate) chips.push({ key: 'endDate', label: 'End Date', value: endDate });
+  if (startDate)
+    chips.push({ key: 'startDate', label: 'Start Date', value: startDate });
+  if (endDate)
+    chips.push({ key: 'endDate', label: 'End Date', value: endDate });
   if (includeTest === 'true') {
-    chips.push({ key: 'includeTest', label: 'Include', value: 'Test profiles' });
+    chips.push({
+      key: 'includeTest',
+      label: 'Include',
+      value: 'Test profiles',
+    });
   }
   return chips;
 };
@@ -79,7 +104,12 @@ interface Props {
   setPageParams(params: Record<string, string | number | null>): void;
 }
 
-const ListFilter = ({ queryParams, profiles, channels, setPageParams }: Props) => {
+const ListFilter = ({
+  queryParams,
+  profiles,
+  channels,
+  setPageParams,
+}: Props) => {
   const [form] = Form.useForm<FilterValues>();
   const [open, setOpen] = useState(false);
   const { profileId, channelId, review, startDate, endDate, includeTest } =

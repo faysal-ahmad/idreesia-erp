@@ -5,15 +5,12 @@ import type { NextFunction, Request, Response } from 'express';
 import { Permissions } from 'meteor/idreesia-common/constants';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import {
-  deleteSecurityServerChannel,
-  deleteSecurityServerProfile,
-  setSecurityServerAlertReview,
+  getSecurityServerAlertReviews,
+  getSecurityServerConfig,
+  getSecurityServerConfigVersion,
   upsertSecurityServerAlert,
-  upsertSecurityServerChannel,
-  upsertSecurityServerProfile,
   SecurityServerSyncError,
   SUPPORTED_IMAGE_MIME_TYPES,
-  type AlertReview,
   type SyncImage,
   type SyncUser,
 } from 'meteor/idreesia-common/server/business-logic/security/security-server';
@@ -21,17 +18,18 @@ import {
 import { getUser } from './get-user';
 
 /**
- * REST endpoints the security (face-recognition monitoring) server pushes its
- * channels, profiles and alerts to. The server logs in through POST /login as
- * a service account holding SECURITY_PUSH_SECURITY_SERVER_DATA, and sends the
- * token it gets back in the Authorization header.
+ * REST endpoints the security (face-recognition monitoring) server syncs
+ * through. Channels and profiles are managed in the ERP and pulled down by the
+ * server; alerts are raised by the server and pushed up. The server logs in
+ * through POST /login as a service account holding
+ * SECURITY_SYNC_SECURITY_SERVER_DATA, and sends the token it gets back in the
+ * Authorization header.
  *
- * The request contract is documented in docs/security-server-push-api.md.
+ * The contract is documented in docs/security-server-sync-api.md.
  */
 
-// Profile pushes can carry several base64 enrollment images.
-const BODY_SIZE_LIMIT = '15mb';
-const REVIEW_VALUES: AlertReview[] = ['CORRECT', 'FALSE_POSITIVE'];
+// An alert push carries one base64 camera frame.
+const BODY_SIZE_LIMIT = '10mb';
 
 type AuthenticatedRequest = Request & { syncUser: SyncUser };
 type Handler = (req: AuthenticatedRequest, res: Response) => Promise<void>;
@@ -39,7 +37,7 @@ type Handler = (req: AuthenticatedRequest, res: Response) => Promise<void>;
 class ValidationError extends Error {}
 
 // ----------------------------------------------------------------------------
-// Body validation helpers
+// Request validation helpers
 // ----------------------------------------------------------------------------
 
 type Body = Record<string, unknown>;
@@ -60,14 +58,6 @@ const requireString = (body: Body, field: string): string => {
   return value;
 };
 
-const requireBoolean = (body: Body, field: string): boolean => {
-  const value = body[field];
-  if (typeof value !== 'boolean') {
-    throw new ValidationError(`'${field}' must be a boolean.`);
-  }
-  return value;
-};
-
 const requireNumber = (body: Body, field: string): number => {
   const value = body[field];
   if (typeof value !== 'number' || !Number.isFinite(value)) {
@@ -76,11 +66,7 @@ const requireNumber = (body: Body, field: string): number => {
   return value;
 };
 
-const optionalNumber = (body: Body, field: string): number | null =>
-  body[field] == null ? null : requireNumber(body, field);
-
-const requireDate = (body: Body, field: string): Date => {
-  const value = body[field];
+const parseDate = (value: unknown, field: string): Date => {
   const date =
     typeof value === 'string' || typeof value === 'number'
       ? new Date(value)
@@ -91,49 +77,41 @@ const requireDate = (body: Body, field: string): Date => {
   return date;
 };
 
-const optionalDate = (body: Body, field: string): Date | null =>
-  body[field] == null ? null : requireDate(body, field);
-
-const optionalReview = (body: Body): AlertReview | null => {
-  const value = body.review;
-  if (value == null) return null;
-  if (!REVIEW_VALUES.includes(value as AlertReview)) {
-    throw new ValidationError(
-      `'review' must be one of ${REVIEW_VALUES.join(', ')} or null.`
-    );
-  }
-  return value as AlertReview;
-};
-
-// Images arrive as { mimeType, data } with base64 data. Either both are
-// present or neither is.
-const optionalImage = (body: Body, label: string): SyncImage | null => {
-  const { mimeType, data } = body;
-  if (mimeType == null && data == null) return null;
-
-  if (typeof mimeType !== 'string' || !SUPPORTED_IMAGE_MIME_TYPES.includes(mimeType)) {
-    throw new ValidationError(
-      `${label}: 'mimeType' must be one of ${SUPPORTED_IMAGE_MIME_TYPES.join(', ')}.`
-    );
-  }
-  if (typeof data !== 'string' || data === '') {
-    throw new ValidationError(`${label}: 'data' must be a base64 string.`);
-  }
-
-  const buffer = Buffer.from(data, 'base64');
-  if (buffer.length === 0) {
-    throw new ValidationError(`${label}: 'data' is not valid base64.`);
-  }
-  return { mimeType, data: buffer };
-};
-
-const optionalNestedImage = (body: Body, field: string, label: string) => {
+// Images arrive as { mimeType, data } with base64 data.
+const optionalImage = (body: Body, field: string): SyncImage | null => {
   const value = body[field];
   if (value == null) return null;
   if (typeof value !== 'object' || Array.isArray(value)) {
     throw new ValidationError(`'${field}' must be an object.`);
   }
-  return optionalImage(value as Body, label);
+
+  const { mimeType, data } = value as Body;
+  if (
+    typeof mimeType !== 'string' ||
+    !SUPPORTED_IMAGE_MIME_TYPES.includes(mimeType)
+  ) {
+    throw new ValidationError(
+      `${field}: 'mimeType' must be one of ${SUPPORTED_IMAGE_MIME_TYPES.join(', ')}.`
+    );
+  }
+  if (typeof data !== 'string' || data === '') {
+    throw new ValidationError(`${field}: 'data' must be a base64 string.`);
+  }
+
+  const buffer = Buffer.from(data, 'base64');
+  if (buffer.length === 0) {
+    throw new ValidationError(`${field}: 'data' is not valid base64.`);
+  }
+  return { mimeType, data: buffer };
+};
+
+const getQueryString = (req: Request, name: string): string | null => {
+  const value = req.query[name];
+  if (value == null || value === '') return null;
+  if (typeof value !== 'string') {
+    throw new ValidationError(`'${name}' must be given once.`);
+  }
+  return value;
 };
 
 const getExternalId = (req: Request): string => {
@@ -151,15 +129,14 @@ const getExternalId = (req: Request): string => {
 const authenticate = Meteor.bindEnvironment(
   async (req: Request, res: Response, next: NextFunction) => {
     const user = (await getUser(req.headers.authorization)) as
-      | (SyncUser & { locked?: boolean; permissions?: string[] })
-      | undefined;
+      (SyncUser & { locked?: boolean; permissions?: string[] }) | undefined;
     if (!user || user.locked === true) {
       res.status(401).json({ error: 'Not authenticated.' });
       return;
     }
 
     if (
-      !hasOnePermission(user, [Permissions.SECURITY_PUSH_SECURITY_SERVER_DATA])
+      !hasOnePermission(user, [Permissions.SECURITY_SYNC_SECURITY_SERVER_DATA])
     ) {
       res.status(403).json({ error: 'Not authorized.' });
       return;
@@ -196,7 +173,7 @@ const handle = (handler: Handler) =>
         res.status(error.statusCode).json({ error: error.message });
       } else {
         // eslint-disable-next-line no-console
-        console.error('Security server push failed', error);
+        console.error('Security server sync failed', error);
         res.status(500).json({ error: 'Internal server error.' });
       }
     }
@@ -212,74 +189,22 @@ export function createSecurityServerRouter() {
   router.use(bodyParser.json({ limit: BODY_SIZE_LIMIT }));
   router.use(handleBodyParserError);
 
-  router.put(
-    '/channels/:externalId',
+  /**
+   * Full snapshot of active channels and profiles. Cheap to poll: answers 304
+   * when the caller's If-None-Match still matches the current version.
+   */
+  router.get(
+    '/config',
     handle(async (req, res) => {
-      const body = getBody(req);
-      const _id = await upsertSecurityServerChannel(
-        req.syncUser,
-        getExternalId(req),
-        {
-          name: requireString(body, 'name'),
-          enabled: requireBoolean(body, 'enabled'),
-          similarityThreshold: optionalNumber(body, 'similarityThreshold'),
-          recognitionFps: requireNumber(body, 'recognitionFps'),
-        }
-      );
-      res.status(200).json({ _id });
-    })
-  );
-
-  router.delete(
-    '/channels/:externalId',
-    handle(async (req, res) => {
-      await deleteSecurityServerChannel(req.syncUser, getExternalId(req));
-      res.status(204).end();
-    })
-  );
-
-  router.put(
-    '/profiles/:externalId',
-    handle(async (req, res) => {
-      const body = getBody(req);
-      if (!Array.isArray(body.images)) {
-        throw new ValidationError("'images' must be an array.");
+      const etag = `"${await getSecurityServerConfigVersion()}"`;
+      // The snapshot carries RTSP passwords and presigned image URLs.
+      res.setHeader('Cache-Control', 'no-store');
+      res.setHeader('ETag', etag);
+      if (req.headers['if-none-match'] === etag) {
+        res.status(304).end();
+        return;
       }
-
-      const seenIds = new Set<string>();
-      const images = body.images.map((value: unknown, index: number) => {
-        if (!value || typeof value !== 'object' || Array.isArray(value)) {
-          throw new ValidationError(`images[${index}] must be an object.`);
-        }
-        const imageBody = value as Body;
-        const id = requireString(imageBody, 'id');
-        if (seenIds.has(id)) {
-          throw new ValidationError(`images[${index}]: duplicate id '${id}'.`);
-        }
-        seenIds.add(id);
-        return { id, image: optionalImage(imageBody, `images[${index}]`) };
-      });
-
-      const _id = await upsertSecurityServerProfile(
-        req.syncUser,
-        getExternalId(req),
-        {
-          name: requireString(body, 'name'),
-          isTest: requireBoolean(body, 'isTest'),
-          createdAt: optionalDate(body, 'createdAt'),
-          updatedAt: optionalDate(body, 'updatedAt'),
-          images,
-        }
-      );
-      res.status(200).json({ _id });
-    })
-  );
-
-  router.delete(
-    '/profiles/:externalId',
-    handle(async (req, res) => {
-      await deleteSecurityServerProfile(req.syncUser, getExternalId(req));
-      res.status(204).end();
+      res.status(200).json(await getSecurityServerConfig());
     })
   );
 
@@ -293,26 +218,33 @@ export function createSecurityServerRouter() {
         {
           profileId: requireString(body, 'profileId'),
           channelId: requireString(body, 'channelId'),
-          timestamp: requireDate(body, 'timestamp'),
+          timestamp: parseDate(body.timestamp, 'timestamp'),
           similarityScore: requireNumber(body, 'similarityScore'),
-          review: optionalReview(body),
-          reviewedAt: optionalDate(body, 'reviewedAt'),
-          image: optionalNestedImage(body, 'image', 'image'),
+          image: optionalImage(body, 'image'),
         }
       );
       res.status(200).json({ _id });
     })
   );
 
-  router.patch(
-    '/alerts/:externalId/review',
+  router.get(
+    '/alert-reviews',
     handle(async (req, res) => {
-      const body = getBody(req);
-      await setSecurityServerAlertReview(req.syncUser, getExternalId(req), {
-        review: optionalReview(body),
-        reviewedAt: optionalDate(body, 'reviewedAt'),
-      });
-      res.status(204).end();
+      const since = getQueryString(req, 'since');
+      const limit = getQueryString(req, 'limit');
+      const nLimit = limit == null ? null : Number.parseInt(limit, 10);
+      if (nLimit != null && (Number.isNaN(nLimit) || nLimit < 1)) {
+        throw new ValidationError("'limit' must be a positive integer.");
+      }
+
+      res
+        .status(200)
+        .json(
+          await getSecurityServerAlertReviews(
+            since == null ? null : parseDate(since, 'since'),
+            nLimit
+          )
+        );
     })
   );
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Barcode from 'react-barcode';
+import Barcode, { type Options as BarcodeOptions } from 'react-barcode';
 import { Col, Divider, Row } from 'antd';
 
 import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
@@ -7,7 +7,7 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import type { HrKarkunByIdForKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { DisplayItem } from '/imports/ui/modules/helpers/controls';
 
-const barcodeOptions = {
+const barcodeOptions: BarcodeOptions = {
   width: 1,
   height: 20,
   format: 'CODE128B',
@@ -17,11 +17,9 @@ const barcodeOptions = {
   margin: 5,
 };
 
-const BarcodeView = Barcode as any;
-
 type HrKarkun = NonNullable<HrKarkunByIdForKarkunsQuery['hrKarkunById']>;
-type KarkunDuty = NonNullable<
-  NonNullable<NonNullable<HrKarkun['karkunData']>['duties']>[number]
+type KarkunTeam = NonNullable<
+  NonNullable<NonNullable<HrKarkun['karkunData']>['teams']>[number]
 >;
 type HrKarkunJob = NonNullable<HrKarkun['employeeData']>['job'] | undefined;
 
@@ -43,7 +41,7 @@ export class NonDetailedForm extends Component<Props> {
 
   getJobDetails = (
     job: HrKarkunJob,
-    duties: KarkunDuty[] = []
+    duties: KarkunTeam[] = []
   ) => {
     let jobName: React.ReactNode[] = [];
     let dutyNames: React.ReactNode[] = [];
@@ -54,13 +52,7 @@ export class NonDetailedForm extends Component<Props> {
 
     if (duties.length > 0) {
       dutyNames = duties.map((duty) => {
-        let dutyName = duty.dutyName;
-        if (duty.shiftName) {
-          dutyName = `${dutyName} - ${duty.shiftName}`;
-        }
-        if (duty.locationName) {
-          dutyName = `${dutyName} - ${duty.locationName}`;
-        }
+        const dutyName = [duty.duty?.name, duty.name].filter(Boolean).join(' - ');
 
         return dutyName;
       });
@@ -76,8 +68,8 @@ export class NonDetailedForm extends Component<Props> {
     const imageColumn = this.getImageColumn();
     const jobDetails = this.getJobDetails(
       hrKarkunById.employeeData?.job,
-      (hrKarkunById.karkunData?.duties ?? []).filter(
-        (duty): duty is KarkunDuty => duty != null
+      (hrKarkunById.karkunData?.teams ?? []).filter(
+        (duty): duty is KarkunTeam => duty != null
       )
     );
     const timestamp = formatDate(new Date(), 'DD MMM, YYYY');
@@ -87,7 +79,7 @@ export class NonDetailedForm extends Component<Props> {
       <div className="form-print-view">
         <Row justify="start" gutter={40}>
           <Col order={1}>
-            <BarcodeView value={hrKarkunById._id} {...barcodeOptions} />
+            <Barcode value={hrKarkunById._id ?? ''} {...barcodeOptions} />
             <DisplayItem label="Generated On" value={timestamp} />
             <DisplayItem label="Name" value={sharedData.name} />
             <DisplayItem label="S/O" value={sharedData.parentName} />

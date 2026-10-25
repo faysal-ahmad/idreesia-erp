@@ -19,8 +19,6 @@ const ControlsContainer: CSSProperties = {
   width: '100%',
 };
 
-const ReactToPrintControl = ReactToPrint as any;
-
 type Props = RouteComponentProps<{ karkunId: string }>;
 
 const PrintView = ({ history, match }: Props) => {
@@ -44,8 +42,8 @@ const PrintView = ({ history, match }: Props) => {
     <>
       <div style={ControlsContainer}>
         <div>
-          <ReactToPrintControl
-            content={() => printViewRef.current}
+          <ReactToPrint
+            content={() => printViewRef.current!}
             trigger={() => (
               <Button size="large" type="primary" icon={<PrinterOutlined />}>
                 Print

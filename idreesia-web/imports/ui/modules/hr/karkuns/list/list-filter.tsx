@@ -57,6 +57,7 @@ export interface KarkunsListFilterProps {
   bloodGroup?: string | null;
   dutyId?: string | null;
   dutyShiftId?: string | null;
+  showDutyFilter?: boolean;
 }
 
 type FilterChipKey =
@@ -261,13 +262,15 @@ const ListFilter = ({
   bloodGroup,
   dutyId,
   dutyShiftId,
+  showDutyFilter = true,
 }: KarkunsListFilterProps) => {
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
   const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
   const { allDutyShifts, allDutyShiftsLoading } = useAllDutyShifts();
 
-  const lookupsLoading = allMSDutiesLoading || allDutyShiftsLoading;
+  const lookupsLoading =
+    showDutyFilter && (allMSDutiesLoading || allDutyShiftsLoading);
 
   const activeFilterCount = getKarkunsFilterChips({
     name,
@@ -361,14 +364,16 @@ const ListFilter = ({
             fieldLayout={formItemLayout}
             initialValue={bloodGroup}
           />
-          <CascaderField
-            data={dutyShiftCascaderData}
-            fieldName="dutyIdShiftId"
-            fieldLabel="Duty/Shift"
-            fieldLayout={formItemLayout}
-            initialValue={[dutyId, dutyShiftId].filter(Boolean)}
-            required={false}
-          />
+          {showDutyFilter ? (
+            <CascaderField
+              data={dutyShiftCascaderData}
+              fieldName="dutyIdShiftId"
+              fieldLabel="Duty/Shift"
+              fieldLayout={formItemLayout}
+              initialValue={[dutyId, dutyShiftId].filter(Boolean)}
+              required={false}
+            />
+          ) : null}
           <Form.Item style={{ marginBottom: 0 }}>
             <Flex justify="flex-end">
               <Button type="primary" htmlType="submit">

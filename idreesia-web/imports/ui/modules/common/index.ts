@@ -25,4 +25,3 @@ export {
 } from './people/list-filter';
 export { default as PersonPicture } from './people/picture';
 
-export { default as KarkunAttendancesList } from './attendance/karkun-attendances-list';

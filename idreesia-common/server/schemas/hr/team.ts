@@ -14,16 +14,32 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  karkunIds: {
+  members: {
     type: Array,
     optional: true,
   },
-  'karkunIds.$': {
+  'members.$': {
+    type: Object,
+  },
+  'members.$.karkunId': {
     type: String,
   },
-  coordinatorKarkunId: {
-    type: String,
+  'members.$.isCoordinator': {
+    type: Boolean,
     optional: true,
+  },
+  // Missing means the member is available every day.
+  'members.$.daysOfWeek': {
+    type: Array,
+    optional: true,
+    minCount: 1,
+  },
+  'members.$.daysOfWeek.$': {
+    type: String,
+    allowedValues: ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+  },
+  dutyId: {
+    type: String,
   },
 })
   .extend(identifiable)

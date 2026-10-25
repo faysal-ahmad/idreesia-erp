@@ -1,12 +1,10 @@
 import React, { type CSSProperties } from 'react';
-import Barcode from 'react-barcode';
+import Barcode, { type Options as BarcodeOptions } from 'react-barcode';
 import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { UserOutlined } from '@ant-design/icons';
 
 import { Avatar } from 'antd';
 import type { SecurityMehfilDuty } from '/imports/ui/modules/security/common/hooks';
-
-const BarcodeControl = Barcode as any;
 
 interface CardProps {
   dutyName?: string;
@@ -17,7 +15,7 @@ interface AnonymousCardsProps {
   showDutyNameInUrdu?: boolean;
 }
 
-const barcodeOptions = {
+const barcodeOptions: BarcodeOptions = {
   width: 1,
   height: 20,
   format: 'CODE128B',
@@ -59,7 +57,7 @@ export const Card = ({ dutyName }: CardProps) => {
       <div className="mehfil_card_picture">{karkunImage}</div>
       <h1 className="mehfil_card_name">381 Karkun</h1>
       <div className="mehfil_card_barcode">
-        <BarcodeControl value={formatDate(new Date(), 'DDMMYYYY')} {...barcodeOptions} />
+        <Barcode value={formatDate(new Date(), 'DDMMYYYY')} {...barcodeOptions} />
       </div>
     </div>
   );

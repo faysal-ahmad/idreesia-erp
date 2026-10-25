@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/client/react';
 import { Link } from 'react-router-dom';
 
-const RouterLink = Link as any;
 import { type Location } from 'history';
 import { type History } from 'history';
 
@@ -87,9 +86,9 @@ const List = ({ history, location }: ListProps) => {
     const { entityId: _entityId, entityType, operationType } = auditLog;
     if (entityType === EntityType.KARKUN && _entityId) {
       return (
-        <RouterLink to={paths.karkunsEditFormPath(_entityId)}>
+        <Link to={paths.karkunsEditFormPath(_entityId)}>
           {`${EntityTypeDisplayNames[entityType]} [${OperationTypeDisplayName[operationType ?? '']}]`}
-        </RouterLink>
+        </Link>
       );
     }
 

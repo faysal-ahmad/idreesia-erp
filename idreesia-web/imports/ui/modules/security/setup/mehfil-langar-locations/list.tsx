@@ -29,8 +29,6 @@ import {
   REMOVE_SECURITY_MEHFIL_LANGAR_LOCATION,
 } from './gql';
 
-const RouterLink = Link as any;
-
 const DEFAULT_PAGE_SIZE = 20;
 
 type LangarLocationRow = NonNullable<
@@ -139,9 +137,9 @@ const List = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: LangarLocationRow) => (
-        <RouterLink to={`${paths.mehfilLangarLocationsPath}/${record._id}`}>
+        <Link to={`${paths.mehfilLangarLocationsPath}/${record._id}`}>
           {text}
-        </RouterLink>
+        </Link>
       ),
     },
     {

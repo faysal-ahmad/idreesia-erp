@@ -1,8 +1,8 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
-  KarkunDuties,
-  Attendances,
+  Committees,
   Salaries,
+  Teams,
 } from 'meteor/idreesia-common/server/collections/hr';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { MehfilKarkuns } from 'meteor/idreesia-common/server/collections/security';
@@ -23,10 +23,21 @@ export async function deleteKarkun(karkunId: string) {
       })
     );
   }
-  // Remove all attendance records for the karkun
-  promises.push(Attendances.removeAsync({ karkunId: { $eq: karkunId } }));
-  // Remove all karkun duties
-  promises.push(KarkunDuties.removeAsync({ karkunId: { $eq: karkunId } }));
+  // Remove the karkun from team and committee members
+  promises.push(
+    Teams.updateAsync(
+      { 'members.karkunId': karkunId },
+      { $pull: { members: { karkunId } } },
+      { multi: true }
+    )
+  );
+  promises.push(
+    Committees.updateAsync(
+      { 'members.karkunId': karkunId },
+      { $pull: { members: { karkunId } } },
+      { multi: true }
+    )
+  );
   // Remove all salary records
   promises.push(Salaries.removeAsync({ karkunId: { $eq: karkunId } }));
   // Remove all mehfil karkun records

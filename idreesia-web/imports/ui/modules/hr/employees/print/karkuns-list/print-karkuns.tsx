@@ -5,8 +5,6 @@ import ReactToPrint from 'react-to-print';
 import { Button, Divider, Spin } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
 
-const ReactToPrintControl = ReactToPrint as any;
-
 import {
   useDynamicBreadcrumbs,
   useQueryParams,
@@ -42,8 +40,8 @@ const PrintView = ({ history, location }: Props) => {
 
   return (
     <>
-      <ReactToPrintControl
-        content={() => karkunsListRef.current}
+      <ReactToPrint
+        content={() => karkunsListRef.current!}
         trigger={() => (
           <Button size="large" type="primary" icon={<PrinterOutlined />}>
             Print Data

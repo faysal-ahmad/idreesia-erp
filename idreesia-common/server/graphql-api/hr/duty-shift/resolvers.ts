@@ -1,9 +1,8 @@
 import {
   Duties,
   DutyShifts,
-  KarkunDuties,
-  Attendances,
 } from 'meteor/idreesia-common/server/collections/hr';
+import { shiftIsPlanned } from 'meteor/idreesia-common/server/business-logic/hr/duty-planning';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -13,31 +12,12 @@ interface ResolverMap {
 const resolvers: ResolverMap = {
   DutyShiftType: {
     duty: async dutyShiftType => Duties.findOneAsync(dutyShiftType.dutyId),
-    canDelete: async dutyShiftType => {
-      // Check if this shift is currently assigned to a karkun
-      const karkunDutiesCount = await KarkunDuties.find({
-        shiftId: { $eq: dutyShiftType._id },
-      }).countAsync();
-      if (karkunDutiesCount > 0) return false;
-
-      // Check if we have marked attendance against this shift
-      const attendanceCount = await Attendances.find({
-        shiftId: { $eq: dutyShiftType._id },
-      }).countAsync();
-      if (attendanceCount > 0) return false;
-
-      return true;
-    },
+    canDelete: async dutyShiftType => !(await shiftIsPlanned(dutyShiftType._id)),
   },
 
   Query: {
     allDutyShifts: async () =>
       DutyShifts.find({}, { sort: { dutyId: 1 } }).fetchAsync(),
-
-    dutyShiftsByDutyId: async (obj, { dutyId }) =>
-      DutyShifts.find({
-        dutyId,
-      }).fetchAsync(),
 
     dutyShiftById: async (obj, { id }) => DutyShifts.findOneAsync(id),
   },
@@ -45,7 +25,7 @@ const resolvers: ResolverMap = {
   Mutation: {
     createDutyShift: async (
       obj,
-      { name, dutyId, startTime, endTime, attendanceSheet },
+      { name, dutyId, startTime, endTime },
       { user }
     ) => {
       const date = new Date();
@@ -54,7 +34,6 @@ const resolvers: ResolverMap = {
         dutyId,
         startTime,
         endTime,
-        attendanceSheet,
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -66,7 +45,7 @@ const resolvers: ResolverMap = {
 
     updateDutyShift: async (
       obj,
-      { _id, name, dutyId, startTime, endTime, attendanceSheet },
+      { _id, name, dutyId, startTime, endTime },
       { user }
     ) => {
       const date = new Date();
@@ -76,7 +55,6 @@ const resolvers: ResolverMap = {
           dutyId,
           startTime,
           endTime,
-          attendanceSheet,
           updatedAt: date,
           updatedBy: user._id,
         },
@@ -86,11 +64,7 @@ const resolvers: ResolverMap = {
     },
 
     removeDutyShift: async (obj, { _id }) => {
-      const usedCount = await KarkunDuties.find({
-        shiftId: { $eq: _id },
-      }).countAsync();
-
-      if (usedCount > 0) {
+      if (await shiftIsPlanned(_id)) {
         throw new Error(
           'This shift cannot be deleted as it is currently in use.'
         );

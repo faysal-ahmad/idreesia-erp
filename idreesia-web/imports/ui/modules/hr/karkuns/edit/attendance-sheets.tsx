@@ -1,89 +1,66 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery } from '@apollo/client/react';
+import { Spin, Table, type TableColumnsType } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { formatDate, parseDate } from 'meteor/idreesia-common/utilities/date-fns';
+import type { KarkunDutyAttendanceSheetQuery } from 'meteor/idreesia-common/types/client-operations';
 
-import { Table, Pagination, Spin } from 'antd';
-import {
-  DEFAULT_PAGE_INDEX_INT,
-  DEFAULT_PAGE_SIZE_INT,
-} from 'meteor/idreesia-common/constants/list-options';
-import type { PagedAttendanceByHrKarkunQuery } from 'meteor/idreesia-common/types/client-operations';
-
-import { PAGED_ATTENDANCE_BY_KARKUN } from '../gql';
-
-const getQueryString = (karkunId: string, pageIndex: number, pageSize: number) =>
-  `?karkunId=${karkunId}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
+import { KARKUN_DUTY_ATTENDANCE_SHEET } from '../gql';
 
 type AttendanceRow = NonNullable<
-  NonNullable<NonNullable<PagedAttendanceByHrKarkunQuery['pagedAttendanceByKarkun']>['data']>[number]
->;
-interface Props { karkunId: string; }
+  NonNullable<KarkunDutyAttendanceSheetQuery['karkunDutyAttendanceSheet']>[number]
+> & { _id: string };
 
-const columns: any[] = [
+interface Props {
+  karkunId: string;
+}
+
+const countColumn = (title: string, dataIndex: keyof AttendanceRow) => ({
+  title,
+  dataIndex,
+  key: dataIndex,
+  width: 90,
+  align: 'right' as const,
+  render: (value: number | null) => value ?? 0,
+});
+
+const columns: TableColumnsType<AttendanceRow> = [
   {
     title: 'Month',
     dataIndex: 'month',
     key: 'month',
-    render: (text: string) => {
-      const date = parseDate(`01-${text}`, Formats.DATE_FORMAT);
-      return formatDate(date, 'MMM, YYYY');
-    },
+    render: (text: string) =>
+      formatDate(parseDate(`01-${text}`, Formats.DATE_FORMAT), 'MMM, YYYY'),
   },
   {
-    title: 'Job / Duty / Shift',
-    key: 'shift.name',
-    render: (_text: unknown, record: AttendanceRow) => {
-      let name;
-      if (record.job) {
-        name = record.job.name;
-      } else if (record.duty) {
-        name = record.duty.name;
-        if (record.shift) {
-          name = `${name} - ${record.shift.name}`;
-        }
-      }
-
-      return name;
-    },
+    title: 'Duty / Location / Shift',
+    key: 'duty',
+    render: (_text, record) =>
+      [record.duty?.name, record.location?.name, record.shiftName]
+        .filter(Boolean)
+        .join(' – '),
   },
-  {
-    title: 'Present',
-    dataIndex: 'presentCount',
-    key: 'presentCount',
-  },
-  {
-    title: 'Absent',
-    dataIndex: 'absentCount',
-    key: 'absentCount',
-  },
+  countColumn('Days', 'daysOnDuty'),
+  countColumn('Present', 'presentCount'),
+  countColumn('Late', 'lateCount'),
+  countColumn('Absent', 'absentCount'),
+  countColumn('Not Marked', 'unmarkedCount'),
   {
     title: 'Percentage',
     dataIndex: 'percentage',
     key: 'percentage',
-    render: (text: string | number) => `${text}%`,
+    width: 110,
+    align: 'right',
+    render: (value: number | null) => `${value ?? 0}%`,
   },
 ];
 
+// Monthly duty attendance for the karkun, computed from day records.
 const AttendanceSheets = ({ karkunId }: Props) => {
-  const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX_INT);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_INT);
-  const { data, loading } = useQuery(PAGED_ATTENDANCE_BY_KARKUN, {
-    variables: {
-      queryString: getQueryString(karkunId, pageIndex, pageSize),
-    },
+  const { data, loading } = useQuery(KARKUN_DUTY_ATTENDANCE_SHEET, {
+    variables: { karkunId },
   });
-
-  const onChange = (index: number, size: number) => {
-    setPageIndex(index - 1);
-    setPageSize(size);
-  };
-
-  const onShowSizeChange = (index: number, size: number) => {
-    setPageIndex(index - 1);
-    setPageSize(size);
-  };
 
   if (loading) {
     return (
@@ -93,30 +70,18 @@ const AttendanceSheets = ({ karkunId }: Props) => {
     );
   }
 
-  const paged = data?.pagedAttendanceByKarkun;
-  const rows = (paged?.data ?? []).filter((row): row is AttendanceRow => row != null);
+  const rows = (data?.karkunDutyAttendanceSheet ?? []).filter(
+    (row): row is AttendanceRow => row?._id != null
+  );
 
   return (
     <Table
       rowKey="_id"
       size="small"
-      columns={columns as any}
+      columns={columns}
       dataSource={rows}
       pagination={false}
       bordered
-      footer={() => (
-        <Pagination
-          current={pageIndex + 1}
-          pageSize={pageSize}
-          showSizeChanger
-          showTotal={(total: number, range: [number, number]) =>
-            `${range[0]}-${range[1]} of ${total} items`
-          }
-          onChange={onChange}
-          onShowSizeChange={onShowSizeChange}
-          total={paged?.totalResults ?? 0}
-        />
-      )}
     />
   );
 };

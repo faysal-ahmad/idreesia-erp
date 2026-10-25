@@ -13,6 +13,7 @@ const ALL_DUTY_LOCATIONS_QUERY: TypedDocumentNode<
   query composerAllDutyLocations {
     allDutyLocations {
       _id
+      dutyId
       name
     }
   }

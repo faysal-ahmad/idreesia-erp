@@ -14,7 +14,7 @@ interface Loaders {
   };
   hr: {
     jobs: Loader;
-    karkunDuties: DataLoader<string, unknown[]>;
+    karkunTeams: DataLoader<string, unknown[]>;
   };
   outstation: {
     cities: Loader;
@@ -125,13 +125,13 @@ export default {
         personKarkunDataType.cityMehfilId
       );
     },
-    duties: async (
+    teams: async (
       personKarkunDataType: PersonKarkunDataType,
       _args: unknown,
       { loaders }: ResolverContext
     ) => {
       if (!personKarkunDataType._id) return [];
-      return loaders.hr.karkunDuties.load(personKarkunDataType._id);
+      return loaders.hr.karkunTeams.load(personKarkunDataType._id);
     },
     attachments: async (
       personKarkunDataType: PersonKarkunDataType,

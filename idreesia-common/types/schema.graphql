@@ -567,7 +567,7 @@ type PersonKarkunDataType {
 
   city: CityType
   cityMehfil: CityMehfilType
-  duties: [KarkunDutyType]
+  teams: [TeamType]
   attachments: [Attachment]
 }
 
@@ -662,84 +662,15 @@ type PagedSecurityLogType {
   data: [SecurityLogType]
 }
 
-type AttendanceType {
-  _id: String
-  karkunId: String
-  dutyId: String
-  shiftId: String
-  jobId: String
-  month: String
-  attendanceDetails: String
-  presentCount: Int
-  absentCount: Int
-  percentage: Float
-  meetingCardBarcodeId: String
-
-  karkun: PersonType
-  job: JobType
-  duty: DutyType
-  shift: DutyShiftType
-
-  createdByName: String
-  updatedByName: String
-
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-type PagedAttendanceType {
-  totalResults: Int
-  data: [AttendanceType]
-}
-extend type Query {
-  attendanceById(_id: String!): AttendanceType
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
-  pagedAttendanceByKarkun(queryString: String): PagedAttendanceType
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
-  attendanceByMonth(
-    month: String!
-    categoryId: String
-    subCategoryId: String
-  ): [AttendanceType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
-  attendanceByBarcodeId(barcodeId: String!): AttendanceType
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
-  attendanceByBarcodeIds(barcodeIds: String!): [AttendanceType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
-}
-
-extend type Mutation {
-  createAttendances(
-    month: String!
-  ): Int
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_DELETE_DATA])
-
-  updateAttendance(
-    _id: String!
-    attendanceDetails: String
-    presentCount: Int
-    absentCount: Int
-    percentage: Int
-  ): AttendanceType
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_DELETE_DATA])
-
-  importAttendances(
-    month: String!
-    dutyId: String!
-    shiftId: String
-  ): Int
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
-
-  deleteAttendances(month: String!, ids: [String]!): Int
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_DELETE_DATA])
-  deleteAllAttendances(month: String!, categoryId: String, subCategoryId: String): Int
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_DELETE_DATA])
-}
-
 extend type Query {
   pagedHrAuditLogs(filter: AuditLogFilter): PagedAuditLogType
     @checkPermissions(permissions: [HR_VIEW_AUDIT_LOGS])
+}
+
+type CommitteeMemberType {
+  karkunId: String
+  isCoordinator: Boolean
+  karkun: PersonType
 }
 
 type CommitteeType {
@@ -747,10 +678,7 @@ type CommitteeType {
   name: String
   color: String
   description: String
-  karkunIds: [String]
-  coordinatorKarkunIds: [String]
-  members: [PersonType]
-  coordinators: [PersonType]
+  members: [CommitteeMemberType]
 
   createdAt: String
   createdBy: String
@@ -764,9 +692,9 @@ extend type Query {
 }
 
 extend type Mutation {
-  createCommittee(name: String!, color: String, description: String, karkunIds: [String!], coordinatorKarkunIds: [String!]): CommitteeType
+  createCommittee(name: String!, color: String, description: String): CommitteeType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  updateCommittee(id: String!, name: String!, color: String, description: String, karkunIds: [String!], coordinatorKarkunIds: [String!]): CommitteeType
+  updateCommittee(id: String!, name: String!, color: String, description: String): CommitteeType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeCommittee(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
@@ -781,29 +709,174 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
 }
 
-type DutyLocationType {	
-  _id: String	
-  name: String	
-  usedCount: Int	
+type DutyLocationType {
+  _id: String
+  dutyId: String
+  name: String
 
-  createdAt: String	
-  createdBy: String	
-  updatedAt: String	
-  updatedBy: String	
-}	
+  duty: DutyType
+  canDelete: Boolean
 
-extend type Query {	
-  allDutyLocations: [DutyLocationType]	
-  dutyLocationById(id: String!): DutyLocationType	
-}	
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allDutyLocations: [DutyLocationType]
+  dutyLocationsByDutyId(dutyId: String!): [DutyLocationType]
+  dutyLocationById(id: String!): DutyLocationType
+}
 
 extend type Mutation {
-  createDutyLocation(name: String!): DutyLocationType
+  createDutyLocation(name: String!, dutyId: String!): DutyLocationType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  updateDutyLocation(id: String!, name: String!): DutyLocationType
+  updateDutyLocation(id: String!, name: String!, dutyId: String!): DutyLocationType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeDutyLocation(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+}
+
+type DutyPlanWeekSlotType {
+  shiftId: String
+  teamId: String
+  teamName: String
+  teamColor: String
+  startDate: String
+}
+
+type DutyPlanWeekType {
+  shifts: [DutyShiftType]
+  slots: [DutyPlanWeekSlotType]
+}
+
+type DutyPlanDaysKarkunType {
+  karkunId: String
+  name: String
+  off: Boolean
+  imageId: String
+  imageThumbnailId: String
+  attendance: String
+}
+
+type DutyPlanDaysSlotType {
+  shiftId: String
+  shiftName: String
+  teamName: String
+  teamKarkuns: [DutyPlanDaysKarkunType]
+  addedKarkuns: [DutyPlanDaysKarkunType]
+  addedKarkunIds: [String]
+  absentKarkunIds: [String]
+}
+
+type DutyPlanDaysDayType {
+  date: String
+  dayOfWeek: String
+  locked: Boolean
+  slots: [DutyPlanDaysSlotType]
+}
+
+type DutyPlanDaysType {
+  startDate: String
+  days: [DutyPlanDaysDayType]
+}
+
+type DutyAttendanceSheetRowType {
+  _id: String
+  month: String
+  karkunId: String
+  name: String
+  dutyId: String
+  locationId: String
+  shiftId: String
+  shiftName: String
+  daysOnDuty: Int
+  presentCount: Int
+  lateCount: Int
+  absentCount: Int
+  unmarkedCount: Int
+  percentage: Int
+  barcodeId: String
+
+  karkun: PersonType
+  duty: DutyType
+  location: DutyLocationType
+}
+
+type DutyAttendanceCardType {
+  _id: String
+  month: String
+  karkunId: String
+  name: String
+  dutyId: String
+  shiftNames: [String]
+  daysOnDuty: Int
+  presentCount: Int
+  lateCount: Int
+  absentCount: Int
+  unmarkedCount: Int
+  percentage: Int
+  barcodeId: String
+
+  karkun: PersonType
+  duty: DutyType
+}
+
+extend type Query {
+  dutyPlanWeek(dutyId: String!, locationId: String!): DutyPlanWeekType
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
+  dutyPlanDays(
+    dutyId: String!
+    locationId: String!
+    startDate: String!
+  ): DutyPlanDaysType
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
+  dutyAttendanceSheet(
+    month: String!
+    dutyId: String!
+    locationId: String
+    shiftId: String
+  ): [DutyAttendanceSheetRowType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+  karkunDutyAttendanceSheet(karkunId: String!): [DutyAttendanceSheetRowType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+  dutyAttendanceCards(
+    month: String!
+    dutyId: String!
+    locationId: String
+    shiftId: String
+    karkunIds: [String!]!
+  ): [DutyAttendanceCardType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+}
+
+extend type Mutation {
+  setDutyShiftTeam(
+    dutyId: String!
+    locationId: String!
+    shiftId: String!
+    teamId: String
+  ): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+  setDutyDayOverride(
+    dutyId: String!
+    locationId: String!
+    shiftId: String!
+    date: String!
+    addedKarkunIds: [String!]
+    absentKarkunIds: [String!]
+  ): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+  setDutyAttendance(
+    dutyId: String!
+    locationId: String!
+    shiftId: String!
+    date: String!
+    karkunId: String!
+    status: String
+  ): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 }
 
 type DutyShiftType {
@@ -812,7 +885,6 @@ type DutyShiftType {
   name: String
   startTime: String
   endTime: String
-  attendanceSheet: String
 
   duty: DutyType
   canDelete: Boolean
@@ -825,7 +897,6 @@ type DutyShiftType {
 
 extend type Query {
   allDutyShifts: [DutyShiftType]
-  dutyShiftsByDutyId(dutyId: String!): [DutyShiftType]
   dutyShiftById(id: String!): DutyShiftType
 }
 
@@ -835,7 +906,6 @@ extend type Mutation {
     dutyId: String!
     startTime: String
     endTime: String
-    attendanceSheet: String
   ): DutyShiftType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   updateDutyShift(
@@ -844,7 +914,6 @@ extend type Mutation {
     dutyId: String!
     startTime: String
     endTime: String
-    attendanceSheet: String
   ): DutyShiftType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeDutyShift(_id: String!): Int
@@ -856,10 +925,12 @@ type DutyType {
   name: String
   isMehfilDuty: Boolean
   description: String
-  attendanceSheet: String
+  committeeId: String
 
+  committee: CommitteeType
   usedCount: Int
   shifts: [DutyShiftType]
+  locations: [DutyLocationType]
   canDelete: Boolean
 
   createdAt: String
@@ -871,13 +942,12 @@ type DutyType {
 extend type Query {
   allMSDuties: [DutyType]
   allMehfilDuties: [DutyType]
-  dutyById(id: String!): DutyType
 }
 
 extend type Mutation {
-  createDuty(name: String!, isMehfilDuty: Boolean!, description: String, attendanceSheet: String): DutyType
+  createDuty(name: String!, isMehfilDuty: Boolean!, description: String, committeeId: String): DutyType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  updateDuty(id: String!, name: String!, description: String, attendanceSheet: String): DutyType
+  updateDuty(id: String!, name: String!, description: String, committeeId: String): DutyType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeDuty(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
@@ -908,60 +978,6 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeJob(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-}
-
-type KarkunDutyType {
-  _id: String
-  karkunId: String
-  dutyId: String
-  shiftId: String
-  locationId: String
-  role: String
-  daysOfWeek: [String]
-
-  duty: DutyType
-  shift: DutyShiftType
-  location: DutyLocationType
-  
-  dutyName: String
-  shiftName: String
-  locationName: String
-
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-
-extend type Query {
-  karkunDutiesByKarkunId(karkunId: String!): [KarkunDutyType]
-  karkunDutyById(_id: String!): KarkunDutyType
-}
-
-extend type Mutation {
-  createKarkunDuty(
-    karkunId: String!
-    dutyId: String!
-    shiftId: String
-    locationId: String
-    role: String
-    daysOfWeek: [String]
-  ): KarkunDutyType
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
-
-  updateKarkunDuty(
-    _id: String!
-    karkunId: String!
-    dutyId: String!
-    shiftId: String
-    locationId: String
-    role: String
-    daysOfWeek: [String]
-  ): KarkunDutyType
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
-
-  removeKarkunDuty(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 }
 
 extend type Query {
@@ -1000,6 +1016,9 @@ extend type Mutation {
     referenceName: String
   ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
+
+  promoteHrKarkun(_id: String!): PersonType
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   updateHrKarkun(
     _id: String!
@@ -1123,15 +1142,21 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
 }
 
+type TeamMemberType {
+  karkunId: String
+  isCoordinator: Boolean
+  daysOfWeek: [String]
+  karkun: PersonType
+}
+
 type TeamType {
   _id: String
   name: String
   color: String
   description: String
-  karkunIds: [String]
-  coordinatorKarkunId: String
-  members: [PersonType]
-  coordinator: PersonType
+  dutyId: String
+  members: [TeamMemberType]
+  duty: DutyType
 
   createdAt: String
   createdBy: String
@@ -1145,18 +1170,22 @@ extend type Query {
 }
 
 extend type Mutation {
-  createTeam(name: String!, color: String, description: String, karkunIds: [String!], coordinatorKarkunId: String): TeamType
+  createTeam(name: String!, color: String, description: String, dutyId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  updateTeam(id: String!, name: String!, color: String, description: String, karkunIds: [String!], coordinatorKarkunId: String): TeamType
+  updateTeam(id: String!, name: String!, color: String, description: String, dutyId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeTeam(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
 
-  addTeamMember(teamId: String!, karkunId: String!): TeamType
+  addTeamMember(teamId: String!, karkunId: String!, daysOfWeek: [String!]!): TeamType
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+  updateTeamMemberDays(teamId: String!, karkunId: String!, daysOfWeek: [String!]!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeTeamMember(teamId: String!, karkunId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  setTeamCoordinator(teamId: String!, karkunId: String!): TeamType
+  addTeamCoordinator(teamId: String!, karkunId: String!): TeamType
+    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+  removeTeamCoordinator(teamId: String!, karkunId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
 }
 

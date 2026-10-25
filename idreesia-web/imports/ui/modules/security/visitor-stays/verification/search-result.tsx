@@ -10,8 +10,6 @@ import StayCard from '../card/stay-card';
 
 import { VERIFICATION_VISITOR_STAY_BY_ID } from '../gql';
 
-const RouterLink = Link as any;
-
 const ErrorStatusStyle: CSSProperties = {
   color: 'red',
   fontSize: 36,
@@ -109,7 +107,7 @@ const SearchResult = ({ barcode }: SearchResultProps) => {
         </Col>
         <Col order={2}>
           <div style={ColumnStyle}>
-            <RouterLink to={registerationUrl}>Open Registeration</RouterLink>
+            <Link to={registerationUrl}>Open Registeration</Link>
             {imageNode}
           </div>
         </Col>

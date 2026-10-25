@@ -6,8 +6,6 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from 'antd';
 import { StoresSubModulePaths as paths } from '/imports/ui/modules/stores';
 
-const RouterLink = Link as any;
-
 const NameDivStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
@@ -56,7 +54,7 @@ const StockItemName = ({
       {stockItem.name}
     </div>
   ) : (
-    <RouterLink
+    <Link
       style={NameTextStyle}
       to={paths.stockItemsEditFormPath(
         stockItem.physicalStoreId,
@@ -64,7 +62,7 @@ const StockItemName = ({
       )}
     >
       {stockItem.name}
-    </RouterLink>
+    </Link>
   );
 
   let imageUrl: string | undefined;

@@ -10,8 +10,9 @@ import {
   AuditOutlined,
   ClusterOutlined,
   DollarOutlined,
-  EnvironmentOutlined,
   LaptopOutlined,
+  CalendarOutlined,
+  CheckCircleOutlined,
   SolutionOutlined,
   TagOutlined,
   TagsOutlined,
@@ -70,20 +71,25 @@ const menuItems = [
         label: 'Karkuns',
       },
       {
-        key: 'attendance-sheets',
+        key: 'duty-planning',
+        icon: <CalendarOutlined style={IconStyle} />,
+        label: 'Duty Planning',
+      },
+      {
+        key: 'duty-attendance',
+        icon: <CheckCircleOutlined style={IconStyle} />,
+        label: 'Duty Attendance',
+      },
+      {
+        key: 'attendance-report',
         icon: <SolutionOutlined style={IconStyle} />,
-        label: 'Attendance Sheets',
+        label: 'Attendance Report',
       },
       {
         key: 'setup',
         icon: <LaptopOutlined style={IconStyle} />,
         label: 'Setup',
         children: [
-          {
-            key: 'teams',
-            icon: <UsergroupAddOutlined style={IconStyle} />,
-            label: 'Teams',
-          },
           {
             key: 'committees',
             icon: <ApartmentOutlined style={IconStyle} />,
@@ -95,9 +101,9 @@ const menuItems = [
             label: 'Duties & Shifts',
           },
           {
-            key: 'duty-locations',
-            icon: <EnvironmentOutlined style={IconStyle} />,
-            label: 'Duty Locations',
+            key: 'teams',
+            icon: <UsergroupAddOutlined style={IconStyle} />,
+            label: 'Teams',
           },
         ],
       },
@@ -155,10 +161,22 @@ const menuRouteMatches: MenuRouteMatch[] = [
     matches: pathname => isPath(pathname, paths.karkunsPath),
   },
   {
-    key: 'attendance-sheets',
+    key: 'attendance-report',
     openKeys: ['karkuns-management'],
-    subModuleName: SubModuleNames.attendanceSheets,
-    matches: pathname => isPath(pathname, paths.attendanceSheetsPath),
+    subModuleName: SubModuleNames.attendanceReport,
+    matches: pathname => isPath(pathname, paths.attendanceReportPath),
+  },
+  {
+    key: 'duty-planning',
+    openKeys: ['karkuns-management'],
+    subModuleName: SubModuleNames.dutyPlanning,
+    matches: pathname => isPath(pathname, paths.dutyPlanningPath),
+  },
+  {
+    key: 'duty-attendance',
+    openKeys: ['karkuns-management'],
+    subModuleName: SubModuleNames.dutyAttendance,
+    matches: pathname => isPath(pathname, paths.dutyAttendancePath),
   },
   {
     key: 'jobs',
@@ -171,12 +189,6 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['karkuns-management', 'setup'],
     subModuleName: SubModuleNames.msDuties,
     matches: pathname => isPath(pathname, paths.msDutiesPath),
-  },
-  {
-    key: 'duty-locations',
-    openKeys: ['karkuns-management', 'setup'],
-    subModuleName: SubModuleNames.dutyLocations,
-    matches: pathname => isPath(pathname, paths.dutyLocationsPath),
   },
   {
     key: 'teams',
@@ -251,16 +263,20 @@ const Sidebar = ({ history }: SidebarProps) => {
         history.push(paths.msDutiesPath);
         break;
 
-      case 'attendance-sheets':
-        history.push(paths.attendanceSheetsPath);
+      case 'attendance-report':
+        history.push(paths.attendanceReportPath);
+        break;
+
+      case 'duty-planning':
+        history.push(paths.dutyPlanningPath);
+        break;
+
+      case 'duty-attendance':
+        history.push(paths.dutyAttendancePath);
         break;
 
       case 'salary-sheets':
         history.push(paths.salarySheetsPath);
-        break;
-
-      case 'duty-locations':
-        history.push(paths.dutyLocationsPath);
         break;
 
       case 'teams':

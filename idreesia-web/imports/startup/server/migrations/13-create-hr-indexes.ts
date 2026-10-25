@@ -1,9 +1,5 @@
 import { Migrations } from 'meteor/quave:migrations';
 
-import {
-  KarkunDuties,
-} from 'meteor/idreesia-common/server/collections/hr';
-
 Migrations.add({
   version: 13,
   async up() {
@@ -19,10 +15,11 @@ Migrations.add({
     // await karkuns.createIndex({ employmentStartDate: 1 }, { background: false });
     // await karkuns.createIndex({ employmentEndDate: 1 }, { background: false });
 
-    const karkunDuties = KarkunDuties.rawCollection();
-    await karkunDuties.createIndex({ karkunId: 1 }, { background: false });
-    await karkunDuties.createIndex({ dutyId: 1 }, { background: false });
-    await karkunDuties.createIndex({ shiftId: 1 }, { background: false });
+    // KarkunDuties collection has since been removed (migration 54 drops it).
+    // const karkunDuties = KarkunDuties.rawCollection();
+    // await karkunDuties.createIndex({ karkunId: 1 }, { background: false });
+    // await karkunDuties.createIndex({ dutyId: 1 }, { background: false });
+    // await karkunDuties.createIndex({ shiftId: 1 }, { background: false });
 
     // const sharedResidencies = SharedResidences.rawCollection();
     // sharedResidencies.createIndex({ address: 'text' });

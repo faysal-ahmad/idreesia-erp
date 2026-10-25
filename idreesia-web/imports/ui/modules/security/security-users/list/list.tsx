@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-const RouterLink = Link as any;
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
@@ -99,7 +98,7 @@ const List = ({ history, location }: ListProps) => {
       dataIndex: 'username',
       key: 'username',
       render: (text: string, record: SecurityUserRow) => (
-        <RouterLink to={paths.securityUsersEditFormPath(record._id!)}>{text}</RouterLink>
+        <Link to={paths.securityUsersEditFormPath(record._id!)}>{text}</Link>
       ),
     },
     {

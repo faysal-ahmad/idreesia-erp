@@ -18,8 +18,8 @@ const barcodeOptions = {
 };
 
 type HrKarkun = NonNullable<HrKarkunByIdForPeopleQuery['hrKarkunById']>;
-type HrKarkunDuty = NonNullable<
-  NonNullable<NonNullable<HrKarkun['karkunData']>['duties']>[number]
+type HrKarkunTeam = NonNullable<
+  NonNullable<NonNullable<HrKarkun['karkunData']>['teams']>[number]
 >;
 type HrKarkunJob = NonNullable<HrKarkun['employeeData']>['job'] | undefined;
 
@@ -40,7 +40,7 @@ export class NonDetailedForm extends Component<Props> {
 
   getJobDetails = (
     job: HrKarkunJob,
-    duties: HrKarkunDuty[] = []
+    duties: HrKarkunTeam[] = []
   ) => {
     let jobName: React.ReactNode[] = [];
     let dutyNames: React.ReactNode[] = [];
@@ -51,13 +51,7 @@ export class NonDetailedForm extends Component<Props> {
 
     if (duties.length > 0) {
       dutyNames = duties.map(duty => {
-        let dutyName = duty.dutyName ?? '';
-        if (duty.shiftName) {
-          dutyName = `${dutyName} - ${duty.shiftName}`;
-        }
-        if (duty.locationName) {
-          dutyName = `${dutyName} - ${duty.locationName}`;
-        }
+        const dutyName = [duty.duty?.name, duty.name].filter(Boolean).join(' - ');
 
         return dutyName;
       });
@@ -72,8 +66,8 @@ export class NonDetailedForm extends Component<Props> {
     const imageColumn = this.getImageColumn();
     const jobDetails = this.getJobDetails(
       hrKarkunById.employeeData?.job,
-      (hrKarkunById.karkunData?.duties ?? []).filter(
-        (duty): duty is HrKarkunDuty => duty != null
+      (hrKarkunById.karkunData?.teams ?? []).filter(
+        (duty): duty is HrKarkunTeam => duty != null
       )
     );
     const timestamp = formatDate(new Date(), 'DD MMM, YYYY');

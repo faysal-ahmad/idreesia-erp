@@ -49,11 +49,13 @@ const HR_KARKUN_BY_ID: TypedDocumentNode<
           description
           mimeType
         }
-        duties {
+        teams {
           _id
-          dutyName
-          shiftName
-          locationName
+          name
+          duty {
+            _id
+            name
+          }
         }
       }
       employeeData {

@@ -36,8 +36,9 @@ import type {
   UpdateTeamMutation,
   UpdateTeamMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import MSKarkunsList from '/imports/ui/modules/helpers/fields/karkun-selection-input/ms-karkuns-list';
+import KarkunsSelectionList from '/imports/ui/modules/hr/karkuns/field/list-container';
 
+import MemberDaysModal, { TEAM_DAYS } from './member-days-modal';
 import TeamForm, { type TeamFormValues } from './team-form';
 import TeamMembersPanel, { type TeamMember } from './members-panel';
 
@@ -55,22 +56,24 @@ const LIST_ALL_TEAMS: TypedDocumentNode<
       name
       color
       description
-      karkunIds
-      coordinatorKarkunId
+      dutyId
       members {
-        _id
-        sharedData {
-          name
-          cnicNumber
-          contactNumber1
-          contactNumber2
+        karkunId
+        isCoordinator
+        daysOfWeek
+        karkun {
+          _id
+          sharedData {
+            name
+            cnicNumber
+            contactNumber1
+            contactNumber2
+          }
         }
       }
-      coordinator {
+      duty {
         _id
-        sharedData {
-          name
-        }
+        name
       }
     }
   }
@@ -80,8 +83,18 @@ const CREATE_TEAM: TypedDocumentNode<
   CreateTeamMutation,
   CreateTeamMutationVariables
 > = gql`
-  mutation createTeam($name: String!, $color: String, $description: String) {
-    createTeam(name: $name, color: $color, description: $description) {
+  mutation createTeam(
+    $name: String!
+    $color: String
+    $description: String
+    $dutyId: String!
+  ) {
+    createTeam(
+      name: $name
+      color: $color
+      description: $description
+      dutyId: $dutyId
+    ) {
       _id
       name
     }
@@ -97,8 +110,15 @@ const UPDATE_TEAM: TypedDocumentNode<
     $name: String!
     $color: String
     $description: String
+    $dutyId: String!
   ) {
-    updateTeam(id: $id, name: $name, color: $color, description: $description) {
+    updateTeam(
+      id: $id
+      name: $name
+      color: $color
+      description: $description
+      dutyId: $dutyId
+    ) {
       _id
       name
     }
@@ -118,8 +138,12 @@ const ADD_TEAM_MEMBER: TypedDocumentNode<
   AddTeamMemberMutation,
   AddTeamMemberMutationVariables
 > = gql`
-  mutation addTeamMember($teamId: String!, $karkunId: String!) {
-    addTeamMember(teamId: $teamId, karkunId: $karkunId) {
+  mutation addTeamMember(
+    $teamId: String!
+    $karkunId: String!
+    $daysOfWeek: [String!]!
+  ) {
+    addTeamMember(teamId: $teamId, karkunId: $karkunId, daysOfWeek: $daysOfWeek) {
       _id
     }
   }
@@ -140,6 +164,11 @@ const List = () => {
   const [newForm] = Form.useForm<TeamFormValues>();
   const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
   const [editForm] = Form.useForm<TeamFormValues>();
+  const [pendingMember, setPendingMember] = useState<{
+    teamId: string;
+    karkunId: string;
+    name: string;
+  } | null>(null);
 
   const { data, loading, refetch } = useQuery(LIST_ALL_TEAMS);
   const allTeams = (data?.allTeams ?? []).filter(
@@ -155,9 +184,12 @@ const List = () => {
   const [removeTeam] = useMutation(REMOVE_TEAM, {
     refetchQueries: ['listAllTeams'],
   });
-  const [addTeamMember] = useMutation(ADD_TEAM_MEMBER, {
-    refetchQueries: ['listAllTeams'],
-  });
+  const [addTeamMember, { loading: addingMember }] = useMutation(
+    ADD_TEAM_MEMBER,
+    {
+      refetchQueries: ['listAllTeams'],
+    }
+  );
   const [addMemberTeamId, setAddMemberTeamId] = useState<string | null>(null);
 
   const updateScrollY = () => {
@@ -234,6 +266,7 @@ const List = () => {
             name: values.name,
             color: values.color,
             description: values.description,
+            dutyId: values.dutyId,
           },
         })
       )
@@ -252,6 +285,7 @@ const List = () => {
       name: record.name,
       color: record.color ?? undefined,
       description: record.description ?? undefined,
+      dutyId: record.dutyId ?? undefined,
     });
     setEditingTeamId(record._id);
   };
@@ -271,6 +305,7 @@ const List = () => {
             name: values.name,
             color: values.color,
             description: values.description,
+            dutyId: values.dutyId,
           },
         })
       )
@@ -292,17 +327,38 @@ const List = () => {
     setAddMemberTeamId(null);
   };
 
-  const handleSelectKarkunForTeam = (karkun: { _id?: string | null }) => {
+  const handleSelectKarkunForTeam = (karkun: {
+    _id?: string;
+    name?: string;
+  }) => {
     const teamId = addMemberTeamId;
     const karkunId = karkun._id;
     handleCloseAddMemberDrawer();
     if (!teamId || !karkunId) return;
 
-    addTeamMember({ variables: { teamId, karkunId } }).catch(
-      (error: Error) => {
+    setPendingMember({
+      teamId,
+      karkunId,
+      name: karkun.name || 'this person',
+    });
+  };
+
+  const handleSaveMemberDays = (daysOfWeek: string[]) => {
+    if (!pendingMember) return;
+    addTeamMember({
+      variables: {
+        teamId: pendingMember.teamId,
+        karkunId: pendingMember.karkunId,
+        daysOfWeek,
+      },
+    })
+      .then(() => {
+        message.success('Member added', 2);
+        setPendingMember(null);
+      })
+      .catch((error: Error) => {
         message.error(error.message, 5);
-      }
-    );
+      });
   };
 
   const handleDeleteClicked = (record: TeamRow) => {
@@ -328,16 +384,24 @@ const List = () => {
 
   const getTeamMembers = (record: TeamRow): TeamMember[] =>
     (record.members ?? [])
-      .filter((member): member is NonNullable<typeof member> => member != null)
+      .filter(
+        (member): member is NonNullable<typeof member> & { karkunId: string } =>
+          member?.karkunId != null
+      )
       .map(member => ({
-        _id: member._id as string,
-        name: member.sharedData?.name ?? '',
-        cnicNumber: member.sharedData?.cnicNumber,
-        contactNumber1: member.sharedData?.contactNumber1,
-        contactNumber2: member.sharedData?.contactNumber2,
+        _id: member.karkunId,
+        name: member.karkun?.sharedData?.name ?? '',
+        cnicNumber: member.karkun?.sharedData?.cnicNumber,
+        contactNumber1: member.karkun?.sharedData?.contactNumber1,
+        contactNumber2: member.karkun?.sharedData?.contactNumber2,
+        isCoordinator: !!member.isCoordinator,
+        daysOfWeek: member.daysOfWeek,
       }));
 
-  if (loading) {
+  // Member add/remove refetches this query and sets `loading` while the
+  // previous result is still here. A full-page spinner would unmount the
+  // table and collapse the open team.
+  if (loading && !data) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
         <Spin size="large" />
@@ -379,10 +443,19 @@ const List = () => {
       ),
     },
     {
-      title: 'Coordinator',
-      key: 'coordinator',
+      title: 'Coordinators',
+      key: 'coordinators',
       render: (_text: unknown, record: TeamRow) =>
-        record.coordinator?.sharedData?.name ?? '',
+        getTeamMembers(record)
+          .filter(member => member.isCoordinator)
+          .map(member => member.name)
+          .filter(Boolean)
+          .join(', '),
+    },
+    {
+      title: 'Duty',
+      key: 'duty',
+      render: (_text: unknown, record: TeamRow) => record.duty?.name ?? '',
     },
     {
       title: 'Members',
@@ -467,7 +540,6 @@ const List = () => {
               <TeamMembersPanel
                 teamId={record._id}
                 members={getTeamMembers(record)}
-                coordinatorKarkunId={record.coordinatorKarkunId}
               />
             ),
           }}
@@ -520,8 +592,21 @@ const List = () => {
         open={addMemberTeamId != null}
         destroyOnHidden
       >
-        <MSKarkunsList handleSelectItem={handleSelectKarkunForTeam} />
+        <KarkunsSelectionList setSelectedValue={handleSelectKarkunForTeam} />
       </Drawer>
+
+      <MemberDaysModal
+        open={pendingMember != null}
+        title={
+          pendingMember
+            ? `Add ${pendingMember.name}`
+            : 'Available days'
+        }
+        initialDays={TEAM_DAYS}
+        confirmLoading={addingMember}
+        onCancel={() => setPendingMember(null)}
+        onSubmit={handleSaveMemberDays}
+      />
     </>
   );
 };

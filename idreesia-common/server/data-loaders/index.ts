@@ -3,7 +3,7 @@ import {
   peopleDataLoader,
   usersDataLoader,
 } from './common';
-import { jobsDataLoader, karkunDutiesDataLoader } from './hr';
+import { jobsDataLoader, karkunTeamsDataLoader } from './hr';
 import {
   itemCategoriesDataLoader,
   locationsDataLoader,
@@ -22,7 +22,7 @@ export function getDataLoaders() {
     },
     hr: {
       jobs: jobsDataLoader(),
-      karkunDuties: karkunDutiesDataLoader(),
+      karkunTeams: karkunTeamsDataLoader(),
     },
     inventory: {
       itemCategories: itemCategoriesDataLoader(),

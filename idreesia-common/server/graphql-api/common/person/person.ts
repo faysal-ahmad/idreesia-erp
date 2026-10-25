@@ -51,7 +51,7 @@ type PersonKarkunDataType {
 
   city: CityType
   cityMehfil: CityMehfilType
-  duties: [KarkunDutyType]
+  teams: [TeamType]
   attachments: [Attachment]
 }
 

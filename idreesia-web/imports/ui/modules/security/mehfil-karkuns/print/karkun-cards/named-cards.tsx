@@ -1,11 +1,9 @@
 import React, { type CSSProperties } from 'react';
-import Barcode from 'react-barcode';
+import Barcode, { type Options as BarcodeOptions } from 'react-barcode';
 import type {
   MehfilKarkunByBarcodeIdQuery,
   MehfilKarkunsByIdsQuery,
 } from 'meteor/idreesia-common/types/client-operations';
-
-const BarcodeControl = Barcode as any;
 
 type MehfilKarkunByIds = NonNullable<
   NonNullable<MehfilKarkunsByIdsQuery['mehfilKarkunsByIds']>[number]
@@ -27,7 +25,7 @@ interface NamedCardsProps {
   showDutyNameInUrdu?: boolean;
 }
 
-const barcodeOptions = {
+const barcodeOptions: BarcodeOptions = {
   width: 1,
   height: 20,
   format: 'CODE128B',
@@ -73,7 +71,7 @@ export const Card = ({ mehfilKarkun, showDutyNameInUrdu }: CardProps) => {
       <div className="mehfil_card_picture">{karkunImage}</div>
       <h1 className="mehfil_card_name">{mehfilKarkun.karkun?.sharedData?.name}</h1>
       <div className="mehfil_card_barcode">
-        <BarcodeControl
+        <Barcode
           value={mehfilKarkun.dutyCardBarcodeId ?? mehfilKarkun._id ?? ''}
           {...barcodeOptions}
         />

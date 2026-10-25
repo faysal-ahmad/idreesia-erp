@@ -29,11 +29,13 @@ const HR_KARKUNS_BY_ID: TypedDocumentNode<
         }
       }
       karkunData {
-        duties {
+        teams {
           _id
-          dutyName
-          shiftName
-          locationName
+          name
+          duty {
+            _id
+            name
+          }
         }
       }
       employeeData {

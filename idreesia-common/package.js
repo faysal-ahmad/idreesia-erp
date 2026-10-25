@@ -5,7 +5,6 @@ Package.describe({
 });
 
 Package.onUse(api => {
-  api.addFiles('private/auth/google.json', 'server', { isAsset: true });
   api.addFiles('private/models/face_detection_yunet_2023mar.onnx', 'server', {
     isAsset: true,
   });

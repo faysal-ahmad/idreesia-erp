@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Barcode from 'react-barcode';
+import Barcode, { type Options as BarcodeOptions } from 'react-barcode';
 import dayjs from 'dayjs';
 
 import { find } from 'meteor/idreesia-common/utilities/lodash';
@@ -7,9 +7,7 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 import { Col, Row } from 'antd';
 
-const BarcodeView = Barcode as any;
-
-const barcodeOptions = {
+const barcodeOptions: BarcodeOptions = {
   width: 0.9,
   height: 20,
   format: 'CODE128B',
@@ -94,7 +92,7 @@ export default class DutyCard extends Component<DutyCardProps> {
                     {visitor.city}, {visitor.country}
                   </div>
                   <div className="visitor_duty_card_item">
-                    <BarcodeView value={visitorStay._id ?? ''} {...barcodeOptions} />
+                    <Barcode value={visitorStay._id ?? ''} {...barcodeOptions} />
                   </div>
                 </div>
               </div>

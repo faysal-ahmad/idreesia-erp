@@ -14,19 +14,19 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  karkunIds: {
+  members: {
     type: Array,
     optional: true,
   },
-  'karkunIds.$': {
+  'members.$': {
+    type: Object,
+  },
+  'members.$.karkunId': {
     type: String,
   },
-  coordinatorKarkunIds: {
-    type: Array,
+  'members.$.isCoordinator': {
+    type: Boolean,
     optional: true,
-  },
-  'coordinatorKarkunIds.$': {
-    type: String,
   },
 })
   .extend(identifiable)

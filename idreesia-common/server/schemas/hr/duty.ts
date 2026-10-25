@@ -13,7 +13,8 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  attendanceSheet: {
+  // The committee responsible for this duty.
+  committeeId: {
     type: String,
     optional: true,
   },

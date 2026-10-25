@@ -690,67 +690,28 @@ export type HelperPagedHrKarkunsQueryVariables = Exact<{
 }>;
 
 
-export type HelperPagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null } | null, karkunData: { lastTarteebDate: string | null, duties: Array<{ _id: string | null, dutyId: string | null, shiftId: string | null, dutyName: string | null, shiftName: string | null, role: string | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
+export type HelperPagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null } | null, karkunData: { lastTarteebDate: string | null, teams: Array<{ _id: string | null, name: string | null, duty: { _id: string | null, name: string | null } | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
 
-export type AttendanceByBarcodeIdsQueryVariables = Exact<{
-  barcodeIds: string;
-}>;
-
-
-export type AttendanceByBarcodeIdsQuery = { attendanceByBarcodeIds: Array<{ _id: string | null, karkunId: string | null, month: string | null, dutyId: string | null, shiftId: string | null, absentCount: number | null, presentCount: number | null, percentage: number | null, meetingCardBarcodeId: string | null, karkun: { _id: string | null, sharedData: { name: string | null, bloodGroup: string | null, image: { _id: string | null, data: string | null } | null } | null } | null, job: { _id: string | null, name: string | null } | null, duty: { _id: string | null, name: string | null } | null, shift: { _id: string | null, name: string | null } | null } | null> | null };
-
-export type AttendanceByMonthQueryVariables = Exact<{
-  month: string;
-  categoryId?: string | null | undefined;
-  subCategoryId?: string | null | undefined;
-}>;
-
-
-export type AttendanceByMonthQuery = { attendanceByMonth: Array<{ _id: string | null, karkunId: string | null, month: string | null, dutyId: string | null, shiftId: string | null, attendanceDetails: string | null, presentCount: number | null, absentCount: number | null, percentage: number | null, meetingCardBarcodeId: string | null, karkun: { _id: string | null, sharedData: { name: string | null, imageId: string | null, imageThumbnailId: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, image: { _id: string | null, data: string | null } | null } | null } | null, duty: { _id: string | null, name: string | null } | null, shift: { _id: string | null, name: string | null } | null, job: { _id: string | null, name: string | null } | null } | null> | null };
-
-export type CreateAttendancesMutationVariables = Exact<{
-  month: string;
-}>;
-
-
-export type CreateAttendancesMutation = { createAttendances: number | null };
-
-export type UpdateAttendanceMutationVariables = Exact<{
-  _id: string;
-  attendanceDetails?: string | null | undefined;
-  presentCount?: number | null | undefined;
-  absentCount?: number | null | undefined;
-  percentage?: number | null | undefined;
-}>;
-
-
-export type UpdateAttendanceMutation = { updateAttendance: { _id: string | null, attendanceDetails: string | null, presentCount: number | null, absentCount: number | null, percentage: number | null } | null };
-
-export type DeleteAttendancesMutationVariables = Exact<{
-  month: string;
-  ids: Array<string | null | undefined> | string;
-}>;
-
-
-export type DeleteAttendancesMutation = { deleteAttendances: number | null };
-
-export type DeleteAllAttendancesMutationVariables = Exact<{
-  month: string;
-  categoryId?: string | null | undefined;
-  subCategoryId?: string | null | undefined;
-}>;
-
-
-export type DeleteAllAttendancesMutation = { deleteAllAttendances: number | null };
-
-export type ImportAttendancesMutationVariables = Exact<{
+export type DutyAttendanceCardsQueryVariables = Exact<{
   month: string;
   dutyId: string;
+  locationId?: string | null | undefined;
+  shiftId?: string | null | undefined;
+  karkunIds: Array<string> | string;
+}>;
+
+
+export type DutyAttendanceCardsQuery = { dutyAttendanceCards: Array<{ _id: string | null, karkunId: string | null, name: string | null, shiftNames: Array<string | null> | null, percentage: number | null, barcodeId: string | null, karkun: { _id: string | null, sharedData: { name: string | null, bloodGroup: string | null, image: { _id: string | null, data: string | null } | null } | null } | null, duty: { _id: string | null, name: string | null } | null } | null> | null };
+
+export type DutyAttendanceSheetQueryVariables = Exact<{
+  month: string;
+  dutyId: string;
+  locationId?: string | null | undefined;
   shiftId?: string | null | undefined;
 }>;
 
 
-export type ImportAttendancesMutation = { importAttendances: number | null };
+export type DutyAttendanceSheetQuery = { dutyAttendanceSheet: Array<{ _id: string | null, month: string | null, karkunId: string | null, name: string | null, dutyId: string | null, locationId: string | null, shiftId: string | null, shiftName: string | null, daysOnDuty: number | null, presentCount: number | null, lateCount: number | null, absentCount: number | null, unmarkedCount: number | null, percentage: number | null, barcodeId: string | null, karkun: { _id: string | null, sharedData: { name: string | null, imageId: string | null, imageThumbnailId: string | null, cnicNumber: string | null, contactNumber1: string | null, bloodGroup: string | null, image: { _id: string | null, data: string | null } | null } | null } | null, duty: { _id: string | null, name: string | null } | null, location: { _id: string | null, name: string | null } | null } | null> | null };
 
 export type PagedHrAuditLogsQueryVariables = Exact<{
   filter?: Types.AuditLogFilter | null | undefined;
@@ -762,7 +723,7 @@ export type PagedHrAuditLogsQuery = { pagedHrAuditLogs: { totalResults: number |
 export type ListAllCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, karkunIds: Array<string | null> | null, coordinatorKarkunIds: Array<string | null> | null, members: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null> | null, coordinators: Array<{ _id: string | null, sharedData: { name: string | null } | null } | null> | null } | null> | null };
+export type ListAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, karkun: { _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null } | null> | null };
 
 export type CreateCommitteeMutationVariables = Exact<{
   name: string;
@@ -822,10 +783,15 @@ export type RemoveCommitteeCoordinatorMutationVariables = Exact<{
 
 export type RemoveCommitteeCoordinatorMutation = { removeCommitteeCoordinator: { _id: string | null } | null };
 
+export type ComposerAllCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ComposerAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null } | null> | null };
+
 export type ComposerAllDutyLocationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ComposerAllDutyLocationsQuery = { allDutyLocations: Array<{ _id: string | null, name: string | null } | null> | null };
+export type ComposerAllDutyLocationsQuery = { allDutyLocations: Array<{ _id: string | null, dutyId: string | null, name: string | null } | null> | null };
 
 export type AllDutyShiftsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -842,39 +808,61 @@ export type ComposerAllMsDutiesQueryVariables = Exact<{ [key: string]: never; }>
 
 export type ComposerAllMsDutiesQuery = { allMSDuties: Array<{ _id: string | null, name: string | null } | null> | null };
 
-export type DutyLocationByIdQueryVariables = Exact<{
-  id: string;
+export type DutyPlanWeekQueryVariables = Exact<{
+  dutyId: string;
+  locationId: string;
 }>;
 
 
-export type DutyLocationByIdQuery = { dutyLocationById: { _id: string | null, name: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type DutyPlanWeekQuery = { dutyPlanWeek: { shifts: Array<{ _id: string | null, name: string | null, startTime: string | null, endTime: string | null } | null> | null, slots: Array<{ shiftId: string | null, teamId: string | null, teamName: string | null, teamColor: string | null, startDate: string | null } | null> | null } | null };
 
-export type UpdateDutyLocationMutationVariables = Exact<{
-  id: string;
-  name: string;
+export type DutyPlanDaysQueryVariables = Exact<{
+  dutyId: string;
+  locationId: string;
+  startDate: string;
 }>;
 
 
-export type UpdateDutyLocationMutation = { updateDutyLocation: { _id: string | null, name: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type DutyPlanDaysQuery = { dutyPlanDays: { startDate: string | null, days: Array<{ date: string | null, dayOfWeek: string | null, locked: boolean | null, slots: Array<{ shiftId: string | null, shiftName: string | null, teamName: string | null, addedKarkunIds: Array<string | null> | null, absentKarkunIds: Array<string | null> | null, teamKarkuns: Array<{ karkunId: string | null, name: string | null, off: boolean | null, imageId: string | null, imageThumbnailId: string | null, attendance: string | null } | null> | null, addedKarkuns: Array<{ karkunId: string | null, name: string | null, imageId: string | null, imageThumbnailId: string | null, attendance: string | null } | null> | null } | null> | null } | null> | null } | null };
 
-export type ListAllDutyLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+export type DutyPlanTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListAllDutyLocationsQuery = { allDutyLocations: Array<{ _id: string | null, name: string | null, usedCount: number | null } | null> | null };
+export type DutyPlanTeamsQuery = { allTeams: Array<{ _id: string | null, name: string | null, color: string | null, dutyId: string | null } | null> | null };
 
-export type CreateDutyLocationMutationVariables = Exact<{
-  name: string;
+export type SetDutyShiftTeamMutationVariables = Exact<{
+  dutyId: string;
+  locationId: string;
+  shiftId: string;
+  teamId?: string | null | undefined;
 }>;
 
 
-export type CreateDutyLocationMutation = { createDutyLocation: { _id: string | null, name: string | null } | null };
+export type SetDutyShiftTeamMutation = { setDutyShiftTeam: boolean | null };
 
-export type RemoveDutyLocationMutationVariables = Exact<{
-  _id: string;
+export type SetDutyDayOverrideMutationVariables = Exact<{
+  dutyId: string;
+  locationId: string;
+  shiftId: string;
+  date: string;
+  addedKarkunIds?: Array<string> | string | null | undefined;
+  absentKarkunIds?: Array<string> | string | null | undefined;
 }>;
 
 
-export type RemoveDutyLocationMutation = { removeDutyLocation: number | null };
+export type SetDutyDayOverrideMutation = { setDutyDayOverride: boolean | null };
+
+export type SetDutyAttendanceMutationVariables = Exact<{
+  dutyId: string;
+  locationId: string;
+  shiftId: string;
+  date: string;
+  karkunId: string;
+  status?: string | null | undefined;
+}>;
+
+
+export type SetDutyAttendanceMutation = { setDutyAttendance: boolean | null };
 
 export type AddHrKarkunAttachmentMutationVariables = Exact<{
   _id: string;
@@ -889,21 +877,21 @@ export type HrKarkunByIdForPeopleQueryVariables = Exact<{
 }>;
 
 
-export type HrKarkunByIdForPeopleQuery = { hrKarkunById: { _id: string | null, isEmployee: boolean | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageId: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, deathDate: string | null, referenceName: string | null } | null, karkunData: { cityId: string | null, cityMehfilId: string | null, ehadKarkun: boolean | null, ehadPermissionDate: string | null, lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null, attachments: Array<{ _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null> | null, duties: Array<{ _id: string | null, dutyName: string | null, shiftName: string | null, locationName: string | null } | null> | null } | null, employeeData: { jobId: string | null, employmentStartDate: string | null, employmentEndDate: string | null, bankAccountDetails: string | null, job: { _id: string | null, name: string | null } | null } | null } | null };
+export type HrKarkunByIdForPeopleQuery = { hrKarkunById: { _id: string | null, isEmployee: boolean | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageId: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, deathDate: string | null, referenceName: string | null } | null, karkunData: { cityId: string | null, cityMehfilId: string | null, ehadKarkun: boolean | null, ehadPermissionDate: string | null, lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null, attachments: Array<{ _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null> | null, teams: Array<{ _id: string | null, name: string | null, duty: { _id: string | null, name: string | null } | null } | null> | null } | null, employeeData: { jobId: string | null, employmentStartDate: string | null, employmentEndDate: string | null, bankAccountDetails: string | null, job: { _id: string | null, name: string | null } | null } | null } | null };
 
 export type HrKarkunsByIdQueryVariables = Exact<{
   _ids: string;
 }>;
 
 
-export type HrKarkunsByIdQuery = { hrKarkunsById: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageId: string | null, contactNumber1: string | null, contactNumber2: string | null, image: { _id: string | null, data: string | null } | null, imageThumbnail: { _id: string | null, data: string | null } | null } | null, karkunData: { duties: Array<{ _id: string | null, dutyName: string | null, shiftName: string | null, locationName: string | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null };
+export type HrKarkunsByIdQuery = { hrKarkunsById: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageId: string | null, contactNumber1: string | null, contactNumber2: string | null, image: { _id: string | null, data: string | null } | null, imageThumbnail: { _id: string | null, data: string | null } | null } | null, karkunData: { teams: Array<{ _id: string | null, name: string | null, duty: { _id: string | null, name: string | null } | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null };
 
 export type HrPeoplePagedHrKarkunsQueryVariables = Exact<{
   filter?: Types.KarkunFilter | null | undefined;
 }>;
 
 
-export type HrPeoplePagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null } | null, karkunData: { lastTarteebDate: string | null, duties: Array<{ _id: string | null, dutyId: string | null, shiftId: string | null, dutyName: string | null, shiftName: string | null, role: string | null } | null> | null } | null, employeeData: { jobId: string | null, employmentStartDate: string | null, job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
+export type HrPeoplePagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null } | null, karkunData: { lastTarteebDate: string | null, teams: Array<{ _id: string | null, name: string | null, duty: { _id: string | null, name: string | null } | null } | null> | null } | null, employeeData: { jobId: string | null, employmentStartDate: string | null, job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
 
 export type PagedSalariesByKarkunQueryVariables = Exact<{
   queryString?: string | null | undefined;
@@ -1015,18 +1003,6 @@ export type CreateHrKarkunMutationVariables = Exact<{
 
 export type CreateHrKarkunMutation = { createHrKarkun: { _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, referenceName: string | null } | null, karkunData: { lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null } | null } | null };
 
-export type CreateKarkunDutyMutationVariables = Exact<{
-  karkunId: string;
-  dutyId: string;
-  shiftId?: string | null | undefined;
-  locationId?: string | null | undefined;
-  role?: string | null | undefined;
-  daysOfWeek?: Array<string | null | undefined> | string | null | undefined;
-}>;
-
-
-export type CreateKarkunDutyMutation = { createKarkunDuty: { _id: string | null, dutyId: string | null, dutyName: string | null, shiftId: string | null, shiftName: string | null, locationId: string | null, locationName: string | null, role: string | null, daysOfWeek: Array<string | null> | null } | null };
-
 export type DeleteHrKarkunMutationVariables = Exact<{
   _id: string;
 }>;
@@ -1039,83 +1015,53 @@ export type HrKarkunByIdForKarkunsQueryVariables = Exact<{
 }>;
 
 
-export type HrKarkunByIdForKarkunsQuery = { hrKarkunById: { _id: string | null, isEmployee: boolean | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageId: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, deathDate: string | null, referenceName: string | null } | null, karkunData: { cityId: string | null, cityMehfilId: string | null, ehadKarkun: boolean | null, ehadPermissionDate: string | null, lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null, attachments: Array<{ _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null> | null, duties: Array<{ _id: string | null, dutyName: string | null, shiftName: string | null, locationName: string | null } | null> | null } | null, employeeData: { jobId: string | null, employmentStartDate: string | null, employmentEndDate: string | null, bankAccountDetails: string | null, job: { _id: string | null, name: string | null } | null } | null } | null };
+export type HrKarkunByIdForKarkunsQuery = { hrKarkunById: { _id: string | null, isEmployee: boolean | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageId: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, deathDate: string | null, referenceName: string | null } | null, karkunData: { cityId: string | null, cityMehfilId: string | null, ehadKarkun: boolean | null, ehadPermissionDate: string | null, lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null, attachments: Array<{ _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null> | null, teams: Array<{ _id: string | null, name: string | null, duty: { _id: string | null, name: string | null } | null } | null> | null } | null, employeeData: { jobId: string | null, employmentStartDate: string | null, employmentEndDate: string | null, bankAccountDetails: string | null, job: { _id: string | null, name: string | null } | null } | null } | null };
 
-export type KarkunDutiesByKarkunIdQueryVariables = Exact<{
+export type KarkunDutyAttendanceSheetQueryVariables = Exact<{
   karkunId: string;
 }>;
 
 
-export type KarkunDutiesByKarkunIdQuery = { karkunDutiesByKarkunId: Array<{ _id: string | null, dutyId: string | null, dutyName: string | null, shiftId: string | null, shiftName: string | null, locationName: string | null, role: string | null, daysOfWeek: Array<string | null> | null } | null> | null };
-
-export type PagedAttendanceByHrKarkunQueryVariables = Exact<{
-  queryString?: string | null | undefined;
-}>;
-
-
-export type PagedAttendanceByHrKarkunQuery = { pagedAttendanceByKarkun: { totalResults: number | null, data: Array<{ _id: string | null, dutyId: string | null, shiftId: string | null, jobId: string | null, month: string | null, absentCount: number | null, presentCount: number | null, percentage: number | null, job: { _id: string | null, name: string | null } | null, duty: { _id: string | null, name: string | null } | null, shift: { _id: string | null, name: string | null } | null } | null> | null } | null };
+export type KarkunDutyAttendanceSheetQuery = { karkunDutyAttendanceSheet: Array<{ _id: string | null, month: string | null, shiftName: string | null, daysOnDuty: number | null, presentCount: number | null, lateCount: number | null, absentCount: number | null, unmarkedCount: number | null, percentage: number | null, duty: { _id: string | null, name: string | null } | null, location: { _id: string | null, name: string | null } | null } | null> | null };
 
 export type HrKarkunsPagedHrKarkunsQueryVariables = Exact<{
   filter?: Types.KarkunFilter | null | undefined;
 }>;
 
 
-export type HrKarkunsPagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null } | null, karkunData: { lastTarteebDate: string | null, duties: Array<{ _id: string | null, dutyId: string | null, shiftId: string | null, dutyName: string | null, shiftName: string | null, role: string | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
+export type HrKarkunsPagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageId: string | null, imageThumbnailId: string | null } | null, karkunData: { lastTarteebDate: string | null, teams: Array<{ _id: string | null, name: string | null, duty: { _id: string | null, name: string | null } | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null } | null> | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
 
-export type RemoveKarkunDutyMutationVariables = Exact<{
+export type PromoteHrKarkunMutationVariables = Exact<{
   _id: string;
 }>;
 
 
-export type RemoveKarkunDutyMutation = { removeKarkunDuty: number | null };
+export type PromoteHrKarkunMutation = { promoteHrKarkun: { _id: string | null, isKarkun: boolean | null } | null };
 
-export type UpdateKarkunDutyMutationVariables = Exact<{
-  _id: string;
-  karkunId: string;
-  dutyId: string;
-  shiftId?: string | null | undefined;
-  locationId?: string | null | undefined;
-  role?: string | null | undefined;
-  daysOfWeek?: Array<string | null | undefined> | string | null | undefined;
-}>;
-
-
-export type UpdateKarkunDutyMutation = { updateKarkunDuty: { _id: string | null, dutyId: string | null, dutyName: string | null, shiftId: string | null, shiftName: string | null, locationId: string | null, locationName: string | null, role: string | null, daysOfWeek: Array<string | null> | null } | null };
-
-export type DutyByIdQueryVariables = Exact<{
-  id: string;
-}>;
-
-
-export type DutyByIdQuery = { dutyById: { _id: string | null, name: string | null, description: string | null, attendanceSheet: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
-
-export type UpdateDutyMutationVariables = Exact<{
-  id: string;
+export type CreateDutyLocationMutationVariables = Exact<{
   name: string;
-  description?: string | null | undefined;
-  attendanceSheet?: string | null | undefined;
+  dutyId: string;
 }>;
 
 
-export type UpdateDutyMutation = { updateDuty: { _id: string | null, name: string | null, description: string | null, attendanceSheet: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type CreateDutyLocationMutation = { createDutyLocation: { _id: string | null, name: string | null, dutyId: string | null } | null };
 
 export type CreateDutyShiftMutationVariables = Exact<{
   name: string;
   dutyId: string;
   startTime?: string | null | undefined;
   endTime?: string | null | undefined;
-  attendanceSheet?: string | null | undefined;
 }>;
 
 
-export type CreateDutyShiftMutation = { createDutyShift: { _id: string | null, name: string | null, dutyId: string | null, startTime: string | null, endTime: string | null, attendanceSheet: string | null } | null };
+export type CreateDutyShiftMutation = { createDutyShift: { _id: string | null, name: string | null, dutyId: string | null, startTime: string | null, endTime: string | null } | null };
 
-export type DutyShiftsByDutyIdQueryVariables = Exact<{
-  dutyId: string;
+export type RemoveDutyLocationMutationVariables = Exact<{
+  _id: string;
 }>;
 
 
-export type DutyShiftsByDutyIdQuery = { dutyShiftsByDutyId: Array<{ _id: string | null, dutyId: string | null, name: string | null, startTime: string | null, endTime: string | null, attendanceSheet: string | null, canDelete: boolean | null } | null> | null };
+export type RemoveDutyLocationMutation = { removeDutyLocation: number | null };
 
 export type RemoveDutyShiftMutationVariables = Exact<{
   _id: string;
@@ -1124,32 +1070,50 @@ export type RemoveDutyShiftMutationVariables = Exact<{
 
 export type RemoveDutyShiftMutation = { removeDutyShift: number | null };
 
+export type UpdateDutyLocationMutationVariables = Exact<{
+  id: string;
+  name: string;
+  dutyId: string;
+}>;
+
+
+export type UpdateDutyLocationMutation = { updateDutyLocation: { _id: string | null, name: string | null, dutyId: string | null } | null };
+
 export type UpdateDutyShiftMutationVariables = Exact<{
   _id: string;
   name: string;
   dutyId: string;
   startTime?: string | null | undefined;
   endTime?: string | null | undefined;
-  attendanceSheet?: string | null | undefined;
 }>;
 
 
-export type UpdateDutyShiftMutation = { updateDutyShift: { _id: string | null, name: string | null, dutyId: string | null, startTime: string | null, endTime: string | null, attendanceSheet: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type UpdateDutyShiftMutation = { updateDutyShift: { _id: string | null, name: string | null, dutyId: string | null, startTime: string | null, endTime: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
 export type ListAllMsDutiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListAllMsDutiesQuery = { allMSDuties: Array<{ _id: string | null, name: string | null, description: string | null, canDelete: boolean | null, shifts: Array<{ _id: string | null, name: string | null } | null> | null } | null> | null };
+export type ListAllMsDutiesQuery = { allMSDuties: Array<{ _id: string | null, name: string | null, description: string | null, committeeId: string | null, canDelete: boolean | null, committee: { _id: string | null, name: string | null } | null, shifts: Array<{ _id: string | null, dutyId: string | null, name: string | null, startTime: string | null, endTime: string | null, canDelete: boolean | null } | null> | null, locations: Array<{ _id: string | null, dutyId: string | null, name: string | null, canDelete: boolean | null } | null> | null } | null> | null };
 
 export type CreateDutyMutationVariables = Exact<{
   name: string;
   isMehfilDuty: boolean;
   description?: string | null | undefined;
-  attendanceSheet?: string | null | undefined;
+  committeeId?: string | null | undefined;
 }>;
 
 
-export type CreateDutyMutation = { createDuty: { _id: string | null, name: string | null, isMehfilDuty: boolean | null, description: string | null, attendanceSheet: string | null } | null };
+export type CreateDutyMutation = { createDuty: { _id: string | null, name: string | null, isMehfilDuty: boolean | null, description: string | null } | null };
+
+export type UpdateDutyMutationVariables = Exact<{
+  id: string;
+  name: string;
+  description?: string | null | undefined;
+  committeeId?: string | null | undefined;
+}>;
+
+
+export type UpdateDutyMutation = { updateDuty: { _id: string | null } | null };
 
 export type RemoveDutyMutationVariables = Exact<{
   _id: string;
@@ -1234,12 +1198,13 @@ export type SalaryReceiptSalariesByIdsQuery = { salariesByIds: Array<{ _id: stri
 export type ListAllTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListAllTeamsQuery = { allTeams: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, karkunIds: Array<string | null> | null, coordinatorKarkunId: string | null, members: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null> | null, coordinator: { _id: string | null, sharedData: { name: string | null } | null } | null } | null> | null };
+export type ListAllTeamsQuery = { allTeams: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, dutyId: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null, duty: { _id: string | null, name: string | null } | null } | null> | null };
 
 export type CreateTeamMutationVariables = Exact<{
   name: string;
   color?: string | null | undefined;
   description?: string | null | undefined;
+  dutyId: string;
 }>;
 
 
@@ -1250,6 +1215,7 @@ export type UpdateTeamMutationVariables = Exact<{
   name: string;
   color?: string | null | undefined;
   description?: string | null | undefined;
+  dutyId: string;
 }>;
 
 
@@ -1265,6 +1231,7 @@ export type RemoveTeamMutation = { removeTeam: number | null };
 export type AddTeamMemberMutationVariables = Exact<{
   teamId: string;
   karkunId: string;
+  daysOfWeek: Array<string> | string;
 }>;
 
 
@@ -1278,13 +1245,30 @@ export type RemoveTeamMemberMutationVariables = Exact<{
 
 export type RemoveTeamMemberMutation = { removeTeamMember: { _id: string | null } | null };
 
-export type SetTeamCoordinatorMutationVariables = Exact<{
+export type AddTeamCoordinatorMutationVariables = Exact<{
   teamId: string;
   karkunId: string;
 }>;
 
 
-export type SetTeamCoordinatorMutation = { setTeamCoordinator: { _id: string | null } | null };
+export type AddTeamCoordinatorMutation = { addTeamCoordinator: { _id: string | null } | null };
+
+export type RemoveTeamCoordinatorMutationVariables = Exact<{
+  teamId: string;
+  karkunId: string;
+}>;
+
+
+export type RemoveTeamCoordinatorMutation = { removeTeamCoordinator: { _id: string | null } | null };
+
+export type UpdateTeamMemberDaysMutationVariables = Exact<{
+  teamId: string;
+  karkunId: string;
+  daysOfWeek: Array<string> | string;
+}>;
+
+
+export type UpdateTeamMemberDaysMutation = { updateTeamMemberDays: { _id: string | null } | null };
 
 export type PagedSecurityAuditLogsQueryVariables = Exact<{
   filter?: Types.AuditLogFilter | null | undefined;

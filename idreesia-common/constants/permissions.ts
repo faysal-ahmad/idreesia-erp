@@ -43,6 +43,9 @@ const Permissions = {
   SECURITY_VIEW_MEHFILS: 'security-view-mehfils',
   SECURITY_MANAGE_MEHFILS: 'security-manage-mehfils',
 
+  SECURITY_VIEW_SECURITY_SERVER_DATA: 'security-view-security-server-data',
+  SECURITY_PUSH_SECURITY_SERVER_DATA: 'security-push-security-server-data',
+
   // ****************************************************************************************
   // Stores Module
   // ****************************************************************************************

@@ -86,6 +86,15 @@ import SecurityVisitorStayResolvers from './security/visitor-stay/resolvers';
 import FaceVectorSchema from './security/face-vector/face-vector';
 import FaceVectorResolvers from './security/face-vector/resolvers';
 
+import SecurityServerChannelSchema from './security/security-server-channel/security-server-channel';
+import SecurityServerChannelResolvers from './security/security-server-channel/resolvers';
+
+import SecurityServerProfileSchema from './security/security-server-profile/security-server-profile';
+import SecurityServerProfileResolvers from './security/security-server-profile/resolvers';
+
+import SecurityServerAlertSchema from './security/security-server-alert/security-server-alert';
+import SecurityServerAlertResolvers from './security/security-server-alert/resolvers';
+
 /**
  * Schema and Resolvers for the HR module
  */
@@ -188,6 +197,9 @@ const typeDefs = [
   SecurityVisitorSchema,
   SecurityVisitorStaySchema,
   FaceVectorSchema,
+  SecurityServerChannelSchema,
+  SecurityServerProfileSchema,
+  SecurityServerAlertSchema,
 
   HRAuditLogSchema,
   DutyShiftSchema,
@@ -240,6 +252,9 @@ const resolvers = merge(
   SecurityVisitorResolvers,
   SecurityVisitorStayResolvers,
   FaceVectorResolvers,
+  SecurityServerChannelResolvers,
+  SecurityServerProfileResolvers,
+  SecurityServerAlertResolvers,
 
   HRAuditLogResolvers,
   DutyShiftResolvers,

@@ -36,10 +36,10 @@ const ContainerStyle: CSSProperties = {
   width: '100%',
 };
 
-const HEADER_BG = '#4a2c6d';
+const HEADER_BG = '#0f1a12';
 
 const HeaderStyle: CSSProperties = {
-  paddingLeft: 8,
+  paddingLeft: 16,
   paddingRight: 16,
   background: HEADER_BG,
 };
@@ -49,17 +49,17 @@ const HeaderTheme = {
     Menu: {
       fontSize: 16,
       darkItemBg: HEADER_BG,
-      darkSubMenuItemBg: '#3b2257',
-      darkItemSelectedBg: '#7a52a8',
-      darkItemHoverBg: '#5f3d8a',
-      darkPopupBg: '#3b2257',
+      darkSubMenuItemBg: '#16261a',
+      darkItemSelectedBg: '#2a4d29',
+      darkItemHoverBg: '#1f3a20',
+      darkPopupBg: '#16261a',
     },
   },
 };
 
 const LogoStyle: CSSProperties = {
-  height: 64,
-  marginRight: 8,
+  height: 44,
+  marginRight: 24,
   flexShrink: 0,
 };
 
@@ -165,7 +165,7 @@ const HeaderContent = ({ history, location, user }: Props) => {
       <Layout.Header style={HeaderStyle}>
         <div style={ContainerStyle}>
           <img
-            src="/images/ebf-logo-light.png"
+            src="/images/eb-logo-emblem.png"
             alt="Eastern Breeze"
             style={LogoStyle}
           />

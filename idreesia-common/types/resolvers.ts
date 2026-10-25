@@ -137,6 +137,8 @@ export type ResolversTypes = ResolversObject<{
   PagedSalaryType: ResolverTypeWrapper<Types.PagedSalaryType>;
   PagedScheduledJobsType: ResolverTypeWrapper<Types.PagedScheduledJobsType>;
   PagedSecurityLogType: ResolverTypeWrapper<Types.PagedSecurityLogType>;
+  PagedSecurityServerAlertType: ResolverTypeWrapper<Types.PagedSecurityServerAlertType>;
+  PagedSecurityServerProfileType: ResolverTypeWrapper<Types.PagedSecurityServerProfileType>;
   PagedStockAdjustment: ResolverTypeWrapper<Types.PagedStockAdjustment>;
   PagedStockItem: ResolverTypeWrapper<Types.PagedStockItem>;
   PagedUserGroupType: ResolverTypeWrapper<Types.PagedUserGroupType>;
@@ -165,6 +167,12 @@ export type ResolversTypes = ResolversObject<{
   SecurityLogFilter: Types.SecurityLogFilter;
   SecurityLogType: ResolverTypeWrapper<Types.SecurityLogType>;
   SecurityLogUserOption: ResolverTypeWrapper<Types.SecurityLogUserOption>;
+  SecurityServerAlertFilter: Types.SecurityServerAlertFilter;
+  SecurityServerAlertType: ResolverTypeWrapper<Types.SecurityServerAlertType>;
+  SecurityServerChannelType: ResolverTypeWrapper<Types.SecurityServerChannelType>;
+  SecurityServerProfileFilter: Types.SecurityServerProfileFilter;
+  SecurityServerProfileImageType: ResolverTypeWrapper<Types.SecurityServerProfileImageType>;
+  SecurityServerProfileType: ResolverTypeWrapper<Types.SecurityServerProfileType>;
   StockAdjustment: ResolverTypeWrapper<Types.StockAdjustment>;
   StockItem: ResolverTypeWrapper<Types.StockItem>;
   String: ResolverTypeWrapper<Types.Scalars['String']['output']>;
@@ -246,6 +254,8 @@ export type ResolversParentTypes = ResolversObject<{
   PagedSalaryType: Types.PagedSalaryType;
   PagedScheduledJobsType: Types.PagedScheduledJobsType;
   PagedSecurityLogType: Types.PagedSecurityLogType;
+  PagedSecurityServerAlertType: Types.PagedSecurityServerAlertType;
+  PagedSecurityServerProfileType: Types.PagedSecurityServerProfileType;
   PagedStockAdjustment: Types.PagedStockAdjustment;
   PagedStockItem: Types.PagedStockItem;
   PagedUserGroupType: Types.PagedUserGroupType;
@@ -273,6 +283,12 @@ export type ResolversParentTypes = ResolversObject<{
   SecurityLogFilter: Types.SecurityLogFilter;
   SecurityLogType: Types.SecurityLogType;
   SecurityLogUserOption: Types.SecurityLogUserOption;
+  SecurityServerAlertFilter: Types.SecurityServerAlertFilter;
+  SecurityServerAlertType: Types.SecurityServerAlertType;
+  SecurityServerChannelType: Types.SecurityServerChannelType;
+  SecurityServerProfileFilter: Types.SecurityServerProfileFilter;
+  SecurityServerProfileImageType: Types.SecurityServerProfileImageType;
+  SecurityServerProfileType: Types.SecurityServerProfileType;
   StockAdjustment: Types.StockAdjustment;
   StockItem: Types.StockItem;
   String: Types.Scalars['String']['output'];
@@ -928,6 +944,16 @@ export type PagedSecurityLogTypeResolvers<ContextType = any, ParentType extends 
   totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
+export type PagedSecurityServerAlertTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedSecurityServerAlertType'] = ResolversParentTypes['PagedSecurityServerAlertType']> = ResolversObject<{
+  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['SecurityServerAlertType']>>>, ParentType, ContextType>;
+  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type PagedSecurityServerProfileTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedSecurityServerProfileType'] = ResolversParentTypes['PagedSecurityServerProfileType']> = ResolversObject<{
+  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['SecurityServerProfileType']>>>, ParentType, ContextType>;
+  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
 export type PagedStockAdjustmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedStockAdjustment'] = ResolversParentTypes['PagedStockAdjustment']> = ResolversObject<{
   data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StockAdjustment']>>>, ParentType, ContextType>;
   totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -1116,6 +1142,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   allSecurityMehfilDuties?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['MehfilDutyType']>>>, ParentType, ContextType, Partial<Types.QueryAllSecurityMehfilDutiesArgs>>;
   allSecurityMehfilLangarDishes?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['MehfilLangarDishType']>>>, ParentType, ContextType>;
   allSecurityMehfilLangarLocations?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['MehfilLangarLocationType']>>>, ParentType, ContextType>;
+  allSecurityServerChannels?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['SecurityServerChannelType']>>>, ParentType, ContextType, Partial<Types.QueryAllSecurityServerChannelsArgs>>;
   allTeams?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['TeamType']>>>, ParentType, ContextType>;
   attachmentsById?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['Attachment']>>>, ParentType, ContextType, RequireFields<Types.QueryAttachmentsByIdArgs, 'ids'>>;
   cityById?: Resolver<Types.Maybe<ResolversTypes['CityType']>, ParentType, ContextType, RequireFields<Types.QueryCityByIdArgs, '_id'>>;
@@ -1170,6 +1197,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   pagedScheduledJobs?: Resolver<Types.Maybe<ResolversTypes['PagedScheduledJobsType']>, ParentType, ContextType, Partial<Types.QueryPagedScheduledJobsArgs>>;
   pagedSecurityAuditLogs?: Resolver<Types.Maybe<ResolversTypes['PagedAuditLogType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityAuditLogsArgs>>;
   pagedSecurityLogs?: Resolver<Types.Maybe<ResolversTypes['PagedSecurityLogType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityLogsArgs>>;
+  pagedSecurityServerAlerts?: Resolver<Types.Maybe<ResolversTypes['PagedSecurityServerAlertType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityServerAlertsArgs>>;
+  pagedSecurityServerProfiles?: Resolver<Types.Maybe<ResolversTypes['PagedSecurityServerProfileType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityServerProfilesArgs>>;
   pagedSecurityUsers?: Resolver<Types.Maybe<ResolversTypes['PagedUserType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityUsersArgs>>;
   pagedSecurityVisitors?: Resolver<Types.Maybe<ResolversTypes['PagedVisitorType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityVisitorsArgs>>;
   pagedStockAdjustments?: Resolver<Types.Maybe<ResolversTypes['PagedStockAdjustment']>, ParentType, ContextType, RequireFields<Types.QueryPagedStockAdjustmentsArgs, 'physicalStoreId'>>;
@@ -1189,6 +1218,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   securityMehfilDutyById?: Resolver<Types.Maybe<ResolversTypes['MehfilDutyType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityMehfilDutyByIdArgs, 'id'>>;
   securityMehfilLangarDishById?: Resolver<Types.Maybe<ResolversTypes['MehfilLangarDishType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityMehfilLangarDishByIdArgs, 'id'>>;
   securityMehfilLangarLocationById?: Resolver<Types.Maybe<ResolversTypes['MehfilLangarLocationType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityMehfilLangarLocationByIdArgs, 'id'>>;
+  securityServerAlertById?: Resolver<Types.Maybe<ResolversTypes['SecurityServerAlertType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityServerAlertByIdArgs, '_id'>>;
+  securityServerProfileById?: Resolver<Types.Maybe<ResolversTypes['SecurityServerProfileType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityServerProfileByIdArgs, '_id'>>;
   securityVisitorByCnic?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityVisitorByCnicArgs, 'cnicNumbers'>>;
   securityVisitorByCnicOrContactNumber?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, Partial<Types.QuerySecurityVisitorByCnicOrContactNumberArgs>>;
   securityVisitorById?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityVisitorByIdArgs, '_id'>>;
@@ -1266,6 +1297,63 @@ export type SecurityLogTypeResolvers<ContextType = any, ParentType extends Resol
 export type SecurityLogUserOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityLogUserOption'] = ResolversParentTypes['SecurityLogUserOption']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+}>;
+
+export type SecurityServerAlertTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityServerAlertType'] = ResolversParentTypes['SecurityServerAlertType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  channelExternalId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  channelId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  channelName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  externalId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  imageUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  profileExternalId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  profileId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  profileIsTest?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  profileName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  review?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  reviewedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  similarityScore?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  timestamp?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type SecurityServerChannelTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityServerChannelType'] = ResolversParentTypes['SecurityServerChannelType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  alertsCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  deletedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  enabled?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  externalId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  recognitionFps?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  similarityThreshold?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type SecurityServerProfileImageTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityServerProfileImageType'] = ResolversParentTypes['SecurityServerProfileImageType']> = ResolversObject<{
+  externalId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  imageUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type SecurityServerProfileTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityServerProfileType'] = ResolversParentTypes['SecurityServerProfileType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  alertsCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  deletedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  externalCreatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  externalId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  externalUpdatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  images?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['SecurityServerProfileImageType']>>>, ParentType, ContextType>;
+  isTest?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type StockAdjustmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['StockAdjustment'] = ResolversParentTypes['StockAdjustment']> = ResolversObject<{
@@ -1473,6 +1561,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PagedSalaryType?: PagedSalaryTypeResolvers<ContextType>;
   PagedScheduledJobsType?: PagedScheduledJobsTypeResolvers<ContextType>;
   PagedSecurityLogType?: PagedSecurityLogTypeResolvers<ContextType>;
+  PagedSecurityServerAlertType?: PagedSecurityServerAlertTypeResolvers<ContextType>;
+  PagedSecurityServerProfileType?: PagedSecurityServerProfileTypeResolvers<ContextType>;
   PagedStockAdjustment?: PagedStockAdjustmentResolvers<ContextType>;
   PagedStockItem?: PagedStockItemResolvers<ContextType>;
   PagedUserGroupType?: PagedUserGroupTypeResolvers<ContextType>;
@@ -1497,6 +1587,10 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ScheduledJobType?: ScheduledJobTypeResolvers<ContextType>;
   SecurityLogType?: SecurityLogTypeResolvers<ContextType>;
   SecurityLogUserOption?: SecurityLogUserOptionResolvers<ContextType>;
+  SecurityServerAlertType?: SecurityServerAlertTypeResolvers<ContextType>;
+  SecurityServerChannelType?: SecurityServerChannelTypeResolvers<ContextType>;
+  SecurityServerProfileImageType?: SecurityServerProfileImageTypeResolvers<ContextType>;
+  SecurityServerProfileType?: SecurityServerProfileTypeResolvers<ContextType>;
   StockAdjustment?: StockAdjustmentResolvers<ContextType>;
   StockItem?: StockItemResolvers<ContextType>;
   TeamMemberType?: TeamMemberTypeResolvers<ContextType>;

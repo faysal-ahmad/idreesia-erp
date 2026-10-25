@@ -7,6 +7,9 @@ export { default as MehfilLangarDetails } from './mehfil-langar-details';
 export { default as MehfilLangarDishes } from './mehfil-langar-dishes';
 export { default as MehfilLangarLocations } from './mehfil-langar-locations';
 export { default as VisitorStays } from './visitor-stays';
+export { default as SecurityServerChannels } from './security-server-channels';
+export { default as SecurityServerProfiles } from './security-server-profiles';
+export { default as SecurityServerAlerts } from './security-server-alerts';
 
 export const Visitors = new Mongo.Collection<Record<string, any>>(
   'security-visitors'

@@ -240,6 +240,20 @@ export const SecurityPermissionsData: PermissionNode = {
       ],
     },
     {
+      title: 'Security Server',
+      key: 'module-security-security-server',
+      children: [
+        {
+          title: 'View Security Server Data',
+          key: PermissionConstants.SECURITY_VIEW_SECURITY_SERVER_DATA,
+        },
+        {
+          title: 'Push Security Server Data',
+          key: PermissionConstants.SECURITY_PUSH_SECURITY_SERVER_DATA,
+        },
+      ],
+    },
+    {
       title: 'Setup',
       key: 'module-security-setup',
       children: [

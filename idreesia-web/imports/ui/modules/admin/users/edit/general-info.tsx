@@ -52,11 +52,6 @@ const GeneralInfo = ({ userId, history }: Props) => {
     displayName,
     locked,
   }: FormValues) => {
-    if (email && !email.includes('@gmail.com')) {
-      message.error('This is not a valid Google Email.', 5);
-      return;
-    }
-
     updateUser({
       variables: {
         userId: userById?._id ?? userId,
@@ -125,7 +120,7 @@ const GeneralInfo = ({ userId, history }: Props) => {
 
         <InputTextField
           fieldName="email"
-          fieldLabel="Google Email"
+          fieldLabel="Email"
           initialValue={userById.email}
         />
 

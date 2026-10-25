@@ -9,6 +9,9 @@ const SubModuleNames = {
   mehfilCardVerification: 'Mehfil Card Verification',
   dutyCardVerification: 'Duty Card Verification',
   visitorStayReport: "Visitor's Stay Report",
+  securityServerChannels: 'Security Server Channels',
+  securityServerProfiles: 'Security Server Profiles',
+  securityServerAlerts: 'Security Server Alerts',
   auditLogs: 'Audit Logs',
   securityUsers: 'Security Users',
 };

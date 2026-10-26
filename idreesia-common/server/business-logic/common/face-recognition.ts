@@ -197,10 +197,19 @@ function getNet(): cv.Net {
   return net;
 }
 
+// See unloadFaceDetectionModel() - same reasoning.
+export function unloadFaceRecognitionModel(): void {
+  net = undefined;
+}
+
 export function alignFace(image: cv.Mat, landmarks: [number, number][]): cv.Mat {
   const m = getSimilarityTransformMatrix(landmarks);
   const transformMat = new cv.Mat(m, cv.CV_64FC1);
-  return image.warpAffine(transformMat, new cv.Size(112, 112), cv.INTER_LINEAR);
+  try {
+    return image.warpAffine(transformMat, new cv.Size(112, 112), cv.INTER_LINEAR);
+  } finally {
+    transformMat.release();
+  }
 }
 
 export function embedFace(alignedImage: cv.Mat): number[] {
@@ -212,10 +221,16 @@ export function embedFace(alignedImage: cv.Mat): number[] {
     true,
     false
   );
-  const net = getNet();
-  net.setInput(blob);
-  const output = net.forward();
-  return (output.getDataAsArray() as number[][])[0];
+  let output: cv.Mat | undefined;
+  try {
+    const net = getNet();
+    net.setInput(blob);
+    output = net.forward();
+    return (output.getDataAsArray() as number[][])[0];
+  } finally {
+    blob.release();
+    output?.release();
+  }
 }
 
 export function cosineSimilarity(a: number[], b: number[]): number {

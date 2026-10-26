@@ -4,6 +4,8 @@ import {
   computeImageVectorData,
   MODEL_VERSION,
 } from './compute-image-vector-data';
+import { unloadFaceDetectionModel } from './face-detection';
+import { unloadFaceRecognitionModel } from './face-recognition';
 
 // Sequential/blocking by design - these OpenCV calls aren't parallelizable without worker
 // threads, and this is only ever run manually (no defaultSchedule - see job-definitions-registry.ts)
@@ -32,13 +34,20 @@ export async function backfillImageVectorData(
     { fields: { 'sharedData.imageId': 1 } }
   ).fetchAsync();
 
-  for (const { _id, sharedData } of people) {
-    const imageVectorData = await computeImageVectorData(sharedData.imageId);
-    await People.updateAsync(_id, {
-      $set: { 'sharedData.imageVectorData': imageVectorData },
-    });
-    counter++;
-    await reportProgress?.(counter / people.length);
+  try {
+    for (const { _id, sharedData } of people) {
+      const imageVectorData = await computeImageVectorData(sharedData.imageId);
+      await People.updateAsync(_id, {
+        $set: { 'sharedData.imageVectorData': imageVectorData },
+      });
+      counter++;
+      await reportProgress?.(counter / people.length);
+    }
+  } finally {
+    // This job is the only face-vector work the jobs process ever does, and it's manual-only, so
+    // the models aren't kept resident there between runs.
+    unloadFaceDetectionModel();
+    unloadFaceRecognitionModel();
   }
 
   return counter;

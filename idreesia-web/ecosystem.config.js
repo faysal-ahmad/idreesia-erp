@@ -7,13 +7,27 @@
 // inherited: Idreesia-Web serves GraphQL/HTTP traffic only, Idreesia-Jobs
 // runs the agenda-based background job processor only. Both boot the same
 // bundle - see imports/startup/server/index.ts and setup-agenda.ts.
+//
+// Memory: both processes share one 2 GB container, but left to itself each
+// Node process sizes its heap as if it had the whole container to itself.
+// The --max-old-space-size caps below (768 + 512 MB) leave ~700 MB for
+// native memory (OpenCV, sharp, Node itself) and pm2. MALLOC_ARENA_MAX=2
+// stops glibc keeping a separate malloc arena per OpenCV/libvips worker
+// thread, which otherwise holds on to freed native memory indefinitely.
+// Revisit the caps if the container size changes.
+const MALLOC_ARENA_MAX = '2';
+
 module.exports = {
   apps: [
     {
       name: 'Idreesia-Web',
       script: 'node ./bundle/main.js',
       autorestart: true,
-      env: { JOBS_ENABLED: 'false' },
+      env: {
+        JOBS_ENABLED: 'false',
+        NODE_OPTIONS: '--max-old-space-size=768',
+        MALLOC_ARENA_MAX,
+      },
     },
     {
       name: 'Idreesia-Jobs',
@@ -22,7 +36,13 @@ module.exports = {
       // PORT is a distinct, never-exposed port - Meteor's webapp package
       // always binds one regardless of role, and it can't share the web
       // app's port within the same container.
-      env: { JOBS_ENABLED: 'true', WEB_SERVER_ENABLED: 'false', PORT: '3001' },
+      env: {
+        JOBS_ENABLED: 'true',
+        WEB_SERVER_ENABLED: 'false',
+        PORT: '3001',
+        NODE_OPTIONS: '--max-old-space-size=512',
+        MALLOC_ARENA_MAX,
+      },
     },
   ]
 };

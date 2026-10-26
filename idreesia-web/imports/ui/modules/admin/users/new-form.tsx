@@ -51,7 +51,7 @@ const NewForm = ({ history }: Props) => {
     email,
     displayName,
   }: FormValues) => {
-    if ((userName && password) || (email && email.includes('@gmail.com'))) {
+    if ((userName && password) || email) {
       createUser({
         variables: {
           personId: karkun ? karkun._id : null,
@@ -76,19 +76,19 @@ const NewForm = ({ history }: Props) => {
         {
           name: 'userName',
           errors: [
-            'Either user name and password, or google email is required to create an account.',
+            'Either user name and password, or email is required to create an account.',
           ],
         },
         {
           name: 'password',
           errors: [
-            'Either user name and password, or google email is required to create an account.',
+            'Either user name and password, or email is required to create an account.',
           ],
         },
         {
           name: 'email',
           errors: [
-            'Either user name and password, or google email is required to create an account.',
+            'Either user name and password, or email is required to create an account.',
           ],
         },
       ]);
@@ -109,7 +109,7 @@ const NewForm = ({ history }: Props) => {
           type="password"
         />
 
-        <InputTextField fieldName="email" fieldLabel="Google Email" />
+        <InputTextField fieldName="email" fieldLabel="Email" />
 
         <InputTextField fieldName="displayName" fieldLabel="Display name" />
 

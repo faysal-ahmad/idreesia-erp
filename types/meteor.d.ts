@@ -233,12 +233,5 @@ declare const Assets: {
   absoluteFilePath(path: string): string;
 };
 
-declare const ServiceConfiguration: {
-  configurations: {
-    upsert(selector: unknown, modifier: unknown): void;
-    upsertAsync(selector: unknown, modifier: unknown): Promise<void>;
-  };
-};
-
 declare module 'meteor/idreesia-common/*';
 declare module 'meteor/*';

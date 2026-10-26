@@ -33,6 +33,7 @@ declare module '@u4/opencv4nodejs' {
       value?: Vec3
     ): Mat;
     warpAffine(transform: Mat, size: Size, interpolation: number): Mat;
+    resize(rows: number, cols: number): Mat;
     getDataAsArray(): number[][];
   }
 

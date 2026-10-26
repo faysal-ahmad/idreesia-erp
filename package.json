@@ -7,6 +7,8 @@
     "@ant-design/icons": "^6.3.2",
     "@apollo/client": "4.2.7",
     "@apollo/server": "^5.5.1",
+    "@aws-sdk/client-s3": "3.1145.0",
+    "@aws-sdk/s3-request-presigner": "3.1145.0",
     "@babel/core": "^7",
     "@babel/eslint-parser": "^7",
     "@babel/plugin-syntax-jsx": "^7",

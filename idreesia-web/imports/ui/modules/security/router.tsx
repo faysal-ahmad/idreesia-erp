@@ -31,6 +31,12 @@ import { VisitorCardVerificationForm } from './visitor-stays';
 import { SecurityUsersList, SecurityUsersEditForm } from './security-users';
 import { AuditLogsList } from './audit-logs';
 import { VisitorStayReport } from './visitor-stay-report';
+import {
+  SecurityServerAlertsList,
+  SecurityServerAlertView,
+  SecurityServerChannelsList,
+  SecurityServerProfilesList,
+} from './security-server';
 
 const Router = () => (
   <Switch>
@@ -78,6 +84,11 @@ const Router = () => (
       component={VisitorCardVerificationForm}
     />
     <Route path={paths.visitorStayReportPath} component={VisitorStayReport} />
+
+    <Route path={paths.securityServerChannelsPath} component={SecurityServerChannelsList} />
+    <Route path={paths.securityServerProfilesPath} component={SecurityServerProfilesList} />
+    <Route path={paths.securityServerAlertViewPath()} component={SecurityServerAlertView} />
+    <Route path={paths.securityServerAlertsPath} component={SecurityServerAlertsList} />
 
     <Route path={paths.securityUsersEditFormPath()} component={SecurityUsersEditForm} />
     <Route path={paths.securityUsersPath} component={SecurityUsersList} />

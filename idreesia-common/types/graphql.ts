@@ -529,6 +529,7 @@ export type Mutation = {
   addIssuanceFormAttachment?: Maybe<IssuanceForm>;
   addMehfilKarkun?: Maybe<MehfilKarkunType>;
   addPurchaseFormAttachment?: Maybe<PurchaseForm>;
+  addSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
   addTeamCoordinator?: Maybe<TeamType>;
   addTeamMember?: Maybe<TeamType>;
   approveIssuanceForms?: Maybe<Array<Maybe<IssuanceForm>>>;
@@ -556,6 +557,8 @@ export type Mutation = {
   createSecurityMehfilDuty?: Maybe<MehfilDutyType>;
   createSecurityMehfilLangarDish?: Maybe<MehfilLangarDishType>;
   createSecurityMehfilLangarLocation?: Maybe<MehfilLangarLocationType>;
+  createSecurityServerChannel?: Maybe<SecurityServerChannelType>;
+  createSecurityServerProfile?: Maybe<SecurityServerProfileType>;
   createSecurityVisitor?: Maybe<PersonType>;
   createStockAdjustment?: Maybe<StockAdjustment>;
   createStockItem?: Maybe<StockItem>;
@@ -569,6 +572,8 @@ export type Mutation = {
   deleteHrKarkun?: Maybe<Scalars['Int']['output']>;
   deletePeopleTag?: Maybe<Scalars['Int']['output']>;
   deleteSalaries?: Maybe<Scalars['Int']['output']>;
+  deleteSecurityServerChannel?: Maybe<Scalars['Int']['output']>;
+  deleteSecurityServerProfile?: Maybe<Scalars['Int']['output']>;
   deleteSecurityVisitor?: Maybe<Scalars['Int']['output']>;
   deleteUserGroup?: Maybe<Scalars['Int']['output']>;
   deleteVisitorStay?: Maybe<Scalars['Int']['output']>;
@@ -601,6 +606,7 @@ export type Mutation = {
   removeSecurityMehfilDuty?: Maybe<Scalars['Int']['output']>;
   removeSecurityMehfilLangarDish?: Maybe<Scalars['Int']['output']>;
   removeSecurityMehfilLangarLocation?: Maybe<Scalars['Int']['output']>;
+  removeSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
   removeStockAdjustments?: Maybe<Scalars['Int']['output']>;
   removeStockItem?: Maybe<Scalars['Int']['output']>;
   removeTeam?: Maybe<Scalars['Int']['output']>;
@@ -624,6 +630,7 @@ export type Mutation = {
   setJobDefinitionEnabled?: Maybe<JobDefinitionType>;
   setPermissions?: Maybe<UserType>;
   setScheduledJobEnabled?: Maybe<Scalars['Boolean']['output']>;
+  setSecurityServerAlertReview?: Maybe<SecurityServerAlertType>;
   setSecurityUserPermissions?: Maybe<UserType>;
   setSecurityVisitorImage?: Maybe<PersonType>;
   setStockItemImage?: Maybe<StockItem>;
@@ -652,6 +659,8 @@ export type Mutation = {
   updateSecurityMehfilDuty?: Maybe<MehfilDutyType>;
   updateSecurityMehfilLangarDish?: Maybe<MehfilLangarDishType>;
   updateSecurityMehfilLangarLocation?: Maybe<MehfilLangarLocationType>;
+  updateSecurityServerChannel?: Maybe<SecurityServerChannelType>;
+  updateSecurityServerProfile?: Maybe<SecurityServerProfileType>;
   updateSecurityVisitor?: Maybe<PersonType>;
   updateSecurityVisitorNotes?: Maybe<PersonType>;
   updateStockAdjustment?: Maybe<StockAdjustment>;
@@ -702,6 +711,12 @@ export type MutationAddPurchaseFormAttachmentArgs = {
   _id: Scalars['String']['input'];
   attachmentId: Scalars['String']['input'];
   physicalStoreId: Scalars['String']['input'];
+};
+
+
+export type MutationAddSecurityServerProfileImageArgs = {
+  imageData: Scalars['String']['input'];
+  profileId: Scalars['String']['input'];
 };
 
 
@@ -910,6 +925,21 @@ export type MutationCreateSecurityMehfilLangarLocationArgs = {
 };
 
 
+export type MutationCreateSecurityServerChannelArgs = {
+  connection: SecurityServerChannelConnectionInput;
+  enabled: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  recognitionFps: Scalars['Float']['input'];
+  similarityThreshold?: InputMaybe<Scalars['Float']['input']>;
+};
+
+
+export type MutationCreateSecurityServerProfileArgs = {
+  isTest: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationCreateSecurityVisitorArgs = {
   birthDate?: InputMaybe<Scalars['String']['input']>;
   city?: InputMaybe<Scalars['String']['input']>;
@@ -1020,6 +1050,16 @@ export type MutationDeletePeopleTagArgs = {
 export type MutationDeleteSalariesArgs = {
   ids: Array<InputMaybe<Scalars['String']['input']>>;
   month: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteSecurityServerChannelArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteSecurityServerProfileArgs = {
+  _id: Scalars['String']['input'];
 };
 
 
@@ -1200,6 +1240,12 @@ export type MutationRemoveSecurityMehfilLangarLocationArgs = {
 };
 
 
+export type MutationRemoveSecurityServerProfileImageArgs = {
+  imageId: Scalars['String']['input'];
+  profileId: Scalars['String']['input'];
+};
+
+
 export type MutationRemoveStockAdjustmentsArgs = {
   _ids: Array<InputMaybe<Scalars['String']['input']>>;
   physicalStoreId: Scalars['String']['input'];
@@ -1345,6 +1391,12 @@ export type MutationSetPermissionsArgs = {
 export type MutationSetScheduledJobEnabledArgs = {
   _id: Scalars['String']['input'];
   enabled: Scalars['Boolean']['input'];
+};
+
+
+export type MutationSetSecurityServerAlertReviewArgs = {
+  _id: Scalars['String']['input'];
+  review?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1573,6 +1625,23 @@ export type MutationUpdateSecurityMehfilLangarLocationArgs = {
 };
 
 
+export type MutationUpdateSecurityServerChannelArgs = {
+  _id: Scalars['String']['input'];
+  connection: SecurityServerChannelConnectionInput;
+  enabled: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  recognitionFps: Scalars['Float']['input'];
+  similarityThreshold?: InputMaybe<Scalars['Float']['input']>;
+};
+
+
+export type MutationUpdateSecurityServerProfileArgs = {
+  _id: Scalars['String']['input'];
+  isTest: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateSecurityVisitorArgs = {
   _id: Scalars['String']['input'];
   birthDate?: InputMaybe<Scalars['String']['input']>;
@@ -1742,6 +1811,18 @@ export type PagedSecurityLogType = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PagedSecurityServerAlertType = {
+  __typename?: 'PagedSecurityServerAlertType';
+  data?: Maybe<Array<Maybe<SecurityServerAlertType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedSecurityServerProfileType = {
+  __typename?: 'PagedSecurityServerProfileType';
+  data?: Maybe<Array<Maybe<SecurityServerProfileType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
 export type PagedStockAdjustment = {
   __typename?: 'PagedStockAdjustment';
   data?: Maybe<Array<Maybe<StockAdjustment>>>;
@@ -1817,12 +1898,15 @@ export enum Permission {
   InViewStockAdjustments = 'IN_VIEW_STOCK_ADJUSTMENTS',
   SecurityDeleteData = 'SECURITY_DELETE_DATA',
   SecurityManageMehfils = 'SECURITY_MANAGE_MEHFILS',
+  SecurityManageSecurityServerData = 'SECURITY_MANAGE_SECURITY_SERVER_DATA',
   SecurityManageSetupData = 'SECURITY_MANAGE_SETUP_DATA',
   SecurityManageUsers = 'SECURITY_MANAGE_USERS',
   SecurityManageVisitors = 'SECURITY_MANAGE_VISITORS',
+  SecuritySyncSecurityServerData = 'SECURITY_SYNC_SECURITY_SERVER_DATA',
   SecurityViewAuditLogs = 'SECURITY_VIEW_AUDIT_LOGS',
   SecurityViewKarkunVerification = 'SECURITY_VIEW_KARKUN_VERIFICATION',
   SecurityViewMehfils = 'SECURITY_VIEW_MEHFILS',
+  SecurityViewSecurityServerData = 'SECURITY_VIEW_SECURITY_SERVER_DATA',
   SecurityViewUsers = 'SECURITY_VIEW_USERS',
   SecurityViewVisitors = 'SECURITY_VIEW_VISITORS'
 }
@@ -1995,6 +2079,7 @@ export type Query = {
   allSecurityMehfilDuties?: Maybe<Array<Maybe<MehfilDutyType>>>;
   allSecurityMehfilLangarDishes?: Maybe<Array<Maybe<MehfilLangarDishType>>>;
   allSecurityMehfilLangarLocations?: Maybe<Array<Maybe<MehfilLangarLocationType>>>;
+  allSecurityServerChannels?: Maybe<Array<Maybe<SecurityServerChannelType>>>;
   allTeams?: Maybe<Array<Maybe<TeamType>>>;
   attachmentsById?: Maybe<Array<Maybe<Attachment>>>;
   cityById?: Maybe<CityType>;
@@ -2049,6 +2134,8 @@ export type Query = {
   pagedScheduledJobs?: Maybe<PagedScheduledJobsType>;
   pagedSecurityAuditLogs?: Maybe<PagedAuditLogType>;
   pagedSecurityLogs?: Maybe<PagedSecurityLogType>;
+  pagedSecurityServerAlerts?: Maybe<PagedSecurityServerAlertType>;
+  pagedSecurityServerProfiles?: Maybe<PagedSecurityServerProfileType>;
   pagedSecurityUsers?: Maybe<PagedUserType>;
   pagedSecurityVisitors?: Maybe<PagedVisitorType>;
   pagedStockAdjustments?: Maybe<PagedStockAdjustment>;
@@ -2068,6 +2155,9 @@ export type Query = {
   securityMehfilDutyById?: Maybe<MehfilDutyType>;
   securityMehfilLangarDishById?: Maybe<MehfilLangarDishType>;
   securityMehfilLangarLocationById?: Maybe<MehfilLangarLocationType>;
+  securityServerAlertById?: Maybe<SecurityServerAlertType>;
+  securityServerChannelById?: Maybe<SecurityServerChannelType>;
+  securityServerProfileById?: Maybe<SecurityServerProfileType>;
   securityVisitorByCnic?: Maybe<PersonType>;
   securityVisitorByCnicOrContactNumber?: Maybe<PersonType>;
   securityVisitorById?: Maybe<PersonType>;
@@ -2088,6 +2178,11 @@ export type Query = {
 
 export type QueryAllSecurityMehfilDutiesArgs = {
   mehfilId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryAllSecurityServerChannelsArgs = {
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -2335,6 +2430,16 @@ export type QueryPagedSecurityLogsArgs = {
 };
 
 
+export type QueryPagedSecurityServerAlertsArgs = {
+  filter?: InputMaybe<SecurityServerAlertFilter>;
+};
+
+
+export type QueryPagedSecurityServerProfilesArgs = {
+  filter?: InputMaybe<SecurityServerProfileFilter>;
+};
+
+
 export type QueryPagedSecurityUsersArgs = {
   filter?: InputMaybe<UserFilter>;
 };
@@ -2434,6 +2539,21 @@ export type QuerySecurityMehfilLangarDishByIdArgs = {
 
 export type QuerySecurityMehfilLangarLocationByIdArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QuerySecurityServerAlertByIdArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type QuerySecurityServerChannelByIdArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type QuerySecurityServerProfileByIdArgs = {
+  _id: Scalars['String']['input'];
 };
 
 
@@ -2599,6 +2719,99 @@ export type SecurityLogUserOption = {
   __typename?: 'SecurityLogUserOption';
   _id: Scalars['String']['output'];
   name: Scalars['String']['output'];
+};
+
+export type SecurityServerAlertFilter = {
+  channelId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  includeTest?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  profileId?: InputMaybe<Scalars['String']['input']>;
+  review?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SecurityServerAlertType = {
+  __typename?: 'SecurityServerAlertType';
+  _id?: Maybe<Scalars['String']['output']>;
+  channelId?: Maybe<Scalars['String']['output']>;
+  channelName?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  externalId?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  profileId?: Maybe<Scalars['String']['output']>;
+  profileIsTest?: Maybe<Scalars['Boolean']['output']>;
+  profileName?: Maybe<Scalars['String']['output']>;
+  review?: Maybe<Scalars['String']['output']>;
+  reviewedAt?: Maybe<Scalars['String']['output']>;
+  similarityScore?: Maybe<Scalars['Float']['output']>;
+  timestamp?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityServerChannelConnectionInput = {
+  host: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
+  path?: InputMaybe<Scalars['String']['input']>;
+  port?: InputMaybe<Scalars['Int']['input']>;
+  username?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SecurityServerChannelConnectionType = {
+  __typename?: 'SecurityServerChannelConnectionType';
+  hasPassword?: Maybe<Scalars['Boolean']['output']>;
+  host?: Maybe<Scalars['String']['output']>;
+  path?: Maybe<Scalars['String']['output']>;
+  port?: Maybe<Scalars['Int']['output']>;
+  username?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityServerChannelType = {
+  __typename?: 'SecurityServerChannelType';
+  _id?: Maybe<Scalars['String']['output']>;
+  alertsCount?: Maybe<Scalars['Int']['output']>;
+  connection?: Maybe<SecurityServerChannelConnectionType>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  deletedAt?: Maybe<Scalars['String']['output']>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  recognitionFps?: Maybe<Scalars['Float']['output']>;
+  similarityThreshold?: Maybe<Scalars['Float']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityServerProfileFilter = {
+  includeDeleted?: InputMaybe<Scalars['String']['input']>;
+  includeTest?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SecurityServerProfileImageType = {
+  __typename?: 'SecurityServerProfileImageType';
+  _id?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  uploadedAt?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityServerProfileType = {
+  __typename?: 'SecurityServerProfileType';
+  _id?: Maybe<Scalars['String']['output']>;
+  alertsCount?: Maybe<Scalars['Int']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  deletedAt?: Maybe<Scalars['String']['output']>;
+  images?: Maybe<Array<Maybe<SecurityServerProfileImageType>>>;
+  isTest?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
 export type StockAdjustment = {

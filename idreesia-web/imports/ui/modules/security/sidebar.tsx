@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { type History } from 'history';
 import {
+  AlertOutlined,
   AuditOutlined,
   BarcodeOutlined,
   BarsOutlined,
@@ -13,6 +14,9 @@ import {
   ToolOutlined,
   UnlockOutlined,
   UnorderedListOutlined,
+  UserOutlined,
+  VideoCameraOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 
 import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
@@ -88,6 +92,28 @@ const menuItems = [
         key: 'visitor-stay-report',
         icon: <BookOutlined style={IconStyle} />,
         label: 'Visitor Stay Report',
+      },
+    ],
+  },
+  {
+    key: 'security-server',
+    icon: <AlertOutlined style={IconStyle} />,
+    label: 'Security Server',
+    children: [
+      {
+        key: 'security-server-alerts',
+        icon: <WarningOutlined style={IconStyle} />,
+        label: 'Alerts',
+      },
+      {
+        key: 'security-server-profiles',
+        icon: <UserOutlined style={IconStyle} />,
+        label: 'Profiles',
+      },
+      {
+        key: 'security-server-channels',
+        icon: <VideoCameraOutlined style={IconStyle} />,
+        label: 'Channels',
       },
     ],
   },
@@ -189,6 +215,24 @@ const menuRouteMatches: MenuRouteMatch[] = [
     matches: (pathname) => isPath(pathname, paths.mehfilLangarLocationsPath),
   },
   {
+    key: 'security-server-alerts',
+    openKeys: ['security-server'],
+    subModuleName: SubModuleNames.securityServerAlerts,
+    matches: (pathname) => isPath(pathname, paths.securityServerAlertsPath),
+  },
+  {
+    key: 'security-server-profiles',
+    openKeys: ['security-server'],
+    subModuleName: SubModuleNames.securityServerProfiles,
+    matches: (pathname) => isPath(pathname, paths.securityServerProfilesPath),
+  },
+  {
+    key: 'security-server-channels',
+    openKeys: ['security-server'],
+    subModuleName: SubModuleNames.securityServerChannels,
+    matches: (pathname) => isPath(pathname, paths.securityServerChannelsPath),
+  },
+  {
     key: 'security-user-accounts',
     openKeys: ['administration'],
     subModuleName: SubModuleNames.securityUsers,
@@ -277,6 +321,18 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'visitor-card-verification':
         history.push(paths.visitorCardVerificationPath);
+        break;
+
+      case 'security-server-alerts':
+        history.push(paths.securityServerAlertsPath);
+        break;
+
+      case 'security-server-profiles':
+        history.push(paths.securityServerProfilesPath);
+        break;
+
+      case 'security-server-channels':
+        history.push(paths.securityServerChannelsPath);
         break;
 
       case 'security-user-accounts':

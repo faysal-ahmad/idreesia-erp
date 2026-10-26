@@ -60,7 +60,7 @@ export const LoginForm = ({ history, location, setShowForm }: Props) => {
       title={
         <Flex align="center" gap={16}>
           <img
-            src="/images/ebf-logo-emblem.png"
+            src="/images/eb-logo-emblem.png"
             alt="Eastern Breeze"
             style={{ height: 100 }}
           />

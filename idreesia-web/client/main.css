@@ -52,6 +52,10 @@ body {
   flex-shrink: 0;
 }
 
+.app-shell-sidebar-title h4.ant-typography {
+  margin: 12px 0 8px;
+}
+
 .app-shell-sidebar-menu {
   flex: 1 1 auto;
   min-height: 0;

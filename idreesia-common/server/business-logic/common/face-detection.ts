@@ -10,6 +10,10 @@ export interface DetectedFace {
 }
 
 const DIVISOR = 32;
+// Long side an image is downscaled to when full-size detection finds nothing (see detectFaces()).
+// 640 is the input size OpenCV's own YuNet samples use; measured on a 2041x2048 close-up whose
+// ~1000px face was missed at full size and at 1280, but found at 960 and below.
+const FALLBACK_MAX_SIDE = 640;
 const STRIDES = [8, 16, 32];
 const OUTPUT_NAMES = [
   'cls_8',
@@ -35,13 +39,45 @@ function getNet(): cv.Net {
   return net;
 }
 
-// Ported from OpenCV's FaceDetectorYNImpl::postProcess (modules/objdetect/src/face_detect.cpp) -
-// @u4/opencv4nodejs doesn't wrap FaceDetectorYN, only the generic cv.dnn module, so YuNet's
-// anchor-based raw output has to be decoded by hand exactly as the C++ does.
 export function detectFaces(
   image: cv.Mat,
   scoreThreshold = 0.7,
   nmsThreshold = 0.3
+): DetectedFace[] {
+  const faces = detectAtFullSize(image, scoreThreshold, nmsThreshold);
+  const longSide = Math.max(image.cols, image.rows);
+  if (faces.length > 0 || longSide <= FALLBACK_MAX_SIDE) return faces;
+
+  // YuNet's largest anchor stride is 32px, so a face filling most of a high-resolution photo
+  // (e.g. a ~1000px face in a 2000px close-up selfie) is far bigger than anything it can match
+  // and goes undetected at full size. Retry on a downscaled copy and map the results back, so
+  // callers always get original-image coordinates. Only a fallback - downscaling up front would
+  // shrink small, distant faces below what YuNet can find. Mirrors the security server's
+  // FaceDetectionService.detect(), so both apply the same quality gate.
+  const scale = FALLBACK_MAX_SIDE / longSide;
+  const resized = image.resize(
+    Math.round(image.rows * scale),
+    Math.round(image.cols * scale)
+  );
+  return detectAtFullSize(resized, scoreThreshold, nmsThreshold).map(face => ({
+    box: {
+      x: face.box.x / scale,
+      y: face.box.y / scale,
+      width: face.box.width / scale,
+      height: face.box.height / scale,
+    },
+    confidence: face.confidence,
+    landmarks: face.landmarks.map(([x, y]): [number, number] => [x / scale, y / scale]),
+  }));
+}
+
+// Ported from OpenCV's FaceDetectorYNImpl::postProcess (modules/objdetect/src/face_detect.cpp) -
+// @u4/opencv4nodejs doesn't wrap FaceDetectorYN, only the generic cv.dnn module, so YuNet's
+// anchor-based raw output has to be decoded by hand exactly as the C++ does.
+function detectAtFullSize(
+  image: cv.Mat,
+  scoreThreshold: number,
+  nmsThreshold: number
 ): DetectedFace[] {
   const inputW = image.cols;
   const inputH = image.rows;

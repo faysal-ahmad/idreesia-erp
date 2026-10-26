@@ -1,7 +1,6 @@
-// All shared server config (MAIL_URL, GOOGLE_OAUTH_CLIENT_ID/SECRET,
-// MONGO_URL, ...) is read directly from process.env, set as App Platform
-// component env vars - pm2-runtime inherits the container's environment, so
-// it doesn't need to be declared here.
+// All shared server config (MAIL_URL, MONGO_URL, S3_*, ...) is read directly
+// from process.env, set as App Platform component env vars - pm2-runtime
+// inherits the container's environment, so it doesn't need to be declared here.
 //
 // JOBS_ENABLED / WEB_SERVER_ENABLED / PORT are role flags that MUST differ
 // between the two apps below, so they're set explicitly here rather than

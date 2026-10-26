@@ -11,6 +11,7 @@ export interface SecurityServerChannelConnectionDocument {
 
 export interface SecurityServerChannelDocument {
   _id: string;
+  externalId?: string;
   name: string;
   enabled: boolean;
   similarityThreshold?: number;

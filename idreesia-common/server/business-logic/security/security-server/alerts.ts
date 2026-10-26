@@ -27,8 +27,10 @@ const getAlertImageKey = (
 /**
  * Stores an alert pushed by the security server. Alerts never change once
  * raised, so re-pushing a known alert is a no-op - the snapshot is never
- * re-uploaded. Profiles and channels deleted in the ERP are still accepted,
- * since the server may not have pulled the deletion yet.
+ * re-uploaded. The payload's profile and channel ids are the security
+ * server's own, matched through `externalId`. Profiles and channels deleted in
+ * the ERP are still accepted, since the server may not have synced the
+ * deletion yet.
  */
 export async function upsertSecurityServerAlert(
   user: SyncUser,
@@ -39,8 +41,8 @@ export async function upsertSecurityServerAlert(
   if (existing) return existing._id;
 
   const [profile, channel] = await Promise.all([
-    SecurityServerProfiles.findOneAsync(profileId),
-    SecurityServerChannels.findOneAsync(channelId),
+    SecurityServerProfiles.findOneAsync({ externalId: profileId }),
+    SecurityServerChannels.findOneAsync({ externalId: channelId }),
   ]);
   if (!profile) {
     throw new SecurityServerSyncError(422, `Unknown profile '${profileId}'.`);
@@ -61,10 +63,10 @@ export async function upsertSecurityServerAlert(
   const date = new Date();
   return SecurityServerAlerts.insertAsync({
     externalId,
-    profileId,
+    profileId: profile._id,
     profileName: profile.name,
     profileIsTest: profile.isTest,
-    channelId,
+    channelId: channel._id,
     channelName: channel.name,
     timestamp,
     similarityScore,
@@ -86,49 +88,11 @@ export async function setSecurityServerAlertReview(
   if (!alert) throw new Error('Alert not found.');
 
   const date = new Date();
-  const audit = { reviewUpdatedAt: date, updatedAt: date, updatedBy: user._id };
+  const audit = { updatedAt: date, updatedBy: user._id };
   await SecurityServerAlerts.updateAsync(
     alertId,
     review
       ? { $set: { review, reviewedAt: date, ...audit } }
       : { $set: audit, $unset: { review: '', reviewedAt: '' } }
   );
-}
-
-export interface AlertReviewRecord {
-  alertId: string;
-  review: AlertReview | null;
-  reviewedAt: Date | null;
-  reviewUpdatedAt: Date;
-}
-
-const DEFAULT_REVIEWS_PAGE_SIZE = 500;
-const MAX_REVIEWS_PAGE_SIZE = 2000;
-
-/**
- * Review decisions made in the ERP, for the security server to pull. Sorted
- * by reviewUpdatedAt so the caller advances its cursor with the last record's
- * value and keeps paging until a short page says it has caught up.
- */
-export async function getSecurityServerAlertReviews(
-  since: Date | null,
-  limit: number | null
-): Promise<AlertReviewRecord[]> {
-  const pageSize = Math.min(
-    limit && limit > 0 ? limit : DEFAULT_REVIEWS_PAGE_SIZE,
-    MAX_REVIEWS_PAGE_SIZE
-  );
-  const alerts = await SecurityServerAlerts.find(
-    {
-      reviewUpdatedAt: since ? { $gt: since } : { $exists: true },
-    },
-    { sort: { reviewUpdatedAt: 1 }, limit: pageSize }
-  ).fetchAsync();
-
-  return alerts.map(alert => ({
-    alertId: alert.externalId,
-    review: alert.review ?? null,
-    reviewedAt: alert.reviewedAt ?? null,
-    reviewUpdatedAt: alert.reviewUpdatedAt!,
-  }));
 }

@@ -1325,7 +1325,6 @@ export type SecurityServerAlertTypeResolvers<ContextType = any, ParentType exten
   profileIsTest?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   profileName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   review?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  reviewUpdatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   reviewedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   similarityScore?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   timestamp?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;

@@ -44,12 +44,6 @@ export default new SimpleSchema({
     type: Date,
     optional: true,
   },
-  // Bumped on every review change, including clearing one - the cursor the
-  // security server pages review decisions by.
-  reviewUpdatedAt: {
-    type: Date,
-    optional: true,
-  },
 })
   .extend(identifiable)
   .extend(timestamps);

@@ -14,7 +14,6 @@ export default gql`
     imageUrl: String
     review: String
     reviewedAt: String
-    reviewUpdatedAt: String
 
     createdAt: String
     createdBy: String

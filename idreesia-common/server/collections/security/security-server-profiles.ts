@@ -3,6 +3,7 @@ import { SecurityServerProfile as SecurityServerProfileSchema } from 'meteor/idr
 
 export interface SecurityServerProfileImageDocument {
   _id: string;
+  externalId?: string;
   imageKey: string;
   uploadedAt: Date;
   uploadedBy: string;
@@ -10,6 +11,7 @@ export interface SecurityServerProfileImageDocument {
 
 export interface SecurityServerProfileDocument {
   _id: string;
+  externalId?: string;
   name: string;
   isTest: boolean;
   images: SecurityServerProfileImageDocument[];

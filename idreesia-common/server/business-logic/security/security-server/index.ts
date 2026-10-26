@@ -13,12 +13,18 @@ export {
 export {
   upsertSecurityServerAlert,
   setSecurityServerAlertReview,
-  getSecurityServerAlertReviews,
 } from './alerts';
 export {
-  getSecurityServerConfig,
-  getSecurityServerConfigVersion,
-} from './config';
+  getSecurityServerChanges,
+  getSecurityServerProfileImage,
+  upsertSecurityServerChannelFromSync,
+  upsertSecurityServerProfileFromSync,
+} from './sync';
+export type {
+  ChannelSyncPush,
+  ProfileSyncImage,
+  ProfileSyncPush,
+} from './sync';
 export { SecurityServerSyncError } from './errors';
 export { SUPPORTED_IMAGE_MIME_TYPES } from './image-files';
 export type {

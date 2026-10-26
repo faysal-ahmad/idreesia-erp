@@ -3,9 +3,14 @@ import SimpleSchema from 'simpl-schema';
 import { identifiable, timestamps } from '../common';
 
 export const SecurityServerProfileImage = new SimpleSchema({
-  // Also the image id the security server sees.
   _id: {
     type: String,
+  },
+  // The security server's id for this image. Unset until the security server
+  // has received it.
+  externalId: {
+    type: String,
+    optional: true,
   },
   // Object storage key, under StorageFolders.SecurityServerProfileImages.
   imageKey: {
@@ -19,9 +24,15 @@ export const SecurityServerProfileImage = new SimpleSchema({
   },
 });
 
-// A person on the security server's watch list. Managed in the ERP and pulled
-// down by the security server.
+// A person on the security server's watch list. Editable in both the ERP and
+// the security server, and kept in step by the security server's two-way sync.
 export default new SimpleSchema({
+  // The security server's id for this profile. Unset until the security
+  // server has received it.
+  externalId: {
+    type: String,
+    optional: true,
+  },
   name: {
     type: String,
   },

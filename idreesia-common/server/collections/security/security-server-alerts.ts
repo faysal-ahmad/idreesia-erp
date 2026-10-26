@@ -14,7 +14,6 @@ export interface SecurityServerAlertDocument {
   imageKey: string;
   review?: 'CORRECT' | 'FALSE_POSITIVE';
   reviewedAt?: Date;
-  reviewUpdatedAt?: Date;
   createdAt?: Date;
   createdBy?: string;
   updatedAt?: Date;

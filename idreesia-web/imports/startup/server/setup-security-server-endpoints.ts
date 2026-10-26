@@ -5,12 +5,17 @@ import type { NextFunction, Request, Response } from 'express';
 import { Permissions } from 'meteor/idreesia-common/constants';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import {
-  getSecurityServerAlertReviews,
-  getSecurityServerConfig,
-  getSecurityServerConfigVersion,
+  getSecurityServerChanges,
+  getSecurityServerProfileImage,
   upsertSecurityServerAlert,
+  upsertSecurityServerChannelFromSync,
+  upsertSecurityServerProfileFromSync,
   SecurityServerSyncError,
   SUPPORTED_IMAGE_MIME_TYPES,
+  type ChannelSyncPush,
+  type ChannelValues,
+  type ProfileSyncImage,
+  type ProfileSyncPush,
   type SyncImage,
   type SyncUser,
 } from 'meteor/idreesia-common/server/business-logic/security/security-server';
@@ -19,8 +24,10 @@ import { getUser } from './get-user';
 
 /**
  * REST endpoints the security (face-recognition monitoring) server syncs
- * through. Channels and profiles are managed in the ERP and pulled down by the
- * server; alerts are raised by the server and pushed up. The server logs in
+ * through. Channels and profiles can be edited on either side: the server
+ * pulls what changed here (/changes) and pushes what changed there
+ * (/channels and /profiles by its own ids). Alerts are raised by the server
+ * and pushed up. The server logs in
  * through POST /login as a service account holding
  * SECURITY_SYNC_SECURITY_SERVER_DATA, and sends the token it gets back in the
  * Authorization header.
@@ -30,6 +37,8 @@ import { getUser } from './get-user';
 
 // An alert push carries one base64 camera frame.
 const BODY_SIZE_LIMIT = '10mb';
+// A profile push carries the photos the ERP doesn't have yet.
+const PROFILE_BODY_SIZE_LIMIT = '50mb';
 
 type AuthenticatedRequest = Request & { syncUser: SyncUser };
 type Handler = (req: AuthenticatedRequest, res: Response) => Promise<void>;
@@ -58,6 +67,23 @@ const requireString = (body: Body, field: string): string => {
   return value;
 };
 
+const optionalString = (body: Body, field: string): string | null => {
+  const value = body[field];
+  if (value == null || value === '') return null;
+  if (typeof value !== 'string') {
+    throw new ValidationError(`'${field}' must be a string.`);
+  }
+  return value;
+};
+
+const requireBoolean = (body: Body, field: string): boolean => {
+  const value = body[field];
+  if (typeof value !== 'boolean') {
+    throw new ValidationError(`'${field}' must be a boolean.`);
+  }
+  return value;
+};
+
 const requireNumber = (body: Body, field: string): number => {
   const value = body[field];
   if (typeof value !== 'number' || !Number.isFinite(value)) {
@@ -78,10 +104,8 @@ const parseDate = (value: unknown, field: string): Date => {
 };
 
 // Images arrive as { mimeType, data } with base64 data.
-const optionalImage = (body: Body, field: string): SyncImage | null => {
-  const value = body[field];
-  if (value == null) return null;
-  if (typeof value !== 'object' || Array.isArray(value)) {
+const parseImage = (value: unknown, field: string): SyncImage => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new ValidationError(`'${field}' must be an object.`);
   }
 
@@ -105,11 +129,101 @@ const optionalImage = (body: Body, field: string): SyncImage | null => {
   return { mimeType, data: buffer };
 };
 
-const getQueryString = (req: Request, name: string): string | null => {
-  const value = req.query[name];
-  if (value == null || value === '') return null;
-  if (typeof value !== 'string') {
-    throw new ValidationError(`'${name}' must be given once.`);
+const optionalImage = (body: Body, field: string): SyncImage | null =>
+  body[field] == null ? null : parseImage(body[field], field);
+
+const requireObject = (body: Body, field: string): Body => {
+  const value = body[field];
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new ValidationError(`'${field}' must be an object.`);
+  }
+  return value as Body;
+};
+
+const parseChannel = (body: Body): ChannelValues => {
+  const similarityThreshold = body.similarityThreshold;
+  if (
+    similarityThreshold != null &&
+    (typeof similarityThreshold !== 'number' ||
+      similarityThreshold < 0 ||
+      similarityThreshold > 1)
+  ) {
+    throw new ValidationError(
+      "'similarityThreshold' must be a number between 0 and 1, or null."
+    );
+  }
+  const connection = requireObject(body, 'connection');
+  const { port } = connection;
+  if (port != null && (!Number.isInteger(port) || (port as number) < 1)) {
+    throw new ValidationError("'connection.port' must be a positive integer.");
+  }
+  return {
+    name: requireString(body, 'name'),
+    enabled: requireBoolean(body, 'enabled'),
+    similarityThreshold: similarityThreshold as number | null,
+    recognitionFps: requireNumber(body, 'recognitionFps'),
+    connection: {
+      host: requireString(connection, 'host'),
+      port: port as number | null,
+      path: optionalString(connection, 'path'),
+      username: optionalString(connection, 'username'),
+      password: optionalString(connection, 'password'),
+    },
+  };
+};
+
+const optionalErpId = (body: Body): string | null => {
+  const value = body.erpId;
+  if (value == null) return null;
+  if (typeof value !== 'string' || value === '') {
+    throw new ValidationError("'erpId' must be a non-empty string or null.");
+  }
+  return value;
+};
+
+const parseChannelPush = (body: Body): ChannelSyncPush => {
+  const erpId = optionalErpId(body);
+  return body.deleted === true
+    ? { erpId, deleted: true }
+    : { erpId, deleted: false, ...parseChannel(body) };
+};
+
+const parseProfileImages = (body: Body): ProfileSyncImage[] => {
+  const { images } = body;
+  if (!Array.isArray(images)) {
+    throw new ValidationError("'images' must be an array.");
+  }
+  return images.map((value, index) => {
+    const field = `images[${index}]`;
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      throw new ValidationError(`${field} must be an object.`);
+    }
+    const image = value as Body;
+    return {
+      localId: requireString(image, 'localId'),
+      erpId: optionalErpId(image),
+      data: image.data == null ? null : parseImage(image, field).data,
+    };
+  });
+};
+
+const parseProfilePush = (body: Body): ProfileSyncPush => {
+  const erpId = optionalErpId(body);
+  return body.deleted === true
+    ? { erpId, deleted: true }
+    : {
+        erpId,
+        deleted: false,
+        name: requireString(body, 'name'),
+        isTest: requireBoolean(body, 'isTest'),
+        images: parseProfileImages(body),
+      };
+};
+
+const getRouteParam = (req: Request, name: string): string => {
+  const value = req.params[name];
+  if (typeof value !== 'string' || value === '') {
+    throw new ValidationError(`Missing '${name}' in the request path.`);
   }
   return value;
 };
@@ -186,25 +300,76 @@ const handle = (handler: Handler) =>
 export function createSecurityServerRouter() {
   const router = express.Router();
   router.use(authenticate);
+
+  /**
+   * A profile pushed by the server, by the server's own id, with its full
+   * photo set. Registered ahead of the general body parser, whose smaller
+   * limit would reject it.
+   */
+  router.put(
+    '/profiles/by-external-id/:localId',
+    bodyParser.json({ limit: PROFILE_BODY_SIZE_LIMIT }),
+    handleBodyParserError,
+    handle(async (req, res) => {
+      res
+        .status(200)
+        .json(
+          await upsertSecurityServerProfileFromSync(
+            req.syncUser,
+            getRouteParam(req, 'localId'),
+            parseProfilePush(getBody(req))
+          )
+        );
+    })
+  );
+
   router.use(bodyParser.json({ limit: BODY_SIZE_LIMIT }));
   router.use(handleBodyParserError);
 
   /**
-   * Full snapshot of active channels and profiles. Cheap to poll: answers 304
-   * when the caller's If-None-Match still matches the current version.
+   * Channels and profiles created, updated or deleted since `since`, or every
+   * active one without it. Includes channel passwords.
    */
   router.get(
-    '/config',
+    '/changes',
     handle(async (req, res) => {
-      const etag = `"${await getSecurityServerConfigVersion()}"`;
-      // The snapshot carries RTSP passwords and presigned image URLs.
-      res.setHeader('Cache-Control', 'no-store');
-      res.setHeader('ETag', etag);
-      if (req.headers['if-none-match'] === etag) {
-        res.status(304).end();
-        return;
+      const since = req.query.since;
+      if (since != null && typeof since !== 'string') {
+        throw new ValidationError("'since' must be given once.");
       }
-      res.status(200).json(await getSecurityServerConfig());
+      res.setHeader('Cache-Control', 'no-store');
+      res
+        .status(200)
+        .json(
+          await getSecurityServerChanges(
+            since ? parseDate(since, 'since') : null
+          )
+        );
+    })
+  );
+
+  router.put(
+    '/channels/by-external-id/:localId',
+    handle(async (req, res) => {
+      const _id = await upsertSecurityServerChannelFromSync(
+        req.syncUser,
+        getRouteParam(req, 'localId'),
+        parseChannelPush(getBody(req))
+      );
+      res.status(200).json({ _id });
+    })
+  );
+
+  router.get(
+    '/profiles/:profileId/images/:imageId',
+    handle(async (req, res) => {
+      const image = await getSecurityServerProfileImage(
+        getRouteParam(req, 'profileId'),
+        getRouteParam(req, 'imageId')
+      );
+      // An image never changes under the same id.
+      res.setHeader('Cache-Control', 'private, max-age=31536000, immutable');
+      res.status(200).type('image/jpeg').send(image);
     })
   );
 
@@ -224,27 +389,6 @@ export function createSecurityServerRouter() {
         }
       );
       res.status(200).json({ _id });
-    })
-  );
-
-  router.get(
-    '/alert-reviews',
-    handle(async (req, res) => {
-      const since = getQueryString(req, 'since');
-      const limit = getQueryString(req, 'limit');
-      const nLimit = limit == null ? null : Number.parseInt(limit, 10);
-      if (nLimit != null && (Number.isNaN(nLimit) || nLimit < 1)) {
-        throw new ValidationError("'limit' must be a positive integer.");
-      }
-
-      res
-        .status(200)
-        .json(
-          await getSecurityServerAlertReviews(
-            since == null ? null : parseDate(since, 'since'),
-            nLimit
-          )
-        );
     })
   );
 

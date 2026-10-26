@@ -2745,7 +2745,6 @@ export type SecurityServerAlertType = {
   profileIsTest?: Maybe<Scalars['Boolean']['output']>;
   profileName?: Maybe<Scalars['String']['output']>;
   review?: Maybe<Scalars['String']['output']>;
-  reviewUpdatedAt?: Maybe<Scalars['String']['output']>;
   reviewedAt?: Maybe<Scalars['String']['output']>;
   similarityScore?: Maybe<Scalars['Float']['output']>;
   timestamp?: Maybe<Scalars['String']['output']>;

@@ -32,6 +32,7 @@ export interface ProfileValues {
 }
 
 export interface AlertPayload {
+  // The security server's own ids (the ERP records' externalId).
   profileId: string;
   channelId: string;
   timestamp: Date;

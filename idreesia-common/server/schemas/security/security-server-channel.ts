@@ -27,9 +27,15 @@ export const SecurityServerChannelConnection = new SimpleSchema({
   },
 });
 
-// A camera feed the security server watches. Managed in the ERP and pulled
-// down by the security server.
+// A camera feed the security server watches. Editable in both the ERP and the
+// security server, and kept in step by the security server's two-way sync.
 export default new SimpleSchema({
+  // The security server's id for this channel. Unset until the security server
+  // has received it.
+  externalId: {
+    type: String,
+    optional: true,
+  },
   name: {
     type: String,
   },

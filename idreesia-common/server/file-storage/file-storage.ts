@@ -52,6 +52,20 @@ export async function deleteFiles(keys: string[]): Promise<void> {
   }
 }
 
+/** Reads a whole object, for serving it through an authenticated API. */
+export async function getFile(
+  key: string
+): Promise<{ body: Buffer; contentType: string | undefined }> {
+  const response = await getInternalClient().send(
+    new GetObjectCommand({
+      Bucket: getFileStorageConfig().bucket,
+      Key: key,
+    })
+  );
+  const bytes = await response.Body!.transformToByteArray();
+  return { body: Buffer.from(bytes), contentType: response.ContentType };
+}
+
 /**
  * Returns a short-lived presigned GET URL for the browser. Signing happens
  * locally, so this makes no network call.

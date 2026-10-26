@@ -14,6 +14,7 @@ import {
   StorageFolders,
 } from 'meteor/idreesia-common/server/file-storage';
 
+import { ProfileImageRejectedError } from './profile-image-rejected-error';
 import type { ProfileValues, SyncImage, SyncUser } from './types';
 
 // Profile images are normalised before storage: upright (EXIF orientation
@@ -109,9 +110,9 @@ export async function deleteSecurityServerProfile(
 }
 
 /**
- * Adds an enrollment photo to a profile. The photo is rejected unless it
- * passes the same face quality gate the security server applies when it
- * computes its embedding, so the server never pulls an image it can't use.
+ * Adds an enrollment photo uploaded in the ERP. The photo is rejected unless
+ * it passes the same face quality gate the security server applies to its own
+ * uploads, so the security server never receives an image it can't use.
  */
 export async function addSecurityServerProfileImage(
   user: SyncUser,
@@ -131,27 +132,44 @@ export async function addSecurityServerProfileImage(
       .jpeg({ quality: JPEG_QUALITY })
       .toBuffer();
   } catch {
-    throw new Error(REJECTION_MESSAGES[ImageVectorStatus.ERROR]);
+    throw new ProfileImageRejectedError(
+      REJECTION_MESSAGES[ImageVectorStatus.ERROR]
+    );
   }
 
   // Checked on the normalised image - exactly what the security server will
   // download. The vector itself is discarded; the server computes its own.
   const { status } = computeVectorFromImageBuffer(normalized);
   if (status !== ImageVectorStatus.COMPUTED) {
-    throw new Error(
+    throw new ProfileImageRejectedError(
       REJECTION_MESSAGES[status] ?? REJECTION_MESSAGES[ImageVectorStatus.ERROR]
     );
   }
 
+  return storeSecurityServerProfileImage(user, profileId, normalized);
+}
+
+/**
+ * Stores a JPEG as one of the profile's photos, with no quality check. Used
+ * directly for photos the security server syncs up, which it already checked
+ * when they were uploaded there.
+ */
+export async function storeSecurityServerProfileImage(
+  user: SyncUser,
+  profileId: string,
+  jpeg: Buffer,
+  externalId?: string
+): Promise<string> {
   const imageId = Random.id();
   const imageKey = `${StorageFolders.SecurityServerProfileImages}/${profileId}/${imageId}.jpg`;
-  await putFile(imageKey, normalized, 'image/jpeg');
+  await putFile(imageKey, jpeg, 'image/jpeg');
 
   const date = new Date();
   await SecurityServerProfiles.updateAsync(profileId, {
     $push: {
       images: {
         _id: imageId,
+        ...(externalId ? { externalId } : {}),
         imageKey,
         uploadedAt: date,
         uploadedBy: user._id,

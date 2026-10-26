@@ -21,7 +21,6 @@ import {
   getPhoneNumberFilterField,
   getBloodGroupFilterField,
   getLastTarteebFilterField,
-  getAttendanceFilterField,
   getMehfilDutyFilterField,
   getCityMehfilFilterField,
   getEhadKarkunFilterField,
@@ -41,7 +40,6 @@ export interface PageParams {
   phoneNumber?: string | null;
   bloodGroup?: string | null;
   lastTarteeb?: string | null;
-  attendance?: string | null;
   jobId?: string | null;
   dutyId?: string | null;
   dutyShiftId?: string | null;
@@ -59,7 +57,6 @@ interface FilterFormValues {
   phoneNumber?: string;
   bloodGroup?: string;
   lastTarteeb?: string;
-  attendance?: string;
   jobId?: string;
   dutyId?: string;
   dutyShiftId?: string;
@@ -82,7 +79,6 @@ export interface Props {
   phoneNumber?: string | null;
   bloodGroup?: string | null;
   lastTarteeb?: string | null;
-  attendance?: string | null;
   dutyId?: string | null;
   userAccount?: string | null;
   ehadKarkun?: string | null;
@@ -95,7 +91,6 @@ export interface Props {
   showPhoneNumberFilter?: boolean;
   showBloodGroupFilter?: boolean;
   showLastTarteebFilter?: boolean;
-  showAttendanceFilter?: boolean;
   showMehfilDutyFilter?: boolean;
   showUserAccountFilter?: boolean;
   showEhadKarkunFilter?: boolean;
@@ -110,7 +105,6 @@ type FilterChipKey =
   | 'phoneNumber'
   | 'bloodGroup'
   | 'lastTarteeb'
-  | 'attendance'
   | 'duty'
   | 'userAccount'
   | 'ehadKarkun'
@@ -168,20 +162,6 @@ const formatLastTarteeb = (value?: string | null) => {
   }
 };
 
-const formatAttendance = (value?: string | null) => {
-  if (!value) return '';
-  try {
-    const { criteria, percentage } = JSON.parse(value) as {
-      criteria?: string;
-      percentage?: number | null;
-    };
-    if (percentage == null) return '';
-    return `${criteria === 'more-than' ? 'More Than' : 'Less Than'} ${percentage}%`;
-  } catch {
-    return '';
-  }
-};
-
 const formatUpdatedBetween = (value?: string | null) => {
   if (!value) return '';
   try {
@@ -200,7 +180,6 @@ type ChipInputs = Pick<
   | 'phoneNumber'
   | 'bloodGroup'
   | 'lastTarteeb'
-  | 'attendance'
   | 'dutyId'
   | 'userAccount'
   | 'ehadKarkun'
@@ -219,7 +198,6 @@ export const getKarkunsFilterChips = ({
   phoneNumber,
   bloodGroup,
   lastTarteeb,
-  attendance,
   dutyId,
   userAccount,
   ehadKarkun,
@@ -252,10 +230,6 @@ export const getKarkunsFilterChips = ({
   const lastTarteebLabel = formatLastTarteeb(lastTarteeb);
   if (lastTarteebLabel) {
     chips.push({ key: 'lastTarteeb', label: 'Last Tarteeb', value: lastTarteebLabel });
-  }
-  const attendanceLabel = formatAttendance(attendance);
-  if (attendanceLabel) {
-    chips.push({ key: 'attendance', label: 'Attendance', value: attendanceLabel });
   }
   if (hasFilterValue(dutyId)) {
     const dutyName =
@@ -308,7 +282,6 @@ export const KarkunsFilterChips = (props: Props) => {
     phoneNumber,
     bloodGroup,
     lastTarteeb,
-    attendance,
     dutyId,
     userAccount,
     ehadKarkun,
@@ -329,7 +302,6 @@ export const KarkunsFilterChips = (props: Props) => {
         phoneNumber,
         bloodGroup,
         lastTarteeb,
-        attendance,
         dutyId,
         userAccount,
         ehadKarkun,
@@ -347,7 +319,6 @@ export const KarkunsFilterChips = (props: Props) => {
       phoneNumber,
       bloodGroup,
       lastTarteeb,
-      attendance,
       dutyId,
       userAccount,
       ehadKarkun,
@@ -390,7 +361,6 @@ export const KarkunsFilterChips = (props: Props) => {
       phoneNumber: null,
       bloodGroup: null,
       lastTarteeb: null,
-      attendance: null,
       jobId: null,
       dutyId: null,
       dutyShiftId: null,
@@ -441,7 +411,6 @@ const ListFilter = ({
   phoneNumber,
   bloodGroup,
   lastTarteeb,
-  attendance,
   dutyId,
   userAccount,
   ehadKarkun,
@@ -455,7 +424,6 @@ const ListFilter = ({
   showPhoneNumberFilter = true,
   showBloodGroupFilter = true,
   showLastTarteebFilter = true,
-  showAttendanceFilter = false,
   showMehfilDutyFilter = false,
   showUserAccountFilter = false,
   showEhadKarkunFilter = false,
@@ -477,7 +445,6 @@ const ListFilter = ({
     phoneNumber,
     bloodGroup,
     lastTarteeb,
-    attendance,
     dutyId,
     userAccount,
     ehadKarkun,
@@ -506,7 +473,6 @@ const ListFilter = ({
       phoneNumber: phoneNumber ?? undefined,
       bloodGroup: bloodGroup ?? undefined,
       lastTarteeb: lastTarteeb ?? undefined,
-      attendance: attendance ?? undefined,
       dutyId: dutyId ?? undefined,
       userAccount: userAccount ?? undefined,
       ehadKarkun: ehadKarkun ?? undefined,
@@ -527,7 +493,6 @@ const ListFilter = ({
       phoneNumber: values.phoneNumber,
       bloodGroup: values.bloodGroup,
       lastTarteeb: values.lastTarteeb,
-      attendance: values.attendance,
       jobId: values.jobId,
       dutyId: values.dutyId,
       dutyShiftId: values.dutyShiftId,
@@ -568,7 +533,6 @@ const ListFilter = ({
         {showPhoneNumberFilter ? getPhoneNumberFilterField(phoneNumber) : null}
         {showBloodGroupFilter ? getBloodGroupFilterField(bloodGroup) : null}
         {showLastTarteebFilter ? getLastTarteebFilterField(lastTarteeb) : null}
-        {showAttendanceFilter ? getAttendanceFilterField(attendance) : null}
         {showUserAccountFilter ? getUserAccountFilterField(userAccount) : null}
         {showMehfilDutyFilter
           ? getMehfilDutyFilterField(dutyId, mehfilDuties)

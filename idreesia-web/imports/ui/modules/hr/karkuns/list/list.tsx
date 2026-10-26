@@ -26,14 +26,13 @@ import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import type { HrKarkunsPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
+import AddKarkunButton from './add-karkun-button';
 import ListFilter, {
   KarkunsFilterChips,
   type PageParams,
 } from './list-filter';
 
 import { PAGED_HR_KARKUNS, DELETE_HR_KARKUN } from '../gql';
-
-const RouterLink = Link as any;
 
 const TABLE_HEADER_ROW_HEIGHT = 55;
 const VIEWPORT_BOTTOM_GAP = 16;
@@ -44,8 +43,8 @@ type KarkunRow = NonNullable<
   >[number]
 >;
 
-type KarkunDuty = NonNullable<
-  NonNullable<NonNullable<KarkunRow['karkunData']>['duties']>[number]
+type KarkunTeam = NonNullable<
+  NonNullable<NonNullable<KarkunRow['karkunData']>['teams']>[number]
 >;
 
 interface Props {
@@ -71,6 +70,7 @@ interface Props {
   showActionsColumn?: boolean;
   predefinedFilterName?: string;
   predefinedFilterStoreId?: string;
+  mode?: 'karkuns' | 'candidates';
 }
 
 const List = ({
@@ -96,6 +96,7 @@ const List = ({
   showActionsColumn,
   predefinedFilterName,
   predefinedFilterStoreId,
+  mode = 'karkuns',
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(360);
@@ -111,11 +112,11 @@ const List = ({
         cnicNumber,
         phoneNumber,
         bloodGroup,
-        dutyId,
-        dutyShiftId,
-        isKarkun: true,
-        isEmployee: true,
-        isVisitor: true,
+        dutyId: mode === 'candidates' ? undefined : dutyId,
+        dutyShiftId: mode === 'candidates' ? undefined : dutyShiftId,
+        isKarkun: mode !== 'candidates',
+        isEmployee: mode === 'candidates' ? undefined : true,
+        isVisitor: mode === 'candidates' ? undefined : true,
         predefinedFilterName,
         predefinedFilterStoreId,
         pageIndex: pageIndex.toString(),
@@ -242,28 +243,27 @@ const List = ({
 
   const dutiesColumn = {
     title: 'Duties',
-    dataIndex: ['karkunData', 'duties'],
+    dataIndex: ['karkunData', 'teams'],
     key: 'duties',
-    render: (duties: KarkunDuty[] | null | undefined, record: KarkunRow) => {
+    render: (duties: KarkunTeam[] | null | undefined, record: KarkunRow) => {
       const normalizedDuties = (duties ?? []).filter(
-        (duty): duty is KarkunDuty => duty != null
+        (duty): duty is KarkunTeam => duty != null
       );
       if (normalizedDuties.length === 0 || !record._id) return null;
 
-      const dutyTabLink = `${paths.karkunsEditFormPath(record._id)}?default-active-tab=duties`;
       const dutyNames = normalizedDuties.map((duty, index) => {
-        let dutyName = duty.dutyName ?? '';
-        if (duty.shiftName) {
-          dutyName = `${dutyName} - ${duty.shiftName}`;
-        }
-        if (duty.role === 'CO') {
+        let dutyName = [duty.duty?.name, duty.name].filter(Boolean).join(' - ');
+        const isCoordinator = duty.members?.some(
+          member => member?.karkunId === record._id && member.isCoordinator
+        );
+        if (isCoordinator) {
           dutyName = `(CO) - ${dutyName}`;
         }
 
         return (
-          <RouterLink key={index} to={dutyTabLink}>
+          <Link key={index} to={paths.teamsPath}>
             {dutyName}
-          </RouterLink>
+          </Link>
         );
       });
 
@@ -418,6 +418,7 @@ const List = ({
       bloodGroup,
       dutyId,
       dutyShiftId,
+      showDutyFilter: mode !== 'candidates',
       setPageParams,
       refreshData: refetchListQuery,
     };
@@ -434,6 +435,7 @@ const List = ({
               New Karkun
             </Button>
           ) : null}
+          {showNewButton ? <AddKarkunButton /> : null}
         </Space>
         <div className="list-table-header-utilities">
           <Space size={8}>

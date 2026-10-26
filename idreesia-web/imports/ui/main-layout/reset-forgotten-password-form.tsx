@@ -18,8 +18,6 @@ const FormWrapperStyle: CSSProperties = {
   marginLeft: '-150px',
 };
 
-const RouterLink = Link as any;
-
 interface FormValues {
   newPassword: string;
   confirmedNewPassword: string;
@@ -81,7 +79,7 @@ export const ResetForgottenPasswordForm = () => {
         </Flex>
         <Divider style={{ marginTop: 0 }} />
         <Flex justify="flex-end">
-          <RouterLink to="/">Back to Login</RouterLink>
+          <Link to="/">Back to Login</Link>
         </Flex>
       </Card>
     </div>

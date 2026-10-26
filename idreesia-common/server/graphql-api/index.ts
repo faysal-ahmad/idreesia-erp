@@ -86,6 +86,15 @@ import SecurityVisitorStayResolvers from './security/visitor-stay/resolvers';
 import FaceVectorSchema from './security/face-vector/face-vector';
 import FaceVectorResolvers from './security/face-vector/resolvers';
 
+import SecurityServerChannelSchema from './security/security-server-channel/security-server-channel';
+import SecurityServerChannelResolvers from './security/security-server-channel/resolvers';
+
+import SecurityServerProfileSchema from './security/security-server-profile/security-server-profile';
+import SecurityServerProfileResolvers from './security/security-server-profile/resolvers';
+
+import SecurityServerAlertSchema from './security/security-server-alert/security-server-alert';
+import SecurityServerAlertResolvers from './security/security-server-alert/resolvers';
+
 /**
  * Schema and Resolvers for the HR module
  */
@@ -104,6 +113,9 @@ import DutyLocationResolvers from './hr/duty-location/resolvers';
 import TeamSchema from './hr/team/team';
 import TeamResolvers from './hr/team/resolvers';
 
+import DutyPlanSchema from './hr/duty-plan/duty-plan';
+import DutyPlanResolvers from './hr/duty-plan/resolvers';
+
 import CommitteeSchema from './hr/committee/committee';
 import CommitteeResolvers from './hr/committee/resolvers';
 
@@ -112,12 +124,6 @@ import JobResolvers from './hr/job/resolvers';
 
 import HRKarkunSchema from './hr/karkun/karkun';
 import HRKarkunResolvers from './hr/karkun/resolvers';
-
-import KarkunDutySchema from './hr/karkun-duties/karkun-duty';
-import KarkunDutyResolvers from './hr/karkun-duties/resolvers';
-
-import AttendanceSchema from './hr/attendance/attendance';
-import AttendanceResolvers from './hr/attendance/resolvers';
 
 import SalarySchema from './hr/salary/salary';
 import SalaryResolvers from './hr/salary/resolvers';
@@ -191,17 +197,19 @@ const typeDefs = [
   SecurityVisitorSchema,
   SecurityVisitorStaySchema,
   FaceVectorSchema,
+  SecurityServerChannelSchema,
+  SecurityServerProfileSchema,
+  SecurityServerAlertSchema,
 
   HRAuditLogSchema,
   DutyShiftSchema,
   DutySchema,
   DutyLocationSchema,
   TeamSchema,
+  DutyPlanSchema,
   CommitteeSchema,
   JobSchema,
   HRKarkunSchema,
-  KarkunDutySchema,
-  AttendanceSchema,
   SalarySchema,
 
   CitySchema,
@@ -244,17 +252,19 @@ const resolvers = merge(
   SecurityVisitorResolvers,
   SecurityVisitorStayResolvers,
   FaceVectorResolvers,
+  SecurityServerChannelResolvers,
+  SecurityServerProfileResolvers,
+  SecurityServerAlertResolvers,
 
   HRAuditLogResolvers,
   DutyShiftResolvers,
   DutyResolvers,
   DutyLocationResolvers,
   TeamResolvers,
+  DutyPlanResolvers,
   CommitteeResolvers,
   JobResolvers,
   HRKarkunResolvers,
-  KarkunDutyResolvers,
-  AttendanceResolvers,
   SalaryResolvers,
 
   CityResolvers,

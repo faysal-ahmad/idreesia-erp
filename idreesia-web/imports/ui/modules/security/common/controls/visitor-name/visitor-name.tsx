@@ -6,8 +6,6 @@ import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from 'antd';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
-const RouterLink = Link as any;
-
 const ContainerDivStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'row nowrap',
@@ -50,9 +48,9 @@ const VisitorName = ({ visitor, additionalInfo, onVisitorNameClicked }: VisitorN
       {visitor.name}
     </div>
   ) : (
-    <RouterLink to={`${paths.visitorRegistrationPath}/${visitor._id}`}>
+    <Link to={`${paths.visitorRegistrationPath}/${visitor._id}`}>
       {visitor.name}
-    </RouterLink>
+    </Link>
   );
 
   const additionalInfoNode = additionalInfo ? (

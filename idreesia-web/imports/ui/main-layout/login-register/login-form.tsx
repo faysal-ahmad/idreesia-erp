@@ -56,7 +56,19 @@ export const LoginForm = ({ history, location, setShowForm }: Props) => {
   };
 
   return (
-    <Card title="Login to Idreesia" style={{ minWidth: 400 }}>
+    <Card
+      title={
+        <Flex align="center" gap={16}>
+          <img
+            src="/images/eb-logo-emblem.png"
+            alt="Eastern Breeze"
+            style={{ height: 100 }}
+          />
+          <span>Login to Eastern Breeze ERP</span>
+        </Flex>
+      }
+      style={{ minWidth: 400 }}
+    >
       <Flex justify="center">
         <Form onFinish={handleFinish}>
           <Form.Item

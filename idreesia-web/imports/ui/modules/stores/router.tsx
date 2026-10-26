@@ -36,86 +36,83 @@ import {
   StockAdjustmentsList,
 } from './stock-adjustments';
 
-const RouterSwitch = Switch as any;
-const RouterRoute = Route as any;
-
 const Router = () => (
-  <RouterSwitch>
-    <RouterRoute path={paths.issuanceReportPath()} component={IssuanceReport} />
-    <RouterRoute path={paths.purchasingReportPath()} component={PurchasingReport} />
+  <Switch>
+    <Route path={paths.issuanceReportPath()} component={IssuanceReport} />
+    <Route path={paths.purchasingReportPath()} component={PurchasingReport} />
 
-    <RouterRoute
+    <Route
       path={paths.itemCategoriesEditFormPath()}
       component={ItemCategoriesEditForm}
     />
-    <RouterRoute path={paths.itemCategoriesPath()} component={ItemCategoriesList} />
+    <Route path={paths.itemCategoriesPath()} component={ItemCategoriesList} />
 
-    <RouterRoute path={paths.vendorsEditFormPath()} component={VendorsEditForm} />
-    <RouterRoute path={paths.vendorsPath()} component={VendorsList} />
+    <Route path={paths.vendorsEditFormPath()} component={VendorsEditForm} />
+    <Route path={paths.vendorsPath()} component={VendorsList} />
 
-    <RouterRoute path={paths.locationsEditFormPath()} component={LocationsEditForm} />
-    <RouterRoute path={paths.locationsPath()} component={LocationsList} />
+    <Route path={paths.locationsEditFormPath()} component={LocationsEditForm} />
+    <Route path={paths.locationsPath()} component={LocationsList} />
 
-    <RouterRoute path={paths.stockItemsNewFormPath()} component={StockItemsNewForm} />
-    <RouterRoute
+    <Route path={paths.stockItemsNewFormPath()} component={StockItemsNewForm} />
+    <Route
       path={paths.stockItemsEditFormPath()}
       component={StockItemsEditForm}
     />
-    <RouterRoute path={paths.stockItemsPath()} component={StockItemsList} />
+    <Route path={paths.stockItemsPath()} component={StockItemsList} />
 
-    <RouterRoute
+    <Route
       path={paths.issuanceFormsNewFormPath()}
       component={IssuanceFormsNewForm}
     />
-    <RouterRoute
+    <Route
       path={paths.issuanceFormsEditFormPath()}
       component={IssuanceFormsEditForm}
     />
-    <RouterRoute
+    <Route
       path={paths.issuanceFormsViewFormPath()}
       component={IssuanceFormsViewForm}
     />
-    <RouterRoute
+    <Route
       path={paths.issuanceFormsPrintFormPath()}
       component={IssuanceFormsPrintForm}
     />
-    <RouterRoute path={paths.issuanceFormsPath()} component={IssuanceFormsList} />
+    <Route path={paths.issuanceFormsPath()} component={IssuanceFormsList} />
 
-    <RouterRoute
+    <Route
       path={paths.purchaseFormsNewFormPath()}
       component={PurchaseFormsNewForm}
     />
-    <RouterRoute
+    <Route
       path={paths.purchaseFormsEditFormPath()}
       component={PurchaseFormsEditForm}
     />
-    <RouterRoute
+    <Route
       path={paths.purchaseFormsViewFormPath()}
       component={PurchaseFormsViewForm}
     />
-    <RouterRoute
+    <Route
       path={paths.purchaseFormsPrintFormPath()}
       component={PurchaseFormsPrintForm}
     />
-    <RouterRoute path={paths.purchaseFormsPath()} component={PurchaseFormsList} />
+    <Route path={paths.purchaseFormsPath()} component={PurchaseFormsList} />
 
-    <RouterRoute
+    <Route
       path={paths.stockAdjustmentsNewFormPath()}
       component={StockAdjustmentsNewForm}
     />
-    <RouterRoute
+    <Route
       path={paths.stockAdjustmentsEditFormPath()}
       component={StockAdjustmentsEditForm}
     />
-    <RouterRoute
+    <Route
       path={paths.stockAdjustmentsViewFormPath()}
       component={StockAdjustmentsViewForm}
     />
-    <RouterRoute
+    <Route
       path={paths.stockAdjustmentsPath()}
       component={StockAdjustmentsList}
     />
-  </RouterSwitch>
+  </Switch>
 );
 
 export default Router;

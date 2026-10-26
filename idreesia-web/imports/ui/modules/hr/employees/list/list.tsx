@@ -33,8 +33,6 @@ import ListFilter, {
 
 import { PAGED_HR_KARKUNS, SET_HR_KARKUN_EMPLOYMENT_INFO } from '../gql';
 
-const RouterLink = Link as any;
-
 const TABLE_HEADER_ROW_HEIGHT = 55;
 const VIEWPORT_BOTTOM_GAP = 16;
 
@@ -249,11 +247,11 @@ const List = ({
       if (!job?.name || !record._id) return null;
 
       return (
-        <RouterLink
+        <Link
           to={`${paths.employeeEditFormPath(record._id)}?default-active-tab=employment`}
         >
           {job.name}
-        </RouterLink>
+        </Link>
       );
     },
   };

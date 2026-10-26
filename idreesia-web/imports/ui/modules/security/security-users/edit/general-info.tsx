@@ -51,7 +51,7 @@ const GeneralInfo = ({ history, userId }: GeneralInfoProps) => {
 
       <InputTextField
         fieldName="email"
-        fieldLabel="Google Email"
+        fieldLabel="Email"
         initialValue={userById.email ?? undefined}
       />
 

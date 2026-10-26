@@ -62,6 +62,19 @@ export default class SubModulePaths {
     return `${SubModulePaths.securityUsersPath}/${userId}`;
   }
 
+  // *************************************************************************************
+  // Security Server Routes
+  // *************************************************************************************
+  static securityServerPath = `${ModulePaths.security}/security-server`;
+  static securityServerChannelsPath = `${SubModulePaths.securityServerPath}/channels`;
+
+  static securityServerProfilesPath = `${SubModulePaths.securityServerPath}/profiles`;
+
+  static securityServerAlertsPath = `${SubModulePaths.securityServerPath}/alerts`;
+  static securityServerAlertViewPath(alertId = ':alertId') {
+    return `${SubModulePaths.securityServerAlertsPath}/${alertId}`;
+  }
+
   // ******************************************************************************
   // Audit Logs
   // ******************************************************************************

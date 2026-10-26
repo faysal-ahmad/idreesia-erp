@@ -32,8 +32,6 @@ import {
   SetInitialPasswordForm,
 } from './main-layout';
 
-const RouterSwitch = Switch as any;
-const RouterRoute = Route as any;
 interface Props { userId?: string | null; isOnline?: boolean; }
 
 const App = ({ userId }: Props) => {
@@ -44,18 +42,18 @@ const App = ({ userId }: Props) => {
 
   if (userId) {
     return (
-      <RouterSwitch>
-        <RouterRoute path="/" component={LoggedInRoute} />
-      </RouterSwitch>
+      <Switch>
+        <Route path="/" component={LoggedInRoute} />
+      </Switch>
     );
   }
 
   return (
-    <RouterSwitch>
-      <RouterRoute path="/set-initial-password/:token" component={SetInitialPasswordForm} />
-      <RouterRoute path="/reset-forgotten-password/:token" component={ResetForgottenPasswordForm} />
-      <RouterRoute path="/" component={LoginRegisterForm} />
-    </RouterSwitch>
+    <Switch>
+      <Route path="/set-initial-password/:token" component={SetInitialPasswordForm} />
+      <Route path="/reset-forgotten-password/:token" component={ResetForgottenPasswordForm} />
+      <Route path="/" component={LoginRegisterForm} />
+    </Switch>
   );
 };
 

@@ -1,8 +1,9 @@
 import {
+  Committees,
   Duties,
+  DutyLocations,
   DutyShifts,
-  KarkunDuties,
-  Attendances,
+  Teams,
 } from 'meteor/idreesia-common/server/collections/hr';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
@@ -10,24 +11,43 @@ interface ResolverMap {
   [key: string]: ResolverField;
 }
 
+// Returns the committee id to store, or null to clear it. Throws if the
+// committee doesn't exist.
+const resolveCommitteeId = async (committeeId: string | null | undefined) => {
+  if (!committeeId) return null;
+  const committee = await Committees.findOneAsync(committeeId);
+  if (!committee) throw new Error('Please select a valid committee.');
+  return committeeId;
+};
+
 const resolvers: ResolverMap = {
   DutyType: {
+    committee: async dutyType =>
+      dutyType.committeeId ? Committees.findOneAsync(dutyType.committeeId) : null,
     shifts: async dutyType =>
       DutyShifts.find({
         dutyId: { $eq: dutyType._id },
       }).fetchAsync(),
+    locations: async dutyType =>
+      DutyLocations.find(
+        { dutyId: { $eq: dutyType._id } },
+        { sort: { name: 1 } }
+      ).fetchAsync(),
     canDelete: async dutyType => {
-      // Check if this duty is currently assigned to a karkun
-      const karkunDutiesCount = await KarkunDuties.find({
+      const shiftCount = await DutyShifts.find({
         dutyId: { $eq: dutyType._id },
       }).countAsync();
-      if (karkunDutiesCount > 0) return false;
+      if (shiftCount > 0) return false;
 
-      // Check if we have marked attendance against this duty
-      const attendanceCount = await Attendances.find({
+      const locationCount = await DutyLocations.find({
         dutyId: { $eq: dutyType._id },
       }).countAsync();
-      if (attendanceCount > 0) return false;
+      if (locationCount > 0) return false;
+
+      const teamCount = await Teams.find({
+        dutyId: { $eq: dutyType._id },
+      }).countAsync();
+      if (teamCount > 0) return false;
 
       return true;
     },
@@ -45,22 +65,21 @@ const resolvers: ResolverMap = {
         { isMehfilDuty: { $eq: true } },
         { sort: { name: 1 } }
       ).fetchAsync(),
-
-    dutyById: async (obj, { id }) => Duties.findOneAsync(id),
   },
 
   Mutation: {
     createDuty: async (
       obj,
-      { name, isMehfilDuty, description, attendanceSheet },
+      { name, isMehfilDuty, description, committeeId },
       { user }
     ) => {
+      const validCommitteeId = await resolveCommitteeId(committeeId);
       const date = new Date();
       const dutyId = await Duties.insertAsync({
         name,
         isMehfilDuty,
         description,
-        attendanceSheet,
+        ...(validCommitteeId ? { committeeId: validCommitteeId } : {}),
         createdAt: date,
         createdBy: user._id,
         updatedAt: date,
@@ -72,19 +91,28 @@ const resolvers: ResolverMap = {
 
     updateDuty: async (
       obj,
-      { id, name, description, attendanceSheet },
+      { id, name, description, committeeId },
       { user }
     ) => {
       const date = new Date();
-      await Duties.updateAsync(id, {
+      const modifier: Record<string, Record<string, unknown>> = {
         $set: {
           name,
           description,
-          attendanceSheet,
           updatedAt: date,
           updatedBy: user._id,
         },
-      });
+      };
+      // Mehfil duty screens don't send committeeId; leave it untouched then.
+      if (committeeId !== undefined) {
+        const validCommitteeId = await resolveCommitteeId(committeeId);
+        if (validCommitteeId) {
+          modifier.$set.committeeId = validCommitteeId;
+        } else {
+          modifier.$unset = { committeeId: '' };
+        }
+      }
+      await Duties.updateAsync(id, modifier);
 
       return Duties.findOneAsync(id);
     },

@@ -10,12 +10,6 @@ export default class SubModulePaths {
   }
 
   static msDutiesPath = `${ModulePaths.hr}/ms-duties`;
-  static msDutiesEditFormPath(dutyId = ':dutyId') {
-    return `${SubModulePaths.msDutiesPath}/${dutyId}`;
-  }
-
-  static dutyLocationsPath = `${ModulePaths.hr}/duty-locations`;
-  static dutyLocationsEditFormPath = `${SubModulePaths.dutyLocationsPath}/:dutyLocationId`;
 
   static teamsPath = `${ModulePaths.hr}/teams`;
 
@@ -43,13 +37,18 @@ export default class SubModulePaths {
     `${SubModulePaths.karkunsPath}/${karkunId}`;
 
   // ******************************************************************************
-  // Attendance Sheets
+  // Duty Planning
   // ******************************************************************************
-  static attendanceSheetsPath = `${ModulePaths.hr}/attendance-sheets`;
-  static attendanceSheetsUploadFormPath = `${SubModulePaths.attendanceSheetsPath}/upload`;
-  static attendanceSheetsMeetingCardsPath = `${SubModulePaths.attendanceSheetsPath}/meeting-cards`;
-  static attendanceSheetsKarkunCardsPath = `${SubModulePaths.attendanceSheetsPath}/karkun-cards`;
-  static attendanceSheetsPrintAttendanceSheetPath = `${SubModulePaths.attendanceSheetsPath}/print-attendance-sheet`;
+  static dutyPlanningPath = `${ModulePaths.hr}/duty-planning`;
+  static dutyAttendancePath = `${ModulePaths.hr}/duty-attendance`;
+
+  // ******************************************************************************
+  // Attendance Report
+  // ******************************************************************************
+  static attendanceReportPath = `${ModulePaths.hr}/attendance-report`;
+  static attendanceReportMeetingCardsPath = `${SubModulePaths.attendanceReportPath}/meeting-cards`;
+  static attendanceReportKarkunCardsPath = `${SubModulePaths.attendanceReportPath}/karkun-cards`;
+  static attendanceReportPrintSheetPath = `${SubModulePaths.attendanceReportPath}/print-attendance-sheet`;
 
   // ******************************************************************************
   // Salary Sheets

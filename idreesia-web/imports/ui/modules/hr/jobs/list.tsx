@@ -34,8 +34,6 @@ import { useAllJobs } from '/imports/ui/modules/hr/common/hooks';
 
 import NewForm, { type NewJobFormValues } from './new-form';
 
-const RouterLink = Link as any;
-
 const DEFAULT_PAGE_SIZE = 20;
 const TABLE_HEADER_ROW_HEIGHT = 55;
 const VIEWPORT_BOTTOM_GAP = 16;
@@ -219,7 +217,7 @@ const List = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: JobRow) => (
-        <RouterLink to={paths.jobsEditFormPath(record._id)}>{text}</RouterLink>
+        <Link to={paths.jobsEditFormPath(record._id)}>{text}</Link>
       ),
     },
     {

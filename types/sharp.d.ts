@@ -2,10 +2,11 @@
 // idreesia-common/server/business-logic/common/generate-image-thumbnail.ts imports it too, and
 // idreesia-common can't physically resolve into idreesia-web's node_modules at typecheck time
 // (same situation as 'exceljs', see types/exceljs.d.ts, and '@u4/opencv4nodejs', see
-// types/opencv4nodejs.d.ts). This declares only the subset of the API that file uses.
+// types/opencv4nodejs.d.ts). This declares only the subset of the API used in idreesia-common.
 declare module 'sharp' {
   interface ResizeOptions {
     fit?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
+    withoutEnlargement?: boolean;
   }
 
   interface JpegOptions {
@@ -13,6 +14,7 @@ declare module 'sharp' {
   }
 
   class Sharp {
+    rotate(): Sharp;
     resize(width?: number, height?: number, options?: ResizeOptions): Sharp;
     jpeg(options?: JpegOptions): Sharp;
     toBuffer(): Promise<Buffer>;

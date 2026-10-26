@@ -17,10 +17,6 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  attendanceSheet: {
-    type: String,
-    optional: true,
-  },
 })
   .extend(identifiable)
   .extend(timestamps);

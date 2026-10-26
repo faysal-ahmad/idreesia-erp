@@ -8,7 +8,6 @@ import {
   InputCnicField,
   InputTextField,
   SelectField,
-  AttendanceFilterField,
   LastTarteebFilterField,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -123,18 +122,6 @@ export function getEhadKarkunFilterField(fieldValue: FieldValue) {
       getDataText={({ label }: LabelValue) => label}
       fieldLayout={formItemLayout}
       initialValue={fieldValue}
-    />
-  );
-}
-
-export function getAttendanceFilterField(fieldValue: FieldValue) {
-  return (
-    <AttendanceFilterField
-      fieldName="attendance"
-      fieldLabel="Attendance"
-      required={false}
-      fieldLayout={formItemLayout}
-      initialValue={fieldValue as string | null | undefined}
     />
   );
 }

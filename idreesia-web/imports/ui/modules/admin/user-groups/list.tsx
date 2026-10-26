@@ -26,8 +26,6 @@ import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
 import { PAGED_USER_GROUPS, DELETE_USER_GROUP } from './gql';
 
-const RouterLink = Link as any;
-
 type UserGroupRow = NonNullable<
   NonNullable<
     NonNullable<PagedUserGroupsQuery['pagedUserGroups']>['data']
@@ -54,7 +52,7 @@ const getColumns = ({
     dataIndex: 'name',
     key: 'name',
     render: (text: string, record: UserGroupRow) => (
-      <RouterLink to={`${paths.userGroupsPath}/${record._id}`}>{text}</RouterLink>
+      <Link to={`${paths.userGroupsPath}/${record._id}`}>{text}</Link>
     ),
   },
   {

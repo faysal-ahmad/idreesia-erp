@@ -1,10 +1,8 @@
 import { Random } from 'meteor/random';
 import React, { Component } from 'react';
-import Barcode from 'react-barcode';
+import Barcode, { type Options as BarcodeOptions } from 'react-barcode';
 
 import { Button, Col, Row } from 'antd';
-
-const BarcodeView = Barcode as any;
 
 interface Props {
   value?: string;
@@ -19,7 +17,7 @@ export default class DisplayBarcode extends Component<Props> {
     onChange?.(updatedValue);
   };
 
-  options = {
+  options: BarcodeOptions = {
     width: 1,
     height: 20,
     format: 'CODE128B',
@@ -32,7 +30,7 @@ export default class DisplayBarcode extends Component<Props> {
   render() {
     const { value, disabled } = this.props;
     const barcodeNode = value ? (
-      <BarcodeView value={value} {...this.options} />
+      <Barcode value={value} {...this.options} />
     ) : null;
 
     if (!disabled) {
@@ -48,6 +46,6 @@ export default class DisplayBarcode extends Component<Props> {
       );
     }
 
-    return <BarcodeView value={value} />;
+    return value ? <Barcode value={value} /> : null;
   }
 }

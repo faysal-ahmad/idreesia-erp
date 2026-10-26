@@ -240,6 +240,24 @@ export const SecurityPermissionsData: PermissionNode = {
       ],
     },
     {
+      title: 'Security Server',
+      key: 'module-security-security-server',
+      children: [
+        {
+          title: 'View Security Server Data',
+          key: PermissionConstants.SECURITY_VIEW_SECURITY_SERVER_DATA,
+        },
+        {
+          title: 'Manage Security Server Data',
+          key: PermissionConstants.SECURITY_MANAGE_SECURITY_SERVER_DATA,
+        },
+        {
+          title: 'Sync Security Server Data (service account)',
+          key: PermissionConstants.SECURITY_SYNC_SECURITY_SERVER_DATA,
+        },
+      ],
+    },
+    {
       title: 'Setup',
       key: 'module-security-setup',
       children: [

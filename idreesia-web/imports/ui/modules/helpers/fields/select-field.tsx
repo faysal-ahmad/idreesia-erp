@@ -19,6 +19,7 @@ interface FieldProps<T> {
   placeholder?: string;
   required?: boolean;
   requiredMessage?: string;
+  disabled?: boolean;
   onChange?(value: unknown): void;
 }
 
@@ -54,6 +55,7 @@ function SelectField<T = DefaultRecord>({
   placeholder,
   required,
   requiredMessage,
+  disabled,
   onChange,
 }: FieldProps<T>) {
   const resolveValue =
@@ -86,6 +88,7 @@ function SelectField<T = DefaultRecord>({
       <Select
         placeholder={placeholder}
         onChange={onChange}
+        disabled={disabled}
         allowClear={allowClear}
         mode={mode as any}
         popupMatchSelectWidth={popupMatchSelectWidth}

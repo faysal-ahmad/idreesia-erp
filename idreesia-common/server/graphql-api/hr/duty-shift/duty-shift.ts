@@ -7,7 +7,6 @@ type DutyShiftType {
   name: String
   startTime: String
   endTime: String
-  attendanceSheet: String
 
   duty: DutyType
   canDelete: Boolean
@@ -20,7 +19,6 @@ type DutyShiftType {
 
 extend type Query {
   allDutyShifts: [DutyShiftType]
-  dutyShiftsByDutyId(dutyId: String!): [DutyShiftType]
   dutyShiftById(id: String!): DutyShiftType
 }
 
@@ -30,7 +28,6 @@ extend type Mutation {
     dutyId: String!
     startTime: String
     endTime: String
-    attendanceSheet: String
   ): DutyShiftType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   updateDutyShift(
@@ -39,7 +36,6 @@ extend type Mutation {
     dutyId: String!
     startTime: String
     endTime: String
-    attendanceSheet: String
   ): DutyShiftType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeDutyShift(_id: String!): Int

@@ -5,9 +5,6 @@ export {
   default as PermissionSelection,
 } from './access-management/permission-selection';
 
-export {
-  default as AttendanceDetail,
-} from './attendance-detail/attendance-detail';
 export { default as TakePicture } from './picture/take-picture';
 export { default as SearchByPicture } from './picture/search-by-picture';
 export { default as UploadAttachment } from './upload/upload-attachment';

@@ -24,10 +24,13 @@ import './stay-cards.css';
 /* Page CSS lives next to UI modules; load only from this client entry.
  * Use *.styles.css — same basename as a .tsx (list.css vs list.tsx)
  * makes Meteor resolve extensionless imports to the CSS object. */
+import '../imports/ui/modules/hr/ms-duties/duty-expanded.styles.css';
+import '../imports/ui/modules/hr/duty-planning/duty-planning.styles.css';
 import '../imports/ui/modules/common/visitors/list.styles.css';
 import '../imports/ui/modules/common/visitors/general-info.styles.css';
 import '../imports/ui/modules/common/people/picture.styles.css';
 import '../imports/ui/modules/security/visitor-registeration/scan/result-grid.styles.css';
+import '../imports/ui/modules/security/security-server/security-server.styles.css';
 import '../imports/ui/modules/admin/deleted-people/relation-counts-table.styles.css';
 
 import App from '../imports/ui/app';

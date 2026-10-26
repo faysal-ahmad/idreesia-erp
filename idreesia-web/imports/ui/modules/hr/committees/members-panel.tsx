@@ -54,19 +54,15 @@ export interface CommitteeMember {
   cnicNumber?: string | null;
   contactNumber1?: string | null;
   contactNumber2?: string | null;
+  isCoordinator: boolean;
 }
 
 interface Props {
   committeeId: string;
   members: CommitteeMember[];
-  coordinatorKarkunIds?: (string | null)[] | null;
 }
 
-const CommitteeMembersPanel = ({
-  committeeId,
-  members,
-  coordinatorKarkunIds,
-}: Props) => {
+const CommitteeMembersPanel = ({ committeeId, members }: Props) => {
   const [removeCommitteeMember] = useMutation(REMOVE_COMMITTEE_MEMBER, {
     refetchQueries: ['listAllCommittees'],
   });
@@ -129,9 +125,7 @@ const CommitteeMembersPanel = ({
       key: 'action',
       width: 80,
       render: (_text: unknown, record: CommitteeMember) => {
-        const isCoordinator = (coordinatorKarkunIds ?? []).includes(
-          record._id
-        );
+        const { isCoordinator } = record;
         return (
           <div className="list-actions-column">
             <Tooltip

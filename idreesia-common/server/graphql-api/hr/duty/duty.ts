@@ -6,10 +6,12 @@ type DutyType {
   name: String
   isMehfilDuty: Boolean
   description: String
-  attendanceSheet: String
+  committeeId: String
 
+  committee: CommitteeType
   usedCount: Int
   shifts: [DutyShiftType]
+  locations: [DutyLocationType]
   canDelete: Boolean
 
   createdAt: String
@@ -21,13 +23,12 @@ type DutyType {
 extend type Query {
   allMSDuties: [DutyType]
   allMehfilDuties: [DutyType]
-  dutyById(id: String!): DutyType
 }
 
 extend type Mutation {
-  createDuty(name: String!, isMehfilDuty: Boolean!, description: String, attendanceSheet: String): DutyType
+  createDuty(name: String!, isMehfilDuty: Boolean!, description: String, committeeId: String): DutyType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
-  updateDuty(id: String!, name: String!, description: String, attendanceSheet: String): DutyType
+  updateDuty(id: String!, name: String!, description: String, committeeId: String): DutyType
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
   removeDuty(_id: String!): Int
     @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])

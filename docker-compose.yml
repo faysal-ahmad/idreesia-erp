@@ -32,6 +32,7 @@ services:
     platform: linux/amd64
     depends_on:
       - mongo
+      - rustfs
     env_file:
       - ./idreesia-web/.env
     ports:
@@ -46,36 +47,45 @@ services:
       - idreesia-common-node-modules:/app/idreesia-common/node_modules
       - root-node-modules:/app/node_modules
 
-  minio:
-    image: minio/minio:RELEASE.2024-11-07T00-52-20Z
+  # S3-compatible object storage. MinIO no longer publishes pullable images,
+  # so RustFS stands in for it. Only path-style addressing is supported, so
+  # S3 clients need forcePathStyle.
+  rustfs:
+    image: rustfs/rustfs:1.0.3
     ports:
       - "9000:9000"
       - "9001:9001" # Console
     environment:
-      MINIO_ROOT_USER: minio_root_user
-      MINIO_ROOT_PASSWORD: minio_root_user_password
+      RUSTFS_ACCESS_KEY: rustfs_root_user
+      RUSTFS_SECRET_KEY: rustfs_root_user_password
+      RUSTFS_CONSOLE_ENABLE: "true"
     volumes:
-      - minio-dev:/data:cached
+      - rustfs-dev:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://minio:9000/minio/health/live"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
       interval: 30s
       timeout: 20s
       retries: 3
-    command: server --console-address ":9001" /data
 
-  minio-defaultbuckets:
-    image: minio/minio:RELEASE.2024-11-07T00-52-20Z
+  # The RustFS image has no mc, so the default bucket is created with the
+  # AWS CLI instead.
+  rustfs-defaultbuckets:
+    image: amazon/aws-cli:2.22.0
     depends_on:
-      - minio
+      rustfs:
+        condition: service_healthy
+    environment:
+      AWS_ACCESS_KEY_ID: rustfs_root_user
+      AWS_SECRET_ACCESS_KEY: rustfs_root_user_password
+      AWS_DEFAULT_REGION: us-east-1
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 minio_root_user minio_root_user_password;
-      /usr/bin/mc mb myminio/idreesia-files;
+      aws --endpoint-url http://rustfs:9000 s3 mb s3://idreesia-files;
       exit 0;
       "
 
 volumes:
-  minio-dev: {}
+  rustfs-dev: {}
   mongo-dev: {}
   mongo-config-dev: {}
   mongo-search-dev: {}

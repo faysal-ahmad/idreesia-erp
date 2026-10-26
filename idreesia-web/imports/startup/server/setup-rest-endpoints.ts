@@ -16,6 +16,8 @@ import {
   exportStockItems,
 } from 'meteor/idreesia-common/server/business-logic/inventory';
 
+import { createSecurityServerRouter } from './setup-security-server-endpoints';
+
 const ReportGenerators = {
   IssuanceForms: exportIsssuanceForms,
   PurchaseForms: exportPurchaseForms,
@@ -211,6 +213,11 @@ export function setupRestEndpoints() {
         res.send(JSON.stringify({ attachmentId }));
       })
     );
+
+    /**
+     * Endpoints the security server pushes its channels, profiles and alerts to
+     */
+    app.use('/api/security-server', createSecurityServerRouter());
 
     WebApp.connectHandlers.use(app as any);
   });

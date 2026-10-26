@@ -227,16 +227,14 @@ export default class KarkunsList extends Component<Props, State> {
 
   dutiesColumn = {
     title: 'Duties',
-    dataIndex: ['karkunData', 'duties'],
+    dataIndex: ['karkunData', 'teams'],
     key: 'duties',
-    render: (duties: NonNullable<KarkunListItem['karkunData']>['duties'] = []) => {
-      let dutyNames: React.ReactNode[] = [];
-      if (duties && duties.length > 0) {
-        dutyNames = duties.map((duty) => {
-          const dutyName = duty?.dutyName;
-          return <span>{dutyName}</span>;
-        });
-      }
+    render: (teams: NonNullable<KarkunListItem['karkunData']>['teams'] = []) => {
+      const dutyNames: React.ReactNode[] = (teams ?? []).map(team => (
+        <span key={team?._id}>
+          {[team?.duty?.name, team?.name].filter(Boolean).join(' - ')}
+        </span>
+      ));
 
       if (dutyNames.length === 0) {
         return null;

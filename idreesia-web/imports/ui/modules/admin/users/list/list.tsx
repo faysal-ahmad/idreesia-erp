@@ -20,8 +20,6 @@ import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import ListFilter, { UserFilterChips } from './list-filter';
 import { PAGED_USERS } from '../gql';
 
-const RouterLink = Link as any;
-
 const TABLE_HEADER_ROW_HEIGHT = 55;
 const VIEWPORT_BOTTOM_GAP = 16;
 
@@ -43,12 +41,12 @@ const columns: any[] = [
     key: 'username',
     render: (_text: unknown, record: UserRow) => (
       <Flex vertical>
-        <RouterLink to={`${paths.usersPath}/${record._id}`}>
+        <Link to={`${paths.usersPath}/${record._id}`}>
           <span>{record.email}</span>
-        </RouterLink>
-        <RouterLink to={`${paths.usersPath}/${record._id}`}>
+        </Link>
+        <Link to={`${paths.usersPath}/${record._id}`}>
           <span>{record.username}</span>
-        </RouterLink>
+        </Link>
         <span>{record.displayName}</span>
       </Flex>
     ),

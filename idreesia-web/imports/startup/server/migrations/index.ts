@@ -50,6 +50,12 @@ import './46-create-people-image-vector-index';
 import './47-create-system-user';
 import './48-create-people-vector-search-index';
 import './49-create-person-reference-indexes';
+import './50-team-members';
+import './51-duty-location-duty-id';
+import './52-duty-plan-indexes';
+import './53-committee-members';
+import './54-drop-old-attendance';
+import './55-create-security-server-indexes';
 
 Migrations.config({
   log: true,

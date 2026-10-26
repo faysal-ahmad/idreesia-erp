@@ -2,7 +2,7 @@
 # Compiles native modules (bcrypt, @u4/opencv4nodejs) against apt's OpenCV
 # and a full build toolchain. None of that toolchain is needed once the
 # addons are compiled, so it never makes it into the runtime image below.
-FROM node:24.19.0-bookworm-slim AS build
+FROM node:24.22.1-bookworm-slim AS build
 # libopencv-dev/pkg-config: native module compilation for @u4/opencv4nodejs
 # (face-vector computation), same setup as idreesia-security-server
 RUN apt-get update && apt-get install -y --no-install-recommends python3 build-essential libopencv-dev pkg-config && rm -rf /var/lib/apt/lists/*
@@ -30,7 +30,7 @@ RUN set -eu; \
     test -s /tmp/runtime-packages.txt
 
 # ---- Runtime stage -------------------------------------------------------
-FROM node:24.19.0-bookworm-slim
+FROM node:24.22.1-bookworm-slim
 EXPOSE 3000
 ENV TZ=Asia/Karachi
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

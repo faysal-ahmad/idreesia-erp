@@ -1,12 +1,14 @@
 {
   "name": "idreesia-apps-suite",
-  "version": "1.11.1",
+  "version": "1.16.1",
   "private": true,
   "devDependencies": {
     "@agendajs/mongo-backend": "^4.0.3",
     "@ant-design/icons": "^6.3.2",
     "@apollo/client": "4.2.7",
     "@apollo/server": "^5.5.1",
+    "@aws-sdk/client-s3": "3.1145.0",
+    "@aws-sdk/s3-request-presigner": "3.1145.0",
     "@babel/core": "^7",
     "@babel/eslint-parser": "^7",
     "@babel/plugin-syntax-jsx": "^7",
@@ -28,7 +30,6 @@
     "@types/react-dom": "18.3.7",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
-    "@types/request": "^2.48.13",
     "@typescript-eslint/eslint-plugin": "^8.65.0",
     "@typescript-eslint/parser": "^8.65.0",
     "agenda": "^6.2.6",
@@ -49,7 +50,6 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "glob": "^13.0.6",
     "globals": "^17.7.0",
-    "googleapis": "^173.0.0",
     "graphql": "16.14.2",
     "graphql-scalars": "^1.25.0",
     "graphql-tag": "2.10.3",
@@ -64,7 +64,6 @@
     "react-to-print": "^3.3.0",
     "redux": "4.2.0",
     "regenerator-runtime": "^0.14.1",
-    "request": "^2.88.2",
     "rxjs": "7.8.2",
     "simpl-schema": "3.2.0",
     "typescript": "6.0.3"
@@ -103,9 +102,10 @@
   "resolutions": {
     "@babel/core": "^7.29.6",
     "@eslint/plugin-kit": "^0.3.4",
+    "@types/react": "18.3.31",
     "ajv": "^6.14.0",
     "flatted": "^3.4.2",
-    "js-yaml": "^4.3.0",
+    "js-yaml": "^4.3.2",
     "picomatch": "^2.3.2",
     "yaml": "^2.8.3"
   }

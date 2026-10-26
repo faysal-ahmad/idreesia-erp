@@ -1,0 +1,18 @@
+.duty-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.duty-expanded-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.duty-expanded-title {
+  color: #344054;
+  font-size: 13px;
+  font-weight: 600;
+}

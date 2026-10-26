@@ -39,6 +39,13 @@ function getNet(): cv.Net {
   return net;
 }
 
+// cv.Net has no release(), so dropping the cached reference is the only way to let the GC free
+// the model and the working buffers it keeps sized to the last input. The next detectFaces() call
+// reloads it.
+export function unloadFaceDetectionModel(): void {
+  net = undefined;
+}
+
 export function detectFaces(
   image: cv.Mat,
   scoreThreshold = 0.7,
@@ -59,7 +66,13 @@ export function detectFaces(
     Math.round(image.rows * scale),
     Math.round(image.cols * scale)
   );
-  return detectAtFullSize(resized, scoreThreshold, nmsThreshold).map(face => ({
+  let resizedFaces: DetectedFace[];
+  try {
+    resizedFaces = detectAtFullSize(resized, scoreThreshold, nmsThreshold);
+  } finally {
+    resized.release();
+  }
+  return resizedFaces.map(face => ({
     box: {
       x: face.box.x / scale,
       y: face.box.y / scale,
@@ -92,12 +105,30 @@ function detectAtFullSize(
     cv.BORDER_CONSTANT,
     new cv.Vec3(0, 0, 0)
   );
+  // These Mats are native memory - several hundred MB for a large photo - so they're released as
+  // soon as the outputs are decoded rather than left for the GC to finalize.
   const blob = cv.blobFromImage(padded);
+  padded.release();
 
-  const net = getNet();
-  net.setInput(blob);
-  const outputs = net.forward(OUTPUT_NAMES);
+  let outputs: cv.Mat[] = [];
+  try {
+    const net = getNet();
+    net.setInput(blob);
+    outputs = net.forward(OUTPUT_NAMES);
+    return decodeOutputs(outputs, padW, padH, scoreThreshold, nmsThreshold);
+  } finally {
+    blob.release();
+    outputs.forEach(output => output.release());
+  }
+}
 
+function decodeOutputs(
+  outputs: cv.Mat[],
+  padW: number,
+  padH: number,
+  scoreThreshold: number,
+  nmsThreshold: number
+): DetectedFace[] {
   const cls = outputs.slice(0, 3);
   const obj = outputs.slice(3, 6);
   const bbox = outputs.slice(6, 9);

@@ -34,7 +34,10 @@ declare module '@u4/opencv4nodejs' {
     ): Mat;
     warpAffine(transform: Mat, size: Size, interpolation: number): Mat;
     resize(rows: number, cols: number): Mat;
+    resizeToMax(maxRowsOrCols: number): Mat;
     getDataAsArray(): number[][];
+    // Frees the native buffer immediately instead of waiting for the GC to finalize the wrapper.
+    release(): void;
   }
 
   export class Net {

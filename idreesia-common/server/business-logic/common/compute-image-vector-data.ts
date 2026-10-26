@@ -26,6 +26,13 @@ export { MODEL_VERSION };
 const DETECTION_SCORE_THRESHOLD = 0.6;
 const HARD_REJECT_MIN_PX = 40;
 
+// Long side images are downscaled to before detection. YuNet's working memory scales with input
+// size and its Net keeps those buffers allocated between calls, so a raw 4000x3000 phone photo
+// pinned several hundred MB of native memory per process. 1280 matches the size security-server
+// profile images are normalised to (see security-server/profiles.ts), and faces large enough to
+// enrol or search with are still well above HARD_REJECT_MIN_PX at that size.
+const MAX_IMAGE_SIDE = 1280;
+
 export interface ImageVectorData {
   vector?: number[];
   status: string;
@@ -38,9 +45,16 @@ export interface ImageVectorData {
 // quality gate, so a photo that can't enrol also can't be searched with - and reports why.
 export function computeVectorFromImageBuffer(buffer: Buffer): ImageVectorData {
   const computedAt = new Date();
+  let image: cv.Mat | undefined;
 
   try {
-    const image = cv.imdecode(buffer);
+    image = cv.imdecode(buffer);
+    if (Math.max(image.cols, image.rows) > MAX_IMAGE_SIDE) {
+      const original = image;
+      image = original.resizeToMax(MAX_IMAGE_SIDE);
+      original.release();
+    }
+
     const faces = detectFaces(image, DETECTION_SCORE_THRESHOLD);
 
     if (faces.length === 0) {
@@ -57,13 +71,18 @@ export function computeVectorFromImageBuffer(buffer: Buffer): ImageVectorData {
     }
 
     const aligned = alignFace(image, face.landmarks);
-    const vector = embedFace(aligned);
-
-    return { vector, status: ImageVectorStatus.COMPUTED, computedAt, modelVersion: MODEL_VERSION };
+    try {
+      const vector = embedFace(aligned);
+      return { vector, status: ImageVectorStatus.COMPUTED, computedAt, modelVersion: MODEL_VERSION };
+    } finally {
+      aligned.release();
+    }
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('computeVectorFromImageBuffer failed:', error);
     return { status: ImageVectorStatus.ERROR, computedAt, modelVersion: MODEL_VERSION };
+  } finally {
+    image?.release();
   }
 }
 

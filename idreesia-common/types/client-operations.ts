@@ -1225,7 +1225,7 @@ export type SalaryReceiptSalariesByIdsQuery = { salariesByIds: Array<{ _id: stri
 export type ListAllTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListAllTeamsQuery = { allTeams: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, dutyId: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null, duty: { _id: string | null, name: string | null } | null } | null> | null };
+export type ListAllTeamsQuery = { allTeams: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, dutyId: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, imageId: string | null, imageThumbnailId: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null, duty: { _id: string | null, name: string | null } | null } | null> | null };
 
 export type CreateTeamMutationVariables = Exact<{
   name: string;

@@ -71,9 +71,6 @@ export default class SubModulePaths {
   static securityServerProfilesPath = `${SubModulePaths.securityServerPath}/profiles`;
 
   static securityServerAlertsPath = `${SubModulePaths.securityServerPath}/alerts`;
-  static securityServerAlertViewPath(alertId = ':alertId') {
-    return `${SubModulePaths.securityServerAlertsPath}/${alertId}`;
-  }
 
   // ******************************************************************************
   // Audit Logs

@@ -25,28 +25,6 @@ services:
       # while the migration that created them stays marked as applied.
       - mongo-search-dev:/data/mongot
 
-  idreesia-web:
-    build:
-      context: .
-      dockerfile: ./idreesia-web/Dockerfile.development
-    platform: linux/amd64
-    depends_on:
-      - mongo
-      - rustfs
-    env_file:
-      - ./idreesia-web/.env
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-      # Named volumes, not part of the bind-mounted repo above, for
-      # everything this container writes to at install/build time - keeps
-      # container-owned files out of your actual working tree entirely.
-      - idreesia-web-node-modules:/app/idreesia-web/node_modules
-      - idreesia-web-meteor-local:/app/idreesia-web/.meteor/local
-      - idreesia-common-node-modules:/app/idreesia-common/node_modules
-      - root-node-modules:/app/node_modules
-
   # S3-compatible object storage. MinIO no longer publishes pullable images,
   # so RustFS stands in for it. Only path-style addressing is supported, so
   # S3 clients need forcePathStyle.
@@ -83,6 +61,28 @@ services:
       aws --endpoint-url http://rustfs:9000 s3 mb s3://idreesia-files;
       exit 0;
       "
+
+  idreesia-web:
+    build:
+      context: .
+      dockerfile: ./idreesia-web/Dockerfile.development
+    platform: linux/amd64
+    depends_on:
+      - mongo
+      - rustfs
+    env_file:
+      - ./idreesia-web/.env
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      # Named volumes, not part of the bind-mounted repo above, for
+      # everything this container writes to at install/build time - keeps
+      # container-owned files out of your actual working tree entirely.
+      - idreesia-web-node-modules:/app/idreesia-web/node_modules
+      - idreesia-web-meteor-local:/app/idreesia-web/.meteor/local
+      - idreesia-common-node-modules:/app/idreesia-common/node_modules
+      - root-node-modules:/app/node_modules
 
 volumes:
   rustfs-dev: {}

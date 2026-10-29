@@ -1225,7 +1225,7 @@ export type SalaryReceiptSalariesByIdsQuery = { salariesByIds: Array<{ _id: stri
 export type ListAllTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListAllTeamsQuery = { allTeams: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, dutyId: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null, duty: { _id: string | null, name: string | null } | null } | null> | null };
+export type ListAllTeamsQuery = { allTeams: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, dutyId: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, imageId: string | null, imageThumbnailId: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null, duty: { _id: string | null, name: string | null } | null } | null> | null };
 
 export type CreateTeamMutationVariables = Exact<{
   name: string;
@@ -1447,6 +1447,13 @@ export type DeleteSecurityServerProfileMutationVariables = Exact<{
 
 
 export type DeleteSecurityServerProfileMutation = { deleteSecurityServerProfile: number | null };
+
+export type PagedSecurityServerAlertGroupsQueryVariables = Exact<{
+  filter?: Types.SecurityServerAlertFilter | null | undefined;
+}>;
+
+
+export type PagedSecurityServerAlertGroupsQuery = { pagedSecurityServerAlertGroups: { totalResults: number | null, data: Array<{ profileId: string | null, profileName: string | null, profileIsTest: boolean | null, alertCount: number | null, notReviewedCount: number | null, firstTimestamp: string | null, lastTimestamp: string | null, latestImageUrl: string | null } | null> | null } | null };
 
 export type PagedSecurityServerAlertsQueryVariables = Exact<{
   filter?: Types.SecurityServerAlertFilter | null | undefined;

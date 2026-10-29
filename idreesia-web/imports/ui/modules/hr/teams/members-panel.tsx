@@ -10,6 +10,7 @@ import {
   UserDeleteOutlined,
 } from '@ant-design/icons';
 import { message } from '/imports/ui/antd-feedback';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import type {
   AddTeamCoordinatorMutation,
@@ -82,6 +83,8 @@ const UPDATE_TEAM_MEMBER_DAYS: TypedDocumentNode<
 export interface TeamMember {
   _id: string;
   name: string;
+  imageId?: string | null;
+  imageThumbnailId?: string | null;
   cnicNumber?: string | null;
   contactNumber1?: string | null;
   contactNumber2?: string | null;
@@ -150,6 +153,9 @@ const TeamMembersPanel = ({ teamId, members }: Props) => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      render: (_text: unknown, record: TeamMember) => (
+        <PersonName person={record} />
+      ),
     },
     {
       title: 'Available days',

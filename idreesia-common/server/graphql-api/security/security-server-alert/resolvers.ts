@@ -2,7 +2,10 @@ import { SecurityServerAlerts } from 'meteor/idreesia-common/server/collections/
 import { getFileUrl } from 'meteor/idreesia-common/server/file-storage';
 import { setSecurityServerAlertReview } from 'meteor/idreesia-common/server/business-logic/security/security-server';
 
-import { getSecurityServerAlerts } from './queries';
+import {
+  getSecurityServerAlertGroups,
+  getSecurityServerAlerts,
+} from './queries';
 
 const REVIEW_VALUES = ['CORRECT', 'FALSE_POSITIVE'];
 
@@ -15,9 +18,15 @@ const resolvers: ResolverMap = {
   SecurityServerAlertType: {
     imageUrl: async alert => getFileUrl(alert.imageKey),
   },
+  SecurityServerAlertGroupType: {
+    latestImageUrl: async group => getFileUrl(group.latestImageKey),
+  },
   Query: {
     pagedSecurityServerAlerts: async (obj, { filter }) =>
       getSecurityServerAlerts(filter ?? {}),
+
+    pagedSecurityServerAlertGroups: async (obj, { filter }) =>
+      getSecurityServerAlertGroups(filter ?? {}),
 
     securityServerAlertById: async (obj, { _id }) =>
       SecurityServerAlerts.findOneAsync(_id),

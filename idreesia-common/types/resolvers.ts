@@ -1343,6 +1343,9 @@ export type SecurityServerAlertTypeResolvers<ContextType = any, ParentType exten
   createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   externalId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  faceQualityReasons?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  faceQualityScore?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  faceSizePx?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   imageUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profileId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profileIsTest?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -1372,6 +1375,8 @@ export type SecurityServerChannelTypeResolvers<ContextType = any, ParentType ext
   createdBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   deletedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   enabled?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  minFaceQuality?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minFaceSizePx?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   recognitionFps?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   similarityThreshold?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;

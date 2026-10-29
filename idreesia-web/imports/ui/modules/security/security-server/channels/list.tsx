@@ -37,6 +37,13 @@ import ChannelFormModal, {
 
 const refetchQueries = ['allSecurityServerChannels'];
 
+// null = the security server's default; 0 turns the check off.
+const formatFaceMinimum = (value: number | null, unit = '') => {
+  if (value == null) return 'Default';
+  if (value === 0) return 'Off';
+  return `${value}${unit}`;
+};
+
 type Props = RouteComponentProps;
 
 const List = (_props: Props) => {
@@ -181,6 +188,18 @@ const List = (_props: Props) => {
       key: 'similarityThreshold',
       render: (value: number | null) =>
         value == null ? 'Default' : value.toFixed(2),
+    },
+    {
+      title: 'Min Face Size',
+      dataIndex: 'minFaceSizePx',
+      key: 'minFaceSizePx',
+      render: (value: number | null) => formatFaceMinimum(value, ' px'),
+    },
+    {
+      title: 'Min Face Quality',
+      dataIndex: 'minFaceQuality',
+      key: 'minFaceQuality',
+      render: (value: number | null) => formatFaceMinimum(value),
     },
     {
       title: 'Alerts',

@@ -83,7 +83,14 @@ const AlertModal = ({ alertId, onClose }: Props) => {
           <Text type="secondary">
             {alert.channelName} · {formatDateTime(alert.timestamp)} ·{' '}
             {formatScore(alert.similarityScore)} confidence
+            {alert.faceSizePx != null ? ` · face ${alert.faceSizePx}px` : ''}
+            {alert.faceQualityScore != null
+              ? ` · quality ${Math.round(alert.faceQualityScore)}`
+              : ''}
           </Text>
+          {alert.faceQualityReasons?.length ? (
+            <Text type="warning">{alert.faceQualityReasons.join(', ')}</Text>
+          ) : null}
           {alert.imageUrl ? (
             <Image
               className="security-server-alert-snapshot"

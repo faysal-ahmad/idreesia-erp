@@ -11,6 +11,9 @@ export default gql`
     channelName: String
     timestamp: String
     similarityScore: Float
+    faceSizePx: Int
+    faceQualityScore: Float
+    faceQualityReasons: [String]
     imageUrl: String
     thumbnailUrl: String
     review: String

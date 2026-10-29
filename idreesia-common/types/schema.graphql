@@ -2088,6 +2088,9 @@ type SecurityServerAlertType {
     channelName: String
     timestamp: String
     similarityScore: Float
+    faceSizePx: Int
+    faceQualityScore: Float
+    faceQualityReasons: [String]
     imageUrl: String
     thumbnailUrl: String
     review: String
@@ -2176,6 +2179,8 @@ type SecurityServerChannelConnectionType {
     enabled: Boolean
     similarityThreshold: Float
     recognitionFps: Float
+    minFaceSizePx: Int
+    minFaceQuality: Int
     connection: SecurityServerChannelConnectionType
 
     alertsCount: Int
@@ -2212,6 +2217,9 @@ type SecurityServerChannelConnectionType {
       enabled: Boolean!
       similarityThreshold: Float
       recognitionFps: Float!
+      # Null = the security server's default; 0 = no check.
+      minFaceSizePx: Int
+      minFaceQuality: Int
       connection: SecurityServerChannelConnectionInput!
     ): SecurityServerChannelType
       @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
@@ -2222,6 +2230,9 @@ type SecurityServerChannelConnectionType {
       enabled: Boolean!
       similarityThreshold: Float
       recognitionFps: Float!
+      # Null = the security server's default; 0 = no check.
+      minFaceSizePx: Int
+      minFaceQuality: Int
       connection: SecurityServerChannelConnectionInput!
     ): SecurityServerChannelType
       @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])

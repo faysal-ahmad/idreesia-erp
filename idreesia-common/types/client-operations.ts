@@ -1413,7 +1413,7 @@ export type AllSecurityServerChannelsQueryVariables = Exact<{
 }>;
 
 
-export type AllSecurityServerChannelsQuery = { allSecurityServerChannels: Array<{ _id: string | null, name: string | null, enabled: boolean | null, similarityThreshold: number | null, recognitionFps: number | null, alertsCount: number | null, deletedAt: string | null, connection: { host: string | null, port: number | null, path: string | null, username: string | null, hasPassword: boolean | null } | null } | null> | null };
+export type AllSecurityServerChannelsQuery = { allSecurityServerChannels: Array<{ _id: string | null, name: string | null, enabled: boolean | null, similarityThreshold: number | null, recognitionFps: number | null, minFaceSizePx: number | null, minFaceQuality: number | null, alertsCount: number | null, deletedAt: string | null, connection: { host: string | null, port: number | null, path: string | null, username: string | null, hasPassword: boolean | null } | null } | null> | null };
 
 export type CreateMissingSecurityServerAlertThumbnailsMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -1425,6 +1425,8 @@ export type CreateSecurityServerChannelMutationVariables = Exact<{
   enabled: boolean;
   similarityThreshold?: number | null | undefined;
   recognitionFps: number;
+  minFaceSizePx?: number | null | undefined;
+  minFaceQuality?: number | null | undefined;
   connection: Types.SecurityServerChannelConnectionInput;
 }>;
 
@@ -1487,14 +1489,14 @@ export type SecurityServerAlertByIdQueryVariables = Exact<{
 }>;
 
 
-export type SecurityServerAlertByIdQuery = { securityServerAlertById: { _id: string | null, profileId: string | null, profileName: string | null, profileIsTest: boolean | null, channelId: string | null, channelName: string | null, timestamp: string | null, similarityScore: number | null, imageUrl: string | null, review: string | null, reviewedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type SecurityServerAlertByIdQuery = { securityServerAlertById: { _id: string | null, profileId: string | null, profileName: string | null, profileIsTest: boolean | null, channelId: string | null, channelName: string | null, timestamp: string | null, similarityScore: number | null, faceSizePx: number | null, faceQualityScore: number | null, faceQualityReasons: Array<string | null> | null, imageUrl: string | null, review: string | null, reviewedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
 export type SecurityServerChannelByIdQueryVariables = Exact<{
   _id: string;
 }>;
 
 
-export type SecurityServerChannelByIdQuery = { securityServerChannelById: { _id: string | null, name: string | null, enabled: boolean | null, similarityThreshold: number | null, recognitionFps: number | null, alertsCount: number | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, connection: { host: string | null, port: number | null, path: string | null, username: string | null, hasPassword: boolean | null } | null } | null };
+export type SecurityServerChannelByIdQuery = { securityServerChannelById: { _id: string | null, name: string | null, enabled: boolean | null, similarityThreshold: number | null, recognitionFps: number | null, minFaceSizePx: number | null, minFaceQuality: number | null, alertsCount: number | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, connection: { host: string | null, port: number | null, path: string | null, username: string | null, hasPassword: boolean | null } | null } | null };
 
 export type SecurityServerProfileByIdQueryVariables = Exact<{
   _id: string;
@@ -1517,11 +1519,13 @@ export type UpdateSecurityServerChannelMutationVariables = Exact<{
   enabled: boolean;
   similarityThreshold?: number | null | undefined;
   recognitionFps: number;
+  minFaceSizePx?: number | null | undefined;
+  minFaceQuality?: number | null | undefined;
   connection: Types.SecurityServerChannelConnectionInput;
 }>;
 
 
-export type UpdateSecurityServerChannelMutation = { updateSecurityServerChannel: { _id: string | null, name: string | null, enabled: boolean | null, similarityThreshold: number | null, recognitionFps: number | null, updatedAt: string | null, updatedBy: string | null, connection: { host: string | null, port: number | null, path: string | null, username: string | null, hasPassword: boolean | null } | null } | null };
+export type UpdateSecurityServerChannelMutation = { updateSecurityServerChannel: { _id: string | null, name: string | null, enabled: boolean | null, similarityThreshold: number | null, recognitionFps: number | null, minFaceSizePx: number | null, minFaceQuality: number | null, updatedAt: string | null, updatedBy: string | null, connection: { host: string | null, port: number | null, path: string | null, username: string | null, hasPassword: boolean | null } | null } | null };
 
 export type UpdateSecurityServerProfileMutationVariables = Exact<{
   _id: string;

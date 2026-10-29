@@ -71,7 +71,15 @@ async function putAlertThumbnail(
 export async function upsertSecurityServerAlert(
   user: SyncUser,
   externalId: string,
-  { profileId, channelId, timestamp, similarityScore, image }: AlertPayload
+  {
+    profileId,
+    channelId,
+    timestamp,
+    similarityScore,
+    faceSizePx,
+    faceQuality,
+    image,
+  }: AlertPayload
 ): Promise<string> {
   const existing = await SecurityServerAlerts.findOneAsync({ externalId });
   if (existing) return existing._id;
@@ -107,6 +115,13 @@ export async function upsertSecurityServerAlert(
     channelName: channel.name,
     timestamp,
     similarityScore,
+    ...(faceSizePx != null ? { faceSizePx } : {}),
+    ...(faceQuality
+      ? {
+          faceQualityScore: faceQuality.score,
+          faceQualityReasons: faceQuality.reasons,
+        }
+      : {}),
     imageKey,
     ...(thumbnailKey ? { thumbnailKey } : {}),
     createdAt: date,

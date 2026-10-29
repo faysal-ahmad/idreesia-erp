@@ -28,6 +28,8 @@ export interface ChannelFormValues {
   password?: string;
   similarityThreshold?: number | null;
   recognitionFps?: number;
+  minFaceSizePx?: number | null;
+  minFaceQuality?: number | null;
 }
 
 // Only set on edit, once the channel is running; a new channel starts here.
@@ -37,9 +39,12 @@ const DEFAULT_RECOGNITION_FPS = 5;
 export const toChannelVariables = (values: ChannelFormValues) => ({
   name: values.name,
   enabled: values.enabled,
-  // A cleared threshold is sent as null, which resets the channel to the default.
+  // A cleared threshold or minimum is sent as null, which resets it to the
+  // security server's default.
   similarityThreshold: values.similarityThreshold ?? null,
   recognitionFps: values.recognitionFps ?? DEFAULT_RECOGNITION_FPS,
+  minFaceSizePx: values.minFaceSizePx ?? null,
+  minFaceQuality: values.minFaceQuality ?? null,
   connection: {
     host: values.host,
     port: values.port ?? null,
@@ -60,6 +65,8 @@ export const toChannelFormValues = (channel: Channel): ChannelFormValues => ({
   username: channel.connection?.username ?? undefined,
   similarityThreshold: channel.similarityThreshold,
   recognitionFps: channel.recognitionFps ?? DEFAULT_RECOGNITION_FPS,
+  minFaceSizePx: channel.minFaceSizePx,
+  minFaceQuality: channel.minFaceQuality,
 });
 
 interface Props {
@@ -226,6 +233,34 @@ const ChannelFormModal = ({
                 min={0}
                 max={1}
                 step={0.01}
+                placeholder="Default"
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+            <Form.Item
+              name="minFaceSizePx"
+              label="Min face size (px)"
+              extra="Faces smaller than this (in the camera's own pixels) are ignored. Lower catches people further away but uses more CPU. Leave blank for the security server's default, or 0 to turn the check off."
+            >
+              <InputNumber
+                min={0}
+                max={2000}
+                step={8}
+                precision={0}
+                placeholder="Default"
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+            <Form.Item
+              name="minFaceQuality"
+              label="Min face quality"
+              extra="Faces scoring below this (0-100: blur, angle, lighting, size) are ignored. Leave blank for the security server's default, or 0 to turn the check off."
+            >
+              <InputNumber
+                min={0}
+                max={100}
+                step={5}
+                precision={0}
                 placeholder="Default"
                 style={{ width: '100%' }}
               />

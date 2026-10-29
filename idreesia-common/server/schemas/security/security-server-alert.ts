@@ -31,6 +31,24 @@ export default new SimpleSchema({
   similarityScore: {
     type: Number,
   },
+  // The matched face's shorter side in camera pixels, and its quality (0-100)
+  // with the reasons it scored low. Missing on alerts raised before the
+  // security server checked faces.
+  faceSizePx: {
+    type: Number,
+    optional: true,
+  },
+  faceQualityScore: {
+    type: Number,
+    optional: true,
+  },
+  faceQualityReasons: {
+    type: Array,
+    optional: true,
+  },
+  'faceQualityReasons.$': {
+    type: String,
+  },
   // Object storage key, under StorageFolders.SecurityServerAlertImages.
   imageKey: {
     type: String,

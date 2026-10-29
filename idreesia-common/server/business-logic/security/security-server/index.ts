@@ -29,6 +29,7 @@ export type {
 export { SecurityServerSyncError } from './errors';
 export { SUPPORTED_IMAGE_MIME_TYPES } from './image-files';
 export type {
+  AlertFaceQuality,
   AlertPayload,
   AlertReview,
   ChannelValues,

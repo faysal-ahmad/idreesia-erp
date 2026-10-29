@@ -65,6 +65,8 @@ export async function getSecurityServerChanges(since: Date | null) {
             enabled: channel.enabled,
             similarityThreshold: channel.similarityThreshold ?? null,
             recognitionFps: channel.recognitionFps,
+            minFaceSizePx: channel.minFaceSizePx ?? null,
+            minFaceQuality: channel.minFaceQuality ?? null,
             connection: {
               host: channel.connection.host,
               port: channel.connection.port ?? null,
@@ -154,6 +156,8 @@ const channelDiffers = (
     enabled,
     similarityThreshold,
     recognitionFps,
+    minFaceSizePx,
+    minFaceQuality,
     connection,
   }: ChannelValues
 ) =>
@@ -161,6 +165,8 @@ const channelDiffers = (
   channel.enabled !== enabled ||
   (channel.similarityThreshold ?? null) !== (similarityThreshold ?? null) ||
   channel.recognitionFps !== recognitionFps ||
+  (channel.minFaceSizePx ?? null) !== (minFaceSizePx ?? null) ||
+  (channel.minFaceQuality ?? null) !== (minFaceQuality ?? null) ||
   channel.connection.host !== connection.host.trim() ||
   (channel.connection.port ?? null) !== (connection.port || null) ||
   blankToNull(channel.connection.path) !== blankToNull(connection.path) ||
@@ -204,6 +210,8 @@ export async function upsertSecurityServerChannelFromSync(
     enabled: push.enabled,
     similarityThreshold: push.similarityThreshold,
     recognitionFps: push.recognitionFps,
+    minFaceSizePx: push.minFaceSizePx ?? null,
+    minFaceQuality: push.minFaceQuality ?? null,
     connection: push.connection,
   };
   if (!existing) {

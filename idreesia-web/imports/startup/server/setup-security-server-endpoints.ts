@@ -12,6 +12,7 @@ import {
   upsertSecurityServerProfileFromSync,
   SecurityServerSyncError,
   SUPPORTED_IMAGE_MIME_TYPES,
+  type AlertFaceQuality,
   type ChannelSyncPush,
   type ChannelValues,
   type ProfileSyncImage,
@@ -92,6 +93,28 @@ const requireNumber = (body: Body, field: string): number => {
   return value;
 };
 
+// Missing or null reads as null.
+const optionalInteger = (
+  body: Body,
+  field: string,
+  min: number,
+  max: number
+): number | null => {
+  const value = body[field];
+  if (value == null) return null;
+  if (
+    typeof value !== 'number' ||
+    !Number.isInteger(value) ||
+    value < min ||
+    value > max
+  ) {
+    throw new ValidationError(
+      `'${field}' must be an integer between ${min} and ${max}, or null.`
+    );
+  }
+  return value;
+};
+
 const parseDate = (value: unknown, field: string): Date => {
   const date =
     typeof value === 'string' || typeof value === 'number'
@@ -132,6 +155,30 @@ const parseImage = (value: unknown, field: string): SyncImage => {
 const optionalImage = (body: Body, field: string): SyncImage | null =>
   body[field] == null ? null : parseImage(body[field], field);
 
+// { score: 0-100, reasons: string[] }; missing or null reads as null.
+const optionalFaceQuality = (
+  body: Body,
+  field: string
+): AlertFaceQuality | null => {
+  if (body[field] == null) return null;
+  const quality = requireObject(body, field);
+  const { score, reasons } = quality;
+  if (typeof score !== 'number' || score < 0 || score > 100) {
+    throw new ValidationError(
+      `${field}: 'score' must be a number from 0 to 100.`
+    );
+  }
+  if (
+    !Array.isArray(reasons) ||
+    reasons.some(reason => typeof reason !== 'string')
+  ) {
+    throw new ValidationError(
+      `${field}: 'reasons' must be an array of strings.`
+    );
+  }
+  return { score, reasons };
+};
+
 const requireObject = (body: Body, field: string): Body => {
   const value = body[field];
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -162,6 +209,8 @@ const parseChannel = (body: Body): ChannelValues => {
     enabled: requireBoolean(body, 'enabled'),
     similarityThreshold: similarityThreshold as number | null,
     recognitionFps: requireNumber(body, 'recognitionFps'),
+    minFaceSizePx: optionalInteger(body, 'minFaceSizePx', 0, 2000),
+    minFaceQuality: optionalInteger(body, 'minFaceQuality', 0, 100),
     connection: {
       host: requireString(connection, 'host'),
       port: port as number | null,
@@ -385,6 +434,8 @@ export function createSecurityServerRouter() {
           channelId: requireString(body, 'channelId'),
           timestamp: parseDate(body.timestamp, 'timestamp'),
           similarityScore: requireNumber(body, 'similarityScore'),
+          faceSizePx: optionalInteger(body, 'faceSizePx', 0, 100000),
+          faceQuality: optionalFaceQuality(body, 'faceQuality'),
           image: optionalImage(body, 'image'),
         }
       );

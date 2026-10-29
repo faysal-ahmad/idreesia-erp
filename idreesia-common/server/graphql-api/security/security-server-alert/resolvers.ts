@@ -1,6 +1,9 @@
 import { SecurityServerAlerts } from 'meteor/idreesia-common/server/collections/security';
 import { getFileUrl } from 'meteor/idreesia-common/server/file-storage';
-import { setSecurityServerAlertReview } from 'meteor/idreesia-common/server/business-logic/security/security-server';
+import {
+  createMissingSecurityServerAlertThumbnails,
+  setSecurityServerAlertReview,
+} from 'meteor/idreesia-common/server/business-logic/security/security-server';
 
 import {
   getSecurityServerAlertGroups,
@@ -17,9 +20,13 @@ interface ResolverMap {
 const resolvers: ResolverMap = {
   SecurityServerAlertType: {
     imageUrl: async alert => getFileUrl(alert.imageKey),
+    thumbnailUrl: async alert =>
+      alert.thumbnailKey ? getFileUrl(alert.thumbnailKey) : null,
   },
   SecurityServerAlertGroupType: {
     latestImageUrl: async group => getFileUrl(group.latestImageKey),
+    latestThumbnailUrl: async group =>
+      group.latestThumbnailKey ? getFileUrl(group.latestThumbnailKey) : null,
   },
   Query: {
     pagedSecurityServerAlerts: async (obj, { filter }) =>
@@ -39,6 +46,9 @@ const resolvers: ResolverMap = {
       await setSecurityServerAlertReview(user, _id, review ?? null);
       return SecurityServerAlerts.findOneAsync(_id);
     },
+
+    createMissingSecurityServerAlertThumbnails: async () =>
+      createMissingSecurityServerAlertThumbnails(),
   },
 };
 

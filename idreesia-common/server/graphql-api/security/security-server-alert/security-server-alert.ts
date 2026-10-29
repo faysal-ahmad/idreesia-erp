@@ -12,6 +12,7 @@ export default gql`
     timestamp: String
     similarityScore: Float
     imageUrl: String
+    thumbnailUrl: String
     review: String
     reviewedAt: String
 
@@ -36,6 +37,7 @@ export default gql`
     firstTimestamp: String
     lastTimestamp: String
     latestImageUrl: String
+    latestThumbnailUrl: String
   }
 
   type PagedSecurityServerAlertGroupType {
@@ -75,6 +77,10 @@ export default gql`
       _id: String!
       review: String
     ): SecurityServerAlertType
+      @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
+
+    # Returns how many thumbnails were created.
+    createMissingSecurityServerAlertThumbnails: Int
       @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
   }
 `;

@@ -12,6 +12,7 @@ export interface SecurityServerAlertDocument {
   timestamp: Date;
   similarityScore: number;
   imageKey: string;
+  thumbnailKey?: string;
   review?: 'CORRECT' | 'FALSE_POSITIVE';
   reviewedAt?: Date;
   createdAt?: Date;

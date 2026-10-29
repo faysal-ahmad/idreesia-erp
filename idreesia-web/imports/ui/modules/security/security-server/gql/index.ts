@@ -14,3 +14,4 @@ export { default as PAGED_SECURITY_SERVER_ALERTS } from './paged-security-server
 export { default as PAGED_SECURITY_SERVER_ALERT_GROUPS } from './paged-security-server-alert-groups';
 export { default as SECURITY_SERVER_ALERT_BY_ID } from './security-server-alert-by-id';
 export { default as SET_SECURITY_SERVER_ALERT_REVIEW } from './set-security-server-alert-review';
+export { default as CREATE_MISSING_SECURITY_SERVER_ALERT_THUMBNAILS } from './create-missing-security-server-alert-thumbnails';

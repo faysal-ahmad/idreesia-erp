@@ -22,6 +22,7 @@ const PAGED_SECURITY_SERVER_ALERTS: TypedDocumentNode<
         timestamp
         similarityScore
         imageUrl
+        thumbnailUrl
         review
       }
     }

@@ -1415,6 +1415,11 @@ export type AllSecurityServerChannelsQueryVariables = Exact<{
 
 export type AllSecurityServerChannelsQuery = { allSecurityServerChannels: Array<{ _id: string | null, name: string | null, enabled: boolean | null, similarityThreshold: number | null, recognitionFps: number | null, alertsCount: number | null, deletedAt: string | null, connection: { host: string | null, port: number | null, path: string | null, username: string | null, hasPassword: boolean | null } | null } | null> | null };
 
+export type CreateMissingSecurityServerAlertThumbnailsMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreateMissingSecurityServerAlertThumbnailsMutation = { createMissingSecurityServerAlertThumbnails: number | null };
+
 export type CreateSecurityServerChannelMutationVariables = Exact<{
   name: string;
   enabled: boolean;
@@ -1453,14 +1458,14 @@ export type PagedSecurityServerAlertGroupsQueryVariables = Exact<{
 }>;
 
 
-export type PagedSecurityServerAlertGroupsQuery = { pagedSecurityServerAlertGroups: { totalResults: number | null, data: Array<{ profileId: string | null, profileName: string | null, profileIsTest: boolean | null, alertCount: number | null, notReviewedCount: number | null, firstTimestamp: string | null, lastTimestamp: string | null, latestImageUrl: string | null } | null> | null } | null };
+export type PagedSecurityServerAlertGroupsQuery = { pagedSecurityServerAlertGroups: { totalResults: number | null, data: Array<{ profileId: string | null, profileName: string | null, profileIsTest: boolean | null, alertCount: number | null, notReviewedCount: number | null, firstTimestamp: string | null, lastTimestamp: string | null, latestImageUrl: string | null, latestThumbnailUrl: string | null } | null> | null } | null };
 
 export type PagedSecurityServerAlertsQueryVariables = Exact<{
   filter?: Types.SecurityServerAlertFilter | null | undefined;
 }>;
 
 
-export type PagedSecurityServerAlertsQuery = { pagedSecurityServerAlerts: { totalResults: number | null, data: Array<{ _id: string | null, profileId: string | null, profileName: string | null, profileIsTest: boolean | null, channelId: string | null, channelName: string | null, timestamp: string | null, similarityScore: number | null, imageUrl: string | null, review: string | null } | null> | null } | null };
+export type PagedSecurityServerAlertsQuery = { pagedSecurityServerAlerts: { totalResults: number | null, data: Array<{ _id: string | null, profileId: string | null, profileName: string | null, profileIsTest: boolean | null, channelId: string | null, channelName: string | null, timestamp: string | null, similarityScore: number | null, imageUrl: string | null, thumbnailUrl: string | null, review: string | null } | null> | null } | null };
 
 export type PagedSecurityServerProfilesQueryVariables = Exact<{
   filter?: Types.SecurityServerProfileFilter | null | undefined;

@@ -2089,6 +2089,7 @@ type SecurityServerAlertType {
     timestamp: String
     similarityScore: Float
     imageUrl: String
+    thumbnailUrl: String
     review: String
     reviewedAt: String
 
@@ -2113,6 +2114,7 @@ type SecurityServerAlertType {
     firstTimestamp: String
     lastTimestamp: String
     latestImageUrl: String
+    latestThumbnailUrl: String
   }
 
   type PagedSecurityServerAlertGroupType {
@@ -2152,6 +2154,10 @@ type SecurityServerAlertType {
       _id: String!
       review: String
     ): SecurityServerAlertType
+      @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
+
+    # Returns how many thumbnails were created.
+    createMissingSecurityServerAlertThumbnails: Int
       @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
   }
 

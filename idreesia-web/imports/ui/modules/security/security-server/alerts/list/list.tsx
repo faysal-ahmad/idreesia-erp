@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
-import { useQuery } from '@apollo/client/react';
+import { useMutation, useQuery } from '@apollo/client/react';
 import dayjs from 'dayjs';
-import { Button, Segmented, Space, Spin } from 'antd';
+import { Button, Dropdown, Segmented, Space, Spin } from 'antd';
 import {
+  FileImageOutlined,
+  SettingOutlined,
   SyncOutlined,
   TeamOutlined,
   UnorderedListOutlined,
@@ -19,12 +21,14 @@ import { message } from '/imports/ui/antd-feedback';
 
 import {
   ALL_SECURITY_SERVER_CHANNELS,
+  CREATE_MISSING_SECURITY_SERVER_ALERT_THUMBNAILS,
   PAGED_SECURITY_SERVER_ALERT_GROUPS,
   PAGED_SECURITY_SERVER_ALERTS,
   PAGED_SECURITY_SERVER_PROFILES,
 } from '../../gql';
 import AlertsTable, { type AlertRow } from '../../common/alerts-table';
 import FilterChips from '../../common/filter-chips';
+import useCanManage from '../../common/use-can-manage';
 import useListScrollY from '../../common/use-list-scroll-y';
 import AlertModal from '../alert-modal';
 import AlertGroupsTable, { type AlertGroupRow } from './alert-groups-table';
@@ -72,6 +76,9 @@ const List = ({ history, location }: Props) => {
   useBreadcrumbs(['Security', 'Security Server', 'Alerts']);
   const { containerRef, scrollY } = useListScrollY();
   const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
+  const canManage = useCanManage();
+  const [createMissingThumbnails, { loading: creatingThumbnails }] =
+    useMutation(CREATE_MISSING_SECURITY_SERVER_ALERT_THUMBNAILS);
 
   const { queryParams, setPageParams } = useQueryParams({
     history,
@@ -172,6 +179,49 @@ const List = ({ history, location }: Props) => {
       message.success('Data Reloaded', 2);
     });
 
+  const handleCreateMissingThumbnails = () => {
+    const hide = message.loading('Creating missing thumbnails...', 0);
+    createMissingThumbnails()
+      .then(({ data: result }) => {
+        hide();
+        const created =
+          result?.createMissingSecurityServerAlertThumbnails ?? 0;
+        message.success(
+          created === 1
+            ? 'Created 1 thumbnail.'
+            : `Created ${created} thumbnails.`,
+          3
+        );
+        refetch();
+      })
+      .catch((error: Error) => {
+        hide();
+        message.error(error.message, 5);
+      });
+  };
+
+  const getActionsMenu = () => (
+    <Dropdown
+      disabled={creatingThumbnails}
+      menu={{
+        items: [
+          {
+            key: 'create-missing-thumbnails',
+            label: (
+              <>
+                <FileImageOutlined />
+                &nbsp; Create missing thumbnails
+              </>
+            ),
+            onClick: handleCreateMissingThumbnails,
+          },
+        ],
+      }}
+    >
+      <Button icon={<SettingOutlined />} loading={creatingThumbnails} />
+    </Dropdown>
+  );
+
   const getTableHeader = () => (
     <div className="list-table-header">
       <div className="list-table-header-section">
@@ -199,6 +249,7 @@ const List = ({ history, location }: Props) => {
             onClick={handleRefresh}
             title="Reload Data"
           />
+          {canManage ? getActionsMenu() : null}
         </Space>
         <FilterChips
           chips={getAlertFilterChips(filterParams, profiles, channels)}

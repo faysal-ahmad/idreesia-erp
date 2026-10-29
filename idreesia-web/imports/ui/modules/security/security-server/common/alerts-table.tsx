@@ -47,15 +47,18 @@ const AlertsTable = ({
       title: 'Snapshot',
       key: 'snapshot',
       width: 140,
-      render: (_text: unknown, record: AlertRow) =>
-        record.imageUrl ? (
+      render: (_text: unknown, record: AlertRow) => {
+        // Older alerts may have no thumbnail yet.
+        const src = record.thumbnailUrl || record.imageUrl;
+        return src ? (
           <Image
             className="security-server-alert-thumb"
-            src={record.imageUrl}
+            src={src}
             alt="Alert snapshot"
             preview={false}
           />
-        ) : null,
+        ) : null;
+      },
     },
     {
       title: 'Time',

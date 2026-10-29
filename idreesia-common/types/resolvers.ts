@@ -787,6 +787,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createJob?: Resolver<Types.Maybe<ResolversTypes['JobType']>, ParentType, ContextType, RequireFields<Types.MutationCreateJobArgs, 'name'>>;
   createLocation?: Resolver<Types.Maybe<ResolversTypes['Location']>, ParentType, ContextType, RequireFields<Types.MutationCreateLocationArgs, 'name' | 'physicalStoreId'>>;
   createMehfil?: Resolver<Types.Maybe<ResolversTypes['MehfilType']>, ParentType, ContextType, RequireFields<Types.MutationCreateMehfilArgs, 'mehfilDate' | 'name'>>;
+  createMissingSecurityServerAlertThumbnails?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   createPeopleTag?: Resolver<Types.Maybe<ResolversTypes['PeopleTagType']>, ParentType, ContextType, RequireFields<Types.MutationCreatePeopleTagArgs, 'color' | 'moduleNames' | 'name' | 'textColor'>>;
   createPhysicalStore?: Resolver<Types.Maybe<ResolversTypes['PhysicalStore']>, ParentType, ContextType, RequireFields<Types.MutationCreatePhysicalStoreArgs, 'name'>>;
   createPurchaseForm?: Resolver<Types.Maybe<ResolversTypes['PurchaseForm']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchaseFormArgs, 'physicalStoreId' | 'purchaseDate' | 'purchasedBy' | 'receivedBy'>>;
@@ -1328,6 +1329,7 @@ export type SecurityServerAlertGroupTypeResolvers<ContextType = any, ParentType 
   firstTimestamp?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastTimestamp?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   latestImageUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  latestThumbnailUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   notReviewedCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   profileId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profileIsTest?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -1348,6 +1350,7 @@ export type SecurityServerAlertTypeResolvers<ContextType = any, ParentType exten
   review?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   reviewedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   similarityScore?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  thumbnailUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   timestamp?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;

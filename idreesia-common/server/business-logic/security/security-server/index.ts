@@ -13,6 +13,7 @@ export {
 export {
   upsertSecurityServerAlert,
   setSecurityServerAlertReview,
+  createMissingSecurityServerAlertThumbnails,
 } from './alerts';
 export {
   getSecurityServerChanges,

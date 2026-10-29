@@ -550,6 +550,7 @@ export type Mutation = {
   createJob?: Maybe<JobType>;
   createLocation?: Maybe<Location>;
   createMehfil?: Maybe<MehfilType>;
+  createMissingSecurityServerAlertThumbnails?: Maybe<Scalars['Int']['output']>;
   createPeopleTag?: Maybe<PeopleTagType>;
   createPhysicalStore?: Maybe<PhysicalStore>;
   createPurchaseForm?: Maybe<PurchaseForm>;
@@ -2750,6 +2751,7 @@ export type SecurityServerAlertGroupType = {
   firstTimestamp?: Maybe<Scalars['String']['output']>;
   lastTimestamp?: Maybe<Scalars['String']['output']>;
   latestImageUrl?: Maybe<Scalars['String']['output']>;
+  latestThumbnailUrl?: Maybe<Scalars['String']['output']>;
   notReviewedCount?: Maybe<Scalars['Int']['output']>;
   profileId?: Maybe<Scalars['String']['output']>;
   profileIsTest?: Maybe<Scalars['Boolean']['output']>;
@@ -2771,6 +2773,7 @@ export type SecurityServerAlertType = {
   review?: Maybe<Scalars['String']['output']>;
   reviewedAt?: Maybe<Scalars['String']['output']>;
   similarityScore?: Maybe<Scalars['Float']['output']>;
+  thumbnailUrl?: Maybe<Scalars['String']['output']>;
   timestamp?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;

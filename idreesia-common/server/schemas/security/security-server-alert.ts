@@ -35,6 +35,12 @@ export default new SimpleSchema({
   imageKey: {
     type: String,
   },
+  // A list-sized JPEG of the image, stored next to it. Missing when it could
+  // not be made; the lists then show the full image.
+  thumbnailKey: {
+    type: String,
+    optional: true,
+  },
   review: {
     type: String,
     optional: true,

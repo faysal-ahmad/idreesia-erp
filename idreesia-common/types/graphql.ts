@@ -1811,6 +1811,12 @@ export type PagedSecurityLogType = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PagedSecurityServerAlertGroupType = {
+  __typename?: 'PagedSecurityServerAlertGroupType';
+  data?: Maybe<Array<Maybe<SecurityServerAlertGroupType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
 export type PagedSecurityServerAlertType = {
   __typename?: 'PagedSecurityServerAlertType';
   data?: Maybe<Array<Maybe<SecurityServerAlertType>>>;
@@ -2134,6 +2140,7 @@ export type Query = {
   pagedScheduledJobs?: Maybe<PagedScheduledJobsType>;
   pagedSecurityAuditLogs?: Maybe<PagedAuditLogType>;
   pagedSecurityLogs?: Maybe<PagedSecurityLogType>;
+  pagedSecurityServerAlertGroups?: Maybe<PagedSecurityServerAlertGroupType>;
   pagedSecurityServerAlerts?: Maybe<PagedSecurityServerAlertType>;
   pagedSecurityServerProfiles?: Maybe<PagedSecurityServerProfileType>;
   pagedSecurityUsers?: Maybe<PagedUserType>;
@@ -2427,6 +2434,11 @@ export type QueryPagedSecurityAuditLogsArgs = {
 
 export type QueryPagedSecurityLogsArgs = {
   filter?: InputMaybe<SecurityLogFilter>;
+};
+
+
+export type QueryPagedSecurityServerAlertGroupsArgs = {
+  filter?: InputMaybe<SecurityServerAlertFilter>;
 };
 
 
@@ -2730,6 +2742,18 @@ export type SecurityServerAlertFilter = {
   profileId?: InputMaybe<Scalars['String']['input']>;
   review?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SecurityServerAlertGroupType = {
+  __typename?: 'SecurityServerAlertGroupType';
+  alertCount?: Maybe<Scalars['Int']['output']>;
+  firstTimestamp?: Maybe<Scalars['String']['output']>;
+  lastTimestamp?: Maybe<Scalars['String']['output']>;
+  latestImageUrl?: Maybe<Scalars['String']['output']>;
+  notReviewedCount?: Maybe<Scalars['Int']['output']>;
+  profileId?: Maybe<Scalars['String']['output']>;
+  profileIsTest?: Maybe<Scalars['Boolean']['output']>;
+  profileName?: Maybe<Scalars['String']['output']>;
 };
 
 export type SecurityServerAlertType = {

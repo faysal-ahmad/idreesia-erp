@@ -1,24 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
 import { useQuery } from '@apollo/client/react';
-import { Button, Space, Spin } from 'antd';
-import { SyncOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import { Button, Segmented, Space, Spin } from 'antd';
+import {
+  SyncOutlined,
+  TeamOutlined,
+  UnorderedListOutlined,
+} from '@ant-design/icons';
 
 import {
   useBreadcrumbs,
   useQueryParams,
 } from 'meteor/idreesia-common/hooks/common';
+import { Formats } from 'meteor/idreesia-common/constants';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { message } from '/imports/ui/antd-feedback';
 
 import {
   ALL_SECURITY_SERVER_CHANNELS,
+  PAGED_SECURITY_SERVER_ALERT_GROUPS,
   PAGED_SECURITY_SERVER_ALERTS,
   PAGED_SECURITY_SERVER_PROFILES,
 } from '../../gql';
 import AlertsTable, { type AlertRow } from '../../common/alerts-table';
 import FilterChips from '../../common/filter-chips';
 import useListScrollY from '../../common/use-list-scroll-y';
+import AlertModal from '../alert-modal';
+import AlertGroupsTable, { type AlertGroupRow } from './alert-groups-table';
 import ListFilter, {
   getAlertFilterChips,
   type AlertFilterParams,
@@ -32,6 +41,16 @@ const FILTER_PARAM_NAMES = [
   'startDate',
   'endDate',
   'includeTest',
+];
+
+// Written for a date the user cleared, as opposed to a blank one (today).
+const ANY_DATE = 'any';
+
+// 'grouped' rolls the alerts up per person; anything else is the flat list.
+const GROUPED_VIEW = 'grouped';
+const VIEW_OPTIONS = [
+  { label: 'List', value: 'list', icon: <UnorderedListOutlined /> },
+  { label: 'By Person', value: GROUPED_VIEW, icon: <TeamOutlined /> },
 ];
 
 // Profiles are a short watch list, so the filter dropdown loads them all.
@@ -52,22 +71,43 @@ type Props = RouteComponentProps;
 const List = ({ history, location }: Props) => {
   useBreadcrumbs(['Security', 'Security Server', 'Alerts']);
   const { containerRef, scrollY } = useListScrollY();
+  const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
 
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
-    paramNames: [...FILTER_PARAM_NAMES, 'pageIndex', 'pageSize'],
+    paramNames: [...FILTER_PARAM_NAMES, 'view', 'pageIndex', 'pageSize'],
   });
   const {
     profileId,
     channelId,
     review,
-    startDate,
-    endDate,
+    startDate: urlStartDate,
+    endDate: urlEndDate,
     includeTest,
+    view,
     pageIndex,
     pageSize,
   } = queryParams as Record<string, string | undefined>;
+  const isGrouped = view === GROUPED_VIEW;
+
+  // A blank date means today, so a fresh visit (and any older URL, where the
+  // dates were written blank) shows today's alerts. A date the user cleared
+  // is written as ANY_DATE instead, so it stays cleared.
+  const today = dayjs().format(Formats.DATE_FORMAT);
+  const toFilterDate = (value?: string) =>
+    value === ANY_DATE ? null : value || today;
+  const startDate = toFilterDate(urlStartDate);
+  const endDate = toFilterDate(urlEndDate);
+  const setParams = (params: Record<string, string | number | null>) => {
+    const next = { startDate, endDate, ...params };
+    setPageParams({
+      ...next,
+      startDate: next.startDate || ANY_DATE,
+      endDate: next.endDate || ANY_DATE,
+    });
+  };
+
   const filterParams: AlertFilterParams = {
     profileId,
     channelId,
@@ -77,9 +117,16 @@ const List = ({ history, location }: Props) => {
     includeTest,
   };
 
-  const { data, loading, refetch } = useQuery(PAGED_SECURITY_SERVER_ALERTS, {
-    variables: { filter: { ...filterParams, pageIndex, pageSize } },
+  const pageFilter = { ...filterParams, pageIndex, pageSize };
+  const alertsQuery = useQuery(PAGED_SECURITY_SERVER_ALERTS, {
+    variables: { filter: pageFilter },
+    skip: isGrouped,
   });
+  const groupsQuery = useQuery(PAGED_SECURITY_SERVER_ALERT_GROUPS, {
+    variables: { filter: pageFilter },
+    skip: !isGrouped,
+  });
+  const { data, loading, refetch } = isGrouped ? groupsQuery : alertsQuery;
   const { data: profilesData, loading: profilesLoading } = useQuery(
     PAGED_SECURITY_SERVER_PROFILES,
     {
@@ -97,7 +144,9 @@ const List = ({ history, location }: Props) => {
     { variables: { includeDeleted: true } }
   );
 
-  if (loading || profilesLoading || channelsLoading) {
+  // Only the first load replaces the page; later refetches (e.g. after a
+  // review is saved in the modal) keep the table and modal mounted.
+  if ((loading && !data) || profilesLoading || channelsLoading) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
         <Spin size="large" />
@@ -109,9 +158,13 @@ const List = ({ history, location }: Props) => {
     profilesData?.pagedSecurityServerProfiles?.data
   );
   const channels = toNamedOptions(channelsData?.allSecurityServerChannels);
-  const pagedAlerts = data?.pagedSecurityServerAlerts;
+  const pagedAlerts = alertsQuery.data?.pagedSecurityServerAlerts;
   const rows = (pagedAlerts?.data ?? []).filter(
     (row): row is AlertRow => row != null
+  );
+  const pagedGroups = groupsQuery.data?.pagedSecurityServerAlertGroups;
+  const groupRows = (pagedGroups?.data ?? []).filter(
+    (row): row is AlertGroupRow => row != null
   );
 
   const handleRefresh = () =>
@@ -121,14 +174,25 @@ const List = ({ history, location }: Props) => {
 
   const getTableHeader = () => (
     <div className="list-table-header">
-      <div className="list-table-header-section" />
+      <div className="list-table-header-section">
+        <Segmented
+          options={VIEW_OPTIONS}
+          value={isGrouped ? GROUPED_VIEW : 'list'}
+          onChange={nextView =>
+            setParams({
+              view: nextView === GROUPED_VIEW ? GROUPED_VIEW : null,
+              pageIndex: 0,
+            })
+          }
+        />
+      </div>
       <div className="list-table-header-utilities">
         <Space size={8}>
           <ListFilter
             queryParams={filterParams}
             profiles={profiles}
             channels={channels}
-            setPageParams={setPageParams}
+            setPageParams={setParams}
           />
           <Button
             icon={<SyncOutlined />}
@@ -138,9 +202,9 @@ const List = ({ history, location }: Props) => {
         </Space>
         <FilterChips
           chips={getAlertFilterChips(filterParams, profiles, channels)}
-          onClear={key => setPageParams({ [key]: null, pageIndex: 0 })}
+          onClear={key => setParams({ [key]: null, pageIndex: 0 })}
           onClearAll={() =>
-            setPageParams({
+            setParams({
               ...Object.fromEntries(FILTER_PARAM_NAMES.map(key => [key, null])),
               pageIndex: 0,
             })
@@ -150,18 +214,41 @@ const List = ({ history, location }: Props) => {
     </div>
   );
 
+  const paging = {
+    pageIndex: pageIndex ? toSafeInteger(pageIndex) : 0,
+    pageSize: pageSize ? toSafeInteger(pageSize) : 20,
+    onPageChange: (nextPageIndex: number, nextPageSize: number) =>
+      setParams({ pageIndex: nextPageIndex, pageSize: nextPageSize }),
+  };
+  const openAlert = (row: AlertRow) => setSelectedAlertId(row._id ?? null);
+
   return (
     <div className="list-container" ref={containerRef}>
-      <AlertsTable
-        rows={rows}
-        totalResults={pagedAlerts?.totalResults ?? 0}
-        pageIndex={pageIndex ? toSafeInteger(pageIndex) : 0}
-        pageSize={pageSize ? toSafeInteger(pageSize) : 20}
-        onPageChange={(nextPageIndex, nextPageSize) =>
-          setPageParams({ pageIndex: nextPageIndex, pageSize: nextPageSize })
-        }
-        title={getTableHeader}
-        scrollY={scrollY}
+      {isGrouped ? (
+        <AlertGroupsTable
+          rows={groupRows}
+          totalResults={pagedGroups?.totalResults ?? 0}
+          {...paging}
+          onAlertClick={openAlert}
+          filterParams={filterParams}
+          loading={loading}
+          title={getTableHeader}
+          scrollY={scrollY}
+        />
+      ) : (
+        <AlertsTable
+          rows={rows}
+          totalResults={pagedAlerts?.totalResults ?? 0}
+          {...paging}
+          onRowClick={openAlert}
+          loading={loading}
+          title={getTableHeader}
+          scrollY={scrollY}
+        />
+      )}
+      <AlertModal
+        alertId={selectedAlertId}
+        onClose={() => setSelectedAlertId(null)}
       />
     </div>
   );

@@ -1448,6 +1448,13 @@ export type DeleteSecurityServerProfileMutationVariables = Exact<{
 
 export type DeleteSecurityServerProfileMutation = { deleteSecurityServerProfile: number | null };
 
+export type PagedSecurityServerAlertGroupsQueryVariables = Exact<{
+  filter?: Types.SecurityServerAlertFilter | null | undefined;
+}>;
+
+
+export type PagedSecurityServerAlertGroupsQuery = { pagedSecurityServerAlertGroups: { totalResults: number | null, data: Array<{ profileId: string | null, profileName: string | null, profileIsTest: boolean | null, alertCount: number | null, notReviewedCount: number | null, firstTimestamp: string | null, lastTimestamp: string | null, latestImageUrl: string | null } | null> | null } | null };
+
 export type PagedSecurityServerAlertsQueryVariables = Exact<{
   filter?: Types.SecurityServerAlertFilter | null | undefined;
 }>;

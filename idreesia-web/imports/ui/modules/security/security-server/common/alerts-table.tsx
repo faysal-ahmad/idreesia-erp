@@ -22,8 +22,12 @@ interface Props {
   pageIndex: number;
   pageSize: number;
   onPageChange(pageIndex: number, pageSize: number): void;
+  onRowClick(row: AlertRow): void;
+  loading?: boolean;
   title?: () => React.ReactNode;
   scrollY?: number;
+  // Within one person's group the Profile column would repeat on every row.
+  hideProfile?: boolean;
 }
 
 const AlertsTable = ({
@@ -32,8 +36,11 @@ const AlertsTable = ({
   pageIndex,
   pageSize,
   onPageChange,
+  onRowClick,
+  loading,
   title,
   scrollY,
+  hideProfile,
 }: Props) => {
   const columns = [
     {
@@ -46,6 +53,7 @@ const AlertsTable = ({
             className="security-server-alert-thumb"
             src={record.imageUrl}
             alt="Alert snapshot"
+            preview={false}
           />
         ) : null,
     },
@@ -54,11 +62,7 @@ const AlertsTable = ({
       dataIndex: 'timestamp',
       key: 'timestamp',
       width: 190,
-      render: (text: string | null, record: AlertRow) => (
-        <Link to={paths.securityServerAlertViewPath(record._id!)}>
-          {formatDateTime(text)}
-        </Link>
-      ),
+      render: (text: string | null) => formatDateTime(text),
     },
     {
       title: 'Profile',
@@ -67,6 +71,7 @@ const AlertsTable = ({
         <>
           <Link
             to={`${paths.securityServerAlertsPath}?profileId=${record.profileId}`}
+            onClick={event => event.stopPropagation()}
           >
             {record.profileName}
           </Link>
@@ -102,7 +107,16 @@ const AlertsTable = ({
       className="list-table"
       rowKey="_id"
       dataSource={rows}
-      columns={columns}
+      columns={
+        hideProfile
+          ? columns.filter(column => column.key !== 'profileName')
+          : columns
+      }
+      onRow={record => ({
+        onClick: () => onRowClick(record),
+        style: { cursor: 'pointer' },
+      })}
+      loading={loading}
       title={title}
       size="middle"
       bordered

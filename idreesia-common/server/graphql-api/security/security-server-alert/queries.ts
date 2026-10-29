@@ -29,19 +29,15 @@ export interface SecurityServerAlertFilter {
   pageSize?: string | null;
 }
 
-export async function getSecurityServerAlerts(
-  filter: SecurityServerAlertFilter = {}
-) {
-  const {
-    profileId,
-    channelId,
-    review,
-    startDate,
-    endDate,
-    includeTest,
-    pageIndex = DEFAULT_PAGE_INDEX,
-    pageSize = DEFAULT_PAGE_SIZE,
-  } = filter;
+// The filter's $match stages, shared by the flat and the grouped lists.
+function getMatchPipeline({
+  profileId,
+  channelId,
+  review,
+  startDate,
+  endDate,
+  includeTest,
+}: SecurityServerAlertFilter): PipelineStage[] {
   const pipeline: PipelineStage[] = [];
 
   if (profileId) {
@@ -79,6 +75,13 @@ export async function getSecurityServerAlerts(
     pipeline.push({ $match: { profileIsTest: { $eq: false } } });
   }
 
+  return pipeline;
+}
+
+function getPaging({
+  pageIndex = DEFAULT_PAGE_INDEX,
+  pageSize = DEFAULT_PAGE_SIZE,
+}: SecurityServerAlertFilter) {
   const nPageIndex = Number.parseInt(
     String(pageIndex || DEFAULT_PAGE_INDEX),
     10
@@ -87,12 +90,62 @@ export async function getSecurityServerAlerts(
   if (Number.isNaN(nPageIndex) || Number.isNaN(nPageSize)) {
     throw new Error('Invalid value passed for pageIndex or pageSize');
   }
+  return [
+    { $skip: nPageIndex * nPageSize },
+    { $limit: nPageSize },
+  ] as PipelineStage[];
+}
 
+export async function getSecurityServerAlerts(
+  filter: SecurityServerAlertFilter = {}
+) {
+  const pipeline = getMatchPipeline(filter);
   const countingPipeline = pipeline.concat({ $count: 'total' });
   const resultsPipeline = pipeline.concat([
     { $sort: { timestamp: -1, _id: 1 } },
-    { $skip: nPageIndex * nPageSize },
-    { $limit: nPageSize },
+    ...getPaging(filter),
+  ]);
+
+  const [data, totalResults] = await Promise.all([
+    SecurityServerAlerts.aggregate(resultsPipeline),
+    SecurityServerAlerts.aggregate<CountResult>(countingPipeline),
+  ]);
+
+  return {
+    data,
+    totalResults: get(totalResults, ['0', 'total'], 0),
+  };
+}
+
+/**
+ * The filtered alerts rolled up per profile (one profile per watched person),
+ * most recently seen first. Each group carries its latest alert's snapshot.
+ */
+export async function getSecurityServerAlertGroups(
+  filter: SecurityServerAlertFilter = {}
+) {
+  const pipeline = getMatchPipeline(filter).concat([
+    { $sort: { timestamp: -1, _id: 1 } },
+    {
+      $group: {
+        _id: '$profileId',
+        profileName: { $first: '$profileName' },
+        profileIsTest: { $first: '$profileIsTest' },
+        alertCount: { $sum: 1 },
+        notReviewedCount: {
+          $sum: { $cond: [{ $ifNull: ['$review', false] }, 0, 1] },
+        },
+        firstTimestamp: { $last: '$timestamp' },
+        lastTimestamp: { $first: '$timestamp' },
+        latestImageKey: { $first: '$imageKey' },
+      },
+    },
+  ]);
+  const countingPipeline = pipeline.concat({ $count: 'total' });
+  const resultsPipeline = pipeline.concat([
+    { $sort: { lastTimestamp: -1, _id: 1 } },
+    ...getPaging(filter),
+    { $addFields: { profileId: '$_id' } },
   ]);
 
   const [data, totalResults] = await Promise.all([

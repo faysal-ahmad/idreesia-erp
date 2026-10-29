@@ -26,6 +26,23 @@ export default gql`
     data: [SecurityServerAlertType]
   }
 
+  # The filtered alerts of one profile, rolled up.
+  type SecurityServerAlertGroupType {
+    profileId: String
+    profileName: String
+    profileIsTest: Boolean
+    alertCount: Int
+    notReviewedCount: Int
+    firstTimestamp: String
+    lastTimestamp: String
+    latestImageUrl: String
+  }
+
+  type PagedSecurityServerAlertGroupType {
+    totalResults: Int
+    data: [SecurityServerAlertGroupType]
+  }
+
   input SecurityServerAlertFilter {
     profileId: String
     channelId: String
@@ -41,6 +58,11 @@ export default gql`
     pagedSecurityServerAlerts(
       filter: SecurityServerAlertFilter
     ): PagedSecurityServerAlertType
+      @checkPermissions(permissions: [SECURITY_VIEW_SECURITY_SERVER_DATA])
+
+    pagedSecurityServerAlertGroups(
+      filter: SecurityServerAlertFilter
+    ): PagedSecurityServerAlertGroupType
       @checkPermissions(permissions: [SECURITY_VIEW_SECURITY_SERVER_DATA])
 
     securityServerAlertById(_id: String!): SecurityServerAlertType

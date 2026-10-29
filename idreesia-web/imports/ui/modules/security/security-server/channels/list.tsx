@@ -169,6 +169,13 @@ const List = (_props: Props) => {
       render: (enabled: boolean | null) => (enabled ? 'Yes' : 'No'),
     },
     {
+      title: 'Recognition Rate',
+      dataIndex: 'recognitionFps',
+      key: 'recognitionFps',
+      render: (value: number | null) =>
+        value == null ? 'Default' : `${value} fps`,
+    },
+    {
       title: 'Similarity Threshold',
       dataIndex: 'similarityThreshold',
       key: 'similarityThreshold',

@@ -1491,6 +1491,11 @@ export type SecurityServerAlertByIdQueryVariables = Exact<{
 
 export type SecurityServerAlertByIdQuery = { securityServerAlertById: { _id: string | null, profileId: string | null, profileName: string | null, profileIsTest: boolean | null, channelId: string | null, channelName: string | null, timestamp: string | null, similarityScore: number | null, faceSizePx: number | null, faceQualityScore: number | null, faceQualityReasons: Array<string | null> | null, imageUrl: string | null, review: string | null, reviewedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
+export type SecurityServerAlertSyncStatusQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SecurityServerAlertSyncStatusQuery = { securityServerAlertSyncStatus: { lastSyncedAt: string | null } | null };
+
 export type SecurityServerChannelByIdQueryVariables = Exact<{
   _id: string;
 }>;

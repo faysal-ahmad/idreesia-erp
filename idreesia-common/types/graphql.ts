@@ -2168,6 +2168,7 @@ export type Query = {
   securityMehfilLangarDishById?: Maybe<MehfilLangarDishType>;
   securityMehfilLangarLocationById?: Maybe<MehfilLangarLocationType>;
   securityServerAlertById?: Maybe<SecurityServerAlertType>;
+  securityServerAlertSyncStatus?: Maybe<SecurityServerAlertSyncStatusType>;
   securityServerChannelById?: Maybe<SecurityServerChannelType>;
   securityServerProfileById?: Maybe<SecurityServerProfileType>;
   securityVisitorByCnic?: Maybe<PersonType>;
@@ -2760,6 +2761,11 @@ export type SecurityServerAlertGroupType = {
   profileId?: Maybe<Scalars['String']['output']>;
   profileIsTest?: Maybe<Scalars['Boolean']['output']>;
   profileName?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityServerAlertSyncStatusType = {
+  __typename?: 'SecurityServerAlertSyncStatusType';
+  lastSyncedAt?: Maybe<Scalars['String']['output']>;
 };
 
 export type SecurityServerAlertType = {

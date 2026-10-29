@@ -25,6 +25,7 @@ import {
   PAGED_SECURITY_SERVER_ALERT_GROUPS,
   PAGED_SECURITY_SERVER_ALERTS,
   PAGED_SECURITY_SERVER_PROFILES,
+  SECURITY_SERVER_ALERT_SYNC_STATUS,
 } from '../../gql';
 import AlertsTable, { type AlertRow } from '../../common/alerts-table';
 import FilterChips from '../../common/filter-chips';
@@ -32,6 +33,7 @@ import useCanManage from '../../common/use-can-manage';
 import useListScrollY from '../../common/use-list-scroll-y';
 import AlertModal from '../alert-modal';
 import AlertGroupsTable, { type AlertGroupRow } from './alert-groups-table';
+import LastSync from './last-sync';
 import ListFilter, {
   getAlertFilterChips,
   type AlertFilterParams,
@@ -56,6 +58,10 @@ const VIEW_OPTIONS = [
   { label: 'List', value: 'list', icon: <UnorderedListOutlined /> },
   { label: 'By Person', value: GROUPED_VIEW, icon: <TeamOutlined /> },
 ];
+
+// The security server checks in about once a minute; poll so the page notices
+// when it stops.
+const SYNC_STATUS_POLL_MS = 60_000;
 
 // Profiles are a short watch list, so the filter dropdown loads them all.
 const ALL_PROFILES_PAGE_SIZE = '1000';
@@ -150,6 +156,10 @@ const List = ({ history, location }: Props) => {
     ALL_SECURITY_SERVER_CHANNELS,
     { variables: { includeDeleted: true } }
   );
+  const { data: syncStatusData, refetch: refetchSyncStatus } = useQuery(
+    SECURITY_SERVER_ALERT_SYNC_STATUS,
+    { pollInterval: SYNC_STATUS_POLL_MS }
+  );
 
   // Only the first load replaces the page; later refetches (e.g. after a
   // review is saved in the modal) keep the table and modal mounted.
@@ -175,7 +185,7 @@ const List = ({ history, location }: Props) => {
   );
 
   const handleRefresh = () =>
-    refetch().then(() => {
+    Promise.all([refetch(), refetchSyncStatus()]).then(() => {
       message.success('Data Reloaded', 2);
     });
 
@@ -233,6 +243,11 @@ const List = ({ history, location }: Props) => {
               view: nextView === GROUPED_VIEW ? GROUPED_VIEW : null,
               pageIndex: 0,
             })
+          }
+        />
+        <LastSync
+          lastSyncedAt={
+            syncStatusData?.securityServerAlertSyncStatus?.lastSyncedAt
           }
         />
       </div>

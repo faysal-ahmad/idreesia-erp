@@ -25,6 +25,12 @@ export default gql`
     updatedBy: String
   }
 
+  # When the security server last got through to the ERP with its alerts. It
+  # checks in after every push run, even with nothing to send.
+  type SecurityServerAlertSyncStatusType {
+    lastSyncedAt: String
+  }
+
   type PagedSecurityServerAlertType {
     totalResults: Int
     data: [SecurityServerAlertType]
@@ -71,6 +77,9 @@ export default gql`
       @checkPermissions(permissions: [SECURITY_VIEW_SECURITY_SERVER_DATA])
 
     securityServerAlertById(_id: String!): SecurityServerAlertType
+      @checkPermissions(permissions: [SECURITY_VIEW_SECURITY_SERVER_DATA])
+
+    securityServerAlertSyncStatus: SecurityServerAlertSyncStatusType
       @checkPermissions(permissions: [SECURITY_VIEW_SECURITY_SERVER_DATA])
   }
 

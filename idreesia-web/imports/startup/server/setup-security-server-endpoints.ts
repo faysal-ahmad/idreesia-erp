@@ -7,6 +7,7 @@ import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/secu
 import {
   getSecurityServerChanges,
   getSecurityServerProfileImage,
+  recordSecurityServerAlertSync,
   upsertSecurityServerAlert,
   upsertSecurityServerChannelFromSync,
   upsertSecurityServerProfileFromSync,
@@ -440,6 +441,18 @@ export function createSecurityServerRouter() {
         }
       );
       res.status(200).json({ _id });
+    })
+  );
+
+  /**
+   * Sent by the security server after every alert push run, even one with
+   * nothing to send, so the alerts page can show when it last got through.
+   */
+  router.post(
+    '/alerts/heartbeat',
+    handle(async (req, res) => {
+      await recordSecurityServerAlertSync();
+      res.status(204).end();
     })
   );
 

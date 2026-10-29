@@ -16,6 +16,10 @@ export {
   createMissingSecurityServerAlertThumbnails,
 } from './alerts';
 export {
+  recordSecurityServerAlertSync,
+  getSecurityServerAlertLastSyncedAt,
+} from './alert-sync-status';
+export {
   getSecurityServerChanges,
   getSecurityServerProfileImage,
   upsertSecurityServerChannelFromSync,

@@ -170,6 +170,7 @@ export type ResolversTypes = ResolversObject<{
   SecurityLogUserOption: ResolverTypeWrapper<Types.SecurityLogUserOption>;
   SecurityServerAlertFilter: Types.SecurityServerAlertFilter;
   SecurityServerAlertGroupType: ResolverTypeWrapper<Types.SecurityServerAlertGroupType>;
+  SecurityServerAlertSyncStatusType: ResolverTypeWrapper<Types.SecurityServerAlertSyncStatusType>;
   SecurityServerAlertType: ResolverTypeWrapper<Types.SecurityServerAlertType>;
   SecurityServerChannelConnectionInput: Types.SecurityServerChannelConnectionInput;
   SecurityServerChannelConnectionType: ResolverTypeWrapper<Types.SecurityServerChannelConnectionType>;
@@ -290,6 +291,7 @@ export type ResolversParentTypes = ResolversObject<{
   SecurityLogUserOption: Types.SecurityLogUserOption;
   SecurityServerAlertFilter: Types.SecurityServerAlertFilter;
   SecurityServerAlertGroupType: Types.SecurityServerAlertGroupType;
+  SecurityServerAlertSyncStatusType: Types.SecurityServerAlertSyncStatusType;
   SecurityServerAlertType: Types.SecurityServerAlertType;
   SecurityServerChannelConnectionInput: Types.SecurityServerChannelConnectionInput;
   SecurityServerChannelConnectionType: Types.SecurityServerChannelConnectionType;
@@ -1243,6 +1245,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   securityMehfilLangarDishById?: Resolver<Types.Maybe<ResolversTypes['MehfilLangarDishType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityMehfilLangarDishByIdArgs, 'id'>>;
   securityMehfilLangarLocationById?: Resolver<Types.Maybe<ResolversTypes['MehfilLangarLocationType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityMehfilLangarLocationByIdArgs, 'id'>>;
   securityServerAlertById?: Resolver<Types.Maybe<ResolversTypes['SecurityServerAlertType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityServerAlertByIdArgs, '_id'>>;
+  securityServerAlertSyncStatus?: Resolver<Types.Maybe<ResolversTypes['SecurityServerAlertSyncStatusType']>, ParentType, ContextType>;
   securityServerChannelById?: Resolver<Types.Maybe<ResolversTypes['SecurityServerChannelType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityServerChannelByIdArgs, '_id'>>;
   securityServerProfileById?: Resolver<Types.Maybe<ResolversTypes['SecurityServerProfileType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityServerProfileByIdArgs, '_id'>>;
   securityVisitorByCnic?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityVisitorByCnicArgs, 'cnicNumbers'>>;
@@ -1334,6 +1337,10 @@ export type SecurityServerAlertGroupTypeResolvers<ContextType = any, ParentType 
   profileId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profileIsTest?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   profileName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type SecurityServerAlertSyncStatusTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityServerAlertSyncStatusType'] = ResolversParentTypes['SecurityServerAlertSyncStatusType']> = ResolversObject<{
+  lastSyncedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type SecurityServerAlertTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityServerAlertType'] = ResolversParentTypes['SecurityServerAlertType']> = ResolversObject<{
@@ -1636,6 +1643,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   SecurityLogType?: SecurityLogTypeResolvers<ContextType>;
   SecurityLogUserOption?: SecurityLogUserOptionResolvers<ContextType>;
   SecurityServerAlertGroupType?: SecurityServerAlertGroupTypeResolvers<ContextType>;
+  SecurityServerAlertSyncStatusType?: SecurityServerAlertSyncStatusTypeResolvers<ContextType>;
   SecurityServerAlertType?: SecurityServerAlertTypeResolvers<ContextType>;
   SecurityServerChannelConnectionType?: SecurityServerChannelConnectionTypeResolvers<ContextType>;
   SecurityServerChannelType?: SecurityServerChannelTypeResolvers<ContextType>;

@@ -183,6 +183,10 @@ Store `_id` and each photo's `_id` as their `externalId`. `missingImages` lists 
 
 An alert can still refer to a profile or channel that was just deleted in the ERP, if the server hasn't synced the deletion yet. It's accepted and kept as history.
 
+### `POST /api/security-server/alerts/heartbeat`
+
+Sent after every alert push run, including runs with nothing to send. The body is empty (`{}`). Returns `204`. The ERP records the time, by its own clock, and shows it on the alerts page as "Last synced", so a quiet camera isn't mistaken for a security server that's down or can't reach the ERP. The page warns once there's been no check-in for 5 minutes.
+
 ## Error handling summary
 
 | Status | Retry? |

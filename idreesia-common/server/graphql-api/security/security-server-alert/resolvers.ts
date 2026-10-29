@@ -2,6 +2,7 @@ import { SecurityServerAlerts } from 'meteor/idreesia-common/server/collections/
 import { getFileUrl } from 'meteor/idreesia-common/server/file-storage';
 import {
   createMissingSecurityServerAlertThumbnails,
+  getSecurityServerAlertLastSyncedAt,
   setSecurityServerAlertReview,
 } from 'meteor/idreesia-common/server/business-logic/security/security-server';
 
@@ -37,6 +38,10 @@ const resolvers: ResolverMap = {
 
     securityServerAlertById: async (obj, { _id }) =>
       SecurityServerAlerts.findOneAsync(_id),
+
+    securityServerAlertSyncStatus: async () => ({
+      lastSyncedAt: await getSecurityServerAlertLastSyncedAt(),
+    }),
   },
   Mutation: {
     setSecurityServerAlertReview: async (obj, { _id, review }, { user }) => {

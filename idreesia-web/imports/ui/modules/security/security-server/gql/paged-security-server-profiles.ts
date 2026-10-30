@@ -22,7 +22,9 @@ const PAGED_SECURITY_SERVER_PROFILES: TypedDocumentNode<
         images {
           _id
           imageUrl
+          thumbnailUrl
         }
+        defaultImageId
       }
     }
   }

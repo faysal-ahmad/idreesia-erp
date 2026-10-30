@@ -16,6 +16,8 @@ export interface SecurityServerChannelDocument {
   enabled: boolean;
   similarityThreshold?: number;
   recognitionFps: number;
+  minFaceSizePx?: number;
+  minFaceQuality?: number;
   connection: SecurityServerChannelConnectionDocument;
   createdAt?: Date;
   createdBy?: string;

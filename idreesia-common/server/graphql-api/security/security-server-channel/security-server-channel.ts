@@ -16,6 +16,8 @@ export default gql`
     enabled: Boolean
     similarityThreshold: Float
     recognitionFps: Float
+    minFaceSizePx: Int
+    minFaceQuality: Int
     connection: SecurityServerChannelConnectionType
 
     alertsCount: Int
@@ -52,6 +54,9 @@ export default gql`
       enabled: Boolean!
       similarityThreshold: Float
       recognitionFps: Float!
+      # Null = the security server's default; 0 = no check.
+      minFaceSizePx: Int
+      minFaceQuality: Int
       connection: SecurityServerChannelConnectionInput!
     ): SecurityServerChannelType
       @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
@@ -62,6 +67,9 @@ export default gql`
       enabled: Boolean!
       similarityThreshold: Float
       recognitionFps: Float!
+      # Null = the security server's default; 0 = no check.
+      minFaceSizePx: Int
+      minFaceQuality: Int
       connection: SecurityServerChannelConnectionInput!
     ): SecurityServerChannelType
       @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])

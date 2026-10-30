@@ -550,6 +550,8 @@ export type Mutation = {
   createJob?: Maybe<JobType>;
   createLocation?: Maybe<Location>;
   createMehfil?: Maybe<MehfilType>;
+  createMissingSecurityServerAlertThumbnails?: Maybe<Scalars['Int']['output']>;
+  createMissingSecurityServerProfileThumbnails?: Maybe<Scalars['Int']['output']>;
   createPeopleTag?: Maybe<PeopleTagType>;
   createPhysicalStore?: Maybe<PhysicalStore>;
   createPurchaseForm?: Maybe<PurchaseForm>;
@@ -631,6 +633,7 @@ export type Mutation = {
   setPermissions?: Maybe<UserType>;
   setScheduledJobEnabled?: Maybe<Scalars['Boolean']['output']>;
   setSecurityServerAlertReview?: Maybe<SecurityServerAlertType>;
+  setSecurityServerProfileDefaultImage?: Maybe<SecurityServerProfileType>;
   setSecurityUserPermissions?: Maybe<UserType>;
   setSecurityVisitorImage?: Maybe<PersonType>;
   setStockItemImage?: Maybe<StockItem>;
@@ -928,6 +931,8 @@ export type MutationCreateSecurityMehfilLangarLocationArgs = {
 export type MutationCreateSecurityServerChannelArgs = {
   connection: SecurityServerChannelConnectionInput;
   enabled: Scalars['Boolean']['input'];
+  minFaceQuality?: InputMaybe<Scalars['Int']['input']>;
+  minFaceSizePx?: InputMaybe<Scalars['Int']['input']>;
   name: Scalars['String']['input'];
   recognitionFps: Scalars['Float']['input'];
   similarityThreshold?: InputMaybe<Scalars['Float']['input']>;
@@ -1400,6 +1405,12 @@ export type MutationSetSecurityServerAlertReviewArgs = {
 };
 
 
+export type MutationSetSecurityServerProfileDefaultImageArgs = {
+  imageId: Scalars['String']['input'];
+  profileId: Scalars['String']['input'];
+};
+
+
 export type MutationSetSecurityUserPermissionsArgs = {
   permissions: Array<InputMaybe<Scalars['String']['input']>>;
   userId: Scalars['String']['input'];
@@ -1629,6 +1640,8 @@ export type MutationUpdateSecurityServerChannelArgs = {
   _id: Scalars['String']['input'];
   connection: SecurityServerChannelConnectionInput;
   enabled: Scalars['Boolean']['input'];
+  minFaceQuality?: InputMaybe<Scalars['Int']['input']>;
+  minFaceSizePx?: InputMaybe<Scalars['Int']['input']>;
   name: Scalars['String']['input'];
   recognitionFps: Scalars['Float']['input'];
   similarityThreshold?: InputMaybe<Scalars['Float']['input']>;
@@ -2163,6 +2176,7 @@ export type Query = {
   securityMehfilLangarDishById?: Maybe<MehfilLangarDishType>;
   securityMehfilLangarLocationById?: Maybe<MehfilLangarLocationType>;
   securityServerAlertById?: Maybe<SecurityServerAlertType>;
+  securityServerAlertSyncStatus?: Maybe<SecurityServerAlertSyncStatusType>;
   securityServerChannelById?: Maybe<SecurityServerChannelType>;
   securityServerProfileById?: Maybe<SecurityServerProfileType>;
   securityVisitorByCnic?: Maybe<PersonType>;
@@ -2750,10 +2764,16 @@ export type SecurityServerAlertGroupType = {
   firstTimestamp?: Maybe<Scalars['String']['output']>;
   lastTimestamp?: Maybe<Scalars['String']['output']>;
   latestImageUrl?: Maybe<Scalars['String']['output']>;
+  latestThumbnailUrl?: Maybe<Scalars['String']['output']>;
   notReviewedCount?: Maybe<Scalars['Int']['output']>;
   profileId?: Maybe<Scalars['String']['output']>;
   profileIsTest?: Maybe<Scalars['Boolean']['output']>;
   profileName?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityServerAlertSyncStatusType = {
+  __typename?: 'SecurityServerAlertSyncStatusType';
+  lastSyncedAt?: Maybe<Scalars['String']['output']>;
 };
 
 export type SecurityServerAlertType = {
@@ -2764,6 +2784,9 @@ export type SecurityServerAlertType = {
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
   externalId?: Maybe<Scalars['String']['output']>;
+  faceQualityReasons?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  faceQualityScore?: Maybe<Scalars['Float']['output']>;
+  faceSizePx?: Maybe<Scalars['Int']['output']>;
   imageUrl?: Maybe<Scalars['String']['output']>;
   profileId?: Maybe<Scalars['String']['output']>;
   profileIsTest?: Maybe<Scalars['Boolean']['output']>;
@@ -2771,6 +2794,7 @@ export type SecurityServerAlertType = {
   review?: Maybe<Scalars['String']['output']>;
   reviewedAt?: Maybe<Scalars['String']['output']>;
   similarityScore?: Maybe<Scalars['Float']['output']>;
+  thumbnailUrl?: Maybe<Scalars['String']['output']>;
   timestamp?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
@@ -2802,6 +2826,8 @@ export type SecurityServerChannelType = {
   createdBy?: Maybe<Scalars['String']['output']>;
   deletedAt?: Maybe<Scalars['String']['output']>;
   enabled?: Maybe<Scalars['Boolean']['output']>;
+  minFaceQuality?: Maybe<Scalars['Int']['output']>;
+  minFaceSizePx?: Maybe<Scalars['Int']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   recognitionFps?: Maybe<Scalars['Float']['output']>;
   similarityThreshold?: Maybe<Scalars['Float']['output']>;
@@ -2821,6 +2847,7 @@ export type SecurityServerProfileImageType = {
   __typename?: 'SecurityServerProfileImageType';
   _id?: Maybe<Scalars['String']['output']>;
   imageUrl?: Maybe<Scalars['String']['output']>;
+  thumbnailUrl?: Maybe<Scalars['String']['output']>;
   uploadedAt?: Maybe<Scalars['String']['output']>;
 };
 
@@ -2830,6 +2857,7 @@ export type SecurityServerProfileType = {
   alertsCount?: Maybe<Scalars['Int']['output']>;
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
+  defaultImageId?: Maybe<Scalars['String']['output']>;
   deletedAt?: Maybe<Scalars['String']['output']>;
   images?: Maybe<Array<Maybe<SecurityServerProfileImageType>>>;
   isTest?: Maybe<Scalars['Boolean']['output']>;

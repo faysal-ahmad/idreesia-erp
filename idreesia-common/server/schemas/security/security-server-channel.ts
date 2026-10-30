@@ -49,6 +49,20 @@ export default new SimpleSchema({
   recognitionFps: {
     type: Number,
   },
+  // Detected faces smaller than this (shorter side, camera pixels) or scoring
+  // below this quality (0-100) are skipped before matching. Unset = the
+  // security server's default; 0 = no check.
+  minFaceSizePx: {
+    type: SimpleSchema.Integer,
+    optional: true,
+    min: 0,
+  },
+  minFaceQuality: {
+    type: SimpleSchema.Integer,
+    optional: true,
+    min: 0,
+    max: 100,
+  },
   connection: {
     type: SecurityServerChannelConnection,
   },

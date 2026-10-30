@@ -4,6 +4,8 @@ export default gql`
   type SecurityServerProfileImageType {
     _id: String
     imageUrl: String
+    # Null for photos stored before thumbnails existed; use imageUrl then.
+    thumbnailUrl: String
     uploadedAt: String
   }
 
@@ -12,6 +14,9 @@ export default gql`
     name: String
     isTest: Boolean
     images: [SecurityServerProfileImageType]
+    # The photo shown for the profile: the chosen default, or the oldest
+    # photo when none was chosen. Null with no photos.
+    defaultImageId: String
 
     alertsCount: Int
 
@@ -74,6 +79,16 @@ export default gql`
       profileId: String!
       imageId: String!
     ): SecurityServerProfileType
+      @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
+
+    setSecurityServerProfileDefaultImage(
+      profileId: String!
+      imageId: String!
+    ): SecurityServerProfileType
+      @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
+
+    # Returns how many thumbnails were created.
+    createMissingSecurityServerProfileThumbnails: Int
       @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
   }
 `;

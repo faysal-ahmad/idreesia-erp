@@ -8,11 +8,15 @@ import {
   SecurityServerProfiles,
 } from 'meteor/idreesia-common/server/collections/security';
 import {
-  deleteFile,
   deleteFiles,
+  getFile,
   putFile,
   StorageFolders,
 } from 'meteor/idreesia-common/server/file-storage';
+import type {
+  SecurityServerProfileDocument,
+  SecurityServerProfileImageDocument,
+} from 'meteor/idreesia-common/server/collections/security/security-server-profiles';
 
 import { ProfileImageRejectedError } from './profile-image-rejected-error';
 import type { ProfileValues, SyncImage, SyncUser } from './types';
@@ -21,6 +25,40 @@ import type { ProfileValues, SyncImage, SyncUser } from './types';
 // applied), no larger than this on the long side, re-encoded as JPEG.
 const MAX_IMAGE_SIDE = 1280;
 const JPEG_QUALITY = 90;
+
+// 2x the thumbnail in the profiles list (40x40, security-server.styles.css)
+// for retina.
+const THUMBNAIL_SIDE = 80;
+const THUMBNAIL_JPEG_QUALITY = 80;
+
+/**
+ * Stores a list-sized JPEG of a profile photo next to it and returns its key,
+ * or null when it could not be made - the list then falls back to the photo.
+ */
+async function putProfileThumbnail(
+  imageKey: string,
+  jpeg: Buffer
+): Promise<string | null> {
+  try {
+    const thumbnail = await sharp(jpeg)
+      .resize(THUMBNAIL_SIDE, THUMBNAIL_SIDE, { fit: 'cover' })
+      .jpeg({ quality: THUMBNAIL_JPEG_QUALITY })
+      .toBuffer();
+    const thumbnailKey = imageKey.replace(/\.jpg$/, '.thumb.jpg');
+    await putFile(thumbnailKey, thumbnail, 'image/jpeg');
+    return thumbnailKey;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`Profile thumbnail failed for '${imageKey}':`, error);
+    return null;
+  }
+}
+
+const getImageFileKeys = ({
+  imageKey,
+  thumbnailKey,
+}: SecurityServerProfileImageDocument) =>
+  thumbnailKey ? [imageKey, thumbnailKey] : [imageKey];
 
 const REJECTION_MESSAGES: Record<string, string> = {
   [ImageVectorStatus.NO_FACE]: 'No face found in the image.',
@@ -91,7 +129,7 @@ export async function deleteSecurityServerProfile(
   profileId: string
 ): Promise<void> {
   const existing = await getActiveProfile(profileId);
-  const imageKeys = existing.images.map(image => image.imageKey);
+  const imageKeys = existing.images.flatMap(getImageFileKeys);
 
   const date = new Date();
   await SecurityServerProfiles.updateAsync(profileId, {
@@ -102,6 +140,7 @@ export async function deleteSecurityServerProfile(
       updatedAt: date,
       updatedBy: user._id,
     },
+    $unset: { defaultImageId: '' },
   });
 
   if (imageKeys.length > 0) {
@@ -163,6 +202,7 @@ export async function storeSecurityServerProfileImage(
   const imageId = Random.id();
   const imageKey = `${StorageFolders.SecurityServerProfileImages}/${profileId}/${imageId}.jpg`;
   await putFile(imageKey, jpeg, 'image/jpeg');
+  const thumbnailKey = await putProfileThumbnail(imageKey, jpeg);
 
   const date = new Date();
   await SecurityServerProfiles.updateAsync(profileId, {
@@ -171,6 +211,7 @@ export async function storeSecurityServerProfileImage(
         _id: imageId,
         ...(externalId ? { externalId } : {}),
         imageKey,
+        ...(thumbnailKey ? { thumbnailKey } : {}),
         uploadedAt: date,
         uploadedBy: user._id,
       },
@@ -191,10 +232,76 @@ export async function removeSecurityServerProfileImage(
   if (!image) throw new Error('Image not found.');
 
   // Remove the reference before the object, so a failure part-way never
-  // leaves the profile pointing at an image that doesn't exist.
+  // leaves the profile pointing at an image that doesn't exist. A removed
+  // default photo falls back to the oldest remaining one.
   await SecurityServerProfiles.updateAsync(profileId, {
     $pull: { images: { _id: imageId } },
     $set: { updatedAt: new Date(), updatedBy: user._id },
+    ...(profile.defaultImageId === imageId
+      ? { $unset: { defaultImageId: '' } }
+      : {}),
   });
-  await deleteFile(image.imageKey);
+  await deleteFiles(getImageFileKeys(image));
 }
+
+export async function setSecurityServerProfileDefaultImage(
+  user: SyncUser,
+  profileId: string,
+  imageId: string
+): Promise<void> {
+  const profile = await getActiveProfile(profileId);
+  if (!profile.images.some(({ _id }) => _id === imageId)) {
+    throw new Error('Image not found.');
+  }
+  await SecurityServerProfiles.updateAsync(profileId, {
+    $set: {
+      defaultImageId: imageId,
+      updatedAt: new Date(),
+      updatedBy: user._id,
+    },
+  });
+}
+
+/**
+ * Makes thumbnails for profile photos stored without one (stored before
+ * thumbnails existed, or whose thumbnail failed). Returns how many were
+ * created. Not a profile change, so updatedAt is kept and nothing syncs.
+ */
+export async function createMissingSecurityServerProfileThumbnails(): Promise<number> {
+  const profiles = await SecurityServerProfiles.find(
+    {
+      deletedAt: { $exists: false },
+      images: { $elemMatch: { thumbnailKey: { $exists: false } } },
+    },
+    { fields: { images: 1 } }
+  ).fetchAsync();
+
+  let created = 0;
+  for (const { _id: profileId, images } of profiles) {
+    for (const { _id: imageId, imageKey, thumbnailKey } of images) {
+      if (thumbnailKey) continue;
+      let jpeg: Buffer;
+      try {
+        ({ body: jpeg } = await getFile(imageKey));
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(`Profile image '${imageKey}' could not be read:`, error);
+        continue;
+      }
+      const newThumbnailKey = await putProfileThumbnail(imageKey, jpeg);
+      if (newThumbnailKey) {
+        await SecurityServerProfiles.updateAsync(
+          { _id: profileId, 'images._id': imageId },
+          { $set: { 'images.$.thumbnailKey': newThumbnailKey } }
+        );
+        created++;
+      }
+    }
+  }
+  return created;
+}
+
+/** The default photo, or the oldest one when none was chosen. */
+export const resolveSecurityServerProfileDefaultImageId = (
+  profile: Pick<SecurityServerProfileDocument, 'defaultImageId' | 'images'>
+): string | null => profile.defaultImageId ?? profile.images[0]?._id ?? null;

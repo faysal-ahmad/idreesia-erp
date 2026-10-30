@@ -2088,7 +2088,11 @@ type SecurityServerAlertType {
     channelName: String
     timestamp: String
     similarityScore: Float
+    faceSizePx: Int
+    faceQualityScore: Float
+    faceQualityReasons: [String]
     imageUrl: String
+    thumbnailUrl: String
     review: String
     reviewedAt: String
 
@@ -2096,6 +2100,12 @@ type SecurityServerAlertType {
     createdBy: String
     updatedAt: String
     updatedBy: String
+  }
+
+  # When the security server last got through to the ERP with its alerts. It
+  # checks in after every push run, even with nothing to send.
+  type SecurityServerAlertSyncStatusType {
+    lastSyncedAt: String
   }
 
   type PagedSecurityServerAlertType {
@@ -2113,6 +2123,7 @@ type SecurityServerAlertType {
     firstTimestamp: String
     lastTimestamp: String
     latestImageUrl: String
+    latestThumbnailUrl: String
   }
 
   type PagedSecurityServerAlertGroupType {
@@ -2144,6 +2155,9 @@ type SecurityServerAlertType {
 
     securityServerAlertById(_id: String!): SecurityServerAlertType
       @checkPermissions(permissions: [SECURITY_VIEW_SECURITY_SERVER_DATA])
+
+    securityServerAlertSyncStatus: SecurityServerAlertSyncStatusType
+      @checkPermissions(permissions: [SECURITY_VIEW_SECURITY_SERVER_DATA])
   }
 
   extend type Mutation {
@@ -2152,6 +2166,10 @@ type SecurityServerAlertType {
       _id: String!
       review: String
     ): SecurityServerAlertType
+      @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
+
+    # Returns how many thumbnails were created.
+    createMissingSecurityServerAlertThumbnails: Int
       @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
   }
 
@@ -2170,6 +2188,8 @@ type SecurityServerChannelConnectionType {
     enabled: Boolean
     similarityThreshold: Float
     recognitionFps: Float
+    minFaceSizePx: Int
+    minFaceQuality: Int
     connection: SecurityServerChannelConnectionType
 
     alertsCount: Int
@@ -2206,6 +2226,9 @@ type SecurityServerChannelConnectionType {
       enabled: Boolean!
       similarityThreshold: Float
       recognitionFps: Float!
+      # Null = the security server's default; 0 = no check.
+      minFaceSizePx: Int
+      minFaceQuality: Int
       connection: SecurityServerChannelConnectionInput!
     ): SecurityServerChannelType
       @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
@@ -2216,6 +2239,9 @@ type SecurityServerChannelConnectionType {
       enabled: Boolean!
       similarityThreshold: Float
       recognitionFps: Float!
+      # Null = the security server's default; 0 = no check.
+      minFaceSizePx: Int
+      minFaceQuality: Int
       connection: SecurityServerChannelConnectionInput!
     ): SecurityServerChannelType
       @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
@@ -2227,6 +2253,8 @@ type SecurityServerChannelConnectionType {
 type SecurityServerProfileImageType {
     _id: String
     imageUrl: String
+    # Null for photos stored before thumbnails existed; use imageUrl then.
+    thumbnailUrl: String
     uploadedAt: String
   }
 
@@ -2235,6 +2263,9 @@ type SecurityServerProfileImageType {
     name: String
     isTest: Boolean
     images: [SecurityServerProfileImageType]
+    # The photo shown for the profile: the chosen default, or the oldest
+    # photo when none was chosen. Null with no photos.
+    defaultImageId: String
 
     alertsCount: Int
 
@@ -2297,6 +2328,16 @@ type SecurityServerProfileImageType {
       profileId: String!
       imageId: String!
     ): SecurityServerProfileType
+      @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
+
+    setSecurityServerProfileDefaultImage(
+      profileId: String!
+      imageId: String!
+    ): SecurityServerProfileType
+      @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
+
+    # Returns how many thumbnails were created.
+    createMissingSecurityServerProfileThumbnails: Int
       @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
   }
 

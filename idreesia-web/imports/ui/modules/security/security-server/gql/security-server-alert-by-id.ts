@@ -19,6 +19,9 @@ const SECURITY_SERVER_ALERT_BY_ID: TypedDocumentNode<
       channelName
       timestamp
       similarityScore
+      faceSizePx
+      faceQualityScore
+      faceQualityReasons
       imageUrl
       review
       reviewedAt

@@ -55,3 +55,20 @@ img.ant-image-img.security-server-alert-snapshot {
   top: 4px;
   right: 4px;
 }
+
+.security-server-profile-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.security-server-profile-name .ant-avatar img {
+  object-fit: cover;
+}
+
+.security-server-photo-default {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  margin-inline-end: 0;
+}

@@ -33,6 +33,8 @@ export async function createSecurityServerChannel(
     enabled,
     similarityThreshold,
     recognitionFps,
+    minFaceSizePx,
+    minFaceQuality,
     connection,
   }: ChannelValues
 ): Promise<string> {
@@ -42,6 +44,8 @@ export async function createSecurityServerChannel(
     enabled,
     ...(similarityThreshold != null ? { similarityThreshold } : {}),
     recognitionFps,
+    ...(minFaceSizePx != null ? { minFaceSizePx } : {}),
+    ...(minFaceQuality != null ? { minFaceQuality } : {}),
     connection: toConnection(connection, connection.password || undefined),
     createdAt: date,
     createdBy: user._id,
@@ -58,6 +62,8 @@ export async function updateSecurityServerChannel(
     enabled,
     similarityThreshold,
     recognitionFps,
+    minFaceSizePx,
+    minFaceQuality,
     connection,
   }: ChannelValues
 ): Promise<void> {
@@ -66,19 +72,28 @@ export async function updateSecurityServerChannel(
   const password = connection.password || existing.connection.password;
   const trimmedName = name.trim();
 
+  // Optional settings left null are unset, so the security server's default
+  // applies.
+  const unset = {
+    ...(similarityThreshold == null
+      ? { similarityThreshold: '' as const }
+      : {}),
+    ...(minFaceSizePx == null ? { minFaceSizePx: '' as const } : {}),
+    ...(minFaceQuality == null ? { minFaceQuality: '' as const } : {}),
+  };
   await SecurityServerChannels.updateAsync(channelId, {
     $set: {
       name: trimmedName,
       enabled,
       ...(similarityThreshold != null ? { similarityThreshold } : {}),
       recognitionFps,
+      ...(minFaceSizePx != null ? { minFaceSizePx } : {}),
+      ...(minFaceQuality != null ? { minFaceQuality } : {}),
       connection: toConnection(connection, password),
       updatedAt: new Date(),
       updatedBy: user._id,
     },
-    ...(similarityThreshold == null
-      ? { $unset: { similarityThreshold: '' as const } }
-      : {}),
+    ...(Object.keys(unset).length > 0 ? { $unset: unset } : {}),
   });
 
   if (existing.name !== trimmedName) {

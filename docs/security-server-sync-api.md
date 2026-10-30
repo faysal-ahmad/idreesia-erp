@@ -53,6 +53,8 @@ Returns channels and profiles created, updated or deleted at or after `since`. L
       "enabled": true,
       "similarityThreshold": 0.42,
       "recognitionFps": 5,
+      "minFaceSizePx": null,
+      "minFaceQuality": 40,
       "connection": {
         "host": "192.168.1.20",
         "port": 554,
@@ -70,7 +72,8 @@ Returns channels and profiles created, updated or deleted at or after `since`. L
       "deleted": false,
       "name": "John Doe",
       "isTest": false,
-      "images": [{ "id": "WJqcCRFwyaTCbqbHS", "externalId": null }]
+      "images": [{ "id": "WJqcCRFwyaTCbqbHS", "externalId": null }],
+      "defaultImageId": "WJqcCRFwyaTCbqbHS"
     }
   ]
 }
@@ -82,8 +85,10 @@ Returns channels and profiles created, updated or deleted at or after `since`. L
 | `id` | The ERP id. Store it as the local record's `externalId`. |
 | `externalId` | The security server's id, or `null` if the security server hasn't received the record yet. |
 | `deleted` | The record was deleted in the ERP; only `id` and `externalId` are sent. |
-| `similarityThreshold`, `connection.*` | May be `null`. `null` threshold means the server's default. |
+| `similarityThreshold`, `minFaceSizePx`, `minFaceQuality`, `connection.*` | May be `null`. A `null` threshold or minimum means the server's default. |
+| `minFaceSizePx`, `minFaceQuality` | Detected faces smaller than this (shorter side, camera pixels) or scoring below this quality (0–100) are skipped before matching. `0` turns the check off. |
 | `images` | The profile's full photo set. Match each photo by `externalId` (your id) or `id`, download the ones you don't have, and remove local ones missing from the set. |
+| `defaultImageId` | The ERP id of the profile's default photo, one of `images`. `null` means none was chosen; both sides then use the oldest photo. Map it to your own photo after applying `images`; if that photo couldn't be downloaded, keep your current default. It only picks the photo shown for the profile and plays no part in matching. |
 
 **The response contains channel passwords.** Never log it.
 
@@ -109,6 +114,8 @@ A record deleted in the ERP comes back if the security server pushes an edit to 
   "enabled": true,
   "similarityThreshold": 0.42,
   "recognitionFps": 5,
+  "minFaceSizePx": null,
+  "minFaceQuality": 40,
   "connection": { "host": "192.168.1.20", "port": 554, "path": "/stream1", "username": "admin", "password": "…" }
 }
 ```
@@ -123,6 +130,7 @@ A delete sends only `{ "erpId": …, "deleted": true }`. An empty `password` kee
   "deleted": false,
   "name": "John Doe",
   "isTest": false,
+  "defaultImageId": "cm9…",
   "images": [
     { "localId": "cm9…", "erpId": "WJqcCRFwyaTCbqbHS" },
     { "localId": "cm8…", "erpId": null, "mimeType": "image/jpeg", "data": "<base64>" }
@@ -131,6 +139,7 @@ A delete sends only `{ "erpId": …, "deleted": true }`. An empty `password` kee
 ```
 
 - `images` is the profile's **full** photo set on the security server. The ERP removes photos missing from it.
+- `defaultImageId` is the `localId` of the profile's default photo, or `null` if none was chosen. If it names a photo the ERP ends up listing in `missingImages`, the ERP keeps its current default until that photo arrives. Leaving the field out also keeps the ERP's current default.
 - Send `mimeType` and `data` for photos the ERP doesn't have yet, which are those with no `erpId`. They're stored as they are, with no quality check, because the security server checked them when they were uploaded there.
 - The body may be up to 50 MB.
 
@@ -158,6 +167,8 @@ Store `_id` and each photo's `_id` as their `externalId`. `missingImages` lists 
   "channelId": "cm1…",
   "timestamp": "2026-10-25T14:03:11.000Z",
   "similarityScore": 0.512,
+  "faceSizePx": 142,
+  "faceQuality": { "score": 71, "reasons": ["Face turned away"] },
   "image": { "mimeType": "image/jpeg", "data": "<base64>" }
 }
 ```
@@ -166,7 +177,8 @@ Store `_id` and each photo's `_id` as their `externalId`. `missingImages` lists 
 |---|---|
 | `profileId`, `channelId` | The **security server's** ids. The ERP finds the records by `externalId`. |
 | `similarityScore` | Cosine similarity, between 0 and 1. |
-| `image` | The snapshot frame, as `image/jpeg`, `image/png` or `image/webp`. Required the first time an alert is pushed; ignored after that. The body may be up to 10 MB. |
+| `faceSizePx`, `faceQuality` | The matched face's shorter side in camera pixels, and its quality: a `score` from 0 to 100 and the `reasons` it scored low. Either may be `null` or missing for alerts raised before faces were checked. |
+| `image` | The snapshot frame, as `image/jpeg`, `image/png` or `image/webp`. The security server sends a reduced copy (long side at most 1280px). Required the first time an alert is pushed; ignored after that. The body may be up to 10 MB. |
 
 | Status | Meaning |
 |---|---|
@@ -174,6 +186,10 @@ Store `_id` and each photo's `_id` as their `externalId`. `missingImages` lists 
 | `422` | The profile or channel hasn't reached the ERP yet, or this is a new alert and `image` is missing. Retry after the next sync. |
 
 An alert can still refer to a profile or channel that was just deleted in the ERP, if the server hasn't synced the deletion yet. It's accepted and kept as history.
+
+### `POST /api/security-server/alerts/heartbeat`
+
+Sent after every alert push run, including runs with nothing to send. The body is empty (`{}`). Returns `204`. The ERP records the time, by its own clock, and shows it on the alerts page as "Last synced", so a quiet camera isn't mistaken for a security server that's down or can't reach the ERP. The page warns once there's been no check-in for 5 minutes.
 
 ## Error handling summary
 

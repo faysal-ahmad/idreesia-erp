@@ -11,7 +11,11 @@ export default gql`
     channelName: String
     timestamp: String
     similarityScore: Float
+    faceSizePx: Int
+    faceQualityScore: Float
+    faceQualityReasons: [String]
     imageUrl: String
+    thumbnailUrl: String
     review: String
     reviewedAt: String
 
@@ -19,6 +23,12 @@ export default gql`
     createdBy: String
     updatedAt: String
     updatedBy: String
+  }
+
+  # When the security server last got through to the ERP with its alerts. It
+  # checks in after every push run, even with nothing to send.
+  type SecurityServerAlertSyncStatusType {
+    lastSyncedAt: String
   }
 
   type PagedSecurityServerAlertType {
@@ -36,6 +46,7 @@ export default gql`
     firstTimestamp: String
     lastTimestamp: String
     latestImageUrl: String
+    latestThumbnailUrl: String
   }
 
   type PagedSecurityServerAlertGroupType {
@@ -67,6 +78,9 @@ export default gql`
 
     securityServerAlertById(_id: String!): SecurityServerAlertType
       @checkPermissions(permissions: [SECURITY_VIEW_SECURITY_SERVER_DATA])
+
+    securityServerAlertSyncStatus: SecurityServerAlertSyncStatusType
+      @checkPermissions(permissions: [SECURITY_VIEW_SECURITY_SERVER_DATA])
   }
 
   extend type Mutation {
@@ -75,6 +89,10 @@ export default gql`
       _id: String!
       review: String
     ): SecurityServerAlertType
+      @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
+
+    # Returns how many thumbnails were created.
+    createMissingSecurityServerAlertThumbnails: Int
       @checkPermissions(permissions: [SECURITY_MANAGE_SECURITY_SERVER_DATA])
   }
 `;

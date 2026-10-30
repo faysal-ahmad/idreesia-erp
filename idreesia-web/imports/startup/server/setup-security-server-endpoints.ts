@@ -267,6 +267,10 @@ const parseProfilePush = (body: Body): ProfileSyncPush => {
         name: requireString(body, 'name'),
         isTest: requireBoolean(body, 'isTest'),
         images: parseProfileImages(body),
+        // Absent (an older server) is kept apart from null (none chosen).
+        ...('defaultImageId' in body
+          ? { defaultImageId: optionalString(body, 'defaultImageId') }
+          : {}),
       };
 };
 

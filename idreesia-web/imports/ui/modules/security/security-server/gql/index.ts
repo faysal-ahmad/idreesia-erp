@@ -10,6 +10,8 @@ export { default as UPDATE_SECURITY_SERVER_PROFILE } from './update-security-ser
 export { default as DELETE_SECURITY_SERVER_PROFILE } from './delete-security-server-profile';
 export { default as ADD_SECURITY_SERVER_PROFILE_IMAGE } from './add-security-server-profile-image';
 export { default as REMOVE_SECURITY_SERVER_PROFILE_IMAGE } from './remove-security-server-profile-image';
+export { default as SET_SECURITY_SERVER_PROFILE_DEFAULT_IMAGE } from './set-security-server-profile-default-image';
+export { default as CREATE_MISSING_SECURITY_SERVER_PROFILE_THUMBNAILS } from './create-missing-security-server-profile-thumbnails';
 export { default as PAGED_SECURITY_SERVER_ALERTS } from './paged-security-server-alerts';
 export { default as PAGED_SECURITY_SERVER_ALERT_GROUPS } from './paged-security-server-alert-groups';
 export { default as SECURITY_SERVER_ALERT_BY_ID } from './security-server-alert-by-id';

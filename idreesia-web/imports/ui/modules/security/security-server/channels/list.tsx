@@ -29,6 +29,10 @@ import {
 } from '../gql';
 import useCanManage from '../common/use-can-manage';
 import ChannelFormModal, {
+  DEFAULT_MIN_FACE_QUALITY,
+  DEFAULT_MIN_FACE_SIZE_PX,
+  DEFAULT_RECOGNITION_FPS,
+  DEFAULT_SIMILARITY_THRESHOLD,
   toChannelFormValues,
   toChannelVariables,
   type Channel,
@@ -38,10 +42,14 @@ import ChannelFormModal, {
 const refetchQueries = ['allSecurityServerChannels'];
 
 // null = the security server's default; 0 turns the check off.
-const formatFaceMinimum = (value: number | null, unit = '') => {
-  if (value == null) return 'Default';
-  if (value === 0) return 'Off';
-  return `${value}${unit}`;
+const formatFaceMinimum = (
+  value: number | null,
+  defaultValue: number,
+  unit = ''
+) => {
+  const minimum = value ?? defaultValue;
+  if (minimum === 0) return 'Off';
+  return `${minimum}${unit}`;
 };
 
 type Props = RouteComponentProps;
@@ -180,26 +188,28 @@ const List = (_props: Props) => {
       dataIndex: 'recognitionFps',
       key: 'recognitionFps',
       render: (value: number | null) =>
-        value == null ? 'Default' : `${value} fps`,
+        `${value ?? DEFAULT_RECOGNITION_FPS} fps`,
     },
     {
       title: 'Similarity Threshold',
       dataIndex: 'similarityThreshold',
       key: 'similarityThreshold',
       render: (value: number | null) =>
-        value == null ? 'Default' : value.toFixed(2),
+        (value ?? DEFAULT_SIMILARITY_THRESHOLD).toFixed(2),
     },
     {
       title: 'Min Face Size',
       dataIndex: 'minFaceSizePx',
       key: 'minFaceSizePx',
-      render: (value: number | null) => formatFaceMinimum(value, ' px'),
+      render: (value: number | null) =>
+        formatFaceMinimum(value, DEFAULT_MIN_FACE_SIZE_PX, ' px'),
     },
     {
       title: 'Min Face Quality',
       dataIndex: 'minFaceQuality',
       key: 'minFaceQuality',
-      render: (value: number | null) => formatFaceMinimum(value),
+      render: (value: number | null) =>
+        formatFaceMinimum(value, DEFAULT_MIN_FACE_QUALITY),
     },
     {
       title: 'Alerts',

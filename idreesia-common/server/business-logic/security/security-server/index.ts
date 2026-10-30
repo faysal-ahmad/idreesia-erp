@@ -9,6 +9,9 @@ export {
   deleteSecurityServerProfile,
   addSecurityServerProfileImage,
   removeSecurityServerProfileImage,
+  setSecurityServerProfileDefaultImage,
+  createMissingSecurityServerProfileThumbnails,
+  resolveSecurityServerProfileDefaultImageId,
 } from './profiles';
 export {
   upsertSecurityServerAlert,

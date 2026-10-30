@@ -72,7 +72,8 @@ Returns channels and profiles created, updated or deleted at or after `since`. L
       "deleted": false,
       "name": "John Doe",
       "isTest": false,
-      "images": [{ "id": "WJqcCRFwyaTCbqbHS", "externalId": null }]
+      "images": [{ "id": "WJqcCRFwyaTCbqbHS", "externalId": null }],
+      "defaultImageId": "WJqcCRFwyaTCbqbHS"
     }
   ]
 }
@@ -87,6 +88,7 @@ Returns channels and profiles created, updated or deleted at or after `since`. L
 | `similarityThreshold`, `minFaceSizePx`, `minFaceQuality`, `connection.*` | May be `null`. A `null` threshold or minimum means the server's default. |
 | `minFaceSizePx`, `minFaceQuality` | Detected faces smaller than this (shorter side, camera pixels) or scoring below this quality (0–100) are skipped before matching. `0` turns the check off. |
 | `images` | The profile's full photo set. Match each photo by `externalId` (your id) or `id`, download the ones you don't have, and remove local ones missing from the set. |
+| `defaultImageId` | The ERP id of the profile's default photo, one of `images`. `null` means none was chosen; both sides then use the oldest photo. Map it to your own photo after applying `images`; if that photo couldn't be downloaded, keep your current default. It only picks the photo shown for the profile and plays no part in matching. |
 
 **The response contains channel passwords.** Never log it.
 
@@ -128,6 +130,7 @@ A delete sends only `{ "erpId": …, "deleted": true }`. An empty `password` kee
   "deleted": false,
   "name": "John Doe",
   "isTest": false,
+  "defaultImageId": "cm9…",
   "images": [
     { "localId": "cm9…", "erpId": "WJqcCRFwyaTCbqbHS" },
     { "localId": "cm8…", "erpId": null, "mimeType": "image/jpeg", "data": "<base64>" }
@@ -136,6 +139,7 @@ A delete sends only `{ "erpId": …, "deleted": true }`. An empty `password` kee
 ```
 
 - `images` is the profile's **full** photo set on the security server. The ERP removes photos missing from it.
+- `defaultImageId` is the `localId` of the profile's default photo, or `null` if none was chosen. If it names a photo the ERP ends up listing in `missingImages`, the ERP keeps its current default until that photo arrives. Leaving the field out also keeps the ERP's current default.
 - Send `mimeType` and `data` for photos the ERP doesn't have yet, which are those with no `erpId`. They're stored as they are, with no quality check, because the security server checked them when they were uploaded there.
 - The body may be up to 50 MB.
 

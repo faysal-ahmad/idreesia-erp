@@ -21,6 +21,7 @@ const SECURITY_SERVER_PROFILE_BY_ID: TypedDocumentNode<
         imageUrl
         uploadedAt
       }
+      defaultImageId
       createdAt
       createdBy
       updatedAt

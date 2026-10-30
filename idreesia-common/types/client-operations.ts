@@ -1406,7 +1406,7 @@ export type AddSecurityServerProfileImageMutationVariables = Exact<{
 }>;
 
 
-export type AddSecurityServerProfileImageMutation = { addSecurityServerProfileImage: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
+export type AddSecurityServerProfileImageMutation = { addSecurityServerProfileImage: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, defaultImageId: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
 
 export type AllSecurityServerChannelsQueryVariables = Exact<{
   includeDeleted?: boolean | null | undefined;
@@ -1419,6 +1419,11 @@ export type CreateMissingSecurityServerAlertThumbnailsMutationVariables = Exact<
 
 
 export type CreateMissingSecurityServerAlertThumbnailsMutation = { createMissingSecurityServerAlertThumbnails: number | null };
+
+export type CreateMissingSecurityServerProfileThumbnailsMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreateMissingSecurityServerProfileThumbnailsMutation = { createMissingSecurityServerProfileThumbnails: number | null };
 
 export type CreateSecurityServerChannelMutationVariables = Exact<{
   name: string;
@@ -1474,7 +1479,7 @@ export type PagedSecurityServerProfilesQueryVariables = Exact<{
 }>;
 
 
-export type PagedSecurityServerProfilesQuery = { pagedSecurityServerProfiles: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, updatedAt: string | null, deletedAt: string | null, images: Array<{ _id: string | null, imageUrl: string | null } | null> | null } | null> | null } | null };
+export type PagedSecurityServerProfilesQuery = { pagedSecurityServerProfiles: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, updatedAt: string | null, deletedAt: string | null, defaultImageId: string | null, images: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null> | null } | null };
 
 export type RemoveSecurityServerProfileImageMutationVariables = Exact<{
   profileId: string;
@@ -1482,7 +1487,7 @@ export type RemoveSecurityServerProfileImageMutationVariables = Exact<{
 }>;
 
 
-export type RemoveSecurityServerProfileImageMutation = { removeSecurityServerProfileImage: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
+export type RemoveSecurityServerProfileImageMutation = { removeSecurityServerProfileImage: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, defaultImageId: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
 
 export type SecurityServerAlertByIdQueryVariables = Exact<{
   _id: string;
@@ -1508,7 +1513,7 @@ export type SecurityServerProfileByIdQueryVariables = Exact<{
 }>;
 
 
-export type SecurityServerProfileByIdQuery = { securityServerProfileById: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
+export type SecurityServerProfileByIdQuery = { securityServerProfileById: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, defaultImageId: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
 
 export type SetSecurityServerAlertReviewMutationVariables = Exact<{
   _id: string;
@@ -1517,6 +1522,14 @@ export type SetSecurityServerAlertReviewMutationVariables = Exact<{
 
 
 export type SetSecurityServerAlertReviewMutation = { setSecurityServerAlertReview: { _id: string | null, review: string | null, reviewedAt: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+
+export type SetSecurityServerProfileDefaultImageMutationVariables = Exact<{
+  profileId: string;
+  imageId: string;
+}>;
+
+
+export type SetSecurityServerProfileDefaultImageMutation = { setSecurityServerProfileDefaultImage: { _id: string | null, defaultImageId: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
 export type UpdateSecurityServerChannelMutationVariables = Exact<{
   _id: string;

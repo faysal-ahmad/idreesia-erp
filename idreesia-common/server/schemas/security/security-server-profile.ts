@@ -16,6 +16,13 @@ export const SecurityServerProfileImage = new SimpleSchema({
   imageKey: {
     type: String,
   },
+  // A list-sized copy next to imageKey. Unset for photos stored before
+  // thumbnails existed, or whose thumbnail failed: the list then uses the
+  // full image.
+  thumbnailKey: {
+    type: String,
+    optional: true,
+  },
   uploadedAt: {
     type: Date,
   },
@@ -44,6 +51,13 @@ export default new SimpleSchema({
   },
   'images.$': {
     type: SecurityServerProfileImage,
+  },
+  // The photo shown for the profile (one of `images`); no part in matching.
+  // Unset = never chosen, or the chosen photo was removed: its oldest photo is
+  // used instead. Synced with the security server.
+  defaultImageId: {
+    type: String,
+    optional: true,
   },
 })
   .extend(identifiable)

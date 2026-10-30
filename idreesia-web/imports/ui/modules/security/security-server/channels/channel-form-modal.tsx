@@ -33,7 +33,13 @@ export interface ChannelFormValues {
 }
 
 // Only set on edit, once the channel is running; a new channel starts here.
-const DEFAULT_RECOGNITION_FPS = 5;
+export const DEFAULT_RECOGNITION_FPS = 5;
+// What the security server uses for a setting left blank (null). Mirrors its
+// DEFAULT_SIMILARITY_THRESHOLD, DEFAULT_MIN_FACE_SIZE_PX and
+// DEFAULT_MIN_FACE_QUALITY - change them together.
+export const DEFAULT_SIMILARITY_THRESHOLD = 0.36;
+export const DEFAULT_MIN_FACE_SIZE_PX = 96;
+export const DEFAULT_MIN_FACE_QUALITY = 40;
 
 /** Maps the form values onto the channel mutations' variables. */
 export const toChannelVariables = (values: ChannelFormValues) => ({
@@ -227,7 +233,7 @@ const ChannelFormModal = ({
             <Form.Item
               name="similarityThreshold"
               label="Similarity threshold"
-              extra="Minimum cosine similarity for a face on this channel to raise an alert. Leave blank to use the security server's default."
+              extra={`Minimum cosine similarity for a face on this channel to raise an alert. Leave blank to use the security server's default (${DEFAULT_SIMILARITY_THRESHOLD}).`}
             >
               <InputNumber
                 min={0}
@@ -240,7 +246,7 @@ const ChannelFormModal = ({
             <Form.Item
               name="minFaceSizePx"
               label="Min face size (px)"
-              extra="Faces smaller than this (in the camera's own pixels) are ignored. Lower catches people further away but uses more CPU. Leave blank for the security server's default, or 0 to turn the check off."
+              extra={`Faces smaller than this (in the camera's own pixels) are ignored. Lower catches people further away but uses more CPU. Leave blank for the security server's default (${DEFAULT_MIN_FACE_SIZE_PX}), or 0 to turn the check off.`}
             >
               <InputNumber
                 min={0}
@@ -254,7 +260,7 @@ const ChannelFormModal = ({
             <Form.Item
               name="minFaceQuality"
               label="Min face quality"
-              extra="Faces scoring below this (0-100: blur, angle, lighting, size) are ignored. Leave blank for the security server's default, or 0 to turn the check off."
+              extra={`Faces scoring below this (0-100: blur, angle, lighting, size) are ignored. Leave blank for the security server's default (${DEFAULT_MIN_FACE_QUALITY}), or 0 to turn the check off.`}
             >
               <InputNumber
                 min={0}

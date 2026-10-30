@@ -5,6 +5,7 @@ export interface SecurityServerProfileImageDocument {
   _id: string;
   externalId?: string;
   imageKey: string;
+  thumbnailKey?: string;
   uploadedAt: Date;
   uploadedBy: string;
 }
@@ -15,6 +16,7 @@ export interface SecurityServerProfileDocument {
   name: string;
   isTest: boolean;
   images: SecurityServerProfileImageDocument[];
+  defaultImageId?: string;
   createdAt?: Date;
   createdBy?: string;
   updatedAt?: Date;

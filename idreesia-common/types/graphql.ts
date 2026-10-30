@@ -551,6 +551,7 @@ export type Mutation = {
   createLocation?: Maybe<Location>;
   createMehfil?: Maybe<MehfilType>;
   createMissingSecurityServerAlertThumbnails?: Maybe<Scalars['Int']['output']>;
+  createMissingSecurityServerProfileThumbnails?: Maybe<Scalars['Int']['output']>;
   createPeopleTag?: Maybe<PeopleTagType>;
   createPhysicalStore?: Maybe<PhysicalStore>;
   createPurchaseForm?: Maybe<PurchaseForm>;
@@ -632,6 +633,7 @@ export type Mutation = {
   setPermissions?: Maybe<UserType>;
   setScheduledJobEnabled?: Maybe<Scalars['Boolean']['output']>;
   setSecurityServerAlertReview?: Maybe<SecurityServerAlertType>;
+  setSecurityServerProfileDefaultImage?: Maybe<SecurityServerProfileType>;
   setSecurityUserPermissions?: Maybe<UserType>;
   setSecurityVisitorImage?: Maybe<PersonType>;
   setStockItemImage?: Maybe<StockItem>;
@@ -1400,6 +1402,12 @@ export type MutationSetScheduledJobEnabledArgs = {
 export type MutationSetSecurityServerAlertReviewArgs = {
   _id: Scalars['String']['input'];
   review?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationSetSecurityServerProfileDefaultImageArgs = {
+  imageId: Scalars['String']['input'];
+  profileId: Scalars['String']['input'];
 };
 
 
@@ -2839,6 +2847,7 @@ export type SecurityServerProfileImageType = {
   __typename?: 'SecurityServerProfileImageType';
   _id?: Maybe<Scalars['String']['output']>;
   imageUrl?: Maybe<Scalars['String']['output']>;
+  thumbnailUrl?: Maybe<Scalars['String']['output']>;
   uploadedAt?: Maybe<Scalars['String']['output']>;
 };
 
@@ -2848,6 +2857,7 @@ export type SecurityServerProfileType = {
   alertsCount?: Maybe<Scalars['Int']['output']>;
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
+  defaultImageId?: Maybe<Scalars['String']['output']>;
   deletedAt?: Maybe<Scalars['String']['output']>;
   images?: Maybe<Array<Maybe<SecurityServerProfileImageType>>>;
   isTest?: Maybe<Scalars['Boolean']['output']>;

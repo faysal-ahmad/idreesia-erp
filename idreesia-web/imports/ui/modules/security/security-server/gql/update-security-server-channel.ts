@@ -15,6 +15,8 @@ const UPDATE_SECURITY_SERVER_CHANNEL: TypedDocumentNode<
     $enabled: Boolean!
     $similarityThreshold: Float
     $recognitionFps: Float!
+    $minFaceSizePx: Int
+    $minFaceQuality: Int
     $connection: SecurityServerChannelConnectionInput!
   ) {
     updateSecurityServerChannel(
@@ -23,6 +25,8 @@ const UPDATE_SECURITY_SERVER_CHANNEL: TypedDocumentNode<
       enabled: $enabled
       similarityThreshold: $similarityThreshold
       recognitionFps: $recognitionFps
+      minFaceSizePx: $minFaceSizePx
+      minFaceQuality: $minFaceQuality
       connection: $connection
     ) {
       _id
@@ -30,6 +34,8 @@ const UPDATE_SECURITY_SERVER_CHANNEL: TypedDocumentNode<
       enabled
       similarityThreshold
       recognitionFps
+      minFaceSizePx
+      minFaceQuality
       connection {
         host
         port

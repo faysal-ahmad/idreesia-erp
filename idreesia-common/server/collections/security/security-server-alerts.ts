@@ -11,7 +11,11 @@ export interface SecurityServerAlertDocument {
   channelName: string;
   timestamp: Date;
   similarityScore: number;
+  faceSizePx?: number;
+  faceQualityScore?: number;
+  faceQualityReasons?: string[];
   imageKey: string;
+  thumbnailKey?: string;
   review?: 'CORRECT' | 'FALSE_POSITIVE';
   reviewedAt?: Date;
   createdAt?: Date;

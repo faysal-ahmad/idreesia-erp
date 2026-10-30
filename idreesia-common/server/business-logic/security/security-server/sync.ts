@@ -65,6 +65,8 @@ export async function getSecurityServerChanges(since: Date | null) {
             enabled: channel.enabled,
             similarityThreshold: channel.similarityThreshold ?? null,
             recognitionFps: channel.recognitionFps,
+            minFaceSizePx: channel.minFaceSizePx ?? null,
+            minFaceQuality: channel.minFaceQuality ?? null,
             connection: {
               host: channel.connection.host,
               port: channel.connection.port ?? null,
@@ -91,6 +93,9 @@ export async function getSecurityServerChanges(since: Date | null) {
               id: image._id,
               externalId: image.externalId ?? null,
             })),
+            // As chosen (null = never chosen): both sides fall back to the
+            // oldest photo the same way.
+            defaultImageId: profile.defaultImageId ?? null,
           }
     ),
   };
@@ -154,6 +159,8 @@ const channelDiffers = (
     enabled,
     similarityThreshold,
     recognitionFps,
+    minFaceSizePx,
+    minFaceQuality,
     connection,
   }: ChannelValues
 ) =>
@@ -161,6 +168,8 @@ const channelDiffers = (
   channel.enabled !== enabled ||
   (channel.similarityThreshold ?? null) !== (similarityThreshold ?? null) ||
   channel.recognitionFps !== recognitionFps ||
+  (channel.minFaceSizePx ?? null) !== (minFaceSizePx ?? null) ||
+  (channel.minFaceQuality ?? null) !== (minFaceQuality ?? null) ||
   channel.connection.host !== connection.host.trim() ||
   (channel.connection.port ?? null) !== (connection.port || null) ||
   blankToNull(channel.connection.path) !== blankToNull(connection.path) ||
@@ -204,6 +213,8 @@ export async function upsertSecurityServerChannelFromSync(
     enabled: push.enabled,
     similarityThreshold: push.similarityThreshold,
     recognitionFps: push.recognitionFps,
+    minFaceSizePx: push.minFaceSizePx ?? null,
+    minFaceQuality: push.minFaceQuality ?? null,
     connection: push.connection,
   };
   if (!existing) {
@@ -236,6 +247,10 @@ export type ProfileSyncPush =
       deleted: false;
       // The profile's full photo set on the security server.
       images: ProfileSyncImage[];
+      // The security server's id for its default photo (one of `images`);
+      // null = none chosen. Undefined from a server that predates it: the
+      // ERP's own choice is kept.
+      defaultImageId?: string | null;
     } & ProfileValues);
 
 export interface ProfileSyncResult {
@@ -244,6 +259,34 @@ export interface ProfileSyncResult {
   // Photos sent without their JPEG that the ERP no longer has; the security
   // server sends them again with it.
   missingImages: string[];
+}
+
+/**
+ * Points the profile's default photo at the one the security server chose.
+ * A photo the ERP doesn't have yet (in `missingImages`) leaves it unchanged
+ * until it arrives on a later sync. Not a change to send back, so updatedAt
+ * is kept.
+ */
+async function applyPushedDefaultImage(
+  profileId: string,
+  pushedDefaultImageId: string | null | undefined,
+  { images }: ProfileSyncResult
+): Promise<void> {
+  if (pushedDefaultImageId === undefined) return;
+  const defaultImageId =
+    pushedDefaultImageId === null
+      ? null
+      : images.find(({ localId }) => localId === pushedDefaultImageId)?._id;
+  if (defaultImageId === undefined) return;
+
+  const profile = (await SecurityServerProfiles.findOneAsync(profileId))!;
+  if ((profile.defaultImageId ?? null) === defaultImageId) return;
+  await SecurityServerProfiles.updateAsync(
+    profileId,
+    defaultImageId === null
+      ? { $unset: { defaultImageId: '' } }
+      : { $set: { defaultImageId } }
+  );
 }
 
 /**
@@ -325,6 +368,8 @@ export async function upsertSecurityServerProfileFromSync(
   for (const image of profile.images.filter(({ _id }) => !kept.has(_id))) {
     await removeSecurityServerProfileImage(user, profileId, image._id);
   }
+
+  await applyPushedDefaultImage(profileId, push.defaultImageId, result);
 
   return result;
 }

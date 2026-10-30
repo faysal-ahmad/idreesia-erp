@@ -3,7 +3,9 @@ import { type RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client/react';
 import {
+  Avatar,
   Button,
+  Dropdown,
   Pagination,
   Popconfirm,
   Space,
@@ -14,9 +16,12 @@ import {
 } from 'antd';
 import {
   DeleteOutlined,
+  FileImageOutlined,
   PictureOutlined,
   PlusCircleOutlined,
+  SettingOutlined,
   SyncOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
@@ -25,6 +30,7 @@ import { message } from '/imports/ui/antd-feedback';
 
 import paths from '../../submodule-paths';
 import {
+  CREATE_MISSING_SECURITY_SERVER_PROFILE_THUMBNAILS,
   CREATE_SECURITY_SERVER_PROFILE,
   DELETE_SECURITY_SERVER_PROFILE,
   PAGED_SECURITY_SERVER_PROFILES,
@@ -43,6 +49,13 @@ type Profile = NonNullable<
 >;
 
 type TabKey = 'live-profiles' | 'test-profiles';
+
+// The default photo's thumbnail; its full image for photos stored before
+// thumbnails existed.
+const getThumbnailUrl = ({ images, defaultImageId }: Profile) => {
+  const image = images?.find(item => item?._id === defaultImageId);
+  return image?.thumbnailUrl || image?.imageUrl || undefined;
+};
 
 // The watch list is small, so both tabs are split and paged on the client
 // from a single fetch, as on the security server.
@@ -76,6 +89,8 @@ const List = (_props: Props) => {
   const [deleteProfile] = useMutation(DELETE_SECURITY_SERVER_PROFILE, {
     refetchQueries,
   });
+  const [createMissingThumbnails, { loading: creatingThumbnails }] =
+    useMutation(CREATE_MISSING_SECURITY_SERVER_PROFILE_THUMBNAILS);
 
   const profiles = (data?.pagedSecurityServerProfiles?.data ?? []).filter(
     (row): row is Profile => row != null
@@ -127,6 +142,49 @@ const List = (_props: Props) => {
       message.success('Data Reloaded', 2);
     });
 
+  const handleCreateMissingThumbnails = () => {
+    const hide = message.loading('Creating missing thumbnails...', 0);
+    createMissingThumbnails()
+      .then(({ data: result }) => {
+        hide();
+        const created =
+          result?.createMissingSecurityServerProfileThumbnails ?? 0;
+        message.success(
+          created === 1
+            ? 'Created 1 thumbnail.'
+            : `Created ${created} thumbnails.`,
+          3
+        );
+        refetch();
+      })
+      .catch((error: Error) => {
+        hide();
+        message.error(error.message, 5);
+      });
+  };
+
+  const getActionsMenu = () => (
+    <Dropdown
+      disabled={creatingThumbnails}
+      menu={{
+        items: [
+          {
+            key: 'create-missing-thumbnails',
+            label: (
+              <>
+                <FileImageOutlined />
+                &nbsp; Create missing thumbnails
+              </>
+            ),
+            onClick: handleCreateMissingThumbnails,
+          },
+        ],
+      }}
+    >
+      <Button icon={<SettingOutlined />} loading={creatingThumbnails} />
+    </Dropdown>
+  );
+
   // Above the tabs, so it isn't the table's own title as on other lists.
   const toolbar = (
     <div className="list-table-header security-server-toolbar">
@@ -142,11 +200,14 @@ const List = (_props: Props) => {
         ) : null}
       </Space>
       <div className="list-table-header-utilities">
-        <Button
-          icon={<SyncOutlined />}
-          onClick={handleRefresh}
-          title="Reload Data"
-        />
+        <Space size={8}>
+          <Button
+            icon={<SyncOutlined />}
+            onClick={handleRefresh}
+            title="Reload Data"
+          />
+          {canManage ? getActionsMenu() : null}
+        </Space>
       </div>
     </div>
   );
@@ -157,9 +218,17 @@ const List = (_props: Props) => {
       dataIndex: 'name',
       key: 'name',
       render: (name: string, record: Profile) => (
-        <Typography.Link onClick={() => openForm(record)}>
-          {name}
-        </Typography.Link>
+        <div className="security-server-profile-name">
+          <Avatar
+            shape="square"
+            size={40}
+            icon={<UserOutlined />}
+            src={getThumbnailUrl(record)}
+          />
+          <Typography.Link onClick={() => openForm(record)}>
+            {name}
+          </Typography.Link>
+        </div>
       ),
     },
     {

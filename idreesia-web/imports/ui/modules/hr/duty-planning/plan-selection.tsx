@@ -32,7 +32,7 @@ interface PlanSelectionProps {
   view: 'days' | 'week';
   onViewChange: (view: 'days' | 'week') => void;
   refreshing: boolean;
-  onRefresh: () => void;
+  onRefresh: (optionsRefresh: Promise<unknown>) => void;
   children: (selection: SelectedPlan | null) => React.ReactNode;
 }
 
@@ -47,8 +47,16 @@ const PlanSelection = ({
   onRefresh,
   children,
 }: PlanSelectionProps) => {
-  const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
-  const { allDutyLocations, allDutyLocationsLoading } = useAllDutyLocations();
+  const {
+    allMSDuties,
+    allMSDutiesLoading,
+    refetch: refetchMSDuties,
+  } = useAllMSDuties();
+  const {
+    allDutyLocations,
+    allDutyLocationsLoading,
+    refetch: refetchDutyLocations,
+  } = useAllDutyLocations();
 
   const duties = (allMSDuties ?? []).filter(
     (duty): duty is DutyOption => duty?._id != null && duty.name != null
@@ -144,9 +152,12 @@ const PlanSelection = ({
             <Button
               icon={<SyncOutlined />}
               title="Reload Data"
-              disabled={!selection}
               loading={refreshing}
-              onClick={onRefresh}
+              onClick={() =>
+                onRefresh(
+                  Promise.all([refetchMSDuties(), refetchDutyLocations()])
+                )
+              }
             />
           </Space>
         </div>

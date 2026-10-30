@@ -4,9 +4,12 @@ import {
 } from 'meteor/idreesia-common/server/collections/security';
 import {
   addSecurityServerProfileImage,
+  createMissingSecurityServerProfileThumbnails,
   createSecurityServerProfile,
   deleteSecurityServerProfile,
   removeSecurityServerProfileImage,
+  resolveSecurityServerProfileDefaultImageId,
+  setSecurityServerProfileDefaultImage,
   updateSecurityServerProfile,
 } from 'meteor/idreesia-common/server/business-logic/security/security-server';
 import { getFileUrl } from 'meteor/idreesia-common/server/file-storage';
@@ -26,8 +29,12 @@ const stripDataUrlPrefix = (imageData: string) =>
 const resolvers: ResolverMap = {
   SecurityServerProfileImageType: {
     imageUrl: async image => getFileUrl(image.imageKey),
+    thumbnailUrl: async image =>
+      image.thumbnailKey ? getFileUrl(image.thumbnailKey) : null,
   },
   SecurityServerProfileType: {
+    defaultImageId: async profile =>
+      resolveSecurityServerProfileDefaultImageId(profile),
     alertsCount: async profile =>
       SecurityServerAlerts.find({
         profileId: { $eq: profile._id },
@@ -83,6 +90,18 @@ const resolvers: ResolverMap = {
       await removeSecurityServerProfileImage(user, profileId, imageId);
       return SecurityServerProfiles.findOneAsync(profileId);
     },
+
+    setSecurityServerProfileDefaultImage: async (
+      obj,
+      { profileId, imageId },
+      { user }
+    ) => {
+      await setSecurityServerProfileDefaultImage(user, profileId, imageId);
+      return SecurityServerProfiles.findOneAsync(profileId);
+    },
+
+    createMissingSecurityServerProfileThumbnails: async () =>
+      createMissingSecurityServerProfileThumbnails(),
   },
 };
 

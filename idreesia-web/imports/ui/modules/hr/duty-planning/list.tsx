@@ -36,11 +36,9 @@ const List = ({ history, location }: ListProps) => {
   });
   const locationId = String(queryParams.locationId || '');
 
-  const handleRefresh = () => {
-    const action = planRef.current?.refresh();
-    if (!action) return;
+  const handleRefresh = (optionsRefresh: Promise<unknown>) => {
     setRefreshing(true);
-    action
+    Promise.all([optionsRefresh, planRef.current?.refresh()])
       .catch((error: unknown) => {
         const text = errorMessage(error);
         if (text) message.error(text, 5);

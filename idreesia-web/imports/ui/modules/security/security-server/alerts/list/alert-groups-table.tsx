@@ -94,15 +94,18 @@ const AlertGroupsTable = ({
       title: 'Latest Snapshot',
       key: 'snapshot',
       width: 140,
-      render: (_text: unknown, record: AlertGroupRow) =>
-        record.latestImageUrl ? (
+      render: (_text: unknown, record: AlertGroupRow) => {
+        // Older alerts may have no thumbnail yet.
+        const src = record.latestThumbnailUrl || record.latestImageUrl;
+        return src ? (
           <Image
             className="security-server-alert-thumb"
-            src={record.latestImageUrl}
+            src={src}
             alt="Latest alert snapshot"
             preview={false}
           />
-        ) : null,
+        ) : null;
+      },
     },
     {
       title: 'Person',

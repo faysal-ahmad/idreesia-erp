@@ -21,6 +21,7 @@ const PAGED_SECURITY_SERVER_ALERT_GROUPS: TypedDocumentNode<
         firstTimestamp
         lastTimestamp
         latestImageUrl
+        latestThumbnailUrl
       }
     }
   }

@@ -9,11 +9,19 @@ export {
   deleteSecurityServerProfile,
   addSecurityServerProfileImage,
   removeSecurityServerProfileImage,
+  setSecurityServerProfileDefaultImage,
+  createMissingSecurityServerProfileThumbnails,
+  resolveSecurityServerProfileDefaultImageId,
 } from './profiles';
 export {
   upsertSecurityServerAlert,
   setSecurityServerAlertReview,
+  createMissingSecurityServerAlertThumbnails,
 } from './alerts';
+export {
+  recordSecurityServerAlertSync,
+  getSecurityServerAlertLastSyncedAt,
+} from './alert-sync-status';
 export {
   getSecurityServerChanges,
   getSecurityServerProfileImage,
@@ -28,6 +36,7 @@ export type {
 export { SecurityServerSyncError } from './errors';
 export { SUPPORTED_IMAGE_MIME_TYPES } from './image-files';
 export type {
+  AlertFaceQuality,
   AlertPayload,
   AlertReview,
   ChannelValues,

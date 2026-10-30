@@ -7,6 +7,7 @@ import {
   Image,
   Popconfirm,
   Space,
+  Tag,
   Typography,
   Upload,
 } from 'antd';
@@ -19,6 +20,7 @@ import {
   ADD_SECURITY_SERVER_PROFILE_IMAGE,
   REMOVE_SECURITY_SERVER_PROFILE_IMAGE,
   SECURITY_SERVER_PROFILE_BY_ID,
+  SET_SECURITY_SERVER_PROFILE_DEFAULT_IMAGE,
 } from '../gql';
 
 const ACCEPTED_FILE_TYPES = 'image/jpeg,image/png,image/webp';
@@ -57,6 +59,10 @@ const ProfileImagesDrawer = ({ profileId, canManage, onClose }: Props) => {
   const [removeImage] = useMutation(REMOVE_SECURITY_SERVER_PROFILE_IMAGE, {
     refetchQueries,
   });
+  const [setDefaultImage, { loading: settingDefault }] = useMutation(
+    SET_SECURITY_SERVER_PROFILE_DEFAULT_IMAGE,
+    { refetchQueries }
+  );
 
   const profile = profileId ? data?.securityServerProfileById : null;
   const images = (profile?.images ?? []).filter(image => image?.imageUrl);
@@ -81,6 +87,13 @@ const ProfileImagesDrawer = ({ profileId, canManage, onClose }: Props) => {
       return false;
     },
   };
+
+  const handleSetDefault = (imageId: string) =>
+    setDefaultImage({ variables: { profileId: profileId!, imageId } }).catch(
+      (error: Error) => {
+        message.error(error.message, 5);
+      }
+    );
 
   const handleRemove = (imageId: string) =>
     removeImage({ variables: { profileId: profileId!, imageId } }).catch(
@@ -123,6 +136,25 @@ const ProfileImagesDrawer = ({ profileId, canManage, onClose }: Props) => {
             {images.map(image => (
               <div key={image!._id} className="security-server-photo">
                 <Image src={image!.imageUrl!} width={140} height={140} />
+                {image!._id === profile?.defaultImageId ? (
+                  <Tag
+                    variant="solid"
+                    color="blue"
+                    className="security-server-photo-default"
+                  >
+                    Default
+                  </Tag>
+                ) : null}
+                {image!._id !== profile?.defaultImageId && canManage ? (
+                  <Button
+                    size="small"
+                    disabled={settingDefault}
+                    className="security-server-photo-default"
+                    onClick={() => handleSetDefault(image!._id!)}
+                  >
+                    Set as default
+                  </Button>
+                ) : null}
                 {canManage ? (
                   <Popconfirm
                     title="Remove this photo?"

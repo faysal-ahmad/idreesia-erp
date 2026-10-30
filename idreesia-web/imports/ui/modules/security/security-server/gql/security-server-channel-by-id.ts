@@ -16,6 +16,8 @@ const SECURITY_SERVER_CHANNEL_BY_ID: TypedDocumentNode<
       enabled
       similarityThreshold
       recognitionFps
+      minFaceSizePx
+      minFaceQuality
       connection {
         host
         port

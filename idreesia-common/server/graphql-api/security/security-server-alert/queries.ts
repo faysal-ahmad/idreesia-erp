@@ -138,6 +138,7 @@ export async function getSecurityServerAlertGroups(
         firstTimestamp: { $last: '$timestamp' },
         lastTimestamp: { $first: '$timestamp' },
         latestImageKey: { $first: '$imageKey' },
+        latestThumbnailKey: { $first: '$thumbnailKey' },
       },
     },
   ]);

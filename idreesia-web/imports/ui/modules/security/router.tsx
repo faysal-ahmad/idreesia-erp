@@ -35,6 +35,7 @@ import {
   SecurityServerAlertsList,
   SecurityServerChannelsList,
   SecurityServerProfilesList,
+  SecurityServerUsage,
 } from './security-server';
 
 const Router = () => (
@@ -87,6 +88,7 @@ const Router = () => (
     <Route path={paths.securityServerChannelsPath} component={SecurityServerChannelsList} />
     <Route path={paths.securityServerProfilesPath} component={SecurityServerProfilesList} />
     <Route path={paths.securityServerAlertsPath} component={SecurityServerAlertsList} />
+    <Route path={paths.securityServerUsagePath} component={SecurityServerUsage} />
 
     <Route path={paths.securityUsersEditFormPath()} component={SecurityUsersEditForm} />
     <Route path={paths.securityUsersPath} component={SecurityUsersList} />

@@ -178,6 +178,9 @@ export type ResolversTypes = ResolversObject<{
   SecurityServerProfileFilter: Types.SecurityServerProfileFilter;
   SecurityServerProfileImageType: ResolverTypeWrapper<Types.SecurityServerProfileImageType>;
   SecurityServerProfileType: ResolverTypeWrapper<Types.SecurityServerProfileType>;
+  SecurityServerUsageChannelType: ResolverTypeWrapper<Types.SecurityServerUsageChannelType>;
+  SecurityServerUsageServerType: ResolverTypeWrapper<Types.SecurityServerUsageServerType>;
+  SecurityServerUsageSummaryType: ResolverTypeWrapper<Types.SecurityServerUsageSummaryType>;
   StockAdjustment: ResolverTypeWrapper<Types.StockAdjustment>;
   StockItem: ResolverTypeWrapper<Types.StockItem>;
   String: ResolverTypeWrapper<Types.Scalars['String']['output']>;
@@ -299,6 +302,9 @@ export type ResolversParentTypes = ResolversObject<{
   SecurityServerProfileFilter: Types.SecurityServerProfileFilter;
   SecurityServerProfileImageType: Types.SecurityServerProfileImageType;
   SecurityServerProfileType: Types.SecurityServerProfileType;
+  SecurityServerUsageChannelType: Types.SecurityServerUsageChannelType;
+  SecurityServerUsageServerType: Types.SecurityServerUsageServerType;
+  SecurityServerUsageSummaryType: Types.SecurityServerUsageSummaryType;
   StockAdjustment: Types.StockAdjustment;
   StockItem: Types.StockItem;
   String: Types.Scalars['String']['output'];
@@ -1250,6 +1256,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   securityServerAlertSyncStatus?: Resolver<Types.Maybe<ResolversTypes['SecurityServerAlertSyncStatusType']>, ParentType, ContextType>;
   securityServerChannelById?: Resolver<Types.Maybe<ResolversTypes['SecurityServerChannelType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityServerChannelByIdArgs, '_id'>>;
   securityServerProfileById?: Resolver<Types.Maybe<ResolversTypes['SecurityServerProfileType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityServerProfileByIdArgs, '_id'>>;
+  securityServerUsageStats?: Resolver<Types.Maybe<ResolversTypes['SecurityServerUsageSummaryType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityServerUsageStatsArgs, 'minutes'>>;
   securityVisitorByCnic?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityVisitorByCnicArgs, 'cnicNumbers'>>;
   securityVisitorByCnicOrContactNumber?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, Partial<Types.QuerySecurityVisitorByCnicOrContactNumberArgs>>;
   securityVisitorById?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.QuerySecurityVisitorByIdArgs, '_id'>>;
@@ -1412,6 +1419,48 @@ export type SecurityServerProfileTypeResolvers<ContextType = any, ParentType ext
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type SecurityServerUsageChannelTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityServerUsageChannelType'] = ResolversParentTypes['SecurityServerUsageChannelType']> = ResolversObject<{
+  busySkipPct?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  channelId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  faceSkipPct?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  faces?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  frameHeight?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  frameWidth?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  inferenceSharePct?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  processedFps?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  readFailures?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  readFps?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  recognitionFps?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  reconnects?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  skippedFaceQuality?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  skippedFaceSize?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type SecurityServerUsageServerTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityServerUsageServerType'] = ResolversParentTypes['SecurityServerUsageServerType']> = ResolversObject<{
+  activeChannels?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  cpuAvgPct?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  cpuCores?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  dnnTarget?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  eventLoopLagMaxMs?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  eventLoopLagP95Ms?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  gpuMemTotalMb?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  gpuMemUsedMb?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  gpuUtilAvgPct?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  gpuUtilMaxPct?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  inferenceBusyAvgPct?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  inferenceBusyMaxPct?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  windowCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type SecurityServerUsageSummaryTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityServerUsageSummaryType'] = ResolversParentTypes['SecurityServerUsageSummaryType']> = ResolversObject<{
+  channels?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['SecurityServerUsageChannelType']>>>, ParentType, ContextType>;
+  coveredSeconds?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  lastBucketAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  minutes?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  server?: Resolver<Types.Maybe<ResolversTypes['SecurityServerUsageServerType']>, ParentType, ContextType>;
 }>;
 
 export type StockAdjustmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['StockAdjustment'] = ResolversParentTypes['StockAdjustment']> = ResolversObject<{
@@ -1653,6 +1702,9 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   SecurityServerChannelType?: SecurityServerChannelTypeResolvers<ContextType>;
   SecurityServerProfileImageType?: SecurityServerProfileImageTypeResolvers<ContextType>;
   SecurityServerProfileType?: SecurityServerProfileTypeResolvers<ContextType>;
+  SecurityServerUsageChannelType?: SecurityServerUsageChannelTypeResolvers<ContextType>;
+  SecurityServerUsageServerType?: SecurityServerUsageServerTypeResolvers<ContextType>;
+  SecurityServerUsageSummaryType?: SecurityServerUsageSummaryTypeResolvers<ContextType>;
   StockAdjustment?: StockAdjustmentResolvers<ContextType>;
   StockItem?: StockItemResolvers<ContextType>;
   TeamMemberType?: TeamMemberTypeResolvers<ContextType>;

@@ -6,6 +6,7 @@ import {
   BarcodeOutlined,
   BarsOutlined,
   BookOutlined,
+  DashboardOutlined,
   FlagOutlined,
   IdcardOutlined,
   LaptopOutlined,
@@ -114,6 +115,11 @@ const menuItems = [
         key: 'security-server-channels',
         icon: <VideoCameraOutlined style={IconStyle} />,
         label: 'Channels',
+      },
+      {
+        key: 'security-server-usage',
+        icon: <DashboardOutlined style={IconStyle} />,
+        label: 'Usage',
       },
     ],
   },
@@ -233,6 +239,12 @@ const menuRouteMatches: MenuRouteMatch[] = [
     matches: (pathname) => isPath(pathname, paths.securityServerChannelsPath),
   },
   {
+    key: 'security-server-usage',
+    openKeys: ['security-server'],
+    subModuleName: SubModuleNames.securityServerUsage,
+    matches: (pathname) => isPath(pathname, paths.securityServerUsagePath),
+  },
+  {
     key: 'security-user-accounts',
     openKeys: ['administration'],
     subModuleName: SubModuleNames.securityUsers,
@@ -333,6 +345,10 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'security-server-channels':
         history.push(paths.securityServerChannelsPath);
+        break;
+
+      case 'security-server-usage':
+        history.push(paths.securityServerUsagePath);
         break;
 
       case 'security-user-accounts':

@@ -18,3 +18,4 @@ export { default as SECURITY_SERVER_ALERT_BY_ID } from './security-server-alert-
 export { default as SET_SECURITY_SERVER_ALERT_REVIEW } from './set-security-server-alert-review';
 export { default as CREATE_MISSING_SECURITY_SERVER_ALERT_THUMBNAILS } from './create-missing-security-server-alert-thumbnails';
 export { default as SECURITY_SERVER_ALERT_SYNC_STATUS } from './security-server-alert-sync-status';
+export { default as SECURITY_SERVER_USAGE_STATS } from './security-server-usage-stats';

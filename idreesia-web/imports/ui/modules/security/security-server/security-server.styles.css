@@ -1,4 +1,4 @@
-/* Security Server pages (channels, profiles, alerts). */
+/* Security Server pages (channels, profiles, alerts, usage). */
 
 .security-server-inline-tag {
   margin-left: 8px;
@@ -71,4 +71,17 @@ img.ant-image-img.security-server-alert-snapshot {
   bottom: 4px;
   left: 4px;
   margin-inline-end: 0;
+}
+
+.security-server-usage-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.security-server-usage-tile-subtext {
+  margin-top: 4px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
 }

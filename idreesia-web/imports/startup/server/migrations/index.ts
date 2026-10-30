@@ -56,6 +56,7 @@ import './52-duty-plan-indexes';
 import './53-committee-members';
 import './54-drop-old-attendance';
 import './55-create-security-server-indexes';
+import './56-create-security-server-usage-indexes';
 
 Migrations.config({
   log: true,

@@ -191,6 +191,41 @@ An alert can still refer to a profile or channel that was just deleted in the ER
 
 Sent after every alert push run, including runs with nothing to send. The body is empty (`{}`). Returns `204`. The ERP records the time, by its own clock, and shows it on the alerts page as "Last synced", so a quiet camera isn't mistaken for a security server that's down or can't reach the ERP. The page warns once there's been no check-in for 5 minutes.
 
+## Pushing usage stats
+
+### `PUT /api/security-server/usage-stats`
+
+The security server collects its usage stats once a minute. It rolls them up into 5-minute buckets and pushes each bucket once it's complete. The ERP's Security Server → Usage page is built from these buckets, and the ERP keeps them for 30 days (TTL index on `bucketStart`).
+
+```json
+{
+  "bucketMinutes": 5,
+  "buckets": [
+    {
+      "bucketStart": "2026-10-30T10:05:00.000Z",
+      "server": {
+        "windowCount": 5, "coveredSeconds": 300, "activeChannels": 4, "dnnTarget": "cuda",
+        "inferenceBusyAvgPct": 41.2, "inferenceBusyMaxPct": 55.0,
+        "gpuUtilAvgPct": 30.1, "gpuUtilMaxPct": 62, "gpuMemUsedMb": 2100, "gpuMemTotalMb": 8192,
+        "cpuAvgPct": 180.4, "cpuCores": 8, "eventLoopLagP95Ms": 12.3, "eventLoopLagMaxMs": 40.1
+      },
+      "channels": [
+        {
+          "channelId": "<security server channel id>", "frameWidth": 1920, "frameHeight": 1080,
+          "framesRead": 7500, "framesProcessed": 1500, "skippedFps": 6000, "skippedBusy": 0,
+          "readFailures": 0, "reconnects": 0, "faces": 42, "skippedFaceSize": 10,
+          "skippedFaceQuality": 3, "inferenceMs": 61234.5
+        }
+      ]
+    }
+  ]
+}
+```
+
+- `server` averages are over the bucket's minute windows. The ERP re-averages them weighted by `windowCount`. `server` is `null` if the bucket has no server row. GPU fields are `null` when no GPU is visible.
+- `channels` counts are summed over the bucket. `channelId` is the security server's own id, matched through the channel's `externalId`. A channel the ERP doesn't know yet is skipped rather than rejected.
+- Upserts by `bucketStart` and by (channel, `bucketStart`), so re-sending a bucket overwrites it. Returns `204`.
+
 ## Error handling summary
 
 | Status | Retry? |

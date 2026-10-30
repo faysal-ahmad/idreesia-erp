@@ -2179,6 +2179,7 @@ export type Query = {
   securityServerAlertSyncStatus?: Maybe<SecurityServerAlertSyncStatusType>;
   securityServerChannelById?: Maybe<SecurityServerChannelType>;
   securityServerProfileById?: Maybe<SecurityServerProfileType>;
+  securityServerUsageStats?: Maybe<SecurityServerUsageSummaryType>;
   securityVisitorByCnic?: Maybe<PersonType>;
   securityVisitorByCnicOrContactNumber?: Maybe<PersonType>;
   securityVisitorById?: Maybe<PersonType>;
@@ -2583,6 +2584,11 @@ export type QuerySecurityServerProfileByIdArgs = {
 };
 
 
+export type QuerySecurityServerUsageStatsArgs = {
+  minutes: Scalars['Int']['input'];
+};
+
+
 export type QuerySecurityVisitorByCnicArgs = {
   cnicNumbers: Array<InputMaybe<Scalars['String']['input']>>;
 };
@@ -2864,6 +2870,51 @@ export type SecurityServerProfileType = {
   name?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityServerUsageChannelType = {
+  __typename?: 'SecurityServerUsageChannelType';
+  busySkipPct?: Maybe<Scalars['Float']['output']>;
+  channelId?: Maybe<Scalars['String']['output']>;
+  faceSkipPct?: Maybe<Scalars['Float']['output']>;
+  faces?: Maybe<Scalars['Int']['output']>;
+  frameHeight?: Maybe<Scalars['Int']['output']>;
+  frameWidth?: Maybe<Scalars['Int']['output']>;
+  inferenceSharePct?: Maybe<Scalars['Float']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  processedFps?: Maybe<Scalars['Float']['output']>;
+  readFailures?: Maybe<Scalars['Int']['output']>;
+  readFps?: Maybe<Scalars['Float']['output']>;
+  recognitionFps?: Maybe<Scalars['Float']['output']>;
+  reconnects?: Maybe<Scalars['Int']['output']>;
+  skippedFaceQuality?: Maybe<Scalars['Int']['output']>;
+  skippedFaceSize?: Maybe<Scalars['Int']['output']>;
+};
+
+export type SecurityServerUsageServerType = {
+  __typename?: 'SecurityServerUsageServerType';
+  activeChannels?: Maybe<Scalars['Int']['output']>;
+  cpuAvgPct?: Maybe<Scalars['Float']['output']>;
+  cpuCores?: Maybe<Scalars['Int']['output']>;
+  dnnTarget?: Maybe<Scalars['String']['output']>;
+  eventLoopLagMaxMs?: Maybe<Scalars['Float']['output']>;
+  eventLoopLagP95Ms?: Maybe<Scalars['Float']['output']>;
+  gpuMemTotalMb?: Maybe<Scalars['Float']['output']>;
+  gpuMemUsedMb?: Maybe<Scalars['Float']['output']>;
+  gpuUtilAvgPct?: Maybe<Scalars['Float']['output']>;
+  gpuUtilMaxPct?: Maybe<Scalars['Float']['output']>;
+  inferenceBusyAvgPct?: Maybe<Scalars['Float']['output']>;
+  inferenceBusyMaxPct?: Maybe<Scalars['Float']['output']>;
+  windowCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type SecurityServerUsageSummaryType = {
+  __typename?: 'SecurityServerUsageSummaryType';
+  channels?: Maybe<Array<Maybe<SecurityServerUsageChannelType>>>;
+  coveredSeconds?: Maybe<Scalars['Int']['output']>;
+  lastBucketAt?: Maybe<Scalars['String']['output']>;
+  minutes?: Maybe<Scalars['Int']['output']>;
+  server?: Maybe<SecurityServerUsageServerType>;
 };
 
 export type StockAdjustment = {

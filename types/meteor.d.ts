@@ -175,6 +175,10 @@ declare module 'meteor/mongo' {
         fieldName: string,
         query?: unknown
       ): Promise<TResult[]>;
+      bulkWrite(
+        operations: readonly unknown[],
+        options?: { ordered?: boolean }
+      ): Promise<unknown>;
     }
 
     interface Cursor<TDocument> {

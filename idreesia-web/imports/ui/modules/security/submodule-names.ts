@@ -12,6 +12,7 @@ const SubModuleNames = {
   securityServerChannels: 'Security Server Channels',
   securityServerProfiles: 'Security Server Profiles',
   securityServerAlerts: 'Security Server Alerts',
+  securityServerUsage: 'Security Server Usage',
   auditLogs: 'Audit Logs',
   securityUsers: 'Security Users',
 };

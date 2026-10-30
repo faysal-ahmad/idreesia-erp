@@ -1515,6 +1515,13 @@ export type SecurityServerProfileByIdQueryVariables = Exact<{
 
 export type SecurityServerProfileByIdQuery = { securityServerProfileById: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, defaultImageId: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
 
+export type SecurityServerUsageStatsQueryVariables = Exact<{
+  minutes: number;
+}>;
+
+
+export type SecurityServerUsageStatsQuery = { securityServerUsageStats: { minutes: number | null, coveredSeconds: number | null, lastBucketAt: string | null, server: { windowCount: number | null, activeChannels: number | null, dnnTarget: string | null, inferenceBusyAvgPct: number | null, inferenceBusyMaxPct: number | null, gpuUtilAvgPct: number | null, gpuUtilMaxPct: number | null, gpuMemUsedMb: number | null, gpuMemTotalMb: number | null, cpuAvgPct: number | null, cpuCores: number | null, eventLoopLagP95Ms: number | null, eventLoopLagMaxMs: number | null } | null, channels: Array<{ channelId: string | null, name: string | null, recognitionFps: number | null, frameWidth: number | null, frameHeight: number | null, readFps: number | null, processedFps: number | null, busySkipPct: number | null, inferenceSharePct: number | null, faces: number | null, skippedFaceSize: number | null, skippedFaceQuality: number | null, faceSkipPct: number | null, readFailures: number | null, reconnects: number | null } | null> | null } | null };
+
 export type SetSecurityServerAlertReviewMutationVariables = Exact<{
   _id: string;
   review?: string | null | undefined;

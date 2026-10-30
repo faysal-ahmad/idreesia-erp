@@ -10,6 +10,14 @@ export { default as VisitorStays } from './visitor-stays';
 export { default as SecurityServerChannels } from './security-server-channels';
 export { default as SecurityServerProfiles } from './security-server-profiles';
 export { default as SecurityServerAlerts } from './security-server-alerts';
+export {
+  SecurityServerUsageServerStats,
+  SecurityServerUsageChannelStats,
+} from './security-server-usage-stats';
+export type {
+  SecurityServerUsageServerStatsDocument,
+  SecurityServerUsageChannelStatsDocument,
+} from './security-server-usage-stats';
 
 export const Visitors = new Mongo.Collection<Record<string, any>>(
   'security-visitors'

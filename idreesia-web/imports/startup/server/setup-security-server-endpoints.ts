@@ -11,6 +11,7 @@ import {
   upsertSecurityServerAlert,
   upsertSecurityServerChannelFromSync,
   upsertSecurityServerProfileFromSync,
+  upsertSecurityServerUsageStats,
   SecurityServerSyncError,
   SUPPORTED_IMAGE_MIME_TYPES,
   type AlertFaceQuality,
@@ -20,6 +21,8 @@ import {
   type ProfileSyncPush,
   type SyncImage,
   type SyncUser,
+  type UsageStatsBucket,
+  type UsageStatsPush,
 } from 'meteor/idreesia-common/server/business-logic/security/security-server';
 
 import { getUser } from './get-user';
@@ -28,8 +31,8 @@ import { getUser } from './get-user';
  * REST endpoints the security (face-recognition monitoring) server syncs
  * through. Channels and profiles can be edited on either side: the server
  * pulls what changed here (/changes) and pushes what changed there
- * (/channels and /profiles by its own ids). Alerts are raised by the server
- * and pushed up. The server logs in
+ * (/channels and /profiles by its own ids). Alerts and usage stats are
+ * produced by the server and pushed up. The server logs in
  * through POST /login as a service account holding
  * SECURITY_SYNC_SECURITY_SERVER_DATA, and sends the token it gets back in the
  * Authorization header.
@@ -274,6 +277,70 @@ const parseProfilePush = (body: Body): ProfileSyncPush => {
       };
 };
 
+// A number that may be null, e.g. GPU figures on a server without a GPU.
+const optionalNumber = (body: Body, field: string): number | null =>
+  body[field] == null ? null : requireNumber(body, field);
+
+const requireArray = (body: Body, field: string): Body[] => {
+  const value = body[field];
+  if (
+    !Array.isArray(value) ||
+    value.some(item => !item || typeof item !== 'object' || Array.isArray(item))
+  ) {
+    throw new ValidationError(`'${field}' must be an array of objects.`);
+  }
+  return value as Body[];
+};
+
+const parseUsageServerBucket = (
+  server: Body
+): NonNullable<UsageStatsBucket['server']> => ({
+  windowCount: requireNumber(server, 'windowCount'),
+  coveredSeconds: requireNumber(server, 'coveredSeconds'),
+  activeChannels: requireNumber(server, 'activeChannels'),
+  dnnTarget: requireString(server, 'dnnTarget'),
+  inferenceBusyAvgPct: requireNumber(server, 'inferenceBusyAvgPct'),
+  inferenceBusyMaxPct: requireNumber(server, 'inferenceBusyMaxPct'),
+  gpuUtilAvgPct: optionalNumber(server, 'gpuUtilAvgPct'),
+  gpuUtilMaxPct: optionalNumber(server, 'gpuUtilMaxPct'),
+  gpuMemUsedMb: optionalNumber(server, 'gpuMemUsedMb'),
+  gpuMemTotalMb: optionalNumber(server, 'gpuMemTotalMb'),
+  cpuAvgPct: requireNumber(server, 'cpuAvgPct'),
+  cpuCores: requireNumber(server, 'cpuCores'),
+  eventLoopLagP95Ms: requireNumber(server, 'eventLoopLagP95Ms'),
+  eventLoopLagMaxMs: requireNumber(server, 'eventLoopLagMaxMs'),
+});
+
+const parseUsageChannelBucket = (
+  channel: Body
+): UsageStatsBucket['channels'][number] => ({
+  channelId: requireString(channel, 'channelId'),
+  frameWidth: optionalNumber(channel, 'frameWidth'),
+  frameHeight: optionalNumber(channel, 'frameHeight'),
+  framesRead: requireNumber(channel, 'framesRead'),
+  framesProcessed: requireNumber(channel, 'framesProcessed'),
+  skippedFps: requireNumber(channel, 'skippedFps'),
+  skippedBusy: requireNumber(channel, 'skippedBusy'),
+  readFailures: requireNumber(channel, 'readFailures'),
+  reconnects: requireNumber(channel, 'reconnects'),
+  faces: requireNumber(channel, 'faces'),
+  skippedFaceSize: requireNumber(channel, 'skippedFaceSize'),
+  skippedFaceQuality: requireNumber(channel, 'skippedFaceQuality'),
+  inferenceMs: requireNumber(channel, 'inferenceMs'),
+});
+
+const parseUsagePush = (body: Body): UsageStatsPush => ({
+  bucketMinutes: requireNumber(body, 'bucketMinutes'),
+  buckets: requireArray(body, 'buckets').map(bucket => ({
+    bucketStart: parseDate(bucket.bucketStart, 'bucketStart'),
+    server:
+      bucket.server == null
+        ? null
+        : parseUsageServerBucket(requireObject(bucket, 'server')),
+    channels: requireArray(bucket, 'channels').map(parseUsageChannelBucket),
+  })),
+});
+
 const getRouteParam = (req: Request, name: string): string => {
   const value = req.params[name];
   if (typeof value !== 'string' || value === '') {
@@ -456,6 +523,18 @@ export function createSecurityServerRouter() {
     '/alerts/heartbeat',
     handle(async (req, res) => {
       await recordSecurityServerAlertSync();
+      res.status(204).end();
+    })
+  );
+
+  /**
+   * Usage stats in 5-minute rollups, for the Usage page. Upserted per bucket,
+   * so re-sending one is harmless.
+   */
+  router.put(
+    '/usage-stats',
+    handle(async (req, res) => {
+      await upsertSecurityServerUsageStats(parseUsagePush(getBody(req)));
       res.status(204).end();
     })
   );

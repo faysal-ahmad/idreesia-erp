@@ -23,6 +23,12 @@ export {
   getSecurityServerAlertLastSyncedAt,
 } from './alert-sync-status';
 export {
+  upsertSecurityServerUsageStats,
+  getSecurityServerUsageSummary,
+  USAGE_STATS_RETENTION_DAYS,
+} from './usage-stats';
+export type { UsageStatsBucket, UsageStatsPush } from './usage-stats';
+export {
   getSecurityServerChanges,
   getSecurityServerProfileImage,
   upsertSecurityServerChannelFromSync,

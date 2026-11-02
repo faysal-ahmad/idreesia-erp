@@ -142,7 +142,7 @@ jobs:
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v3
         with:
-          meteor-release: 3.5
+          meteor-release: 3.5.4
 
       - run: meteor npm install -g yarn
 

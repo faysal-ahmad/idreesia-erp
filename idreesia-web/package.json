@@ -46,7 +46,7 @@
     "meteor-node-stubs": "^1.2.27",
     "mongodb": "^6.20.0",
     "multer": "^2.3.0",
-    "newrelic": "12.25.1",
+    "newrelic": "^14.10.0",
     "numeral": "^2.0.6",
     "prop-types": "^15.8.1",
     "qs": "^6.16.0",

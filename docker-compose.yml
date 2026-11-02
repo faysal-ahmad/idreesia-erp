@@ -71,6 +71,10 @@ services:
       - rustfs
     env_file:
       - ./idreesia-web/.env
+    environment:
+      # The native file watcher can't poll the bind-mounted repo on Docker
+      # Desktop (EINTR errors on every startup); poll instead.
+      METEOR_WATCH_FORCE_POLLING: "true"
     ports:
       - "3000:3000"
     volumes:

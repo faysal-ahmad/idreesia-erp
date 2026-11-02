@@ -26,6 +26,7 @@ import {
 } from 'meteor/idreesia-common/server/business-logic/security/security-server';
 
 import { getUser } from './get-user';
+import { noticeError } from './newrelic';
 
 /**
  * REST endpoints the security (face-recognition monitoring) server syncs
@@ -409,6 +410,7 @@ const handle = (handler: Handler) =>
       } else {
         // eslint-disable-next-line no-console
         console.error('Security server sync failed', error);
+        noticeError(error, { source: 'security-server-sync', path: req.path });
         res.status(500).json({ error: 'Internal server error.' });
       }
     }

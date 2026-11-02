@@ -5,9 +5,13 @@ import { config } from 'dotenv';
 // without this, Mongo.Collection.prototype.attachSchema is never patched in.
 import 'meteor/aldeed:collection2/static';
 
+
 config({
   path: path.resolve(process.env.PWD ?? process.cwd(), '.env'),
 });
+
+// Needs the .env values loaded above (ENVIRONMENT, NEW_RELIC_*).
+initNewRelic();
 
 import './configure-services';
 import './migrations';
@@ -24,6 +28,7 @@ import {
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
 } from 'meteor/idreesia-common/server/graphql-api/_directives';
+import { initNewRelic } from './newrelic';
 import { setupAgenda } from './setup-agenda';
 import { setupRestEndpoints } from './setup-rest-endpoints';
 import { getUser } from './get-user';

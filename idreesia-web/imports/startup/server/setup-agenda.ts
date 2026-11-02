@@ -3,6 +3,8 @@ import { setupJobDefinitions } from 'meteor/idreesia-common/server/business-logi
 import { scheduleRecurringJobs } from 'meteor/idreesia-common/server/business-logic/jobs/recurring-schedule';
 import { startJobProcessorHeartbeat } from 'meteor/idreesia-common/server/business-logic/jobs/job-processor-heartbeat';
 
+import { noticeError } from './newrelic';
+
 const jobsEnabled = process.env.JOBS_ENABLED === 'true';
 
 export async function setupAgenda() {
@@ -14,6 +16,10 @@ export async function setupAgenda() {
   await setupJobDefinitions();
 
   if (!jobsEnabled) return;
+
+  agenda.on('fail', (error: Error, job: { attrs: { name: string } }) => {
+    noticeError(error, { source: 'agenda-job', jobName: job.attrs.name });
+  });
 
   await agenda.start();
   await scheduleRecurringJobs();

@@ -5,6 +5,8 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
 
+import { reportError } from '../monitoring';
+
 interface LayoutRootState {
   activeModuleName?: string | null;
 }
@@ -38,6 +40,9 @@ const MainContent = () => {
     main = (
       <Suspense fallback={<div />}>
         <ErrorBoundary
+          onError={error =>
+            reportError(error, { source: 'module-router', module: activeModuleName ?? '' })
+          }
           fallbackRender={({ error }) => (
             <div style={{ padding: 24 }}>
               <h3>Something went wrong</h3>

@@ -207,7 +207,7 @@ const ListContainer = ({ history, location }: ListContainerProps) => {
   };
 
   const handleItemSelected = (karkun: KarkunRef) => {
-    history.push(`${paths.karkunsPath}/${karkun._id}`);
+    history.push(paths.employeeEditFormPath(karkun._id));
   };
 
   if (allJobsLoading) {

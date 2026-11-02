@@ -31,7 +31,6 @@ services:
   rustfs:
     image: rustfs/rustfs:1.0.3
     ports:
-      - "9000:9000"
       - "9001:9001" # Console
     environment:
       RUSTFS_ACCESS_KEY: rustfs_root_user

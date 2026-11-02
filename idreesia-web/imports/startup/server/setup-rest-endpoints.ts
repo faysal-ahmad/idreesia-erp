@@ -17,6 +17,7 @@ import {
 } from 'meteor/idreesia-common/server/business-logic/inventory';
 
 import { createSecurityServerRouter } from './setup-security-server-endpoints';
+import { getBrowserMonitoringConfig } from './newrelic';
 
 const ReportGenerators = {
   IssuanceForms: exportIsssuanceForms,
@@ -213,6 +214,21 @@ export function setupRestEndpoints() {
         res.send(JSON.stringify({ attachmentId }));
       })
     );
+
+    /**
+     * Public config for the browser monitoring agent. The client can't read
+     * process.env, so it fetches this at startup. Returns 204 when monitoring
+     * is disabled. These are New Relic's public browser-agent identifiers
+     * (they ship in every page that uses the agent), not secrets.
+     */
+    app.get('/api/monitoring-config', (req: Request, res: Response) => {
+      const config = getBrowserMonitoringConfig();
+      if (!config) {
+        res.status(204).end();
+        return;
+      }
+      res.json(config);
+    });
 
     /**
      * Endpoints the security server pushes its channels, profiles and alerts to

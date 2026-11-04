@@ -2,6 +2,8 @@ import gql from 'graphql-tag';
 
 export default gql`
 extend type Query {
+  hrCommitteeOptions: [CommitteeType]
+
   hrKarkunById(_id: String!): PersonType
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 

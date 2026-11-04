@@ -129,6 +129,20 @@ export const HrPermissionsData: PermissionNode = {
         },
       ],
     },
+    {
+      title: 'Committees',
+      key: 'module-hr-committees',
+      children: [
+        {
+          title: 'View Committees Data',
+          key: PermissionConstants.HR_VIEW_COMMITTEES,
+        },
+        {
+          title: 'Manage Committees Data',
+          key: PermissionConstants.HR_MANAGE_COMMITTEES,
+        },
+      ],
+    },
   ],
 };
 

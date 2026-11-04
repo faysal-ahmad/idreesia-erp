@@ -27,6 +27,9 @@ const Permissions = {
   HR_VIEW_EMPLOYEES: 'hr-view-employees',
   HR_MANAGE_EMPLOYEES: 'hr-manage-employees',
 
+  HR_VIEW_COMMITTEES: 'hr-view-committees',
+  HR_MANAGE_COMMITTEES: 'hr-manage-committees',
+
   // ****************************************************************************************
   // Security Module
   // ****************************************************************************************

@@ -1898,10 +1898,12 @@ export enum Permission {
   AdminViewSecurityLogs = 'ADMIN_VIEW_SECURITY_LOGS',
   AdminViewUsersAndGroups = 'ADMIN_VIEW_USERS_AND_GROUPS',
   HrDeleteData = 'HR_DELETE_DATA',
+  HrManageCommittees = 'HR_MANAGE_COMMITTEES',
   HrManageEmployees = 'HR_MANAGE_EMPLOYEES',
   HrManageKarkuns = 'HR_MANAGE_KARKUNS',
   HrManageSetupData = 'HR_MANAGE_SETUP_DATA',
   HrViewAuditLogs = 'HR_VIEW_AUDIT_LOGS',
+  HrViewCommittees = 'HR_VIEW_COMMITTEES',
   HrViewEmployees = 'HR_VIEW_EMPLOYEES',
   HrViewKarkuns = 'HR_VIEW_KARKUNS',
   InApproveIssuanceForms = 'IN_APPROVE_ISSUANCE_FORMS',
@@ -2124,6 +2126,7 @@ export type Query = {
   dutyPlanWeek?: Maybe<DutyPlanWeekType>;
   dutyShiftById?: Maybe<DutyShiftType>;
   faceVectors: Array<FaceVectorRecord>;
+  hrCommitteeOptions?: Maybe<Array<Maybe<CommitteeType>>>;
   hrKarkunById?: Maybe<PersonType>;
   hrKarkunsById?: Maybe<Array<Maybe<PersonType>>>;
   inventoryStatistics?: Maybe<InventoryStatistics>;

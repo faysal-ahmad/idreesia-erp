@@ -810,10 +810,10 @@ export type RemoveCommitteeCoordinatorMutationVariables = Exact<{
 
 export type RemoveCommitteeCoordinatorMutation = { removeCommitteeCoordinator: { _id: string | null } | null };
 
-export type ComposerAllCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
+export type ComposerHrCommitteeOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ComposerAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null } | null> | null };
+export type ComposerHrCommitteeOptionsQuery = { hrCommitteeOptions: Array<{ _id: string | null, name: string | null } | null> | null };
 
 export type ComposerAllDutyLocationsQueryVariables = Exact<{ [key: string]: never; }>;
 

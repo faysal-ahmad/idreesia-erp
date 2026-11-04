@@ -1,4 +1,5 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import { Committees } from 'meteor/idreesia-common/server/collections/hr';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { computeImageVectorData } from 'meteor/idreesia-common/server/business-logic/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
@@ -12,6 +13,9 @@ interface ResolverMap {
 
 const resolvers: ResolverMap = {
   Query: {
+    hrCommitteeOptions: async () =>
+      Committees.find({}, { sort: { name: 1 }, fields: { name: 1 } }).fetchAsync(),
+
     hrKarkunById: async (obj, { _id }) => People.findOneAsync(_id),
 
     hrKarkunsById: async (obj, { _ids }) => {

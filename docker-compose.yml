@@ -58,8 +58,52 @@ services:
     entrypoint: >
       /bin/sh -c "
       aws --endpoint-url http://rustfs:9000 s3 mb s3://idreesia-files;
+      aws --endpoint-url http://rustfs:9000 s3 mb s3://rocketchat;
       exit 0;
       "
+
+  # Rocket.Chat shares the mongo service above (its own `rocketchat`
+  # database) rather than running a second mongod - it only needs a replica
+  # set, which atlas-local already initialises. Published on 3100 because the
+  # ERP owns 3000. No TRANSPORTER is set, so it runs as a single monolith
+  # process without NATS.
+  rocketchat:
+    image: rocketchat/rocket.chat:8.9.0
+    depends_on:
+      mongo:
+        condition: service_started
+      rustfs-defaultbuckets:
+        condition: service_completed_successfully
+    environment:
+      MONGO_URL: mongodb://mongo:27017/rocketchat?directConnection=true
+      ROOT_URL: http://localhost:3100
+      PORT: "3000"
+      DEPLOY_METHOD: docker
+      DEPLOY_PLATFORM: compose
+      # Skip the setup wizard and seed a local admin so the dev instance is
+      # usable straight away.
+      OVERWRITE_SETTING_Show_Setup_Wizard: completed
+      ADMIN_USERNAME: admin
+      ADMIN_PASS: admin
+      ADMIN_EMAIL: admin@idreesia.local
+      # File uploads, avatars and user data exports go to the `rocketchat`
+      # bucket on RustFS instead of GridFS. RustFS only does path-style
+      # addressing, hence ForcePathStyle. The endpoint is the in-network
+      # hostname, which browsers can't reach (9000 isn't published), so all
+      # three proxy settings make Rocket.Chat stream files itself rather than
+      # redirecting clients to a pre-signed rustfs:9000 URL.
+      OVERWRITE_SETTING_FileUpload_Storage_Type: AmazonS3
+      OVERWRITE_SETTING_FileUpload_S3_BucketURL: http://rustfs:9000
+      OVERWRITE_SETTING_FileUpload_S3_Bucket: rocketchat
+      OVERWRITE_SETTING_FileUpload_S3_Region: us-east-1
+      OVERWRITE_SETTING_FileUpload_S3_AWSAccessKeyId: rustfs_root_user
+      OVERWRITE_SETTING_FileUpload_S3_AWSSecretAccessKey: rustfs_root_user_password
+      OVERWRITE_SETTING_FileUpload_S3_ForcePathStyle: "true"
+      OVERWRITE_SETTING_FileUpload_S3_Proxy_Uploads: "true"
+      OVERWRITE_SETTING_FileUpload_S3_Proxy_Avatars: "true"
+      OVERWRITE_SETTING_FileUpload_S3_Proxy_UserDataFiles: "true"
+    ports:
+      - "3100:3000"
 
   idreesia-web:
     build:

@@ -2213,6 +2213,7 @@ export type Query = {
   mehfilKarkunByBarcodeId?: Maybe<MehfilKarkunType>;
   mehfilKarkunsByIds?: Maybe<Array<Maybe<MehfilKarkunType>>>;
   mehfilKarkunsByMehfilId?: Maybe<Array<Maybe<MehfilKarkunType>>>;
+  myCommittees?: Maybe<Array<Maybe<CommitteeType>>>;
   pagedCities?: Maybe<PagedCityType>;
   pagedDeletedPeople?: Maybe<PagedPeopleType>;
   pagedHrAuditLogs?: Maybe<PagedAuditLogType>;

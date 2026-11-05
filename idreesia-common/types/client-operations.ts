@@ -2421,3 +2421,8 @@ export type VendorByIdQueryVariables = Exact<{
 
 
 export type VendorByIdQuery = { vendorById: { _id: string | null, physicalStoreId: string | null, name: string | null, contactPerson: string | null, contactNumber: string | null, address: string | null, notes: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+
+export type MyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, color: string | null } | null> | null };

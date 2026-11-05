@@ -4,6 +4,7 @@ const ModulePaths = {
   hr: '/hr',
   security: '/security',
   communications: '/communications',
+  workspaces: '/workspaces',
 };
 
 export default ModulePaths;

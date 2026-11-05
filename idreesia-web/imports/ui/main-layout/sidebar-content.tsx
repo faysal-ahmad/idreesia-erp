@@ -37,6 +37,9 @@ const sidebarsMap: Record<
   [ModuleNames.communications]: React.lazy(
     () => import('/imports/ui/modules/communications/sidebar')
   ),
+  [ModuleNames.workspaces]: React.lazy(
+    () => import('/imports/ui/modules/workspaces/sidebar')
+  ),
 };
 
 const SidebarContent = ({ history }: Props) => {

@@ -1275,6 +1275,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   mehfilKarkunByBarcodeId?: Resolver<Types.Maybe<ResolversTypes['MehfilKarkunType']>, ParentType, ContextType, RequireFields<Types.QueryMehfilKarkunByBarcodeIdArgs, 'barcode'>>;
   mehfilKarkunsByIds?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['MehfilKarkunType']>>>, ParentType, ContextType, RequireFields<Types.QueryMehfilKarkunsByIdsArgs, 'ids'>>;
   mehfilKarkunsByMehfilId?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['MehfilKarkunType']>>>, ParentType, ContextType, RequireFields<Types.QueryMehfilKarkunsByMehfilIdArgs, 'mehfilId'>>;
+  myCommittees?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CommitteeType']>>>, ParentType, ContextType>;
   pagedCities?: Resolver<Types.Maybe<ResolversTypes['PagedCityType']>, ParentType, ContextType, Partial<Types.QueryPagedCitiesArgs>>;
   pagedDeletedPeople?: Resolver<Types.Maybe<ResolversTypes['PagedPeopleType']>, ParentType, ContextType, Partial<Types.QueryPagedDeletedPeopleArgs>>;
   pagedHrAuditLogs?: Resolver<Types.Maybe<ResolversTypes['PagedAuditLogType']>, ParentType, ContextType, Partial<Types.QueryPagedHrAuditLogsArgs>>;

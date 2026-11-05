@@ -65,6 +65,7 @@ const LogoStyle: CSSProperties = {
 
 const modulePathsMapping: Record<string, string> = {
   [ModuleNames.admin]: ModulePaths.admin,
+  [ModuleNames.workspaces]: ModulePaths.workspaces,
   // ***********************************************
   // Items within this section would be grouped under
   // the node '381-A Operations'
@@ -141,7 +142,10 @@ const HeaderContent = ({ history, location, user }: Props) => {
     // accessible to the user
     const moduleNames = keys(modulePathsMapping);
     moduleNames.forEach((moduleName: string) => {
-      if (moduleName !== ModuleNames.admin) {
+      if (
+        moduleName !== ModuleNames.admin &&
+        moduleName !== ModuleNames.workspaces
+      ) {
         if (isModuleAccessible(user, moduleName)) {
           childMenuItems.push({ key: moduleName, label: moduleName });
           const modulePath = modulePathsMapping[moduleName];
@@ -158,6 +162,19 @@ const HeaderContent = ({ history, location, user }: Props) => {
         label: '381-A Operations',
         children: childMenuItems,
       });
+    }
+
+    // Add the workspaces node if the user is linked to a person (or is the
+    // erp-admin). Access to workspaces is based on committee membership, not
+    // permissions.
+    if (user.karkun?._id || user.username === 'erp-admin') {
+      menuItems.push({
+        key: ModuleNames.workspaces,
+        label: ModuleNames.workspaces,
+      });
+      if (pathname.startsWith(ModulePaths.workspaces)) {
+        selectedMenuItemKey.push(ModuleNames.workspaces);
+      }
     }
   }
 

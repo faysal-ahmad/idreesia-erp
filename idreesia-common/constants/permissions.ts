@@ -51,6 +51,13 @@ const Permissions = {
   SECURITY_SYNC_SECURITY_SERVER_DATA: 'security-sync-security-server-data',
 
   // ****************************************************************************************
+  // Communications Module
+  // ****************************************************************************************
+  COMMUNICATIONS_INBOX_VIEW_MESSAGES: 'communications-inbox-view-messages',
+  COMMUNICATIONS_INBOX_REPLY_TO_MESSAGES:
+    'communications-inbox-reply-to-messages',
+
+  // ****************************************************************************************
   // Stores Module
   // ****************************************************************************************
   IN_MANAGE_SETUP_DATA: 'stores-manage-setup-data',

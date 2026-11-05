@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Collapse, Form, Space, Spin, type CollapseProps } from 'antd';
+import { MessageOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Collapse,
+  Form,
+  Space,
+  Spin,
+  Tooltip,
+  type CollapseProps,
+} from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import {
   InputTextField,
@@ -11,7 +20,12 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
-import { USER_BY_ID, PAGED_USERS, UPDATE_USER } from '../gql';
+import {
+  USER_BY_ID,
+  PAGED_USERS,
+  UPDATE_USER,
+  CREATE_CHAT_ACCOUNT,
+} from '../gql';
 
 interface Props {
   userId: string;
@@ -19,6 +33,7 @@ interface Props {
 }
 
 interface FormValues {
+  userName?: string;
   password?: string;
   email?: string;
   displayName?: string;
@@ -36,6 +51,15 @@ const GeneralInfo = ({ userId, history }: Props) => {
       'adminUserById',
     ],
   });
+  const [createChatAccount, { loading: creatingChatAccount }] = useMutation(
+    CREATE_CHAT_ACCOUNT,
+    {
+      refetchQueries: [
+        { query: PAGED_USERS, variables: { filter: {} } },
+        'adminUserById',
+      ],
+    }
+  );
   const userById = data?.userById;
 
   const handleCancel = () => {
@@ -47,6 +71,7 @@ const GeneralInfo = ({ userId, history }: Props) => {
   };
 
   const handleFinish = ({
+    userName,
     password,
     email,
     displayName,
@@ -55,6 +80,8 @@ const GeneralInfo = ({ userId, history }: Props) => {
     updateUser({
       variables: {
         userId: userById?._id ?? userId,
+        // A user name can only be set once; after that the field is locked.
+        userName: !userById?.username && userName ? userName : undefined,
         password,
         email,
         displayName,
@@ -70,6 +97,16 @@ const GeneralInfo = ({ userId, history }: Props) => {
       });
   };
 
+  const handleCreateChatAccount = () => {
+    createChatAccount({ variables: { userId: userById?._id ?? userId } })
+      .then(() => {
+        message.success('Chat account created', 2);
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
+  };
+
   if (loading || !userById) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
@@ -77,6 +114,30 @@ const GeneralInfo = ({ userId, history }: Props) => {
       </div>
     );
   }
+
+  // Uses the saved values, not what is typed in the form: the chat account
+  // is created from the stored user name and display name.
+  const canCreateChatAccount =
+    !!userById.username && !!userById.displayName?.trim();
+  const createChatAccountButton = userById.hasChatAccount ? null : (
+    <Tooltip
+      title={
+        canCreateChatAccount
+          ? undefined
+          : 'Set and save a user name and display name first'
+      }
+    >
+      <Button
+        size="large"
+        icon={<MessageOutlined />}
+        disabled={!canCreateChatAccount}
+        loading={creatingChatAccount}
+        onClick={handleCreateChatAccount}
+      >
+        Create Chat Account
+      </Button>
+    </Tooltip>
+  );
 
   const karkunField = userById.personId ? (
     <InputTextField
@@ -102,7 +163,7 @@ const GeneralInfo = ({ userId, history }: Props) => {
         <InputTextField
           fieldName="userName"
           fieldLabel="User name"
-          disabled
+          disabled={!!userById.username}
           initialValue={userById.username}
         />
 
@@ -153,6 +214,7 @@ const GeneralInfo = ({ userId, history }: Props) => {
             handleCancel={handleCancel}
             isFieldsTouched={isFieldsTouched}
             fullWidth
+            extra={createChatAccountButton}
           />
         </Space>
       </Form>

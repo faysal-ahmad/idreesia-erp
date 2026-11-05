@@ -94,6 +94,9 @@ import SecurityServerProfileResolvers from './security/security-server-profile/r
 
 import SecurityServerAlertSchema from './security/security-server-alert/security-server-alert';
 import SecurityServerAlertResolvers from './security/security-server-alert/resolvers';
+
+import InboxSchema from './communications/inbox/inbox';
+import InboxResolvers from './communications/inbox/resolvers';
 import SecurityServerUsageSchema from './security/security-server-usage/security-server-usage';
 import SecurityServerUsageResolvers from './security/security-server-usage/resolvers';
 
@@ -204,6 +207,8 @@ const typeDefs = [
   SecurityServerAlertSchema,
   SecurityServerUsageSchema,
 
+  InboxSchema,
+
   HRAuditLogSchema,
   DutyShiftSchema,
   DutySchema,
@@ -259,6 +264,8 @@ const resolvers = merge(
   SecurityServerProfileResolvers,
   SecurityServerAlertResolvers,
   SecurityServerUsageResolvers,
+
+  InboxResolvers,
 
   HRAuditLogResolvers,
   DutyShiftResolvers,

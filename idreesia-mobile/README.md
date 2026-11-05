@@ -79,7 +79,7 @@ cd ../idreesia-web
 yarn start
 ```
 
-Then start the mobile app. It serves the browser build on port 3100, so use
+Then start the mobile app. It serves the browser build on port 3200, so use
 the browser's device emulation:
 
 ```bash
@@ -105,3 +105,9 @@ yarn start:ios
 Before targeting a physical device or a non-local backend, point
 `settings.sample.json` and the scripts' `--mobile-server` value at a URL the
 device can reach. `localhost` on a phone is the phone itself.
+
+On iOS, allow the **Local Network** prompt the first time the app runs. The
+app reaches the backend, Rocket.Chat and the mobile server through your Mac's
+LAN address. If you tapped "Don't Allow", hot code push silently stops: saved
+changes never reach the phone. Turn it back on in Settings → Privacy &
+Security → Local Network → Idreesia Mobile.

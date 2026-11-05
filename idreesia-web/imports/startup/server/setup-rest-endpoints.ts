@@ -17,6 +17,7 @@ import {
 } from 'meteor/idreesia-common/server/business-logic/inventory';
 
 import { createSecurityServerRouter } from './setup-security-server-endpoints';
+import { createCommunicationsRouter } from './setup-communications-endpoints';
 import { getBrowserMonitoringConfig } from './newrelic';
 
 const ReportGenerators = {
@@ -234,6 +235,11 @@ export function setupRestEndpoints() {
      * Endpoints the security server pushes its channels, profiles and alerts to
      */
     app.use('/api/security-server', createSecurityServerRouter());
+
+    /**
+     * Media proxy for the Communications inbox (files stored in Rocket.Chat)
+     */
+    app.use('/api/communications', createCommunicationsRouter());
 
     WebApp.connectHandlers.use(app as any);
   });

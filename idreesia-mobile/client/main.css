@@ -9,6 +9,33 @@
   box-sizing: border-box;
 }
 
+/* Text size follows the phone's setting (iOS Dynamic Type): the root font
+ * size is set by imports/ui/theme/text-scale.ts, 17px at the default text
+ * size. All text is sized in rem (1rem = 17px at the default) so it scales
+ * with it; icons and touch targets stay in px. antd-mobile's own text sizes
+ * are re-declared in rem here (html:root outranks its :root defaults). */
+html {
+  font-size: 17px;
+}
+
+html:root {
+  --adm-font-size-1: 0.5294rem; /* 9px */
+  --adm-font-size-2: 0.5882rem; /* 10px */
+  --adm-font-size-3: 0.6471rem; /* 11px */
+  --adm-font-size-4: 0.7059rem; /* 12px */
+  --adm-font-size-5: 0.7647rem; /* 13px */
+  --adm-font-size-6: 0.8235rem; /* 14px */
+  --adm-font-size-7: 0.8824rem; /* 15px */
+  --adm-font-size-8: 0.9412rem; /* 16px */
+  --adm-font-size-9: 1rem; /* 17px */
+  --adm-font-size-10: 1.0588rem; /* 18px */
+}
+
+body {
+  /* Was the browser default (16px) before text sizes moved to rem. */
+  font-size: 0.9412rem; /* 16px */
+}
+
 html,
 body {
   margin: 0;
@@ -113,7 +140,7 @@ body {
 .page-hint {
   margin: 4px 16px 0;
   color: var(--app-color-text-secondary);
-  font-size: 14px;
+  font-size: 0.8235rem; /* 14px */
   line-height: 1.5;
 }
 
@@ -180,13 +207,13 @@ body {
 .list-toolbar-hint {
   margin: 8px 4px 0;
   color: var(--app-color-text-secondary);
-  font-size: 13px;
+  font-size: 0.7647rem; /* 13px */
 }
 
 .paged-list-count {
   margin: 8px 16px 0;
   color: var(--app-color-text-weak);
-  font-size: 13px;
+  font-size: 0.7647rem; /* 13px */
 }
 
 .paged-list-count + .adm-list {
@@ -230,7 +257,7 @@ body {
 .auth-brand-name {
   margin: 10px 0 0;
   color: var(--app-color-primary);
-  font-size: 13px;
+  font-size: 0.7647rem; /* 13px */
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -238,14 +265,14 @@ body {
 
 .auth-title {
   margin: 0 16px 6px;
-  font-size: 26px;
+  font-size: 1.5294rem; /* 26px */
   line-height: 1.2;
 }
 
 .auth-subtitle {
   margin: 0 16px 8px;
   color: var(--app-color-text-secondary);
-  font-size: 15px;
+  font-size: 0.8824rem; /* 15px */
   line-height: 1.5;
 }
 
@@ -262,7 +289,7 @@ body {
   align-items: center;
   margin-top: 16px;
   color: var(--app-color-text-secondary);
-  font-size: 14px;
+  font-size: 0.8235rem; /* 14px */
 }
 
 .auth-footer a {

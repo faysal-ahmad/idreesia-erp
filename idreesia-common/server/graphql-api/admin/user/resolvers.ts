@@ -6,9 +6,11 @@ import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
 import { DataSource } from 'meteor/idreesia-common/constants';
+import { ChatError } from 'meteor/idreesia-common/server/chat';
 
 interface UserType {
   _id: string;
+  chatUserId?: string;
   personId?: string;
   username?: string;
   permissions?: string[];
@@ -46,6 +48,8 @@ function requireUser(user: ResolverContext['user']) {
 
 export default {
   UserType: {
+    hasChatAccount: (userType: UserType) => !!userType.chatUserId,
+
     person: async (userType: UserType) => {
       if (!userType.personId) return null;
       return People.findOneAsync(userType.personId);
@@ -175,6 +179,25 @@ export default {
       params: { userId?: string; userName?: string },
       { user }: ResolverContext
     ) => Users.resetPassword(params, requireUser(user), DataSource.ADMIN),
+
+    createChatAccount: async (
+      _obj: unknown,
+      params: { userId: string },
+      { user }: ResolverContext
+    ) => {
+      try {
+        return await Users.createChatAccount(
+          params,
+          requireUser(user),
+          DataSource.ADMIN
+        );
+      } catch (error) {
+        if (error instanceof ChatError) {
+          throw new Error(`Chat: ${error.message}`);
+        }
+        throw error;
+      }
+    },
 
     updateLoginTime: async (_obj: unknown, _args: unknown, { user }: ResolverContext) => {
       if (user) {

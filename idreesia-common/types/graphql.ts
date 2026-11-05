@@ -286,6 +286,52 @@ export type FaceVectorResultType = {
   vector?: Maybe<Array<Scalars['Float']['output']>>;
 };
 
+export type InboxAttachmentType = {
+  __typename?: 'InboxAttachmentType';
+  kind?: Maybe<Scalars['String']['output']>;
+  mimeType?: Maybe<Scalars['String']['output']>;
+  size?: Maybe<Scalars['Float']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+export type InboxConversationDetailType = {
+  __typename?: 'InboxConversationDetailType';
+  conversation?: Maybe<InboxConversationType>;
+  messages?: Maybe<Array<Maybe<InboxMessageType>>>;
+};
+
+export type InboxConversationFilter = {
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  searchText?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type InboxConversationType = {
+  __typename?: 'InboxConversationType';
+  _id?: Maybe<Scalars['String']['output']>;
+  assignedTo?: Maybe<Scalars['String']['output']>;
+  customerName?: Maybe<Scalars['String']['output']>;
+  lastMessage?: Maybe<InboxMessageType>;
+  lastMessageAt?: Maybe<Scalars['String']['output']>;
+  mobileNumber?: Maybe<Scalars['String']['output']>;
+  open?: Maybe<Scalars['Boolean']['output']>;
+  startedAt?: Maybe<Scalars['String']['output']>;
+  visitorId?: Maybe<Scalars['String']['output']>;
+  waitingResponse?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type InboxMessageType = {
+  __typename?: 'InboxMessageType';
+  _id?: Maybe<Scalars['String']['output']>;
+  attachments?: Maybe<Array<Maybe<InboxAttachmentType>>>;
+  roomId?: Maybe<Scalars['String']['output']>;
+  senderName?: Maybe<Scalars['String']['output']>;
+  senderType?: Maybe<Scalars['String']['output']>;
+  sentAt?: Maybe<Scalars['String']['output']>;
+  text?: Maybe<Scalars['String']['output']>;
+};
+
 export type InventoryStatistics = {
   __typename?: 'InventoryStatistics';
   itemsVerifiedLessThanThreeMonthsAgo?: Maybe<Scalars['Int']['output']>;
@@ -538,6 +584,7 @@ export type Mutation = {
   cancelVisitorStay?: Maybe<VisitorStayType>;
   clearJobDefinitionSchedule?: Maybe<JobDefinitionType>;
   createAttachment?: Maybe<Attachment>;
+  createChatAccount?: Maybe<UserType>;
   createCity?: Maybe<CityType>;
   createCityMehfil?: Maybe<CityMehfilType>;
   createCommittee?: Maybe<CommitteeType>;
@@ -620,6 +667,7 @@ export type Mutation = {
   restorePerson?: Maybe<Scalars['Int']['output']>;
   retryFailedJob?: Maybe<Scalars['Boolean']['output']>;
   runScheduledJobNow?: Maybe<Scalars['Boolean']['output']>;
+  sendInboxMessage?: Maybe<InboxMessageType>;
   setDutyAttendance?: Maybe<Scalars['Boolean']['output']>;
   setDutyDayOverride?: Maybe<Scalars['Boolean']['output']>;
   setDutyDetail?: Maybe<Array<Maybe<MehfilKarkunType>>>;
@@ -769,6 +817,11 @@ export type MutationCreateAttachmentArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   mimeType?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationCreateChatAccountArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -1311,6 +1364,12 @@ export type MutationRunScheduledJobNowArgs = {
 };
 
 
+export type MutationSendInboxMessageArgs = {
+  roomId: Scalars['String']['input'];
+  text: Scalars['String']['input'];
+};
+
+
 export type MutationSetDutyAttendanceArgs = {
   date: Scalars['String']['input'];
   dutyId: Scalars['String']['input'];
@@ -1727,6 +1786,7 @@ export type MutationUpdateUserArgs = {
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
   userId: Scalars['String']['input'];
+  userName?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1773,6 +1833,12 @@ export type PagedAuditLogType = {
 export type PagedCityType = {
   __typename?: 'PagedCityType';
   data?: Maybe<Array<Maybe<CityType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedInboxConversationType = {
+  __typename?: 'PagedInboxConversationType';
+  data?: Maybe<Array<Maybe<InboxConversationType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -1897,6 +1963,8 @@ export enum Permission {
   AdminManageUsersAndGroups = 'ADMIN_MANAGE_USERS_AND_GROUPS',
   AdminViewSecurityLogs = 'ADMIN_VIEW_SECURITY_LOGS',
   AdminViewUsersAndGroups = 'ADMIN_VIEW_USERS_AND_GROUPS',
+  CommunicationsInboxReplyToMessages = 'COMMUNICATIONS_INBOX_REPLY_TO_MESSAGES',
+  CommunicationsInboxViewMessages = 'COMMUNICATIONS_INBOX_VIEW_MESSAGES',
   HrDeleteData = 'HR_DELETE_DATA',
   HrManageCommittees = 'HR_MANAGE_COMMITTEES',
   HrManageEmployees = 'HR_MANAGE_EMPLOYEES',
@@ -2129,6 +2197,7 @@ export type Query = {
   hrCommitteeOptions?: Maybe<Array<Maybe<CommitteeType>>>;
   hrKarkunById?: Maybe<PersonType>;
   hrKarkunsById?: Maybe<Array<Maybe<PersonType>>>;
+  inboxConversation?: Maybe<InboxConversationDetailType>;
   inventoryStatistics?: Maybe<InventoryStatistics>;
   isJobProcessorActive?: Maybe<Scalars['Boolean']['output']>;
   issuanceFormById?: Maybe<IssuanceForm>;
@@ -2148,6 +2217,7 @@ export type Query = {
   pagedDeletedPeople?: Maybe<PagedPeopleType>;
   pagedHrAuditLogs?: Maybe<PagedAuditLogType>;
   pagedHrKarkuns?: Maybe<PagedKarkunType>;
+  pagedInboxConversations?: Maybe<PagedInboxConversationType>;
   pagedIssuanceForms?: Maybe<PagedIssuanceForm>;
   pagedJobLogs?: Maybe<PagedJobLogsType>;
   pagedPeople?: Maybe<PagedPeopleType>;
@@ -2317,6 +2387,11 @@ export type QueryHrKarkunsByIdArgs = {
 };
 
 
+export type QueryInboxConversationArgs = {
+  roomId: Scalars['String']['input'];
+};
+
+
 export type QueryInventoryStatisticsArgs = {
   physicalStoreId: Scalars['String']['input'];
 };
@@ -2410,6 +2485,11 @@ export type QueryPagedHrAuditLogsArgs = {
 
 export type QueryPagedHrKarkunsArgs = {
   filter?: InputMaybe<KarkunFilter>;
+};
+
+
+export type QueryPagedInboxConversationsArgs = {
+  filter?: InputMaybe<InboxConversationFilter>;
 };
 
 
@@ -3018,6 +3098,7 @@ export type UserType = {
   email?: Maybe<Scalars['String']['output']>;
   emailVerified?: Maybe<Scalars['Boolean']['output']>;
   groups?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  hasChatAccount?: Maybe<Scalars['Boolean']['output']>;
   instances?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   karkun?: Maybe<PersonType>;
   lastActiveAt?: Maybe<Scalars['String']['output']>;

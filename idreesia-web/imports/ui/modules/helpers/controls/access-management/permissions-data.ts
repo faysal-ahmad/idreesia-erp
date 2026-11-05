@@ -306,3 +306,23 @@ export const SecurityPermissionsData: PermissionNode = {
   ],
 };
 
+export const CommunicationsPermissionsData: PermissionNode = {
+  title: 'Communications',
+  key: 'module-communications',
+  children: [
+    {
+      title: 'Inbox',
+      key: 'module-communications-inbox',
+      children: [
+        {
+          title: 'View Messages',
+          key: PermissionConstants.COMMUNICATIONS_INBOX_VIEW_MESSAGES,
+        },
+        {
+          title: 'Reply to Messages',
+          key: PermissionConstants.COMMUNICATIONS_INBOX_REPLY_TO_MESSAGES,
+        },
+      ],
+    },
+  ],
+};

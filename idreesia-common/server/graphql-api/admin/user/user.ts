@@ -15,6 +15,7 @@ type UserType {
   permissions: [String]
   instances: [String]
   groups: [String]
+  hasChatAccount: Boolean
 
   person: PersonType
   karkun: PersonType
@@ -59,6 +60,7 @@ extend type Mutation {
 
   updateUser(
     userId: String!
+    userName: String
     password: String
     email: String
     displayName: String
@@ -82,6 +84,10 @@ extend type Mutation {
 
   resetPassword(
     userName: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  createChatAccount(
+    userId: String!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   updateLoginTime: Int

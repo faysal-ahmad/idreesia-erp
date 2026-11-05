@@ -66,9 +66,12 @@ services:
   # database) rather than running a second mongod - it only needs a replica
   # set, which atlas-local already initialises. Published on 3100 because the
   # ERP owns 3000. No TRANSPORTER is set, so it runs as a single monolith
-  # process without NATS.
+  # process without NATS. Fixed policy settings (login, profiles, Livechat
+  # routing) are baked into containers/rocketchat/Dockerfile; only
+  # environment-specific values are set here.
   rocketchat:
-    image: rocketchat/rocket.chat:8.9.0
+    build:
+      context: ./containers/rocketchat
     depends_on:
       mongo:
         condition: service_started
@@ -77,15 +80,22 @@ services:
     environment:
       MONGO_URL: mongodb://mongo:27017/rocketchat?directConnection=true
       ROOT_URL: http://localhost:3100
-      PORT: "3000"
       DEPLOY_METHOD: docker
       DEPLOY_PLATFORM: compose
-      # Skip the setup wizard and seed a local admin so the dev instance is
-      # usable straight away.
-      OVERWRITE_SETTING_Show_Setup_Wizard: completed
+      # Seed a local admin so the dev instance is usable straight away.
       ADMIN_USERNAME: admin
       ADMIN_PASS: admin
       ADMIN_EMAIL: admin@idreesia.local
+      # Password login form. The image defaults it to "false"; this overrides
+      # it for the one-time setup (signing in as admin and as the ERP service
+      # account, see docs/communications-inbox.md). Remove this line, or set
+      # it to "false", afterwards so ERP users can only get in through the ERP.
+      OVERWRITE_SETTING_Accounts_ShowFormLogin: "true"
+      # The mobile app's public chat page calls the Livechat visitor API
+      # directly from its WebView (another origin), so the REST API needs CORS.
+      # Tighten the origin list for production.
+      OVERWRITE_SETTING_API_Enable_CORS: "true"
+      OVERWRITE_SETTING_API_CORS_Origin: "*"
       # File uploads, avatars and user data exports go to the `rocketchat`
       # bucket on RustFS instead of GridFS. RustFS only does path-style
       # addressing, hence ForcePathStyle. The endpoint is the in-network

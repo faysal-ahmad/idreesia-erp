@@ -8,6 +8,7 @@ const SecurityOperationTypeDisplayName = {
   [SecurityOperationType.PERMISSIONS_CHANGED]: 'Permissions Changed',
   [SecurityOperationType.INSTANCE_ACCESS_CHANGED]: 'Instance Access Changed',
   [SecurityOperationType.GROUPS_CHANGED]: 'Groups Changed',
+  [SecurityOperationType.CHAT_ACCOUNT_CREATED]: 'Chat Account Created',
   [SecurityOperationType.INVALID_LOGIN_ATTEMPT]: 'Invalid Login Attempt',
   [SecurityOperationType.LOGIN]: 'Login to System',
 };

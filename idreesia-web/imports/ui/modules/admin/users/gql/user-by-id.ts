@@ -16,6 +16,7 @@ const USER_BY_ID: TypedDocumentNode<
       email
       displayName
       locked
+      hasChatAccount
       instances
       permissions
       personId

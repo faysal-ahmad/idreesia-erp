@@ -18,6 +18,12 @@ export type CityFilter = {
   region?: string | null | undefined;
 };
 
+export type InboxConversationFilter = {
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+  searchText?: string | null | undefined;
+};
+
 export type ItemWithQuantityAndPriceInput = {
   isInflow?: boolean | null | undefined;
   price?: number | null | undefined;
@@ -637,6 +643,13 @@ export type UserGroupPermissionsByIdQueryVariables = Exact<{
 
 export type UserGroupPermissionsByIdQuery = { userGroupById: { _id: string | null, permissions: Array<string | null> | null } | null };
 
+export type CreateChatAccountMutationVariables = Exact<{
+  userId: string;
+}>;
+
+
+export type CreateChatAccountMutation = { createChatAccount: { _id: string | null, username: string | null, hasChatAccount: boolean | null } | null };
+
 export type CreateUserMutationVariables = Exact<{
   userName?: string | null | undefined;
   password?: string | null | undefined;
@@ -653,7 +666,7 @@ export type PagedUsersQueryVariables = Exact<{
 }>;
 
 
-export type PagedUsersQuery = { pagedUsers: { totalResults: number | null, data: Array<{ _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, lastActiveAt: string | null, karkun: { _id: string | null, sharedData: { name: string | null, imageId: string | null, imageThumbnailId: string | null } | null } | null } | null> | null } | null };
+export type PagedUsersQuery = { pagedUsers: { totalResults: number | null, data: Array<{ _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, lastActiveAt: string | null, hasChatAccount: boolean | null, karkun: { _id: string | null, sharedData: { name: string | null, imageId: string | null, imageThumbnailId: string | null } | null } | null } | null> | null } | null };
 
 export type SetInstanceAccessMutationVariables = Exact<{
   userId: string;
@@ -673,6 +686,7 @@ export type SetPermissionsMutation = { setPermissions: { _id: string | null, per
 
 export type UpdateUserMutationVariables = Exact<{
   userId: string;
+  userName?: string | null | undefined;
   password?: string | null | undefined;
   email?: string | null | undefined;
   displayName?: string | null | undefined;
@@ -680,14 +694,14 @@ export type UpdateUserMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserMutation = { updateUser: { _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, personId: string | null, karkun: { _id: string | null, sharedData: { name: string | null } | null } | null } | null };
+export type UpdateUserMutation = { updateUser: { _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, hasChatAccount: boolean | null, personId: string | null, karkun: { _id: string | null, sharedData: { name: string | null } | null } | null } | null };
 
 export type AdminUserByIdQueryVariables = Exact<{
   _id: string;
 }>;
 
 
-export type AdminUserByIdQuery = { userById: { _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, instances: Array<string | null> | null, permissions: Array<string | null> | null, personId: string | null, karkun: { _id: string | null, sharedData: { name: string | null } | null } | null } | null };
+export type AdminUserByIdQuery = { userById: { _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, hasChatAccount: boolean | null, instances: Array<string | null> | null, permissions: Array<string | null> | null, personId: string | null, karkun: { _id: string | null, sharedData: { name: string | null } | null } | null } | null };
 
 export type UserNamesQueryVariables = Exact<{
   ids?: Array<string | null | undefined> | string | null | undefined;
@@ -695,6 +709,28 @@ export type UserNamesQueryVariables = Exact<{
 
 
 export type UserNamesQuery = { userNames: Array<string | null> | null };
+
+export type InboxConversationQueryVariables = Exact<{
+  roomId: string;
+}>;
+
+
+export type InboxConversationQuery = { inboxConversation: { conversation: { _id: string | null, customerName: string | null, mobileNumber: string | null, startedAt: string | null, assignedTo: string | null, open: boolean | null } | null, messages: Array<{ _id: string | null, roomId: string | null, text: string | null, sentAt: string | null, senderType: string | null, senderName: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null } | null> | null } | null };
+
+export type PagedInboxConversationsQueryVariables = Exact<{
+  filter?: Types.InboxConversationFilter | null | undefined;
+}>;
+
+
+export type PagedInboxConversationsQuery = { pagedInboxConversations: { totalResults: number | null, data: Array<{ _id: string | null, mobileNumber: string | null, lastMessageAt: string | null } | null> | null } | null };
+
+export type SendInboxMessageMutationVariables = Exact<{
+  roomId: string;
+  text: string;
+}>;
+
+
+export type SendInboxMessageMutation = { sendInboxMessage: { _id: string | null } | null };
 
 export type UpdateAttachmentMutationVariables = Exact<{
   _id: string;

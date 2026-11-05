@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type RouteComponentProps } from 'react-router';
 import { useQuery } from '@apollo/client/react';
-import { LockOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import {
+  CheckOutlined,
+  LockOutlined,
+  PlusCircleOutlined,
+} from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Button, Flex, Pagination, Space, Spin, Table } from 'antd';
 
@@ -60,6 +64,14 @@ const columns: any[] = [
       if (!text) return '';
       return dayjs(Number(text)).format(Formats.DATE_TIME_FORMAT);
     },
+  },
+  {
+    title: 'Chat Account',
+    key: 'hasChatAccount',
+    width: 120,
+    align: 'center',
+    render: (_text: unknown, record: UserRow) =>
+      record.hasChatAccount ? <CheckOutlined /> : null,
   },
   {
     title: 'Karkun Name',

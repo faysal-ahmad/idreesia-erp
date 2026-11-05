@@ -64,8 +64,8 @@ enum Permission {
   SECURITY_MANAGE_SECURITY_SERVER_DATA
   SECURITY_SYNC_SECURITY_SERVER_DATA
 
-  COMMUNICATIONS_INBOX_VIEW_MESSAGES
-  COMMUNICATIONS_INBOX_REPLY_TO_MESSAGES
+  CORRESPONDENCE_INBOX_VIEW_MESSAGES
+  CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES
 }
 
 scalar Date
@@ -682,7 +682,7 @@ type InboxAttachmentType {
     title: String
     mimeType: String
     size: Float
-    # ERP media proxy path (/api/communications/files/...). Needs the Meteor
+    # ERP media proxy path (/api/correspondence/files/...). Needs the Meteor
     # login token in the Authorization header.
     url: String
   }
@@ -733,15 +733,15 @@ type InboxAttachmentType {
     pagedInboxConversations(
       filter: InboxConversationFilter
     ): PagedInboxConversationType
-      @checkPermissions(permissions: [COMMUNICATIONS_INBOX_VIEW_MESSAGES])
+      @checkPermissions(permissions: [CORRESPONDENCE_INBOX_VIEW_MESSAGES])
 
     inboxConversation(roomId: String!): InboxConversationDetailType
-      @checkPermissions(permissions: [COMMUNICATIONS_INBOX_VIEW_MESSAGES])
+      @checkPermissions(permissions: [CORRESPONDENCE_INBOX_VIEW_MESSAGES])
   }
 
   extend type Mutation {
     sendInboxMessage(roomId: String!, text: String!): InboxMessageType
-      @checkPermissions(permissions: [COMMUNICATIONS_INBOX_REPLY_TO_MESSAGES])
+      @checkPermissions(permissions: [CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES])
   }
 
 extend type Query {

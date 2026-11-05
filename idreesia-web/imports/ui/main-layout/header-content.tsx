@@ -72,7 +72,7 @@ const modulePathsMapping: Record<string, string> = {
   [ModuleNames.hr]: ModulePaths.hr,
   [ModuleNames.stores]: ModulePaths.stores,
   [ModuleNames.security]: ModulePaths.security,
-  [ModuleNames.communications]: ModulePaths.communications,
+  [ModuleNames.correspondence]: ModulePaths.correspondence,
   // ***********************************************
 };
 

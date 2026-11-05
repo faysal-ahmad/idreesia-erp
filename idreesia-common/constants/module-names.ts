@@ -3,7 +3,7 @@ const ModuleNames = {
   hr: 'HR',
   stores: 'Stores',
   security: 'Security',
-  communications: 'Communications',
+  correspondence: 'Correspondence',
   workspaces: 'Workspaces',
 };
 

@@ -95,8 +95,8 @@ import SecurityServerProfileResolvers from './security/security-server-profile/r
 import SecurityServerAlertSchema from './security/security-server-alert/security-server-alert';
 import SecurityServerAlertResolvers from './security/security-server-alert/resolvers';
 
-import InboxSchema from './communications/inbox/inbox';
-import InboxResolvers from './communications/inbox/resolvers';
+import InboxSchema from './correspondence/inbox/inbox';
+import InboxResolvers from './correspondence/inbox/resolvers';
 import SecurityServerUsageSchema from './security/security-server-usage/security-server-usage';
 import SecurityServerUsageResolvers from './security/security-server-usage/resolvers';
 

@@ -11,7 +11,7 @@ const useCanReply = () => {
   if (!user) return false;
   if (user.username === 'erp-admin') return true;
   return (user.permissions ?? []).includes(
-    Permissions.COMMUNICATIONS_INBOX_REPLY_TO_MESSAGES
+    Permissions.CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES
   );
 };
 

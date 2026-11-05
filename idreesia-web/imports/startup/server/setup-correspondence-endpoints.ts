@@ -12,7 +12,7 @@ import { getUser } from './get-user';
 import { noticeError } from './newrelic';
 
 /**
- * Media proxy for the Communications inbox. Files that customers upload live
+ * Media proxy for the Correspondence inbox. Files that customers upload live
  * in Rocket.Chat, which the browser can't (and shouldn't) reach. The browser
  * requests them here with its Meteor login token in the Authorization header;
  * the ERP checks the inbox permission and streams the file from Rocket.Chat
@@ -34,7 +34,7 @@ const authenticate = Meteor.bindEnvironment(
       | undefined;
     if (!user) {
       // eslint-disable-next-line no-console
-      console.warn(`Communications file proxy: 401 for ${req.path} (no valid login token)`);
+      console.warn(`Correspondence file proxy: 401 for ${req.path} (no valid login token)`);
       res.status(401).json({ error: 'Not authenticated.' });
       return;
     }
@@ -43,11 +43,11 @@ const authenticate = Meteor.bindEnvironment(
     // erp-admin through and refuses other locked users.
     if (
       !hasOnePermission(user, [
-        Permissions.COMMUNICATIONS_INBOX_VIEW_MESSAGES,
+        Permissions.CORRESPONDENCE_INBOX_VIEW_MESSAGES,
       ])
     ) {
       // eslint-disable-next-line no-console
-      console.warn(`Communications file proxy: 403 for ${req.path} (user ${user._id} lacks the inbox permission or is locked)`);
+      console.warn(`Correspondence file proxy: 403 for ${req.path} (user ${user._id} lacks the inbox permission or is locked)`);
       res.status(403).json({ error: 'Not authorized.' });
       return;
     }
@@ -65,7 +65,7 @@ const streamFile = Meteor.bindEnvironment(
     const fileName = String(req.params.fileName ?? '');
     if (!FILE_ID_PATTERN.test(roomId) || !FILE_ID_PATTERN.test(fileId) || !fileName) {
       // eslint-disable-next-line no-console
-      console.warn(`Communications file proxy: 400 for ${req.path} (invalid path)`);
+      console.warn(`Correspondence file proxy: 400 for ${req.path} (invalid path)`);
       res.status(400).json({ error: 'Invalid file path.' });
       return;
     }
@@ -106,20 +106,20 @@ const streamFile = Meteor.bindEnvironment(
       if (error instanceof ChatError && [403, 404].includes(error.statusCode)) {
         // eslint-disable-next-line no-console
         console.warn(
-          `Communications file proxy: chat server answered ${error.statusCode} for ${req.path}`
+          `Correspondence file proxy: chat server answered ${error.statusCode} for ${req.path}`
         );
         res.status(404).json({ error: 'File not found.' });
         return;
       }
       // eslint-disable-next-line no-console
-      console.error('Communications file proxy failed', error);
-      noticeError(error, { source: 'communications-files', path: req.path });
+      console.error('Correspondence file proxy failed', error);
+      noticeError(error, { source: 'correspondence-files', path: req.path });
       res.status(502).json({ error: 'Could not load the file.' });
     }
   }
 );
 
-export const createCommunicationsRouter = () => {
+export const createCorrespondenceRouter = () => {
   const router = express.Router();
   router.use(authenticate);
   // fileName may itself contain encoded characters; express decodes it.

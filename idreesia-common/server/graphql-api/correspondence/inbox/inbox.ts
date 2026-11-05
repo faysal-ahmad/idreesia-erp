@@ -9,7 +9,7 @@ export default gql`
     title: String
     mimeType: String
     size: Float
-    # ERP media proxy path (/api/communications/files/...). Needs the Meteor
+    # ERP media proxy path (/api/correspondence/files/...). Needs the Meteor
     # login token in the Authorization header.
     url: String
   }
@@ -60,14 +60,14 @@ export default gql`
     pagedInboxConversations(
       filter: InboxConversationFilter
     ): PagedInboxConversationType
-      @checkPermissions(permissions: [COMMUNICATIONS_INBOX_VIEW_MESSAGES])
+      @checkPermissions(permissions: [CORRESPONDENCE_INBOX_VIEW_MESSAGES])
 
     inboxConversation(roomId: String!): InboxConversationDetailType
-      @checkPermissions(permissions: [COMMUNICATIONS_INBOX_VIEW_MESSAGES])
+      @checkPermissions(permissions: [CORRESPONDENCE_INBOX_VIEW_MESSAGES])
   }
 
   extend type Mutation {
     sendInboxMessage(roomId: String!, text: String!): InboxMessageType
-      @checkPermissions(permissions: [COMMUNICATIONS_INBOX_REPLY_TO_MESSAGES])
+      @checkPermissions(permissions: [CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES])
   }
 `;

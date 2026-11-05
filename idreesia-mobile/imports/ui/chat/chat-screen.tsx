@@ -79,7 +79,7 @@ const Conversation = ({ identity, onChangeNumber }: { identity: ChatIdentity; on
 /**
  * Public chat with the Idreesia team, opened from the sign-in screen without
  * logging in. Talks to Rocket.Chat's Livechat visitor API directly; replies
- * come from reps in the ERP's Communications → Inbox.
+ * come from reps in the ERP's Correspondence → Inbox.
  */
 export const ChatScreen = () => {
   const [identity, setIdentity] = useState<ChatIdentity | null>(loadIdentity);

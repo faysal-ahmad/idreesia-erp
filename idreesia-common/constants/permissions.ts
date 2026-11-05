@@ -51,11 +51,11 @@ const Permissions = {
   SECURITY_SYNC_SECURITY_SERVER_DATA: 'security-sync-security-server-data',
 
   // ****************************************************************************************
-  // Communications Module
+  // Correspondence Module
   // ****************************************************************************************
-  COMMUNICATIONS_INBOX_VIEW_MESSAGES: 'communications-inbox-view-messages',
-  COMMUNICATIONS_INBOX_REPLY_TO_MESSAGES:
-    'communications-inbox-reply-to-messages',
+  CORRESPONDENCE_INBOX_VIEW_MESSAGES: 'correspondence-inbox-view-messages',
+  CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES:
+    'correspondence-inbox-reply-to-messages',
 
   // ****************************************************************************************
   // Stores Module

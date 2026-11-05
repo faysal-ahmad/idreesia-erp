@@ -3,7 +3,7 @@ const ModulePaths = {
   stores: '/stores',
   hr: '/hr',
   security: '/security',
-  communications: '/communications',
+  correspondence: '/correspondence',
   workspaces: '/workspaces',
 };
 

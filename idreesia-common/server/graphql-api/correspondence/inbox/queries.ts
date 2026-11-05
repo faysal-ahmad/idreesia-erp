@@ -48,7 +48,7 @@ const toProxyUrl = (
   }
   const match = FILE_UPLOAD_PATH.exec(path);
   if (!match) return null;
-  return `/api/communications/files/${roomId}/${match[1]}/${match[2]}`;
+  return `/api/correspondence/files/${roomId}/${match[1]}/${match[2]}`;
 };
 
 const mapAttachment = (attachment: ChatAttachment, roomId: string) => {

@@ -4,7 +4,7 @@ export default class SubModulePaths {
   // *************************************************************************************
   // Inbox Routes
   // *************************************************************************************
-  static inboxPath = `${ModulePaths.communications}/inbox`;
+  static inboxPath = `${ModulePaths.correspondence}/inbox`;
   static inboxConversationPath(roomId = ':roomId?') {
     return `${SubModulePaths.inboxPath}/${roomId}`;
   }

@@ -9,13 +9,13 @@ import ConversationList from './conversation-list';
 import ConversationView from './conversation-view';
 
 /**
- * Communications inbox: open Rocket.Chat Omnichannel conversations (one per
+ * Correspondence inbox: open Rocket.Chat Omnichannel conversations (one per
  * customer) on the left, the selected customer's full history and a reply
  * box on the right. All data comes through ERP GraphQL - the browser never
  * talks to Rocket.Chat.
  */
 const Inbox = () => {
-  useBreadcrumbs(['Communications', 'Inbox']);
+  useBreadcrumbs(['Correspondence', 'Inbox']);
   const history = useHistory();
   const { roomId } = useParams<{ roomId?: string }>();
 

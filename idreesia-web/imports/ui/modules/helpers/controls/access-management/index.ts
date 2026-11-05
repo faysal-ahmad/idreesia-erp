@@ -5,5 +5,5 @@ export {
   HrPermissionsData,
   StoresPermissionsData,
   SecurityPermissionsData,
-  CommunicationsPermissionsData,
+  CorrespondencePermissionsData,
 } from './permissions-data';

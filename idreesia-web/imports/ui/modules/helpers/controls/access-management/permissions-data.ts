@@ -306,21 +306,21 @@ export const SecurityPermissionsData: PermissionNode = {
   ],
 };
 
-export const CommunicationsPermissionsData: PermissionNode = {
-  title: 'Communications',
-  key: 'module-communications',
+export const CorrespondencePermissionsData: PermissionNode = {
+  title: 'Correspondence',
+  key: 'module-correspondence',
   children: [
     {
       title: 'Inbox',
-      key: 'module-communications-inbox',
+      key: 'module-correspondence-inbox',
       children: [
         {
           title: 'View Messages',
-          key: PermissionConstants.COMMUNICATIONS_INBOX_VIEW_MESSAGES,
+          key: PermissionConstants.CORRESPONDENCE_INBOX_VIEW_MESSAGES,
         },
         {
           title: 'Reply to Messages',
-          key: PermissionConstants.COMMUNICATIONS_INBOX_REPLY_TO_MESSAGES,
+          key: PermissionConstants.CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES,
         },
       ],
     },

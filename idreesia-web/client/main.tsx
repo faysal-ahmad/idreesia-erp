@@ -35,7 +35,7 @@ import '../imports/ui/modules/common/people/picture.styles.css';
 import '../imports/ui/modules/security/visitor-registeration/scan/result-grid.styles.css';
 import '../imports/ui/modules/security/security-server/security-server.styles.css';
 import '../imports/ui/modules/admin/deleted-people/relation-counts-table.styles.css';
-import '../imports/ui/modules/communications/inbox/inbox.styles.css';
+import '../imports/ui/modules/correspondence/inbox/inbox.styles.css';
 
 import App from '../imports/ui/app';
 import { AntdFeedbackBridge } from '../imports/ui/antd-feedback';

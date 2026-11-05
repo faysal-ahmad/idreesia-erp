@@ -1,6 +1,6 @@
-# Communications Inbox (Rocket.Chat Omnichannel)
+# Correspondence Inbox (Rocket.Chat Omnichannel)
 
-The **Communications → Inbox** page shows customer messages that come in through Rocket.Chat Omnichannel (Livechat) and lets ERP representatives reply.
+The **Correspondence → Inbox** page shows customer messages that come in through Rocket.Chat Omnichannel (Livechat) and lets ERP representatives reply.
 
 The ERP stores none of this data: there are no Mongo collections for it. The data stays in Rocket.Chat.
 
@@ -10,7 +10,7 @@ The ERP stores none of this data: there are no Mongo collections for it. The dat
 mobile app ──(Livechat visitor API, token = mobile number)──▶ Rocket.Chat
                                                                   ▲
 browser ──GraphQL (/graphql, @checkPermissions)──▶ ERP server ────┘ REST, service account
-browser ──/api/communications/files/... (ERP auth)──▶ ERP server ─┘ /file-upload proxy
+browser ──/api/correspondence/files/... (ERP auth)──▶ ERP server ─┘ /file-upload proxy
 ```
 
 - **The browser never calls Rocket.Chat.** The Rocket.Chat URL and the service account token stay on the ERP server.
@@ -22,16 +22,16 @@ browser ──/api/communications/files/... (ERP auth)──▶ ERP server ─�
 | Piece | Location |
 |---|---|
 | Rocket.Chat REST client | `idreesia-common/server/chat/` |
-| GraphQL module | `idreesia-common/server/graphql-api/communications/inbox/` |
-| Media proxy route | `idreesia-web/imports/startup/server/setup-communications-endpoints.ts` |
-| UI | `idreesia-web/imports/ui/modules/communications/inbox/` |
+| GraphQL module | `idreesia-common/server/graphql-api/correspondence/inbox/` |
+| Media proxy route | `idreesia-web/imports/startup/server/setup-correspondence-endpoints.ts` |
+| UI | `idreesia-web/imports/ui/modules/correspondence/inbox/` |
 
 ## Permissions
 
 | Permission | Allows |
 |---|---|
-| `COMMUNICATIONS_INBOX_VIEW_MESSAGES` | Seeing the module, the conversation list, the history and media |
-| `COMMUNICATIONS_INBOX_REPLY_TO_MESSAGES` | Sending replies; the reply box only shows for users who have it |
+| `CORRESPONDENCE_INBOX_VIEW_MESSAGES` | Seeing the module, the conversation list, the history and media |
+| `CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES` | Sending replies; the reply box only shows for users who have it |
 
 ## One-time Rocket.Chat setup
 

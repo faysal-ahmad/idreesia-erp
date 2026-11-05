@@ -88,7 +88,7 @@ services:
       ADMIN_EMAIL: admin@idreesia.local
       # Password login form. The image defaults it to "false"; this overrides
       # it for the one-time setup (signing in as admin and as the ERP service
-      # account, see docs/communications-inbox.md). Remove this line, or set
+      # account, see docs/rocket-chat-integration.md). Remove this line, or set
       # it to "false", afterwards so ERP users can only get in through the ERP.
       OVERWRITE_SETTING_Accounts_ShowFormLogin: "true"
       # The mobile app's public chat page calls the Livechat visitor API

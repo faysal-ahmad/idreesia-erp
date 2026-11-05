@@ -18,7 +18,7 @@ ENV CREATE_TOKENS_FOR_USERS=true
 # Skip the setup wizard; the admin is seeded from ADMIN_* in the compose file.
 ENV OVERWRITE_SETTING_Show_Setup_Wizard=completed
 
-# Omnichannel (Livechat) backs the ERP Communications inbox.
+# Omnichannel (Livechat) backs the ERP Correspondence inbox.
 #  - Reps are not always "online" as Rocket.Chat agents, so new chats must be
 #    accepted (and queued) even when no agent is online - otherwise visitors
 #    get `no-agent-online`.

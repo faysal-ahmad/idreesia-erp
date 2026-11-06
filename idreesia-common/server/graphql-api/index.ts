@@ -138,6 +138,8 @@ import SalaryResolvers from './hr/salary/resolvers';
  */
 import WorkspaceCommitteeSchema from './workspaces/committee/committee';
 import WorkspaceCommitteeResolvers from './workspaces/committee/resolvers';
+import WorkspaceDiscussionsSchema from './workspaces/discussions/discussions';
+import WorkspaceDiscussionsResolvers from './workspaces/discussions/resolvers';
 
 /**
  * Schema and Resolvers for the Outstation module
@@ -227,6 +229,7 @@ const typeDefs = [
   SalarySchema,
 
   WorkspaceCommitteeSchema,
+  WorkspaceDiscussionsSchema,
 
   CitySchema,
   CityMehfilSchema,
@@ -287,6 +290,7 @@ const resolvers = merge(
   SalaryResolvers,
 
   WorkspaceCommitteeResolvers,
+  WorkspaceDiscussionsResolvers,
 
   CityResolvers,
   CityMehfilResolvers,

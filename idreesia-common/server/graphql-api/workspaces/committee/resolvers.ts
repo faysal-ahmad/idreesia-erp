@@ -42,6 +42,9 @@ const toWorkspaceKarkun = (person: PersonDocument) => ({
 
 const resolvers: ResolverMap = {
   WorkspaceCommitteeType: {
+    features: (committee: CommitteeDocument) =>
+      (committee.features as string[] | undefined) ?? [],
+
     canManageMembers: (committee: CommitteeDocument, args, { user }) =>
       isCommitteeCoordinator(user as WorkspaceUser, committee),
 

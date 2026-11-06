@@ -1,4 +1,9 @@
 import { Committees, Duties } from 'meteor/idreesia-common/server/collections/hr';
+import { CommitteeFeatures } from 'meteor/idreesia-common/constants/hr';
+import {
+  disableCommitteeFeature,
+  enableCommitteeFeature,
+} from 'meteor/idreesia-common/server/business-logic/hr/committee';
 import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
@@ -22,6 +27,10 @@ const updateMember = async (
 };
 
 const resolvers: ResolverMap = {
+  CommitteeType: {
+    features: committee => committee.features ?? [],
+  },
+
   CommitteeMemberType: {
     karkun: async (member, args, { loaders }) => {
       if (!member.karkunId) return null;
@@ -33,6 +42,7 @@ const resolvers: ResolverMap = {
     allCommittees: async () =>
       Committees.find({}, { sort: { name: 1 } }).fetchAsync(),
     committeeById: async (obj, { id }) => Committees.findOneAsync(id),
+    allCommitteeFeatures: async () => CommitteeFeatures,
   },
 
   Mutation: {
@@ -118,6 +128,18 @@ const resolvers: ResolverMap = {
 
       return Committees.findOneAsync(committeeId);
     },
+
+    enableCommitteeFeature: async (
+      obj,
+      { committeeId, featureKey },
+      { user }
+    ) => enableCommitteeFeature(committeeId, featureKey, user._id),
+
+    disableCommitteeFeature: async (
+      obj,
+      { committeeId, featureKey },
+      { user }
+    ) => disableCommitteeFeature(committeeId, featureKey, user._id),
   },
 };
 

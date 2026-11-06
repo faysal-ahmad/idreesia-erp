@@ -21,6 +21,7 @@ import {
   Tag,
   Tooltip,
 } from 'antd';
+import { Link } from 'react-router-dom';
 import { message } from '/imports/ui/antd-feedback';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
@@ -33,9 +34,8 @@ import type {
   ListAllCommitteesQueryVariables,
   RemoveCommitteeMutation,
   RemoveCommitteeMutationVariables,
-  UpdateCommitteeMutation,
-  UpdateCommitteeMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
+import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 import KarkunsSelectionList from '/imports/ui/modules/hr/karkuns/field/list-container';
 
 import CommitteeForm, { type CommitteeFormValues } from './committee-form';
@@ -90,28 +90,6 @@ const CREATE_COMMITTEE: TypedDocumentNode<
   }
 `;
 
-const UPDATE_COMMITTEE: TypedDocumentNode<
-  UpdateCommitteeMutation,
-  UpdateCommitteeMutationVariables
-> = gql`
-  mutation updateCommittee(
-    $id: String!
-    $name: String!
-    $color: String
-    $description: String
-  ) {
-    updateCommittee(
-      id: $id
-      name: $name
-      color: $color
-      description: $description
-    ) {
-      _id
-      name
-    }
-  }
-`;
-
 const REMOVE_COMMITTEE: TypedDocumentNode<
   RemoveCommitteeMutation,
   RemoveCommitteeMutationVariables
@@ -145,10 +123,6 @@ const List = () => {
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [showNewFormModal, setShowNewFormModal] = useState(false);
   const [newForm] = Form.useForm<CommitteeFormValues>();
-  const [editingCommitteeId, setEditingCommitteeId] = useState<string | null>(
-    null
-  );
-  const [editForm] = Form.useForm<CommitteeFormValues>();
 
   const { data, loading, refetch } = useQuery(LIST_ALL_COMMITTEES);
   const allCommittees = (data?.allCommittees ?? []).filter(
@@ -158,10 +132,6 @@ const List = () => {
 
   const [createCommittee, { loading: creating }] = useMutation(
     CREATE_COMMITTEE,
-    { refetchQueries: ['listAllCommittees'] }
-  );
-  const [updateCommittee, { loading: updating }] = useMutation(
-    UPDATE_COMMITTEE,
     { refetchQueries: ['listAllCommittees'] }
   );
   const [removeCommittee] = useMutation(REMOVE_COMMITTEE, {
@@ -261,43 +231,6 @@ const List = () => {
         }
       });
 
-  const handleEditClicked = (record: CommitteeRow) => {
-    editForm.setFieldsValue({
-      name: record.name,
-      color: record.color ?? undefined,
-      description: record.description ?? undefined,
-    });
-    setEditingCommitteeId(record._id);
-  };
-
-  const handleCloseEditForm = () => {
-    setEditingCommitteeId(null);
-    editForm.resetFields();
-  };
-
-  const handleUpdateCommittee = () =>
-    editForm
-      .validateFields()
-      .then(values =>
-        updateCommittee({
-          variables: {
-            id: editingCommitteeId as string,
-            name: values.name,
-            color: values.color,
-            description: values.description,
-          },
-        })
-      )
-      .then(() => {
-        message.success('Committee updated', 2);
-        handleCloseEditForm();
-      })
-      .catch((error: Error) => {
-        if (error?.message) {
-          message.error(error.message, 5);
-        }
-      });
-
   const handleAddMemberClicked = (record: CommitteeRow) => {
     setAddMemberCommitteeId(record._id);
   };
@@ -385,13 +318,7 @@ const List = () => {
             gap: 8,
           }}
         >
-          <Button
-            type="link"
-            style={{ padding: 0, height: 'auto' }}
-            onClick={() => handleEditClicked(record)}
-          >
-            {text}
-          </Button>
+          <Link to={paths.committeesEditFormPath(record._id)}>{text}</Link>
           {record.color ? <Tag color={record.color}>&nbsp;</Tag> : null}
         </div>
       ),
@@ -519,19 +446,6 @@ const List = () => {
         destroyOnHidden
       >
         <CommitteeForm form={newForm} />
-      </Modal>
-
-      <Modal
-        title="Edit Committee"
-        open={editingCommitteeId != null}
-        width={720}
-        okText="Save"
-        confirmLoading={updating}
-        onOk={handleUpdateCommittee}
-        onCancel={handleCloseEditForm}
-        destroyOnHidden
-      >
-        <CommitteeForm form={editForm} />
       </Modal>
 
       <Drawer

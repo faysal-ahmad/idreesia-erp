@@ -97,6 +97,13 @@ export type CityType = {
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
+export type CommitteeFeatureType = {
+  __typename?: 'CommitteeFeatureType';
+  description?: Maybe<Scalars['String']['output']>;
+  key?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
 export type CommitteeMemberType = {
   __typename?: 'CommitteeMemberType';
   isCoordinator?: Maybe<Scalars['Boolean']['output']>;
@@ -111,10 +118,36 @@ export type CommitteeType = {
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  features?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   members?: Maybe<Array<Maybe<CommitteeMemberType>>>;
   name?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type DiscussionAttachmentType = {
+  __typename?: 'DiscussionAttachmentType';
+  kind?: Maybe<Scalars['String']['output']>;
+  mimeType?: Maybe<Scalars['String']['output']>;
+  size?: Maybe<Scalars['Int']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+export type DiscussionInfoType = {
+  __typename?: 'DiscussionInfoType';
+  canPost?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type DiscussionMessageType = {
+  __typename?: 'DiscussionMessageType';
+  _id?: Maybe<Scalars['String']['output']>;
+  attachments?: Maybe<Array<Maybe<DiscussionAttachmentType>>>;
+  isOwn?: Maybe<Scalars['Boolean']['output']>;
+  isSystem?: Maybe<Scalars['Boolean']['output']>;
+  senderName?: Maybe<Scalars['String']['output']>;
+  sentAt?: Maybe<Scalars['String']['output']>;
+  text?: Maybe<Scalars['String']['output']>;
 };
 
 export type DuplicatePersonGroupType = {
@@ -626,6 +659,8 @@ export type Mutation = {
   deleteSecurityVisitor?: Maybe<Scalars['Int']['output']>;
   deleteUserGroup?: Maybe<Scalars['Int']['output']>;
   deleteVisitorStay?: Maybe<Scalars['Int']['output']>;
+  disableCommitteeFeature: Scalars['Boolean']['output'];
+  enableCommitteeFeature: Scalars['Boolean']['output'];
   fixCitySpelling?: Maybe<Scalars['Int']['output']>;
   fixNameSpelling?: Maybe<Scalars['Int']['output']>;
   hardDeletePeople?: Maybe<Scalars['Int']['output']>;
@@ -725,6 +760,7 @@ export type Mutation = {
   verifyStockItemLevel?: Maybe<StockItem>;
   workspaceAddCommitteeMember?: Maybe<WorkspaceCommitteeType>;
   workspaceRemoveCommitteeMember?: Maybe<WorkspaceCommitteeType>;
+  workspaceSendDiscussionMessage: Scalars['Boolean']['output'];
 };
 
 
@@ -1135,6 +1171,18 @@ export type MutationDeleteUserGroupArgs = {
 
 export type MutationDeleteVisitorStayArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type MutationDisableCommitteeFeatureArgs = {
+  committeeId: Scalars['String']['input'];
+  featureKey: Scalars['String']['input'];
+};
+
+
+export type MutationEnableCommitteeFeatureArgs = {
+  committeeId: Scalars['String']['input'];
+  featureKey: Scalars['String']['input'];
 };
 
 
@@ -1838,6 +1886,12 @@ export type MutationWorkspaceRemoveCommitteeMemberArgs = {
   karkunId: Scalars['String']['input'];
 };
 
+
+export type MutationWorkspaceSendDiscussionMessageArgs = {
+  committeeId: Scalars['String']['input'];
+  text: Scalars['String']['input'];
+};
+
 export type PagedAuditLogType = {
   __typename?: 'PagedAuditLogType';
   data?: Maybe<Array<Maybe<AuditLogType>>>;
@@ -2175,6 +2229,7 @@ export type Query = {
   allAccessiblePhysicalStores?: Maybe<Array<Maybe<PhysicalStore>>>;
   allCities?: Maybe<Array<Maybe<CityType>>>;
   allCityMehfils?: Maybe<Array<Maybe<CityMehfilType>>>;
+  allCommitteeFeatures?: Maybe<Array<Maybe<CommitteeFeatureType>>>;
   allCommittees?: Maybe<Array<Maybe<CommitteeType>>>;
   allDutyLocations?: Maybe<Array<Maybe<DutyLocationType>>>;
   allDutyShifts?: Maybe<Array<Maybe<DutyShiftType>>>;
@@ -2291,6 +2346,8 @@ export type Query = {
   visitorStayById?: Maybe<VisitorStayType>;
   workspaceCommitteeById?: Maybe<WorkspaceCommitteeType>;
   workspaceCommitteeKarkunSearch?: Maybe<PagedWorkspaceKarkunType>;
+  workspaceDiscussionInfo?: Maybe<DiscussionInfoType>;
+  workspaceDiscussionMessages?: Maybe<Array<Maybe<DiscussionMessageType>>>;
 };
 
 
@@ -2791,6 +2848,17 @@ export type QueryWorkspaceCommitteeKarkunSearchArgs = {
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
+
+export type QueryWorkspaceDiscussionInfoArgs = {
+  committeeId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceDiscussionMessagesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  committeeId: Scalars['String']['input'];
+};
+
 export type SalaryType = {
   __typename?: 'SalaryType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -3226,6 +3294,7 @@ export type WorkspaceCommitteeType = {
   canManageMembers?: Maybe<Scalars['Boolean']['output']>;
   color?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  features?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   members?: Maybe<Array<Maybe<WorkspaceCommitteeMemberType>>>;
   name?: Maybe<Scalars['String']['output']>;
 };

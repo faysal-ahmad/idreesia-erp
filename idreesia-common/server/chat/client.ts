@@ -18,8 +18,17 @@ export class ChatError extends Error {
 
 type QueryValue = string | number | boolean | undefined | null;
 
-const authHeaders = () => {
-  const { userId, authToken } = getChatConfig();
+/**
+ * A chat login. Calls default to the ERP service account; pass a user's own
+ * credentials (see user-tokens.ts) to act as that user.
+ */
+export interface ChatCredentials {
+  userId: string;
+  authToken: string;
+}
+
+const authHeaders = (credentials?: ChatCredentials) => {
+  const { userId, authToken } = credentials ?? getChatConfig();
   return { 'X-User-Id': userId, 'X-Auth-Token': authToken };
 };
 
@@ -55,22 +64,39 @@ const parseResponse = async <T>(response: Response): Promise<T> => {
 
 export const chatGet = async <T>(
   path: string,
-  query?: Record<string, QueryValue>
+  query?: Record<string, QueryValue>,
+  credentials?: ChatCredentials
 ): Promise<T> => {
   const response = await fetch(buildUrl(path, query), {
-    headers: authHeaders(),
+    headers: authHeaders(credentials),
   });
   return parseResponse<T>(response);
 };
 
 export const chatPost = async <T>(
   path: string,
-  body: unknown
+  body: unknown,
+  credentials?: ChatCredentials
 ): Promise<T> => {
   const response = await fetch(buildUrl(path), {
     method: 'POST',
-    headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+    headers: { ...authHeaders(credentials), 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
+  });
+  return parseResponse<T>(response);
+};
+
+/** POSTs a multipart form, e.g. a file upload. */
+export const chatPostMultipart = async <T>(
+  path: string,
+  formData: FormData,
+  credentials?: ChatCredentials
+): Promise<T> => {
+  // fetch sets the multipart Content-Type (with its boundary) itself.
+  const response = await fetch(buildUrl(path), {
+    method: 'POST',
+    headers: authHeaders(credentials),
+    body: formData,
   });
   return parseResponse<T>(response);
 };

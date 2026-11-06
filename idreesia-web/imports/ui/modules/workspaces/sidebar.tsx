@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { type History } from 'history';
 import { Menu } from 'antd';
-import { ClusterOutlined, TeamOutlined } from '@ant-design/icons';
+import { ClusterOutlined, MessageOutlined, TeamOutlined } from '@ant-design/icons';
 
+import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
 import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
 import { useMyCommittees } from './hooks/use-my-committees';
 import SubModuleNames from './submodule-names';
@@ -23,6 +24,7 @@ type KeyPrefixHandler = [string, string, PathBuilder];
 // sub-module. Menu keys are `${prefix}-${committeeId}`.
 const KeyPrefixHandlers: KeyPrefixHandler[] = [
   ['members', SubModuleNames.members, paths.committeeMembersPath],
+  ['discussions', SubModuleNames.discussions, paths.committeeDiscussionsPath],
 ];
 
 interface ActiveMenu {
@@ -111,6 +113,16 @@ const Sidebar = ({ history }: SidebarProps) => {
         icon: <TeamOutlined style={IconStyle} />,
         label: 'Members',
       },
+      // Only for committees with the Discussions feature enabled.
+      ...(committee.features?.includes(CommitteeFeatureKeys.DISCUSSIONS)
+        ? [
+            {
+              key: `discussions-${committee._id}`,
+              icon: <MessageOutlined style={IconStyle} />,
+              label: 'Discussions',
+            },
+          ]
+        : []),
     ],
   }));
 

@@ -103,6 +103,49 @@ Admins create a chat account for an ERP user from **Admin → Users**:
   - If a chat account with that user name already exists, it's linked rather than duplicated.
 - **What the ERP stores:** only the chat user's id, as `chatUserId` on the ERP user. Creating the account writes a "Chat Account Created" entry to **Admin → Security Logs**.
 
+## Committee discussions
+
+A committee can have **Discussions** turned on from **HR → Committees → (committee) → Features**. Members then get a **Discussions** item under that committee in the **Workspaces** sidebar, where they read and post messages and files.
+
+**What happens in Rocket.Chat**
+- **Turning Discussions on** creates a Rocket.Chat private group (`committee-<name>-<id suffix>`) and adds every member who has a chat account. The group's id is stored on the committee as `chatGroupId`.
+- **Turning it off** archives the group.
+- **Turning it back on** unarchives the same group, so its history stays. It also adds any members who are missing.
+- **Membership changes made while it's on** are not yet synced to the group.
+
+**Who can do what**
+- **Reading** is open to committee members (and `erp-admin`), and only while Discussions is on. History and files are read as the service account, which owns the group, so members without a chat account can read too.
+- **Posting and uploading** happen as the member's own chat account, so a member needs one (see [Chat accounts](#chat-accounts-for-erp-users)). Without one, the composer explains this instead of showing.
+
+**Acting as a member (per-user tokens)**
+- The ERP gets a login token for the member's chat account with `users.createToken`.
+- It keeps the token on the ERP user as `chatAuthToken`. This is server-only and never returned through GraphQL.
+- It reuses the stored token, and gets a new one only when Rocket.Chat rejects it.
+- This needs:
+  - `CREATE_TOKENS_FOR_USERS=true` on Rocket.Chat. It's baked into the image.
+  - `CREATE_TOKENS_FOR_USERS_SECRET` on Rocket.Chat. It's set per environment: `docker-compose.yml` for dev, the Rocket.Chat App Platform env (encrypted) for production. Rocket.Chat 7+ refuses `users.createToken` without it.
+  - `ROCKETCHAT_CREATE_TOKENS_SECRET` on the ERP, with the same value: `idreesia-web/.env` for dev, the ERP App Platform env for production.
+  - The service account's **User Generate Access Token** permission. It already has this through the admin role (setup step 2).
+
+**Files**
+- Downloads go through `GET /api/workspaces/committees/:committeeId/discussions/files/:fileId/:fileName?sig=…`, and uploads through `POST /api/workspaces/committees/:committeeId/discussions/files` (field `file`, up to 25 MB).
+- Both use the Meteor login token in the `Authorization` header and check committee membership.
+- The service account can read every group's files. So each file URL in a message list carries a signature over (group, file), and the download route only serves a file whose signature matches that committee's group.
+
+**Code layout**
+- The GraphQL resolvers and REST routes only check access. The work is done in shared business logic, so other hosts (e.g. teams) can reuse it after their own checks.
+
+| Piece | Location |
+|---|---|
+| Rocket.Chat group calls | `idreesia-common/server/chat/groups.ts` |
+| Per-user tokens | `idreesia-common/server/business-logic/common/chat-user-credentials.ts` |
+| Discussions logic (generic) | `idreesia-common/server/business-logic/discussions/` |
+| Committee feature on/off | `idreesia-common/server/business-logic/hr/committee/` |
+| Workspaces GraphQL (access checks) | `idreesia-common/server/graphql-api/workspaces/discussions/` |
+| File routes | `idreesia-web/imports/startup/server/setup-workspace-discussion-endpoints.ts` |
+| Reusable UI + `DiscussionDataProvider` | `idreesia-web/imports/ui/modules/common/discussions/` |
+| Committee provider + page | `idreesia-web/imports/ui/modules/workspaces/discussions/` |
+
 ## Trying it with curl (simulating the mobile app)
 
 ```sh

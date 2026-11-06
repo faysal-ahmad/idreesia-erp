@@ -83,11 +83,15 @@ export type ResolversTypes = ResolversObject<{
   CityFilter: Types.CityFilter;
   CityMehfilType: ResolverTypeWrapper<Types.CityMehfilType>;
   CityType: ResolverTypeWrapper<Types.CityType>;
+  CommitteeFeatureType: ResolverTypeWrapper<Types.CommitteeFeatureType>;
   CommitteeMemberType: ResolverTypeWrapper<Types.CommitteeMemberType>;
   CommitteeType: ResolverTypeWrapper<Types.CommitteeType>;
   Currency: ResolverTypeWrapper<Types.Scalars['Currency']['output']>;
   Date: ResolverTypeWrapper<Types.Scalars['Date']['output']>;
   DateTime: ResolverTypeWrapper<Types.Scalars['DateTime']['output']>;
+  DiscussionAttachmentType: ResolverTypeWrapper<Types.DiscussionAttachmentType>;
+  DiscussionInfoType: ResolverTypeWrapper<Types.DiscussionInfoType>;
+  DiscussionMessageType: ResolverTypeWrapper<Types.DiscussionMessageType>;
   DuplicatePersonGroupType: ResolverTypeWrapper<Types.DuplicatePersonGroupType>;
   DuplicatePersonSummaryType: ResolverTypeWrapper<Types.DuplicatePersonSummaryType>;
   DutyAttendanceCardType: ResolverTypeWrapper<Types.DutyAttendanceCardType>;
@@ -218,11 +222,15 @@ export type ResolversParentTypes = ResolversObject<{
   CityFilter: Types.CityFilter;
   CityMehfilType: Types.CityMehfilType;
   CityType: Types.CityType;
+  CommitteeFeatureType: Types.CommitteeFeatureType;
   CommitteeMemberType: Types.CommitteeMemberType;
   CommitteeType: Types.CommitteeType;
   Currency: Types.Scalars['Currency']['output'];
   Date: Types.Scalars['Date']['output'];
   DateTime: Types.Scalars['DateTime']['output'];
+  DiscussionAttachmentType: Types.DiscussionAttachmentType;
+  DiscussionInfoType: Types.DiscussionInfoType;
+  DiscussionMessageType: Types.DiscussionMessageType;
   DuplicatePersonGroupType: Types.DuplicatePersonGroupType;
   DuplicatePersonSummaryType: Types.DuplicatePersonSummaryType;
   DutyAttendanceCardType: Types.DutyAttendanceCardType;
@@ -416,6 +424,12 @@ export type CityTypeResolvers<ContextType = any, ParentType extends ResolversPar
   updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
+export type CommitteeFeatureTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['CommitteeFeatureType'] = ResolversParentTypes['CommitteeFeatureType']> = ResolversObject<{
+  description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  key?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
 export type CommitteeMemberTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['CommitteeMemberType'] = ResolversParentTypes['CommitteeMemberType']> = ResolversObject<{
   isCoordinator?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   karkun?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType>;
@@ -428,6 +442,7 @@ export type CommitteeTypeResolvers<ContextType = any, ParentType extends Resolve
   createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  features?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   members?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CommitteeMemberType']>>>, ParentType, ContextType>;
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -445,6 +460,28 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
 }
+
+export type DiscussionAttachmentTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DiscussionAttachmentType'] = ResolversParentTypes['DiscussionAttachmentType']> = ResolversObject<{
+  kind?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  mimeType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  size?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  title?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type DiscussionInfoTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DiscussionInfoType'] = ResolversParentTypes['DiscussionInfoType']> = ResolversObject<{
+  canPost?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+}>;
+
+export type DiscussionMessageTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DiscussionMessageType'] = ResolversParentTypes['DiscussionMessageType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  attachments?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DiscussionAttachmentType']>>>, ParentType, ContextType>;
+  isOwn?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isSystem?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  senderName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  sentAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  text?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
 
 export type DuplicatePersonGroupTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DuplicatePersonGroupType'] = ResolversParentTypes['DuplicatePersonGroupType']> = ResolversObject<{
   count?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -881,6 +918,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteSecurityVisitor?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteSecurityVisitorArgs, '_id'>>;
   deleteUserGroup?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteUserGroupArgs, '_id'>>;
   deleteVisitorStay?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteVisitorStayArgs, '_id'>>;
+  disableCommitteeFeature?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationDisableCommitteeFeatureArgs, 'committeeId' | 'featureKey'>>;
+  enableCommitteeFeature?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationEnableCommitteeFeatureArgs, 'committeeId' | 'featureKey'>>;
   fixCitySpelling?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationFixCitySpellingArgs, 'existingSpelling' | 'newSpelling'>>;
   fixNameSpelling?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationFixNameSpellingArgs, 'existingSpelling' | 'newSpelling'>>;
   hardDeletePeople?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationHardDeletePeopleArgs, '_ids'>>;
@@ -980,6 +1019,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   verifyStockItemLevel?: Resolver<Types.Maybe<ResolversTypes['StockItem']>, ParentType, ContextType, RequireFields<Types.MutationVerifyStockItemLevelArgs, '_id' | 'physicalStoreId'>>;
   workspaceAddCommitteeMember?: Resolver<Types.Maybe<ResolversTypes['WorkspaceCommitteeType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAddCommitteeMemberArgs, 'committeeId' | 'karkunId'>>;
   workspaceRemoveCommitteeMember?: Resolver<Types.Maybe<ResolversTypes['WorkspaceCommitteeType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceRemoveCommitteeMemberArgs, 'committeeId' | 'karkunId'>>;
+  workspaceSendDiscussionMessage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationWorkspaceSendDiscussionMessageArgs, 'committeeId' | 'text'>>;
 }>;
 
 export type PagedAuditLogTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedAuditLogType'] = ResolversParentTypes['PagedAuditLogType']> = ResolversObject<{
@@ -1232,6 +1272,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   allAccessiblePhysicalStores?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PhysicalStore']>>>, ParentType, ContextType>;
   allCities?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CityType']>>>, ParentType, ContextType>;
   allCityMehfils?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CityMehfilType']>>>, ParentType, ContextType>;
+  allCommitteeFeatures?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CommitteeFeatureType']>>>, ParentType, ContextType>;
   allCommittees?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CommitteeType']>>>, ParentType, ContextType>;
   allDutyLocations?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DutyLocationType']>>>, ParentType, ContextType>;
   allDutyShifts?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DutyShiftType']>>>, ParentType, ContextType>;
@@ -1348,6 +1389,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   visitorStayById?: Resolver<Types.Maybe<ResolversTypes['VisitorStayType']>, ParentType, ContextType, RequireFields<Types.QueryVisitorStayByIdArgs, '_id'>>;
   workspaceCommitteeById?: Resolver<Types.Maybe<ResolversTypes['WorkspaceCommitteeType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceCommitteeByIdArgs, 'committeeId'>>;
   workspaceCommitteeKarkunSearch?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceKarkunType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceCommitteeKarkunSearchArgs, 'committeeId'>>;
+  workspaceDiscussionInfo?: Resolver<Types.Maybe<ResolversTypes['DiscussionInfoType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDiscussionInfoArgs, 'committeeId'>>;
+  workspaceDiscussionMessages?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DiscussionMessageType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDiscussionMessagesArgs, 'committeeId'>>;
 }>;
 
 export type SalaryTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SalaryType'] = ResolversParentTypes['SalaryType']> = ResolversObject<{
@@ -1707,6 +1750,7 @@ export type WorkspaceCommitteeTypeResolvers<ContextType = any, ParentType extend
   canManageMembers?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   color?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  features?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   members?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceCommitteeMemberType']>>>, ParentType, ContextType>;
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
@@ -1726,11 +1770,15 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   AuditLogType?: AuditLogTypeResolvers<ContextType>;
   CityMehfilType?: CityMehfilTypeResolvers<ContextType>;
   CityType?: CityTypeResolvers<ContextType>;
+  CommitteeFeatureType?: CommitteeFeatureTypeResolvers<ContextType>;
   CommitteeMemberType?: CommitteeMemberTypeResolvers<ContextType>;
   CommitteeType?: CommitteeTypeResolvers<ContextType>;
   Currency?: GraphQLScalarType;
   Date?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
+  DiscussionAttachmentType?: DiscussionAttachmentTypeResolvers<ContextType>;
+  DiscussionInfoType?: DiscussionInfoTypeResolvers<ContextType>;
+  DiscussionMessageType?: DiscussionMessageTypeResolvers<ContextType>;
   DuplicatePersonGroupType?: DuplicatePersonGroupTypeResolvers<ContextType>;
   DuplicatePersonSummaryType?: DuplicatePersonSummaryTypeResolvers<ContextType>;
   DutyAttendanceCardType?: DutyAttendanceCardTypeResolvers<ContextType>;

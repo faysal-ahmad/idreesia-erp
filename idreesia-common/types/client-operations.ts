@@ -783,6 +783,44 @@ export type PagedHrAuditLogsQueryVariables = Exact<{
 
 export type PagedHrAuditLogsQuery = { pagedHrAuditLogs: { totalResults: number | null, data: Array<{ _id: string | null, entityId: string | null, entityType: string | null, operationType: string | null, auditValues: Array<string | null> | null, operationTime: string | null, operationBy: string | null, operationByName: string | null, operationByImageId: string | null, operationByImageThumbnailId: string | null } | null> | null } | null };
 
+export type CommitteeByIdQueryVariables = Exact<{
+  id: string;
+}>;
+
+
+export type CommitteeByIdQuery = { committeeById: { _id: string | null, name: string | null, color: string | null, description: string | null, features: Array<string | null> | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+
+export type AllCommitteeFeaturesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllCommitteeFeaturesQuery = { allCommitteeFeatures: Array<{ key: string | null, name: string | null, description: string | null } | null> | null };
+
+export type EnableCommitteeFeatureMutationVariables = Exact<{
+  committeeId: string;
+  featureKey: string;
+}>;
+
+
+export type EnableCommitteeFeatureMutation = { enableCommitteeFeature: boolean };
+
+export type DisableCommitteeFeatureMutationVariables = Exact<{
+  committeeId: string;
+  featureKey: string;
+}>;
+
+
+export type DisableCommitteeFeatureMutation = { disableCommitteeFeature: boolean };
+
+export type UpdateCommitteeMutationVariables = Exact<{
+  id: string;
+  name: string;
+  color?: string | null | undefined;
+  description?: string | null | undefined;
+}>;
+
+
+export type UpdateCommitteeMutation = { updateCommittee: { _id: string | null, name: string | null } | null };
+
 export type ListAllCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -796,16 +834,6 @@ export type CreateCommitteeMutationVariables = Exact<{
 
 
 export type CreateCommitteeMutation = { createCommittee: { _id: string | null, name: string | null } | null };
-
-export type UpdateCommitteeMutationVariables = Exact<{
-  id: string;
-  name: string;
-  color?: string | null | undefined;
-  description?: string | null | undefined;
-}>;
-
-
-export type UpdateCommitteeMutation = { updateCommittee: { _id: string | null, name: string | null } | null };
 
 export type RemoveCommitteeMutationVariables = Exact<{
   _id: string;
@@ -2422,10 +2450,33 @@ export type VendorByIdQueryVariables = Exact<{
 
 export type VendorByIdQuery = { vendorById: { _id: string | null, physicalStoreId: string | null, name: string | null, contactPerson: string | null, contactNumber: string | null, address: string | null, notes: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
+export type WorkspaceDiscussionInfoQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspaceDiscussionInfoQuery = { workspaceDiscussionInfo: { canPost: boolean | null } | null };
+
+export type WorkspaceDiscussionMessagesQueryVariables = Exact<{
+  committeeId: string;
+  after?: string | null | undefined;
+}>;
+
+
+export type WorkspaceDiscussionMessagesQuery = { workspaceDiscussionMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, isOwn: boolean | null, isSystem: boolean | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null } | null> | null };
+
+export type WorkspaceSendDiscussionMessageMutationVariables = Exact<{
+  committeeId: string;
+  text: string;
+}>;
+
+
+export type WorkspaceSendDiscussionMessageMutation = { workspaceSendDiscussionMessage: boolean };
+
 export type MyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, color: string | null } | null> | null };
+export type MyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, color: string | null, features: Array<string | null> | null } | null> | null };
 
 export type WorkspaceCommitteeMembersQueryVariables = Exact<{
   committeeId: string;

@@ -20,6 +20,8 @@ type WorkspaceCommitteeType {
   description: String
   # True when the logged-in user can manage this committee's members.
   canManageMembers: Boolean
+  # Keys of the features enabled for this committee (e.g. 'discussions').
+  features: [String]
   members: [WorkspaceCommitteeMemberType]
 }
 

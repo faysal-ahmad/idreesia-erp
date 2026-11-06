@@ -86,6 +86,11 @@ services:
       ADMIN_USERNAME: admin
       ADMIN_PASS: admin
       ADMIN_EMAIL: admin@idreesia.local
+      # Required with every users.createToken call (the image sets
+      # CREATE_TOKENS_FOR_USERS). The ERP sends it as
+      # ROCKETCHAT_CREATE_TOKENS_SECRET, so the two must match. Dev-only
+      # value; production sets its own on the App Platform component.
+      CREATE_TOKENS_FOR_USERS_SECRET: dev-create-tokens-secret
       # Password login form. The image defaults it to "false"; this overrides
       # it for the one-time setup (signing in as admin and as the ERP service
       # account, see docs/rocket-chat-integration.md). Remove this line, or set

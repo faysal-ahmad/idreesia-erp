@@ -5,14 +5,16 @@
 #
 # OVERWRITE_SETTING_* values are re-applied on every start, so changing them
 # in the admin UI only lasts until the next restart.
-FROM rocketchat/rocket.chat:8.9.0
+FROM rocketchat/rocket.chat:8.9.1
 
 ENV PORT=3000
 EXPOSE 3000
 
 # Every ERP user has a matching Rocket.Chat user, provisioned by the ERP.
 # The ERP logs them in by minting a token for them
-# (POST /api/v1/users.createToken), which this variable enables.
+# (POST /api/v1/users.createToken), which this variable enables. Each call
+# must also carry CREATE_TOKENS_FOR_USERS_SECRET, which differs per
+# environment and so is set in docker-compose.yml / the App Platform env.
 ENV CREATE_TOKENS_FOR_USERS=true
 
 # Skip the setup wizard; the admin is seeded from ADMIN_* in the compose file.

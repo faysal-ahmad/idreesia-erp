@@ -7,12 +7,19 @@ type CommitteeMemberType {
   karkun: PersonType
 }
 
+type CommitteeFeatureType {
+  key: String
+  name: String
+  description: String
+}
+
 type CommitteeType {
   _id: String
   name: String
   color: String
   description: String
   members: [CommitteeMemberType]
+  features: [String]
 
   createdAt: String
   createdBy: String
@@ -24,6 +31,8 @@ extend type Query {
   allCommittees: [CommitteeType]
     @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
   committeeById(id: String!): CommitteeType
+    @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
+  allCommitteeFeatures: [CommitteeFeatureType]
     @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
 }
 
@@ -42,5 +51,10 @@ extend type Mutation {
   addCommitteeCoordinator(committeeId: String!, karkunId: String!): CommitteeType
     @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
   removeCommitteeCoordinator(committeeId: String!, karkunId: String!): CommitteeType
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+
+  enableCommitteeFeature(committeeId: String!, featureKey: String!): Boolean!
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+  disableCommitteeFeature(committeeId: String!, featureKey: String!): Boolean!
     @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
 }`;

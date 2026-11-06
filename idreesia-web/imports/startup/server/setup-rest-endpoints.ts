@@ -18,6 +18,7 @@ import {
 
 import { createSecurityServerRouter } from './setup-security-server-endpoints';
 import { createCorrespondenceRouter } from './setup-correspondence-endpoints';
+import { createWorkspaceDiscussionRouter } from './setup-workspace-discussion-endpoints';
 import { getBrowserMonitoringConfig } from './newrelic';
 
 const ReportGenerators = {
@@ -240,6 +241,11 @@ export function setupRestEndpoints() {
      * Media proxy for the Correspondence inbox (files stored in Rocket.Chat)
      */
     app.use('/api/correspondence', createCorrespondenceRouter());
+
+    /**
+     * Files of committee discussions in Workspaces (stored in Rocket.Chat)
+     */
+    app.use('/api/workspaces', createWorkspaceDiscussionRouter());
 
     WebApp.connectHandlers.use(app as any);
   });

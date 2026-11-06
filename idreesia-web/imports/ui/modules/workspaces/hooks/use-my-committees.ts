@@ -20,6 +20,7 @@ const MY_COMMITTEES: TypedDocumentNode<
       _id
       name
       color
+      features
     }
   }
 `;

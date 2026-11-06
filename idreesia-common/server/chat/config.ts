@@ -26,3 +26,16 @@ export function getChatConfig(): ChatConfig {
     authToken: process.env.ROCKETCHAT_AUTH_TOKEN as string,
   };
 }
+
+// Rocket.Chat only issues tokens for other users (users.createToken) when
+// the call carries the secret set as CREATE_TOKENS_FOR_USERS_SECRET on the
+// Rocket.Chat server. Only needed for features that act as a user.
+export function getChatCreateTokensSecret(): string {
+  const secret = process.env.ROCKETCHAT_CREATE_TOKENS_SECRET;
+  if (!secret) {
+    throw new Error(
+      'Chat is not configured. Missing env var: ROCKETCHAT_CREATE_TOKENS_SECRET'
+    );
+  }
+  return secret;
+}

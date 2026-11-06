@@ -5,8 +5,8 @@ import {
   listOpenRooms,
   withVisitorPhones,
   sendAgentMessage,
-  type ChatAttachment,
-  type ChatDate,
+  mapChatAttachment,
+  toIsoString,
   type ChatLivechatRoom,
   type ChatMessage,
 } from 'meteor/idreesia-common/server/chat';
@@ -19,78 +19,11 @@ const MAX_REPLY_LENGTH = 5000;
 // Mapping Rocket.Chat → ERP GraphQL shapes
 // ----------------------------------------------------------------------------
 
-const toIsoString = (date?: ChatDate | null): string | null => {
-  if (!date) return null;
-  if (date instanceof Date) return date.toISOString();
-  if (typeof date === 'object' && '$date' in date) {
-    return new Date(date.$date).toISOString();
-  }
-  return new Date(date).toISOString();
-};
-
-// Rocket.Chat serves uploads at /file-upload/<fileId>/<fileName>. The browser
-// can't reach Rocket.Chat, so they are rewritten to the ERP media proxy, which
-// needs the room id to fetch them with that room's visitor credentials.
-const FILE_UPLOAD_PATH = /^\/file-upload\/([^/?#]+)\/([^?#]+)/;
-
-const toProxyUrl = (
-  rcUrl: string | null | undefined,
-  roomId: string
-): string | null => {
-  if (!rcUrl || !roomId) return null;
-  let path = rcUrl;
-  if (/^https?:\/\//i.test(rcUrl)) {
-    try {
-      path = new URL(rcUrl).pathname;
-    } catch {
-      return null;
-    }
-  }
-  const match = FILE_UPLOAD_PATH.exec(path);
-  if (!match) return null;
-  return `/api/correspondence/files/${roomId}/${match[1]}/${match[2]}`;
-};
-
-const mapAttachment = (attachment: ChatAttachment, roomId: string) => {
-  if (attachment.image_url) {
-    return {
-      kind: 'image',
-      title: attachment.title ?? null,
-      mimeType: attachment.image_type ?? null,
-      size: attachment.image_size ?? null,
-      url: toProxyUrl(attachment.image_url, roomId),
-    };
-  }
-  if (attachment.audio_url) {
-    return {
-      kind: 'audio',
-      title: attachment.title ?? null,
-      mimeType: attachment.audio_type ?? null,
-      size: attachment.audio_size ?? null,
-      url: toProxyUrl(attachment.audio_url, roomId),
-    };
-  }
-  if (attachment.video_url) {
-    return {
-      kind: 'video',
-      title: attachment.title ?? null,
-      mimeType: attachment.video_type ?? null,
-      size: attachment.video_size ?? null,
-      url: toProxyUrl(attachment.video_url, roomId),
-    };
-  }
-  if (attachment.title_link) {
-    return {
-      kind: 'file',
-      title: attachment.title ?? null,
-      mimeType: null,
-      size: null,
-      url: toProxyUrl(attachment.title_link, roomId),
-    };
-  }
-  // Quotes and other attachment types without a file are not shown.
-  return null;
-};
+// The browser can't reach Rocket.Chat, so uploads are rewritten to the ERP
+// media proxy, which needs the room id to fetch them with that room's
+// visitor credentials.
+const inboxFileUrl = (roomId: string) => (fileId: string, fileName: string) =>
+  `/api/correspondence/files/${roomId}/${fileId}/${fileName}`;
 
 const mapMessage = (message?: ChatMessage | null) => {
   if (!message) return null;
@@ -108,7 +41,9 @@ const mapMessage = (message?: ChatMessage | null) => {
     senderName:
       message.alias || message.u?.name || message.u?.username || null,
     attachments: (message.attachments ?? [])
-      .map(attachment => mapAttachment(attachment, message.rid))
+      .map(attachment =>
+        mapChatAttachment(attachment, inboxFileUrl(message.rid))
+      )
       .filter(Boolean),
   };
 };

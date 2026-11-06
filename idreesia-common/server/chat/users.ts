@@ -1,6 +1,7 @@
 import { Random } from 'meteor/random';
 
-import { ChatError, chatGet, chatPost } from './client';
+import { ChatError, chatGet, chatPost, type ChatCredentials } from './client';
+import { getChatCreateTokensSecret } from './config';
 
 interface ChatUser {
   _id: string;
@@ -69,4 +70,19 @@ export const createChatUser = async ({
   });
 
   return result.user._id;
+};
+
+/**
+ * Issues a login token for a chat user, so the ERP can act as them (e.g.
+ * post their messages). Each call adds a login session in the chat server,
+ * so callers should keep and reuse the token rather than asking every time.
+ */
+export const createChatUserToken = async (
+  chatUserId: string
+): Promise<ChatCredentials> => {
+  const result = await chatPost<{ data: ChatCredentials }>(
+    '/api/v1/users.createToken',
+    { userId: chatUserId, secret: getChatCreateTokensSecret() }
+  );
+  return result.data;
 };

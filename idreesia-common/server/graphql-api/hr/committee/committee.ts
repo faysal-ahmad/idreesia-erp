@@ -25,10 +25,6 @@ extend type Query {
     @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
   committeeById(id: String!): CommitteeType
     @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
-
-  # Committees the logged-in user is a member of. Access is based on
-  # membership, not permissions.
-  myCommittees: [CommitteeType]
 }
 
 extend type Mutation {

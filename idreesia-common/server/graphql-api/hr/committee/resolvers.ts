@@ -33,21 +33,6 @@ const resolvers: ResolverMap = {
     allCommittees: async () =>
       Committees.find({}, { sort: { name: 1 } }).fetchAsync(),
     committeeById: async (obj, { id }) => Committees.findOneAsync(id),
-    myCommittees: async (obj, args, { user }) => {
-      const { username, personId, locked } = (user ?? {}) as {
-        username?: string;
-        personId?: string;
-        locked?: boolean;
-      };
-      if (username === 'erp-admin') {
-        return Committees.find({}, { sort: { name: 1 } }).fetchAsync();
-      }
-      if (!personId || locked) return [];
-      return Committees.find(
-        { 'members.karkunId': personId },
-        { sort: { name: 1 } }
-      ).fetchAsync();
-    },
   },
 
   Mutation: {

@@ -773,10 +773,6 @@ extend type Query {
     @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
   committeeById(id: String!): CommitteeType
     @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
-
-  # Committees the logged-in user is a member of. Access is based on
-  # membership, not permissions.
-  myCommittees: [CommitteeType]
 }
 
 extend type Mutation {
@@ -2683,4 +2679,68 @@ extend type Mutation {
     csvData: String!
   ): String
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+}
+
+type WorkspaceCommitteeMemberType {
+  karkunId: String
+  isCoordinator: Boolean
+  name: String
+  imageId: String
+  imageThumbnailId: String
+  contactNumber1: String
+  contactNumber2: String
+}
+
+type WorkspaceCommitteeType {
+  _id: String
+  name: String
+  color: String
+  description: String
+  # True when the logged-in user can manage this committee's members.
+  canManageMembers: Boolean
+  members: [WorkspaceCommitteeMemberType]
+}
+
+type WorkspaceKarkunType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageId: String
+  imageThumbnailId: String
+}
+
+type PagedWorkspaceKarkunType {
+  data: [WorkspaceKarkunType]
+  totalResults: Int
+}
+
+extend type Query {
+  # Committees the logged-in user is currently a member of.
+  myCommittees: [WorkspaceCommitteeType]
+
+  # A committee the logged-in user is a member of; null otherwise.
+  workspaceCommitteeById(committeeId: String!): WorkspaceCommitteeType
+
+  # Karkuns that a coordinator can add to their committee.
+  workspaceCommitteeKarkunSearch(
+    committeeId: String!
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedWorkspaceKarkunType
+}
+
+extend type Mutation {
+  workspaceAddCommitteeMember(
+    committeeId: String!
+    karkunId: String!
+  ): WorkspaceCommitteeType
+  workspaceRemoveCommitteeMember(
+    committeeId: String!
+    karkunId: String!
+  ): WorkspaceCommitteeType
 }

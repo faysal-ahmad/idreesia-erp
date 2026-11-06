@@ -723,6 +723,8 @@ export type Mutation = {
   updateVendor?: Maybe<Vendor>;
   updateVisitorStay?: Maybe<VisitorStayType>;
   verifyStockItemLevel?: Maybe<StockItem>;
+  workspaceAddCommitteeMember?: Maybe<WorkspaceCommitteeType>;
+  workspaceRemoveCommitteeMember?: Maybe<WorkspaceCommitteeType>;
 };
 
 
@@ -1824,6 +1826,18 @@ export type MutationVerifyStockItemLevelArgs = {
   physicalStoreId: Scalars['String']['input'];
 };
 
+
+export type MutationWorkspaceAddCommitteeMemberArgs = {
+  committeeId: Scalars['String']['input'];
+  karkunId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceRemoveCommitteeMemberArgs = {
+  committeeId: Scalars['String']['input'];
+  karkunId: Scalars['String']['input'];
+};
+
 export type PagedAuditLogType = {
   __typename?: 'PagedAuditLogType';
   data?: Maybe<Array<Maybe<AuditLogType>>>;
@@ -1941,6 +1955,12 @@ export type PagedVisitorStayType = {
 export type PagedVisitorType = {
   __typename?: 'PagedVisitorType';
   data?: Maybe<Array<Maybe<PersonType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedWorkspaceKarkunType = {
+  __typename?: 'PagedWorkspaceKarkunType';
+  data?: Maybe<Array<Maybe<WorkspaceKarkunType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -2213,7 +2233,7 @@ export type Query = {
   mehfilKarkunByBarcodeId?: Maybe<MehfilKarkunType>;
   mehfilKarkunsByIds?: Maybe<Array<Maybe<MehfilKarkunType>>>;
   mehfilKarkunsByMehfilId?: Maybe<Array<Maybe<MehfilKarkunType>>>;
-  myCommittees?: Maybe<Array<Maybe<CommitteeType>>>;
+  myCommittees?: Maybe<Array<Maybe<WorkspaceCommitteeType>>>;
   pagedCities?: Maybe<PagedCityType>;
   pagedDeletedPeople?: Maybe<PagedPeopleType>;
   pagedHrAuditLogs?: Maybe<PagedAuditLogType>;
@@ -2269,6 +2289,8 @@ export type Query = {
   vendorById?: Maybe<Vendor>;
   vendorsByPhysicalStoreId?: Maybe<Array<Maybe<Vendor>>>;
   visitorStayById?: Maybe<VisitorStayType>;
+  workspaceCommitteeById?: Maybe<WorkspaceCommitteeType>;
+  workspaceCommitteeKarkunSearch?: Maybe<PagedWorkspaceKarkunType>;
 };
 
 
@@ -2754,6 +2776,21 @@ export type QueryVisitorStayByIdArgs = {
   _id: Scalars['String']['input'];
 };
 
+
+export type QueryWorkspaceCommitteeByIdArgs = {
+  committeeId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceCommitteeKarkunSearchArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  committeeId: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type SalaryType = {
   __typename?: 'SalaryType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -3170,4 +3207,36 @@ export type VisitorStayType = {
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
   visitorId?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceCommitteeMemberType = {
+  __typename?: 'WorkspaceCommitteeMemberType';
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  contactNumber2?: Maybe<Scalars['String']['output']>;
+  imageId?: Maybe<Scalars['String']['output']>;
+  imageThumbnailId?: Maybe<Scalars['String']['output']>;
+  isCoordinator?: Maybe<Scalars['Boolean']['output']>;
+  karkunId?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceCommitteeType = {
+  __typename?: 'WorkspaceCommitteeType';
+  _id?: Maybe<Scalars['String']['output']>;
+  canManageMembers?: Maybe<Scalars['Boolean']['output']>;
+  color?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  members?: Maybe<Array<Maybe<WorkspaceCommitteeMemberType>>>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceKarkunType = {
+  __typename?: 'WorkspaceKarkunType';
+  _id?: Maybe<Scalars['String']['output']>;
+  cnicNumber?: Maybe<Scalars['String']['output']>;
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  imageId?: Maybe<Scalars['String']['output']>;
+  imageThumbnailId?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  parentName?: Maybe<Scalars['String']['output']>;
 };

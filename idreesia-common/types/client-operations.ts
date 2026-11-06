@@ -2426,3 +2426,36 @@ export type MyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, color: string | null } | null> | null };
+
+export type WorkspaceCommitteeMembersQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspaceCommitteeMembersQuery = { workspaceCommitteeById: { _id: string | null, canManageMembers: boolean | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, name: string | null, imageId: string | null, imageThumbnailId: string | null, contactNumber1: string | null, contactNumber2: string | null } | null> | null } | null };
+
+export type WorkspaceCommitteeKarkunSearchQueryVariables = Exact<{
+  committeeId: string;
+  name?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type WorkspaceCommitteeKarkunSearchQuery = { workspaceCommitteeKarkunSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageId: string | null, imageThumbnailId: string | null } | null> | null } | null };
+
+export type WorkspaceAddCommitteeMemberMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type WorkspaceAddCommitteeMemberMutation = { workspaceAddCommitteeMember: { _id: string | null } | null };
+
+export type WorkspaceRemoveCommitteeMemberMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type WorkspaceRemoveCommitteeMemberMutation = { workspaceRemoveCommitteeMember: { _id: string | null } | null };

@@ -34,10 +34,7 @@ const DUTY_ATTENDANCE_CARDS: TypedDocumentNode<
         sharedData {
           name
           bloodGroup
-          image {
-            _id
-            data
-          }
+          imageUrl
         }
       }
       duty {

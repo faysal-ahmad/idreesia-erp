@@ -16,7 +16,7 @@ export const STOCK_ITEM_BY_ID: TypedDocumentNode<
       name
       company
       details
-      imageId
+      imageUrl
       categoryId
       unitOfMeasurement
       startingStockLevel

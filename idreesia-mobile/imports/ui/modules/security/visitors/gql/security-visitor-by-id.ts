@@ -26,8 +26,8 @@ export const MOBILE_SECURITY_VISITOR_BY_ID: TypedDocumentNode<
         permanentAddress
         educationalQualification
         meansOfEarning
-        imageId
-        imageThumbnailId
+        imageUrl
+        imageThumbnailUrl
         tags {
           _id
           name

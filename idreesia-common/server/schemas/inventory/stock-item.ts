@@ -28,6 +28,12 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  // Object storage key (stock-item-images/...). imageId is the legacy
+  // Attachments copy, kept only until it is migrated.
+  imageKey: {
+    type: String,
+    optional: true,
+  },
   startingStockLevel: {
     type: Number,
   },

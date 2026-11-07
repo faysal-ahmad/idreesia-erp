@@ -12,3 +12,6 @@ export {
 } from './search-people-by-face-vector';
 export type { FaceMatch } from './search-people-by-face-vector';
 export { backfillImageVectorData } from './backfill-image-vector-data';
+export { setPersonImage } from './set-person-image';
+export { getPersonImageUrls } from './person-images';
+export type { PersonImageUrls } from './person-images';

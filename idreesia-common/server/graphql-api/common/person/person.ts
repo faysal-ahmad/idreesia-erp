@@ -23,6 +23,8 @@ type PersonSharedDataType {
   referenceName: String
   imageId: String
   imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
   imageVectorData: PersonImageVectorDataType
   tagIds: [String]
 

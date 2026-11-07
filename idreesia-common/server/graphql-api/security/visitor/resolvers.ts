@@ -1,6 +1,6 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
-  computeImageVectorData,
+  setPersonImage,
   computeVectorFromImageBuffer,
   searchPeopleByFaceVector,
 } from 'meteor/idreesia-common/server/business-logic/common';
@@ -81,13 +81,8 @@ const resolvers: ResolverMap = {
     deleteSecurityVisitor: async (obj, { _id }, { user }) =>
       People.removePerson(_id, user),
 
-    setSecurityVisitorImage: async (obj, values, { user }) => {
-      const personValues = People.visitorToPerson(values);
-      personValues.sharedData.imageVectorData = await computeImageVectorData(
-        values.imageId
-      );
-      return People.updatePerson(personValues, user);
-    },
+    setSecurityVisitorImage: async (obj, { _id, imageData }, { user }) =>
+      setPersonImage(user, _id, imageData),
 
     updateSecurityVisitorNotes: async (obj, values, { user }) => {
       const personValues = People.visitorToPerson(values);

@@ -1,12 +1,12 @@
 import React, { Fragment, type CSSProperties } from 'react';
 import { useMutation } from '@apollo/client/react';
-import { Row, Col } from 'antd';
+import { Button, Row, Col, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import { message } from '/imports/ui/antd-feedback';
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import type { StockItemByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
+  readImageFile,
   TakePicture,
-  UploadAttachment,
 } from '/imports/ui/modules/helpers/controls';
 
 import { SET_STOCK_ITEM_IMAGE } from '../gql';
@@ -22,21 +22,21 @@ const Picture = ({ stockItemById }: Props) => {
     refetchQueries: ['pagedStockItems'],
   });
 
-  const updateImageId = (imageId: string) => {
+  const updateImage = (imageData: string) => {
     if (!stockItemById._id || !stockItemById.physicalStoreId) return;
 
     setStockItemImage({
       variables: {
         _id: stockItemById._id,
         physicalStoreId: stockItemById.physicalStoreId,
-        imageId,
+        imageData,
       },
     }).catch((error: Error) => {
       message.error(error.message, 5);
     });
   };
 
-  const url = getDownloadUrl(stockItemById.imageId);
+  const url = stockItemById.imageUrl;
   const imageStyle: CSSProperties = { maxWidth: '400px' };
 
   return (
@@ -51,8 +51,25 @@ const Picture = ({ stockItemById }: Props) => {
       <br />
       <Row>
         <Col span={16}>
-          <UploadAttachment onUploadFinish={updateImageId} />
-          <TakePicture onPictureTaken={updateImageId} />
+          <Upload
+            accept="image/*"
+            showUploadList={false}
+            beforeUpload={file => {
+              readImageFile(file)
+                .then(updateImage)
+                .catch((error: Error) => {
+                  message.error(error.message, 5);
+                });
+              // The image is sent with the mutation, not uploaded here.
+              return false;
+            }}
+          >
+            <Button type="default">
+              <UploadOutlined />
+              Upload Picture
+            </Button>
+          </Upload>
+          <TakePicture onPictureCaptured={updateImage} />
         </Col>
       </Row>
     </Fragment>

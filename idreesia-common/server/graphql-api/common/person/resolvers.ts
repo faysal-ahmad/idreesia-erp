@@ -5,6 +5,7 @@ import { PeopleTags } from 'meteor/idreesia-common/server/collections/admin';
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
+import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 
 type Loader = DataLoader<string, unknown>;
 
@@ -28,6 +29,8 @@ interface Person {
 }
 
 interface PersonSharedDataType {
+  imageKey?: string;
+  imageThumbnailKey?: string;
   imageId?: string;
   imageThumbnailId?: string;
   tagIds?: string[];
@@ -73,6 +76,10 @@ export default {
       person.karkunData ? { ...person.karkunData, _id: person._id } : null,
   },
   PersonSharedDataType: {
+    imageUrl: (personSharedDataType: PersonSharedDataType) =>
+      getPersonImageUrls(personSharedDataType).imageUrl,
+    imageThumbnailUrl: (personSharedDataType: PersonSharedDataType) =>
+      getPersonImageUrls(personSharedDataType).imageThumbnailUrl,
     image: async (
       personSharedDataType: PersonSharedDataType,
       _args: unknown,

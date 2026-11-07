@@ -6,6 +6,12 @@ import {
   StockAdjustments,
 } from 'meteor/idreesia-common/server/collections/inventory';
 
+import {
+  getStockItemImageUrl,
+  removeStockItemImageFiles,
+  setStockItemImage,
+} from 'meteor/idreesia-common/server/business-logic/inventory/stock-item-images';
+
 import { getPagedStockItems, getStatistics } from './queries';
 import { mergeStockItems, recalculateStockLevels } from './helpers';
 
@@ -20,6 +26,7 @@ interface StockItem {
   minStockLevel?: number;
   currentStockLevel?: number;
   imageId?: string;
+  imageKey?: string;
 }
 
 interface StockItemArgs extends StockItem {
@@ -43,6 +50,7 @@ interface ResolverContext {
 
 export default {
   StockItem: {
+    imageUrl: (stockItem: StockItem) => getStockItemImageUrl(stockItem),
     formattedName: async (stockItem: StockItem) => {
       const { name, company, details } = stockItem;
       let formattedName = name;
@@ -262,6 +270,12 @@ export default {
         purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount ===
         0
       ) {
+        await removeStockItemImageFiles(
+          await StockItems.findOneAsync({
+            _id: { $eq: _id },
+            physicalStoreId: { $eq: physicalStoreId },
+          })
+        );
         return StockItems.removeAsync({
           _id: { $eq: _id },
           physicalStoreId: { $eq: physicalStoreId },
@@ -273,26 +287,13 @@ export default {
 
     setStockItemImage: async (
       _obj: unknown,
-      { _id, physicalStoreId, imageId }: StockItemArgs,
+      {
+        _id,
+        physicalStoreId,
+        imageData,
+      }: Pick<StockItemArgs, '_id' | 'physicalStoreId'> & { imageData: string },
       { user }: ResolverContext
-    ) => {
-      const date = new Date();
-      await StockItems.updateAsync(
-        {
-          _id: { $eq: _id },
-          physicalStoreId: { $eq: physicalStoreId },
-        },
-        {
-          $set: {
-            imageId,
-            updatedAt: date,
-            updatedBy: user._id,
-          },
-        }
-      );
-
-      return StockItems.findOneAsync(_id);
-    },
+    ) => setStockItemImage(user, _id, physicalStoreId, imageData),
 
     mergeStockItems: async (
       _obj: unknown,

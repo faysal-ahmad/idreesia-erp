@@ -31,6 +31,9 @@ services:
   rustfs:
     image: rustfs/rustfs:1.0.3
     ports:
+      # S3 API, for the public image URLs (and presigned URLs) the
+      # browser opens via S3_PUBLIC_ENDPOINT=http://localhost:9000.
+      - "9000:9000"
       - "9001:9001" # Console
     environment:
       RUSTFS_ACCESS_KEY: rustfs_root_user
@@ -59,6 +62,7 @@ services:
       /bin/sh -c "
       aws --endpoint-url http://rustfs:9000 s3 mb s3://idreesia-files;
       aws --endpoint-url http://rustfs:9000 s3 mb s3://rocketchat;
+      aws --endpoint-url http://rustfs:9000 s3api put-bucket-policy --bucket idreesia-files --policy '{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Action\":[\"s3:GetObject\"],\"Resource\":[\"arn:aws:s3:::idreesia-files/people-images/*\",\"arn:aws:s3:::idreesia-files/stock-item-images/*\"]}]}';
       exit 0;
       "
 
@@ -104,7 +108,7 @@ services:
       # File uploads, avatars and user data exports go to the `rocketchat`
       # bucket on RustFS instead of GridFS. RustFS only does path-style
       # addressing, hence ForcePathStyle. The endpoint is the in-network
-      # hostname, which browsers can't reach (9000 isn't published), so all
+      # hostname, which browsers can't resolve, so all
       # three proxy settings make Rocket.Chat stream files itself rather than
       # redirecting clients to a pre-signed rustfs:9000 URL.
       OVERWRITE_SETTING_FileUpload_Storage_Type: AmazonS3

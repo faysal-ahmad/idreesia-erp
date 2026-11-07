@@ -2,7 +2,6 @@ import React, { type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { UserOutlined } from '@ant-design/icons';
 
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar } from 'antd';
 
 const NameDivStyle: CSSProperties = {
@@ -15,16 +14,15 @@ const NameDivStyle: CSSProperties = {
 
 export function getNameWithImageRenderer(
   id: string,
-  imageId: string | undefined,
+  imageUrl: string | null | undefined,
   name: React.ReactNode,
   path: string,
   iconToUse?: React.ReactNode
 ) {
-  if (imageId) {
-    const url = getDownloadUrl(imageId);
+  if (imageUrl) {
     return (
       <div style={NameDivStyle}>
-        <Avatar shape="square" size="large" src={url} />
+        <Avatar shape="square" size="large" src={imageUrl} />
         &nbsp;
         <Link to={path}>{name}</Link>
       </div>

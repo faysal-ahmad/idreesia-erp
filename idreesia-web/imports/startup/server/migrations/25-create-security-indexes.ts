@@ -1,11 +1,13 @@
 import { Migrations } from 'meteor/quave:migrations';
 
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+// Visitors collection has since been dropped - see migration 59.
+// import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 
 Migrations.add({
   version: 25,
   async up() {
-    const visitors = Visitors.rawCollection();
-    await visitors.createIndex({ ehadDate: 1 }, { background: true });
+    // Visitors collection has since been dropped.
+    // const visitors = Visitors.rawCollection();
+    // await visitors.createIndex({ ehadDate: 1 }, { background: true });
   },
 });

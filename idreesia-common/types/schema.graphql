@@ -118,8 +118,8 @@ type DuplicatePersonSummaryType {
   cnicNumber: String
   contactNumber1: String
   contactNumber2: String
-  imageId: String
-  imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
   updatedAt: String
 }
 
@@ -466,13 +466,6 @@ type Query {
 }
 
 type Mutation {
-  createAttachment(
-    name: String
-    description: String
-    mimeType: String
-    data: String!
-  ): Attachment
-
   updateAttachment(_id: String!, name: String, description: String): Attachment
 }
 
@@ -486,8 +479,8 @@ type AuditLogType {
   operationBy: String
 
   operationByName: String
-  operationByImageId: String
-  operationByImageThumbnailId: String
+  operationByImageUrl: String
+  operationByImageThumbnailUrl: String
 }
 
 input AuditLogFilter {
@@ -554,6 +547,8 @@ type PersonSharedDataType {
   referenceName: String
   imageId: String
   imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
   imageVectorData: PersonImageVectorDataType
   tagIds: [String]
 
@@ -655,11 +650,11 @@ type SecurityLogType {
   dataSourceDetail: String
 
   userName: String
-  userImageId: String
-  userImageThumbnailId: String
+  userImageUrl: String
+  userImageThumbnailUrl: String
   operationByName: String
-  operationByImageId: String
-  operationByImageThumbnailId: String
+  operationByImageUrl: String
+  operationByImageThumbnailUrl: String
 }
 
 input SecurityLogFilter {
@@ -867,8 +862,8 @@ type DutyPlanDaysKarkunType {
   karkunId: String
   name: String
   off: Boolean
-  imageId: String
-  imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
   attendance: String
 }
 
@@ -1177,7 +1172,7 @@ extend type Mutation {
   ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
-  setHrKarkunProfileImage(_id: String!, imageId: String!): PersonType
+  setHrKarkunProfileImage(_id: String!, imageData: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   addHrKarkunAttachment(_id: String!, attachmentId: String!): PersonType
@@ -1757,7 +1752,7 @@ type StockItem {
   details: String
   unitOfMeasurement: String
   categoryId: String
-  imageId: String
+  imageUrl: String
   physicalStoreId: String
   startingStockLevel: Float
   minStockLevel: Float
@@ -1845,7 +1840,7 @@ extend type Mutation {
   @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
-  setStockItemImage(_id: String!, physicalStoreId: String!, imageId: String!): StockItem
+  setStockItemImage(_id: String!, physicalStoreId: String!, imageData: String!): StockItem
   @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
@@ -2693,7 +2688,7 @@ extend type Mutation {
   deleteSecurityVisitor(_id: String!): Int
   @checkPermissions(permissions: [SECURITY_DELETE_DATA])
 
-  setSecurityVisitorImage(_id: String!, imageId: String!): PersonType
+  setSecurityVisitorImage(_id: String!, imageData: String!): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   updateSecurityVisitorNotes(
@@ -2713,8 +2708,8 @@ type WorkspaceCommitteeMemberType {
   karkunId: String
   isCoordinator: Boolean
   name: String
-  imageId: String
-  imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
   contactNumber1: String
   contactNumber2: String
   # The person has an ERP user.
@@ -2744,8 +2739,8 @@ type WorkspaceKarkunType {
   parentName: String
   cnicNumber: String
   contactNumber1: String
-  imageId: String
-  imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
 }
 
 type PagedWorkspaceKarkunType {
@@ -2810,8 +2805,8 @@ type DiscussionMessageType {
   sentAt: String
   senderName: String
   senderId: String
-  senderImageId: String
-  senderImageThumbnailId: String
+  senderImageUrl: String
+  senderImageThumbnailUrl: String
   isOwn: Boolean
   isSystem: Boolean
   attachments: [DiscussionAttachmentType]
@@ -2847,8 +2842,8 @@ type DiscussionMemberType {
   # Chat username, used in @mentions.
   username: String
   name: String
-  imageId: String
-  imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
 }
 
 type DiscussionInfoType {

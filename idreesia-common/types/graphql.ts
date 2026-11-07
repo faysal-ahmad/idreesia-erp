@@ -48,8 +48,8 @@ export type AuditLogType = {
   entityId?: Maybe<Scalars['String']['output']>;
   entityType?: Maybe<Scalars['String']['output']>;
   operationBy?: Maybe<Scalars['String']['output']>;
-  operationByImageId?: Maybe<Scalars['String']['output']>;
-  operationByImageThumbnailId?: Maybe<Scalars['String']['output']>;
+  operationByImageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  operationByImageUrl?: Maybe<Scalars['String']['output']>;
   operationByName?: Maybe<Scalars['String']['output']>;
   operationTime?: Maybe<Scalars['String']['output']>;
   operationType?: Maybe<Scalars['String']['output']>;
@@ -145,8 +145,8 @@ export type DiscussionInfoType = {
 
 export type DiscussionMemberType = {
   __typename?: 'DiscussionMemberType';
-  imageId?: Maybe<Scalars['String']['output']>;
-  imageThumbnailId?: Maybe<Scalars['String']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   username?: Maybe<Scalars['String']['output']>;
 };
@@ -168,8 +168,8 @@ export type DiscussionMessageType = {
   isSystem?: Maybe<Scalars['Boolean']['output']>;
   reactions?: Maybe<Array<Maybe<DiscussionReactionType>>>;
   senderId?: Maybe<Scalars['String']['output']>;
-  senderImageId?: Maybe<Scalars['String']['output']>;
-  senderImageThumbnailId?: Maybe<Scalars['String']['output']>;
+  senderImageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  senderImageUrl?: Maybe<Scalars['String']['output']>;
   senderName?: Maybe<Scalars['String']['output']>;
   sentAt?: Maybe<Scalars['String']['output']>;
   showInMainList?: Maybe<Scalars['Boolean']['output']>;
@@ -208,8 +208,8 @@ export type DuplicatePersonSummaryType = {
   cnicNumber?: Maybe<Scalars['String']['output']>;
   contactNumber1?: Maybe<Scalars['String']['output']>;
   contactNumber2?: Maybe<Scalars['String']['output']>;
-  imageId?: Maybe<Scalars['String']['output']>;
-  imageThumbnailId?: Maybe<Scalars['String']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
 };
@@ -279,8 +279,8 @@ export type DutyPlanDaysDayType = {
 export type DutyPlanDaysKarkunType = {
   __typename?: 'DutyPlanDaysKarkunType';
   attendance?: Maybe<Scalars['String']['output']>;
-  imageId?: Maybe<Scalars['String']['output']>;
-  imageThumbnailId?: Maybe<Scalars['String']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
   karkunId?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   off?: Maybe<Scalars['Boolean']['output']>;
@@ -661,7 +661,6 @@ export type Mutation = {
   approveStockAdjustments?: Maybe<Array<Maybe<StockAdjustment>>>;
   cancelVisitorStay?: Maybe<VisitorStayType>;
   clearJobDefinitionSchedule?: Maybe<JobDefinitionType>;
-  createAttachment?: Maybe<Attachment>;
   createChatAccount?: Maybe<UserType>;
   createCity?: Maybe<CityType>;
   createCityMehfil?: Maybe<CityMehfilType>;
@@ -899,14 +898,6 @@ export type MutationCancelVisitorStayArgs = {
 
 export type MutationClearJobDefinitionScheduleArgs = {
   _id: Scalars['String']['input'];
-};
-
-
-export type MutationCreateAttachmentArgs = {
-  data: Scalars['String']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  mimeType?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1531,7 +1522,7 @@ export type MutationSetHrKarkunEmploymentInfoArgs = {
 
 export type MutationSetHrKarkunProfileImageArgs = {
   _id: Scalars['String']['input'];
-  imageId: Scalars['String']['input'];
+  imageData: Scalars['String']['input'];
 };
 
 
@@ -1587,13 +1578,13 @@ export type MutationSetSecurityUserPermissionsArgs = {
 
 export type MutationSetSecurityVisitorImageArgs = {
   _id: Scalars['String']['input'];
-  imageId: Scalars['String']['input'];
+  imageData: Scalars['String']['input'];
 };
 
 
 export type MutationSetStockItemImageArgs = {
   _id: Scalars['String']['input'];
-  imageId: Scalars['String']['input'];
+  imageData: Scalars['String']['input'];
   physicalStoreId: Scalars['String']['input'];
 };
 
@@ -2252,6 +2243,8 @@ export type PersonSharedDataType = {
   imageId?: Maybe<Scalars['String']['output']>;
   imageThumbnail?: Maybe<Attachment>;
   imageThumbnailId?: Maybe<Scalars['String']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
   imageVectorData?: Maybe<PersonImageVectorDataType>;
   meansOfEarning?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
@@ -3067,15 +3060,15 @@ export type SecurityLogType = {
   dataSource?: Maybe<Scalars['String']['output']>;
   dataSourceDetail?: Maybe<Scalars['String']['output']>;
   operationBy?: Maybe<Scalars['String']['output']>;
-  operationByImageId?: Maybe<Scalars['String']['output']>;
-  operationByImageThumbnailId?: Maybe<Scalars['String']['output']>;
+  operationByImageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  operationByImageUrl?: Maybe<Scalars['String']['output']>;
   operationByName?: Maybe<Scalars['String']['output']>;
   operationDetails?: Maybe<Scalars['JSONObject']['output']>;
   operationTime?: Maybe<Scalars['String']['output']>;
   operationType?: Maybe<Scalars['String']['output']>;
   userId?: Maybe<Scalars['String']['output']>;
-  userImageId?: Maybe<Scalars['String']['output']>;
-  userImageThumbnailId?: Maybe<Scalars['String']['output']>;
+  userImageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  userImageUrl?: Maybe<Scalars['String']['output']>;
   userName?: Maybe<Scalars['String']['output']>;
 };
 
@@ -3281,7 +3274,7 @@ export type StockItem = {
   currentStockLevel?: Maybe<Scalars['Float']['output']>;
   details?: Maybe<Scalars['String']['output']>;
   formattedName?: Maybe<Scalars['String']['output']>;
-  imageId?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
   issuanceFormsCount?: Maybe<Scalars['Float']['output']>;
   minStockLevel?: Maybe<Scalars['Float']['output']>;
   name?: Maybe<Scalars['String']['output']>;
@@ -3427,8 +3420,8 @@ export type WorkspaceCommitteeMemberType = {
   hasChatAccount?: Maybe<Scalars['Boolean']['output']>;
   hasDiscussionAccess?: Maybe<Scalars['Boolean']['output']>;
   hasLoginAccount?: Maybe<Scalars['Boolean']['output']>;
-  imageId?: Maybe<Scalars['String']['output']>;
-  imageThumbnailId?: Maybe<Scalars['String']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
   isCoordinator?: Maybe<Scalars['Boolean']['output']>;
   karkunId?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
@@ -3450,8 +3443,8 @@ export type WorkspaceKarkunType = {
   _id?: Maybe<Scalars['String']['output']>;
   cnicNumber?: Maybe<Scalars['String']['output']>;
   contactNumber1?: Maybe<Scalars['String']['output']>;
-  imageId?: Maybe<Scalars['String']['output']>;
-  imageThumbnailId?: Maybe<Scalars['String']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   parentName?: Maybe<Scalars['String']['output']>;
 };

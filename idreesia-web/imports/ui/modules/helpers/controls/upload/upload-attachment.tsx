@@ -2,11 +2,14 @@ import React from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import type { UploadChangeParam, UploadFile } from 'antd/es/upload';
 
+import type { AttachmentCategoryValue } from 'meteor/idreesia-common/constants';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { Button, Upload } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 interface Props {
+  /** What the file belongs to - decides where it is stored. */
+  category: AttachmentCategoryValue;
   accept?: string;
   onUploadFinish?(attachmentId: string): void;
   disabled?: boolean;
@@ -14,6 +17,7 @@ interface Props {
 }
 
 const UploadAttachment = ({
+  category,
   accept = '*',
   onUploadFinish = noop,
   disabled = false,
@@ -23,6 +27,7 @@ const UploadAttachment = ({
     accept={accept}
     name="file"
     action="/upload-file"
+    data={{ category }}
     showUploadList={false}
     onChange={(info: UploadChangeParam<UploadFile>) => {
       if (info.file.status === 'done') {

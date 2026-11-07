@@ -4,6 +4,7 @@ import {
   PurchaseForms,
   StockAdjustments,
 } from 'meteor/idreesia-common/server/collections/inventory';
+import { removeStockItemImageFiles } from 'meteor/idreesia-common/server/business-logic/inventory/stock-item-images';
 
 interface ItemEntry extends Record<string, unknown> {
   stockItemId: string;
@@ -208,6 +209,13 @@ export async function mergeStockItems(
   await mergeStockAdjustments(_idToKeep, _idsToMerge, physicalStoreId);
   await mergeStartingStockLevels(_idToKeep, _idsToMerge, physicalStoreId);
   await recalculateStockLevels(_idToKeep, physicalStoreId);
+
+  const mergedItems = await StockItems.find({
+    _id: { $in: _idsToMerge },
+  }).fetchAsync();
+  for (const mergedItem of mergedItems) {
+    await removeStockItemImageFiles(mergedItem);
+  }
 
   return StockItems.removeAsync({
     _id: { $in: _idsToMerge },

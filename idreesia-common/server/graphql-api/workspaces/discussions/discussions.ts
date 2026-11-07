@@ -24,8 +24,8 @@ type DiscussionMessageType {
   sentAt: String
   senderName: String
   senderId: String
-  senderImageId: String
-  senderImageThumbnailId: String
+  senderImageUrl: String
+  senderImageThumbnailUrl: String
   isOwn: Boolean
   isSystem: Boolean
   attachments: [DiscussionAttachmentType]
@@ -61,8 +61,8 @@ type DiscussionMemberType {
   # Chat username, used in @mentions.
   username: String
   name: String
-  imageId: String
-  imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
 }
 
 type DiscussionInfoType {

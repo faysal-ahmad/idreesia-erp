@@ -15,8 +15,8 @@ export interface KarkunSelectionItem {
   parentName?: string | null;
   cnicNumber?: string | null;
   contactNumber1?: string | null;
-  imageId?: string | null;
-  imageThumbnailId?: string | null;
+  imageUrl?: string | null;
+  imageThumbnailUrl?: string | null;
 }
 
 export type KarkunSelectionPageParams = PageParams;
@@ -135,8 +135,8 @@ const KarkunSelectionList = ({
           person={{
             _id: record._id,
             name: record.name ?? '',
-            imageId: record.imageId,
-            imageThumbnailId: record.imageThumbnailId,
+            imageUrl: record.imageUrl,
+            imageThumbnailUrl: record.imageThumbnailUrl,
           }}
         />
       ),

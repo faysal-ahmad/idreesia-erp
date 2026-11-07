@@ -86,7 +86,7 @@ extend type Mutation {
   ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
-  setHrKarkunProfileImage(_id: String!, imageId: String!): PersonType
+  setHrKarkunProfileImage(_id: String!, imageData: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   addHrKarkunAttachment(_id: String!, attachmentId: String!): PersonType

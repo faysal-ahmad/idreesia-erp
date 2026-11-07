@@ -2,6 +2,8 @@ import sharp from 'sharp';
 
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 
+import { readAttachmentData } from './stored-attachments';
+
 // 2x the largest avatar display size (80px, in person-name.tsx) for retina.
 const THUMBNAIL_SIZE = 160;
 const THUMBNAIL_JPEG_QUALITY = 80;
@@ -11,11 +13,12 @@ export async function generateImageThumbnail(
 ): Promise<string | null> {
   try {
     const attachment = await Attachments.findOneAsync(attachmentId);
-    if (!attachment || !attachment.mimeType.startsWith('image/')) {
+    const bytes = await readAttachmentData(attachment);
+    if (!attachment || !bytes || !attachment.mimeType.startsWith('image/')) {
       return null;
     }
 
-    const thumbnailBuffer = await sharp(Buffer.from(attachment.data, 'base64'))
+    const thumbnailBuffer = await sharp(bytes)
       .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE, { fit: 'cover' })
       .jpeg({ quality: THUMBNAIL_JPEG_QUALITY })
       .toBuffer();

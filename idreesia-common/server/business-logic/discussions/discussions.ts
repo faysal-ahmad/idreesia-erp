@@ -30,6 +30,11 @@ import {
   type MappedChatAttachment,
 } from 'meteor/idreesia-common/server/chat';
 import { withChatUserCredentials } from 'meteor/idreesia-common/server/business-logic/common/chat-user-credentials';
+import {
+  getPersonImageUrls,
+  type PersonImageFields,
+  type PersonImageUrls,
+} from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import {
   Attachments,
@@ -67,8 +72,8 @@ export interface DiscussionMessage {
   /** The sender's chat user id. */
   senderId: string | null;
   /** The sender's profile image (chat user → ERP user → person). */
-  senderImageId: string | null;
-  senderImageThumbnailId: string | null;
+  senderImageUrl: string | null;
+  senderImageThumbnailUrl: string | null;
   isOwn: boolean;
   isSystem: boolean;
   attachments: MappedChatAttachment[];
@@ -222,8 +227,8 @@ const mapMessage = (
       sentAt: toIsoString(message.ts),
       senderName: null,
       senderId: null,
-      senderImageId: null,
-      senderImageThumbnailId: null,
+      senderImageUrl: null,
+      senderImageThumbnailUrl: null,
       isOwn: false,
       isSystem: true,
       attachments: [],
@@ -238,8 +243,8 @@ const mapMessage = (
     sentAt: toIsoString(message.ts),
     senderName: message.u?.name || message.u?.username || null,
     senderId: message.u?._id ?? null,
-    senderImageId: null,
-    senderImageThumbnailId: null,
+    senderImageUrl: null,
+    senderImageThumbnailUrl: null,
     isOwn: !!actor.chatUserId && message.u?._id === actor.chatUserId,
     isSystem: false,
     attachments: (message.attachments ?? [])
@@ -261,10 +266,7 @@ const mapMessage = (
 // Profile images of chat users: chat user → ERP user (chatUserId) →
 // person (personId) → shared profile image. One lookup per collection.
 const getChatUserImages = async (chatUserIds: string[]) => {
-  const images = new Map<
-    string,
-    { imageId: string; imageThumbnailId: string | null }
-  >();
+  const images = new Map<string, PersonImageUrls>();
   const uniqueIds = [...new Set(chatUserIds.filter(Boolean))];
   if (uniqueIds.length === 0) return images;
 
@@ -280,17 +282,23 @@ const getChatUserImages = async (chatUserIds: string[]) => {
   const people = (await People.find(
     { _id: { $in: personIds } },
     {
-      fields: { 'sharedData.imageId': 1, 'sharedData.imageThumbnailId': 1 },
+      fields: {
+        'sharedData.imageKey': 1,
+        'sharedData.imageThumbnailKey': 1,
+        'sharedData.imageId': 1,
+        'sharedData.imageThumbnailId': 1,
+      },
     }
   ).fetchAsync()) as Array<{
     _id: string;
-    sharedData?: { imageId?: string; imageThumbnailId?: string };
+    sharedData?: PersonImageFields;
   }>;
   const personById = new Map(people.map(person => [person._id, person]));
 
-  // A thumbnail id can point to an attachment that no longer exists; only
-  // hand out thumbnails that do, so callers fall back to the full image.
+  // A legacy thumbnail id can point to an attachment that no longer exists;
+  // only hand out thumbnails that do, so callers fall back to the full image.
   const thumbnailIds = people
+    .filter(person => !person.sharedData?.imageKey)
     .map(person => person.sharedData?.imageThumbnailId)
     .filter((id): id is string => !!id);
   const existingThumbnailIds = new Set(
@@ -308,16 +316,17 @@ const getChatUserImages = async (chatUserIds: string[]) => {
     const shared = user.personId
       ? personById.get(user.personId)?.sharedData
       : undefined;
-    if (user.chatUserId && shared?.imageId) {
-      const thumbnailId = shared.imageThumbnailId;
-      images.set(user.chatUserId, {
-        imageId: shared.imageId,
-        imageThumbnailId:
-          thumbnailId && existingThumbnailIds.has(thumbnailId)
-            ? thumbnailId
-            : null,
-      });
-    }
+    if (!user.chatUserId || !shared) return;
+
+    const thumbnailId = shared.imageThumbnailId;
+    const urls = getPersonImageUrls({
+      ...shared,
+      imageThumbnailId:
+        thumbnailId && existingThumbnailIds.has(thumbnailId)
+          ? thumbnailId
+          : null,
+    });
+    if (urls.imageUrl) images.set(user.chatUserId, urls);
   });
   return images;
 };
@@ -333,8 +342,8 @@ const addSenderImages = async (messages: DiscussionMessage[]) => {
     if (!image) return message;
     return {
       ...message,
-      senderImageId: image.imageId,
-      senderImageThumbnailId: image.imageThumbnailId,
+      senderImageUrl: image.imageUrl,
+      senderImageThumbnailUrl: image.imageThumbnailUrl,
     };
   });
 };
@@ -343,8 +352,8 @@ export interface DiscussionMember {
   /** Chat username, used in @mentions. */
   username: string;
   name: string | null;
-  imageId: string | null;
-  imageThumbnailId: string | null;
+  imageUrl: string | null;
+  imageThumbnailUrl: string | null;
 }
 
 /**
@@ -368,8 +377,8 @@ export const getDiscussionMembers = async (
       return {
         username: member.username!,
         name: member.name ?? null,
-        imageId: image?.imageId ?? null,
-        imageThumbnailId: image?.imageThumbnailId ?? null,
+        imageUrl: image?.imageUrl ?? null,
+        imageThumbnailUrl: image?.imageThumbnailUrl ?? null,
       };
     })
     .sort((a, b) =>

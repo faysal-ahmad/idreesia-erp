@@ -6,6 +6,7 @@ export {
 } from './access-management/permission-selection';
 
 export { default as TakePicture } from './picture/take-picture';
+export { default as readImageFile } from './picture/read-image-file';
 export { default as SearchByPicture } from './picture/search-by-picture';
 export { default as UploadAttachment } from './upload/upload-attachment';
 export { default as AttachmentsList } from './attachments/attachments-list';

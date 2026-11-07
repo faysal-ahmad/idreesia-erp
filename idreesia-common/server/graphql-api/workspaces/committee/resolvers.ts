@@ -1,6 +1,7 @@
 import { Committees } from 'meteor/idreesia-common/server/collections/hr';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import {
   addCommitteeMember,
   getCommitteeMemberAccess,
@@ -33,6 +34,8 @@ interface PersonDocument {
     contactNumber2?: string;
     imageId?: string;
     imageThumbnailId?: string;
+    imageKey?: string;
+    imageThumbnailKey?: string;
   };
 }
 
@@ -42,8 +45,7 @@ const toWorkspaceKarkun = (person: PersonDocument) => ({
   parentName: person.sharedData?.parentName,
   cnicNumber: person.sharedData?.cnicNumber,
   contactNumber1: person.sharedData?.contactNumber1,
-  imageId: person.sharedData?.imageId,
-  imageThumbnailId: person.sharedData?.imageThumbnailId,
+  ...getPersonImageUrls(person.sharedData),
 });
 
 const resolvers: ResolverMap = {
@@ -78,8 +80,7 @@ const resolvers: ResolverMap = {
           hasChatAccount: memberAccess?.hasChatAccount ?? false,
           hasDiscussionAccess: memberAccess?.hasDiscussionAccess ?? null,
           name: shared?.name,
-          imageId: shared?.imageId,
-          imageThumbnailId: shared?.imageThumbnailId,
+          ...getPersonImageUrls(shared),
           contactNumber1: shared?.contactNumber1,
           contactNumber2: shared?.contactNumber2,
         };

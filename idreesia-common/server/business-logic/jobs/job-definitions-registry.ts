@@ -4,6 +4,8 @@ import { addMonths, format, startOfMonth } from 'date-fns';
 import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries';
 import { backfillImageVectorData } from 'meteor/idreesia-common/server/business-logic/common/backfill-image-vector-data';
 import { backfillImageThumbnails } from 'meteor/idreesia-common/server/business-logic/common/backfill-image-thumbnails';
+import { moveImagesToStorage } from 'meteor/idreesia-common/server/business-logic/common/move-images-to-storage';
+import { removeMigratedImagesFromDb } from 'meteor/idreesia-common/server/business-logic/common/remove-migrated-images-from-db';
 import { createTodayDutyDayAttendances } from 'meteor/idreesia-common/server/business-logic/hr/duty-planning';
 import { getSystemUser } from './system-user';
 import { createProgressReporter } from './report-progress';
@@ -68,6 +70,28 @@ const JOB_DEFINITIONS_REGISTRY: JobDefinitionSeed[] = [
     // as they're set (see People.updatePerson).
     handler: async agendaJob => {
       await backfillImageThumbnails(createProgressReporter(agendaJob));
+    },
+  },
+  {
+    name: 'move-images-to-storage',
+    displayName: 'Move Images to Storage',
+    // No defaultSchedule - manual-only (Run Now). A one-time copy of existing
+    // files from Attachments into object storage - people's profile photos,
+    // stock item images, and purchase form / issuance form / karkun
+    // attachments; new uploads go there directly. Copy only - see
+    // remove-migrated-images-from-db.
+    handler: async agendaJob => {
+      await moveImagesToStorage(createProgressReporter(agendaJob));
+    },
+  },
+  {
+    name: 'remove-migrated-images-from-db',
+    displayName: 'Remove Migrated Images from DB',
+    // No defaultSchedule - manual-only (Run Now), once the copied files have
+    // been checked. Removes from Mongo the content of files confirmed to
+    // exist in object storage.
+    handler: async agendaJob => {
+      await removeMigratedImagesFromDb(createProgressReporter(agendaJob));
     },
   },
 ];

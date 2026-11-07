@@ -19,7 +19,7 @@ export interface CardKarkun {
   karkunId: string;
   name: string;
   bloodGroup?: string | null;
-  imageData?: string | null;
+  imageUrl?: string | null;
   dutyName: string;
   shiftNames: string;
   percentage: number;
@@ -67,7 +67,7 @@ export const useCardKarkuns = (params: SheetParams & { karkunIds?: string }) => 
       karkunId: card.karkunId,
       name: sharedData?.name ?? card.name ?? '',
       bloodGroup: sharedData?.bloodGroup,
-      imageData: sharedData?.image?.data,
+      imageUrl: sharedData?.imageUrl,
       dutyName: card.duty?.name ?? '',
       shiftNames: (card.shiftNames ?? []).filter(Boolean).join(', '),
       percentage: card.percentage ?? 0,

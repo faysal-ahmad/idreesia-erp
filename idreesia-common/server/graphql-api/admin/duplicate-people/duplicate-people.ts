@@ -7,8 +7,8 @@ type DuplicatePersonSummaryType {
   cnicNumber: String
   contactNumber1: String
   contactNumber2: String
-  imageId: String
-  imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
   updatedAt: String
 }
 

@@ -40,15 +40,11 @@ const DUTY_ATTENDANCE_SHEET: TypedDocumentNode<
         _id
         sharedData {
           name
-          imageId
-          imageThumbnailId
+          imageUrl
+          imageThumbnailUrl
           cnicNumber
           contactNumber1
           bloodGroup
-          image {
-            _id
-            data
-          }
         }
       }
       duty {

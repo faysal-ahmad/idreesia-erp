@@ -7,6 +7,11 @@ import type { Request, Response } from 'express';
 
 import { kebabCase } from 'meteor/idreesia-common/utilities/lodash';
 import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
+import {
+  createStoredAttachment,
+  getAttachmentDownloadUrl,
+  isAttachmentCategory,
+} from 'meteor/idreesia-common/server/business-logic/common/stored-attachments';
 import { exportKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/karkuns-exporter';
 import { exportVisitors } from 'meteor/idreesia-common/server/business-logic/security/visitors-exporter';
 import {
@@ -105,7 +110,11 @@ export function setupRestEndpoints() {
         const { attachmentId } = req.query;
         if (typeof attachmentId === 'string') {
           const attachment = await Attachments.findOneAsync(attachmentId);
-          if (attachment) {
+          if (attachment?.fileKey) {
+            // Stored privately in object storage: hand out a short-lived
+            // presigned URL rather than streaming it through this server.
+            res.redirect(302, await getAttachmentDownloadUrl(attachment.fileKey));
+          } else if (attachment?.data) {
             const imgData = Buffer.from(attachment.data, 'base64');
             res.removeHeader('Pragma');
             res.removeHeader('Expires');
@@ -135,12 +144,19 @@ export function setupRestEndpoints() {
         const { file } = req as Request & {
           file: Express.Multer.File;
         };
-        const attachment = {
+        // Sent as a multipart field (or query param) by UploadAttachment.
+        const category = req.body?.category ?? req.query.category;
+        if (!file || !isAttachmentCategory(category)) {
+          res.writeHead(400);
+          res.end('A file and a valid attachment category are required.');
+          return;
+        }
+        const attachmentId = await createStoredAttachment({
+          category,
           name: file.originalname,
           mimeType: file.mimetype,
-          data: file.buffer.toString('base64'),
-        };
-        const attachmentId = await Attachments.insertAsync(attachment);
+          body: file.buffer,
+        });
         res.writeHead(200);
         res.end(attachmentId);
       })
@@ -206,13 +222,21 @@ export function setupRestEndpoints() {
       '/upload-base64-file',
       bodyParser.json({ limit: '5mb' }),
       Meteor.bindEnvironment(async (req: Request, res: Response) => {
-        const { name, mimeType, data } = req.body;
-        const attachment = {
+        const { name, mimeType, data, category } = req.body;
+        if (typeof data !== 'string' || !isAttachmentCategory(category)) {
+          res.status(400).send(
+            JSON.stringify({
+              error: 'Data and a valid attachment category are required.',
+            })
+          );
+          return;
+        }
+        const attachmentId = await createStoredAttachment({
+          category,
           name,
-          mimeType,
-          data,
-        };
-        const attachmentId = await Attachments.insertAsync(attachment);
+          mimeType: mimeType || 'image/jpeg',
+          body: Buffer.from(data, 'base64'),
+        });
         res.send(JSON.stringify({ attachmentId }));
       })
     );

@@ -17,20 +17,17 @@ export class List extends Component<ListProps> {
     dataIndex: 'name',
     key: 'name',
     render: (_text: unknown, record: MehfilKarkun) => {
-      const image = record.karkun?.sharedData?.image;
-      const imageThumbnail = record.karkun?.sharedData?.imageThumbnail;
       const personNameData = {
         _id: record._id ?? '',
         name: record.karkun?.sharedData?.name ?? '',
-        ...(image?.data ? { image: { data: image.data } } : {}),
-        ...(imageThumbnail?.data
-          ? { imageThumbnail: { data: imageThumbnail.data } }
-          : {}),
+        imageUrl: record.karkun?.sharedData?.imageUrl,
+        imageThumbnailUrl: record.karkun?.sharedData?.imageThumbnailUrl,
       };
 
       return (
         <PersonName
           person={personNameData}
+          plainImage
           onPersonNameClicked={() => {}}
         />
       );

@@ -28,8 +28,8 @@ export default class AttendanceSheet extends Component<AttendanceSheetProps> {
           person={{
             _id: record.karkunId,
             name: sharedData?.name ?? record.name ?? '',
-            imageId: sharedData?.imageId ?? undefined,
-            imageThumbnailId: sharedData?.imageThumbnailId ?? undefined,
+            imageUrl: sharedData?.imageUrl ?? undefined,
+            imageThumbnailUrl: sharedData?.imageThumbnailUrl ?? undefined,
           }}
         />
       );

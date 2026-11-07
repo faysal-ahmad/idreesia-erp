@@ -295,9 +295,9 @@ const List = ({
               ? {
                   _id: record.karkun._id,
                   name: record.karkun.sharedData.name,
-                  imageId: record.karkun.sharedData.imageId ?? undefined,
-                  imageThumbnailId:
-                    record.karkun.sharedData.imageThumbnailId ?? undefined,
+                  imageUrl: record.karkun.sharedData.imageUrl ?? undefined,
+                  imageThumbnailUrl:
+                    record.karkun.sharedData.imageThumbnailUrl ?? undefined,
                 }
               : undefined
           }

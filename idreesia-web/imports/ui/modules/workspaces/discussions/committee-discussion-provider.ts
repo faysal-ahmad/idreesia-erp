@@ -1,6 +1,5 @@
 import type { ApolloClient } from '@apollo/client';
 import { Accounts } from 'meteor/accounts-base';
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import type { WorkspaceDiscussionMessageFieldsFragment } from 'meteor/idreesia-common/types/client-operations';
 
 import type {
@@ -56,10 +55,8 @@ const mapMessage = (
   sentAt: message.sentAt ?? null,
   senderName: message.senderName ?? null,
   senderId: message.senderId ?? null,
-  senderAvatarUrl: message.senderImageId
-    ? getDownloadUrl(message.senderImageThumbnailId ?? message.senderImageId) ??
-      null
-    : null,
+  senderAvatarUrl:
+    message.senderImageThumbnailUrl ?? message.senderImageUrl ?? null,
   isOwn: !!message.isOwn,
   isSystem: !!message.isSystem,
   attachments: (message.attachments ?? []).filter(notNull).map(attachment => ({
@@ -137,9 +134,7 @@ export default class CommitteeDiscussionProvider implements DiscussionDataProvid
       .map(member => ({
         username: member.username,
         name: member.name ?? null,
-        avatarUrl: member.imageId
-          ? getDownloadUrl(member.imageThumbnailId ?? member.imageId) ?? null
-          : null,
+        avatarUrl: member.imageThumbnailUrl ?? member.imageUrl ?? null,
       }));
   }
 

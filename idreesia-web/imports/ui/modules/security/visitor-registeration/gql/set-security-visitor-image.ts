@@ -9,11 +9,12 @@ const SET_SECURITY_VISITOR_IMAGE: TypedDocumentNode<
   SetSecurityVisitorImageMutation,
   SetSecurityVisitorImageMutationVariables
 > = gql`
-  mutation setSecurityVisitorImage($_id: String!, $imageId: String!) {
-    setSecurityVisitorImage(_id: $_id, imageId: $imageId) {
+  mutation setSecurityVisitorImage($_id: String!, $imageData: String!) {
+    setSecurityVisitorImage(_id: $_id, imageData: $imageData) {
       _id
       sharedData {
-        imageId
+        imageUrl
+        imageThumbnailUrl
       }
     }
   }

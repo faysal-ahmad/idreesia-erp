@@ -65,15 +65,15 @@ export const DUTY_PLAN_DAYS: TypedDocumentNode<
             karkunId
             name
             off
-            imageId
-            imageThumbnailId
+            imageUrl
+            imageThumbnailUrl
             attendance
           }
           addedKarkuns {
             karkunId
             name
-            imageId
-            imageThumbnailId
+            imageUrl
+            imageThumbnailUrl
             attendance
           }
           addedKarkunIds

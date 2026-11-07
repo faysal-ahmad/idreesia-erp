@@ -27,8 +27,8 @@ export const WORKSPACE_COMMITTEE_MEMBERS: TypedDocumentNode<
         karkunId
         isCoordinator
         name
-        imageId
-        imageThumbnailId
+        imageUrl
+        imageThumbnailUrl
         contactNumber1
         contactNumber2
         hasChatAccount
@@ -65,8 +65,8 @@ export const WORKSPACE_COMMITTEE_KARKUN_SEARCH: TypedDocumentNode<
         parentName
         cnicNumber
         contactNumber1
-        imageId
-        imageThumbnailId
+        imageUrl
+        imageThumbnailUrl
       }
     }
   }

@@ -7,8 +7,8 @@ type WorkspaceCommitteeMemberType {
   karkunId: String
   isCoordinator: Boolean
   name: String
-  imageId: String
-  imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
   contactNumber1: String
   contactNumber2: String
   # The person has an ERP user.
@@ -38,8 +38,8 @@ type WorkspaceKarkunType {
   parentName: String
   cnicNumber: String
   contactNumber1: String
-  imageId: String
-  imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
 }
 
 type PagedWorkspaceKarkunType {

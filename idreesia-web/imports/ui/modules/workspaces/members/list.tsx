@@ -134,8 +134,8 @@ const List = () => {
             person={{
               _id: record.karkunId,
               name: record.name ?? '',
-              imageId: record.imageId,
-              imageThumbnailId: record.imageThumbnailId,
+              imageUrl: record.imageUrl,
+              imageThumbnailUrl: record.imageThumbnailUrl,
             }}
           />
           {record.isCoordinator ? <Tag color="gold">Coordinator</Tag> : null}

@@ -11,7 +11,6 @@ import {
   setActiveModuleName,
   setActiveSubModuleName,
 } from 'meteor/idreesia-common/action-creators';
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import ChangePasswordForm from './change-password-form';
 
 const ContainerStyle: CSSProperties = {
@@ -69,8 +68,8 @@ const UserMenu = ({ history }: Props) => {
   const userName = user.karkun?.sharedData?.name ?? user.displayName;
 
   let avatar = <Avatar size="large" icon={<UserOutlined />} />;
-  if (user.karkun?.sharedData?.imageId) {
-    const url = getDownloadUrl(user.karkun.sharedData.imageId);
+  if (user.karkun?.sharedData?.imageUrl) {
+    const url = user.karkun.sharedData.imageUrl;
     avatar = <Avatar size="large" src={url} />;
   }
 

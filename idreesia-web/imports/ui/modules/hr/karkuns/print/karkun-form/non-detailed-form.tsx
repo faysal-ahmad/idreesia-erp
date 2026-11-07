@@ -3,7 +3,6 @@ import Barcode, { type Options as BarcodeOptions } from 'react-barcode';
 import { Col, Divider, Row } from 'antd';
 
 import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import type { HrKarkunByIdForKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { DisplayItem } from '/imports/ui/modules/helpers/controls';
 
@@ -31,7 +30,7 @@ export class NonDetailedForm extends Component<Props> {
   getImageColumn = () => {
     const { hrKarkunById } = this.props;
     if (!hrKarkunById) return null;
-    const url = getDownloadUrl(hrKarkunById.sharedData?.imageId);
+    const url = hrKarkunById.sharedData?.imageUrl;
     return url ? (
       <Col order={2}>
         <img src={url} style={{ width: '200px' }} alt="Karkun" />

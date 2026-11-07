@@ -262,7 +262,7 @@ const List = ({ history, location }: Props) => {
           : paths.stockAdjustmentsEditFormPath(physicalStoreId, formId);
         return getNameWithImageRenderer(
           formId,
-          record.refStockItem?.imageId ?? undefined,
+          record.refStockItem?.imageUrl,
           record.refStockItem?.formattedName ?? '',
           path,
           'picture'

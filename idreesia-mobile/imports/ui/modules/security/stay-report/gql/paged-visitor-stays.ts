@@ -25,8 +25,8 @@ export const MOBILE_PAGED_VISITOR_STAYS: TypedDocumentNode<
           _id
           sharedData {
             name
-            imageId
-            imageThumbnailId
+            imageUrl
+            imageThumbnailUrl
           }
           visitorData {
             city

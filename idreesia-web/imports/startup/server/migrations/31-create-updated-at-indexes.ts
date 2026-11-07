@@ -6,7 +6,8 @@ import { Users } from 'meteor/idreesia-common/server/collections/admin';
 // import { Vouchers } from 'meteor/idreesia-common/server/collections/accounts';
 // Karkuns collection has since been removed - its data now lives on People.
 // import { Karkuns } from 'meteor/idreesia-common/server/collections/hr';
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+// Visitors collection has since been dropped - see migration 59.
+// import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 
 Migrations.add({
   version: 31,
@@ -22,9 +23,10 @@ Migrations.add({
     //   { background: true }
     // );
     // await Karkuns.rawCollection().createIndex({ updatedAt: 1 }, { background: true });
-    await Visitors.rawCollection().createIndex(
-      { updatedAt: 1 },
-      { background: true }
-    );
+    // Visitors collection has since been dropped.
+    // await Visitors.rawCollection().createIndex(
+    //   { updatedAt: 1 },
+    //   { background: true }
+    // );
   },
 });

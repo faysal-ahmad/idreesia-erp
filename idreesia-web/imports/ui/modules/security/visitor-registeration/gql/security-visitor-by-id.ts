@@ -25,7 +25,7 @@ const SECURITY_VISITOR_BY_ID: TypedDocumentNode<
         permanentAddress
         educationalQualification
         meansOfEarning
-        imageId
+        imageUrl
         tagIds
         tags {
           _id

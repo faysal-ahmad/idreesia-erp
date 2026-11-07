@@ -32,8 +32,8 @@ const HR_COMMITTEE_KARKUN_SEARCH: TypedDocumentNode<
           parentName
           cnicNumber
           contactNumber1
-          imageId
-          imageThumbnailId
+          imageUrl
+          imageThumbnailUrl
         }
       }
     }
@@ -108,8 +108,8 @@ const AddMemberDrawer = ({ committeeId, memberIds, onClose }: Props) => {
             parentName: person.sharedData?.parentName,
             cnicNumber: person.sharedData?.cnicNumber,
             contactNumber1: person.sharedData?.contactNumber1,
-            imageId: person.sharedData?.imageId,
-            imageThumbnailId: person.sharedData?.imageThumbnailId,
+            imageUrl: person.sharedData?.imageUrl,
+            imageThumbnailUrl: person.sharedData?.imageThumbnailUrl,
           },
         ]
       : []

@@ -2,7 +2,6 @@ import React, { useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { UserOutlined } from '@ant-design/icons';
 
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from 'antd';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
@@ -26,7 +25,7 @@ const TextDivStyle: CSSProperties = {
 interface Visitor {
   _id: string;
   name: string;
-  imageId?: string;
+  imageUrl?: string;
 }
 
 interface VisitorNameProps {
@@ -57,10 +56,9 @@ const VisitorName = ({ visitor, additionalInfo, onVisitorNameClicked }: VisitorN
     <span>{additionalInfo}</span>
   ) : null;
 
-  let imageUrl: string | undefined;
   let avatarNode = <Avatar shape="square" size="large" icon={<UserOutlined />} />;
-  if (visitor.imageId) {
-    imageUrl = getDownloadUrl(visitor.imageId) ?? undefined;
+  const { imageUrl } = visitor;
+  if (imageUrl) {
     avatarNode = (
       <Avatar
         shape="square"

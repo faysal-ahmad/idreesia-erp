@@ -161,9 +161,8 @@ export default class PeopleList extends Component<Props, State> {
       const personNameData = {
         _id: record._id,
         name: record.sharedData?.name,
-        imageId: record.sharedData?.imageId,
-        image: record.sharedData?.image,
-        imageThumbnail: record.sharedData?.imageThumbnail,
+        imageUrl: record.sharedData?.imageUrl,
+        imageThumbnailUrl: record.sharedData?.imageThumbnailUrl,
       };
 
       return (

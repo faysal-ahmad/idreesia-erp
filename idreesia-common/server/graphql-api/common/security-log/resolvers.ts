@@ -1,5 +1,9 @@
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import {
+  getPersonImageUrls,
+  type PersonImageFields,
+} from 'meteor/idreesia-common/server/business-logic/common/person-images';
 
 interface SecurityLogType {
   userId?: string;
@@ -7,10 +11,8 @@ interface SecurityLogType {
 }
 
 interface PersonRecord {
-  sharedData?: {
+  sharedData?: PersonImageFields & {
     name?: string;
-    imageId?: string;
-    imageThumbnailId?: string;
   };
 }
 
@@ -31,16 +33,14 @@ export default {
       return user?.displayName;
     },
 
-    userImageId: async (securityLogType: SecurityLogType) => {
+    userImageUrl: async (securityLogType: SecurityLogType) => {
       const { person } = await getUserPerson(securityLogType.userId);
-      if (person) return person.sharedData?.imageId;
-      return null;
+      return getPersonImageUrls(person?.sharedData).imageUrl;
     },
 
-    userImageThumbnailId: async (securityLogType: SecurityLogType) => {
+    userImageThumbnailUrl: async (securityLogType: SecurityLogType) => {
       const { person } = await getUserPerson(securityLogType.userId);
-      if (person) return person.sharedData?.imageThumbnailId;
-      return null;
+      return getPersonImageUrls(person?.sharedData).imageThumbnailUrl;
     },
 
     operationByName: async (securityLogType: SecurityLogType) => {
@@ -49,16 +49,14 @@ export default {
       return user?.displayName;
     },
 
-    operationByImageId: async (securityLogType: SecurityLogType) => {
+    operationByImageUrl: async (securityLogType: SecurityLogType) => {
       const { person } = await getUserPerson(securityLogType.operationBy);
-      if (person) return person.sharedData?.imageId;
-      return null;
+      return getPersonImageUrls(person?.sharedData).imageUrl;
     },
 
-    operationByImageThumbnailId: async (securityLogType: SecurityLogType) => {
+    operationByImageThumbnailUrl: async (securityLogType: SecurityLogType) => {
       const { person } = await getUserPerson(securityLogType.operationBy);
-      if (person) return person.sharedData?.imageThumbnailId;
-      return null;
+      return getPersonImageUrls(person?.sharedData).imageThumbnailUrl;
     },
   },
 };

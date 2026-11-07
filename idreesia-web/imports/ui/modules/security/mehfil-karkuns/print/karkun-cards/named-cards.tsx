@@ -50,9 +50,9 @@ export const Card = ({ mehfilKarkun, showDutyNameInUrdu }: CardProps) => {
     cardHeading = (showDutyNameInUrdu ? mehfilDuty.urduName : mehfilDuty.name) ?? '';
   }
 
-  const karkunImage = mehfilKarkun.karkun?.sharedData?.image ? (
+  const karkunImage = mehfilKarkun.karkun?.sharedData?.imageUrl ? (
     <img
-      src={`data:image/jpeg;base64,${mehfilKarkun.karkun.sharedData.image.data}`}
+      src={mehfilKarkun.karkun.sharedData.imageUrl}
       style={{ maxHeight: '100%', width: 'auto' }}
       alt={mehfilKarkun.karkun.sharedData.name ?? 'Karkun'}
     />

@@ -8,7 +8,7 @@ type StockItem {
   details: String
   unitOfMeasurement: String
   categoryId: String
-  imageId: String
+  imageUrl: String
   physicalStoreId: String
   startingStockLevel: Float
   minStockLevel: Float
@@ -96,7 +96,7 @@ extend type Mutation {
   @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
-  setStockItemImage(_id: String!, physicalStoreId: String!, imageId: String!): StockItem
+  setStockItemImage(_id: String!, physicalStoreId: String!, imageData: String!): StockItem
   @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 

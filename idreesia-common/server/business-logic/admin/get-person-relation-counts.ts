@@ -6,8 +6,6 @@ import {
   Teams,
 } from 'meteor/idreesia-common/server/collections/hr';
 import { MehfilKarkuns, VisitorStays } from 'meteor/idreesia-common/server/collections/security';
-import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
-import { Messages } from 'meteor/idreesia-common/server/collections/communication';
 import {
   IssuanceForms,
   PurchaseForms,
@@ -148,8 +146,6 @@ export async function getPersonRelationCounts(
     dutyDayAttendanceCounts,
     visitorStayCounts,
     mehfilKarkunCounts,
-    imdadRequestCounts,
-    messageCounts,
     issuanceFormCounts,
     purchaseFormCounts,
     stockAdjustmentCounts,
@@ -162,8 +158,6 @@ export async function getPersonRelationCounts(
     countByArrayField(DutyDayAttendances, 'karkuns', 'karkunId', personIds),
     countBySingleField(VisitorStays, 'visitorId', personIds),
     countBySingleField(MehfilKarkuns, 'karkunId', personIds),
-    countBySingleField(ImdadRequests, 'visitorId', personIds),
-    countByAnyField(Messages, ['karkunIds', 'visitorIds'], personIds),
     countByAnyField(IssuanceForms, ['issuedBy', 'issuedTo'], personIds),
     countByAnyField(PurchaseForms, ['receivedBy', 'purchasedBy'], personIds),
     countBySingleField(StockAdjustments, 'adjustedBy', personIds),
@@ -178,8 +172,6 @@ export async function getPersonRelationCounts(
     { name: 'Duty Day Attendances', countsById: dutyDayAttendanceCounts },
     { name: 'Stay History', countsById: visitorStayCounts },
     { name: 'Mehfil Assignments', countsById: mehfilKarkunCounts },
-    { name: 'Imdad Requests', countsById: imdadRequestCounts },
-    { name: 'Messages', countsById: messageCounts },
     { name: 'Issuance Forms', countsById: issuanceFormCounts },
     { name: 'Purchase Forms', countsById: purchaseFormCounts },
     { name: 'Stock Adjustments', countsById: stockAdjustmentCounts },

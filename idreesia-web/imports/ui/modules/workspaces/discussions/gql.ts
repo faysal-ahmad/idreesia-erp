@@ -39,8 +39,8 @@ const DISCUSSION_MESSAGE_FIELDS = gql`
     sentAt
     senderName
     senderId
-    senderImageId
-    senderImageThumbnailId
+    senderImageUrl
+    senderImageThumbnailUrl
     isOwn
     isSystem
     attachments {
@@ -86,8 +86,8 @@ export const WORKSPACE_DISCUSSION_MEMBERS: TypedDocumentNode<
     workspaceDiscussionMembers(committeeId: $committeeId) {
       username
       name
-      imageId
-      imageThumbnailId
+      imageUrl
+      imageThumbnailUrl
     }
   }
 `;

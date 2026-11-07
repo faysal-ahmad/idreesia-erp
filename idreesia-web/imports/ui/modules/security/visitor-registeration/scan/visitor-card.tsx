@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 import { Card } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 
 export interface CardPerson {
@@ -16,7 +15,7 @@ export interface CardPerson {
     cnicNumber?: string | null;
     contactNumber1?: string | null;
     contactNumber2?: string | null;
-    imageId?: string | null;
+    imageUrl?: string | null;
   } | null;
   visitorData?: {
     city?: string | null;
@@ -37,16 +36,16 @@ const VisitorCard = ({ person }: Props) => {
     cnicNumber,
     contactNumber1,
     contactNumber2,
-    imageId,
+    imageUrl,
   } = sharedData ?? {};
   const { city, country } = visitorData ?? {};
 
   // Either half can be missing, so join rather than assuming a "City, Country" pair.
   const location = [city, country].filter(Boolean).join(', ');
 
-  // The full image rather than imageThumbnailId: thumbnails are a 160x160 centre crop, and this
+  // The full image rather than imageThumbnailUrl: thumbnails are a 160x160 centre crop, and this
   // card exists so the operator can match a face against the person standing in front of them.
-  const url = getDownloadUrl(imageId);
+  const url = imageUrl;
 
   const handleClick = () => {
     if (!_id) return;

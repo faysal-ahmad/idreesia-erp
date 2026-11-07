@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import { Checkbox, Col, Divider, InputNumber, Row } from 'antd';
 
 import type { HrKarkunByIdForPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { DisplayItem, EhadDurationDisplay } from '/imports/ui/modules/helpers/controls';
 
 const barcodeOptions = {
@@ -34,7 +33,7 @@ interface Props {
 export class DetailedForm extends Component<Props> {
   getImageColumn = () => {
     const { hrKarkunById } = this.props;
-    const url = getDownloadUrl(hrKarkunById.sharedData?.imageId);
+    const url = hrKarkunById.sharedData?.imageUrl;
     return url ? (
       <Col order={2}>
         <img src={url} style={{ width: '200px' }} alt="Karkun" />

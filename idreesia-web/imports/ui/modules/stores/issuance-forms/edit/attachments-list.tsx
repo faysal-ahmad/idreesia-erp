@@ -5,6 +5,7 @@ import { useMutation } from '@apollo/client/react';
 import type { IssuanceFormByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
+import { AttachmentCategory } from 'meteor/idreesia-common/constants';
 import {
   ADD_ISSUANCE_FORM_ATTACHMENT,
   REMOVE_ISSUANCE_FORM_ATTACHMENT,
@@ -49,6 +50,7 @@ const AttachmentsList = ({ physicalStoreId, issuanceFormById }: Props) => {
 
   return (
     <AttachmentsListControl
+      category={AttachmentCategory.ISSUANCE_FORM}
       canEditAttachments
       canUploadDocument
       attachments={(issuanceFormById.attachments ?? undefined) as Parameters<typeof AttachmentsListControl>[0]['attachments']}

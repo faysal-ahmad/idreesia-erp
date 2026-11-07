@@ -20,7 +20,7 @@ const GeneralInfo = ({ history, person }: Props) => (
     handleCancel={() => history.push(paths.duplicatePeoplePath)}
     sideContent={
       <PersonPicture
-        imageId={person.sharedData?.imageId}
+        imageUrl={person.sharedData?.imageUrl}
         personName={person.sharedData?.name ?? undefined}
       />
     }

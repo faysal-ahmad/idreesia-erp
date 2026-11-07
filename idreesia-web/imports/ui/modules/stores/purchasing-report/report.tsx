@@ -57,7 +57,7 @@ interface LocationSummary {
 interface PurchaseSummaryItem {
   stockItemId: string;
   stockItemName: string;
-  stockItemImageId?: string;
+  stockItemImageUrl?: string;
   categoryName?: string;
   unitOfMeasurement?: string;
   byLocation: Record<string, LocationSummary>;
@@ -92,7 +92,7 @@ const PURCHASE_FORMS_BY_MONTH: TypedDocumentNode<
         refStockItem {
           _id
           name
-          imageId
+          imageUrl
           categoryName
           unitOfMeasurement
         }
@@ -126,7 +126,7 @@ const buildPurchaseSummary = (
             summaryItem = {
               stockItemId: item.stockItemId,
               stockItemName: refStockItem.name,
-              stockItemImageId: refStockItem.imageId ?? undefined,
+              stockItemImageUrl: refStockItem.imageUrl ?? undefined,
               categoryName: refStockItem.categoryName ?? undefined,
               unitOfMeasurement: refStockItem.unitOfMeasurement ?? undefined,
               byLocation: {},
@@ -325,7 +325,7 @@ const Report = ({
             _id: record.stockItemId,
             physicalStoreId,
             name: record.stockItemName,
-            imageId: record.stockItemImageId,
+            imageUrl: record.stockItemImageUrl,
           }}
         />
       ),

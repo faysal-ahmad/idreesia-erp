@@ -24,6 +24,7 @@ declare namespace Meteor {
   interface Settings {
     public?: {
       backendUrl?: string;
+      rocketChatUrl?: string;
       [key: string]: unknown;
     };
     private?: {

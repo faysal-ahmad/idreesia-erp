@@ -202,8 +202,8 @@ const List = ({
           person={{
             _id: record._id,
             name: record.sharedData.name,
-            imageId: record.sharedData.imageId ?? undefined,
-            imageThumbnailId: record.sharedData.imageThumbnailId ?? undefined,
+            imageUrl: record.sharedData.imageUrl ?? undefined,
+            imageThumbnailUrl: record.sharedData.imageThumbnailUrl ?? undefined,
           }}
           onPersonNameClicked={() => handleItemSelected(record)}
         />

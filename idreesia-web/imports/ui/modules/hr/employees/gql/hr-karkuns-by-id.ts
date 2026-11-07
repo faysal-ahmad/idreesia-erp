@@ -16,17 +16,10 @@ const HR_KARKUNS_BY_ID: TypedDocumentNode<
         name
         parentName
         cnicNumber
-        imageId
+        imageUrl
         contactNumber1
         contactNumber2
-        image {
-          _id
-          data
-        }
-        imageThumbnail {
-          _id
-          data
-        }
+        imageThumbnailUrl
       }
       karkunData {
         teams {

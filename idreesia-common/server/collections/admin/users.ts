@@ -8,6 +8,7 @@ import {
 } from 'meteor/idreesia-common/utilities/lodash';
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
+import { createChatUser } from 'meteor/idreesia-common/server/chat';
 
 type LooseRecord = Record<string, any>;
 
@@ -23,6 +24,7 @@ interface AppUser extends LooseRecord {
   permissions?: string[];
   instances?: string[];
   groups?: string[];
+  chatUserId?: string;
 }
 
 interface MappedUser extends LooseRecord {
@@ -107,12 +109,19 @@ interface UsersCollection extends Mongo.Collection<AppUser> {
     dataSource: string,
     dataSourceDetail?: string | null
   ): Promise<MappedUser>;
+  createChatAccount(
+    values: { userId: string },
+    user: UserRef,
+    dataSource: string,
+    dataSourceDetail?: string | null
+  ): Promise<MappedUser>;
 }
 
 declare const Accounts: {
   createUserAsync(options: LooseRecord): Promise<string>;
   findUserByUsername(userName?: string): Promise<AppUser | null>;
   setPasswordAsync(userId: string, password: string): Promise<void>;
+  setUsername(userId: string, newUsername: string): Promise<void>;
 };
 
 const Users = (Meteor as unknown as { users: UsersCollection }).users;
@@ -135,6 +144,7 @@ const mapUser = (user: AppUser): MappedUser => ({
   permissions: user.permissions || [],
   instances: user.instances || [],
   groups: user.groups || [],
+  chatUserId: user.chatUserId,
 });
 
 const buildPipeline = (params: LooseRecord): LooseRecord[] | UserSearchResult => {
@@ -248,18 +258,44 @@ Users.searchUsers = params => {
 // Common Create/Update methods for User.
 // Used from Admin/Outstation/Portals.
 // *******************************************************************
+
+// Letters, digits, '.', '-' and '_' only - the characters the chat server
+// accepts, so every ERP user name can also be used for a chat account.
+const USER_NAME_PATTERN = /^[0-9a-zA-Z._-]+$/;
+
+/**
+ * Validates a user name and checks that no other ERP user has it.
+ * `Accounts.findUserByUsername` ignores case, so `Ali` and `ali` clash.
+ * Returns the trimmed name to store.
+ */
+const assertUserNameAvailable = async (
+  userName: string,
+  excludeUserId?: string
+): Promise<string> => {
+  const trimmed = userName.trim();
+  if (!USER_NAME_PATTERN.test(trimmed)) {
+    throw new Error(
+      `User name '${trimmed}' may only contain letters, digits, '.', '-' and '_'.`
+    );
+  }
+
+  const existingUser = await Accounts.findUserByUsername(trimmed);
+  if (existingUser && existingUser._id !== excludeUserId) {
+    throw new Error(`User name '${trimmed}' is already in use.`);
+  }
+
+  return trimmed;
+};
+
 Users.createUser = async (
-  { userName, password, email, displayName, personId },
+  { userName: rawUserName, password, email, displayName, personId },
   user,
   dataSource,
   dataSourceDetail = null
 ) => {
-  if (userName) {
-    const existingUser = await Accounts.findUserByUsername(userName);
-    if (existingUser) {
-      throw new Error(`User name '${userName}' is already in use.`);
-    }
-  }
+  const userName = rawUserName
+    ? await assertUserNameAvailable(rawUserName)
+    : rawUserName;
 
   if (personId) {
     const existingUser = await Users.findOneAsync({ personId });
@@ -313,12 +349,19 @@ Users.createUser = async (
 };
 
 Users.updateUser = async (
-  { userId, password, email, displayName, locked },
+  { userId, userName, password, email, displayName, locked },
   user,
   dataSource,
   dataSourceDetail = null
 ) => {
   const existingUser = await Users.findOneUser(userId);
+
+  // A user name can only be set once. After that it is fixed, because the
+  // chat account (if any) is keyed on it.
+  if (userName && !existingUser.username) {
+    const newUserName = await assertUserNameAvailable(userName, userId);
+    await Accounts.setUsername(userId, newUserName);
+  }
   if (existingUser.locked !== locked) {
     // Create a security log
     if (locked === true) {
@@ -587,6 +630,53 @@ Users.lockAccount = async ({ userId }, user, dataSource, dataSourceDetail) => {
   await SecurityLogs.insertAsync({
     userId,
     operationType: SecurityOperationType.ACCOUNT_LOCKED,
+    operationBy: user._id,
+    operationTime: new Date(),
+    dataSource,
+    dataSourceDetail,
+  });
+
+  return Users.findOneUser(userId);
+};
+
+/**
+ * Creates (or links) the chat account for an ERP user. Needs a saved user
+ * name and display name: the user name becomes the chat user name and the
+ * display name the chat display name.
+ */
+Users.createChatAccount = async (
+  { userId },
+  user,
+  dataSource,
+  dataSourceDetail = null
+) => {
+  const existingUser = await Users.findOneAsync(userId);
+  if (!existingUser) {
+    throw new Error('User not found.');
+  }
+  if (existingUser.chatUserId) {
+    throw new Error('This user already has a chat account.');
+  }
+
+  const username = existingUser.username?.trim();
+  const name = existingUser.profile?.name?.trim();
+  if (!username || !name) {
+    throw new Error(
+      'A user name and display name are required to create a chat account.'
+    );
+  }
+
+  const chatUserId = await createChatUser({
+    username,
+    name,
+    email: get(existingUser, 'emails.0.address', null),
+  });
+
+  await Users.updateAsync(userId, { $set: { chatUserId } });
+
+  await SecurityLogs.insertAsync({
+    userId,
+    operationType: SecurityOperationType.CHAT_ACCOUNT_CREATED,
     operationBy: user._id,
     operationTime: new Date(),
     dataSource,

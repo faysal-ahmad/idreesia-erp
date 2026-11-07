@@ -1,11 +1,21 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { getPersonRelationCounts } from 'meteor/idreesia-common/server/business-logic/admin';
+import {
+  getPersonImageUrls,
+  type PersonImageFields,
+} from 'meteor/idreesia-common/server/business-logic/common/person-images';
 
 interface UserRef {
   _id: string;
 }
 
 export default {
+  DuplicatePersonSummaryType: {
+    imageUrl: (person: PersonImageFields) =>
+      getPersonImageUrls(person).imageUrl,
+    imageThumbnailUrl: (person: PersonImageFields) =>
+      getPersonImageUrls(person).imageThumbnailUrl,
+  },
   Query: {
     duplicateCnics: async () => People.findDuplicateCnics(),
 

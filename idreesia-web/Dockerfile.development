@@ -50,7 +50,7 @@ ENV PATH="/home/node/.meteor:${PATH}"
 # below auto-switches to the pinned release's tool version - one that never
 # had yarn installed into it via "meteor npm install -g yarn" - and fails
 # with "'yarn' is not a Meteor command".
-RUN curl "https://install.meteor.com/?release=3.5" | sh
+RUN curl "https://install.meteor.com/?release=3.5.4" | sh
 RUN meteor npm install -g yarn
 
 # node_modules/.meteor/local are volume-backed (see docker-compose.yml), so

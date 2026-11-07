@@ -142,7 +142,7 @@ jobs:
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v3
         with:
-          meteor-release: 3.5
+          meteor-release: 3.5.4
 
       - run: meteor npm install -g yarn
 
@@ -185,19 +185,42 @@ jobs:
           done
           docker build "${BUILD_ARGS[@]}" -f idreesia-web/Dockerfile.production idreesia-web
 
+      # Rocket.Chat with the ERP's fixed settings baked in. It gets the same
+      # release tags as the ERP image, so each ERP release has a matching
+      # Rocket.Chat image.
+      - name: Build Rocket.Chat Container
+        if: ${{ github.ref_name == 'master' }}
+        env:
+          IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/idreesia-rocketchat
+          DOCKER_TAGS: ${{ steps.release-version.outputs.docker_tags }}
+          SOURCE_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          IFS=',' read -ra TAGS <<< "$DOCKER_TAGS"
+          BUILD_ARGS=()
+          for tag in "${TAGS[@]}"; do
+            BUILD_ARGS+=("-t" "$IMAGE_NAME:$tag")
+          done
+          # Links the new GHCR package to this repository so it inherits the
+          # repository's access settings.
+          docker build "${BUILD_ARGS[@]}" \
+            --label "org.opencontainers.image.source=$SOURCE_URL" \
+            containers/rocketchat
+
       - name: Login to GHCR
         if: ${{ github.ref_name == 'master' }}
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io --username "${{ github.actor }}" --password-stdin
 
-      - name: Push Docker Container
+      - name: Push Docker Containers
         if: ${{ github.ref_name == 'master' }}
         env:
-          IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/idreesia-web
+          OWNER: ghcr.io/${{ github.repository_owner }}
           DOCKER_TAGS: ${{ steps.release-version.outputs.docker_tags }}
         run: |
           IFS=',' read -ra TAGS <<< "$DOCKER_TAGS"
-          for tag in "${TAGS[@]}"; do
-            docker push "$IMAGE_NAME:$tag"
+          for image in idreesia-web idreesia-rocketchat; do
+            for tag in "${TAGS[@]}"; do
+              docker push "$OWNER/$image:$tag"
+            done
           done
 
       - name: Install doctl

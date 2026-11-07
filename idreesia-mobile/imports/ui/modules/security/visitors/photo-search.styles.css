@@ -21,7 +21,7 @@
   border-radius: var(--app-radius-medium);
   background: var(--app-color-surface);
   color: var(--app-color-danger);
-  font-size: 15px;
+  font-size: 0.8824rem; /* 15px */
   line-height: 1.5;
   text-align: center;
 }

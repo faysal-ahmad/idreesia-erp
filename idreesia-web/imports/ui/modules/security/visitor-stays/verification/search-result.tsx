@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@apollo/client/react';
 import { CloseCircleTwoTone } from '@ant-design/icons';
 
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Row, Col, Spin } from 'antd';
 import { SecuritySubModulePaths as paths } from '/imports/ui/modules/security';
 import StayCard from '../card/stay-card';
@@ -89,7 +88,7 @@ const SearchResult = ({ barcode }: SearchResultProps) => {
     criminalRecord: refVisitor.visitorData?.criminalRecord,
   };
 
-  const url = getDownloadUrl(refVisitor.sharedData?.imageId);
+  const url = refVisitor.sharedData?.imageUrl;
   const imageNode = url ? (
     <img src={url} style={{ width: '250px' }} alt={visitor.name ?? 'Visitor'} />
   ) : null;

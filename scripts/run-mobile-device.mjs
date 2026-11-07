@@ -6,7 +6,7 @@
 // On the phone, "localhost" is the phone itself, so the app has to reach the
 // Mac by its Wi-Fi address. This writes idreesia-mobile/settings.device.json
 // (gitignored) with public.backendUrl pointing at the idreesia-web backend on
-// this Mac, and starts the mobile app's own Meteor server on port 3100 as the
+// this Mac (and public.rocketChatUrl at Rocket.Chat), and starts the mobile app's own Meteor server on port 3200 as the
 // --mobile-server (it serves hot code push for the mobile bundle). The phone
 // must be on the same Wi-Fi network as the Mac.
 
@@ -16,8 +16,10 @@ import { networkInterfaces } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const MOBILE_PORT = 3100;
+const MOBILE_PORT = 3200;
 const BACKEND_PORT = 3000;
+// Rocket.Chat (docker-compose), which the public chat page calls directly.
+const CHAT_PORT = 3100;
 
 const platform = process.argv[2];
 if (!['ios', 'android'].includes(platform)) {
@@ -43,10 +45,15 @@ if (!host) {
 
 const mobileDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../idreesia-mobile');
 const settings = JSON.parse(readFileSync(path.join(mobileDir, 'settings.sample.json'), 'utf8'));
-settings.public = { ...settings.public, backendUrl: `http://${host}:${BACKEND_PORT}` };
+settings.public = {
+  ...settings.public,
+  backendUrl: `http://${host}:${BACKEND_PORT}`,
+  rocketChatUrl: `http://${host}:${CHAT_PORT}`,
+};
 writeFileSync(path.join(mobileDir, 'settings.device.json'), `${JSON.stringify(settings, null, 2)}\n`);
 
 console.log(`Backend (idreesia-web):  http://${host}:${BACKEND_PORT}`);
+console.log(`Chat:                    http://${host}:${CHAT_PORT}`);
 console.log(`Mobile server:           http://${host}:${MOBILE_PORT}`);
 
 const meteor = spawn(

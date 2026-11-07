@@ -21,7 +21,7 @@ const HR_KARKUN_BY_ID: TypedDocumentNode<
         name
         parentName
         cnicNumber
-        imageId
+        imageUrl
         contactNumber1
         contactNumber2
         emailAddress

@@ -9,8 +9,8 @@ export const MOBILE_VISITOR_LIST_FIELDS = gql`
       parentName
       cnicNumber
       contactNumber1
-      imageId
-      imageThumbnailId
+      imageUrl
+      imageThumbnailUrl
       tags {
         _id
         name

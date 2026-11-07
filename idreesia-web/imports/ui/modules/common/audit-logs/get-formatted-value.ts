@@ -23,7 +23,6 @@ const fieldDisplayNamesMap: Record<string, string> = {
   mehfilRaabta: 'Mehfil Raabta',
   msRaabta: 'MS Raabta',
   referenceName: 'R/O',
-  imageId: 'Image ID',
   attachmentId: 'Attachment ID',
   dataSource: 'Source',
 };
@@ -34,6 +33,28 @@ const fieldValueFormatterMap: Record<string, (val: unknown) => string> = {
   lastTarteebDate: val =>
     dayjs(val as string | number | Date).format(Formats.DATE_FORMAT),
 };
+
+// Photo changes are shown only as "Photo: updated" - never the attachment
+// id or storage key, which older entries recorded. Thumbnail entries are
+// folded into the photo entry and not shown.
+const PhotoFields = new Set([
+  'imageId',
+  'sharedData.imageId',
+  'sharedData.imageKey',
+  'sharedData.image',
+]);
+const PhotoThumbnailFields = new Set([
+  'sharedData.imageThumbnailId',
+  'sharedData.imageThumbnailKey',
+]);
+
+/** Whether an audit value is a photo thumbnail change, which isn't shown. */
+export const isHiddenAuditField = (fieldName: string) =>
+  PhotoThumbnailFields.has(fieldName);
+
+/** Whether an audit value is a photo change, shown without its values. */
+export const isPhotoAuditField = (fieldName: string) =>
+  PhotoFields.has(fieldName);
 
 export default function getFormattedValue({
   fieldName,

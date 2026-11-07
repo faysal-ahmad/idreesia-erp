@@ -4,7 +4,6 @@ import { CalendarOutline, LeftOutline, RightOutline } from 'antd-mobile-icons';
 import { ModulePaths } from 'meteor/idreesia-common/constants';
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
 
-import { getBackendFileUrl } from '/imports/startup/backend';
 import { PagedList } from '../../../components';
 import { usePagedQuery } from '../../../hooks';
 import { Page } from '../../../layout';
@@ -86,9 +85,7 @@ export const StayReportScreen = () => {
         paged={paged}
         renderItem={stay => {
           const visitor = stay.refVisitor;
-          const imageUrl = getBackendFileUrl(
-            visitor?.sharedData?.imageThumbnailId ?? visitor?.sharedData?.imageId
-          );
+          const imageUrl = visitor?.sharedData?.imageThumbnailUrl ?? visitor?.sharedData?.imageUrl;
           const place = [visitor?.visitorData?.city, visitor?.visitorData?.country]
             .filter(Boolean)
             .join(', ');

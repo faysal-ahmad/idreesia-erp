@@ -34,10 +34,7 @@ const formQuery: TypedDocumentNode<
         _id
         sharedData {
           name
-          image {
-            _id
-            data
-          }
+          imageUrl
         }
       }
     }

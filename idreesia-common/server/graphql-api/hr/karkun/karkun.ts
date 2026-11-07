@@ -2,6 +2,8 @@ import gql from 'graphql-tag';
 
 export default gql`
 extend type Query {
+  hrCommitteeOptions: [CommitteeType]
+
   hrKarkunById(_id: String!): PersonType
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 
@@ -84,7 +86,7 @@ extend type Mutation {
   ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
-  setHrKarkunProfileImage(_id: String!, imageId: String!): PersonType
+  setHrKarkunProfileImage(_id: String!, imageData: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   addHrKarkunAttachment(_id: String!, attachmentId: String!): PersonType

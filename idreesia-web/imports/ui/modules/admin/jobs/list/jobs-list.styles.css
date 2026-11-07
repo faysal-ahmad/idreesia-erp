@@ -1,0 +1,13 @@
+/*
+ * Jobs Dashboard — tints rows for jobs that are still to run (scheduled,
+ * repeating, queued, running, paused) so they stand apart from finished ones.
+ * Loaded from client/main.tsx (do not import from this folder's .tsx).
+ */
+
+.list-table .ant-table-tbody > tr.jobs-list-row-scheduled > td {
+  background: #eef6ff !important;
+}
+
+.list-table .ant-table-tbody > tr.jobs-list-row-scheduled:hover > td {
+  background: #dcebff !important;
+}

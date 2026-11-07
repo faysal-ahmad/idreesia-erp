@@ -204,9 +204,9 @@ const List = ({
           person={{
             _id: record._id ?? '',
             name: record.karkun?.sharedData?.name ?? '',
-            imageId: record.karkun?.sharedData?.imageId ?? undefined,
-            imageThumbnailId:
-              record.karkun?.sharedData?.imageThumbnailId ?? undefined,
+            imageUrl: record.karkun?.sharedData?.imageUrl ?? undefined,
+            imageThumbnailUrl:
+              record.karkun?.sharedData?.imageThumbnailUrl ?? undefined,
           }}
           onPersonNameClicked={() => {}}
         />

@@ -4,6 +4,7 @@ import { Spin } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
+import { AttachmentCategory } from 'meteor/idreesia-common/constants';
 
 import {
   HR_KARKUN_BY_ID,
@@ -58,6 +59,7 @@ const AttachmentsList = ({ employeeId }: Props) => {
 
   return (
     <AttachmentsListControl
+      category={AttachmentCategory.PROFILE}
       canUploadDocument
       canEditAttachments
       attachments={(data?.hrKarkunById?.karkunData?.attachments ?? []) as any}

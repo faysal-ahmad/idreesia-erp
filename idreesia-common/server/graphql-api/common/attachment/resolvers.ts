@@ -1,14 +1,10 @@
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 
-import { createAttachment } from './utilities';
-
 interface AttachmentArgs {
   _id: string;
   ids: string[];
   name?: string;
   description?: string;
-  mimeType?: string;
-  data: string;
 }
 
 interface ResolverContext {
@@ -26,19 +22,6 @@ export default {
   },
 
   Mutation: {
-    createAttachment: async (
-      _obj: unknown,
-      { name, description, mimeType, data }: AttachmentArgs,
-      { user }: ResolverContext
-    ) => {
-      const attachmentId = await createAttachment(
-        { name, description, mimeType, data },
-        { user }
-      );
-
-      return Attachments.findOneAsync(attachmentId);
-    },
-
     updateAttachment: async (
       _obj: unknown,
       { _id, name, description }: AttachmentArgs,

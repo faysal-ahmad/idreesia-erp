@@ -12,12 +12,13 @@ interface StockItemGroupResult {
 export async function getStatistics(physicalStoreId: string) {
   const itemsWithImages = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
-    imageId: { $ne: null },
+    $or: [{ imageKey: { $ne: null } }, { imageId: { $ne: null } }],
   }).countAsync();
 
   const itemsWithoutImages = await StockItems.find({
     physicalStoreId: { $eq: physicalStoreId },
-    $or: [{ imageId: { $exists: false } }, { imageId: { $eq: null } }],
+    imageKey: { $eq: null },
+    imageId: { $eq: null },
   }).countAsync();
 
   const itemsWithPositiveStockLevel = await StockItems.find({

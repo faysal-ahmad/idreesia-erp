@@ -58,8 +58,8 @@ const PersonAction = ({
 const PersonRow = ({
   karkunId,
   name,
-  imageId,
-  imageThumbnailId,
+  imageUrl,
+  imageThumbnailUrl,
   member,
   off,
   showImage,
@@ -70,8 +70,8 @@ const PersonRow = ({
 }: {
   karkunId: string;
   name: string;
-  imageId?: string | null;
-  imageThumbnailId?: string | null;
+  imageUrl?: string | null;
+  imageThumbnailUrl?: string | null;
   member: boolean;
   off: boolean;
   showImage: boolean;
@@ -94,8 +94,8 @@ const PersonRow = ({
           person={{
             _id: karkunId,
             name,
-            imageId,
-            imageThumbnailId,
+            imageUrl,
+            imageThumbnailUrl,
           }}
         />
       ) : (
@@ -152,8 +152,8 @@ const WeekView = ({
                           karkunId: karkun.karkunId,
                           name: karkun.name,
                           off: !!karkun.off,
-                          imageId: karkun.imageId,
-                          imageThumbnailId: karkun.imageThumbnailId,
+                          imageUrl: karkun.imageUrl,
+                          imageThumbnailUrl: karkun.imageThumbnailUrl,
                           attendance: asStatus(karkun.attendance),
                         },
                       ]
@@ -165,8 +165,8 @@ const WeekView = ({
                         {
                           karkunId: karkun.karkunId,
                           name: karkun.name,
-                          imageId: karkun.imageId,
-                          imageThumbnailId: karkun.imageThumbnailId,
+                          imageUrl: karkun.imageUrl,
+                          imageThumbnailUrl: karkun.imageThumbnailUrl,
                           attendance: asStatus(karkun.attendance),
                         },
                       ]
@@ -221,8 +221,8 @@ const WeekView = ({
                         key={karkun.karkunId}
                         karkunId={karkun.karkunId}
                         name={karkun.name ?? ''}
-                        imageId={karkun.imageId}
-                        imageThumbnailId={karkun.imageThumbnailId}
+                        imageUrl={karkun.imageUrl}
+                        imageThumbnailUrl={karkun.imageThumbnailUrl}
                         member
                         off={karkun.off}
                         showImage={showImages}
@@ -251,8 +251,8 @@ const WeekView = ({
                         key={karkun.karkunId}
                         karkunId={karkun.karkunId}
                         name={karkun.name ?? ''}
-                        imageId={karkun.imageId}
-                        imageThumbnailId={karkun.imageThumbnailId}
+                        imageUrl={karkun.imageUrl}
+                        imageThumbnailUrl={karkun.imageThumbnailUrl}
                         member={false}
                         off={false}
                         showImage={showImages}

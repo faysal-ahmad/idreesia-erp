@@ -12,11 +12,11 @@ type SecurityLogType {
   dataSourceDetail: String
 
   userName: String
-  userImageId: String
-  userImageThumbnailId: String
+  userImageUrl: String
+  userImageThumbnailUrl: String
   operationByName: String
-  operationByImageId: String
-  operationByImageThumbnailId: String
+  operationByImageUrl: String
+  operationByImageThumbnailUrl: String
 }
 
 input SecurityLogFilter {

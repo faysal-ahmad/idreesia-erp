@@ -22,8 +22,8 @@ const PAGED_SECURITY_VISITORS: TypedDocumentNode<
           cnicNumber
           contactNumber1
           contactNumber2
-          imageId
-          imageThumbnailId
+          imageUrl
+          imageThumbnailUrl
           imageVectorData {
             status
           }

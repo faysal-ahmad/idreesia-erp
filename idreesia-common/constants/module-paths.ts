@@ -3,6 +3,8 @@ const ModulePaths = {
   stores: '/stores',
   hr: '/hr',
   security: '/security',
+  correspondence: '/correspondence',
+  workspaces: '/workspaces',
 };
 
 export default ModulePaths;

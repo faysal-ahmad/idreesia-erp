@@ -31,6 +31,9 @@ services:
   rustfs:
     image: rustfs/rustfs:1.0.3
     ports:
+      # S3 API, for the public image URLs (and presigned URLs) the
+      # browser opens via S3_PUBLIC_ENDPOINT=http://localhost:9000.
+      - "9000:9000"
       - "9001:9001" # Console
     environment:
       RUSTFS_ACCESS_KEY: rustfs_root_user
@@ -58,8 +61,68 @@ services:
     entrypoint: >
       /bin/sh -c "
       aws --endpoint-url http://rustfs:9000 s3 mb s3://idreesia-files;
+      aws --endpoint-url http://rustfs:9000 s3 mb s3://rocketchat;
+      aws --endpoint-url http://rustfs:9000 s3api put-bucket-policy --bucket idreesia-files --policy '{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Action\":[\"s3:GetObject\"],\"Resource\":[\"arn:aws:s3:::idreesia-files/people-images/*\",\"arn:aws:s3:::idreesia-files/stock-item-images/*\"]}]}';
       exit 0;
       "
+
+  # Rocket.Chat shares the mongo service above (its own `rocketchat`
+  # database) rather than running a second mongod - it only needs a replica
+  # set, which atlas-local already initialises. Published on 3100 because the
+  # ERP owns 3000. No TRANSPORTER is set, so it runs as a single monolith
+  # process without NATS. Fixed policy settings (login, profiles, Livechat
+  # routing) are baked into containers/rocketchat/Dockerfile; only
+  # environment-specific values are set here.
+  rocketchat:
+    build:
+      context: ./containers/rocketchat
+    depends_on:
+      mongo:
+        condition: service_started
+      rustfs-defaultbuckets:
+        condition: service_completed_successfully
+    environment:
+      MONGO_URL: mongodb://mongo:27017/rocketchat?directConnection=true
+      ROOT_URL: http://localhost:3100
+      DEPLOY_METHOD: docker
+      DEPLOY_PLATFORM: compose
+      # Seed a local admin so the dev instance is usable straight away.
+      ADMIN_USERNAME: admin
+      ADMIN_PASS: admin
+      ADMIN_EMAIL: admin@idreesia.local
+      # Required with every users.createToken call (the image sets
+      # CREATE_TOKENS_FOR_USERS). The ERP sends it as
+      # ROCKETCHAT_CREATE_TOKENS_SECRET, so the two must match. Dev-only
+      # value; production sets its own on the App Platform component.
+      CREATE_TOKENS_FOR_USERS_SECRET: dev-create-tokens-secret
+      # Password login form. The image defaults it to "false"; this overrides
+      # it for the one-time setup (signing in as admin and as the ERP service
+      # account, see docs/rocket-chat-integration.md). Remove this line, or set
+      # it to "false", afterwards so ERP users can only get in through the ERP.
+      OVERWRITE_SETTING_Accounts_ShowFormLogin: "true"
+      # The mobile app's public chat page calls the Livechat visitor API
+      # directly from its WebView (another origin), so the REST API needs CORS.
+      # Tighten the origin list for production.
+      OVERWRITE_SETTING_API_Enable_CORS: "true"
+      OVERWRITE_SETTING_API_CORS_Origin: "*"
+      # File uploads, avatars and user data exports go to the `rocketchat`
+      # bucket on RustFS instead of GridFS. RustFS only does path-style
+      # addressing, hence ForcePathStyle. The endpoint is the in-network
+      # hostname, which browsers can't resolve, so all
+      # three proxy settings make Rocket.Chat stream files itself rather than
+      # redirecting clients to a pre-signed rustfs:9000 URL.
+      OVERWRITE_SETTING_FileUpload_Storage_Type: AmazonS3
+      OVERWRITE_SETTING_FileUpload_S3_BucketURL: http://rustfs:9000
+      OVERWRITE_SETTING_FileUpload_S3_Bucket: rocketchat
+      OVERWRITE_SETTING_FileUpload_S3_Region: us-east-1
+      OVERWRITE_SETTING_FileUpload_S3_AWSAccessKeyId: rustfs_root_user
+      OVERWRITE_SETTING_FileUpload_S3_AWSSecretAccessKey: rustfs_root_user_password
+      OVERWRITE_SETTING_FileUpload_S3_ForcePathStyle: "true"
+      OVERWRITE_SETTING_FileUpload_S3_Proxy_Uploads: "true"
+      OVERWRITE_SETTING_FileUpload_S3_Proxy_Avatars: "true"
+      OVERWRITE_SETTING_FileUpload_S3_Proxy_UserDataFiles: "true"
+    ports:
+      - "3100:3000"
 
   idreesia-web:
     build:
@@ -71,6 +134,10 @@ services:
       - rustfs
     env_file:
       - ./idreesia-web/.env
+    environment:
+      # The native file watcher can't poll the bind-mounted repo on Docker
+      # Desktop (EINTR errors on every startup); poll instead.
+      METEOR_WATCH_FORCE_POLLING: "true"
     ports:
       - "3000:3000"
     volumes:

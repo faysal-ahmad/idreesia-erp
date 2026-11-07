@@ -3,6 +3,7 @@ import { Button, Form, Input, Toast } from 'antd-mobile';
 import { useMutation } from '@apollo/client/react';
 import { Link } from '../../router';
 
+import { ChatPaths } from '../../chat';
 import { AuthLayout, PasswordInput } from '../../components';
 import { MOBILE_UPDATE_LOGIN_TIME } from '../../gql';
 import { getErrorMessage, loginWithPassword } from '../accounts';
@@ -36,6 +37,9 @@ export const LoginScreen = () => {
           <Link to="/forgot-password">Forgot password?</Link>
           <span>
             Don&apos;t have an account? <Link to="/register">Register</Link>
+          </span>
+          <span>
+            Need help? <Link to={ChatPaths.chat}>Message us</Link>
           </span>
         </>
       }

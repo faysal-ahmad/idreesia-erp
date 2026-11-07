@@ -2,7 +2,6 @@ import React, { useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { PictureOutlined } from '@ant-design/icons';
 
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from 'antd';
 import { StoresSubModulePaths as paths } from '/imports/ui/modules/stores';
 
@@ -29,7 +28,7 @@ interface StockItem {
   _id: string;
   physicalStoreId: string;
   name: string;
-  imageId?: string | null;
+  imageUrl?: string | null;
 }
 
 interface StockItemNameProps {
@@ -69,8 +68,8 @@ const StockItemName = ({
   let avatarNode = (
     <Avatar shape="square" size="large" icon={<PictureOutlined />} />
   );
-  if (stockItem.imageId) {
-    imageUrl = getDownloadUrl(stockItem.imageId) ?? undefined;
+  if (stockItem.imageUrl) {
+    imageUrl = stockItem.imageUrl;
     avatarNode = (
       <Avatar
         shape="square"

@@ -21,7 +21,7 @@ export const MOBILE_CURRENT_USER: TypedDocumentNode<
         _id
         sharedData {
           name
-          imageId
+          imageUrl
         }
       }
     }

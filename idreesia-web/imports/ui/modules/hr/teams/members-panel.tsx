@@ -83,8 +83,8 @@ const UPDATE_TEAM_MEMBER_DAYS: TypedDocumentNode<
 export interface TeamMember {
   _id: string;
   name: string;
-  imageId?: string | null;
-  imageThumbnailId?: string | null;
+  imageUrl?: string | null;
+  imageThumbnailUrl?: string | null;
   cnicNumber?: string | null;
   contactNumber1?: string | null;
   contactNumber2?: string | null;

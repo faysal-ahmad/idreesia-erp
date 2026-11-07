@@ -11,8 +11,8 @@ type AuditLogType {
   operationBy: String
 
   operationByName: String
-  operationByImageId: String
-  operationByImageThumbnailId: String
+  operationByImageUrl: String
+  operationByImageThumbnailUrl: String
 }
 
 input AuditLogFilter {

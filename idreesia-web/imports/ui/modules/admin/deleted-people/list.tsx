@@ -231,7 +231,7 @@ const List = ({ history, location }: Props) => {
               contactNumber2: person.sharedData?.contactNumber2,
               city: person.visitorData?.city,
               country: person.visitorData?.country,
-              imageId: person.sharedData?.imageId,
+              imageUrl: person.sharedData?.imageUrl,
               criminalRecord: person.visitorData?.criminalRecord,
               otherNotes: person.visitorData?.otherNotes,
               isKarkun: person.isKarkun,

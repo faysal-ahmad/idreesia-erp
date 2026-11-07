@@ -28,13 +28,16 @@ enum Permission {
   ADMIN_MANAGE_DUPLICATE_PEOPLE
   ADMIN_VIEW_SECURITY_LOGS
 
-  HR_MANAGE_SETUP_DATA
+  HR_MANAGE_KARKUNS_SETUP_DATA
   HR_DELETE_DATA
   HR_VIEW_AUDIT_LOGS
   HR_VIEW_KARKUNS
   HR_MANAGE_KARKUNS
   HR_VIEW_EMPLOYEES
   HR_MANAGE_EMPLOYEES
+  HR_MANAGE_EMPLOYEES_SETUP_DATA
+  HR_VIEW_COMMITTEES
+  HR_MANAGE_COMMITTEES
 
   IN_MANAGE_SETUP_DATA
   IN_MANAGE_STOCK_ITEMS
@@ -61,6 +64,9 @@ enum Permission {
   SECURITY_VIEW_SECURITY_SERVER_DATA
   SECURITY_MANAGE_SECURITY_SERVER_DATA
   SECURITY_SYNC_SECURITY_SERVER_DATA
+
+  CORRESPONDENCE_INBOX_VIEW_MESSAGES
+  CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES
 }
 
 scalar Date
@@ -112,8 +118,8 @@ type DuplicatePersonSummaryType {
   cnicNumber: String
   contactNumber1: String
   contactNumber2: String
-  imageId: String
-  imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
   updatedAt: String
 }
 
@@ -363,6 +369,7 @@ type UserType {
   permissions: [String]
   instances: [String]
   groups: [String]
+  hasChatAccount: Boolean
 
   person: PersonType
   karkun: PersonType
@@ -407,6 +414,7 @@ extend type Mutation {
 
   updateUser(
     userId: String!
+    userName: String
     password: String
     email: String
     displayName: String
@@ -432,6 +440,10 @@ extend type Mutation {
     userName: String!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
+  createChatAccount(
+    userId: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
   updateLoginTime: Int
   updateLastActiveTime: Int
 }
@@ -454,13 +466,6 @@ type Query {
 }
 
 type Mutation {
-  createAttachment(
-    name: String
-    description: String
-    mimeType: String
-    data: String!
-  ): Attachment
-
   updateAttachment(_id: String!, name: String, description: String): Attachment
 }
 
@@ -474,8 +479,8 @@ type AuditLogType {
   operationBy: String
 
   operationByName: String
-  operationByImageId: String
-  operationByImageThumbnailId: String
+  operationByImageUrl: String
+  operationByImageThumbnailUrl: String
 }
 
 input AuditLogFilter {
@@ -542,6 +547,8 @@ type PersonSharedDataType {
   referenceName: String
   imageId: String
   imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
   imageVectorData: PersonImageVectorDataType
   tagIds: [String]
 
@@ -643,11 +650,11 @@ type SecurityLogType {
   dataSourceDetail: String
 
   userName: String
-  userImageId: String
-  userImageThumbnailId: String
+  userImageUrl: String
+  userImageThumbnailUrl: String
   operationByName: String
-  operationByImageId: String
-  operationByImageThumbnailId: String
+  operationByImageUrl: String
+  operationByImageThumbnailUrl: String
 }
 
 input SecurityLogFilter {
@@ -665,6 +672,74 @@ type PagedSecurityLogType {
   data: [SecurityLogType]
 }
 
+type InboxAttachmentType {
+    # image | audio | video | file
+    kind: String
+    title: String
+    mimeType: String
+    size: Float
+    # ERP media proxy path (/api/correspondence/files/...). Needs the Meteor
+    # login token in the Authorization header.
+    url: String
+  }
+
+  type InboxMessageType {
+    _id: String
+    roomId: String
+    text: String
+    sentAt: String
+    # visitor | agent | system
+    senderType: String
+    senderName: String
+    attachments: [InboxAttachmentType]
+  }
+
+  type InboxConversationType {
+    # The customer's open Rocket.Chat room
+    _id: String
+    visitorId: String
+    customerName: String
+    mobileNumber: String
+    startedAt: String
+    lastMessageAt: String
+    lastMessage: InboxMessageType
+    waitingResponse: Boolean
+    assignedTo: String
+    open: Boolean
+  }
+
+  type PagedInboxConversationType {
+    totalResults: Int
+    data: [InboxConversationType]
+  }
+
+  type InboxConversationDetailType {
+    conversation: InboxConversationType
+    # Every message across all of the customer's rooms, oldest first
+    messages: [InboxMessageType]
+  }
+
+  input InboxConversationFilter {
+    searchText: String
+    pageIndex: String
+    pageSize: String
+  }
+
+  extend type Query {
+    pagedInboxConversations(
+      filter: InboxConversationFilter
+    ): PagedInboxConversationType
+      @checkPermissions(permissions: [CORRESPONDENCE_INBOX_VIEW_MESSAGES])
+
+    inboxConversation(roomId: String!): InboxConversationDetailType
+      @checkPermissions(permissions: [CORRESPONDENCE_INBOX_VIEW_MESSAGES])
+  }
+
+  extend type Mutation {
+    sendInboxMessage(roomId: String!, text: String!): InboxMessageType
+      @checkPermissions(permissions: [CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES])
+  }
+
 extend type Query {
   pagedHrAuditLogs(filter: AuditLogFilter): PagedAuditLogType
     @checkPermissions(permissions: [HR_VIEW_AUDIT_LOGS])
@@ -674,6 +749,19 @@ type CommitteeMemberType {
   karkunId: String
   isCoordinator: Boolean
   karkun: PersonType
+  # The person has an ERP user.
+  hasLoginAccount: Boolean
+  # That user has a chat account.
+  hasChatAccount: Boolean
+  # That chat account is in the committee's discussion group. Null when
+  # Discussions is not enabled (or chat could not be reached).
+  hasDiscussionAccess: Boolean
+}
+
+type CommitteeFeatureType {
+  key: String
+  name: String
+  description: String
 }
 
 type CommitteeType {
@@ -682,6 +770,7 @@ type CommitteeType {
   color: String
   description: String
   members: [CommitteeMemberType]
+  features: [String]
 
   createdAt: String
   createdBy: String
@@ -691,25 +780,40 @@ type CommitteeType {
 
 extend type Query {
   allCommittees: [CommitteeType]
+    @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
   committeeById(id: String!): CommitteeType
+    @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
+  allCommitteeFeatures: [CommitteeFeatureType]
+    @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
 }
 
 extend type Mutation {
   createCommittee(name: String!, color: String, description: String): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
   updateCommittee(id: String!, name: String!, color: String, description: String): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
   removeCommittee(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
 
   addCommitteeMember(committeeId: String!, karkunId: String!): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
   removeCommitteeMember(committeeId: String!, karkunId: String!): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
   addCommitteeCoordinator(committeeId: String!, karkunId: String!): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
   removeCommitteeCoordinator(committeeId: String!, karkunId: String!): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+
+  enableCommitteeFeature(committeeId: String!, featureKey: String!): Boolean!
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+  disableCommitteeFeature(committeeId: String!, featureKey: String!): Boolean!
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+  setCommitteeMemberDiscussionAccess(
+    committeeId: String!
+    karkunId: String!
+    hasAccess: Boolean!
+  ): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
 }
 
 type DutyLocationType {
@@ -734,11 +838,11 @@ extend type Query {
 
 extend type Mutation {
   createDutyLocation(name: String!, dutyId: String!): DutyLocationType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateDutyLocation(id: String!, name: String!, dutyId: String!): DutyLocationType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeDutyLocation(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 type DutyPlanWeekSlotType {
@@ -758,8 +862,8 @@ type DutyPlanDaysKarkunType {
   karkunId: String
   name: String
   off: Boolean
-  imageId: String
-  imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
   attendance: String
 }
 
@@ -910,7 +1014,7 @@ extend type Mutation {
     startTime: String
     endTime: String
   ): DutyShiftType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateDutyShift(
     _id: String!
     name: String!
@@ -918,9 +1022,9 @@ extend type Mutation {
     startTime: String
     endTime: String
   ): DutyShiftType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeDutyShift(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 type DutyType {
@@ -949,11 +1053,11 @@ extend type Query {
 
 extend type Mutation {
   createDuty(name: String!, isMehfilDuty: Boolean!, description: String, committeeId: String): DutyType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateDuty(id: String!, name: String!, description: String, committeeId: String): DutyType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeDuty(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 type JobType {
@@ -976,14 +1080,16 @@ extend type Query {
 
 extend type Mutation {
   createJob(name: String!, description: String): JobType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
   updateJob(id: String!, name: String!, description: String): JobType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
   removeJob(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
 }
 
 extend type Query {
+  hrCommitteeOptions: [CommitteeType]
+
   hrKarkunById(_id: String!): PersonType
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 
@@ -1066,7 +1172,7 @@ extend type Mutation {
   ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
-  setHrKarkunProfileImage(_id: String!, imageId: String!): PersonType
+  setHrKarkunProfileImage(_id: String!, imageData: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   addHrKarkunAttachment(_id: String!, attachmentId: String!): PersonType
@@ -1174,22 +1280,22 @@ extend type Query {
 
 extend type Mutation {
   createTeam(name: String!, color: String, description: String, dutyId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateTeam(id: String!, name: String!, color: String, description: String, dutyId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeTeam(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 
   addTeamMember(teamId: String!, karkunId: String!, daysOfWeek: [String!]!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateTeamMemberDays(teamId: String!, karkunId: String!, daysOfWeek: [String!]!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeTeamMember(teamId: String!, karkunId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   addTeamCoordinator(teamId: String!, karkunId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeTeamCoordinator(teamId: String!, karkunId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 type ItemWithQuantity {
@@ -1646,7 +1752,7 @@ type StockItem {
   details: String
   unitOfMeasurement: String
   categoryId: String
-  imageId: String
+  imageUrl: String
   physicalStoreId: String
   startingStockLevel: Float
   minStockLevel: Float
@@ -1734,7 +1840,7 @@ extend type Mutation {
   @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
-  setStockItemImage(_id: String!, physicalStoreId: String!, imageId: String!): StockItem
+  setStockItemImage(_id: String!, physicalStoreId: String!, imageData: String!): StockItem
   @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 
@@ -2582,7 +2688,7 @@ extend type Mutation {
   deleteSecurityVisitor(_id: String!): Int
   @checkPermissions(permissions: [SECURITY_DELETE_DATA])
 
-  setSecurityVisitorImage(_id: String!, imageId: String!): PersonType
+  setSecurityVisitorImage(_id: String!, imageData: String!): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   updateSecurityVisitorNotes(
@@ -2596,4 +2702,212 @@ extend type Mutation {
     csvData: String!
   ): String
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+}
+
+type WorkspaceCommitteeMemberType {
+  karkunId: String
+  isCoordinator: Boolean
+  name: String
+  imageUrl: String
+  imageThumbnailUrl: String
+  contactNumber1: String
+  contactNumber2: String
+  # The person has an ERP user.
+  hasLoginAccount: Boolean
+  # That user has a chat account.
+  hasChatAccount: Boolean
+  # That chat account is in the committee's discussion group. Null when
+  # Discussions is not enabled (or chat could not be reached).
+  hasDiscussionAccess: Boolean
+}
+
+type WorkspaceCommitteeType {
+  _id: String
+  name: String
+  color: String
+  description: String
+  # True when the logged-in user can manage this committee's members.
+  canManageMembers: Boolean
+  # Keys of the features enabled for this committee (e.g. 'discussions').
+  features: [String]
+  members: [WorkspaceCommitteeMemberType]
+}
+
+type WorkspaceKarkunType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PagedWorkspaceKarkunType {
+  data: [WorkspaceKarkunType]
+  totalResults: Int
+}
+
+extend type Query {
+  # Committees the logged-in user is currently a member of.
+  myCommittees: [WorkspaceCommitteeType]
+
+  # A committee the logged-in user is a member of; null otherwise.
+  workspaceCommitteeById(committeeId: String!): WorkspaceCommitteeType
+
+  # Karkuns that a coordinator can add to their committee.
+  workspaceCommitteeKarkunSearch(
+    committeeId: String!
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedWorkspaceKarkunType
+}
+
+extend type Mutation {
+  workspaceAddCommitteeMember(
+    committeeId: String!
+    karkunId: String!
+  ): WorkspaceCommitteeType
+  workspaceRemoveCommitteeMember(
+    committeeId: String!
+    karkunId: String!
+  ): WorkspaceCommitteeType
+  # Adds a member's chat account to the committee's discussion group, or
+  # removes it. The member must have a chat account.
+  workspaceSetCommitteeMemberDiscussionAccess(
+    committeeId: String!
+    karkunId: String!
+    hasAccess: Boolean!
+  ): Boolean
+}
+
+type DiscussionAttachmentType {
+  kind: String
+  title: String
+  mimeType: String
+  size: Int
+  url: String
+}
+
+type DiscussionReactionType {
+  emoji: String
+  count: Int
+  usernames: [String]
+  reactedByMe: Boolean
+}
+
+type DiscussionMessageType {
+  _id: String
+  text: String
+  sentAt: String
+  senderName: String
+  senderId: String
+  senderImageUrl: String
+  senderImageThumbnailUrl: String
+  isOwn: Boolean
+  isSystem: Boolean
+  attachments: [DiscussionAttachmentType]
+  editedAt: String
+  isPinned: Boolean
+  # Starred by the logged-in user.
+  isStarred: Boolean
+  reactions: [DiscussionReactionType]
+  # On a thread reply: the parent message id.
+  threadId: String
+  # A thread reply that is also shown in the main list.
+  showInMainList: Boolean
+  threadReplyCount: Int
+  threadLastReplyAt: String
+}
+
+type DiscussionSyncType {
+  messages: [DiscussionMessageType]
+  deletedIds: [String]
+  # Pass back as 'since' on the next sync.
+  syncedAt: String
+  # Initial load only: older messages exist.
+  hasOlder: Boolean
+}
+
+# A page of messages, oldest first.
+type DiscussionMessagePageType {
+  messages: [DiscussionMessageType]
+  hasMore: Boolean
+}
+
+type DiscussionMemberType {
+  # Chat username, used in @mentions.
+  username: String
+  name: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type DiscussionInfoType {
+  canPost: Boolean
+  # The logged-in user can pin/unpin messages (committee coordinators).
+  canPin: Boolean
+}
+
+extend type Query {
+  workspaceDiscussionInfo(committeeId: String!): DiscussionInfoType
+  # Without 'since': the latest messages. With it: what changed since then.
+  workspaceDiscussionSync(committeeId: String!, since: String): DiscussionSyncType
+  # A thread: the parent message first, then its replies.
+  workspaceDiscussionThreadMessages(
+    committeeId: String!
+    threadId: String!
+  ): [DiscussionMessageType]
+  workspaceDiscussionMembers(committeeId: String!): [DiscussionMemberType]
+  workspaceDiscussionPinnedMessages(committeeId: String!): [DiscussionMessageType]
+  # Messages starred by the logged-in user.
+  workspaceDiscussionStarredMessages(committeeId: String!): [DiscussionMessageType]
+  # Messages sent before 'before' (an ISO time), one page.
+  workspaceDiscussionOlderMessages(
+    committeeId: String!
+    before: String!
+  ): DiscussionMessagePageType
+  # Messages matching the search (words or a /regex/), newest page first;
+  # 'offset' is the number of matches already shown.
+  workspaceDiscussionSearchMessages(
+    committeeId: String!
+    searchText: String!
+    offset: Int
+  ): DiscussionMessagePageType
+}
+
+extend type Mutation {
+  workspaceSendDiscussionMessage(
+    committeeId: String!
+    text: String!
+    threadId: String
+  ): Boolean!
+  workspaceReactToDiscussionMessage(
+    committeeId: String!
+    messageId: String!
+    emoji: String!
+    shouldReact: Boolean!
+  ): Boolean!
+  workspaceSetDiscussionMessageStarred(
+    committeeId: String!
+    messageId: String!
+    starred: Boolean!
+  ): Boolean!
+  workspaceSetDiscussionMessagePinned(
+    committeeId: String!
+    messageId: String!
+    pinned: Boolean!
+  ): Boolean!
+  workspaceEditDiscussionMessage(
+    committeeId: String!
+    messageId: String!
+    text: String!
+  ): Boolean!
+  workspaceDeleteDiscussionMessage(
+    committeeId: String!
+    messageId: String!
+  ): Boolean!
 }

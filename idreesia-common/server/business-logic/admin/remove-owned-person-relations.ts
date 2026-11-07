@@ -1,11 +1,6 @@
-import {
-  Committees,
-  DutyDayAttendances,
-  Teams,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { DutyDayAttendances, Teams } from 'meteor/idreesia-common/server/collections/hr';
+import { removePersonFromCommittees } from 'meteor/idreesia-common/server/business-logic/hr/committee';
 import { MehfilKarkuns, VisitorStays } from 'meteor/idreesia-common/server/collections/security';
-import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
-import { Messages } from 'meteor/idreesia-common/server/collections/communication';
 import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 
 // Removes the relation records owned by a person (the categories a person
@@ -23,11 +18,7 @@ import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 // runs, so that final record is unaffected by this cleanup.
 export async function removeOwnedPersonRelations(personId: string): Promise<void> {
   await Promise.all([
-    Committees.updateAsync(
-      { 'members.karkunId': personId },
-      { $pull: { members: { karkunId: personId } } },
-      { multi: true }
-    ),
+    removePersonFromCommittees(personId),
     Teams.updateAsync(
       { 'members.karkunId': personId },
       { $pull: { members: { karkunId: personId } } },
@@ -40,12 +31,6 @@ export async function removeOwnedPersonRelations(personId: string): Promise<void
     ),
     VisitorStays.removeAsync({ visitorId: personId }),
     MehfilKarkuns.removeAsync({ karkunId: personId }),
-    ImdadRequests.removeAsync({ visitorId: personId }),
-    Messages.updateAsync(
-      { $or: [{ karkunIds: personId }, { visitorIds: personId }] },
-      { $pull: { karkunIds: personId, visitorIds: personId } },
-      { multi: true }
-    ),
     AuditLogs.removeAsync({ entityId: personId }),
   ]);
 }

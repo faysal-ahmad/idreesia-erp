@@ -68,8 +68,8 @@ const columns = [
         person={{
           _id: record.userId,
           name: record.userName,
-          imageId: record.userImageId,
-          imageThumbnailId: record.userImageThumbnailId,
+          imageUrl: record.userImageUrl,
+          imageThumbnailUrl: record.userImageThumbnailUrl,
         }}
       />
     ),
@@ -99,8 +99,8 @@ const columns = [
         person={{
           _id: record.operationBy,
           name: record.operationByName,
-          imageId: record.operationByImageId,
-          imageThumbnailId: record.operationByImageThumbnailId,
+          imageUrl: record.operationByImageUrl,
+          imageThumbnailUrl: record.operationByImageThumbnailUrl,
         }}
       />
     ),

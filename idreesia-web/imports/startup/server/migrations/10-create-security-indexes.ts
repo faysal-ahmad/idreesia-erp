@@ -1,20 +1,19 @@
 import { Migrations } from 'meteor/quave:migrations';
 
-import {
-  Visitors,
-  VisitorStays,
-} from 'meteor/idreesia-common/server/collections/security';
+// Visitors collection has since been dropped - see migration 59.
+import { VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 
 Migrations.add({
   version: 10,
   async up() {
-    const visitors = Visitors.rawCollection();
-    await visitors.createIndex({ name: 'text' });
-    await visitors.createIndex({ cnicNumber: 1 }, { background: true });
-    await visitors.createIndex({ contactNumber1: 1 }, { background: true });
-    await visitors.createIndex({ contactNumber2: 1 }, { background: true });
-    await visitors.createIndex({ city: 1 }, { background: true });
-    await visitors.createIndex({ country: 1 }, { background: true });
+    // Visitors collection has since been dropped.
+    // const visitors = Visitors.rawCollection();
+    // await visitors.createIndex({ name: 'text' });
+    // await visitors.createIndex({ cnicNumber: 1 }, { background: true });
+    // await visitors.createIndex({ contactNumber1: 1 }, { background: true });
+    // await visitors.createIndex({ contactNumber2: 1 }, { background: true });
+    // await visitors.createIndex({ city: 1 }, { background: true });
+    // await visitors.createIndex({ country: 1 }, { background: true });
 
     const visitorStays = VisitorStays.rawCollection();
     await visitorStays.createIndex({ visitorId: 1 }, { background: true });

@@ -28,15 +28,11 @@ export default class KarkunsList extends Component<Props> {
           person={{
             _id: record._id,
             name: record.sharedData.name,
-            imageId: record.sharedData.imageId ?? undefined,
-            image: record.sharedData.image?.data
-              ? { data: record.sharedData.image.data ?? undefined }
-              : undefined,
-            imageThumbnail: record.sharedData.imageThumbnail?.data
-              ? { data: record.sharedData.imageThumbnail.data ?? undefined }
-              : undefined,
+            imageUrl: record.sharedData.imageUrl ?? undefined,
+            imageThumbnailUrl: record.sharedData.imageThumbnailUrl ?? undefined,
           }}
           showLargeImage
+          plainImage
         />
       );
     },

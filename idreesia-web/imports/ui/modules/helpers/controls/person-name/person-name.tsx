@@ -2,24 +2,23 @@ import React, { useState, type CSSProperties } from 'react';
 import { UserOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { Avatar, Modal } from 'antd';
 import ImageVectorStatusBadge from '../image-vector-status-badge/image-vector-status-badge';
 
 interface Person {
   _id?: string | null;
   name?: string | null;
-  imageId?: string | null;
-  imageThumbnailId?: string | null;
+  imageUrl?: string | null;
+  imageThumbnailUrl?: string | null;
   imageVectorStatus?: string | null;
-  image?: { data?: string };
-  imageThumbnail?: { data?: string };
 }
 
 interface Props {
   person?: Person | null;
   onPersonNameClicked?(person: Person): void;
   showLargeImage?: boolean;
+  /** Renders the photo as a plain image (no avatar or popup), for printing. */
+  plainImage?: boolean;
 }
 
 const NameDivStyle: CSSProperties = {
@@ -36,6 +35,7 @@ const PersonName = ({
   person,
   onPersonNameClicked = noop,
   showLargeImage = false,
+  plainImage = false,
 }: Props) => {
   const [showDialog, setShowDialog] = useState(false);
   if (!person || !person._id || !person.name) return null;
@@ -60,7 +60,8 @@ const PersonName = ({
     ? { height: '80px', width: '80px', borderRadius: '10%' }
     : { height: '40px', width: '40px', borderRadius: '10%' };
 
-  let imageUrl: string | undefined;
+  const imageUrl = person.imageUrl ?? undefined;
+  const avatarSrc = person.imageThumbnailUrl ?? imageUrl;
   let avatarNode = (
     <Avatar
       shape="square"
@@ -69,10 +70,11 @@ const PersonName = ({
       icon={<UserOutlined />}
     />
   );
-  if (person.imageId) {
-    imageUrl = getDownloadUrl(person.imageId) ?? undefined;
-    const avatarSrc =
-      getDownloadUrl(person.imageThumbnailId ?? person.imageId) ?? undefined;
+  if (avatarSrc && plainImage) {
+    avatarNode = (
+      <img src={avatarSrc} style={imageSizeStyle} alt={person.name} />
+    );
+  } else if (avatarSrc) {
     avatarNode = (
       <Avatar
         shape="square"
@@ -81,17 +83,6 @@ const PersonName = ({
         onClick={() => {
           setShowDialog(true);
         }}
-      />
-    );
-  }
-
-  const inlineImage = person.imageThumbnail ?? person.image;
-  if (inlineImage) {
-    avatarNode = (
-      <img
-        src={`data:image/jpeg;base64,${inlineImage.data}`}
-        style={imageSizeStyle}
-        alt={person.name}
       />
     );
   }

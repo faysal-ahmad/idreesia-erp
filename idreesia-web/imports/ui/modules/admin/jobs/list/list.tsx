@@ -37,11 +37,28 @@ const ProgressStatuses: Record<string, 'exception' | 'active' | 'normal'> = {
 };
 const getProgressStatus = (status: string) => ProgressStatuses[status] ?? 'normal';
 
+// Jobs that have finished; every other status is still to run.
+const FinishedStatuses = new Set(['completed', 'failed']);
+const getRowClassName = (record: JobRow) =>
+  record.status && !FinishedStatuses.has(record.status)
+    ? 'jobs-list-row-scheduled'
+    : '';
+
 // nextRunAt/lastRunAt/lastFinishedAt arrive as ISO-8601 UTC strings (the
 // DateTime scalar) - dayjs parses that and formats in the browser's local
 // timezone by default, same convention as audit-info.tsx.
-const formatTimestamp = (value?: string | null) =>
-  value ? dayjs(value).format(Formats.DATE_TIME_FORMAT) : null;
+// Date and time on separate lines, so the three timestamp columns stay narrow.
+const formatTimestamp = (value?: string | null) => {
+  if (!value) return null;
+  const timestamp = dayjs(value);
+  return (
+    <>
+      {timestamp.format(Formats.DATE_FORMAT)}
+      <br />
+      {timestamp.format(Formats.TIME_FORMAT)}
+    </>
+  );
+};
 
 interface ListProps {
   history: History;
@@ -153,12 +170,16 @@ const List = ({ history, location }: ListProps) => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      // Wide enough for the longest job name on one line; ellipsis (with the
+      // full name on hover) only as a fallback.
+      width: 280,
+      ellipsis: true,
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      width: 180,
+      width: 120,
       render: (statusValue: string, record: JobRow) =>
         statusValue === 'running' && record.progress != null ? (
           <Progress
@@ -174,21 +195,22 @@ const List = ({ history, location }: ListProps) => {
       title: 'Next Run At',
       dataIndex: 'nextRunAt',
       key: 'nextRunAt',
-      width: 200,
+      width: 120,
       render: formatTimestamp,
     },
     {
       title: 'Last Run At',
       dataIndex: 'lastRunAt',
       key: 'lastRunAt',
-      width: 200,
+      width: 120,
       render: formatTimestamp,
     },
     {
       title: 'Last Finished At',
       dataIndex: 'lastFinishedAt',
       key: 'lastFinishedAt',
-      width: 200,
+      // A little wider than the other timestamps so its header fits on one line.
+      width: 150,
       render: formatTimestamp,
     },
     {
@@ -256,6 +278,7 @@ const List = ({ history, location }: ListProps) => {
       <Table
         className="list-table"
         rowKey="_id"
+        rowClassName={getRowClassName}
         dataSource={jobRows}
         columns={columns}
         bordered

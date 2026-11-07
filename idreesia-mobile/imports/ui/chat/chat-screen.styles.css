@@ -1,0 +1,242 @@
+/* Public chat (imports/ui/chat). Loaded from client/main.tsx. */
+
+.chat-intro {
+  margin: 0 16px 12px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.8824rem; /* 15px */
+  line-height: 1.5;
+}
+
+.chat-nav-icon {
+  font-size: 22px;
+  vertical-align: middle;
+}
+
+/* Thread */
+
+.chat-thread {
+  padding: 0 12px;
+}
+
+.chat-divider {
+  margin: 16px 0 8px;
+  color: var(--app-color-text-weak);
+  font-size: 0.7059rem; /* 12px */
+  text-align: center;
+}
+
+.chat-row {
+  display: flex;
+  margin: 6px 0;
+}
+
+.chat-row-mine {
+  justify-content: flex-end;
+}
+
+.chat-row-theirs {
+  justify-content: flex-start;
+}
+
+.chat-bubble {
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  box-shadow: var(--app-elevation);
+}
+
+.chat-row-mine .chat-bubble {
+  background: var(--app-color-primary);
+  color: var(--app-color-on-primary);
+}
+
+.chat-bubble-sender {
+  margin-bottom: 2px;
+  color: var(--app-color-primary);
+  font-size: 0.7059rem; /* 12px */
+  font-weight: 600;
+}
+
+.chat-bubble-text {
+  font-size: 0.8824rem; /* 15px */
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-bubble-time {
+  margin-top: 2px;
+  font-size: 0.6471rem; /* 11px */
+  opacity: 0.7;
+  text-align: right;
+}
+
+.chat-bubble-media + .chat-bubble-media,
+.chat-bubble-media + .chat-bubble-text {
+  margin-top: 6px;
+}
+
+/* Media */
+
+.chat-media-image-button {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.chat-media-image {
+  display: block;
+  max-width: 220px;
+  max-height: 260px;
+  border-radius: var(--app-radius-medium);
+}
+
+.chat-media-audio {
+  width: 240px;
+  max-width: 100%;
+}
+
+.chat-media-video {
+  width: 240px;
+  max-width: 100%;
+  border-radius: var(--app-radius-medium);
+}
+
+.chat-media-file {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* Composer (pinned in the page footer) */
+
+.chat-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.chat-composer-entry {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.chat-composer-icon {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
+  color: var(--app-color-primary);
+  font-size: 22px;
+}
+
+.chat-composer-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--app-color-border);
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-background);
+  box-sizing: border-box;
+}
+
+.chat-composer-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+/* Round primary buttons on the right: the mic and Send. */
+.chat-round-button,
+.chat-round-button.adm-button {
+  display: flex;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  font-size: 22px;
+}
+
+/* Hold-to-record mic (WhatsApp style): hold to record, release to send,
+   slide left to cancel. Long-press must not select text or open the iOS
+   callout, and the browser must not treat the slide as a scroll. */
+
+.chat-mic-button {
+  background: var(--app-color-primary);
+  color: var(--app-color-on-primary);
+  font-size: 24px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  transition: transform 120ms ease-out;
+}
+
+.chat-mic-button:disabled {
+  opacity: 0.5;
+}
+
+.chat-mic-button-active {
+  transform: scale(1.35);
+}
+
+.chat-recording {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  align-items: center;
+  gap: 8px;
+  color: var(--app-color-text);
+  font-size: 0.8824rem; /* 15px */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.chat-recording-time {
+  font-variant-numeric: tabular-nums;
+}
+
+.chat-recording-cancel {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--app-color-text-secondary);
+  white-space: nowrap;
+}
+
+.chat-recording-dot {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--app-color-danger);
+  animation: chat-recording-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes chat-recording-pulse {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.3;
+  }
+}
+
+/* Hidden file input behind the paperclip (attach) button */
+
+.chat-file-input {
+  display: none;
+}

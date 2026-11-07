@@ -20,7 +20,7 @@ const PAGED_DELETED_PEOPLE: TypedDocumentNode<
           cnicNumber
           contactNumber1
           contactNumber2
-          imageId
+          imageUrl
           tags {
             _id
             name

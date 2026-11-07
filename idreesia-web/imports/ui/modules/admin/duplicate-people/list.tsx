@@ -74,8 +74,8 @@ const getMemberColumns = (
         person={{
           _id: record._id,
           name: record.name,
-          imageId: record.imageId,
-          imageThumbnailId: record.imageThumbnailId,
+          imageUrl: record.imageUrl,
+          imageThumbnailUrl: record.imageThumbnailUrl,
         }}
         onPersonNameClicked={() => {
           history.push(paths.duplicatePersonEditFormPath(record._id ?? ''));

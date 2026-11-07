@@ -24,7 +24,7 @@ const PAGED_VISITOR_STAYS: TypedDocumentNode<
           _id
           sharedData {
             name
-            imageId
+            imageUrl
           }
           visitorData {
             city

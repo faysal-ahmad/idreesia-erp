@@ -28,7 +28,7 @@ export const PAGED_STOCK_ADJUSTMENTS: TypedDocumentNode<
         refStockItem {
           _id
           formattedName
-          imageId
+          imageUrl
         }
         refAdjustedBy {
           _id

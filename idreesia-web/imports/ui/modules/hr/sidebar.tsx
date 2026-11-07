@@ -91,11 +91,6 @@ const menuItems = [
         label: 'Setup',
         children: [
           {
-            key: 'committees',
-            icon: <ApartmentOutlined style={IconStyle} />,
-            label: 'Committees',
-          },
-          {
             key: 'ms-duties',
             icon: <TagsOutlined style={IconStyle} />,
             label: 'Duties & Shifts',
@@ -106,6 +101,18 @@ const menuItems = [
             label: 'Teams',
           },
         ],
+      },
+    ],
+  },
+  {
+    key: 'committee-management',
+    icon: <ClusterOutlined style={IconStyle} />,
+    label: 'Committee Management',
+    children: [
+      {
+        key: 'committees',
+        icon: <ApartmentOutlined style={IconStyle} />,
+        label: 'Committees',
       },
     ],
   },
@@ -198,7 +205,7 @@ const menuRouteMatches: MenuRouteMatch[] = [
   },
   {
     key: 'committees',
-    openKeys: ['karkuns-management', 'setup'],
+    openKeys: ['committee-management'],
     subModuleName: SubModuleNames.committees,
     matches: pathname => isPath(pathname, paths.committeesPath),
   },

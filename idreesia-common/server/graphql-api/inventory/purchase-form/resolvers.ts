@@ -311,7 +311,7 @@ const resolvers: ResolverMap = {
         }
       );
 
-      await Attachments.removeAsync(attachmentId);
+      await Attachments.removeAttachment(attachmentId);
       return PurchaseForms.findOneAsync(_id);
     },
 

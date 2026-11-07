@@ -94,10 +94,6 @@ export const HrPermissionsData: PermissionNode = {
       key: PermissionConstants.HR_DELETE_DATA,
     },
     {
-      title: 'Manage Setup Data',
-      key: PermissionConstants.HR_MANAGE_SETUP_DATA,
-    },
-    {
       title: 'View Audit Logs',
       key: PermissionConstants.HR_VIEW_AUDIT_LOGS,
     },
@@ -113,6 +109,10 @@ export const HrPermissionsData: PermissionNode = {
           title: 'Manage Karkuns Data',
           key: PermissionConstants.HR_MANAGE_KARKUNS,
         },
+        {
+          title: 'Manage Karkuns Setup Data',
+          key: PermissionConstants.HR_MANAGE_KARKUNS_SETUP_DATA,
+        },
       ],
     },
     {
@@ -126,6 +126,24 @@ export const HrPermissionsData: PermissionNode = {
         {
           title: 'Manage Employees Data',
           key: PermissionConstants.HR_MANAGE_EMPLOYEES,
+        },
+        {
+          title: 'Manage Employees Setup Data',
+          key: PermissionConstants.HR_MANAGE_EMPLOYEES_SETUP_DATA,
+        },
+      ],
+    },
+    {
+      title: 'Committees',
+      key: 'module-hr-committees',
+      children: [
+        {
+          title: 'View Committees Data',
+          key: PermissionConstants.HR_VIEW_COMMITTEES,
+        },
+        {
+          title: 'Manage Committees Data',
+          key: PermissionConstants.HR_MANAGE_COMMITTEES,
         },
       ],
     },
@@ -292,3 +310,23 @@ export const SecurityPermissionsData: PermissionNode = {
   ],
 };
 
+export const CorrespondencePermissionsData: PermissionNode = {
+  title: 'Correspondence',
+  key: 'module-correspondence',
+  children: [
+    {
+      title: 'Inbox',
+      key: 'module-correspondence-inbox',
+      children: [
+        {
+          title: 'View Messages',
+          key: PermissionConstants.CORRESPONDENCE_INBOX_VIEW_MESSAGES,
+        },
+        {
+          title: 'Reply to Messages',
+          key: PermissionConstants.CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES,
+        },
+      ],
+    },
+  ],
+};

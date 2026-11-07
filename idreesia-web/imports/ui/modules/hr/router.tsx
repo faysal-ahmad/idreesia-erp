@@ -5,7 +5,7 @@ import { default as paths } from './submodule-paths';
 import { JobsEditForm, JobsList } from './jobs';
 import { MSDutiesList } from './ms-duties';
 import { TeamsList } from './teams';
-import { CommitteesList } from './committees';
+import { CommitteesEditForm, CommitteesList } from './committees';
 import {
   EmployeeEditForm,
   EmployeesList,
@@ -43,6 +43,10 @@ const Router = () => (
 
     <Route path={paths.teamsPath} component={TeamsList} />
 
+    <Route
+      path={paths.committeesEditFormPath()}
+      component={CommitteesEditForm}
+    />
     <Route path={paths.committeesPath} component={CommitteesList} />
 
     <Route path={paths.karkunsNewFormPath} component={KarkunsNewForm} />

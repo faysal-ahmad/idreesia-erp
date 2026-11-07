@@ -28,6 +28,7 @@ antd-mobile only ships components and theming docs. It has no guidance on page p
 | Keeping a list alive under its detail | `idreesia-mobile/imports/ui/modules/security/visitors/visitors-feature.tsx` + `imports/ui/layout/keep-alive.tsx` |
 | Paged query → infinite list | `idreesia-mobile/imports/ui/hooks/use-paged-query.ts` + `imports/ui/components/paged-list.tsx` |
 | Form screen | `idreesia-mobile/imports/ui/account/change-password-screen.tsx` |
+| Public chat (signed out, Rocket.Chat) | `idreesia-mobile/imports/ui/chat/` |
 | Shared CSS | `idreesia-mobile/client/main.css` |
 | Page CSS example | `idreesia-mobile/imports/ui/account/account-screen.styles.css` |
 
@@ -101,6 +102,8 @@ The shell handles the themed nav bar, sticky positioning and safe areas (notch a
 
 Signed-out screens use `AuthLayout` (`components/auth-layout.tsx`) instead.
 
+**Exception: the public chat** (`imports/ui/chat`, `/chat`). It needs no login, so it isn't a module or feature, and it is linked from the sign-in screen's footer ("Need help? Message us"). Because it's a full conversation screen, it uses `Page` (with `backTo="/login"`) rather than `AuthLayout`. It talks to Rocket.Chat's Livechat visitor API directly (`public.rocketChatUrl`), not the ERP backend. Other signed-out pages that need a full screen should follow the same pattern.
+
 ---
 
 ## 4. Page templates
@@ -155,6 +158,7 @@ A feature's entry screen is usually a list. Build it from `usePagedQuery` and `P
   - In the browser and the iOS app it shows `CameraView`, a full-screen live viewfinder with a shutter button. In the iOS app this avoids the native camera screen, which left the app blank for about 2 seconds after each photo. The local plugin `cordova-plugins/idreesia-webview-camera` stops iOS asking for camera permission again on every launch.
   - In the Android app it uses cordova-plugin-camera with the camera as the only source, until `CameraView` has been tested in Android's WebView.
   - It never uses a file input, which would also offer the gallery.
+  - **Exception: the public chat** (`imports/ui/chat`) also has a paperclip attach button that opens the system picker through a hidden `<input type="file" multiple>`. On iOS that offers Photo Library, Take Photo and Choose Files; on Android, the WebView's file chooser. Customers sending a message may share existing photos and documents, while record-keeping features (visitor photos) stay camera-only.
   - It returns a JPEG data URL of at most 1024 px, which keeps uploads well under the 5 MB GraphQL limit.
 - Start capture from an explicit "Take photo" button rather than opening the camera on load.
 - Show the captured photo above the results, and pin a "Retake photo" button in the `footer`.
@@ -195,6 +199,10 @@ After a flow completes and the user needs to know what happens next (for example
 - **Page-only rules** go in `*.styles.css` next to the screen, **imported only from `client/main.tsx`**. This is the same Meteor rule as the web: don't import CSS from `.tsx` files, and don't give a CSS file the same basename as a `.tsx` file.
 - **Icons:** use `antd-mobile-icons` only, in outline style. Leading list icons use the `list-icon` class.
 - **Touch targets** are at least 44 px high. Screens are portrait-only.
+- **Text size follows the phone's setting** (iOS Dynamic Type, so Larger Text works for people who need it). `imports/ui/theme/text-scale.ts` sets the root font size from the system body size: 17px at the default, capped at 1.6× so nav bars, the tab bar and the chat composer don't break. Android stays at the default for now.
+  - Size **text in `rem`** (1rem = 17px at the default; write the px value in a comment, e.g. `font-size: 0.8824rem; /* 15px */`). antd-mobile's `--adm-font-size-*` variables are re-declared in rem in `client/main.css`.
+  - Keep **icons, avatars and touch targets in `px`**, so they stay inside their buttons at large text sizes.
+  - Check new screens at the largest non-accessibility size and at an accessibility size (Settings → Accessibility → Display & Text Size → Larger Text).
 - **Locale:** antd-mobile's built-in text defaults to Chinese. `client/main.tsx` sets English globally with `setDefaultConfig({ locale: enUS })`, which also covers `Dialog` and `Toast`.
 
 ---

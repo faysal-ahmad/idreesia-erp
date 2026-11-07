@@ -29,7 +29,7 @@
 .stay-report-date {
   flex: 1;
   gap: 8px;
-  font-size: 16px;
+  font-size: 0.9412rem; /* 16px */
   font-weight: 500;
 }
 

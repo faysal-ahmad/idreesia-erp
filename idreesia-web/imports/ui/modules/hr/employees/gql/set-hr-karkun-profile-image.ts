@@ -9,11 +9,12 @@ const SET_HR_KARKUN_PROFILE_IMAGE: TypedDocumentNode<
   SetHrKarkunProfileImageMutation,
   SetHrKarkunProfileImageMutationVariables
 > = gql`
-  mutation setHrKarkunProfileImage($_id: String!, $imageId: String!) {
-    setHrKarkunProfileImage(_id: $_id, imageId: $imageId) {
+  mutation setHrKarkunProfileImage($_id: String!, $imageData: String!) {
+    setHrKarkunProfileImage(_id: $_id, imageData: $imageData) {
       _id
       sharedData {
-        imageId
+        imageUrl
+        imageThumbnailUrl
       }
     }
   }

@@ -21,7 +21,7 @@ export const PAGED_STOCK_ITEMS: TypedDocumentNode<
         formattedName
         company
         details
-        imageId
+        imageUrl
         categoryName
         unitOfMeasurement
         minStockLevel

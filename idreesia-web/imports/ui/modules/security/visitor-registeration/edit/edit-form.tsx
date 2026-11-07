@@ -76,7 +76,7 @@ const EditForm = ({ history, location, match }: Props) => {
     cnicNumber: securityVisitorById.sharedData?.cnicNumber,
     referenceName: securityVisitorById.sharedData?.referenceName,
     contactNumber1: securityVisitorById.sharedData?.contactNumber1,
-    imageId: securityVisitorById.sharedData?.imageId,
+    imageUrl: securityVisitorById.sharedData?.imageUrl,
     city: securityVisitorById.visitorData?.city,
     country: securityVisitorById.visitorData?.country,
     criminalRecord: securityVisitorById.visitorData?.criminalRecord,

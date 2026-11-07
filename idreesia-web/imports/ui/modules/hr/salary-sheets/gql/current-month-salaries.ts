@@ -37,8 +37,8 @@ const CURRENT_MONTH_SALARIES: TypedDocumentNode<
         sharedData {
           name
           parentName
-          imageId
-          imageThumbnailId
+          imageUrl
+          imageThumbnailUrl
           cnicNumber
           contactNumber1
         }

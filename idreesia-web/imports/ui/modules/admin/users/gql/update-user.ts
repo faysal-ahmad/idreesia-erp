@@ -11,6 +11,7 @@ const UPDATE_USER: TypedDocumentNode<
 > = gql`
   mutation updateUser(
     $userId: String!
+    $userName: String
     $password: String
     $email: String
     $displayName: String
@@ -18,6 +19,7 @@ const UPDATE_USER: TypedDocumentNode<
   ) {
     updateUser(
       userId: $userId
+      userName: $userName
       password: $password
       email: $email
       displayName: $displayName
@@ -28,6 +30,7 @@ const UPDATE_USER: TypedDocumentNode<
       email
       displayName
       locked
+      hasChatAccount
       personId
       karkun {
         _id

@@ -25,18 +25,29 @@ export async function backfillImageVectorData(
   // which is the desired behaviour after the pipeline itself has changed.
   const people = await People.find(
     {
-      'sharedData.imageId': { $exists: true, $ne: null },
-      $or: [
-        { 'sharedData.imageVectorData': { $exists: false } },
-        { 'sharedData.imageVectorData.modelVersion': { $ne: MODEL_VERSION } },
+      $and: [
+        {
+          $or: [
+            { 'sharedData.imageKey': { $exists: true, $ne: null } },
+            { 'sharedData.imageId': { $exists: true, $ne: null } },
+          ],
+        },
+        {
+          $or: [
+            { 'sharedData.imageVectorData': { $exists: false } },
+            {
+              'sharedData.imageVectorData.modelVersion': { $ne: MODEL_VERSION },
+            },
+          ],
+        },
       ],
     },
-    { fields: { 'sharedData.imageId': 1 } }
+    { fields: { 'sharedData.imageKey': 1, 'sharedData.imageId': 1 } }
   ).fetchAsync();
 
   try {
     for (const { _id, sharedData } of people) {
-      const imageVectorData = await computeImageVectorData(sharedData.imageId);
+      const imageVectorData = await computeImageVectorData(sharedData);
       await People.updateAsync(_id, {
         $set: { 'sharedData.imageVectorData': imageVectorData },
       });

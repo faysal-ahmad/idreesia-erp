@@ -91,6 +91,16 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  // Object storage keys (people-images/...). imageId/imageThumbnailId are the
+  // legacy Attachments copies, kept only until they are migrated.
+  imageKey: {
+    type: String,
+    optional: true,
+  },
+  imageThumbnailKey: {
+    type: String,
+    optional: true,
+  },
   imageVectorData: {
     type: ImageVectorData,
     optional: true,

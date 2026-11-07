@@ -21,8 +21,8 @@ const PAGED_SECURITY_AUDIT_LOGS: TypedDocumentNode<
         operationTime
         operationBy
         operationByName
-        operationByImageId
-        operationByImageThumbnailId
+        operationByImageUrl
+        operationByImageThumbnailUrl
       }
     }
   }

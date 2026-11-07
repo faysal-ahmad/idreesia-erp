@@ -19,12 +19,13 @@ const PAGED_USERS: TypedDocumentNode<
         displayName
         locked
         lastActiveAt
+        hasChatAccount
         karkun {
           _id
           sharedData {
             name
-            imageId
-            imageThumbnailId
+            imageUrl
+            imageThumbnailUrl
           }
         }
       }

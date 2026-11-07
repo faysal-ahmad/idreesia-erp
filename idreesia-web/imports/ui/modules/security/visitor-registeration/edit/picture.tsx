@@ -21,11 +21,11 @@ const Picture = ({ visitorId, securityVisitorById }: Props) => {
     refetchQueries: ['pagedSecurityVisitors', 'securityRegistrationVisitorById'],
   });
 
-  const updateImageId = (imageId: string) => {
+  const updateImage = (imageData: string) => {
     setSecurityVisitorImage({
       variables: {
         _id: visitorId,
-        imageId,
+        imageData,
       },
     }).catch((error: Error) => {
       message.error(error.message, 5);
@@ -34,10 +34,9 @@ const Picture = ({ visitorId, securityVisitorById }: Props) => {
 
   return (
     <PersonPicture
-      imageId={securityVisitorById.sharedData?.imageId}
+      imageUrl={securityVisitorById.sharedData?.imageUrl}
       personName={securityVisitorById.sharedData?.name ?? undefined}
-      onUploadFinish={updateImageId}
-      onPictureTaken={updateImageId}
+      onImageSelected={updateImage}
     />
   );
 };

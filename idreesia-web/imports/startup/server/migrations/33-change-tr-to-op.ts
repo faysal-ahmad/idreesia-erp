@@ -1,35 +1,39 @@
 import { Migrations } from 'meteor/quave:migrations';
 
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
-import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
-import { Visitors } from 'meteor/idreesia-common/server/collections/security';
+// ImdadRequests collection has since been dropped - see migration 44.
+// import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
+// Visitors collection has since been dropped - see migration 59.
+// import { Visitors } from 'meteor/idreesia-common/server/collections/security';
 
 Migrations.add({
   version: 33,
   async up() {
-    await ImdadRequests.updateAsync(
-      {
-        dataSource: 'telephone-room',
-      },
-      {
-        $set: {
-          dataSource: 'operations',
-        },
-      },
-      { multi: true }
-    );
+    // ImdadRequests collection has since been dropped.
+    // await ImdadRequests.updateAsync(
+    //   {
+    //     dataSource: 'telephone-room',
+    //   },
+    //   {
+    //     $set: {
+    //       dataSource: 'operations',
+    //     },
+    //   },
+    //   { multi: true }
+    // );
 
-    await Visitors.updateAsync(
-      {
-        dataSource: 'telephone-room',
-      },
-      {
-        $set: {
-          dataSource: 'operations',
-        },
-      },
-      { multi: true }
-    );
+    // Visitors collection has since been dropped.
+    // await Visitors.updateAsync(
+    //   {
+    //     dataSource: 'telephone-room',
+    //   },
+    //   {
+    //     $set: {
+    //       dataSource: 'operations',
+    //     },
+    //   },
+    //   { multi: true }
+    // );
 
     const users = await Users.find({}).fetchAsync();
     for (const user of users) {

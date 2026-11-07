@@ -12,15 +12,15 @@ export const SET_STOCK_ITEM_IMAGE: TypedDocumentNode<
   mutation setStockItemImage(
     $_id: String!
     $physicalStoreId: String!
-    $imageId: String!
+    $imageData: String!
   ) {
     setStockItemImage(
       _id: $_id
       physicalStoreId: $physicalStoreId
-      imageId: $imageId
+      imageData: $imageData
     ) {
       _id
-      imageId
+      imageUrl
     }
   }
 `;

@@ -1,0 +1,23 @@
+{
+  "name": "idreesia-scene-lifecycle",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Adopts the UIKit scene life cycle on iOS, which apps built with the iOS 27 SDK must use to launch. Stopgap until Meteor builds with cordova-ios 8.",
+  "cordova": {
+    "id": "idreesia-scene-lifecycle",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "engines": {
+    "cordovaDependencies": {
+      "1.0.0": {
+        "cordova-ios": ">=7.0.0 <8.0.0"
+      }
+    }
+  }
+}

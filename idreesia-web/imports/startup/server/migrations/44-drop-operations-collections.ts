@@ -1,6 +1,8 @@
 import { Migrations } from 'meteor/quave:migrations';
 
-import { ImdadReasons, ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
+// ImdadReasons and ImdadRequests collections were dropped by this migration
+// and their classes have since been removed from the codebase.
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 const NamespaceNotFound = 26;
 
@@ -15,10 +17,10 @@ async function dropIfExists(db: { dropCollection(name: string): Promise<unknown>
 Migrations.add({
   version: 44,
   async up() {
-    const db = ImdadRequests.rawDatabase();
+    const db = People.rawDatabase();
 
-    await dropIfExists(db, ImdadReasons.rawCollection().collectionName);
-    await dropIfExists(db, ImdadRequests.rawCollection().collectionName);
+    await dropIfExists(db, 'imdad-imdad-reasons');
+    await dropIfExists(db, 'imdad-imdad-requests');
     await dropIfExists(db, 'wazaif-management-wazaif');
     await dropIfExists(db, 'wazaif-management-delivery-orders');
     await dropIfExists(db, 'wazaif-management-printing-orders');

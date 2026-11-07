@@ -2,6 +2,8 @@ import * as cv from '@u4/opencv4nodejs';
 
 import { ImageVectorStatus } from 'meteor/idreesia-common/constants';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
+import { getFile } from 'meteor/idreesia-common/server/file-storage';
+import { readAttachmentData } from './stored-attachments';
 
 import { detectFaces } from './face-detection';
 import { alignFace, embedFace } from './face-recognition';
@@ -86,27 +88,39 @@ export function computeVectorFromImageBuffer(buffer: Buffer): ImageVectorData {
   }
 }
 
-export async function computeImageVectorData(attachmentId: string): Promise<ImageVectorData> {
+const errorResult = (): ImageVectorData => ({
+  status: ImageVectorStatus.ERROR,
+  computedAt: new Date(),
+  modelVersion: MODEL_VERSION,
+});
+
+/**
+ * Computes the vector of a person's stored photo - from object storage, or
+ * from Attachments for a photo that hasn't been migrated yet.
+ */
+export async function computeImageVectorData({
+  imageKey,
+  imageId,
+}: {
+  imageKey?: string | null;
+  imageId?: string | null;
+}): Promise<ImageVectorData> {
   try {
-    const attachment = await Attachments.findOneAsync(attachmentId);
-    if (!attachment || !attachment.mimeType.startsWith('image/')) {
-      return {
-        status: ImageVectorStatus.ERROR,
-        computedAt: new Date(),
-        modelVersion: MODEL_VERSION,
-      };
+    if (imageKey) {
+      const { body } = await getFile(imageKey);
+      return computeVectorFromImageBuffer(body);
     }
 
-    return computeVectorFromImageBuffer(Buffer.from(attachment.data, 'base64'));
+    const attachment = imageId ? await Attachments.findOneAsync(imageId) : null;
+    if (!attachment || !attachment.mimeType.startsWith('image/')) {
+      return errorResult();
+    }
+    const bytes = await readAttachmentData(attachment);
+    return bytes ? computeVectorFromImageBuffer(bytes) : errorResult();
   } catch (error) {
-    // Callers store this result on the person rather than handling a throw - setSecurityVisitorImage
-    // and setHrKarkunProfileImage both assign it straight into sharedData.imageVectorData.
+    // Callers store this result on the person rather than handling a throw.
     // eslint-disable-next-line no-console
-    console.error(`computeImageVectorData failed for attachment ${attachmentId}:`, error);
-    return {
-      status: ImageVectorStatus.ERROR,
-      computedAt: new Date(),
-      modelVersion: MODEL_VERSION,
-    };
+    console.error(`computeImageVectorData failed for '${imageKey ?? imageId}':`, error);
+    return errorResult();
   }
 }

@@ -24,6 +24,7 @@ import {
   Teams,
 } from 'meteor/idreesia-common/server/collections/hr';
 import { generateImageThumbnail } from 'meteor/idreesia-common/server/business-logic/common/generate-image-thumbnail';
+import { deleteFiles } from 'meteor/idreesia-common/server/file-storage';
 import {
   forOwn,
   get,
@@ -67,6 +68,34 @@ type PersonInput = LooseRecord & {
   karkunData?: LooseRecord;
   employeeData?: LooseRecord;
 };
+
+// Audit entries record only that the photo changed - never which file, so
+// they hold no ids or keys pointing at stored images.
+const PHOTO_AUDIT_FIELD = 'sharedData.image';
+const PHOTO_AUDIT_VALUE = 'updated';
+const PHOTO_FIELDS = [
+  'sharedData.imageId',
+  'sharedData.imageThumbnailId',
+  'sharedData.imageKey',
+  'sharedData.imageThumbnailKey',
+];
+
+/** Audit values with any photo fields replaced by a single "updated" entry. */
+const toAuditValues = (values: LooseRecord): LooseRecord => {
+  const auditValues = omitBy(values, (_value, key) =>
+    PHOTO_FIELDS.includes(key)
+  );
+  if (keys(values).some(key => PHOTO_FIELDS.includes(key))) {
+    auditValues[PHOTO_AUDIT_FIELD] = PHOTO_AUDIT_VALUE;
+  }
+  return auditValues;
+};
+
+interface PersonImageInput {
+  imageKey: string;
+  imageThumbnailKey: string | null;
+  imageVectorData: LooseRecord;
+}
 
 interface AttachmentInput {
   _id: string;
@@ -180,7 +209,7 @@ class People extends AggregatableCollection<PersonDocument> {
         operationType: OperationType.UPDATE,
         operationBy: user._id,
         operationTime: date,
-        auditValues: changedValues,
+        auditValues: toAuditValues(changedValues),
       },
       existingPerson || null
     );
@@ -236,7 +265,9 @@ class People extends AggregatableCollection<PersonDocument> {
 
   async hardRemovePerson(_id: string, user: UserRef) {
     const date = new Date();
+    const existingPerson = await this.findOneAsync(_id);
     const result = await this.removeAsync(_id);
+    if (existingPerson) await this.removeImageFiles(existingPerson.sharedData);
 
     await AuditLogs.createAuditLog({
       entityId: _id,
@@ -247,6 +278,81 @@ class People extends AggregatableCollection<PersonDocument> {
     });
 
     return result;
+  }
+
+  /**
+   * Points the person at a profile photo already stored in object storage,
+   * then removes the photo it replaces - from object storage, or from
+   * Attachments for a photo that was never migrated.
+   */
+  async setImage(
+    _id: string,
+    { imageKey, imageThumbnailKey, imageVectorData }: PersonImageInput,
+    user: UserRef
+  ) {
+    const existingPerson = await this.findOneAsync(_id);
+    if (!existingPerson) {
+      throw new Error(`Person '${_id}' was not found.`);
+    }
+
+    const date = new Date();
+    await this.updateAsync(_id, {
+      $set: {
+        'sharedData.imageKey': imageKey,
+        'sharedData.imageVectorData': imageVectorData,
+        ...(imageThumbnailKey
+          ? { 'sharedData.imageThumbnailKey': imageThumbnailKey }
+          : {}),
+        updatedAt: date,
+        updatedBy: user._id,
+      },
+      $unset: {
+        'sharedData.imageId': '',
+        'sharedData.imageThumbnailId': '',
+        ...(imageThumbnailKey ? {} : { 'sharedData.imageThumbnailKey': '' }),
+      },
+    });
+
+    await AuditLogs.createAuditLog(
+      {
+        entityId: _id,
+        entityType: EntityType.PERSON,
+        operationType: OperationType.UPDATE,
+        operationBy: user._id,
+        operationTime: date,
+        auditValues: { [PHOTO_AUDIT_FIELD]: PHOTO_AUDIT_VALUE },
+      },
+      existingPerson
+    );
+
+    await this.removeImageFiles(existingPerson.sharedData);
+    return this.findOneAsync(_id);
+  }
+
+  /**
+   * Deletes a person's stored profile photo files - in object storage, and
+   * any legacy Attachments copies.
+   */
+  async removeImageFiles(sharedData: LooseRecord | undefined) {
+    if (!sharedData) return;
+
+    const keysToDelete = [sharedData.imageKey, sharedData.imageThumbnailKey]
+      .filter(Boolean) as string[];
+    if (keysToDelete.length > 0) {
+      try {
+        await deleteFiles(keysToDelete);
+      } catch (error) {
+        // An orphaned file is harmless; failing the update over it is not.
+        // eslint-disable-next-line no-console
+        console.error(`Failed to delete people images ${keysToDelete}:`, error);
+      }
+    }
+
+    const attachmentIds = [sharedData.imageId, sharedData.imageThumbnailId]
+      .filter(Boolean) as string[];
+    if (attachmentIds.length > 0) {
+      await Attachments.removeAsync({ _id: { $in: attachmentIds } });
+    }
   }
 
   async addAttachment({ _id, attachmentId }: AttachmentInput, user: UserRef) {
@@ -959,6 +1065,8 @@ class People extends AggregatableCollection<PersonDocument> {
               contactNumber2: '$sharedData.contactNumber2',
               imageId: '$sharedData.imageId',
               imageThumbnailId: '$sharedData.imageThumbnailId',
+              imageKey: '$sharedData.imageKey',
+              imageThumbnailKey: '$sharedData.imageThumbnailKey',
               updatedAt: '$updatedAt',
             },
           },
@@ -981,6 +1089,8 @@ class People extends AggregatableCollection<PersonDocument> {
           contactNumber2: '$sharedData.contactNumber2',
           imageId: '$sharedData.imageId',
           imageThumbnailId: '$sharedData.imageThumbnailId',
+          imageKey: '$sharedData.imageKey',
+          imageThumbnailKey: '$sharedData.imageThumbnailKey',
           updatedAt: '$updatedAt',
           phones: {
             $setDifference: [
@@ -1004,6 +1114,8 @@ class People extends AggregatableCollection<PersonDocument> {
               contactNumber2: '$contactNumber2',
               imageId: '$imageId',
               imageThumbnailId: '$imageThumbnailId',
+              imageKey: '$imageKey',
+              imageThumbnailKey: '$imageThumbnailKey',
               updatedAt: '$updatedAt',
             },
           },

@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type RouteComponentProps } from 'react-router';
 import { useQuery } from '@apollo/client/react';
-import { LockOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import {
+  CheckOutlined,
+  LockOutlined,
+  PlusCircleOutlined,
+} from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Button, Flex, Pagination, Space, Spin, Table } from 'antd';
 
@@ -62,6 +66,14 @@ const columns: any[] = [
     },
   },
   {
+    title: 'Chat Account',
+    key: 'hasChatAccount',
+    width: 120,
+    align: 'center',
+    render: (_text: unknown, record: UserRow) =>
+      record.hasChatAccount ? <CheckOutlined /> : null,
+  },
+  {
     title: 'Karkun Name',
     key: 'karkun.name',
     render: (_text: unknown, record: UserRow) =>
@@ -70,9 +82,9 @@ const columns: any[] = [
           person={{
             _id: record.karkun._id,
             name: record.karkun.sharedData.name,
-            imageId: record.karkun.sharedData.imageId ?? undefined,
-            imageThumbnailId:
-              record.karkun.sharedData.imageThumbnailId ?? undefined,
+            imageUrl: record.karkun.sharedData.imageUrl ?? undefined,
+            imageThumbnailUrl:
+              record.karkun.sharedData.imageThumbnailUrl ?? undefined,
           }}
           onPersonNameClicked={noop}
         />

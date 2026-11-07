@@ -119,9 +119,9 @@ export default class Cards extends Component<CardsProps> {
       ? 'info_box'
       : 'info_box hidden';
 
-    const karkunImage = karkun.imageData ? (
+    const karkunImage = karkun.imageUrl ? (
       <img
-        src={`data:image/jpeg;base64,${karkun.imageData}`}
+        src={karkun.imageUrl}
         style={{ maxHeight: '100%', width: 'auto' }}
         alt={karkun.name}
       />

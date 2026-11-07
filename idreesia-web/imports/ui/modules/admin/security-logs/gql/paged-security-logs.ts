@@ -22,11 +22,11 @@ const PAGED_SECURITY_LOGS: TypedDocumentNode<
         dataSource
         dataSourceDetail
         userName
-        userImageId
-        userImageThumbnailId
+        userImageUrl
+        userImageThumbnailUrl
         operationByName
-        operationByImageId
-        operationByImageThumbnailId
+        operationByImageUrl
+        operationByImageThumbnailUrl
       }
     }
   }

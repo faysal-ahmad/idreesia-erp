@@ -34,6 +34,12 @@ const sidebarsMap: Record<
   [ModuleNames.security]: React.lazy(
     () => import('/imports/ui/modules/security/sidebar')
   ),
+  [ModuleNames.correspondence]: React.lazy(
+    () => import('/imports/ui/modules/correspondence/sidebar')
+  ),
+  [ModuleNames.workspaces]: React.lazy(
+    () => import('/imports/ui/modules/workspaces/sidebar')
+  ),
 };
 
 const SidebarContent = ({ history }: Props) => {

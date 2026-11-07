@@ -19,13 +19,6 @@ type Query {
 }
 
 type Mutation {
-  createAttachment(
-    name: String
-    description: String
-    mimeType: String
-    data: String!
-  ): Attachment
-
   updateAttachment(_id: String!, name: String, description: String): Attachment
 }
 `;

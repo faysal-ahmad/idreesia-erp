@@ -29,10 +29,9 @@ export interface PersonListItem {
   contactNumber2?: string | null;
   city?: string | null;
   country?: string | null;
-  imageId?: string | null;
-  imageThumbnailId?: string | null;
+  imageUrl?: string | null;
+  imageThumbnailUrl?: string | null;
   imageVectorStatus?: string | null;
-  image?: { data?: string | null } | null;
   criminalRecord?: string | null;
   otherNotes?: string | null;
   isKarkun?: boolean | null;
@@ -175,12 +174,9 @@ export default class PersonGeneralList extends Component<Props, State> {
             person={{
               _id: record._id,
               name: record.name ?? '',
-              imageId: record.imageId ?? undefined,
-              imageThumbnailId: record.imageThumbnailId ?? undefined,
+              imageUrl: record.imageUrl ?? undefined,
+              imageThumbnailUrl: record.imageThumbnailUrl ?? undefined,
               imageVectorStatus: record.imageVectorStatus,
-              image: record.image
-                ? { data: record.image.data ?? undefined }
-                : undefined,
             }}
             onPersonNameClicked={() => this.props.handleSelectItem?.(record)}
           />

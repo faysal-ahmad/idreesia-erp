@@ -2,7 +2,7 @@ import React from 'react';
 import { noop } from 'lodash';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
-import { Button, Form, Space } from 'antd';
+import { Button, Flex, Form, Space } from 'antd';
 
 interface Props {
   handleCancel?(): void;
@@ -11,6 +11,8 @@ interface Props {
   fullWidth?: boolean;
   /** Hide the Save button, leaving only Cancel. */
   hideSave?: boolean;
+  /** Extra content shown at the left end of the row (e.g. a page action). */
+  extra?: React.ReactNode;
 }
 
 const buttonItemLayout = {
@@ -29,11 +31,9 @@ const FormButtonsSaveCancel = ({
   isFieldsTouched,
   fullWidth = false,
   hideSave = false,
-}: Props) => (
-  <Form.Item
-    {...(fullWidth ? fullWidthButtonLayout : buttonItemLayout)}
-    style={fullWidth ? { marginBottom: 0 } : undefined}
-  >
+  extra,
+}: Props) => {
+  const buttons = (
     <Space size={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
       <Button
         size="large"
@@ -55,7 +55,23 @@ const FormButtonsSaveCancel = ({
         </Button>
       )}
     </Space>
-  </Form.Item>
-);
+  );
+
+  return (
+    <Form.Item
+      {...(fullWidth ? fullWidthButtonLayout : buttonItemLayout)}
+      style={fullWidth ? { marginBottom: 0 } : undefined}
+    >
+      {extra ? (
+        <Flex justify="space-between" align="center" gap={8}>
+          <div>{extra}</div>
+          {buttons}
+        </Flex>
+      ) : (
+        buttons
+      )}
+    </Form.Item>
+  );
+};
 
 export default FormButtonsSaveCancel;

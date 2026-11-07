@@ -13,8 +13,8 @@ const DUPLICATE_PHONE_NUMBERS: TypedDocumentNode<DuplicatePhoneNumbersQuery> = g
         cnicNumber
         contactNumber1
         contactNumber2
-        imageId
-        imageThumbnailId
+        imageUrl
+        imageThumbnailUrl
         updatedAt
       }
     }

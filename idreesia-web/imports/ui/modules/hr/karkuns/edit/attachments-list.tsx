@@ -5,6 +5,7 @@ import { type match } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client/react';
 
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
+import { AttachmentCategory } from 'meteor/idreesia-common/constants';
 
 import {
   HR_KARKUN_BY_ID,
@@ -53,6 +54,7 @@ const AttachmentsList = ({ karkunId, match }: Props) => {
 
   return (
     <AttachmentsListControl
+      category={AttachmentCategory.PROFILE}
       canUploadDocument
       canEditAttachments
       attachments={(data?.hrKarkunById?.karkunData?.attachments ?? []) as any}

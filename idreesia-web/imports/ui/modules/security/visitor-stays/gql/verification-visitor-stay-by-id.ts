@@ -31,7 +31,7 @@ const VERIFICATION_VISITOR_STAY_BY_ID: TypedDocumentNode<
           cnicNumber
           contactNumber1
           contactNumber2
-          imageId
+          imageUrl
         }
         visitorData {
           city

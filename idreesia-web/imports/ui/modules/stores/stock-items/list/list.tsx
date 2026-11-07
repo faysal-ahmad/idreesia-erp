@@ -394,7 +394,7 @@ const List = ({
                         _id: record._id,
                         physicalStoreId,
                         name: record.name ?? '',
-                        imageId: record.imageId ?? undefined,
+                        imageUrl: record.imageUrl,
                       }
                     : null
                 }

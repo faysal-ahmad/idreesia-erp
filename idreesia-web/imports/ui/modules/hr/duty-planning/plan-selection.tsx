@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { SyncOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Segmented, Space, Spin, TreeSelect } from 'antd';
+import { Button, Cascader, DatePicker, Segmented, Space, Spin } from 'antd';
 
 import {
   useAllDutyLocations,
@@ -65,7 +65,7 @@ const PlanSelection = ({
     (item): item is LocationOption =>
       item?._id != null && item.dutyId != null && item.name != null
   );
-  const treeData = useMemo(
+  const cascaderOptions = useMemo(
     () =>
       duties
         .slice()
@@ -74,19 +74,10 @@ const PlanSelection = ({
           const dutyChildren = locations
             .filter(item => item.dutyId === duty._id)
             .sort((left, right) => left.name.localeCompare(right.name))
-            .map(item => ({
-              title: item.name,
-              label: `${duty.name} · ${item.name}`,
-              value: item._id,
-            }));
+            .map(item => ({ label: item.name, value: item._id }));
           if (dutyChildren.length === 0) return [];
           return [
-            {
-              title: duty.name,
-              value: `duty:${duty._id}`,
-              selectable: false,
-              children: dutyChildren,
-            },
+            { label: duty.name, value: duty._id, children: dutyChildren },
           ];
         }),
     [duties, locations]
@@ -118,17 +109,23 @@ const PlanSelection = ({
       <div className="duty-roster-selection">
         <div className="duty-roster-toolbar">
           <Space size={12}>
-            <span className="duty-roster-select-label">Duty Location</span>
-            <TreeSelect
+            <span className="duty-roster-select-label">Duty</span>
+            <Cascader
               className="duty-roster-location-select"
-              placeholder="Select a duty location"
+              placeholder="Select a duty"
               showSearch
-              treeDefaultExpandAll
-              treeNodeFilterProp="title"
-              treeNodeLabelProp="label"
-              treeData={treeData}
-              value={locationId || undefined}
-              onChange={value => onLocationIdChange(value ? String(value) : '')}
+              expandTrigger="hover"
+              options={cascaderOptions}
+              value={
+                selection
+                  ? [selection.duty._id, selection.location._id]
+                  : undefined
+              }
+              onChange={value =>
+                onLocationIdChange(
+                  value && value.length > 1 ? String(value[value.length - 1]) : ''
+                )
+              }
             />
           </Space>
           <Space size={12}>

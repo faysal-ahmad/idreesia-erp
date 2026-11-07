@@ -2,7 +2,6 @@ import React, { type ReactNode } from 'react';
 import { Avatar, List } from 'antd-mobile';
 import type { MobileVisitorListFieldsFragment } from 'meteor/idreesia-common/types/client-operations';
 
-import { getBackendFileUrl } from '/imports/startup/backend';
 import { PersonTags } from './person-tags';
 
 /** Shape of the MobileVisitorListFields fragment (gql/visitor-list-fields.ts). */
@@ -18,7 +17,7 @@ interface Props {
 
 export const VisitorListItem = ({ visitor, extra, onClick }: Props) => {
   const { sharedData, visitorData } = visitor;
-  const imageUrl = getBackendFileUrl(sharedData?.imageThumbnailId ?? sharedData?.imageId);
+  const imageUrl = sharedData?.imageThumbnailUrl ?? sharedData?.imageUrl;
   const place = [visitorData?.city, visitorData?.country].filter(Boolean).join(', ');
   const details = [sharedData?.cnicNumber, sharedData?.contactNumber1, place].filter(Boolean);
 

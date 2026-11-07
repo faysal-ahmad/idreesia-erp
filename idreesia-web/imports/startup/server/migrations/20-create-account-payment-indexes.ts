@@ -1,7 +1,8 @@
 import { Migrations } from 'meteor/quave:migrations';
 
-// Payments collection has since been dropped - see migration 42.
-import { PaymentsHistory } from 'meteor/idreesia-common/server/collections/accounts';
+// Payments collection has since been dropped - see migration 42 - and
+// PaymentsHistory - see migration 59.
+// import { PaymentsHistory } from 'meteor/idreesia-common/server/collections/accounts';
 
 Migrations.add({
   version: 20,
@@ -15,7 +16,8 @@ Migrations.add({
     // await payments.createIndex({ paymentDate: 1 }, { background: true });
     // await payments.createIndex({ isDeleted: 1 }, { background: true });
 
-    const paymentsHistory = PaymentsHistory.rawCollection();
-    await paymentsHistory.createIndex({ paymentId: 1 }, { background: true });
+    // PaymentsHistory collection has since been dropped.
+    // const paymentsHistory = PaymentsHistory.rawCollection();
+    // await paymentsHistory.createIndex({ paymentId: 1 }, { background: true });
   },
 });

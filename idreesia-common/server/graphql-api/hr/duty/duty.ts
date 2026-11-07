@@ -27,10 +27,10 @@ extend type Query {
 
 extend type Mutation {
   createDuty(name: String!, isMehfilDuty: Boolean!, description: String, committeeId: String): DutyType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateDuty(id: String!, name: String!, description: String, committeeId: String): DutyType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeDuty(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 `;

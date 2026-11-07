@@ -1,4 +1,6 @@
 export { default as ActionNames } from './action-names';
+export { default as AttachmentCategory } from './attachment-category';
+export type { AttachmentCategoryValue } from './attachment-category';
 export { default as DataSource } from './data-source';
 export { default as Formats } from './formats';
 export { default as ImageVectorStatus } from './image-vector-status';

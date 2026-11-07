@@ -31,6 +31,7 @@ import { type CSSProperties } from 'react';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
+import type { AttachmentCategoryValue } from 'meteor/idreesia-common/constants';
 
 import {
   TakePicture,
@@ -47,6 +48,8 @@ interface Attachment {
 }
 
 interface Props {
+  /** What new attachments belong to - decides where they are stored. */
+  category: AttachmentCategoryValue;
   attachments?: Attachment[];
   canTakePicture?: boolean;
   canUploadDocument?: boolean;
@@ -88,6 +91,7 @@ const updateAttachmentMutation: TypedDocumentNode<
 `;
 
 const AttachmentsList = ({
+  category,
   attachments = [],
   canTakePicture = false,
   canUploadDocument = false,
@@ -220,6 +224,7 @@ const AttachmentsList = ({
           <Row gutter={16}>
             <Col order={1}>
               <UploadAttachment
+                category={category}
                 disabled={!canUploadDocument}
                 buttonText="Upload Attachment"
                 onUploadFinish={handleAttachmentAdded}
@@ -228,6 +233,7 @@ const AttachmentsList = ({
             {canTakePicture ? (
               <Col order={2}>
                 <TakePicture
+                  category={category}
                   disabled={!canTakePicture}
                   buttonText="Capture Image"
                   onPictureTaken={handleAttachmentAdded}

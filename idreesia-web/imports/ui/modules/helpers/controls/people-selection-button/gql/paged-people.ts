@@ -22,18 +22,8 @@ const PAGED_PEOPLE: TypedDocumentNode<
           cnicNumber
           contactNumber1
           contactNumber2
-          imageId
-          image {
-            _id
-            name
-            description
-            mimeType
-            data
-          }
-          imageThumbnail {
-            _id
-            data
-          }
+          imageUrl
+          imageThumbnailUrl
         }
         visitorData {
           city

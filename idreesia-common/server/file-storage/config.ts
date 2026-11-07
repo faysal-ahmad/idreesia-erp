@@ -1,6 +1,8 @@
 export interface FileStorageConfig {
   endpoint: string;
   publicEndpoint: string;
+  /** Spaces CDN (edge) endpoint for public files, when the bucket has one. */
+  cdnEndpoint: string | null;
   region: string;
   bucket: string;
   accessKeyId: string;
@@ -31,6 +33,7 @@ export function getFileStorageConfig(): FileStorageConfig {
     // Presigned URLs are opened by the browser, which may not be able to
     // resolve the internal endpoint (e.g. the `rustfs` compose service name).
     publicEndpoint: process.env.S3_PUBLIC_ENDPOINT || endpoint,
+    cdnEndpoint: process.env.S3_CDN_ENDPOINT || null,
     region: process.env.S3_REGION || 'us-east-1',
     bucket: process.env.S3_BUCKET as string,
     accessKeyId: process.env.S3_ACCESS_KEY_ID as string,

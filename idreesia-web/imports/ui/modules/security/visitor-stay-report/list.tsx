@@ -50,7 +50,7 @@ const VIEWPORT_BOTTOM_GAP = 16;
 interface VisitorRecord {
   _id: string;
   name: string;
-  imageId?: string | null;
+  imageUrl?: string | null;
   city?: string | null;
   country?: string | null;
   criminalRecord?: string | null;
@@ -212,7 +212,7 @@ class List extends Component<ListProps, ListState> {
           visitor={{
             _id: record.refVisitor._id,
             name: record.refVisitor.name,
-            imageId: record.refVisitor.imageId ?? undefined,
+            imageUrl: record.refVisitor.imageUrl ?? undefined,
           }}
           onVisitorNameClicked={(visitor) => this.props.handleItemSelected(visitor)}
         />
@@ -586,7 +586,7 @@ const ListWithData = (props: ListWithDataProps) => {
         refVisitor: {
           _id: refVisitor._id,
           name,
-          imageId: refVisitor.sharedData?.imageId,
+          imageUrl: refVisitor.sharedData?.imageUrl,
           city: refVisitor.visitorData?.city,
           country: refVisitor.visitorData?.country,
           criminalRecord: refVisitor.visitorData?.criminalRecord,

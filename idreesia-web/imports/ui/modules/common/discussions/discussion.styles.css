@@ -1,0 +1,515 @@
+/*
+ * Discussions (reusable): header, message list and composer. Uses the shared
+ * chrome tokens from docs/ui-design-guidelines.md.
+ */
+
+.discussion {
+  display: flex;
+  flex-direction: column;
+  /* Fill Layout.Content exactly so only the message list scrolls. */
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 420px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.discussion-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #f3f4f6;
+  border-bottom: 1px solid #d0d5dd;
+}
+
+.discussion-header-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.discussion-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #344054;
+}
+
+.discussion-subtitle {
+  font-size: 12px;
+  color: #667085;
+}
+
+.discussion-state {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+.discussion-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+
+.discussion-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Side panel (thread, pinned, starred), like Rocket.Chat's contextual bar. */
+.discussion-side-panel {
+  position: relative;
+  /* Width (20%-50% of the discussion) is set inline; see side-panel.tsx. */
+  flex: 0 0 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #d0d5dd;
+  background: #fff;
+}
+
+/* Drag handle on the panel's left edge. */
+.discussion-side-panel-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -4px;
+  width: 8px;
+  cursor: col-resize;
+  touch-action: none;
+  z-index: 2;
+}
+
+.discussion-side-panel-resizer:hover,
+.discussion-side-panel-resizer:active {
+  background: linear-gradient(
+    to right,
+    transparent 3px,
+    #1677ff 3px,
+    #1677ff 5px,
+    transparent 5px
+  );
+}
+
+.discussion-side-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px 6px 16px;
+  border-bottom: 1px solid #eaecf0;
+}
+
+.discussion-messages {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 0 16px;
+  background: #fff;
+}
+
+/* Day divider: a rule with the date in a pill, as in Rocket.Chat. */
+.discussion-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 20px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #344054;
+}
+
+.discussion-divider::before,
+.discussion-divider::after {
+  content: '';
+  flex: 1 1 auto;
+  border-top: 1px solid #eaecf0;
+}
+
+.discussion-divider-label {
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: #f2f4f7;
+}
+
+/* Messages: left-aligned rows with an avatar gutter, like Rocket.Chat. */
+.discussion-message {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  padding: 6px 20px;
+}
+
+.discussion-message-pinned {
+  background: #fffaeb;
+}
+
+/* Hover actions, top right of the message (Rocket.Chat style). */
+.discussion-message-toolbar {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  display: none;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid #eaecf0;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.1);
+  z-index: 1;
+}
+
+.discussion-message:hover .discussion-message-toolbar,
+.discussion-message-toolbar:focus-within {
+  display: flex;
+}
+
+.discussion-message-marker {
+  font-size: 12px;
+  color: #b54708;
+}
+
+.discussion-message-marker-star {
+  color: #fdb022;
+}
+
+.discussion-message-edited {
+  font-size: 12px;
+  color: #98a2b3;
+}
+
+.discussion-message-editor-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.discussion-message-editor-hint {
+  margin-right: auto;
+  font-size: 12px;
+  color: #98a2b3;
+}
+
+.discussion-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.discussion-reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid #eaecf0;
+  border-radius: 12px;
+  background: #f9fafb;
+  color: #344054;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.discussion-reaction:hover:not(:disabled) {
+  border-color: #b8d0f5;
+}
+
+.discussion-reaction:disabled {
+  cursor: default;
+}
+
+.discussion-reaction-mine {
+  border-color: #84adff;
+  background: #eff4ff;
+  color: #1d4ed8;
+}
+
+.discussion-reaction-emoji {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.discussion-reaction-add {
+  color: #667085;
+}
+
+.discussion-thread-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.discussion-thread-summary-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475467;
+}
+
+.discussion-message:hover {
+  background: #f7f8fa;
+}
+
+.discussion-message-grouped {
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+.discussion-message-gutter {
+  flex: 0 0 36px;
+  display: flex;
+  justify-content: center;
+}
+
+.discussion-message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  font-size: 18px;
+}
+
+/* Shared by message and mention avatars (discussion-avatar.tsx). */
+.discussion-avatar-image {
+  object-fit: cover;
+  background: #f2f4f7;
+}
+
+.discussion-avatar-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  user-select: none;
+}
+
+.discussion-message-hover-time {
+  visibility: hidden;
+  font-size: 11px;
+  line-height: 22px;
+  color: #98a2b3;
+  white-space: nowrap;
+}
+
+.discussion-message:hover .discussion-message-hover-time {
+  visibility: visible;
+}
+
+.discussion-message-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.discussion-message-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.discussion-message-sender {
+  font-weight: 600;
+  color: #101828;
+}
+
+.discussion-message-time {
+  font-size: 12px;
+  color: #98a2b3;
+}
+
+.discussion-message-text {
+  color: #344054;
+  line-height: 22px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.discussion-message-system {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+.discussion-message-system .discussion-message-body {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.discussion-message-system-text {
+  font-size: 13px;
+  font-style: italic;
+  color: #667085;
+}
+
+.discussion-message-attachment {
+  margin-top: 4px;
+}
+
+.discussion-attachment-image {
+  max-width: 280px;
+  max-height: 280px;
+  border-radius: 6px;
+}
+
+.discussion-attachment-audio {
+  width: 280px;
+  max-width: 100%;
+}
+
+.discussion-attachment-video {
+  max-width: 360px;
+  width: 100%;
+  border-radius: 6px;
+}
+
+.discussion-attachment-loading {
+  padding: 8px 24px;
+}
+
+.discussion-attachment-unavailable {
+  color: #98a2b3;
+  font-style: italic;
+}
+
+.discussion-composer {
+  padding: 12px 16px;
+  border-top: 1px solid #d0d5dd;
+  background: #fff;
+}
+
+.discussion-composer-error {
+  margin-bottom: 8px;
+}
+
+.discussion-composer-box {
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.discussion-composer-box:focus-within {
+  border-color: #1677ff;
+}
+
+.discussion-composer-input.ant-input {
+  padding: 10px 12px;
+}
+
+.discussion-composer-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  background: #f9fafb;
+  border-top: 1px solid #eaecf0;
+}
+
+.discussion-composer-divider.ant-divider-vertical {
+  height: 20px;
+  margin: 0 6px;
+}
+
+.discussion-composer-toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.discussion-composer-send.ant-btn:not(:disabled) {
+  color: #1677ff;
+}
+
+/* @mention suggestions (above the composer, as in Rocket.Chat) */
+.discussion-mention-popup {
+  min-width: 320px;
+}
+
+.discussion-mention-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.discussion-mention-avatar {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.discussion-mention-name {
+  font-weight: 600;
+  color: #101828;
+}
+
+.discussion-mention-username {
+  color: #667085;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.discussion-md-mention {
+  padding: 0 3px;
+  border-radius: 4px;
+  background: #fff4e5;
+  color: #b54708;
+  font-weight: 600;
+}
+
+/* Rocket.Chat markdown in message bubbles */
+.discussion-md-code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(16, 24, 40, 0.06);
+  font-family: SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.discussion-md-code-block {
+  margin: 4px 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(16, 24, 40, 0.06);
+  font-family: SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+
+/* Search box at the top of the search panel. */
+.discussion-search {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eaecf0;
+}
+
+.discussion-search-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #667085;
+}
+
+/* "Load older" button at the top of a message list. */
+.discussion-load-older {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 4px;
+}
+
+/* A message jumped to from search, pinned or starred. */
+.discussion-message-highlight {
+  background: #fff7e0;
+  box-shadow: inset 3px 0 0 #faad14;
+  transition: background 0.6s ease;
+}

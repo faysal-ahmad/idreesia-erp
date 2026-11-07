@@ -2,11 +2,12 @@
   "name": "idreesia-webview-camera",
   "version": "1.0.0",
   "private": true,
-  "description": "Lets the app's own pages use the camera through getUserMedia without WKWebView's extra per-launch permission prompt.",
+  "description": "Lets the app's own pages use the camera and microphone through getUserMedia (no per-launch WKWebView prompt on iOS; microphone permission on Android).",
   "cordova": {
     "id": "idreesia-webview-camera",
     "platforms": [
-      "ios"
+      "ios",
+      "android"
     ]
   },
   "keywords": [

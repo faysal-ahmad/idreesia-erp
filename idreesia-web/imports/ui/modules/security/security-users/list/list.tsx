@@ -83,9 +83,9 @@ const List = ({ history, location }: ListProps) => {
         const personData = {
           _id: record.person._id,
           name: record.person.sharedData?.name ?? '',
-          imageId: record.person.sharedData?.imageId ?? undefined,
-          imageThumbnailId:
-            record.person.sharedData?.imageThumbnailId ?? undefined,
+          imageUrl: record.person.sharedData?.imageUrl ?? undefined,
+          imageThumbnailUrl:
+            record.person.sharedData?.imageThumbnailUrl ?? undefined,
         };
 
         return (

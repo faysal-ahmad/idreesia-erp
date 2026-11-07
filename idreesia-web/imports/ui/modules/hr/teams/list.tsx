@@ -65,8 +65,8 @@ const LIST_ALL_TEAMS: TypedDocumentNode<
           _id
           sharedData {
             name
-            imageId
-            imageThumbnailId
+            imageUrl
+            imageThumbnailUrl
             cnicNumber
             contactNumber1
             contactNumber2
@@ -393,8 +393,8 @@ const List = () => {
       .map(member => ({
         _id: member.karkunId,
         name: member.karkun?.sharedData?.name ?? '',
-        imageId: member.karkun?.sharedData?.imageId,
-        imageThumbnailId: member.karkun?.sharedData?.imageThumbnailId,
+        imageUrl: member.karkun?.sharedData?.imageUrl,
+        imageThumbnailUrl: member.karkun?.sharedData?.imageThumbnailUrl,
         cnicNumber: member.karkun?.sharedData?.cnicNumber,
         contactNumber1: member.karkun?.sharedData?.contactNumber1,
         contactNumber2: member.karkun?.sharedData?.contactNumber2,

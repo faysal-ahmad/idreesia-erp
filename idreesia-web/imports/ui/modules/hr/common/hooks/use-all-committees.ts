@@ -2,16 +2,16 @@ import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import type {
-  ComposerAllCommitteesQuery,
-  ComposerAllCommitteesQueryVariables,
+  ComposerHrCommitteeOptionsQuery,
+  ComposerHrCommitteeOptionsQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
 const ALL_COMMITTEES_QUERY: TypedDocumentNode<
-  ComposerAllCommitteesQuery,
-  ComposerAllCommitteesQueryVariables
+  ComposerHrCommitteeOptionsQuery,
+  ComposerHrCommitteeOptionsQueryVariables
 > = gql`
-  query composerAllCommittees {
-    allCommittees {
+  query composerHrCommitteeOptions {
+    hrCommitteeOptions {
       _id
       name
     }
@@ -25,6 +25,6 @@ export const useAllCommittees = () => {
     ...queryResult,
     loading,
     allCommitteesLoading: loading,
-    allCommittees: data?.allCommittees ?? null,
+    allCommittees: data?.hrCommitteeOptions ?? null,
   };
 };

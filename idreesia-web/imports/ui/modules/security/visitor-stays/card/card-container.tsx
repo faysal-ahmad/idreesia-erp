@@ -15,7 +15,7 @@ export interface CardVisitor {
   city?: string | null;
   country?: string | null;
   criminalRecord?: string | null;
-  imageId?: string | null;
+  imageUrl?: string | null;
 }
 
 export interface CardVisitorStay {

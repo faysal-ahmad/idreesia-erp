@@ -27,6 +27,12 @@ const routersMap: Record<
   [ModuleNames.security]: React.lazy(
     () => import('/imports/ui/modules/security/router')
   ),
+  [ModuleNames.correspondence]: React.lazy(
+    () => import('/imports/ui/modules/correspondence/router')
+  ),
+  [ModuleNames.workspaces]: React.lazy(
+    () => import('/imports/ui/modules/workspaces/router')
+  ),
 };
 
 const MainContent = () => {

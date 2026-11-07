@@ -1,5 +1,3 @@
-import { Mongo } from 'meteor/mongo';
-
 export { default as Mehfils } from './mehfils';
 export { default as MehfilDuties } from './mehfil-duties';
 export { default as MehfilKarkuns } from './mehfil-karkuns';
@@ -19,12 +17,3 @@ export type {
   SecurityServerUsageChannelStatsDocument,
 } from './security-server-usage-stats';
 
-export const Visitors = new Mongo.Collection<Record<string, any>>(
-  'security-visitors'
-) as Mongo.Collection<Record<string, any>> & {
-  isCnicInUse(cnicNumber: string): Promise<boolean>;
-  isContactNumberInUse(contactNumber: string): Promise<boolean>;
-};
-export const VisitorMulakaats = new Mongo.Collection(
-  'security-visitor-mulakaats'
-);

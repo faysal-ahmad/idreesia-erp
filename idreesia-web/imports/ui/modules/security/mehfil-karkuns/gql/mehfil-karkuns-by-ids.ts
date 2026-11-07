@@ -30,14 +30,8 @@ export const MEHFIL_KARKUNS_BY_IDS: TypedDocumentNode<
           cnicNumber
           contactNumber1
           contactNumber2
-          image {
-            _id
-            data
-          }
-          imageThumbnail {
-            _id
-            data
-          }
+          imageUrl
+          imageThumbnailUrl
         }
         visitorData {
           city

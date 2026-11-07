@@ -13,8 +13,8 @@ const DUPLICATE_CNICS: TypedDocumentNode<DuplicateCnicsQuery> = gql`
         cnicNumber
         contactNumber1
         contactNumber2
-        imageId
-        imageThumbnailId
+        imageUrl
+        imageThumbnailUrl
         updatedAt
       }
     }

@@ -19,11 +19,11 @@ const Picture = ({ employeeId, employee }: Props) => {
     refetchQueries: ['hrPeoplePagedHrKarkuns', 'hrKarkunByIdForPeople'],
   });
 
-  const updateImageId = (imageId: string) => {
+  const updateImage = (imageData: string) => {
     setHrKarkunProfileImage({
       variables: {
         _id: employeeId,
-        imageId,
+        imageData,
       },
     }).catch((error: Error) => {
       message.error(error.message, 5);
@@ -32,10 +32,9 @@ const Picture = ({ employeeId, employee }: Props) => {
 
   return (
     <PersonPicture
-      imageId={employee.sharedData?.imageId}
+      imageUrl={employee.sharedData?.imageUrl}
       personName={employee.sharedData?.name ?? undefined}
-      onUploadFinish={updateImageId}
-      onPictureTaken={updateImageId}
+      onImageSelected={updateImage}
     />
   );
 };

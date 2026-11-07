@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
         id="idreesia-webview-camera"
         version="1.0.0">
   <name>Idreesia WebView Camera</name>
   <description>
-    Lets the app's own pages use the camera through getUserMedia without
-    WKWebView's extra per-launch permission prompt. iOS's normal camera
-    permission (NSCameraUsageDescription) still applies.
+    Lets the app's own pages use the camera and microphone through
+    getUserMedia. iOS: without WKWebView's extra per-launch permission prompt
+    (the normal NSCameraUsageDescription / NSMicrophoneUsageDescription
+    permission still applies). Android: declares the microphone permission
+    the chat's voice notes need (requested at runtime through
+    cordova-plugin-android-permissions).
   </description>
 
   <platform name="ios">
@@ -18,5 +22,12 @@
     </config-file>
     <header-file src="src/ios/IdreesiaWebViewCamera.h" />
     <source-file src="src/ios/IdreesiaWebViewCamera.m" />
+  </platform>
+
+  <platform name="android">
+    <config-file target="AndroidManifest.xml" parent="/manifest">
+      <uses-permission android:name="android.permission.RECORD_AUDIO" />
+      <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    </config-file>
   </platform>
 </plugin>

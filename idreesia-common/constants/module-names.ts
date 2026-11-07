@@ -3,6 +3,8 @@ const ModuleNames = {
   hr: 'HR',
   stores: 'Stores',
   security: 'Security',
+  correspondence: 'Correspondence',
+  workspaces: 'Workspaces',
 };
 
 export default ModuleNames;

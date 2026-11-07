@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="idreesia-scene-lifecycle"
+        version="1.0.0">
+  <name>Idreesia Scene Life Cycle</name>
+  <description>
+    Apps built with the iOS 27 SDK (Xcode 27) must adopt the UIKit scene
+    life cycle or iOS refuses to launch them. Meteor 3.5/3.6 builds with
+    cordova-ios 7.1.1, which predates scenes (cordova-ios 8 supports them).
+    This declares a single window scene and moves Cordova's web view into it.
+    Remove this plugin once Meteor builds with cordova-ios 8.
+  </description>
+
+  <platform name="ios">
+    <config-file target="*-Info.plist" parent="UIApplicationSceneManifest">
+      <dict>
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <false/>
+        <key>UISceneConfigurations</key>
+        <dict>
+          <key>UIWindowSceneSessionRoleApplication</key>
+          <array>
+            <dict>
+              <key>UISceneConfigurationName</key>
+              <string>Default Configuration</string>
+              <key>UISceneDelegateClassName</key>
+              <string>IdreesiaSceneDelegate</string>
+            </dict>
+          </array>
+        </dict>
+      </dict>
+    </config-file>
+    <header-file src="src/ios/IdreesiaSceneDelegate.h" />
+    <!-- Xcode 27 also rejects CordovaLib's iOS 11 deployment target. -->
+    <hook type="after_prepare" src="hooks/cordova-lib-deployment-target.js" />
+    <hook type="after_plugin_install" src="hooks/cordova-lib-deployment-target.js" />
+    <source-file src="src/ios/IdreesiaSceneDelegate.m" />
+  </platform>
+</plugin>

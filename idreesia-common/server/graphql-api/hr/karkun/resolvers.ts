@@ -1,6 +1,7 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import { Committees } from 'meteor/idreesia-common/server/collections/hr';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
-import { computeImageVectorData } from 'meteor/idreesia-common/server/business-logic/common';
+import { setPersonImage } from 'meteor/idreesia-common/server/business-logic/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
 
 import { getKarkunsByPredefinedFilter } from './queries';
@@ -12,6 +13,9 @@ interface ResolverMap {
 
 const resolvers: ResolverMap = {
   Query: {
+    hrCommitteeOptions: async () =>
+      Committees.find({}, { sort: { name: 1 }, fields: { name: 1 } }).fetchAsync(),
+
     hrKarkunById: async (obj, { _id }) => People.findOneAsync(_id),
 
     hrKarkunsById: async (obj, { _ids }) => {
@@ -119,13 +123,8 @@ const resolvers: ResolverMap = {
       return People.updatePerson(personValues, user);
     },
 
-    setHrKarkunProfileImage: async (obj, values, { user }) => {
-      const personValues = await People.karkunToPerson(values);
-      personValues.sharedData.imageVectorData = await computeImageVectorData(
-        values.imageId
-      );
-      return People.updatePerson(personValues, user);
-    },
+    setHrKarkunProfileImage: async (obj, { _id, imageData }, { user }) =>
+      setPersonImage(user, _id, imageData),
 
     addHrKarkunAttachment: async (obj, { _id, attachmentId }, { user }) =>
       People.addAttachment({ _id, attachmentId }, user),

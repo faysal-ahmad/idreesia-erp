@@ -3,7 +3,6 @@ import { ImageViewer } from 'antd-mobile';
 import { UserOutline } from 'antd-mobile-icons';
 import { useQuery } from '@apollo/client/react';
 
-import { getBackendFileUrl } from '/imports/startup/backend';
 import { Page, PageEmpty, PageError, PageLoading } from '../../../layout';
 import { useParams } from '../../../router';
 import { SecurityPaths } from '../paths';
@@ -74,7 +73,7 @@ export const VisitorDetailScreen = ({ backTo = SecurityPaths.visitors }: Props) 
   const name = sharedData?.name ?? 'Unnamed visitor';
   // The full image, not the 160×160 thumbnail: this is for matching a face
   // against the person standing there.
-  const imageUrl = getBackendFileUrl(sharedData?.imageId ?? sharedData?.imageThumbnailId);
+  const imageUrl = sharedData?.imageUrl ?? sharedData?.imageThumbnailUrl;
   const place = [visitorData?.city, visitorData?.country].filter(Boolean).join(', ');
 
   return page(

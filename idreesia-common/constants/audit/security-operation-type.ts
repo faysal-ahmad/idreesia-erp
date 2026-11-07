@@ -6,6 +6,7 @@ const SecurityOperationType = {
   PERMISSIONS_CHANGED: 'permissions-changed',
   INSTANCE_ACCESS_CHANGED: 'instance-access-changed',
   GROUPS_CHANGED: 'groups-changed',
+  CHAT_ACCOUNT_CREATED: 'chat-account-created',
 
   LOGIN: 'login',
   INVALID_LOGIN_ATTEMPT: 'invalid-login-attempt',

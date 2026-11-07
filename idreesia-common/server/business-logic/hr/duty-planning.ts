@@ -1,4 +1,5 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import {
   Duties,
   DutyDayAttendances,
@@ -104,6 +105,8 @@ interface PersonDocument {
     name?: string | null;
     imageId?: string | null;
     imageThumbnailId?: string | null;
+    imageKey?: string | null;
+    imageThumbnailKey?: string | null;
   } | null;
 }
 
@@ -177,10 +180,7 @@ function personName(people: Map<string, PersonDocument>, karkunId: string) {
 
 function personImages(people: Map<string, PersonDocument>, karkunId: string) {
   const shared = people.get(karkunId)?.sharedData;
-  return {
-    imageId: shared?.imageId || null,
-    imageThumbnailId: shared?.imageThumbnailId || null,
-  };
+  return getPersonImageUrls(shared);
 }
 
 async function requireDutyAndLocation(
@@ -650,8 +650,8 @@ export interface DaysKarkun {
   karkunId: string;
   name: string;
   off: boolean;
-  imageId: string | null;
-  imageThumbnailId: string | null;
+  imageUrl: string | null;
+  imageThumbnailUrl: string | null;
   attendance: DutyAttendanceStatus | null;
 }
 

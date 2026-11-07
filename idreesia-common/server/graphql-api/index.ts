@@ -94,6 +94,9 @@ import SecurityServerProfileResolvers from './security/security-server-profile/r
 
 import SecurityServerAlertSchema from './security/security-server-alert/security-server-alert';
 import SecurityServerAlertResolvers from './security/security-server-alert/resolvers';
+
+import InboxSchema from './correspondence/inbox/inbox';
+import InboxResolvers from './correspondence/inbox/resolvers';
 import SecurityServerUsageSchema from './security/security-server-usage/security-server-usage';
 import SecurityServerUsageResolvers from './security/security-server-usage/resolvers';
 
@@ -129,6 +132,14 @@ import HRKarkunResolvers from './hr/karkun/resolvers';
 
 import SalarySchema from './hr/salary/salary';
 import SalaryResolvers from './hr/salary/resolvers';
+
+/**
+ * Workspaces Schema and Resolvers
+ */
+import WorkspaceCommitteeSchema from './workspaces/committee/committee';
+import WorkspaceCommitteeResolvers from './workspaces/committee/resolvers';
+import WorkspaceDiscussionsSchema from './workspaces/discussions/discussions';
+import WorkspaceDiscussionsResolvers from './workspaces/discussions/resolvers';
 
 /**
  * Schema and Resolvers for the Outstation module
@@ -204,6 +215,8 @@ const typeDefs = [
   SecurityServerAlertSchema,
   SecurityServerUsageSchema,
 
+  InboxSchema,
+
   HRAuditLogSchema,
   DutyShiftSchema,
   DutySchema,
@@ -214,6 +227,9 @@ const typeDefs = [
   JobSchema,
   HRKarkunSchema,
   SalarySchema,
+
+  WorkspaceCommitteeSchema,
+  WorkspaceDiscussionsSchema,
 
   CitySchema,
   CityMehfilSchema,
@@ -260,6 +276,8 @@ const resolvers = merge(
   SecurityServerAlertResolvers,
   SecurityServerUsageResolvers,
 
+  InboxResolvers,
+
   HRAuditLogResolvers,
   DutyShiftResolvers,
   DutyResolvers,
@@ -270,6 +288,9 @@ const resolvers = merge(
   JobResolvers,
   HRKarkunResolvers,
   SalaryResolvers,
+
+  WorkspaceCommitteeResolvers,
+  WorkspaceDiscussionsResolvers,
 
   CityResolvers,
   CityMehfilResolvers,

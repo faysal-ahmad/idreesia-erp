@@ -41,7 +41,9 @@ async function requireActiveProcessor() {
   }
 }
 
-// Lower sorts first - scheduled/waiting/in-progress jobs ahead of finished ones.
+// Lower sorts first - scheduled/waiting/in-progress jobs ahead of finished
+// ones. Failed and completed jobs form one "finished" group, ordered by when
+// they finished (see finishedAt).
 const STATE_SORT_PRIORITY: Record<JobState, number> = {
   running: 0,
   queued: 1,
@@ -49,8 +51,13 @@ const STATE_SORT_PRIORITY: Record<JobState, number> = {
   repeating: 3,
   paused: 4,
   failed: 5,
-  completed: 6,
+  completed: 5,
 };
+
+const FINISHED_PRIORITY = STATE_SORT_PRIORITY.completed;
+
+const finishedAt = (job: { lastFinishedAt?: Date; failedAt?: Date }) =>
+  (job.lastFinishedAt ?? job.failedAt)?.getTime() ?? 0;
 
 export default {
   Query: {
@@ -76,6 +83,10 @@ export default {
         const priorityDiff =
           STATE_SORT_PRIORITY[a.state] - STATE_SORT_PRIORITY[b.state];
         if (priorityDiff !== 0) return priorityDiff;
+        // Finished jobs: most recently finished first.
+        if (STATE_SORT_PRIORITY[a.state] === FINISHED_PRIORITY) {
+          return finishedAt(b) - finishedAt(a);
+        }
         return (b.nextRunAt?.getTime() ?? 0) - (a.nextRunAt?.getTime() ?? 0);
       });
 

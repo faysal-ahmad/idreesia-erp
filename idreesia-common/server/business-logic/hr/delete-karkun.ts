@@ -1,11 +1,9 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import {
-  Committees,
-  Salaries,
-  Teams,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { Salaries, Teams } from 'meteor/idreesia-common/server/collections/hr';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { MehfilKarkuns } from 'meteor/idreesia-common/server/collections/security';
+
+import { removePersonFromCommittees } from './committee';
 
 export async function deleteKarkun(karkunId: string) {
   const existingKarkun = await People.findOneAsync(karkunId);
@@ -31,13 +29,8 @@ export async function deleteKarkun(karkunId: string) {
       { multi: true }
     )
   );
-  promises.push(
-    Committees.updateAsync(
-      { 'members.karkunId': karkunId },
-      { $pull: { members: { karkunId } } },
-      { multi: true }
-    )
-  );
+  // Committee removal also takes them out of committee discussions.
+  promises.push(removePersonFromCommittees(karkunId));
   // Remove all salary records
   promises.push(Salaries.removeAsync({ karkunId: { $eq: karkunId } }));
   // Remove all mehfil karkun records

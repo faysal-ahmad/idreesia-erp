@@ -58,11 +58,3 @@ export const backendConnection: DDPConnection | null = backendUrl
 export const backendAccounts: AccountsClient | null = backendConnection
   ? new BackendAccountsClient({ connection: backendConnection })
   : null;
-
-/**
- * URL of a stored attachment (e.g. a person's photo) on the backend. The web's
- * getDownloadUrl() uses the page's own origin, which on mobile is the app,
- * not the backend.
- */
-export const getBackendFileUrl = (attachmentId?: string | null) =>
-  attachmentId ? `${backendUrl}/download-file?attachmentId=${attachmentId}` : undefined;

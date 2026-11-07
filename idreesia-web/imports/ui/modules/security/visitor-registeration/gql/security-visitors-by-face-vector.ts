@@ -22,7 +22,7 @@ const SECURITY_VISITORS_BY_FACE_VECTOR: TypedDocumentNode<
           cnicNumber
           contactNumber1
           contactNumber2
-          imageId
+          imageUrl
         }
         visitorData {
           city

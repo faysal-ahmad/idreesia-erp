@@ -18,8 +18,8 @@ type DutyPlanDaysKarkunType {
   karkunId: String
   name: String
   off: Boolean
-  imageId: String
-  imageThumbnailId: String
+  imageUrl: String
+  imageThumbnailUrl: String
   attendance: String
 }
 

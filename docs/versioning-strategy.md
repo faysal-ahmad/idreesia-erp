@@ -75,6 +75,8 @@ ghcr.io/<owner>/idreesia-web:1
 ghcr.io/<owner>/idreesia-web:latest
 ```
 
+The Rocket.Chat image (`containers/rocketchat/Dockerfile`) is published with the same tags as `ghcr.io/<owner>/idreesia-rocketchat`, so each ERP release has a matching Rocket.Chat image.
+
 ## Implementation
 
 The versioning logic lives in `scripts/resolve-release-version.mjs`.

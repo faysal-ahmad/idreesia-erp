@@ -4,6 +4,7 @@ import { useMutation } from '@apollo/client/react';
 
 import type { InventoryPurchaseFormByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { AttachmentsList as AttachmentsListControl } from '/imports/ui/modules/helpers/controls';
+import { AttachmentCategory } from 'meteor/idreesia-common/constants';
 import { ADD_PURCHASE_FORM_ATTACHMENT, REMOVE_PURCHASE_FORM_ATTACHMENT } from '../gql';
 
 type PurchaseForm = NonNullable<InventoryPurchaseFormByIdQuery['purchaseFormById']>;
@@ -20,6 +21,7 @@ const AttachmentsList = ({ physicalStoreId, purchaseFormById }: Props) => {
 
   return (
     <AttachmentsListControl
+      category={AttachmentCategory.PURCHASE_FORM}
       canUploadDocument
       canEditAttachments
       attachments={(purchaseFormById.attachments ?? undefined) as Parameters<typeof AttachmentsListControl>[0]['attachments']}

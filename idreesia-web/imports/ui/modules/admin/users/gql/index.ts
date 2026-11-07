@@ -4,3 +4,4 @@ export { default as PAGED_USERS } from './paged-users';
 export { default as USER_BY_ID } from './user-by-id';
 export { default as SET_PERMISSIONS } from './set-permissions';
 export { default as SET_INSTANCE_ACCESS } from './set-instant-access';
+export { default as CREATE_CHAT_ACCOUNT } from './create-chat-account';

@@ -4,7 +4,6 @@ import { Col, Divider, Row } from 'antd';
 
 import type { HrKarkunByIdForPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
 import { formatDate } from 'meteor/idreesia-common/utilities/date-fns';
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import { DisplayItem } from '/imports/ui/modules/helpers/controls';
 
 const barcodeOptions = {
@@ -30,7 +29,7 @@ interface Props {
 export class NonDetailedForm extends Component<Props> {
   getImageColumn = () => {
     const { hrKarkunById } = this.props;
-    const url = getDownloadUrl(hrKarkunById.sharedData?.imageId);
+    const url = hrKarkunById.sharedData?.imageUrl;
     return url ? (
       <Col order={2}>
         <img src={url} style={{ width: '200px' }} alt="Karkun" />

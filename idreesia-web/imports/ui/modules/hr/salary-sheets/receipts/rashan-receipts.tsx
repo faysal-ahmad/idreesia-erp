@@ -31,10 +31,10 @@ const HeaderStyle: CSSProperties = {
 
 export default class RashanReceipts extends Component<ReceiptsProps> {
   getImageColumn = (karkun: NonNullable<RashanReceiptRecord['karkun']>) =>
-    karkun.sharedData?.image ? (
+    karkun.sharedData?.imageUrl ? (
       <Col order={1}>
         <img
-          src={`data:image/jpeg;base64,${karkun.sharedData.image.data}`}
+          src={karkun.sharedData.imageUrl}
           style={{ width: '100px' }}
           alt={karkun.sharedData?.name ?? undefined}
         />

@@ -7,7 +7,10 @@ import { OperationType } from 'meteor/idreesia-common/constants/audit';
 import type { PagedHrAuditLogsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-import getFormattedValue from './get-formatted-value';
+import getFormattedValue, {
+  isHiddenAuditField,
+  isPhotoAuditField,
+} from './get-formatted-value';
 
 type AuditLogRow = NonNullable<
   NonNullable<NonNullable<PagedHrAuditLogsQuery['pagedHrAuditLogs']>['data']>[number]
@@ -71,8 +74,8 @@ export default class AuditLogsList extends Component<Props> {
           person={{
             _id: record.operationBy,
             name: record.operationByName,
-            imageId: record.operationByImageId,
-            imageThumbnailId: record.operationByImageThumbnailId ?? undefined,
+            imageUrl: record.operationByImageUrl,
+            imageThumbnailUrl: record.operationByImageThumbnailUrl ?? undefined,
           } as Parameters<typeof PersonName>[0]['person']}
         />
       ),
@@ -85,6 +88,10 @@ export default class AuditLogsList extends Component<Props> {
         const { operationType } = record;
         const fieldNodes = values?.map((value: string, index: number) => {
           const parsedValue = JSON.parse(value);
+          if (isHiddenAuditField(parsedValue.fieldName)) return null;
+          if (isPhotoAuditField(parsedValue.fieldName)) {
+            return <li key={index}>Photo: updated</li>;
+          }
           const { fieldName, changedFrom, changedTo } = getFormattedValue(
             parsedValue
           );

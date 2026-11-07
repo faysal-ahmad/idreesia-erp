@@ -18,7 +18,7 @@ const SECURITY_VISITOR_BY_CNIC: TypedDocumentNode<
         cnicNumber
         contactNumber1
         contactNumber2
-        imageId
+        imageUrl
       }
       visitorData {
         city

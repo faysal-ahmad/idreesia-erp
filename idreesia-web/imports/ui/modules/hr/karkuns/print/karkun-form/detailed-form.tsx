@@ -3,7 +3,6 @@ import Barcode, { type Options as BarcodeOptions } from 'react-barcode';
 import dayjs from 'dayjs';
 import { Checkbox, Col, Divider, InputNumber, Row } from 'antd';
 
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
 import type { HrKarkunByIdForKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { DisplayItem, EhadDurationDisplay } from '/imports/ui/modules/helpers/controls';
 
@@ -35,7 +34,7 @@ export class DetailedForm extends Component<Props> {
   getImageColumn = () => {
     const { hrKarkunById } = this.props;
     if (!hrKarkunById) return null;
-    const url = getDownloadUrl(hrKarkunById.sharedData?.imageId);
+    const url = hrKarkunById.sharedData?.imageUrl;
     return url ? (
       <Col order={2}>
         <img src={url} style={{ width: '200px' }} alt="Karkun" />

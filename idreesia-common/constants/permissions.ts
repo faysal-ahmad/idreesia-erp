@@ -17,7 +17,7 @@ const Permissions = {
   // ****************************************************************************************
   // HR Module
   // ****************************************************************************************
-  HR_MANAGE_SETUP_DATA: 'hr-manage-setup-data',
+  HR_MANAGE_KARKUNS_SETUP_DATA: 'hr-manage-karkuns-setup-data',
   HR_DELETE_DATA: 'hr-delete-data',
   HR_VIEW_AUDIT_LOGS: 'hr-view-audit-logs',
 
@@ -26,6 +26,10 @@ const Permissions = {
 
   HR_VIEW_EMPLOYEES: 'hr-view-employees',
   HR_MANAGE_EMPLOYEES: 'hr-manage-employees',
+  HR_MANAGE_EMPLOYEES_SETUP_DATA: 'hr-manage-employees-setup-data',
+
+  HR_VIEW_COMMITTEES: 'hr-view-committees',
+  HR_MANAGE_COMMITTEES: 'hr-manage-committees',
 
   // ****************************************************************************************
   // Security Module
@@ -46,6 +50,13 @@ const Permissions = {
   SECURITY_VIEW_SECURITY_SERVER_DATA: 'security-view-security-server-data',
   SECURITY_MANAGE_SECURITY_SERVER_DATA: 'security-manage-security-server-data',
   SECURITY_SYNC_SECURITY_SERVER_DATA: 'security-sync-security-server-data',
+
+  // ****************************************************************************************
+  // Correspondence Module
+  // ****************************************************************************************
+  CORRESPONDENCE_INBOX_VIEW_MESSAGES: 'correspondence-inbox-view-messages',
+  CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES:
+    'correspondence-inbox-reply-to-messages',
 
   // ****************************************************************************************
   // Stores Module

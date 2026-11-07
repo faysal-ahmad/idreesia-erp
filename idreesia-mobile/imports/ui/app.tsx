@@ -4,6 +4,7 @@ import { ErrorBlock, NoticeBar, SpinLoading } from 'antd-mobile';
 import { backendUrl } from '/imports/startup/backend';
 import { AccountPaths, AccountScreen, ChangePasswordScreen } from './account';
 import { ForgotPasswordScreen, LoginScreen, RegisterScreen } from './auth/screens';
+import { ChatPaths, ChatScreen } from './chat';
 import { useAuthState } from './hooks';
 import { AppTabBar, isTabRoot, NavigationTracker } from './layout';
 import { ModulesScreen, renderModuleRoutes } from './modules';
@@ -14,6 +15,8 @@ const SignedOutRoutes = () => (
     <Route exact path="/login" component={LoginScreen} />
     <Route exact path="/register" component={RegisterScreen} />
     <Route exact path="/forgot-password" component={ForgotPasswordScreen} />
+    {/* Public chat with the team; needs no account (imports/ui/chat). */}
+    <Route exact path={ChatPaths.chat} component={ChatScreen} />
     <Redirect to="/login" />
   </Switch>
 );

@@ -94,10 +94,6 @@ export const HrPermissionsData: PermissionNode = {
       key: PermissionConstants.HR_DELETE_DATA,
     },
     {
-      title: 'Manage Setup Data',
-      key: PermissionConstants.HR_MANAGE_SETUP_DATA,
-    },
-    {
       title: 'View Audit Logs',
       key: PermissionConstants.HR_VIEW_AUDIT_LOGS,
     },
@@ -113,6 +109,10 @@ export const HrPermissionsData: PermissionNode = {
           title: 'Manage Karkuns Data',
           key: PermissionConstants.HR_MANAGE_KARKUNS,
         },
+        {
+          title: 'Manage Karkuns Setup Data',
+          key: PermissionConstants.HR_MANAGE_KARKUNS_SETUP_DATA,
+        },
       ],
     },
     {
@@ -126,6 +126,10 @@ export const HrPermissionsData: PermissionNode = {
         {
           title: 'Manage Employees Data',
           key: PermissionConstants.HR_MANAGE_EMPLOYEES,
+        },
+        {
+          title: 'Manage Employees Setup Data',
+          key: PermissionConstants.HR_MANAGE_EMPLOYEES_SETUP_DATA,
         },
       ],
     },

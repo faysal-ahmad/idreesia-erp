@@ -32,6 +32,9 @@ const PermissionSelection = forwardRef<PermissionSelectionHandle, Props>(({
   const [initDone, setInitDone] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState<TreeKey[]>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeKey[]>([]);
+  // Expand the parents of the initially granted permissions, then hand control
+  // to the user - leaving this on re-opens those parents on every collapse.
+  const [autoExpandParent, setAutoExpandParent] = useState(true);
 
   useEffect(() => {
     if (securityEntity && !initDone) {
@@ -50,6 +53,7 @@ const PermissionSelection = forwardRef<PermissionSelectionHandle, Props>(({
 
   const onExpand = (keys: TreeKey[]) => {
     setExpandedKeys(keys);
+    setAutoExpandParent(false);
   };
 
   const onCheck = (keys: TreeKey[] | { checked: TreeKey[]; halfChecked: TreeKey[] }) => {
@@ -64,7 +68,7 @@ const PermissionSelection = forwardRef<PermissionSelectionHandle, Props>(({
   return (
     <Tree
       checkable
-      autoExpandParent
+      autoExpandParent={autoExpandParent}
       onExpand={onExpand}
       expandedKeys={expandedKeys}
       onCheck={onCheck}

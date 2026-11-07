@@ -58,6 +58,7 @@ import './54-drop-old-attendance';
 import './55-create-security-server-indexes';
 import './56-create-security-server-usage-indexes';
 import './57-create-chat-user-indexes';
+import './58-rename-hr-setup-data-permission';
 
 Migrations.config({
   log: true,

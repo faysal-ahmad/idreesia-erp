@@ -23,10 +23,10 @@ extend type Query {
 
 extend type Mutation {
   createDutyLocation(name: String!, dutyId: String!): DutyLocationType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateDutyLocation(id: String!, name: String!, dutyId: String!): DutyLocationType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeDutyLocation(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 `;

@@ -28,13 +28,14 @@ enum Permission {
   ADMIN_MANAGE_DUPLICATE_PEOPLE
   ADMIN_VIEW_SECURITY_LOGS
 
-  HR_MANAGE_SETUP_DATA
+  HR_MANAGE_KARKUNS_SETUP_DATA
   HR_DELETE_DATA
   HR_VIEW_AUDIT_LOGS
   HR_VIEW_KARKUNS
   HR_MANAGE_KARKUNS
   HR_VIEW_EMPLOYEES
   HR_MANAGE_EMPLOYEES
+  HR_MANAGE_EMPLOYEES_SETUP_DATA
   HR_VIEW_COMMITTEES
   HR_MANAGE_COMMITTEES
 
@@ -842,11 +843,11 @@ extend type Query {
 
 extend type Mutation {
   createDutyLocation(name: String!, dutyId: String!): DutyLocationType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateDutyLocation(id: String!, name: String!, dutyId: String!): DutyLocationType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeDutyLocation(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 type DutyPlanWeekSlotType {
@@ -1018,7 +1019,7 @@ extend type Mutation {
     startTime: String
     endTime: String
   ): DutyShiftType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateDutyShift(
     _id: String!
     name: String!
@@ -1026,9 +1027,9 @@ extend type Mutation {
     startTime: String
     endTime: String
   ): DutyShiftType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeDutyShift(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 type DutyType {
@@ -1057,11 +1058,11 @@ extend type Query {
 
 extend type Mutation {
   createDuty(name: String!, isMehfilDuty: Boolean!, description: String, committeeId: String): DutyType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateDuty(id: String!, name: String!, description: String, committeeId: String): DutyType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeDuty(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 type JobType {
@@ -1084,11 +1085,11 @@ extend type Query {
 
 extend type Mutation {
   createJob(name: String!, description: String): JobType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
   updateJob(id: String!, name: String!, description: String): JobType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
   removeJob(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
 }
 
 extend type Query {
@@ -1284,22 +1285,22 @@ extend type Query {
 
 extend type Mutation {
   createTeam(name: String!, color: String, description: String, dutyId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateTeam(id: String!, name: String!, color: String, description: String, dutyId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeTeam(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 
   addTeamMember(teamId: String!, karkunId: String!, daysOfWeek: [String!]!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateTeamMemberDays(teamId: String!, karkunId: String!, daysOfWeek: [String!]!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeTeamMember(teamId: String!, karkunId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   addTeamCoordinator(teamId: String!, karkunId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeTeamCoordinator(teamId: String!, karkunId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 type ItemWithQuantity {

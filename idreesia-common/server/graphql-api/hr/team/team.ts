@@ -30,20 +30,20 @@ extend type Query {
 
 extend type Mutation {
   createTeam(name: String!, color: String, description: String, dutyId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateTeam(id: String!, name: String!, color: String, description: String, dutyId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeTeam(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 
   addTeamMember(teamId: String!, karkunId: String!, daysOfWeek: [String!]!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   updateTeamMemberDays(teamId: String!, karkunId: String!, daysOfWeek: [String!]!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeTeamMember(teamId: String!, karkunId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   addTeamCoordinator(teamId: String!, karkunId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeTeamCoordinator(teamId: String!, karkunId: String!): TeamType
-    @checkPermissions(permissions: [HR_MANAGE_SETUP_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }`;

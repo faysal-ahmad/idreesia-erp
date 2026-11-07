@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client/react';
 import {
   Button,
+  Checkbox,
   Empty,
   Flex,
   Pagination,
@@ -19,6 +20,7 @@ import {
   UserDeleteOutlined,
 } from '@ant-design/icons';
 
+import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
 import type { WorkspaceCommitteeMembersQuery } from 'meteor/idreesia-common/types/client-operations';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 import { message } from '/imports/ui/antd-feedback';
@@ -27,6 +29,7 @@ import AddMemberDrawer from './add-member-drawer';
 import {
   WORKSPACE_COMMITTEE_MEMBERS,
   WORKSPACE_REMOVE_COMMITTEE_MEMBER,
+  WORKSPACE_SET_COMMITTEE_MEMBER_DISCUSSION_ACCESS,
 } from './gql';
 
 type Member = NonNullable<
@@ -49,6 +52,10 @@ const List = () => {
     fetchPolicy: 'cache-and-network',
   });
   const [removeMember] = useMutation(WORKSPACE_REMOVE_COMMITTEE_MEMBER);
+  const [setDiscussionAccess] = useMutation(
+    WORKSPACE_SET_COMMITTEE_MEMBER_DISCUSSION_ACCESS
+  );
+  const [savingAccessId, setSavingAccessId] = useState<string | null>(null);
 
   if (loading && !data) {
     return (
@@ -68,6 +75,9 @@ const List = () => {
   }
 
   const canManageMembers = !!committee.canManageMembers;
+  const discussionsEnabled = !!committee.features?.includes(
+    CommitteeFeatureKeys.DISCUSSIONS
+  );
   const members = (committee.members ?? []).filter(
     (member): member is Member => member != null && member.karkunId != null
   );
@@ -91,6 +101,18 @@ const List = () => {
       .catch((error: Error) => {
         message.error(error.message, 5);
       });
+  };
+
+  const handleDiscussionAccessChange = (karkunId: string, hasAccess: boolean) => {
+    setSavingAccessId(karkunId);
+    setDiscussionAccess({
+      variables: { committeeId: committeeId!, karkunId, hasAccess },
+    })
+      .then(() => refetch())
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      })
+      .finally(() => setSavingAccessId(null));
   };
 
   const handleMemberAdded = () => {
@@ -129,6 +151,28 @@ const List = () => {
           {record.contactNumber1 ? <span>{record.contactNumber1}</span> : null}
           {record.contactNumber2 ? <span>{record.contactNumber2}</span> : null}
         </Flex>
+      ),
+    },
+    {
+      title: 'Has Discussion Access',
+      key: 'hasDiscussionAccess',
+      width: 180,
+      align: 'center' as const,
+      // Editable by coordinators, for members with a chat account, while
+      // Discussions is enabled.
+      render: (_text: unknown, record: Member) => (
+        <Checkbox
+          checked={!!record.hasDiscussionAccess}
+          disabled={
+            !canManageMembers ||
+            !discussionsEnabled ||
+            !record.hasChatAccount ||
+            savingAccessId != null
+          }
+          onChange={event =>
+            handleDiscussionAccessChange(record.karkunId!, event.target.checked)
+          }
+        />
       ),
     },
     ...(canManageMembers

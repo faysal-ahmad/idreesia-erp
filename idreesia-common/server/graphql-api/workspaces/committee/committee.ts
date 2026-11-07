@@ -11,6 +11,13 @@ type WorkspaceCommitteeMemberType {
   imageThumbnailId: String
   contactNumber1: String
   contactNumber2: String
+  # The person has an ERP user.
+  hasLoginAccount: Boolean
+  # That user has a chat account.
+  hasChatAccount: Boolean
+  # That chat account is in the committee's discussion group. Null when
+  # Discussions is not enabled (or chat could not be reached).
+  hasDiscussionAccess: Boolean
 }
 
 type WorkspaceCommitteeType {
@@ -67,4 +74,11 @@ extend type Mutation {
     committeeId: String!
     karkunId: String!
   ): WorkspaceCommitteeType
+  # Adds a member's chat account to the committee's discussion group, or
+  # removes it. The member must have a chat account.
+  workspaceSetCommitteeMemberDiscussionAccess(
+    committeeId: String!
+    karkunId: String!
+    hasAccess: Boolean!
+  ): Boolean
 }`;

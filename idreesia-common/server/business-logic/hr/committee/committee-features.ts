@@ -56,6 +56,37 @@ const runHandler = async (
 };
 
 /**
+ * Runs a member hook of every feature enabled on the committee, e.g. so the
+ * discussion's chat group follows the committee's membership. Failures are
+ * reported as a GraphQL error, before the membership itself changes.
+ */
+export const runMemberHooks = async (
+  committee: CommitteeDoc,
+  hook: 'memberAdded' | 'memberRemoved',
+  karkunId: string
+) => {
+  for (const featureKey of committee.features ?? []) {
+    if (!isCommitteeFeatureKey(featureKey)) continue;
+    const handler = featureHandlers[featureKey];
+    const run = handler[hook];
+    if (!run) continue;
+    try {
+      await run.call(handler, committee, karkunId);
+    } catch (error) {
+      if (error instanceof GraphQLError) throw error;
+      const reason = error instanceof Error ? error.message : String(error);
+      const action =
+        hook === 'memberAdded'
+          ? 'add the member to the committee discussion'
+          : 'remove the member from the committee discussion';
+      throw new GraphQLError(`Could not ${action}: ${reason}`, {
+        extensions: { code: 'FEATURE_ACTION_FAILED' },
+      });
+    }
+  }
+};
+
+/**
  * Enables a feature for a committee: sets it up outside the ERP first, then
  * records it (and any data the feature keeps) on the committee. Enabling an
  * already enabled feature re-runs its setup, which is safe.

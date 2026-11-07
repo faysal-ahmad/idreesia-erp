@@ -5,6 +5,13 @@ type CommitteeMemberType {
   karkunId: String
   isCoordinator: Boolean
   karkun: PersonType
+  # The person has an ERP user.
+  hasLoginAccount: Boolean
+  # That user has a chat account.
+  hasChatAccount: Boolean
+  # That chat account is in the committee's discussion group. Null when
+  # Discussions is not enabled (or chat could not be reached).
+  hasDiscussionAccess: Boolean
 }
 
 type CommitteeFeatureType {
@@ -56,5 +63,11 @@ extend type Mutation {
   enableCommitteeFeature(committeeId: String!, featureKey: String!): Boolean!
     @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
   disableCommitteeFeature(committeeId: String!, featureKey: String!): Boolean!
+    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+  setCommitteeMemberDiscussionAccess(
+    committeeId: String!
+    karkunId: String!
+    hasAccess: Boolean!
+  ): Boolean
     @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
 }`;

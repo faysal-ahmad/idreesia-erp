@@ -1,10 +1,28 @@
 export {
+  deleteDiscussionMessage,
+  editDiscussionMessage,
   fetchDiscussionFile,
   getDiscussionInfo,
-  getDiscussionMessages,
+  getDiscussionMembers,
+  getDiscussionPinnedMessages,
+  getDiscussionStarredMessages,
+  searchDiscussionMessages,
+  getOlderDiscussionMessages,
+  getDiscussionThreadMessages,
+  reactToDiscussionMessage,
   sendDiscussionMessage,
+  setDiscussionMessagePinned,
+  setDiscussionMessageStarred,
+  syncDiscussionMessages,
   uploadDiscussionFile,
   MAX_DISCUSSION_FILE_SIZE,
   MAX_DISCUSSION_MESSAGE_LENGTH,
 } from './discussions';
-export type { DiscussionActor, DiscussionMessage } from './discussions';
+export type {
+  DiscussionActor,
+  DiscussionMember,
+  DiscussionMessage,
+  DiscussionMessagePage,
+  DiscussionReaction,
+  DiscussionSync,
+} from './discussions';

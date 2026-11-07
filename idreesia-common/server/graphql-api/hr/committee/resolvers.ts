@@ -1,10 +1,15 @@
 import { Committees, Duties } from 'meteor/idreesia-common/server/collections/hr';
 import { CommitteeFeatures } from 'meteor/idreesia-common/constants/hr';
 import {
+  addCommitteeMember,
   disableCommitteeFeature,
   enableCommitteeFeature,
+  getCommitteeMemberAccess,
+  removeCommitteeMember,
+  setCommitteeMemberDiscussionAccess,
+  type CommitteeDoc,
+  type CommitteeMemberAccess,
 } from 'meteor/idreesia-common/server/business-logic/hr/committee';
-import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -26,9 +31,37 @@ const updateMember = async (
   }
 };
 
+// Member access is looked up per committee, at most once per request, and
+// only when one of the access fields is asked for.
+type MemberWithCommittee = { karkunId: string; committee: CommitteeDoc };
+const accessCache = new WeakMap<
+  object,
+  Map<string, Promise<Map<string, CommitteeMemberAccess>>>
+>();
+
+const getMemberAccess = async (
+  member: MemberWithCommittee,
+  context: object
+) => {
+  let byCommittee = accessCache.get(context);
+  if (!byCommittee) {
+    byCommittee = new Map();
+    accessCache.set(context, byCommittee);
+  }
+  const { committee } = member;
+  let access = byCommittee.get(committee._id);
+  if (!access) {
+    access = getCommitteeMemberAccess(committee);
+    byCommittee.set(committee._id, access);
+  }
+  return (await access).get(member.karkunId);
+};
+
 const resolvers: ResolverMap = {
   CommitteeType: {
     features: committee => committee.features ?? [],
+    members: (committee: CommitteeDoc) =>
+      (committee.members ?? []).map(member => ({ ...member, committee })),
   },
 
   CommitteeMemberType: {
@@ -36,6 +69,12 @@ const resolvers: ResolverMap = {
       if (!member.karkunId) return null;
       return loaders.common.people.load(member.karkunId);
     },
+    hasLoginAccount: async (member: MemberWithCommittee, args, context) =>
+      (await getMemberAccess(member, context))?.hasLoginAccount ?? false,
+    hasChatAccount: async (member: MemberWithCommittee, args, context) =>
+      (await getMemberAccess(member, context))?.hasChatAccount ?? false,
+    hasDiscussionAccess: async (member: MemberWithCommittee, args, context) =>
+      (await getMemberAccess(member, context))?.hasDiscussionAccess ?? null,
   },
 
   Query: {
@@ -91,26 +130,26 @@ const resolvers: ResolverMap = {
     },
 
     addCommitteeMember: async (obj, { committeeId, karkunId }) => {
-      const committee = await Committees.findOneAsync(committeeId);
-      if (!committee) throw new Error('Committee not found.');
-      await ensureKarkuns([karkunId]);
-      const added = await Committees.updateAsync(
-        { _id: committeeId, 'members.karkunId': { $ne: karkunId } },
-        { $push: { members: { karkunId } } }
-      );
-      if (added === 0) {
-        throw new Error('This person is already a member of the committee.');
-      }
-
+      await addCommitteeMember(committeeId, karkunId);
       return Committees.findOneAsync(committeeId);
     },
 
     removeCommitteeMember: async (obj, { committeeId, karkunId }) => {
-      await Committees.updateAsync(committeeId, {
-        $pull: { members: { karkunId } },
-      });
-
+      await removeCommitteeMember(committeeId, karkunId);
       return Committees.findOneAsync(committeeId);
+    },
+
+    setCommitteeMemberDiscussionAccess: async (
+      obj,
+      { committeeId, karkunId, hasAccess }
+    ) => {
+      const committee = await Committees.findOneAsync(committeeId);
+      if (!committee) throw new Error('Committee not found.');
+      return setCommitteeMemberDiscussionAccess(
+        committee as unknown as CommitteeDoc,
+        karkunId,
+        hasAccess
+      );
     },
 
     addCommitteeCoordinator: async (obj, { committeeId, karkunId }) => {

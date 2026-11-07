@@ -14,4 +14,8 @@ export interface CommitteeDoc {
 export interface CommitteeFeatureHandler {
   enable(committee: CommitteeDoc): Promise<Record<string, unknown> | void>;
   disable(committee: CommitteeDoc): Promise<Record<string, unknown> | void>;
+  /** Called, while the feature is enabled, before a member is added. */
+  memberAdded?(committee: CommitteeDoc, karkunId: string): Promise<void>;
+  /** Called, while the feature is enabled, before a member is removed. */
+  memberRemoved?(committee: CommitteeDoc, karkunId: string): Promise<void>;
 }

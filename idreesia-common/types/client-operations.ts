@@ -783,6 +783,21 @@ export type PagedHrAuditLogsQueryVariables = Exact<{
 
 export type PagedHrAuditLogsQuery = { pagedHrAuditLogs: { totalResults: number | null, data: Array<{ _id: string | null, entityId: string | null, entityType: string | null, operationType: string | null, auditValues: Array<string | null> | null, operationTime: string | null, operationBy: string | null, operationByName: string | null, operationByImageId: string | null, operationByImageThumbnailId: string | null } | null> | null } | null };
 
+export type HrCommitteeKarkunSearchQueryVariables = Exact<{
+  filter?: Types.KarkunFilter | null | undefined;
+}>;
+
+
+export type HrCommitteeKarkunSearchQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageId: string | null, imageThumbnailId: string | null } | null } | null> | null } | null };
+
+export type AddCommitteeMemberMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type AddCommitteeMemberMutation = { addCommitteeMember: { _id: string | null } | null };
+
 export type CommitteeByIdQueryVariables = Exact<{
   id: string;
 }>;
@@ -824,7 +839,7 @@ export type UpdateCommitteeMutation = { updateCommittee: { _id: string | null, n
 export type ListAllCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, karkun: { _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null } | null> | null };
+export type ListAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, hasLoginAccount: boolean | null, hasChatAccount: boolean | null, hasDiscussionAccess: boolean | null, karkun: { _id: string | null, sharedData: { name: string | null, imageId: string | null, imageThumbnailId: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null } | null> | null };
 
 export type CreateCommitteeMutationVariables = Exact<{
   name: string;
@@ -841,14 +856,6 @@ export type RemoveCommitteeMutationVariables = Exact<{
 
 
 export type RemoveCommitteeMutation = { removeCommittee: number | null };
-
-export type AddCommitteeMemberMutationVariables = Exact<{
-  committeeId: string;
-  karkunId: string;
-}>;
-
-
-export type AddCommitteeMemberMutation = { addCommitteeMember: { _id: string | null } | null };
 
 export type RemoveCommitteeMemberMutationVariables = Exact<{
   committeeId: string;
@@ -873,6 +880,15 @@ export type RemoveCommitteeCoordinatorMutationVariables = Exact<{
 
 
 export type RemoveCommitteeCoordinatorMutation = { removeCommitteeCoordinator: { _id: string | null } | null };
+
+export type SetCommitteeMemberDiscussionAccessMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+  hasAccess: boolean;
+}>;
+
+
+export type SetCommitteeMemberDiscussionAccessMutation = { setCommitteeMemberDiscussionAccess: boolean | null };
 
 export type ComposerHrCommitteeOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2450,28 +2466,122 @@ export type VendorByIdQueryVariables = Exact<{
 
 export type VendorByIdQuery = { vendorById: { _id: string | null, physicalStoreId: string | null, name: string | null, contactPerson: string | null, contactNumber: string | null, address: string | null, notes: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
+export type WorkspaceDiscussionMessageFieldsFragment = { _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageId: string | null, senderImageThumbnailId: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null };
+
 export type WorkspaceDiscussionInfoQueryVariables = Exact<{
   committeeId: string;
 }>;
 
 
-export type WorkspaceDiscussionInfoQuery = { workspaceDiscussionInfo: { canPost: boolean | null } | null };
+export type WorkspaceDiscussionInfoQuery = { workspaceDiscussionInfo: { canPost: boolean | null, canPin: boolean | null } | null };
 
-export type WorkspaceDiscussionMessagesQueryVariables = Exact<{
+export type WorkspaceDiscussionMembersQueryVariables = Exact<{
   committeeId: string;
-  after?: string | null | undefined;
 }>;
 
 
-export type WorkspaceDiscussionMessagesQuery = { workspaceDiscussionMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, isOwn: boolean | null, isSystem: boolean | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null } | null> | null };
+export type WorkspaceDiscussionMembersQuery = { workspaceDiscussionMembers: Array<{ username: string | null, name: string | null, imageId: string | null, imageThumbnailId: string | null } | null> | null };
+
+export type WorkspaceDiscussionSyncQueryVariables = Exact<{
+  committeeId: string;
+  since?: string | null | undefined;
+}>;
+
+
+export type WorkspaceDiscussionSyncQuery = { workspaceDiscussionSync: { deletedIds: Array<string | null> | null, syncedAt: string | null, hasOlder: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageId: string | null, senderImageThumbnailId: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
+
+export type WorkspaceDiscussionThreadMessagesQueryVariables = Exact<{
+  committeeId: string;
+  threadId: string;
+}>;
+
+
+export type WorkspaceDiscussionThreadMessagesQuery = { workspaceDiscussionThreadMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageId: string | null, senderImageThumbnailId: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null } | null> | null };
+
+export type WorkspaceDiscussionPinnedMessagesQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspaceDiscussionPinnedMessagesQuery = { workspaceDiscussionPinnedMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageId: string | null, senderImageThumbnailId: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null } | null> | null };
+
+export type WorkspaceDiscussionStarredMessagesQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspaceDiscussionStarredMessagesQuery = { workspaceDiscussionStarredMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageId: string | null, senderImageThumbnailId: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null } | null> | null };
+
+export type WorkspaceDiscussionSearchMessagesQueryVariables = Exact<{
+  committeeId: string;
+  searchText: string;
+  offset?: number | null | undefined;
+}>;
+
+
+export type WorkspaceDiscussionSearchMessagesQuery = { workspaceDiscussionSearchMessages: { hasMore: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageId: string | null, senderImageThumbnailId: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
+
+export type WorkspaceDiscussionOlderMessagesQueryVariables = Exact<{
+  committeeId: string;
+  before: string;
+}>;
+
+
+export type WorkspaceDiscussionOlderMessagesQuery = { workspaceDiscussionOlderMessages: { hasMore: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageId: string | null, senderImageThumbnailId: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
 
 export type WorkspaceSendDiscussionMessageMutationVariables = Exact<{
   committeeId: string;
   text: string;
+  threadId?: string | null | undefined;
 }>;
 
 
 export type WorkspaceSendDiscussionMessageMutation = { workspaceSendDiscussionMessage: boolean };
+
+export type WorkspaceReactToDiscussionMessageMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+  emoji: string;
+  shouldReact: boolean;
+}>;
+
+
+export type WorkspaceReactToDiscussionMessageMutation = { workspaceReactToDiscussionMessage: boolean };
+
+export type WorkspaceSetDiscussionMessageStarredMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+  starred: boolean;
+}>;
+
+
+export type WorkspaceSetDiscussionMessageStarredMutation = { workspaceSetDiscussionMessageStarred: boolean };
+
+export type WorkspaceSetDiscussionMessagePinnedMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+  pinned: boolean;
+}>;
+
+
+export type WorkspaceSetDiscussionMessagePinnedMutation = { workspaceSetDiscussionMessagePinned: boolean };
+
+export type WorkspaceEditDiscussionMessageMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+  text: string;
+}>;
+
+
+export type WorkspaceEditDiscussionMessageMutation = { workspaceEditDiscussionMessage: boolean };
+
+export type WorkspaceDeleteDiscussionMessageMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+}>;
+
+
+export type WorkspaceDeleteDiscussionMessageMutation = { workspaceDeleteDiscussionMessage: boolean };
 
 export type MyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2483,11 +2593,13 @@ export type WorkspaceCommitteeMembersQueryVariables = Exact<{
 }>;
 
 
-export type WorkspaceCommitteeMembersQuery = { workspaceCommitteeById: { _id: string | null, canManageMembers: boolean | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, name: string | null, imageId: string | null, imageThumbnailId: string | null, contactNumber1: string | null, contactNumber2: string | null } | null> | null } | null };
+export type WorkspaceCommitteeMembersQuery = { workspaceCommitteeById: { _id: string | null, canManageMembers: boolean | null, features: Array<string | null> | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, name: string | null, imageId: string | null, imageThumbnailId: string | null, contactNumber1: string | null, contactNumber2: string | null, hasChatAccount: boolean | null, hasDiscussionAccess: boolean | null } | null> | null } | null };
 
 export type WorkspaceCommitteeKarkunSearchQueryVariables = Exact<{
   committeeId: string;
   name?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
   pageIndex?: string | null | undefined;
   pageSize?: string | null | undefined;
 }>;
@@ -2510,3 +2622,12 @@ export type WorkspaceRemoveCommitteeMemberMutationVariables = Exact<{
 
 
 export type WorkspaceRemoveCommitteeMemberMutation = { workspaceRemoveCommitteeMember: { _id: string | null } | null };
+
+export type WorkspaceSetCommitteeMemberDiscussionAccessMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+  hasAccess: boolean;
+}>;
+
+
+export type WorkspaceSetCommitteeMemberDiscussionAccessMutation = { workspaceSetCommitteeMemberDiscussionAccess: boolean | null };

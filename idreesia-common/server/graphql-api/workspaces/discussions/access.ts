@@ -5,7 +5,12 @@ import {
   type CommitteeDoc,
 } from 'meteor/idreesia-common/server/business-logic/hr/committee';
 
-import { getMemberCommittee, type WorkspaceUser } from '../committee/access';
+import {
+  getCoordinatedCommittee,
+  getMemberCommittee,
+  isCommitteeCoordinator,
+  type WorkspaceUser,
+} from '../committee/access';
 
 /**
  * Permission check for a committee's discussions: the user must be a member
@@ -23,6 +28,24 @@ export const getMemberCommitteeChatGroupId = async (
       extensions: { code: 'FORBIDDEN' },
     });
   }
+  return getCommitteeChatGroupId(committee as unknown as CommitteeDoc);
+};
+
+/** Whether the user may pin messages: coordinators of the committee. */
+export const canPinCommitteeDiscussion = async (
+  user: WorkspaceUser | null | undefined,
+  committeeId: string
+): Promise<boolean> => {
+  const committee = await getMemberCommittee(user, committeeId);
+  return !!committee && isCommitteeCoordinator(user, committee);
+};
+
+/** Like getMemberCommitteeChatGroupId, for coordinators only. */
+export const getCoordinatedCommitteeChatGroupId = async (
+  user: WorkspaceUser | null | undefined,
+  committeeId: string
+): Promise<string> => {
+  const committee = await getCoordinatedCommittee(user, committeeId);
   return getCommitteeChatGroupId(committee as unknown as CommitteeDoc);
 };
 

@@ -1,7 +1,13 @@
 import { Committees } from 'meteor/idreesia-common/server/collections/hr';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
+import {
+  addCommitteeMember,
+  getCommitteeMemberAccess,
+  removeCommitteeMember,
+  setCommitteeMemberDiscussionAccess,
+  type CommitteeDoc,
+} from 'meteor/idreesia-common/server/business-logic/hr/committee';
 
 import {
   type CommitteeDocument,
@@ -52,17 +58,25 @@ const resolvers: ResolverMap = {
     // a committee member needs are exposed (no CNIC, addresses, etc).
     members: async (committee: CommitteeDocument, args, { loaders }) => {
       const members = committee.members ?? [];
+      const personIds = members.map(member => member.karkunId);
       const people = (await loaders.common.people.loadMany(
-        members.map(member => member.karkunId)
+        personIds
       )) as Array<PersonDocument | Error | null>;
+      const access = await getCommitteeMemberAccess(
+        committee as unknown as CommitteeDoc
+      );
 
       const rows = members.map((member, index) => {
         const person = people[index];
         const shared =
           person && !(person instanceof Error) ? person.sharedData : undefined;
+        const memberAccess = access.get(member.karkunId);
         return {
           karkunId: member.karkunId,
           isCoordinator: !!member.isCoordinator,
+          hasLoginAccount: memberAccess?.hasLoginAccount ?? false,
+          hasChatAccount: memberAccess?.hasChatAccount ?? false,
+          hasDiscussionAccess: memberAccess?.hasDiscussionAccess ?? null,
           name: shared?.name,
           imageId: shared?.imageId,
           imageThumbnailId: shared?.imageThumbnailId,
@@ -125,18 +139,7 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       await getCoordinatedCommittee(user, committeeId);
-      await ensureKarkuns([karkunId]);
-      const added = await Committees.updateAsync(
-        { _id: committeeId, 'members.karkunId': { $ne: karkunId } },
-        {
-          $push: { members: { karkunId } },
-          $set: { updatedAt: new Date(), updatedBy: user._id },
-        }
-      );
-      if (added === 0) {
-        throw new Error('This person is already a member of the committee.');
-      }
-
+      await addCommitteeMember(committeeId, karkunId, user._id);
       return Committees.findOneAsync(committeeId);
     },
 
@@ -158,12 +161,21 @@ const resolvers: ResolverMap = {
         throw new Error('Coordinators cannot be removed from here.');
       }
 
-      await Committees.updateAsync(committeeId, {
-        $pull: { members: { karkunId } },
-        $set: { updatedAt: new Date(), updatedBy: user._id },
-      });
-
+      await removeCommitteeMember(committeeId, karkunId, user._id);
       return Committees.findOneAsync(committeeId);
+    },
+
+    workspaceSetCommitteeMemberDiscussionAccess: async (
+      obj,
+      { committeeId, karkunId, hasAccess },
+      { user }
+    ) => {
+      const committee = await getCoordinatedCommittee(user, committeeId);
+      return setCommitteeMemberDiscussionAccess(
+        committee as unknown as CommitteeDoc,
+        karkunId,
+        hasAccess
+      );
     },
   },
 };

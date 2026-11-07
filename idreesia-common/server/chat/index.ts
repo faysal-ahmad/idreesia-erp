@@ -4,3 +4,4 @@ export * from './omnichannel';
 export * from './users';
 export * from './groups';
 export * from './message-mapping';
+export * from './emoji';

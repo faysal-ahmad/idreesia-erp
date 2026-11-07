@@ -162,11 +162,21 @@ const uploadFile = Meteor.bindEnvironment(
 
     try {
       const chatGroupId = await authorize(req);
-      await uploadDiscussionFile(chatGroupId, req.erpUser!, {
-        buffer: file.buffer,
-        fileName: file.originalname,
-        mimeType: file.mimetype || 'application/octet-stream',
-      });
+      // Optional: posts the file as a reply in that thread.
+      const threadId =
+        typeof req.body?.threadId === 'string' && req.body.threadId
+          ? req.body.threadId
+          : null;
+      await uploadDiscussionFile(
+        chatGroupId,
+        req.erpUser!,
+        {
+          buffer: file.buffer,
+          fileName: file.originalname,
+          mimeType: file.mimetype || 'application/octet-stream',
+        },
+        threadId
+      );
       res.json({ success: true });
     } catch (error) {
       sendError(req, res, error);

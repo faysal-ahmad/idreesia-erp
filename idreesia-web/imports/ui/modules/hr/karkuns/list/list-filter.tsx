@@ -58,6 +58,7 @@ export interface KarkunsListFilterProps {
   dutyId?: string | null;
   dutyShiftId?: string | null;
   showDutyFilter?: boolean;
+  showBloodGroupFilter?: boolean;
 }
 
 type FilterChipKey =
@@ -263,6 +264,7 @@ const ListFilter = ({
   dutyId,
   dutyShiftId,
   showDutyFilter = true,
+  showBloodGroupFilter = true,
 }: KarkunsListFilterProps) => {
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
@@ -354,16 +356,18 @@ const ListFilter = ({
             fieldLayout={formItemLayout}
             initialValue={phoneNumber}
           />
-          <SelectField<LabelValue>
-            fieldName="bloodGroup"
-            fieldLabel="Blood Group"
-            required={false}
-            data={BLOOD_GROUP_OPTIONS}
-            getDataValue={({ value }) => value}
-            getDataText={({ label }) => label}
-            fieldLayout={formItemLayout}
-            initialValue={bloodGroup}
-          />
+          {showBloodGroupFilter ? (
+            <SelectField<LabelValue>
+              fieldName="bloodGroup"
+              fieldLabel="Blood Group"
+              required={false}
+              data={BLOOD_GROUP_OPTIONS}
+              getDataValue={({ value }) => value}
+              getDataText={({ label }) => label}
+              fieldLayout={formItemLayout}
+              initialValue={bloodGroup}
+            />
+          ) : null}
           {showDutyFilter ? (
             <CascaderField
               data={dutyShiftCascaderData}

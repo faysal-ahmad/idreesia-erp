@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
-import { Popconfirm, Row, Table, Tooltip } from 'antd';
-import { CrownFilled, CrownOutlined, UserDeleteOutlined } from '@ant-design/icons';
+import { Checkbox, Popconfirm, Row, Table, Tooltip } from 'antd';
+import {
+  CheckOutlined,
+  CrownFilled,
+  CrownOutlined,
+  UserDeleteOutlined,
+} from '@ant-design/icons';
 import { message } from '/imports/ui/antd-feedback';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import type {
   AddCommitteeCoordinatorMutation,
@@ -13,6 +19,8 @@ import type {
   RemoveCommitteeCoordinatorMutationVariables,
   RemoveCommitteeMemberMutation,
   RemoveCommitteeMemberMutationVariables,
+  SetCommitteeMemberDiscussionAccessMutation,
+  SetCommitteeMemberDiscussionAccessMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
 const REMOVE_COMMITTEE_MEMBER: TypedDocumentNode<
@@ -48,14 +56,39 @@ const REMOVE_COMMITTEE_COORDINATOR: TypedDocumentNode<
   }
 `;
 
+const SET_COMMITTEE_MEMBER_DISCUSSION_ACCESS: TypedDocumentNode<
+  SetCommitteeMemberDiscussionAccessMutation,
+  SetCommitteeMemberDiscussionAccessMutationVariables
+> = gql`
+  mutation setCommitteeMemberDiscussionAccess(
+    $committeeId: String!
+    $karkunId: String!
+    $hasAccess: Boolean!
+  ) {
+    setCommitteeMemberDiscussionAccess(
+      committeeId: $committeeId
+      karkunId: $karkunId
+      hasAccess: $hasAccess
+    )
+  }
+`;
+
 export interface CommitteeMember {
   _id: string;
   name: string;
+  imageId?: string | null;
+  imageThumbnailId?: string | null;
   cnicNumber?: string | null;
   contactNumber1?: string | null;
   contactNumber2?: string | null;
   isCoordinator: boolean;
+  hasLoginAccount: boolean;
+  hasChatAccount: boolean;
+  /** Null when Discussions is not enabled (or chat is unreachable). */
+  hasDiscussionAccess: boolean | null;
 }
+
+const renderCheck = (value: boolean) => (value ? <CheckOutlined /> : null);
 
 interface Props {
   committeeId: string;
@@ -69,6 +102,11 @@ const CommitteeMembersPanel = ({ committeeId, members }: Props) => {
   const [addCommitteeCoordinator] = useMutation(ADD_COMMITTEE_COORDINATOR, {
     refetchQueries: ['listAllCommittees'],
   });
+  const [setDiscussionAccess] = useMutation(
+    SET_COMMITTEE_MEMBER_DISCUSSION_ACCESS,
+    { refetchQueries: ['listAllCommittees'], awaitRefetchQueries: true }
+  );
+  const [savingAccessId, setSavingAccessId] = useState<string | null>(null);
   const [removeCommitteeCoordinator] = useMutation(
     REMOVE_COMMITTEE_COORDINATOR,
     { refetchQueries: ['listAllCommittees'] }
@@ -94,11 +132,26 @@ const CommitteeMembersPanel = ({ committeeId, members }: Props) => {
     });
   };
 
+  const handleDiscussionAccessChange = (
+    karkunId: string,
+    hasAccess: boolean
+  ) => {
+    setSavingAccessId(karkunId);
+    setDiscussionAccess({ variables: { committeeId, karkunId, hasAccess } })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      })
+      .finally(() => setSavingAccessId(null));
+  };
+
   const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      render: (_text: unknown, record: CommitteeMember) => (
+        <PersonName person={record} />
+      ),
     },
     {
       title: 'CNIC Number',
@@ -120,6 +173,43 @@ const CommitteeMembersPanel = ({ committeeId, members }: Props) => {
         if (numbers.length === 0) return '';
         return <>{numbers}</>;
       },
+    },
+    {
+      title: 'Has Login Account',
+      key: 'hasLoginAccount',
+      width: 150,
+      align: 'center' as const,
+      render: (_text: unknown, record: CommitteeMember) =>
+        renderCheck(record.hasLoginAccount),
+    },
+    {
+      title: 'Has Chat Account',
+      key: 'hasChatAccount',
+      width: 150,
+      align: 'center' as const,
+      render: (_text: unknown, record: CommitteeMember) =>
+        renderCheck(record.hasChatAccount),
+    },
+    {
+      title: 'Has Discussion Access',
+      key: 'hasDiscussionAccess',
+      width: 180,
+      align: 'center' as const,
+      // Editable for members with a chat account, while Discussions is
+      // enabled.
+      render: (_text: unknown, record: CommitteeMember) => (
+        <Checkbox
+          checked={!!record.hasDiscussionAccess}
+          disabled={
+            record.hasDiscussionAccess === null ||
+            !record.hasChatAccount ||
+            savingAccessId != null
+          }
+          onChange={event =>
+            handleDiscussionAccessChange(record._id, event.target.checked)
+          }
+        />
+      ),
     },
     {
       key: 'action',

@@ -10,7 +10,6 @@ import {
 } from '@ant-design/icons';
 import {
   Button,
-  Drawer,
   Form,
   Modal,
   Pagination,
@@ -26,8 +25,6 @@ import { message } from '/imports/ui/antd-feedback';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import type {
-  AddCommitteeMemberMutation,
-  AddCommitteeMemberMutationVariables,
   CreateCommitteeMutation,
   CreateCommitteeMutationVariables,
   ListAllCommitteesQuery,
@@ -36,8 +33,8 @@ import type {
   RemoveCommitteeMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
-import KarkunsSelectionList from '/imports/ui/modules/hr/karkuns/field/list-container';
 
+import AddMemberDrawer from './add-member-drawer';
 import CommitteeForm, { type CommitteeFormValues } from './committee-form';
 import CommitteeMembersPanel, {
   type CommitteeMember,
@@ -60,10 +57,15 @@ const LIST_ALL_COMMITTEES: TypedDocumentNode<
       members {
         karkunId
         isCoordinator
+        hasLoginAccount
+        hasChatAccount
+        hasDiscussionAccess
         karkun {
           _id
           sharedData {
             name
+            imageId
+            imageThumbnailId
             cnicNumber
             contactNumber1
             contactNumber2
@@ -99,17 +101,6 @@ const REMOVE_COMMITTEE: TypedDocumentNode<
   }
 `;
 
-const ADD_COMMITTEE_MEMBER: TypedDocumentNode<
-  AddCommitteeMemberMutation,
-  AddCommitteeMemberMutationVariables
-> = gql`
-  mutation addCommitteeMember($committeeId: String!, $karkunId: String!) {
-    addCommitteeMember(committeeId: $committeeId, karkunId: $karkunId) {
-      _id
-    }
-  }
-`;
-
 type CommitteeRow = NonNullable<
   NonNullable<ListAllCommitteesQuery['allCommittees']>[number]
 > & { _id: string; name: string };
@@ -135,9 +126,6 @@ const List = () => {
     { refetchQueries: ['listAllCommittees'] }
   );
   const [removeCommittee] = useMutation(REMOVE_COMMITTEE, {
-    refetchQueries: ['listAllCommittees'],
-  });
-  const [addCommitteeMember] = useMutation(ADD_COMMITTEE_MEMBER, {
     refetchQueries: ['listAllCommittees'],
   });
   const [addMemberCommitteeId, setAddMemberCommitteeId] = useState<
@@ -239,19 +227,6 @@ const List = () => {
     setAddMemberCommitteeId(null);
   };
 
-  const handleSelectKarkunForCommittee = (karkun: { _id?: string | null }) => {
-    const committeeId = addMemberCommitteeId;
-    const karkunId = karkun._id;
-    handleCloseAddMemberDrawer();
-    if (!committeeId || !karkunId) return;
-
-    addCommitteeMember({ variables: { committeeId, karkunId } }).catch(
-      (error: Error) => {
-        message.error(error.message, 5);
-      }
-    );
-  };
-
   const handleDeleteClicked = (record: CommitteeRow) => {
     removeCommittee({
       variables: {
@@ -282,13 +257,27 @@ const List = () => {
       .map(member => ({
         _id: member.karkunId,
         name: member.karkun?.sharedData?.name ?? '',
+        imageId: member.karkun?.sharedData?.imageId,
+        imageThumbnailId: member.karkun?.sharedData?.imageThumbnailId,
         cnicNumber: member.karkun?.sharedData?.cnicNumber,
         contactNumber1: member.karkun?.sharedData?.contactNumber1,
         contactNumber2: member.karkun?.sharedData?.contactNumber2,
         isCoordinator: !!member.isCoordinator,
+        hasLoginAccount: !!member.hasLoginAccount,
+        hasChatAccount: !!member.hasChatAccount,
+        hasDiscussionAccess: member.hasDiscussionAccess ?? null,
       }));
 
-  if (loading) {
+  const addMemberCommittee = allCommittees.find(
+    committee => committee._id === addMemberCommitteeId
+  );
+  const addMemberIds = addMemberCommittee
+    ? getCommitteeMembers(addMemberCommittee).map(member => member._id)
+    : [];
+
+  // Only block on the first load; a refetch (e.g. after adding a member from
+  // the drawer) must not unmount the page, or the open drawer closes.
+  if (loading && !data) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
         <Spin size="large" />
@@ -406,6 +395,7 @@ const List = () => {
           dataSource={pageData}
           columns={columns}
           title={getTableHeader}
+          loading={loading}
           bordered
           size="middle"
           tableLayout="fixed"
@@ -448,15 +438,11 @@ const List = () => {
         <CommitteeForm form={newForm} />
       </Modal>
 
-      <Drawer
-        title="Select a Karkun"
-        width={800}
+      <AddMemberDrawer
+        committeeId={addMemberCommitteeId}
+        memberIds={addMemberIds}
         onClose={handleCloseAddMemberDrawer}
-        open={addMemberCommitteeId != null}
-        destroyOnHidden
-      >
-        <KarkunsSelectionList setSelectedValue={handleSelectKarkunForCommittee} />
-      </Drawer>
+      />
     </>
   );
 };

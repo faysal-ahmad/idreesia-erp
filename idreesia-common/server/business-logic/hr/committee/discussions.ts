@@ -7,6 +7,8 @@ import {
   archiveChatGroup,
   createChatGroup,
   findChatGroup,
+  getChatGroupMemberIds,
+  removeChatGroupMember,
   unarchiveChatGroup,
 } from 'meteor/idreesia-common/server/chat';
 
@@ -33,6 +35,13 @@ const memberChatUserIds = async (committee: CommitteeDoc) => {
   return users
     .map(user => user.chatUserId as string | undefined)
     .filter((chatUserId): chatUserId is string => !!chatUserId);
+};
+
+// The chat user id of one person, if they have an ERP user with a chat
+// account.
+const personChatUserId = async (personId: string) => {
+  const [user] = await Users.findByPersonIds([personId]);
+  return (user?.chatUserId as string | undefined) || null;
 };
 
 /**
@@ -67,6 +76,68 @@ export const discussionsHandler: CommitteeFeatureHandler = {
       await archiveChatGroup(group._id);
     }
   },
+
+  // Keep the group's membership in step with the committee's.
+  async memberAdded(committee, karkunId) {
+    if (!committee.chatGroupId) return;
+    const chatUserId = await personChatUserId(karkunId);
+    if (chatUserId) await addChatGroupMembers(committee.chatGroupId, [chatUserId]);
+  },
+
+  async memberRemoved(committee, karkunId) {
+    if (!committee.chatGroupId) return;
+    const chatUserId = await personChatUserId(karkunId);
+    if (chatUserId) await removeChatGroupMember(committee.chatGroupId, chatUserId);
+  },
+};
+
+const isDiscussionsEnabled = (committee: CommitteeDoc) =>
+  !!committee.chatGroupId &&
+  !!committee.features?.includes(CommitteeFeatureKeys.DISCUSSIONS);
+
+/**
+ * Chat user ids currently in the committee's discussion group, or null when
+ * the committee doesn't have Discussions enabled.
+ */
+export const getCommitteeDiscussionChatUserIds = async (
+  committee: CommitteeDoc
+): Promise<Set<string> | null> => {
+  if (!isDiscussionsEnabled(committee)) return null;
+  return new Set(await getChatGroupMemberIds(committee.chatGroupId!));
+};
+
+/**
+ * Gives a committee member access to the committee's discussion (adds their
+ * chat account to the group) or takes it away (removes it from the group).
+ */
+export const setCommitteeMemberDiscussionAccess = async (
+  committee: CommitteeDoc,
+  karkunId: string,
+  hasAccess: boolean
+): Promise<true> => {
+  if (!isDiscussionsEnabled(committee)) {
+    throw new GraphQLError('Discussions are not enabled for this committee.', {
+      extensions: { code: 'BAD_USER_INPUT' },
+    });
+  }
+  if (!(committee.members ?? []).some(member => member.karkunId === karkunId)) {
+    throw new GraphQLError('This person is not a member of the committee.', {
+      extensions: { code: 'BAD_USER_INPUT' },
+    });
+  }
+  const chatUserId = await personChatUserId(karkunId);
+  if (!chatUserId) {
+    throw new GraphQLError('This member does not have a chat account.', {
+      extensions: { code: 'BAD_USER_INPUT' },
+    });
+  }
+
+  if (hasAccess) {
+    await addChatGroupMembers(committee.chatGroupId!, [chatUserId]);
+  } else {
+    await removeChatGroupMember(committee.chatGroupId!, chatUserId);
+  }
+  return true;
 };
 
 /**

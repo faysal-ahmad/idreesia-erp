@@ -38,6 +38,20 @@ export interface ChatMessage {
   u?: { _id: string; username?: string; name?: string };
   file?: { _id: string; name?: string; type?: string };
   attachments?: ChatAttachment[];
+  _updatedAt?: ChatDate;
+  editedAt?: ChatDate;
+  /** Thread parent id, on a thread reply. */
+  tmid?: string;
+  /** A thread reply also shown in the main list. */
+  tshow?: boolean;
+  /** On a thread parent: reply count and last reply time. */
+  tcount?: number;
+  tlm?: ChatDate;
+  pinned?: boolean;
+  /** Users who starred the message. */
+  starred?: Array<{ _id: string }>;
+  /** Reactions by shortcode (e.g. ':thumbsup:'). */
+  reactions?: Record<string, { usernames?: string[] }>;
 }
 
 export interface ChatVisitorInfo {

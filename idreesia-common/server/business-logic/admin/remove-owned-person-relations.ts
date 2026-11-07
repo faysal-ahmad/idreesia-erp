@@ -1,8 +1,5 @@
-import {
-  Committees,
-  DutyDayAttendances,
-  Teams,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { DutyDayAttendances, Teams } from 'meteor/idreesia-common/server/collections/hr';
+import { removePersonFromCommittees } from 'meteor/idreesia-common/server/business-logic/hr/committee';
 import { MehfilKarkuns, VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 import { ImdadRequests } from 'meteor/idreesia-common/server/collections/imdad';
 import { Messages } from 'meteor/idreesia-common/server/collections/communication';
@@ -23,11 +20,7 @@ import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 // runs, so that final record is unaffected by this cleanup.
 export async function removeOwnedPersonRelations(personId: string): Promise<void> {
   await Promise.all([
-    Committees.updateAsync(
-      { 'members.karkunId': personId },
-      { $pull: { members: { karkunId: personId } } },
-      { multi: true }
-    ),
+    removePersonFromCommittees(personId),
     Teams.updateAsync(
       { 'members.karkunId': personId },
       { $pull: { members: { karkunId: personId } } },

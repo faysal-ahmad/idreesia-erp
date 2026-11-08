@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, Toast } from 'antd-mobile';
+import { Button, Form, Input } from 'antd-mobile';
 import { useMutation } from '@apollo/client/react';
+import { showError } from '../../layout';
 import { Link } from '../../router';
 
 import { ChatPaths } from '../../chat';
 import { AuthLayout, PasswordInput } from '../../components';
 import { MOBILE_UPDATE_LOGIN_TIME } from '../../gql';
-import { getErrorMessage, loginWithPassword } from '../accounts';
+import { loginWithPassword } from '../accounts';
 
 interface LoginFormValues {
   userName: string;
@@ -25,7 +26,7 @@ export const LoginScreen = () => {
       // Not awaited: signing in shouldn't fail if this bookkeeping call does.
       updateLoginTime().catch(() => undefined);
     } catch (error) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(error, 'Login failed.') });
+      showError(error, 'Login failed.');
       setSubmitting(false);
     }
   };

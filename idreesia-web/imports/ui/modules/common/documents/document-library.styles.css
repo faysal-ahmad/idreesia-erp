@@ -1,0 +1,10 @@
+/* Workspaces → Documents (common/documents/document-library.tsx) */
+
+.document-library .document-library-path {
+  margin: 4px 0 12px;
+  font-size: 14px;
+}
+
+.document-library .list-table .ant-space-item .ant-tag {
+  margin-inline-end: 0;
+}

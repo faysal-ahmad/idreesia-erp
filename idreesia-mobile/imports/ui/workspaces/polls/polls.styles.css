@@ -1,0 +1,328 @@
+/* Workspace → Polls (workspaces/polls). Loaded from client/main.tsx. */
+
+/* List */
+.polls-tabs {
+  margin: 0 12px 4px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.polls-list-tags {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+/* Poll screen: a summary card, then the field rows (as on meeting / visitor-detail) */
+.poll-summary {
+  margin: 0 12px 10px;
+  padding: 16px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  text-align: center;
+}
+
+.poll-summary-title {
+  margin: 0;
+  font-size: 1.1765rem; /* 20px */
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.poll-summary-tags {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.poll-summary-note {
+  margin: 10px 0 0;
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+}
+
+.poll-fields {
+  margin: 0 12px 10px;
+  padding: 2px 14px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.poll-field {
+  display: grid;
+  grid-template-columns: 7.2em 1fr;
+  gap: 10px;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--app-color-border);
+  font-size: 0.8824rem; /* 15px */
+  line-height: 1.4;
+}
+
+.poll-field:last-child {
+  border-bottom: 0;
+}
+
+.poll-field dt {
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+}
+
+.poll-field dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.poll-hint {
+  margin: 0 24px 8px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+}
+
+.poll-muted {
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+  font-weight: normal;
+}
+
+.poll-danger-text {
+  color: var(--app-color-danger);
+}
+
+/* A question: on the ballot and in the results */
+.poll-question {
+  margin: 0 12px 10px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.poll-question-error {
+  border-color: var(--app-color-danger);
+}
+
+.poll-question-title {
+  margin: 0 0 4px;
+  font-size: 0.9412rem; /* 16px */
+  font-weight: 600;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.poll-question-description {
+  margin: 0 0 6px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.poll-question-hint {
+  margin: 0 0 8px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+}
+
+.poll-question-problem {
+  margin: 8px 0 0;
+  color: var(--app-color-danger);
+  font-size: 0.8235rem; /* 14px */
+}
+
+/* Results */
+.poll-stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 0 12px 10px;
+  padding: 12px 8px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.poll-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.poll-stat-value {
+  font-size: 1.2941rem; /* 22px */
+  font-weight: 600;
+}
+
+.poll-stat-label {
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+}
+
+.poll-result-option {
+  margin-top: 10px;
+}
+
+.poll-result-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+  font-size: 0.8824rem; /* 15px */
+  overflow-wrap: anywhere;
+}
+
+.poll-result-leading {
+  font-weight: 600;
+}
+
+.poll-result-bar {
+  --fill-color: var(--app-color-primary);
+  --track-color: var(--app-color-surface-muted);
+  --track-width: 8px;
+}
+
+/* Options other than the leading one: the same colour, lighter. */
+.poll-result-bar:not(.poll-result-bar-leading) .adm-progress-bar-fill {
+  opacity: 0.45;
+}
+
+.poll-result-voters {
+  margin: 4px 0 0;
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+  overflow-wrap: anywhere;
+}
+
+.poll-non-voters {
+  margin: 0 12px 16px;
+  overflow: hidden;
+  border-radius: var(--app-radius-medium);
+}
+
+.poll-load-more {
+  margin: 0 12px 16px;
+}
+
+/* Poll form: the questions list and the question sheet */
+.poll-form-questions {
+  --border-top: none;
+  --border-bottom: none;
+  margin-bottom: 8px;
+}
+
+.poll-question-number {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--app-color-primary-light);
+  color: var(--app-color-primary);
+  font-weight: 600;
+}
+
+.poll-form-popup {
+  max-height: 90vh;
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom);
+  border-top-left-radius: var(--app-radius-medium);
+  border-top-right-radius: var(--app-radius-medium);
+  background: var(--app-color-background);
+}
+
+.poll-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.poll-option-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 4px 0 10px;
+  border: 1px solid var(--app-color-border);
+  border-radius: var(--app-radius-small);
+}
+
+.poll-option-remove {
+  flex: none;
+  padding: 10px;
+  color: var(--app-color-text-secondary);
+  font-size: 20px;
+}
+
+/* Voter picker (voter-picker-popup.tsx) */
+.poll-picker {
+  display: flex;
+  max-height: 85vh;
+  flex-direction: column;
+  border-top-left-radius: var(--app-radius-medium);
+  border-top-right-radius: var(--app-radius-medium);
+}
+
+.poll-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px 4px 16px;
+}
+
+.poll-picker-title {
+  font-size: 1rem; /* 17px */
+  font-weight: 600;
+}
+
+.poll-picker-search {
+  padding: 4px 12px 8px;
+}
+
+.poll-picker-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.poll-picker-footer {
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--app-color-border);
+}
+
+.poll-picker-note {
+  margin: 0 0 8px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+}
+
+/* Confirmation dialogs on the poll screen */
+
+.poll-dialog p {
+  margin: 0;
+}
+
+.poll-dialog-emphasis {
+  margin: 2px 0 12px;
+  font-weight: 600;
+}
+
+.poll-dialog-note {
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+}
+
+/* Ballot options: the chosen one is filled solid so it stands out */
+.poll-selector {
+  --color: var(--app-color-surface-muted);
+  --text-color: var(--app-color-text);
+  --border: solid 1px var(--app-color-border);
+  --checked-color: var(--app-color-primary);
+  --checked-text-color: var(--app-color-on-primary);
+  --checked-border: solid 1px var(--app-color-primary);
+}
+
+.poll-selector .adm-selector-item-active {
+  font-weight: 600;
+}

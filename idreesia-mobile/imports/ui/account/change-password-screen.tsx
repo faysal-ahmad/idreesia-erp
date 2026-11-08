@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Form, Toast } from 'antd-mobile';
+import { Button, Form } from 'antd-mobile';
 
-import { changePassword, getErrorMessage } from '../auth/accounts';
+import { changePassword } from '../auth/accounts';
 import { PasswordInput } from '../components';
-import { Page, useNavigateBack } from '../layout';
+import { Page, useNavigateBack, showError, showSuccess } from '../layout';
 import { AccountPaths } from './paths';
 
 interface ChangePasswordFormValues {
@@ -21,13 +21,10 @@ export const ChangePasswordScreen = () => {
     setSubmitting(true);
     try {
       await changePassword(oldPassword, newPassword);
-      Toast.show({ icon: 'success', content: 'Your password has been changed.' });
+      showSuccess('Your password has been changed.');
       navigateBack();
     } catch (error) {
-      Toast.show({
-        icon: 'fail',
-        content: getErrorMessage(error, 'Could not change your password.'),
-      });
+      showError(error, 'Could not change your password.');
       setSubmitting(false);
     }
   };

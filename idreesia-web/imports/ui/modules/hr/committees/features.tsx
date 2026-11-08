@@ -5,6 +5,8 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { Alert, Popconfirm, Spin, Switch, Table } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
+import { CommitteeFeatureCategories } from 'meteor/idreesia-common/constants/hr';
+
 import type {
   AllCommitteeFeaturesQuery,
   AllCommitteeFeaturesQueryVariables,
@@ -23,6 +25,7 @@ const ALL_COMMITTEE_FEATURES: TypedDocumentNode<
       key
       name
       description
+      category
     }
   }
 `;
@@ -52,7 +55,54 @@ interface FeatureRow {
   key: string;
   name: string;
   description: string | null;
+  category: string | null;
 }
+
+const UNCATEGORIZED = 'Other';
+const CATEGORY_ORDER: string[] = [
+  ...Object.values(CommitteeFeatureCategories),
+  UNCATEGORIZED,
+];
+
+const categoryOf = (feature: FeatureRow) => feature.category || UNCATEGORIZED;
+
+// Orders features by category (keeping their original order within a
+// category) and works out how many rows each category cell should span.
+const groupByCategory = (features: FeatureRow[]) => {
+  const sorted = features
+    .map((feature, index) => ({ feature, index }))
+    .sort((a, b) => {
+      const rankA = CATEGORY_ORDER.indexOf(categoryOf(a.feature));
+      const rankB = CATEGORY_ORDER.indexOf(categoryOf(b.feature));
+      const byCategory =
+        (rankA === -1 ? CATEGORY_ORDER.length : rankA) -
+        (rankB === -1 ? CATEGORY_ORDER.length : rankB);
+      if (byCategory !== 0) return byCategory;
+      const byName = categoryOf(a.feature).localeCompare(categoryOf(b.feature));
+      return byName !== 0 ? byName : a.index - b.index;
+    })
+    .map(({ feature }) => feature);
+
+  const rowSpans = new Map<string, number>();
+  sorted.forEach((feature, index) => {
+    const isFirstInCategory =
+      index === 0 || categoryOf(sorted[index - 1]) !== categoryOf(feature);
+    if (!isFirstInCategory) {
+      rowSpans.set(feature.key, 0);
+      return;
+    }
+    let span = 1;
+    while (
+      index + span < sorted.length &&
+      categoryOf(sorted[index + span]) === categoryOf(feature)
+    ) {
+      span += 1;
+    }
+    rowSpans.set(feature.key, span);
+  });
+
+  return { sorted, rowSpans };
+};
 
 interface Props {
   committeeId: string;
@@ -79,9 +129,11 @@ const Features = ({ committeeId, enabledFeatures }: Props) => {
     mutationOptions
   );
 
-  const features = (data?.allCommitteeFeatures ?? []).filter(
-    (feature): feature is FeatureRow =>
-      feature?.key != null && feature.name != null
+  const { sorted: features, rowSpans } = groupByCategory(
+    (data?.allCommitteeFeatures ?? []).filter(
+      (feature): feature is FeatureRow =>
+        feature?.key != null && feature.name != null
+    )
   );
 
   const handleToggle = (feature: FeatureRow, enabled: boolean) => {
@@ -113,6 +165,15 @@ const Features = ({ committeeId, enabledFeatures }: Props) => {
   }
 
   const columns = [
+    {
+      title: 'Category',
+      key: 'category',
+      width: 160,
+      render: (_text: unknown, feature: FeatureRow) => categoryOf(feature),
+      onCell: (feature: FeatureRow) => ({
+        rowSpan: rowSpans.get(feature.key) ?? 1,
+      }),
+    },
     {
       title: 'Feature',
       dataIndex: 'name',

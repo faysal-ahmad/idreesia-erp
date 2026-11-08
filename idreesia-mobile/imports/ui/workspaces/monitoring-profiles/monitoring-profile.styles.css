@@ -1,0 +1,90 @@
+/* One Monitoring Profile (monitoring-profile-screen.tsx). Loaded
+   from client/main.tsx. The edit form, then a grid of the profile's photos. */
+
+.monitoring-profile-photos {
+  margin: 0 12px 16px;
+  padding: 12px 14px 14px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.monitoring-profile-photos-title {
+  margin: 0 0 10px;
+  font-size: 0.8824rem; /* 15px */
+  font-weight: 600;
+}
+
+.monitoring-profile-photos-empty,
+.monitoring-profile-photos-hint {
+  margin: 0 0 12px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+}
+
+.monitoring-profile-photos-hint {
+  margin: 8px 0 0;
+}
+
+.monitoring-profile-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.monitoring-profile-photo {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.monitoring-profile-photo-view {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface-muted);
+}
+
+.monitoring-profile-photo-view img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.monitoring-profile-photo-default {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  padding: 1px 6px;
+  border-radius: var(--app-radius-medium);
+  background: rgb(0 0 0 / 60%);
+  color: #fff;
+  font-size: 0.6471rem; /* 11px */
+  pointer-events: none;
+}
+
+/* Large enough to tap, in the photo's corner */
+.monitoring-profile-photo-remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 55%);
+  color: #fff;
+  font-size: 16px;
+}
+
+.monitoring-profile-photo-remove:disabled {
+  opacity: 0.5;
+}

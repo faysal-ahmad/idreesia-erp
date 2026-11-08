@@ -1,0 +1,70 @@
+/* Monitoring Alerts (monitoring-alerts-screen.tsx). Loaded from client/main.tsx. */
+
+.monitoring-alerts-date-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.monitoring-alerts-step,
+.monitoring-alerts-date {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  color: var(--app-color-text);
+  font: inherit;
+}
+
+.monitoring-alerts-step {
+  width: 40px;
+  flex-shrink: 0;
+  color: var(--app-color-primary);
+  font-size: 18px;
+}
+
+.monitoring-alerts-date {
+  flex: 1;
+  gap: 8px;
+  font-size: 0.9412rem; /* 16px */
+  font-weight: 500;
+}
+
+.monitoring-alerts-date .antd-mobile-icon {
+  color: var(--app-color-primary);
+  font-size: 18px;
+}
+
+.monitoring-alert-item .adm-list-item-content-prefix {
+  align-self: flex-start;
+  padding-top: 14px;
+}
+
+.monitoring-alert-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface-muted);
+}
+
+.monitoring-alert-item .adm-list-item-description {
+  line-height: 1.5;
+}
+
+.monitoring-alert-test-tag {
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* "Show test" toggle on the right of the alert count */
+.monitoring-alerts-test-toggle {
+  --icon-size: 18px;
+  --font-size: 0.7647rem; /* 13px */
+  --gap: 6px;
+
+  flex-shrink: 0;
+  color: var(--app-color-text-secondary);
+}

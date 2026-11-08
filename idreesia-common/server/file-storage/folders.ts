@@ -12,4 +12,10 @@ export const StorageFolders = {
   PurchaseFormAttachments: 'purchase-form-attachments',
   IssuanceFormAttachments: 'issuance-form-attachments',
   ProfileAttachments: 'profile-attachments',
+  // Document management system (business-logic/dms) - one object per
+  // document version: <folder>/<workspaceId>/<documentId>/<versionId>.<ext>
+  Documents: 'dms-documents',
+  // Meetings module (business-logic/meetings) - one object per attachment:
+  // <folder>/<workspaceId>/<meetingId>/<attachmentId>.<ext>
+  MeetingAttachments: 'meeting-attachments',
 } as const;

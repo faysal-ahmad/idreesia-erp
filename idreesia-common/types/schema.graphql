@@ -762,6 +762,7 @@ type CommitteeFeatureType {
   key: String
   name: String
   description: String
+  category: String
 }
 
 type CommitteeType {
@@ -2911,3 +2912,993 @@ extend type Mutation {
     messageId: String!
   ): Boolean!
 }
+
+type WorkspaceDocumentsInfoType {
+    # The logged-in user is a coordinator: can purge, empty the trash, delete
+    # versions and force-unlock.
+    canManage: Boolean
+    # Largest file, in bytes, that can be uploaded.
+    maxFileSize: Float
+  }
+
+  type WorkspaceDocumentFolderType {
+    _id: String
+    name: String
+    parentId: String
+    createdAt: String
+    createdByName: String
+    updatedAt: String
+    updatedByName: String
+    deletedAt: String
+    deletedByName: String
+  }
+
+  type WorkspaceDocumentLockType {
+    userName: String
+    lockedAt: String
+    expiresAt: String
+    note: String
+    # Checked out by the logged-in user.
+    isMine: Boolean
+  }
+
+  type WorkspaceDocumentType {
+    _id: String
+    name: String
+    folderId: String
+    # Search results only.
+    folderName: String
+    description: String
+    tags: [String]
+    fileName: String
+    mimeType: String
+    size: Float
+    currentVersionNumber: Int
+    # Set while the document is checked out.
+    lock: WorkspaceDocumentLockType
+    createdAt: String
+    createdByName: String
+    updatedAt: String
+    updatedByName: String
+    deletedAt: String
+    deletedByName: String
+  }
+
+  type PagedWorkspaceDocumentType {
+    data: [WorkspaceDocumentType]
+    totalResults: Int
+  }
+
+  type WorkspaceDocumentFolderContentsType {
+    # The folders from the root down to this one (empty for the root).
+    path: [WorkspaceDocumentFolderType]
+    folders: [WorkspaceDocumentFolderType]
+    documents: PagedWorkspaceDocumentType
+  }
+
+  type WorkspaceDocumentVersionType {
+    _id: String
+    versionNumber: Int
+    fileName: String
+    mimeType: String
+    size: Float
+    comment: String
+    isCurrent: Boolean
+    createdAt: String
+    createdByName: String
+  }
+
+  type WorkspaceDocumentActivityType {
+    _id: String
+    # A DmsAction, e.g. 'document-created'.
+    action: String
+    entityType: String
+    entityId: String
+    documentId: String
+    userName: String
+    at: String
+    # JSON object with action-specific details.
+    details: String
+  }
+
+  type WorkspaceDocumentTrashType {
+    folders: [WorkspaceDocumentFolderType]
+    documents: [WorkspaceDocumentType]
+  }
+
+  type WorkspaceDocumentUploadType {
+    uploadId: String
+    documentId: String
+    # PUT the file here with the Content-Type header below.
+    url: String
+    contentType: String
+    expiresAt: String
+  }
+
+  type WorkspaceDocumentDownloadType {
+    url: String
+    fileName: String
+  }
+
+  extend type Query {
+    workspaceDocumentsInfo(committeeId: String!): WorkspaceDocumentsInfoType
+    # A folder (null = root): its path, subfolders and a page of documents.
+    workspaceDocumentFolderContents(
+      committeeId: String!
+      folderId: String
+      pageIndex: Int
+      pageSize: Int
+    ): WorkspaceDocumentFolderContentsType
+    # Every folder, e.g. for picking where to move something.
+    workspaceDocumentFolders(
+      committeeId: String!
+    ): [WorkspaceDocumentFolderType]
+    # Documents whose name, description or tags match the words.
+    workspaceDocumentSearch(
+      committeeId: String!
+      text: String!
+      pageIndex: Int
+      pageSize: Int
+    ): PagedWorkspaceDocumentType
+    workspaceDocumentById(
+      committeeId: String!
+      documentId: String!
+    ): WorkspaceDocumentType
+    workspaceDocumentVersions(
+      committeeId: String!
+      documentId: String!
+    ): [WorkspaceDocumentVersionType]
+    # Newest first; pass the last entry's 'at' as 'before' for the next page.
+    workspaceDocumentActivity(
+      committeeId: String!
+      documentId: String
+      before: String
+      limit: Int
+    ): [WorkspaceDocumentActivityType]
+    workspaceDocumentTrash(committeeId: String!): WorkspaceDocumentTrashType
+  }
+
+  extend type Mutation {
+    workspaceCreateDocumentFolder(
+      committeeId: String!
+      parentId: String
+      name: String!
+    ): Boolean
+    workspaceRenameDocumentFolder(
+      committeeId: String!
+      folderId: String!
+      name: String!
+    ): Boolean
+    workspaceMoveDocumentFolder(
+      committeeId: String!
+      folderId: String!
+      parentId: String
+    ): Boolean
+    workspaceTrashDocumentFolder(
+      committeeId: String!
+      folderId: String!
+    ): Boolean
+
+    # Starts a direct upload: a new document in folderId, or a new version of
+    # documentId. Then PUT the file to the URL and call
+    # workspaceCompleteDocumentUpload.
+    workspaceCreateDocumentUpload(
+      committeeId: String!
+      folderId: String
+      documentId: String
+      fileName: String!
+      mimeType: String
+      size: Float!
+      comment: String
+    ): WorkspaceDocumentUploadType
+    workspaceCompleteDocumentUpload(
+      committeeId: String!
+      uploadId: String!
+    ): WorkspaceDocumentType
+    workspaceAbortDocumentUpload(
+      committeeId: String!
+      uploadId: String!
+    ): Boolean
+
+    workspaceUpdateDocument(
+      committeeId: String!
+      documentId: String!
+      name: String!
+      description: String
+      tags: [String]
+    ): Boolean
+    workspaceMoveDocument(
+      committeeId: String!
+      documentId: String!
+      folderId: String
+    ): Boolean
+    workspaceTrashDocument(committeeId: String!, documentId: String!): Boolean
+    # A short-lived link to a version (default: current). A mutation because
+    # each download is recorded in the activity log.
+    workspaceDocumentDownloadUrl(
+      committeeId: String!
+      documentId: String!
+      versionId: String
+      inline: Boolean
+    ): WorkspaceDocumentDownloadType
+
+    workspaceRestoreDocumentVersion(
+      committeeId: String!
+      documentId: String!
+      versionId: String!
+    ): Boolean
+    # Coordinators only.
+    workspaceDeleteDocumentVersion(
+      committeeId: String!
+      documentId: String!
+      versionId: String!
+    ): Boolean
+
+    workspaceCheckOutDocument(
+      committeeId: String!
+      documentId: String!
+      note: String
+    ): Boolean
+    workspaceCheckInDocument(committeeId: String!, documentId: String!): Boolean
+    # Coordinators only.
+    workspaceForceUnlockDocument(
+      committeeId: String!
+      documentId: String!
+    ): Boolean
+
+    # Restores a trashed folder or document, under newName if given; with
+    # toRoot, at the top level instead of its original folder.
+    workspaceRestoreDocumentTrashItem(
+      committeeId: String!
+      itemId: String!
+      newName: String
+      toRoot: Boolean
+    ): Boolean
+    # Coordinators only.
+    workspacePurgeDocumentTrashItem(
+      committeeId: String!
+      itemId: String!
+    ): Boolean
+    # Coordinators only. Returns how many items were purged.
+    workspaceEmptyDocumentTrash(committeeId: String!): Int
+  }
+
+type WorkspaceMeetingsInfoType {
+    # The logged-in user is a coordinator: can schedule and manage meetings.
+    canManage: Boolean
+    # The logged-in user's participant id (karkun id), if any.
+    myParticipantId: String
+    # Largest attachment, in bytes, that can be uploaded.
+    maxFileSize: Float
+    # Time zone new meetings are scheduled in.
+    timeZone: String
+  }
+
+  type WorkspaceMeetingMemberType {
+    participantId: String
+    name: String
+    isCoordinator: Boolean
+  }
+
+  type WorkspaceMeetingParticipantType {
+    participantId: String
+    name: String
+    # organizer, required or optional
+    role: String
+    # pending, accepted, declined or tentative
+    rsvpStatus: String
+    rsvpRespondedAt: String
+    rsvpComment: String
+    # present, absent, late or excused; null until recorded
+    attendanceStatus: String
+    attendanceNote: String
+    attendanceMarkedAt: String
+    attendanceMarkedByName: String
+    # The logged-in user.
+    isMe: Boolean
+  }
+
+  type WorkspaceMeetingAgendaItemType {
+    _id: String
+    title: String
+    description: String
+    durationMinutes: Int
+    presenterId: String
+    presenterName: String
+  }
+
+  type WorkspaceMeetingType {
+    _id: String
+    title: String
+    description: String
+    location: String
+    onlineUrl: String
+    startsAt: String
+    endsAt: String
+    timeZone: String
+    # scheduled, completed or cancelled
+    status: String
+    cancelledAt: String
+    cancelledByName: String
+    cancellationReason: String
+    completedAt: String
+    completedByName: String
+    participants: [WorkspaceMeetingParticipantType]
+    agenda: [WorkspaceMeetingAgendaItemType]
+    minutes: String
+    minutesUpdatedAt: String
+    minutesUpdatedByName: String
+    attachmentCount: Int
+    openActionItemCount: Int
+    # The logged-in user's response, if they are invited.
+    myRsvpStatus: String
+    createdAt: String
+    createdByName: String
+    updatedAt: String
+    updatedByName: String
+  }
+
+  type PagedWorkspaceMeetingType {
+    data: [WorkspaceMeetingType]
+    totalResults: Int
+  }
+
+  type WorkspaceMeetingAttachmentType {
+    _id: String
+    name: String
+    description: String
+    fileName: String
+    mimeType: String
+    size: Float
+    createdAt: String
+    createdByName: String
+    # Only coordinators can delete it.
+    canDelete: Boolean
+  }
+
+  type WorkspaceMeetingActionItemType {
+    _id: String
+    meetingId: String
+    meetingTitle: String
+    # When the meeting ends (ms), to tell past meetings from upcoming ones.
+    meetingEndsAt: String
+    agendaItemId: String
+    title: String
+    description: String
+    assigneeId: String
+    assigneeName: String
+    dueDate: String
+    # open, in-progress, done or cancelled
+    status: String
+    completedAt: String
+    completedByName: String
+    createdAt: String
+    createdByName: String
+    # Coordinators and the assignee can change its status.
+    canChangeStatus: Boolean
+  }
+
+  type PagedWorkspaceMeetingActionItemType {
+    data: [WorkspaceMeetingActionItemType]
+    totalResults: Int
+  }
+
+  type WorkspaceMeetingActivityType {
+    _id: String
+    # A MeetingsAction, e.g. 'meeting-created'.
+    action: String
+    entityType: String
+    entityId: String
+    meetingId: String
+    userName: String
+    at: String
+    # JSON object with action-specific details.
+    details: String
+  }
+
+  type WorkspaceMeetingUploadType {
+    uploadId: String
+    # PUT the file here with the Content-Type header below.
+    url: String
+    contentType: String
+    expiresAt: String
+  }
+
+  type WorkspaceMeetingDownloadType {
+    url: String
+    fileName: String
+  }
+
+  input WorkspaceMeetingInput {
+    title: String!
+    startsAt: String!
+    endsAt: String!
+    location: String
+    onlineUrl: String
+    description: String
+  }
+
+  input WorkspaceMeetingAgendaItemInput {
+    title: String!
+    description: String
+    durationMinutes: Int
+    presenterId: String
+  }
+
+  input WorkspaceMeetingAttendanceInput {
+    participantId: String!
+    # null clears it
+    status: String
+    note: String
+  }
+
+  input WorkspaceMeetingActionItemInput {
+    title: String!
+    description: String
+    assigneeId: String
+    dueDate: String
+    agendaItemId: String
+  }
+
+  extend type Query {
+    workspaceMeetingsInfo(committeeId: String!): WorkspaceMeetingsInfoType
+    # The committee's members, who can be invited.
+    workspaceMeetingMembers(
+      committeeId: String!
+    ): [WorkspaceMeetingMemberType]
+    # view: upcoming (default), past, cancelled or all. from/to narrow to
+    # meetings overlapping that range (e.g. a calendar month).
+    workspaceMeetings(
+      committeeId: String!
+      view: String
+      from: String
+      to: String
+      text: String
+      pageIndex: Int
+      pageSize: Int
+    ): PagedWorkspaceMeetingType
+    workspaceMeetingById(
+      committeeId: String!
+      meetingId: String!
+    ): WorkspaceMeetingType
+    workspaceMeetingAttachments(
+      committeeId: String!
+      meetingId: String!
+    ): [WorkspaceMeetingAttachmentType]
+    # assigneeId 'me' for the logged-in user's own items.
+    workspaceMeetingActionItems(
+      committeeId: String!
+      meetingId: String
+      assigneeId: String
+      status: [String]
+      pageIndex: Int
+      pageSize: Int
+    ): PagedWorkspaceMeetingActionItemType
+    # Newest first; pass the last entry's 'at' as 'before' for the next page.
+    workspaceMeetingActivity(
+      committeeId: String!
+      meetingId: String
+      before: String
+      limit: Int
+    ): [WorkspaceMeetingActivityType]
+  }
+
+  extend type Mutation {
+    # Coordinators only, like every meeting change below unless noted.
+    workspaceCreateMeeting(
+      committeeId: String!
+      input: WorkspaceMeetingInput!
+      participantIds: [String]
+    ): WorkspaceMeetingType
+    workspaceUpdateMeeting(
+      committeeId: String!
+      meetingId: String!
+      input: WorkspaceMeetingInput!
+    ): WorkspaceMeetingType
+    workspaceCancelMeeting(
+      committeeId: String!
+      meetingId: String!
+      reason: String
+    ): WorkspaceMeetingType
+    workspaceCompleteMeeting(
+      committeeId: String!
+      meetingId: String!
+    ): WorkspaceMeetingType
+    workspaceReopenMeeting(
+      committeeId: String!
+      meetingId: String!
+    ): WorkspaceMeetingType
+    workspaceDeleteMeeting(committeeId: String!, meetingId: String!): Boolean
+
+    # Makes the participant list exactly these members (new ones invited,
+    # missing ones removed).
+    workspaceSetMeetingParticipants(
+      committeeId: String!
+      meetingId: String!
+      participantIds: [String]!
+    ): WorkspaceMeetingType
+    workspaceSetMeetingParticipantRole(
+      committeeId: String!
+      meetingId: String!
+      participantId: String!
+      role: String!
+    ): WorkspaceMeetingType
+    # Members answer for themselves (participantId omitted); coordinators
+    # can answer for any participant.
+    workspaceRespondToMeeting(
+      committeeId: String!
+      meetingId: String!
+      participantId: String
+      status: String!
+      comment: String
+    ): WorkspaceMeetingType
+    workspaceMarkMeetingAttendance(
+      committeeId: String!
+      meetingId: String!
+      entries: [WorkspaceMeetingAttendanceInput]!
+    ): WorkspaceMeetingType
+
+    workspaceAddMeetingAgendaItem(
+      committeeId: String!
+      meetingId: String!
+      input: WorkspaceMeetingAgendaItemInput!
+    ): WorkspaceMeetingType
+    workspaceUpdateMeetingAgendaItem(
+      committeeId: String!
+      meetingId: String!
+      agendaItemId: String!
+      input: WorkspaceMeetingAgendaItemInput!
+    ): WorkspaceMeetingType
+    workspaceRemoveMeetingAgendaItem(
+      committeeId: String!
+      meetingId: String!
+      agendaItemId: String!
+    ): WorkspaceMeetingType
+    workspaceReorderMeetingAgenda(
+      committeeId: String!
+      meetingId: String!
+      agendaItemIds: [String]!
+    ): WorkspaceMeetingType
+
+    workspaceSetMeetingMinutes(
+      committeeId: String!
+      meetingId: String!
+      text: String
+    ): WorkspaceMeetingType
+
+    # Any member. Starts a direct upload: PUT the file to the URL, then call
+    # workspaceCompleteMeetingAttachmentUpload.
+    workspaceCreateMeetingAttachmentUpload(
+      committeeId: String!
+      meetingId: String!
+      fileName: String!
+      mimeType: String
+      size: Float!
+    ): WorkspaceMeetingUploadType
+    workspaceCompleteMeetingAttachmentUpload(
+      committeeId: String!
+      uploadId: String!
+    ): WorkspaceMeetingAttachmentType
+    workspaceAbortMeetingAttachmentUpload(
+      committeeId: String!
+      uploadId: String!
+    ): Boolean
+    # Any member. A mutation because each download is logged.
+    workspaceMeetingAttachmentDownloadUrl(
+      committeeId: String!
+      attachmentId: String!
+      inline: Boolean
+    ): WorkspaceMeetingDownloadType
+    # Coordinators only.
+    workspaceDeleteMeetingAttachment(
+      committeeId: String!
+      attachmentId: String!
+    ): Boolean
+
+    workspaceCreateMeetingActionItem(
+      committeeId: String!
+      meetingId: String!
+      input: WorkspaceMeetingActionItemInput!
+    ): WorkspaceMeetingActionItemType
+    workspaceUpdateMeetingActionItem(
+      committeeId: String!
+      actionItemId: String!
+      input: WorkspaceMeetingActionItemInput!
+    ): WorkspaceMeetingActionItemType
+    # Coordinators and the assignee.
+    workspaceSetMeetingActionItemStatus(
+      committeeId: String!
+      actionItemId: String!
+      status: String!
+    ): WorkspaceMeetingActionItemType
+    workspaceDeleteMeetingActionItem(
+      committeeId: String!
+      actionItemId: String!
+    ): Boolean
+  }
+
+type WorkspaceMonitoringAlertType {
+  _id: String
+  timestamp: String
+  profileName: String
+  profileIsTest: Boolean
+  channelName: String
+  similarityScore: Float
+  # CORRECT, FALSE_POSITIVE, or null when not reviewed yet.
+  review: String
+  imageUrl: String
+  thumbnailUrl: String
+}
+
+type PagedWorkspaceMonitoringAlertType {
+  data: [WorkspaceMonitoringAlertType]
+  totalResults: Int
+}
+
+extend type Query {
+  # Alerts raised on 'date' (DD-MM-YYYY), newest first. Alerts of test
+  # profiles are included unless 'includeTest' is false.
+  workspaceMonitoringAlerts(
+    committeeId: String!
+    date: String!
+    includeTest: Boolean
+    pageIndex: String
+    pageSize: String
+  ): PagedWorkspaceMonitoringAlertType
+}
+
+type WorkspaceMonitoringProfilePhotoType {
+  _id: String
+  imageUrl: String
+  # Null for photos stored before thumbnails existed; use imageUrl then.
+  thumbnailUrl: String
+}
+
+type WorkspaceMonitoringProfileType {
+  _id: String
+  name: String
+  isTest: Boolean
+  # The default photo first.
+  photos: [WorkspaceMonitoringProfilePhotoType]
+  alertsCount: Int
+}
+
+type PagedWorkspaceMonitoringProfileType {
+  data: [WorkspaceMonitoringProfileType]
+  totalResults: Int
+}
+
+extend type Query {
+  # Profiles that aren't deleted, by name. 'name' matches part of the name.
+  # Test profiles are included unless 'includeTest' is false.
+  workspaceMonitoringProfiles(
+    committeeId: String!
+    name: String
+    includeTest: Boolean
+    pageIndex: String
+    pageSize: String
+  ): PagedWorkspaceMonitoringProfileType
+
+  # Null when the profile doesn't exist or was deleted.
+  workspaceMonitoringProfileById(
+    committeeId: String!
+    profileId: String!
+  ): WorkspaceMonitoringProfileType
+}
+
+extend type Mutation {
+  updateWorkspaceMonitoringProfile(
+    committeeId: String!
+    profileId: String!
+    name: String!
+    isTest: Boolean!
+  ): WorkspaceMonitoringProfileType
+
+  # imageData is base64, optionally as a data: URL. The photo is rejected
+  # unless it has exactly one face the security server can use.
+  addWorkspaceMonitoringProfilePhoto(
+    committeeId: String!
+    profileId: String!
+    imageData: String!
+  ): WorkspaceMonitoringProfileType
+
+  removeWorkspaceMonitoringProfilePhoto(
+    committeeId: String!
+    profileId: String!
+    photoId: String!
+  ): WorkspaceMonitoringProfileType
+}
+
+# A previous stay of the same visitor, on a stay's detail screen.
+type WorkspaceStayHistoryItemType {
+  _id: String
+  fromDate: String
+  toDate: String
+  numOfDays: Float
+  stayReason: String
+}
+
+type WorkspaceNightStayType {
+  _id: String
+  visitorId: String
+  fromDate: String
+  toDate: String
+  numOfDays: Float
+  stayReason: String
+  stayAllowedBy: String
+  visitorName: String
+  visitorImageUrl: String
+  visitorImageThumbnailUrl: String
+  city: String
+  country: String
+  # The visitor's latest 5 stays before this one, newest first, not counting
+  # cancelled stays.
+  stayHistory: [WorkspaceStayHistoryItemType]
+}
+
+type PagedWorkspaceNightStayType {
+  data: [WorkspaceNightStayType]
+  totalResults: Int
+}
+
+extend type Query {
+  # Stays covering 'stayDate' (DD-MM-YYYY), including ones that started on an
+  # earlier day. Cancelled stays are left out. 'sortBy' is one of name, city or stayDate.
+  workspaceNightStays(
+    committeeId: String!
+    stayDate: String!
+    name: String
+    city: String
+    stayReason: String
+    sortBy: String
+    sortOrder: String
+    pageIndex: String
+    pageSize: String
+  ): PagedWorkspaceNightStayType
+
+  # One stay from the report; null if it doesn't exist or was cancelled.
+  workspaceNightStayById(
+    committeeId: String!
+    stayId: String!
+  ): WorkspaceNightStayType
+}
+
+type WorkspacePollsInfoType {
+    # The logged-in user is a coordinator: can create and manage polls.
+    canManage: Boolean
+    # The logged-in user's voter id (karkun id), if they can vote.
+    myVoterId: String
+  }
+
+  type WorkspacePollMemberType {
+    voterId: String
+    name: String
+    isCoordinator: Boolean
+  }
+
+  type WorkspacePollOptionType {
+    _id: String
+    text: String
+  }
+
+  type WorkspacePollQuestionType {
+    _id: String
+    text: String
+    description: String
+    # single or multiple
+    type: String
+    required: Boolean
+    minChoices: Int
+    maxChoices: Int
+    options: [WorkspacePollOptionType]
+  }
+
+  type WorkspacePollAnswerType {
+    questionId: String
+    optionIds: [String]
+  }
+
+  type WorkspacePollType {
+    _id: String
+    title: String
+    description: String
+    # draft, open, closed or cancelled
+    status: String
+    anonymous: Boolean
+    showResultsWhileOpen: Boolean
+    closesAt: String
+    openedAt: String
+    # Set when the poll has closed. closedByName is empty when it closed
+    # on its own at closesAt.
+    closedAt: String
+    closedByName: String
+    cancelledAt: String
+    cancelledByName: String
+    cancellationReason: String
+    questions: [WorkspacePollQuestionType]
+    eligibleVoterIds: [String]
+    eligibleCount: Int
+    voteCount: Int
+    # The logged-in user can vote in this poll.
+    isEligible: Boolean
+    hasVoted: Boolean
+    # The logged-in user's own answers, if they have voted.
+    myAnswers: [WorkspacePollAnswerType]
+    canSeeResults: Boolean
+    createdAt: String
+    createdByName: String
+    updatedAt: String
+    updatedByName: String
+  }
+
+  type PagedWorkspacePollType {
+    data: [WorkspacePollType]
+    totalResults: Int
+  }
+
+  type WorkspacePollVoterType {
+    voterId: String
+    name: String
+    # Unset for anonymous polls.
+    hasVoted: Boolean
+  }
+
+  type WorkspacePollOptionResultType {
+    optionId: String
+    text: String
+    count: Int
+    percentage: Float
+    # Who chose it. Unset for anonymous polls.
+    voters: [WorkspacePollVoterType]
+  }
+
+  type WorkspacePollQuestionResultType {
+    questionId: String
+    text: String
+    type: String
+    answeredCount: Int
+    options: [WorkspacePollOptionResultType]
+  }
+
+  type WorkspacePollResultsType {
+    pollId: String
+    status: String
+    anonymous: Boolean
+    closedAt: String
+    totalVoters: Int
+    eligibleCount: Int
+    # Percentage of eligible voters who voted.
+    turnout: Float
+    # Eligible voters who didn't vote. Unset for anonymous polls.
+    nonVoters: [WorkspacePollVoterType]
+    questions: [WorkspacePollQuestionResultType]
+  }
+
+  type WorkspacePollActivityType {
+    _id: String
+    action: String
+    entityType: String
+    entityId: String
+    pollId: String
+    userName: String
+    at: String
+    # JSON
+    details: String
+  }
+
+  input WorkspacePollOptionInput {
+    # Keeps an existing option; leave empty for a new one.
+    _id: String
+    text: String!
+  }
+
+  input WorkspacePollQuestionInput {
+    # Keeps an existing question; leave empty for a new one.
+    _id: String
+    text: String!
+    description: String
+    # single (default) or multiple
+    type: String
+    required: Boolean
+    minChoices: Int
+    maxChoices: Int
+    options: [WorkspacePollOptionInput]!
+  }
+
+  input WorkspacePollInput {
+    title: String!
+    description: String
+    closesAt: String!
+    # Drafts only.
+    anonymous: Boolean
+    showResultsWhileOpen: Boolean
+    # Drafts only. Empty: every committee member.
+    eligibleVoterIds: [String]
+    # Drafts only.
+    questions: [WorkspacePollQuestionInput]
+  }
+
+  input WorkspacePollAnswerInput {
+    questionId: String!
+    optionIds: [String]
+  }
+
+  extend type Query {
+    workspacePollsInfo(committeeId: String!): WorkspacePollsInfoType
+    # The committee's members, who can be made eligible to vote.
+    workspacePollMembers(committeeId: String!): [WorkspacePollMemberType]
+    # view: open (default), closed, drafts (coordinators) or all.
+    workspacePolls(
+      committeeId: String!
+      view: String
+      text: String
+      pageIndex: Int
+      pageSize: Int
+    ): PagedWorkspacePollType
+    workspacePollById(committeeId: String!, pollId: String!): WorkspacePollType
+    # Once the poll has closed (or while open, if the poll allows it).
+    workspacePollResults(
+      committeeId: String!
+      pollId: String!
+    ): WorkspacePollResultsType
+    # Coordinators only.
+    workspacePollVoters(
+      committeeId: String!
+      pollId: String!
+    ): [WorkspacePollVoterType]
+    # Coordinators only. Newest first; pass the last entry's 'at' as
+    # 'before' for the next page.
+    workspacePollActivity(
+      committeeId: String!
+      pollId: String
+      before: String
+      limit: Int
+    ): [WorkspacePollActivityType]
+  }
+
+  extend type Mutation {
+    # Coordinators only, like every poll change below unless noted.
+    workspaceCreatePoll(
+      committeeId: String!
+      input: WorkspacePollInput!
+    ): WorkspacePollType
+    workspaceUpdatePoll(
+      committeeId: String!
+      pollId: String!
+      input: WorkspacePollInput!
+    ): WorkspacePollType
+    # Adds members to an open poll's eligible voters.
+    workspaceAddPollVoters(
+      committeeId: String!
+      pollId: String!
+      voterIds: [String]!
+    ): WorkspacePollType
+    workspaceOpenPoll(
+      committeeId: String!
+      pollId: String!
+      closesAt: String
+    ): WorkspacePollType
+    workspaceClosePoll(committeeId: String!, pollId: String!): WorkspacePollType
+    workspaceReopenPoll(
+      committeeId: String!
+      pollId: String!
+      closesAt: String!
+    ): WorkspacePollType
+    workspaceCancelPoll(
+      committeeId: String!
+      pollId: String!
+      reason: String
+    ): WorkspacePollType
+    workspaceDeletePoll(committeeId: String!, pollId: String!): Boolean
+
+    # Members vote for themselves.
+    workspaceCastPollVote(
+      committeeId: String!
+      pollId: String!
+      answers: [WorkspacePollAnswerInput]!
+    ): WorkspacePollType
+    workspaceWithdrawPollVote(
+      committeeId: String!
+      pollId: String!
+    ): WorkspacePollType
+  }

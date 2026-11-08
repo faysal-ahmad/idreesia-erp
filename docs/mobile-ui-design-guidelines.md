@@ -13,22 +13,30 @@ antd-mobile only ships components and theming docs. It has no guidance on page p
 | Theme (colours, radii, font) | `idreesia-mobile/imports/ui/theme/theme.ts` |
 | Page shell | `idreesia-mobile/imports/ui/layout/page.tsx` |
 | Loading / empty / error / no-access states | `idreesia-mobile/imports/ui/layout/status.tsx` |
+| Toasts (success, error, warning, info) | `idreesia-mobile/imports/ui/layout/toast.tsx` |
+| User-readable error text | `idreesia-mobile/imports/ui/utilities/describe-error.ts` |
 | Back navigation | `idreesia-mobile/imports/ui/layout/navigation.tsx` |
 | Tab bar | `idreesia-mobile/imports/ui/layout/tab-bar.tsx` |
-| Module / feature types | `idreesia-mobile/imports/ui/modules/types.ts` |
-| Module registry | `idreesia-mobile/imports/ui/modules/registry.ts` |
-| Permission rules | `idreesia-mobile/imports/ui/modules/access.ts` |
-| Example module (Security → Visitors) | `idreesia-mobile/imports/ui/modules/security/` |
-| List screen (search, filters, paging) | `idreesia-mobile/imports/ui/modules/security/visitors/visitors-list-screen.tsx` |
-| List row | `idreesia-mobile/imports/ui/modules/security/visitors/visitor-list-item.tsx` |
+| Module / feature types | `idreesia-mobile/imports/ui/apps/types.ts` |
+| Module registry | `idreesia-mobile/imports/ui/apps/registry.ts` |
+| Permission rules | `idreesia-mobile/imports/ui/apps/access.ts` |
+| Example module (Security → Visitors) | `idreesia-mobile/imports/ui/apps/security/` |
+| List screen (search, filters, paging) | `idreesia-mobile/imports/ui/apps/security/visitors/visitors-list-screen.tsx` |
+| List row | `idreesia-mobile/imports/ui/apps/security/visitors/visitor-list-item.tsx` |
 | Camera capture (Cordova + browser) | `idreesia-mobile/imports/ui/utilities/capture-photo.ts` + `imports/ui/components/camera-view.tsx` |
-| Photo search screen | `idreesia-mobile/imports/ui/modules/security/visitors/photo-search-screen.tsx` |
-| Single-date report | `idreesia-mobile/imports/ui/modules/security/stay-report/stay-report-screen.tsx` |
-| Detail screen | `idreesia-mobile/imports/ui/modules/security/visitors/visitor-detail-screen.tsx` |
-| Keeping a list alive under its detail | `idreesia-mobile/imports/ui/modules/security/visitors/visitors-feature.tsx` + `imports/ui/layout/keep-alive.tsx` |
+| Photo search screen | `idreesia-mobile/imports/ui/apps/security/visitors/photo-search-screen.tsx` |
+| Single-date report | `idreesia-mobile/imports/ui/apps/security/stay-report/stay-report-screen.tsx` |
+| Detail screen | `idreesia-mobile/imports/ui/apps/security/visitors/visitor-detail-screen.tsx` |
+| Keeping a list alive under its detail | `idreesia-mobile/imports/ui/apps/security/visitors/visitors-feature.tsx` + `imports/ui/layout/keep-alive.tsx` |
 | Paged query → infinite list | `idreesia-mobile/imports/ui/hooks/use-paged-query.ts` + `imports/ui/components/paged-list.tsx` |
+| Workspace screens (opened from the Workspaces tab) | `idreesia-mobile/imports/ui/workspaces/` + `workspaces-stack.tsx` |
 | Form screen | `idreesia-mobile/imports/ui/account/change-password-screen.tsx` |
 | Public chat (signed out, Rocket.Chat) | `idreesia-mobile/imports/ui/chat/` |
+| Message composer (text, camera, files, voice notes) | `idreesia-mobile/imports/ui/components/message-composer/` |
+| Committee discussion (signed in) | `idreesia-mobile/imports/ui/workspaces/discussions/` |
+| Committee meetings (list → meeting → parts, bottom-sheet forms) | `idreesia-mobile/imports/ui/workspaces/meetings/` |
+| Committee polls (voting on the poll screen with a pinned submit, results with progress bars, question editor in a bottom sheet) | `idreesia-mobile/imports/ui/workspaces/polls/` |
+| Committee documents (folder drill-down with library-wide search, presigned uploads, document → versions / activity, trash, move via a folder-picker sheet) | `idreesia-mobile/imports/ui/workspaces/documents/` |
 | Shared CSS | `idreesia-mobile/client/main.css` |
 | Page CSS example | `idreesia-mobile/imports/ui/account/account-screen.styles.css` |
 
@@ -39,7 +47,31 @@ antd-mobile only ships components and theming docs. It has no guidance on page p
 The mobile app uses the same functional modules as the web app (`ModuleNames` / `ModulePaths` in `idreesia-common/constants`). Each module contains **features**, which are use cases such as Security → Visitors.
 
 ```
-Modules tab (/)
+Home tab (/home)                         ← default after signing in; empty for now
+Workspaces tab (/workspaces)             ← the user's workspaces, each expanding to its features
+├── Workspace members (/workspaces/committees/:committeeId/members)   ← imports/ui/workspaces; the Workspaces list stays alive under it
+├── Workspace discussion (/workspaces/committees/:committeeId/discussions)   ← DiscussionFeature; main list stays alive under:
+│   ├── …/discussions/threads/:threadId
+│   ├── …/discussions/search
+│   ├── …/discussions/pinned
+│   └── …/discussions/starred
+├── Workspace Meetings (/workspaces/committees/:committeeId/meetings)   ← MeetingsFeature; the list stays alive under a meeting, and the meeting under its parts:
+│   ├── …/meetings/new                    ← form (coordinators)
+│   └── …/meetings/:meetingId             ← one meeting: summary, your response, rows for its parts
+│       └── …/meetings/:meetingId/{edit,agenda,participants,minutes,attachments,action-items,activity}   ← item forms open in bottom Popups, not deeper screens
+├── Workspace Polls (/workspaces/committees/:committeeId/polls)   ← PollsFeature; the list stays alive under a poll, and the poll under its parts:
+│   ├── …/polls/new                       ← form (coordinators); questions are edited in a bottom Popup
+│   └── …/polls/:pollId                   ← one poll: summary, the questions to vote on (pinned "Submit vote"), rows for its parts
+│       └── …/polls/:pollId/{edit,results,voters,activity}   ← voters and activity are for coordinators
+├── Workspace Documents (/workspaces/committees/:committeeId/documents)   ← DocumentsFeature; the top level stays alive underneath, the last folder under a document opened from it, and the document under its parts:
+│   ├── …/documents/folders/:folderId     ← one folder: subfolders and documents; the search box searches the whole library
+│   ├── …/documents/trash                 ← restore; delete forever / empty trash (coordinators)
+│   └── …/documents/files/:documentId     ← one document: details, check-out state, pinned "Open document"; other actions in the "more" ActionSheet
+│       └── …/documents/files/:documentId/{versions,activity}   ← forms (new folder, rename, edit, move) open in bottom Popups
+├── Workspace Night Stay Report (/workspaces/committees/:committeeId/night-stay-report)   ← NightStayReportFeature; read-only, one night at a time; report stays alive under:
+│   └── …/night-stay-report/:stayId   ← one stay, with a large photo
+└── Workspace Security Server Alerts (/workspaces/committees/:committeeId/security-server-alerts)   ← read-only, one day at a time
+Apps tab (/apps)                         ← lists the user's modules
 └── Security (/security)                 ← module screen, lists its features
     └── Visitors (/security/visitors)    ← feature; owns every route below it
         ├── /security/visitors/:id       ← detail
@@ -48,7 +80,7 @@ Account tab (/account)
 └── Change password (/account/change-password)
 ```
 
-- **Modules** are declared as `ModuleDefinition`s and registered in `modules/registry.ts`. Only add a module to the mobile app once it has at least one mobile feature.
+- **Modules** are declared as `ModuleDefinition`s and registered in `apps/registry.ts`. Only add a module to the mobile app once it has at least one mobile feature.
 - **Features** are `FeatureDefinition`s inside their module. Each one has a `path` under the module's path, a list of `permissions`, and a `component`. The component owns every route under its path, so it renders its own `<Switch>` for list, detail and form screens.
 - **Visibility follows permissions.**
   - A feature is shown when the user has **any** of its permissions (`Permissions` from idreesia-common).
@@ -58,23 +90,23 @@ Account tab (/account)
 
 ### Adding a feature
 
-1. Create `modules/<module>/<feature>/` containing the feature component and its screens.
-2. Add its path to `modules/<module>/paths.ts`, always under `ModulePaths.<module>`.
+1. Create `apps/<module>/<feature>/` containing the feature component and its screens.
+2. Add its path to `apps/<module>/paths.ts`, always under `ModulePaths.<module>`.
 3. Add a `FeatureDefinition` to the module's `features`. Give it a title, a one-line description, an `antd-mobile-icons` icon, its path, its permissions and its component.
 4. The routes, the module screen entry and the permission gate come for free. Don't add routes to `app.tsx`.
 
 ### Adding a module
 
-1. Create `modules/<module>/index.tsx` exporting a `ModuleDefinition` that uses the shared `ModuleNames` / `ModulePaths` values.
+1. Create `apps/<module>/index.tsx` exporting a `ModuleDefinition` that uses the shared `ModuleNames` / `ModulePaths` values.
 2. Add it to `modules` in `registry.ts`. The list order is the display order.
 
 ---
 
 ## 2. Navigation
 
-- **Tab bar:** Modules and Account are the only top-level destinations. The tab bar shows only on their root screens. Don't add tabs per module; modules are listed on the Modules tab.
+- **Tab bar:** Home, Workspaces, Apps and Account are the only top-level destinations, in that order. Home is the default screen after signing in. The tab bar shows only on their root screens. Don't add tabs per module; modules are listed on the Apps tab.
 - **Drill-down:** every screen below a tab root is full-screen, with a back arrow in the nav bar. Keep the hierarchy to at most **module → feature → list → detail → form**. If you need more levels, rethink the flow, for example with a popup or tabs inside the detail screen.
-- **Back:** set `backTo` on `Page` to the parent route. `useNavigateBack` uses `history.goBack()` when the user got there within the app, which keeps Android's hardware back button in step. On a deep link or after a reload, it replaces the current route with the parent, so the back arrow never leaves the app.
+- **Back:** set `backTo` on `Page` to the parent route. That gives the screen a back arrow and a swipe right from the left edge (`layout/use-swipe-back.ts`), on every platform; both run the same back action. `useNavigateBack` uses `history.goBack()` when the user got there within the app, which keeps Android's hardware back button in step. On a deep link or after a reload, it replaces the current route with the parent, so the back arrow never leaves the app.
 - **Coming back keeps the screen as it was:** a list (or search) that opens a detail screen stays mounted underneath it inside `KeepAlive`, so back shows the same search, loaded pages and scroll position. The feature component decides which screens are still in the back stack; see `visitors-feature.tsx`. When another feature opens a record (e.g. the stay report opening a visitor), route the detail screen under that feature's own path (`/security/stay-report/:visitorId`) and reuse the screen component with its `backTo`, so the opening screen stays alive; see `stay-report-feature.tsx`. Don't store screen state in module variables or the URL to fake this.
 - **After saving:** go back to where the user came from with `useNavigateBack(parentPath)`, not `history.push`. That way back doesn't return to the form.
 - **Routes:** use path constants (`<Module>Paths`, `AccountPaths`), never string literals. Routes use a `HashRouter` (`/#/…`), which Cordova needs.
@@ -149,16 +181,19 @@ A feature's entry screen is usually a list. Build it from `usePagedQuery` and `P
 - **Submit:** a primary block `Button` in the form's `footer`, with `loading` while saving and a label that says what it does ("Register visitor", not "Submit").
 - **Choices:** use `Picker`, `CascadePicker` or `DatePicker` (opened from a `Form.Item` with `onClick`) instead of free-text fields. For lists that are too long for a picker, open a searchable selection screen.
 - **Grouping:** for long forms, split the fields into several `Form` cards with `Form.Header`s. For more than about 8 fields, consider steps (`Steps`) instead of one long scroll.
-- **Validation:** use `rules` on each `Form.Item`, with a message that tells the user what to do ("Please enter the CNIC."). Validate formats on the client, and show server errors in a `Toast`.
+- **Validation:** use `rules` on each `Form.Item`, with a message that tells the user what to do ("Please enter the CNIC."). Validate formats on the client, and show server errors with `showError`.
 - **Keyboard:** set `type`, `inputMode`, `autoComplete` and `autoCapitalize` so phones show the right keyboard.
 
 ### Camera screens
 
 - Take photos with `capturePhoto()` (`imports/ui/utilities`). It is **camera-only**: users can't pick an existing image.
-  - In the browser and the iOS app it shows `CameraView`, a full-screen live viewfinder with a shutter button. In the iOS app this avoids the native camera screen, which left the app blank for about 2 seconds after each photo. The local plugin `cordova-plugins/idreesia-webview-camera` stops iOS asking for camera permission again on every launch.
+  - In the browser and the iOS app it shows `CameraView`, a full-screen live viewfinder with a shutter button and, on devices with more than one camera, a switch-camera button (back camera first; the front camera's preview is mirrored, the photo isn't). In the iOS app this avoids the native camera screen, which left the app blank for about 2 seconds after each photo. The local plugin `cordova-plugins/idreesia-webview-camera` stops iOS asking for camera permission again on every launch.
   - In the Android app it uses cordova-plugin-camera with the camera as the only source, until `CameraView` has been tested in Android's WebView.
   - It never uses a file input, which would also offer the gallery.
   - **Exception: the public chat** (`imports/ui/chat`) also has a paperclip attach button that opens the system picker through a hidden `<input type="file" multiple>`. On iOS that offers Photo Library, Take Photo and Choose Files; on Android, the WebView's file chooser. Customers sending a message may share existing photos and documents, while record-keeping features (visitor photos) stay camera-only.
+  - **Exception: Meetings attachments** (`imports/ui/workspaces/meetings/attachments-screen.tsx`) use a hidden `<input type="file" multiple>`, like the public chat, because they are documents (agendas, reports, PDFs) rather than photos taken for a record. Files go straight to storage through a presigned URL, and open in a full-screen preview as in Discussions.
+  - **Exception: Documents** (`imports/ui/workspaces/documents`) uses the same hidden file input for uploads and new versions, for the same reason as Meetings attachments; documents open in the same full-screen preview.
+  - **Exception: Monitoring Profiles** (`imports/ui/workspaces/monitoring-profiles`) also lets users pick a photo from the gallery with `pickPhoto()` (`imports/ui/utilities`), offered next to "Take photo" in an `ActionSheet`. Enrollment photos of a watched person usually already exist, and the server rejects any photo without exactly one usable face. `pickPhoto()` uses cordova-plugin-camera's photo library on Android and an image-only file input elsewhere (the system photo picker on iOS), and returns the same scaled JPEG data URL as `capturePhoto()`. Other features stay camera-only unless asked otherwise.
   - It returns a JPEG data URL of at most 1024 px, which keeps uploads well under the 5 MB GraphQL limit.
 - Start capture from an explicit "Take photo" button rather than opening the camera on load.
 - Show the captured photo above the results, and pin a "Retake photo" button in the `footer`.
@@ -175,8 +210,10 @@ After a flow completes and the user needs to know what happens next (for example
 
 | Situation | Use |
 |-----------|-----|
-| Action succeeded (saved, deleted) | `Toast` with `icon: 'success'`, then go back |
-| Action failed | `Toast` with `icon: 'fail'` and `getErrorMessage(error, fallback)` |
+| Action succeeded (saved, deleted) | `showSuccess('Folder renamed.')`, then go back |
+| Action failed | `showError(error, 'Could not upload the file.')` |
+| The user has to fix something first (client-side check) | `showWarning('Please add at least 2 options.')` |
+| Neutral information or a hint | `showInfo('Hold to record, release to send.')` |
 | Irreversible or destructive action | `Dialog.confirm` before doing it |
 | Flow finished and the user needs next steps | `Result` screen |
 | Screen loading / empty / failed / not allowed | `PageLoading` / `PageEmpty` / `PageError` / `NoAccess` |
@@ -184,7 +221,13 @@ After a flow completes and the user needs to know what happens next (for example
 | Button action in progress | `loading` on the button; disable double submits |
 
 - Never render `null` while loading, and never leave a blank screen.
-- Keep error text human-readable. `getErrorMessage` prefers the server's `reason`.
+- **Toasts** come from `layout/toast.tsx`, never antd-mobile's `Toast.show` directly. Its stock toast is a narrow, centred box that breaks words in half. Ours is a full-width card under the nav bar: a coloured icon, a bold line saying what happened and, for errors, a second line saying why. Tapping it dismisses it, and errors stay up longer (4.5 s) so there's time to read them.
+- **Error text has two parts.** The `title` you pass says what failed, naming the thing when it helps (`Could not upload "minutes.pdf".`). The detail line comes from the error itself, through `describeError`:
+  - the server's `reason` / `message` is shown as written, so write server errors for users ("The face is too small. Move closer and retake.");
+  - lost connections, from any layer (Apollo, fetch, XHR), read "Check your internet connection and try again.";
+  - technical text (status codes, JS errors, "Internal server error") is dropped, and the detail falls back to "Please try again.".
+- Errors you throw on the client to reach a `showError` should explain the cause, not repeat the title ("It is larger than the 25 MB limit.", not "Could not upload the file.").
+- `getErrorMessage(error, fallback)` uses the same rules for inline text, such as `PageError`'s description.
 
 ---
 
@@ -197,7 +240,7 @@ After a flow completes and the user needs to know what happens next (for example
 - **Components before custom styling.** Prefer antd-mobile props such as `color="primary"` and `fill="outline"`. antd-mobile components are already themed through the `--adm-*` variables.
 - **Shared chrome** (shell, status states, auth, list icons) lives in `client/main.css`.
 - **Page-only rules** go in `*.styles.css` next to the screen, **imported only from `client/main.tsx`**. This is the same Meteor rule as the web: don't import CSS from `.tsx` files, and don't give a CSS file the same basename as a `.tsx` file.
-- **Icons:** use `antd-mobile-icons` only, in outline style. Leading list icons use the `list-icon` class.
+- **Icons:** use `antd-mobile-icons` only, in outline style. Leading list icons use the `list-icon` class. When the set has no suitable icon (e.g. a house for the Home tab), add one to `imports/ui/components/icons/` that follows its conventions (48×48 grid, 3px outline, `currentColor`, `antd-mobile-icon` class); see `home-outline.tsx`.
 - **Touch targets** are at least 44 px high. Screens are portrait-only.
 - **Text size follows the phone's setting** (iOS Dynamic Type, so Larger Text works for people who need it). `imports/ui/theme/text-scale.ts` sets the root font size from the system body size: 17px at the default, capped at 1.6× so nav bars, the tab bar and the chat composer don't break. Android stays at the default for now.
   - Size **text in `rem`** (1rem = 17px at the default; write the px value in a comment, e.g. `font-size: 0.8824rem; /* 15px */`). antd-mobile's `--adm-font-size-*` variables are re-declared in rem in `client/main.css`.
@@ -211,7 +254,7 @@ After a flow completes and the user needs to know what happens next (for example
 
 - Use sentence case for titles, buttons and labels ("Change password", not "Change Password").
 - Buttons say what they do: "Register visitor", "Check in", "Save changes".
-- Keep list descriptions to one short line. The module screen shows feature descriptions such as "Look up and register visitors".
+- Keep list descriptions to one short line. The Apps tab's module screens show feature descriptions such as "Look up and register visitors".
 - Refer to people and places the same way the web app does, so users recognise them across both apps.
 
 ---

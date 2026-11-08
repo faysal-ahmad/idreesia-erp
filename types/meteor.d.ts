@@ -180,6 +180,23 @@ declare module 'meteor/mongo' {
         operations: readonly unknown[],
         options?: { ordered?: boolean }
       ): Promise<unknown>;
+      find(
+        filter: unknown,
+        options?: unknown
+      ): {
+        toArray(): Promise<TDocument[]>;
+      };
+      countDocuments(filter?: unknown): Promise<number>;
+      findOneAndUpdate(
+        filter: unknown,
+        update: unknown,
+        options?: unknown
+      ): Promise<TDocument | null>;
+      updateMany(
+        filter: unknown,
+        update: unknown,
+        options?: unknown
+      ): Promise<{ matchedCount: number; modifiedCount: number }>;
     }
 
     interface Cursor<TDocument> {

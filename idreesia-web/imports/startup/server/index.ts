@@ -24,6 +24,7 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebApp } from 'meteor/webapp';
 import { typeDefs, resolvers } from 'meteor/idreesia-common/server/graphql-api';
 import { getDataLoaders } from 'meteor/idreesia-common/server/data-loaders';
+import { runWithRequestHost } from 'meteor/idreesia-common/server/file-storage';
 import {
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
@@ -74,6 +75,10 @@ if (webServerEnabled) {
       // Face search posts a captured photo as a base64 variable, which blows past the 100kb
       // default at higher zoom levels. Matches the limit on /upload-base64-file.
       express.json({ limit: '5mb' }),
+      // File URLs made for this request use the host the client came in by
+      // (the mobile app on a phone in development; see request-host.ts).
+      // After express.json, so the context carries into the resolvers.
+      (req, res, next) => runWithRequestHost(req.hostname, next),
       expressMiddleware(server, {
         context: async ({ req }) => ({
           user: await getUser(req.headers.authorization),

@@ -1,0 +1,105 @@
+/* One stay from the Night Stay Report (night-stay-detail-screen.tsx). Loaded
+   from client/main.tsx. A large photo for matching the face, then compact
+   field rows, as on the visitor detail screen. */
+
+.night-stay-detail-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 12px 10px;
+  padding: 16px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  text-align: center;
+}
+
+.night-stay-detail-photo {
+  display: block;
+  width: 160px;
+  height: 160px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--app-radius-large);
+  background: var(--app-color-surface-muted);
+  box-shadow: var(--app-elevation);
+}
+
+.night-stay-detail-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.night-stay-detail-no-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--app-color-text-weak);
+  font-size: 64px;
+  box-shadow: none;
+}
+
+.night-stay-detail-name {
+  margin: 12px 0 0;
+  font-size: 1.1765rem; /* 20px */
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.night-stay-detail-fields {
+  margin: 0 12px;
+  padding: 2px 14px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.night-stay-detail-field {
+  display: grid;
+  grid-template-columns: 7.2em 1fr;
+  gap: 10px;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--app-color-border);
+  font-size: 0.8824rem; /* 15px */
+  line-height: 1.4;
+}
+
+.night-stay-detail-field:last-child {
+  border-bottom: 0;
+}
+
+.night-stay-detail-field dt {
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+}
+
+.night-stay-detail-field dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* The visitor's earlier stays, under the stay's details */
+
+.night-stay-history {
+  margin-top: 14px;
+}
+
+.night-stay-history-title {
+  margin: 0 24px 6px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+  font-weight: 500;
+}
+
+.night-stay-history-empty {
+  margin: 0 12px;
+  padding: 12px 14px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  color: var(--app-color-text-secondary);
+  font-size: 0.8824rem; /* 15px */
+  text-align: center;
+}

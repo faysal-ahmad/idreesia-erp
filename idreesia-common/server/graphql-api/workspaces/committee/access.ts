@@ -1,3 +1,6 @@
+import { GraphQLError } from 'graphql';
+
+import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
 import { Committees } from 'meteor/idreesia-common/server/collections/hr';
 
 export interface WorkspaceUser {
@@ -84,4 +87,14 @@ export const getCoordinatedCommittee = async (
     throw new Error('Only coordinators of this committee can do this.');
   }
   return committee;
+};
+
+// Throws unless the committee has the Members feature enabled.
+export const assertMembersEnabled = (committee: CommitteeDocument) => {
+  const features = (committee.features as string[] | undefined) ?? [];
+  if (!features.includes(CommitteeFeatureKeys.MEMBERS)) {
+    throw new GraphQLError('Members is not enabled for this committee.', {
+      extensions: { code: 'FORBIDDEN' },
+    });
+  }
 };

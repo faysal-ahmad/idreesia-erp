@@ -11,37 +11,39 @@
  * and it becomes available as a CSS variable automatically.
  */
 
-// Sampled from the Idreesia flag (public/images/idreesia-logo.png).
-const brandGreen = '#16803e';
+// Sampled from the Eastern Breeze emblem (public/images/eb-logo-emblem.png):
+// its dark teal-green outline. The emblem's lighter sage (#6eb48c) and aqua
+// (#82c8dc) are too pale for white text, so they only inform the tints below.
+const brandTeal = '#2d7a5f';
 
 export const palette = {
   // Brand
-  primary: brandGreen,
-  primaryDark: '#0f5f2d', // pressed states, dark accents
-  primaryLight: '#e7f3eb', // tinted backgrounds, selected rows
+  primary: brandTeal,
+  primaryDark: '#1f5a46', // pressed states, dark accents
+  primaryLight: '#e5f2ec', // tinted backgrounds, selected rows
   onPrimary: '#ffffff', // text and icons on primary
 
   // Status
-  success: brandGreen,
+  success: brandTeal,
   warning: '#c77700',
   danger: '#d93026',
 
-  // Neutrals (slightly green-tinted greys to sit well next to the brand)
-  text: '#1b2620',
-  textSecondary: '#56655c',
-  textWeak: '#8a988f', // placeholders, hints, inactive icons
-  textDisabled: '#c3ccc6',
-  border: '#dfe7e2',
-  background: '#f3f6f4', // page background
+  // Neutrals (slightly teal-tinted greys to sit well next to the brand)
+  text: '#1a2624',
+  textSecondary: '#52645f',
+  textWeak: '#879a95', // placeholders, hints, inactive icons
+  textDisabled: '#c0cdc9',
+  border: '#dae6e2',
+  background: '#f1f6f5', // page background
   surface: '#ffffff', // cards, lists, form panels
-  surfaceMuted: '#eef2ef', // fills inside surfaces
+  surfaceMuted: '#eaf2f0', // fills inside surfaces
 } as const;
 
 export const shape = {
   radiusSmall: '4px',
   radiusMedium: '8px',
   radiusLarge: '12px',
-  elevation: '0 6px 20px rgba(15, 60, 32, 0.16)', // raised elements
+  elevation: '0 6px 20px rgba(20, 70, 56, 0.16)', // raised elements
 } as const;
 
 export const fontFamily =

@@ -3,6 +3,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { backendAccounts } from '/imports/startup/backend';
 import { apolloClient } from '/imports/startup/apollo-client';
 
+import { describeError } from '../utilities/describe-error';
+
 // Promise wrappers for the account operations the mobile app performs against
 // the backend connection. accounts-password only wires loginWithPassword,
 // changePassword and forgotPassword to the default connection, so these
@@ -26,13 +28,9 @@ const toPromise = (
     });
   });
 
-export const getErrorMessage = (error: unknown, fallback: string): string => {
-  if (error && typeof error === 'object') {
-    const { reason, message } = error as { reason?: string; message?: string };
-    return reason || message || fallback;
-  }
-  return fallback;
-};
+/** A user-readable message for the error (see describeError), or the fallback. */
+export const getErrorMessage = (error: unknown, fallback: string): string =>
+  describeError(error) ?? fallback;
 
 /** Logs in with either an email address or a username, like the web app. */
 export const loginWithPassword = async (

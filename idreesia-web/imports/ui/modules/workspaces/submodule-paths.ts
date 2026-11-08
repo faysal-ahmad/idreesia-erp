@@ -14,4 +14,39 @@ export default class SubModulePaths {
   static committeeDiscussionsPath(committeeId = ':committeeId') {
     return `${SubModulePaths.committeePath(committeeId)}/discussions`;
   }
+
+  static committeeDocumentsPath(committeeId = ':committeeId') {
+    return `${SubModulePaths.committeePath(committeeId)}/documents`;
+  }
+
+  static committeeMeetingsPath(committeeId = ':committeeId') {
+    return `${SubModulePaths.committeePath(committeeId)}/meetings`;
+  }
+
+  static committeeMeetingPath(
+    committeeId = ':committeeId',
+    meetingId = ':meetingId'
+  ) {
+    return `${SubModulePaths.committeeMeetingsPath(committeeId)}/${meetingId}`;
+  }
+
+  static committeePollsPath(committeeId = ':committeeId') {
+    return `${SubModulePaths.committeePath(committeeId)}/polls`;
+  }
+
+  static committeePollPath(committeeId = ':committeeId', pollId = ':pollId') {
+    return `${SubModulePaths.committeePollsPath(committeeId)}/${pollId}`;
+  }
+
+  static committeeNightStayReportPath(committeeId = ':committeeId') {
+    return `${SubModulePaths.committeePath(committeeId)}/night-stay-report`;
+  }
+
+  static committeeMonitoringAlertsPath(committeeId = ':committeeId') {
+    return `${SubModulePaths.committeePath(committeeId)}/monitoring-alerts`;
+  }
+
+  static committeeMonitoringProfilesPath(committeeId = ':committeeId') {
+    return `${SubModulePaths.committeePath(committeeId)}/monitoring-profiles`;
+  }
 }

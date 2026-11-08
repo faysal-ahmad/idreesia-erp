@@ -1,7 +1,17 @@
 import React, { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { type History } from 'history';
 import { Menu } from 'antd';
-import { ClusterOutlined, MessageOutlined, TeamOutlined } from '@ant-design/icons';
+import {
+  AlertOutlined,
+  BarChartOutlined,
+  CalendarOutlined,
+  ClusterOutlined,
+  FolderOpenOutlined,
+  IdcardOutlined,
+  MessageOutlined,
+  MoonOutlined,
+  TeamOutlined,
+} from '@ant-design/icons';
 
 import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
 import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
@@ -25,6 +35,24 @@ type KeyPrefixHandler = [string, string, PathBuilder];
 const KeyPrefixHandlers: KeyPrefixHandler[] = [
   ['members', SubModuleNames.members, paths.committeeMembersPath],
   ['discussions', SubModuleNames.discussions, paths.committeeDiscussionsPath],
+  ['documents', SubModuleNames.documents, paths.committeeDocumentsPath],
+  ['meetings', SubModuleNames.meetings, paths.committeeMeetingsPath],
+  ['polls', SubModuleNames.polls, paths.committeePollsPath],
+  [
+    'night-stay-report',
+    SubModuleNames.nightStayReport,
+    paths.committeeNightStayReportPath,
+  ],
+  [
+    'monitoring-alerts',
+    SubModuleNames.monitoringAlerts,
+    paths.committeeMonitoringAlertsPath,
+  ],
+  [
+    'monitoring-profiles',
+    SubModuleNames.monitoringProfiles,
+    paths.committeeMonitoringProfilesPath,
+  ],
 ];
 
 interface ActiveMenu {
@@ -108,18 +136,80 @@ const Sidebar = ({ history }: SidebarProps) => {
     icon: <ClusterOutlined style={IconStyle} />,
     label: committee.name,
     children: [
-      {
-        key: `members-${committee._id}`,
-        icon: <TeamOutlined style={IconStyle} />,
-        label: 'Members',
-      },
-      // Only for committees with the Discussions feature enabled.
+      // Each item only for committees with that feature enabled.
+      ...(committee.features?.includes(CommitteeFeatureKeys.MEMBERS)
+        ? [
+            {
+              key: `members-${committee._id}`,
+              icon: <TeamOutlined style={IconStyle} />,
+              label: 'Members',
+            },
+          ]
+        : []),
       ...(committee.features?.includes(CommitteeFeatureKeys.DISCUSSIONS)
         ? [
             {
               key: `discussions-${committee._id}`,
               icon: <MessageOutlined style={IconStyle} />,
               label: 'Discussions',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(CommitteeFeatureKeys.DOCUMENTS)
+        ? [
+            {
+              key: `documents-${committee._id}`,
+              icon: <FolderOpenOutlined style={IconStyle} />,
+              label: 'Documents',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(CommitteeFeatureKeys.MEETINGS)
+        ? [
+            {
+              key: `meetings-${committee._id}`,
+              icon: <CalendarOutlined style={IconStyle} />,
+              label: 'Meetings',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(CommitteeFeatureKeys.POLLS)
+        ? [
+            {
+              key: `polls-${committee._id}`,
+              icon: <BarChartOutlined style={IconStyle} />,
+              label: 'Polls',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(CommitteeFeatureKeys.NIGHT_STAY_REPORT)
+        ? [
+            {
+              key: `night-stay-report-${committee._id}`,
+              icon: <MoonOutlined style={IconStyle} />,
+              label: 'Night Stay Report',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(
+        CommitteeFeatureKeys.MONITORING_ALERTS
+      )
+        ? [
+            {
+              key: `monitoring-alerts-${committee._id}`,
+              icon: <AlertOutlined style={IconStyle} />,
+              label: 'Monitoring Alerts',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(
+        CommitteeFeatureKeys.MONITORING_PROFILES
+      )
+        ? [
+            {
+              key: `monitoring-profiles-${committee._id}`,
+              icon: <IdcardOutlined style={IconStyle} />,
+              label: 'Monitoring Profiles',
             },
           ]
         : []),

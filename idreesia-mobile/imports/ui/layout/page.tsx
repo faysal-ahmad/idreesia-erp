@@ -1,11 +1,15 @@
-import React, { type ReactNode } from 'react';
+import React, { type ReactNode, useLayoutEffect, useRef } from 'react';
 import { NavBar } from 'antd-mobile';
 
 import { useNavigateBack } from './navigation';
+import { useSwipeBack } from './use-swipe-back';
 
 interface Props {
   title: ReactNode;
-  /** Parent route. When set, the nav bar shows a back arrow that returns here. */
+  /**
+   * Parent route. When set, the nav bar shows a back arrow that returns here,
+   * and swiping right from the left edge of the screen does the same.
+   */
   backTo?: string;
   /** Nav bar actions on the right (icons or short text). */
   right?: ReactNode;
@@ -20,12 +24,32 @@ interface Props {
  */
 export const Page = ({ title, backTo, right, footer, children }: Props) => {
   const navigateBack = useNavigateBack(backTo ?? '/');
+  const pageRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  useSwipeBack(pageRef, navigateBack, Boolean(backTo));
+
+  // iOS WebKit can keep painting the sticky header at the scroll offset of the
+  // screen this one replaced (e.g. a short detail screen opened from a
+  // scrolled list, kept alive underneath), leaving the nav bar and its back
+  // arrow off screen until the next scroll. Laying the header out again once
+  // after mount makes WebKit recompute its position.
+  useLayoutEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      const header = headerRef.current;
+      if (!header) return;
+      header.style.position = 'relative';
+      // Reading a layout property forces the relayout before restoring.
+      header.getBoundingClientRect();
+      header.style.position = '';
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   return (
-    <div className="page">
+    <div ref={pageRef} className="page">
       {/* The header, not the NavBar, clears the status bar / Dynamic Island:
           antd-mobile's own NavBar padding would override ours. */}
-      <header className="page-header">
+      <header ref={headerRef} className="page-header">
         <NavBar back={backTo ? '' : null} className="page-nav-bar" right={right} onBack={navigateBack}>
           {title}
         </NavBar>

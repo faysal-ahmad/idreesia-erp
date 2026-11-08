@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 import multer from 'multer';
 import type { NextFunction, Request, Response } from 'express';
@@ -186,6 +187,9 @@ const uploadFile = Meteor.bindEnvironment(
 
 export const createWorkspaceDiscussionRouter = () => {
   const router = express.Router();
+  // The mobile app calls these from its own origin (like /graphql). Before
+  // authenticate, so CORS preflights (which carry no token) get through.
+  router.use(cors());
   router.use(authenticate);
   // fileName may itself contain encoded characters; express decodes it.
   router.get(

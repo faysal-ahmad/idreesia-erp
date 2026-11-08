@@ -14,4 +14,8 @@ export default class SubModulePaths {
   static committeeDiscussionsPath(committeeId = ':committeeId') {
     return `${SubModulePaths.committeePath(committeeId)}/discussions`;
   }
+
+  static committeeNightStayReportPath(committeeId = ':committeeId') {
+    return `${SubModulePaths.committeePath(committeeId)}/night-stay-report`;
+  }
 }

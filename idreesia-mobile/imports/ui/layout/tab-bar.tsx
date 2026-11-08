@@ -2,12 +2,17 @@ import React from 'react';
 import { TabBar } from 'antd-mobile';
 import { AppstoreOutline, UserOutline } from 'antd-mobile-icons';
 
+import { AccountPaths } from '../account/paths';
+import { HomeOutline } from '../components/icons/home-outline';
+import { HomePaths } from '../home/paths';
+import { AppsPaths } from '../apps/paths';
 import { useHistory } from '../router';
 
 /** Top-level destinations. Only their root screens show the tab bar. */
 export const tabs = [
-  { key: '/', title: 'Modules', icon: <AppstoreOutline /> },
-  { key: '/account', title: 'Account', icon: <UserOutline /> },
+  { key: HomePaths.home, title: 'Home', icon: <HomeOutline /> },
+  { key: AppsPaths.apps, title: 'Apps', icon: <AppstoreOutline /> },
+  { key: AccountPaths.account, title: 'Account', icon: <UserOutline /> },
 ];
 
 export const isTabRoot = (pathname: string) => tabs.some(tab => tab.key === pathname);

@@ -1,0 +1,412 @@
+/* Committee discussions (imports/ui/workspaces/discussions). Bubbles follow
+   the public chat's look (imports/ui/chat). */
+
+.discussion-list {
+  padding: 0 12px;
+}
+
+.discussion-load-older {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.discussion-load-older .adm-button {
+  color: var(--app-color-primary);
+}
+
+.discussion-divider {
+  margin: 16px 0 8px;
+  color: var(--app-color-text-weak);
+  font-size: 0.7059rem; /* 12px */
+  text-align: center;
+}
+
+.discussion-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.discussion-row-first {
+  margin-top: 10px;
+}
+
+.discussion-row-mine {
+  justify-content: flex-end;
+}
+
+.discussion-avatar-slot {
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.discussion-avatar {
+  --size: 32px;
+  --border-radius: 50%;
+}
+
+.discussion-avatar-letter {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--app-color-primary-light);
+  color: var(--app-color-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.discussion-message {
+  display: flex;
+  max-width: 78%;
+  flex-direction: column;
+}
+
+.discussion-row-mine .discussion-message {
+  align-items: flex-end;
+}
+
+.discussion-bubble {
+  padding: 8px 12px;
+  /* Long-press opens the message's actions (Copy text is one of them), so
+     the system's text selection and callout are turned off. */
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  box-shadow: var(--app-elevation);
+}
+
+.discussion-row-mine .discussion-bubble {
+  background: var(--app-color-primary);
+  color: var(--app-color-on-primary);
+}
+
+.discussion-bubble-sender {
+  margin-bottom: 2px;
+  color: var(--app-color-primary);
+  font-size: 0.7059rem; /* 12px */
+  font-weight: 600;
+}
+
+.discussion-bubble-text {
+  font-size: 0.8824rem; /* 15px */
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.discussion-bubble-meta {
+  margin-top: 2px;
+  font-size: 0.6471rem; /* 11px */
+  opacity: 0.7;
+  text-align: right;
+}
+
+.discussion-bubble-media + .discussion-bubble-media,
+.discussion-bubble-media + .discussion-bubble-text {
+  margin-top: 6px;
+}
+
+.discussion-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.discussion-reaction {
+  min-height: 28px;
+  padding: 2px 8px;
+  color: var(--app-color-text);
+  font-family: inherit;
+  border: 1px solid var(--app-color-border);
+  border-radius: 999px;
+  background: var(--app-color-surface);
+  font-size: 0.7647rem; /* 13px */
+}
+
+.discussion-reaction-mine {
+  border-color: var(--app-color-primary);
+  background: var(--app-color-primary-light);
+}
+
+.discussion-thread-link {
+  min-height: 32px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--app-color-primary);
+  font-family: inherit;
+  font-size: 0.7059rem; /* 12px */
+  font-weight: 600;
+}
+
+/* Attachments */
+
+.discussion-attachment-image-button {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.discussion-attachment-image {
+  display: block;
+  max-width: 220px;
+  max-height: 260px;
+  border-radius: var(--app-radius-medium);
+}
+
+.discussion-attachment-audio,
+.discussion-attachment-video {
+  width: 240px;
+  max-width: 100%;
+}
+
+.discussion-attachment-video {
+  border-radius: var(--app-radius-medium);
+}
+
+.discussion-attachment-file {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.discussion-attachment-file-icon {
+  flex-shrink: 0;
+  font-size: 24px;
+}
+
+.discussion-attachment-file-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+}
+
+.discussion-attachment-file-size {
+  flex-shrink: 0;
+  font-size: 0.7059rem; /* 12px */
+  opacity: 0.7;
+}
+
+.discussion-attachment-loading,
+.discussion-attachment-unavailable {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8235rem; /* 14px */
+  opacity: 0.8;
+}
+
+/* File preview (full screen) */
+
+.discussion-file-preview {
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+}
+
+.discussion-file-preview-header {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--app-color-border);
+}
+
+.discussion-file-preview-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.discussion-file-preview-close {
+  padding: 10px;
+  font-size: 22px;
+}
+
+.discussion-file-preview-frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+}
+
+/* Shown in the footer instead of the composer */
+
+.discussion-cannot-post {
+  margin: 0;
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+  text-align: center;
+}
+
+/* Nav bar "more" menu */
+
+.discussion-nav-icon {
+  font-size: 22px;
+  vertical-align: middle;
+}
+
+/* A message jumped to from search, pinned or starred */
+
+.discussion-row-highlight .discussion-bubble {
+  animation: discussion-highlight 2s ease-out;
+}
+
+@keyframes discussion-highlight {
+  from {
+    box-shadow: 0 0 0 3px var(--app-color-primary);
+  }
+
+  to {
+    box-shadow: var(--app-elevation);
+  }
+}
+
+.discussion-badge {
+  font-weight: 600;
+}
+
+.discussion-star {
+  margin-right: 4px;
+  vertical-align: -1px;
+}
+
+/* Markdown in message text (message-text.tsx) */
+
+.discussion-bubble-text a {
+  color: var(--app-color-primary);
+  overflow-wrap: anywhere;
+}
+
+.discussion-md-mention {
+  color: var(--app-color-primary);
+  font-weight: 600;
+}
+
+.discussion-row-mine .discussion-bubble-text a,
+.discussion-row-mine .discussion-md-mention {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.discussion-md-code {
+  padding: 0 4px;
+  border-radius: var(--app-radius-small);
+  background: var(--app-color-surface-muted);
+  color: var(--app-color-text);
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.8235rem; /* 14px */
+}
+
+.discussion-md-code-block {
+  margin: 4px 0;
+  padding: 8px;
+  overflow-x: auto;
+  border-radius: var(--app-radius-small);
+  background: var(--app-color-surface-muted);
+  color: var(--app-color-text);
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.7647rem; /* 13px */
+  white-space: pre;
+}
+
+/* Reaction picker (bottom sheet) */
+
+.discussion-reaction-picker {
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+  border-radius: var(--app-radius-large) var(--app-radius-large) 0 0;
+}
+
+.discussion-quick-reactions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.discussion-quick-reaction {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--app-color-surface-muted);
+  font-size: 24px;
+}
+
+.discussion-more-reactions.adm-button {
+  color: var(--app-color-primary);
+}
+
+/* Edit popup */
+
+.discussion-edit-popup {
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  border-radius: var(--app-radius-large) var(--app-radius-large) 0 0;
+}
+
+.discussion-edit-title {
+  margin-bottom: 12px;
+  font-size: 1rem; /* 17px */
+  font-weight: 600;
+}
+
+.discussion-edit-input {
+  padding: 10px 12px;
+  border: 1px solid var(--app-color-border);
+  border-radius: var(--app-radius-medium);
+  box-sizing: border-box;
+}
+
+.discussion-edit-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.discussion-danger-text {
+  color: var(--app-color-danger);
+}
+
+/* Search, pinned and starred results */
+
+.discussion-result-text {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
+}
+
+.discussion-result-when {
+  font-size: 0.7059rem; /* 12px */
+}
+
+.discussion-result-thread {
+  color: var(--app-color-text-secondary);
+  font-weight: 400;
+}
+
+.discussion-search-hint {
+  margin: 8px 16px;
+}

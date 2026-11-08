@@ -15,20 +15,23 @@ antd-mobile only ships components and theming docs. It has no guidance on page p
 | Loading / empty / error / no-access states | `idreesia-mobile/imports/ui/layout/status.tsx` |
 | Back navigation | `idreesia-mobile/imports/ui/layout/navigation.tsx` |
 | Tab bar | `idreesia-mobile/imports/ui/layout/tab-bar.tsx` |
-| Module / feature types | `idreesia-mobile/imports/ui/modules/types.ts` |
-| Module registry | `idreesia-mobile/imports/ui/modules/registry.ts` |
-| Permission rules | `idreesia-mobile/imports/ui/modules/access.ts` |
-| Example module (Security → Visitors) | `idreesia-mobile/imports/ui/modules/security/` |
-| List screen (search, filters, paging) | `idreesia-mobile/imports/ui/modules/security/visitors/visitors-list-screen.tsx` |
-| List row | `idreesia-mobile/imports/ui/modules/security/visitors/visitor-list-item.tsx` |
+| Module / feature types | `idreesia-mobile/imports/ui/apps/types.ts` |
+| Module registry | `idreesia-mobile/imports/ui/apps/registry.ts` |
+| Permission rules | `idreesia-mobile/imports/ui/apps/access.ts` |
+| Example module (Security → Visitors) | `idreesia-mobile/imports/ui/apps/security/` |
+| List screen (search, filters, paging) | `idreesia-mobile/imports/ui/apps/security/visitors/visitors-list-screen.tsx` |
+| List row | `idreesia-mobile/imports/ui/apps/security/visitors/visitor-list-item.tsx` |
 | Camera capture (Cordova + browser) | `idreesia-mobile/imports/ui/utilities/capture-photo.ts` + `imports/ui/components/camera-view.tsx` |
-| Photo search screen | `idreesia-mobile/imports/ui/modules/security/visitors/photo-search-screen.tsx` |
-| Single-date report | `idreesia-mobile/imports/ui/modules/security/stay-report/stay-report-screen.tsx` |
-| Detail screen | `idreesia-mobile/imports/ui/modules/security/visitors/visitor-detail-screen.tsx` |
-| Keeping a list alive under its detail | `idreesia-mobile/imports/ui/modules/security/visitors/visitors-feature.tsx` + `imports/ui/layout/keep-alive.tsx` |
+| Photo search screen | `idreesia-mobile/imports/ui/apps/security/visitors/photo-search-screen.tsx` |
+| Single-date report | `idreesia-mobile/imports/ui/apps/security/stay-report/stay-report-screen.tsx` |
+| Detail screen | `idreesia-mobile/imports/ui/apps/security/visitors/visitor-detail-screen.tsx` |
+| Keeping a list alive under its detail | `idreesia-mobile/imports/ui/apps/security/visitors/visitors-feature.tsx` + `imports/ui/layout/keep-alive.tsx` |
 | Paged query → infinite list | `idreesia-mobile/imports/ui/hooks/use-paged-query.ts` + `imports/ui/components/paged-list.tsx` |
+| Workspace screens (opened from Home) | `idreesia-mobile/imports/ui/workspaces/` + `imports/ui/home/home-stack.tsx` |
 | Form screen | `idreesia-mobile/imports/ui/account/change-password-screen.tsx` |
 | Public chat (signed out, Rocket.Chat) | `idreesia-mobile/imports/ui/chat/` |
+| Message composer (text, camera, files, voice notes) | `idreesia-mobile/imports/ui/components/message-composer/` |
+| Committee discussion (signed in) | `idreesia-mobile/imports/ui/workspaces/discussions/` |
 | Shared CSS | `idreesia-mobile/client/main.css` |
 | Page CSS example | `idreesia-mobile/imports/ui/account/account-screen.styles.css` |
 
@@ -39,7 +42,16 @@ antd-mobile only ships components and theming docs. It has no guidance on page p
 The mobile app uses the same functional modules as the web app (`ModuleNames` / `ModulePaths` in `idreesia-common/constants`). Each module contains **features**, which are use cases such as Security → Visitors.
 
 ```
-Modules tab (/)
+Home tab (/home)                         ← default after signing in
+├── Workspace members (/workspaces/committees/:committeeId/members)   ← imports/ui/workspaces; Home stays alive under it
+├── Workspace discussion (/workspaces/committees/:committeeId/discussions)   ← DiscussionFeature; main list stays alive under:
+│   ├── …/discussions/threads/:threadId
+│   ├── …/discussions/search
+│   ├── …/discussions/pinned
+│   └── …/discussions/starred
+└── Workspace Night Stay Report (/workspaces/committees/:committeeId/night-stay-report)   ← NightStayReportFeature; read-only, one night at a time; report stays alive under:
+    └── …/night-stay-report/:stayId   ← one stay, with a large photo
+Apps tab (/apps)                         ← lists the user's modules
 └── Security (/security)                 ← module screen, lists its features
     └── Visitors (/security/visitors)    ← feature; owns every route below it
         ├── /security/visitors/:id       ← detail
@@ -48,7 +60,7 @@ Account tab (/account)
 └── Change password (/account/change-password)
 ```
 
-- **Modules** are declared as `ModuleDefinition`s and registered in `modules/registry.ts`. Only add a module to the mobile app once it has at least one mobile feature.
+- **Modules** are declared as `ModuleDefinition`s and registered in `apps/registry.ts`. Only add a module to the mobile app once it has at least one mobile feature.
 - **Features** are `FeatureDefinition`s inside their module. Each one has a `path` under the module's path, a list of `permissions`, and a `component`. The component owns every route under its path, so it renders its own `<Switch>` for list, detail and form screens.
 - **Visibility follows permissions.**
   - A feature is shown when the user has **any** of its permissions (`Permissions` from idreesia-common).
@@ -58,23 +70,23 @@ Account tab (/account)
 
 ### Adding a feature
 
-1. Create `modules/<module>/<feature>/` containing the feature component and its screens.
-2. Add its path to `modules/<module>/paths.ts`, always under `ModulePaths.<module>`.
+1. Create `apps/<module>/<feature>/` containing the feature component and its screens.
+2. Add its path to `apps/<module>/paths.ts`, always under `ModulePaths.<module>`.
 3. Add a `FeatureDefinition` to the module's `features`. Give it a title, a one-line description, an `antd-mobile-icons` icon, its path, its permissions and its component.
 4. The routes, the module screen entry and the permission gate come for free. Don't add routes to `app.tsx`.
 
 ### Adding a module
 
-1. Create `modules/<module>/index.tsx` exporting a `ModuleDefinition` that uses the shared `ModuleNames` / `ModulePaths` values.
+1. Create `apps/<module>/index.tsx` exporting a `ModuleDefinition` that uses the shared `ModuleNames` / `ModulePaths` values.
 2. Add it to `modules` in `registry.ts`. The list order is the display order.
 
 ---
 
 ## 2. Navigation
 
-- **Tab bar:** Modules and Account are the only top-level destinations. The tab bar shows only on their root screens. Don't add tabs per module; modules are listed on the Modules tab.
+- **Tab bar:** Home, Apps and Account are the only top-level destinations, in that order. Home is the default screen after signing in. The tab bar shows only on their root screens. Don't add tabs per module; modules are listed on the Apps tab.
 - **Drill-down:** every screen below a tab root is full-screen, with a back arrow in the nav bar. Keep the hierarchy to at most **module → feature → list → detail → form**. If you need more levels, rethink the flow, for example with a popup or tabs inside the detail screen.
-- **Back:** set `backTo` on `Page` to the parent route. `useNavigateBack` uses `history.goBack()` when the user got there within the app, which keeps Android's hardware back button in step. On a deep link or after a reload, it replaces the current route with the parent, so the back arrow never leaves the app.
+- **Back:** set `backTo` on `Page` to the parent route. That gives the screen a back arrow and a swipe right from the left edge (`layout/use-swipe-back.ts`), on every platform; both run the same back action. `useNavigateBack` uses `history.goBack()` when the user got there within the app, which keeps Android's hardware back button in step. On a deep link or after a reload, it replaces the current route with the parent, so the back arrow never leaves the app.
 - **Coming back keeps the screen as it was:** a list (or search) that opens a detail screen stays mounted underneath it inside `KeepAlive`, so back shows the same search, loaded pages and scroll position. The feature component decides which screens are still in the back stack; see `visitors-feature.tsx`. When another feature opens a record (e.g. the stay report opening a visitor), route the detail screen under that feature's own path (`/security/stay-report/:visitorId`) and reuse the screen component with its `backTo`, so the opening screen stays alive; see `stay-report-feature.tsx`. Don't store screen state in module variables or the URL to fake this.
 - **After saving:** go back to where the user came from with `useNavigateBack(parentPath)`, not `history.push`. That way back doesn't return to the form.
 - **Routes:** use path constants (`<Module>Paths`, `AccountPaths`), never string literals. Routes use a `HashRouter` (`/#/…`), which Cordova needs.
@@ -197,7 +209,7 @@ After a flow completes and the user needs to know what happens next (for example
 - **Components before custom styling.** Prefer antd-mobile props such as `color="primary"` and `fill="outline"`. antd-mobile components are already themed through the `--adm-*` variables.
 - **Shared chrome** (shell, status states, auth, list icons) lives in `client/main.css`.
 - **Page-only rules** go in `*.styles.css` next to the screen, **imported only from `client/main.tsx`**. This is the same Meteor rule as the web: don't import CSS from `.tsx` files, and don't give a CSS file the same basename as a `.tsx` file.
-- **Icons:** use `antd-mobile-icons` only, in outline style. Leading list icons use the `list-icon` class.
+- **Icons:** use `antd-mobile-icons` only, in outline style. Leading list icons use the `list-icon` class. When the set has no suitable icon (e.g. a house for the Home tab), add one to `imports/ui/components/icons/` that follows its conventions (48×48 grid, 3px outline, `currentColor`, `antd-mobile-icon` class); see `home-outline.tsx`.
 - **Touch targets** are at least 44 px high. Screens are portrait-only.
 - **Text size follows the phone's setting** (iOS Dynamic Type, so Larger Text works for people who need it). `imports/ui/theme/text-scale.ts` sets the root font size from the system body size: 17px at the default, capped at 1.6× so nav bars, the tab bar and the chat composer don't break. Android stays at the default for now.
   - Size **text in `rem`** (1rem = 17px at the default; write the px value in a comment, e.g. `font-size: 0.8824rem; /* 15px */`). antd-mobile's `--adm-font-size-*` variables are re-declared in rem in `client/main.css`.
@@ -211,7 +223,7 @@ After a flow completes and the user needs to know what happens next (for example
 
 - Use sentence case for titles, buttons and labels ("Change password", not "Change Password").
 - Buttons say what they do: "Register visitor", "Check in", "Save changes".
-- Keep list descriptions to one short line. The module screen shows feature descriptions such as "Look up and register visitors".
+- Keep list descriptions to one short line. The Apps tab's module screens show feature descriptions such as "Look up and register visitors".
 - Refer to people and places the same way the web app does, so users recognise them across both apps.
 
 ---

@@ -1,0 +1,200 @@
+/* Message composer (components/message-composer), used by the public chat
+   and discussions. Loaded from client/main.tsx. */
+
+/* Composer (pinned in the page footer) */
+
+.chat-composer {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.chat-composer-entry {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.chat-composer-icon {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
+  color: var(--app-color-primary);
+  font-size: 22px;
+}
+
+.chat-composer-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--app-color-border);
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-background);
+  box-sizing: border-box;
+}
+
+.chat-composer-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+/* Round primary buttons on the right: the mic and Send. */
+.chat-round-button,
+.chat-round-button.adm-button {
+  display: flex;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  font-size: 22px;
+}
+
+/* Hold-to-record mic (WhatsApp style): hold to record, release to send,
+   slide left to cancel. Long-press must not select text or open the iOS
+   callout, and the browser must not treat the slide as a scroll. */
+
+.chat-mic-button {
+  background: var(--app-color-primary);
+  color: var(--app-color-on-primary);
+  font-size: 24px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  transition: transform 120ms ease-out;
+}
+
+.chat-mic-button:disabled {
+  opacity: 0.5;
+}
+
+.chat-mic-button-active {
+  transform: scale(1.35);
+}
+
+.chat-recording {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  align-items: center;
+  gap: 8px;
+  color: var(--app-color-text);
+  font-size: 0.8824rem; /* 15px */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.chat-recording-time {
+  font-variant-numeric: tabular-nums;
+}
+
+.chat-recording-cancel {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--app-color-text-secondary);
+  white-space: nowrap;
+}
+
+.chat-recording-dot {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--app-color-danger);
+  animation: chat-recording-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes chat-recording-pulse {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.3;
+  }
+}
+
+/* Hidden file input behind the paperclip (attach) button */
+
+.chat-file-input {
+  display: none;
+}
+
+/* @mention suggestions, floating above the composer */
+
+.composer-mentions {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 12px);
+  left: 0;
+  overflow: hidden;
+  border: 1px solid var(--app-color-border);
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  box-shadow: var(--app-elevation);
+}
+
+.composer-mention {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border: 0;
+  background: none;
+  color: var(--app-color-text);
+  font: inherit;
+  text-align: left;
+}
+
+.composer-mention + .composer-mention {
+  border-top: 1px solid var(--app-color-border);
+}
+
+.composer-mention-avatar {
+  --size: 28px;
+  --border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.composer-mention-letter {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--app-color-primary-light);
+  color: var(--app-color-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.composer-mention-name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.8824rem; /* 15px */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.composer-mention-username {
+  margin-left: auto;
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+}

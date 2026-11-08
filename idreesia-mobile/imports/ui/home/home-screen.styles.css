@@ -1,0 +1,17 @@
+/* Home tab (imports/ui/home/home-screen.tsx) */
+
+.home-empty-item .adm-list-item-content-main {
+  color: var(--app-color-text-secondary);
+  font-size: 0.8824rem; /* 15px */
+}
+
+/* A workspace's items (Members, Discussions), indented under its name so
+   their icons line up with the name's text. */
+.adm-list-item.home-workspace-item {
+  padding-left: 48px;
+  background: var(--app-color-surface-muted);
+}
+
+.home-workspace-item .list-icon {
+  font-size: 20px;
+}

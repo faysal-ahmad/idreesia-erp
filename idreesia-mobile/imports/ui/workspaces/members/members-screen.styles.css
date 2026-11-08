@@ -1,0 +1,17 @@
+/* Workspace members (imports/ui/workspaces/members/members-screen.tsx) */
+
+.workspace-member-avatar {
+  --size: 44px;
+  --border-radius: 50%;
+}
+
+.workspace-member-phones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.workspace-member-phones a {
+  color: var(--app-color-primary);
+  text-decoration: none;
+}

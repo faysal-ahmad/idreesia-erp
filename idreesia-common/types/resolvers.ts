@@ -161,6 +161,7 @@ export type ResolversTypes = ResolversObject<{
   PagedVisitorStayType: ResolverTypeWrapper<Types.PagedVisitorStayType>;
   PagedVisitorType: ResolverTypeWrapper<Types.PagedVisitorType>;
   PagedWorkspaceKarkunType: ResolverTypeWrapper<Types.PagedWorkspaceKarkunType>;
+  PagedWorkspaceNightStayType: ResolverTypeWrapper<Types.PagedWorkspaceNightStayType>;
   PeopleTagType: ResolverTypeWrapper<Types.PeopleTagType>;
   Permission: Types.Permission;
   PersonEmployeeDataType: ResolverTypeWrapper<Types.PersonEmployeeDataType>;
@@ -215,6 +216,8 @@ export type ResolversTypes = ResolversObject<{
   WorkspaceCommitteeMemberType: ResolverTypeWrapper<Types.WorkspaceCommitteeMemberType>;
   WorkspaceCommitteeType: ResolverTypeWrapper<Types.WorkspaceCommitteeType>;
   WorkspaceKarkunType: ResolverTypeWrapper<Types.WorkspaceKarkunType>;
+  WorkspaceNightStayType: ResolverTypeWrapper<Types.WorkspaceNightStayType>;
+  WorkspaceStayHistoryItemType: ResolverTypeWrapper<Types.WorkspaceStayHistoryItemType>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -304,6 +307,7 @@ export type ResolversParentTypes = ResolversObject<{
   PagedVisitorStayType: Types.PagedVisitorStayType;
   PagedVisitorType: Types.PagedVisitorType;
   PagedWorkspaceKarkunType: Types.PagedWorkspaceKarkunType;
+  PagedWorkspaceNightStayType: Types.PagedWorkspaceNightStayType;
   PeopleTagType: Types.PeopleTagType;
   PersonEmployeeDataType: Types.PersonEmployeeDataType;
   PersonFilter: Types.PersonFilter;
@@ -357,6 +361,8 @@ export type ResolversParentTypes = ResolversObject<{
   WorkspaceCommitteeMemberType: Types.WorkspaceCommitteeMemberType;
   WorkspaceCommitteeType: Types.WorkspaceCommitteeType;
   WorkspaceKarkunType: Types.WorkspaceKarkunType;
+  WorkspaceNightStayType: Types.WorkspaceNightStayType;
+  WorkspaceStayHistoryItemType: Types.WorkspaceStayHistoryItemType;
 }>;
 
 export type CheckInstanceAccessDirectiveArgs = {
@@ -1182,6 +1188,11 @@ export type PagedWorkspaceKarkunTypeResolvers<ContextType = any, ParentType exte
   totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
+export type PagedWorkspaceNightStayTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedWorkspaceNightStayType'] = ResolversParentTypes['PagedWorkspaceNightStayType']> = ResolversObject<{
+  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceNightStayType']>>>, ParentType, ContextType>;
+  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
 export type PeopleTagTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PeopleTagType'] = ResolversParentTypes['PeopleTagType']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   color?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1454,6 +1465,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   workspaceDiscussionStarredMessages?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DiscussionMessageType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDiscussionStarredMessagesArgs, 'committeeId'>>;
   workspaceDiscussionSync?: Resolver<Types.Maybe<ResolversTypes['DiscussionSyncType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDiscussionSyncArgs, 'committeeId'>>;
   workspaceDiscussionThreadMessages?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DiscussionMessageType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDiscussionThreadMessagesArgs, 'committeeId' | 'threadId'>>;
+  workspaceNightStayById?: Resolver<Types.Maybe<ResolversTypes['WorkspaceNightStayType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceNightStayByIdArgs, 'committeeId' | 'stayId'>>;
+  workspaceNightStays?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceNightStayType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceNightStaysArgs, 'committeeId' | 'stayDate'>>;
 }>;
 
 export type SalaryTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SalaryType'] = ResolversParentTypes['SalaryType']> = ResolversObject<{
@@ -1831,6 +1844,30 @@ export type WorkspaceKarkunTypeResolvers<ContextType = any, ParentType extends R
   parentName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
+export type WorkspaceNightStayTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceNightStayType'] = ResolversParentTypes['WorkspaceNightStayType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  city?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  country?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  fromDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  numOfDays?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  stayAllowedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  stayHistory?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceStayHistoryItemType']>>>, ParentType, ContextType>;
+  stayReason?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  toDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  visitorId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  visitorImageThumbnailUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  visitorImageUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  visitorName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceStayHistoryItemTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceStayHistoryItemType'] = ResolversParentTypes['WorkspaceStayHistoryItemType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  fromDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  numOfDays?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  stayReason?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  toDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
 export type Resolvers<ContextType = any> = ResolversObject<{
   Attachment?: AttachmentResolvers<ContextType>;
   AuditLogType?: AuditLogTypeResolvers<ContextType>;
@@ -1907,6 +1944,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PagedVisitorStayType?: PagedVisitorStayTypeResolvers<ContextType>;
   PagedVisitorType?: PagedVisitorTypeResolvers<ContextType>;
   PagedWorkspaceKarkunType?: PagedWorkspaceKarkunTypeResolvers<ContextType>;
+  PagedWorkspaceNightStayType?: PagedWorkspaceNightStayTypeResolvers<ContextType>;
   PeopleTagType?: PeopleTagTypeResolvers<ContextType>;
   PersonEmployeeDataType?: PersonEmployeeDataTypeResolvers<ContextType>;
   PersonImageVectorDataType?: PersonImageVectorDataTypeResolvers<ContextType>;
@@ -1951,6 +1989,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   WorkspaceCommitteeMemberType?: WorkspaceCommitteeMemberTypeResolvers<ContextType>;
   WorkspaceCommitteeType?: WorkspaceCommitteeTypeResolvers<ContextType>;
   WorkspaceKarkunType?: WorkspaceKarkunTypeResolvers<ContextType>;
+  WorkspaceNightStayType?: WorkspaceNightStayTypeResolvers<ContextType>;
+  WorkspaceStayHistoryItemType?: WorkspaceStayHistoryItemTypeResolvers<ContextType>;
 }>;
 
 export type DirectiveResolvers<ContextType = any> = ResolversObject<{

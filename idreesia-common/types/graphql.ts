@@ -2111,6 +2111,12 @@ export type PagedWorkspaceKarkunType = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PagedWorkspaceNightStayType = {
+  __typename?: 'PagedWorkspaceNightStayType';
+  data?: Maybe<Array<Maybe<WorkspaceNightStayType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
 export type PeopleTagType = {
   __typename?: 'PeopleTagType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -2450,6 +2456,8 @@ export type Query = {
   workspaceDiscussionStarredMessages?: Maybe<Array<Maybe<DiscussionMessageType>>>;
   workspaceDiscussionSync?: Maybe<DiscussionSyncType>;
   workspaceDiscussionThreadMessages?: Maybe<Array<Maybe<DiscussionMessageType>>>;
+  workspaceNightStayById?: Maybe<WorkspaceNightStayType>;
+  workspaceNightStays?: Maybe<PagedWorkspaceNightStayType>;
 };
 
 
@@ -2995,6 +3003,25 @@ export type QueryWorkspaceDiscussionThreadMessagesArgs = {
   threadId: Scalars['String']['input'];
 };
 
+
+export type QueryWorkspaceNightStayByIdArgs = {
+  committeeId: Scalars['String']['input'];
+  stayId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceNightStaysArgs = {
+  city?: InputMaybe<Scalars['String']['input']>;
+  committeeId: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+  stayDate: Scalars['String']['input'];
+  stayReason?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type SalaryType = {
   __typename?: 'SalaryType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -3447,4 +3474,30 @@ export type WorkspaceKarkunType = {
   imageUrl?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   parentName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceNightStayType = {
+  __typename?: 'WorkspaceNightStayType';
+  _id?: Maybe<Scalars['String']['output']>;
+  city?: Maybe<Scalars['String']['output']>;
+  country?: Maybe<Scalars['String']['output']>;
+  fromDate?: Maybe<Scalars['String']['output']>;
+  numOfDays?: Maybe<Scalars['Float']['output']>;
+  stayAllowedBy?: Maybe<Scalars['String']['output']>;
+  stayHistory?: Maybe<Array<Maybe<WorkspaceStayHistoryItemType>>>;
+  stayReason?: Maybe<Scalars['String']['output']>;
+  toDate?: Maybe<Scalars['String']['output']>;
+  visitorId?: Maybe<Scalars['String']['output']>;
+  visitorImageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  visitorImageUrl?: Maybe<Scalars['String']['output']>;
+  visitorName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceStayHistoryItemType = {
+  __typename?: 'WorkspaceStayHistoryItemType';
+  _id?: Maybe<Scalars['String']['output']>;
+  fromDate?: Maybe<Scalars['String']['output']>;
+  numOfDays?: Maybe<Scalars['Float']['output']>;
+  stayReason?: Maybe<Scalars['String']['output']>;
+  toDate?: Maybe<Scalars['String']['output']>;
 };

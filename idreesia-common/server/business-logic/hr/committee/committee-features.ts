@@ -8,12 +8,14 @@ import {
 import { Committees } from 'meteor/idreesia-common/server/collections/hr';
 
 import { discussionsHandler } from './discussions';
+import { nightStayReportHandler } from './night-stay-report';
 import type { CommitteeDoc, CommitteeFeatureHandler } from './types';
 
 // Every feature needs a handler; the Record type makes a missing one a
 // compile error when a feature is added to the constants.
 const featureHandlers: Record<CommitteeFeatureKey, CommitteeFeatureHandler> = {
   [CommitteeFeatureKeys.DISCUSSIONS]: discussionsHandler,
+  [CommitteeFeatureKeys.NIGHT_STAY_REPORT]: nightStayReportHandler,
 };
 
 const loadCommittee = async (

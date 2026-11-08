@@ -1,5 +1,6 @@
 export const CommitteeFeatureKeys = {
   DISCUSSIONS: 'discussions',
+  NIGHT_STAY_REPORT: 'night-stay-report',
 } as const;
 
 export type CommitteeFeatureKey =
@@ -18,6 +19,11 @@ export const CommitteeFeatures: CommitteeFeature[] = [
     key: CommitteeFeatureKeys.DISCUSSIONS,
     name: 'Discussions',
     description: 'A private discussion space for the committee members.',
+  },
+  {
+    key: CommitteeFeatureKeys.NIGHT_STAY_REPORT,
+    name: 'Night Stay Report',
+    description: 'The visitors registered by Security as staying on a given night.',
   },
 ];
 

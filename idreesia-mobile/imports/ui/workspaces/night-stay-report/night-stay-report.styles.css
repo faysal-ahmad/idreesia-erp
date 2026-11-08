@@ -1,0 +1,53 @@
+/* Night Stay Report (night-stay-report-screen.tsx). Loaded from client/main.tsx. */
+
+.night-stay-date-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.night-stay-step,
+.night-stay-date {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  color: var(--app-color-text);
+  font: inherit;
+}
+
+.night-stay-step {
+  width: 40px;
+  flex-shrink: 0;
+  color: var(--app-color-primary);
+  font-size: 18px;
+}
+
+.night-stay-date {
+  flex: 1;
+  gap: 8px;
+  font-size: 0.9412rem; /* 16px */
+  font-weight: 500;
+}
+
+.night-stay-date .antd-mobile-icon {
+  color: var(--app-color-primary);
+  font-size: 18px;
+}
+
+.night-stay-item .adm-list-item-content-prefix {
+  align-self: flex-start;
+  padding-top: 14px;
+}
+
+.night-stay-avatar {
+  --size: 48px;
+  --border-radius: var(--app-radius-medium);
+}
+
+.night-stay-item .adm-list-item-description {
+  line-height: 1.5;
+}

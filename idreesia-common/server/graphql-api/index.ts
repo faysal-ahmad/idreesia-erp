@@ -140,6 +140,8 @@ import WorkspaceCommitteeSchema from './workspaces/committee/committee';
 import WorkspaceCommitteeResolvers from './workspaces/committee/resolvers';
 import WorkspaceDiscussionsSchema from './workspaces/discussions/discussions';
 import WorkspaceDiscussionsResolvers from './workspaces/discussions/resolvers';
+import WorkspaceNightStayReportSchema from './workspaces/night-stay-report/night-stay-report';
+import WorkspaceNightStayReportResolvers from './workspaces/night-stay-report/resolvers';
 
 /**
  * Schema and Resolvers for the Outstation module
@@ -230,6 +232,7 @@ const typeDefs = [
 
   WorkspaceCommitteeSchema,
   WorkspaceDiscussionsSchema,
+  WorkspaceNightStayReportSchema,
 
   CitySchema,
   CityMehfilSchema,
@@ -291,6 +294,7 @@ const resolvers = merge(
 
   WorkspaceCommitteeResolvers,
   WorkspaceDiscussionsResolvers,
+  WorkspaceNightStayReportResolvers,
 
   CityResolvers,
   CityMehfilResolvers,

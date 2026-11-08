@@ -145,6 +145,18 @@ A committee can have **Discussions** turned on from **HR → Committees → (com
 | File routes | `idreesia-web/imports/startup/server/setup-workspace-discussion-endpoints.ts` |
 | Reusable UI + `DiscussionDataProvider` | `idreesia-web/imports/ui/modules/common/discussions/` |
 | Committee provider + page | `idreesia-web/imports/ui/modules/workspaces/discussions/` |
+| Mobile screen (Home → workspace → Discussions) | `idreesia-mobile/imports/ui/workspaces/discussions/` |
+
+**Mobile app**
+- Members open a committee's discussion from **Home → (workspace) → Discussions**. It uses the same GraphQL queries and file routes as the web, with the mobile app's login token.
+- The file routes allow CORS (like `/graphql`), because the app calls them from its own origin.
+- It has what the web has:
+  - the main list (polling every 5 s, "Load earlier messages" for history);
+  - posting text, photos, files and voice notes through the shared composer (`imports/ui/components/message-composer`), with @mention suggestions;
+  - threads (tap "N replies", or long-press → Reply in thread);
+  - long-press actions: react, copy, star, pin (coordinators), and edit/delete own messages; tapping a reaction toggles your own;
+  - search, pinned and starred messages from the ⋯ menu; picking one jumps to it in the list, or opens its thread.
+- File attachments other than photos, audio and video open in a full-screen in-app preview (there's no in-app browser plugin), so formats the WebView can't show (e.g. Word) don't open yet.
 
 ## Trying it with curl (simulating the mobile app)
 

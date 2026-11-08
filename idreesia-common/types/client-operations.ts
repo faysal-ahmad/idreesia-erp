@@ -189,24 +189,6 @@ export type SecurityDistinctStayAllowedByQueryVariables = Exact<{ [key: string]:
 
 export type SecurityDistinctStayAllowedByQuery = { distinctStayAllowedBy: Array<string | null> | null };
 
-export type MobileCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type MobileCurrentUserQuery = { currentUser: { _id: string | null, username: string | null, displayName: string | null, email: string | null, permissions: Array<string | null> | null, instances: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null } | null } | null } | null };
-
-export type MobileRegisterUserMutationVariables = Exact<{
-  displayName: string;
-  email: string;
-}>;
-
-
-export type MobileRegisterUserMutation = { registerUser: number | null };
-
-export type MobileUpdateLoginTimeMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type MobileUpdateLoginTimeMutation = { updateLoginTime: number | null };
-
 export type MobilePagedVisitorStaysQueryVariables = Exact<{
   queryString: string;
 }>;
@@ -251,6 +233,171 @@ export type MobileVisitorStaysByVisitorIdQueryVariables = Exact<{
 
 
 export type MobileVisitorStaysByVisitorIdQuery = { pagedVisitorStaysByVisitorId: { totalResults: number | null, data: Array<{ _id: string | null, fromDate: string | null, numOfDays: number | null, cancelledDate: string | null } | null> | null } | null };
+
+export type MobileCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileCurrentUserQuery = { currentUser: { _id: string | null, username: string | null, displayName: string | null, email: string | null, permissions: Array<string | null> | null, instances: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null } | null } | null } | null };
+
+export type MobileRegisterUserMutationVariables = Exact<{
+  displayName: string;
+  email: string;
+}>;
+
+
+export type MobileRegisterUserMutation = { registerUser: number | null };
+
+export type MobileUpdateLoginTimeMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileUpdateLoginTimeMutation = { updateLoginTime: number | null };
+
+export type MobileMyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileMyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, description: string | null, features: Array<string | null> | null } | null> | null };
+
+export type MobileWorkspaceReactToDiscussionMessageMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+  emoji: string;
+  shouldReact: boolean;
+}>;
+
+
+export type MobileWorkspaceReactToDiscussionMessageMutation = { workspaceReactToDiscussionMessage: boolean };
+
+export type MobileWorkspaceSetDiscussionMessageStarredMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+  starred: boolean;
+}>;
+
+
+export type MobileWorkspaceSetDiscussionMessageStarredMutation = { workspaceSetDiscussionMessageStarred: boolean };
+
+export type MobileWorkspaceSetDiscussionMessagePinnedMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+  pinned: boolean;
+}>;
+
+
+export type MobileWorkspaceSetDiscussionMessagePinnedMutation = { workspaceSetDiscussionMessagePinned: boolean };
+
+export type MobileWorkspaceEditDiscussionMessageMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+  text: string;
+}>;
+
+
+export type MobileWorkspaceEditDiscussionMessageMutation = { workspaceEditDiscussionMessage: boolean };
+
+export type MobileWorkspaceDeleteDiscussionMessageMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+}>;
+
+
+export type MobileWorkspaceDeleteDiscussionMessageMutation = { workspaceDeleteDiscussionMessage: boolean };
+
+export type MobileWorkspaceDiscussionThreadMessagesQueryVariables = Exact<{
+  committeeId: string;
+  threadId: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionThreadMessagesQuery = { workspaceDiscussionThreadMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null };
+
+export type MobileWorkspaceDiscussionMembersQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionMembersQuery = { workspaceDiscussionMembers: Array<{ username: string | null, name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null };
+
+export type MobileWorkspaceDiscussionPinnedMessagesQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionPinnedMessagesQuery = { workspaceDiscussionPinnedMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null };
+
+export type MobileWorkspaceDiscussionStarredMessagesQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionStarredMessagesQuery = { workspaceDiscussionStarredMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null };
+
+export type MobileWorkspaceDiscussionSearchMessagesQueryVariables = Exact<{
+  committeeId: string;
+  searchText: string;
+  offset?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspaceDiscussionSearchMessagesQuery = { workspaceDiscussionSearchMessages: { hasMore: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
+
+export type MobileDiscussionMessageFieldsFragment = { _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null };
+
+export type MobileWorkspaceDiscussionInfoQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionInfoQuery = { workspaceCommitteeById: { _id: string | null, name: string | null } | null, workspaceDiscussionInfo: { canPost: boolean | null, canPin: boolean | null } | null };
+
+export type MobileWorkspaceDiscussionSyncQueryVariables = Exact<{
+  committeeId: string;
+  since?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceDiscussionSyncQuery = { workspaceDiscussionSync: { deletedIds: Array<string | null> | null, syncedAt: string | null, hasOlder: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceDiscussionOlderMessagesQueryVariables = Exact<{
+  committeeId: string;
+  before: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionOlderMessagesQuery = { workspaceDiscussionOlderMessages: { hasMore: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceSendDiscussionMessageMutationVariables = Exact<{
+  committeeId: string;
+  text: string;
+  threadId?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceSendDiscussionMessageMutation = { workspaceSendDiscussionMessage: boolean };
+
+export type MobileWorkspaceCommitteeMembersQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceCommitteeMembersQuery = { workspaceCommitteeById: { _id: string | null, name: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null } | null> | null } | null };
+
+export type MobileWorkspaceNightStayByIdQueryVariables = Exact<{
+  committeeId: string;
+  stayId: string;
+}>;
+
+
+export type MobileWorkspaceNightStayByIdQuery = { workspaceNightStayById: { _id: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, visitorName: string | null, visitorImageUrl: string | null, visitorImageThumbnailUrl: string | null, city: string | null, country: string | null, stayHistory: Array<{ _id: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null } | null> | null } | null };
+
+export type MobileWorkspaceNightStaysQueryVariables = Exact<{
+  committeeId: string;
+  stayDate: string;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceNightStaysQuery = { workspaceNightStays: { totalResults: number | null, data: Array<{ _id: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, visitorName: string | null, visitorImageUrl: string | null, visitorImageThumbnailUrl: string | null, city: string | null, country: string | null } | null> | null } | null };
 
 export type RegisterUserMutationVariables = Exact<{
   displayName: string;
@@ -2631,3 +2778,18 @@ export type WorkspaceSetCommitteeMemberDiscussionAccessMutationVariables = Exact
 
 
 export type WorkspaceSetCommitteeMemberDiscussionAccessMutation = { workspaceSetCommitteeMemberDiscussionAccess: boolean | null };
+
+export type WorkspaceNightStaysQueryVariables = Exact<{
+  committeeId: string;
+  stayDate: string;
+  name?: string | null | undefined;
+  city?: string | null | undefined;
+  stayReason?: string | null | undefined;
+  sortBy?: string | null | undefined;
+  sortOrder?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type WorkspaceNightStaysQuery = { workspaceNightStays: { totalResults: number | null, data: Array<{ _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, visitorName: string | null, visitorImageUrl: string | null, visitorImageThumbnailUrl: string | null, city: string | null, country: string | null } | null> | null } | null };

@@ -12,6 +12,12 @@ export {
   type CommitteeMemberAccess,
 } from './member-access';
 export {
+  getNightStayById,
+  getNightStayHistory,
+  getNightStays,
+  type NightStaysFilter,
+} from './night-stay-report';
+export {
   addCommitteeMember,
   removeCommitteeMember,
   removePersonFromCommittees,

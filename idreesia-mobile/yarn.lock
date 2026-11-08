@@ -493,6 +493,13 @@ dunder-proto@^1.0.1:
     es-errors "^1.3.0"
     gopd "^1.2.0"
 
+emoji-picker-react@4.22.3:
+  version "4.22.3"
+  resolved "https://registry.yarnpkg.com/emoji-picker-react/-/emoji-picker-react-4.22.3.tgz#4379cb0c158341d0979f7603016cecb95624f5f3"
+  integrity sha512-jrAkkoN69l5lA2Xp6P5axqoK1YdHNS1+MKMlLxwltnnnaXrojUjZaolgI/U8vdx8vFWqG42yYqpLSR83f6pwiw==
+  dependencies:
+    shipstyles "1.0.0"
+
 es-define-property@^1.0.0, es-define-property@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/es-define-property/-/es-define-property-1.0.1.tgz#983eb2f9a6724e9303f61addf011c72e09e0b0fa"
@@ -1190,6 +1197,11 @@ sha.js@^2.4.0, sha.js@^2.4.12, sha.js@^2.4.8:
     inherits "^2.0.4"
     safe-buffer "^5.2.1"
     to-buffer "^1.2.0"
+
+shipstyles@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/shipstyles/-/shipstyles-1.0.0.tgz#8fd95f4c095748a1a47086ea5ce447405d779531"
+  integrity sha512-1AcihfXo/mSxqeOdoKqq/5TNv+vSH0dBYPFq88PUX5FBkK5pRmY5TP9SuMNio85PQ+euUI67+KpSVk1cUVDCgA==
 
 side-channel-list@^1.0.1:
   version "1.0.1"

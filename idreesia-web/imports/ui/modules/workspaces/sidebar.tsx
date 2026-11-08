@@ -1,7 +1,12 @@
 import React, { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { type History } from 'history';
 import { Menu } from 'antd';
-import { ClusterOutlined, MessageOutlined, TeamOutlined } from '@ant-design/icons';
+import {
+  ClusterOutlined,
+  MessageOutlined,
+  MoonOutlined,
+  TeamOutlined,
+} from '@ant-design/icons';
 
 import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
 import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
@@ -25,6 +30,11 @@ type KeyPrefixHandler = [string, string, PathBuilder];
 const KeyPrefixHandlers: KeyPrefixHandler[] = [
   ['members', SubModuleNames.members, paths.committeeMembersPath],
   ['discussions', SubModuleNames.discussions, paths.committeeDiscussionsPath],
+  [
+    'night-stay-report',
+    SubModuleNames.nightStayReport,
+    paths.committeeNightStayReportPath,
+  ],
 ];
 
 interface ActiveMenu {
@@ -120,6 +130,15 @@ const Sidebar = ({ history }: SidebarProps) => {
               key: `discussions-${committee._id}`,
               icon: <MessageOutlined style={IconStyle} />,
               label: 'Discussions',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(CommitteeFeatureKeys.NIGHT_STAY_REPORT)
+        ? [
+            {
+              key: `night-stay-report-${committee._id}`,
+              icon: <MoonOutlined style={IconStyle} />,
+              label: 'Night Stay Report',
             },
           ]
         : []),

@@ -235,7 +235,7 @@ const toDateOrUndefined = (value?: string | null) =>
 
 /**
  * - upcoming: scheduled meetings that haven't ended, soonest first
- * - past: held (or due to have been held) meetings, latest first
+ * - past: meetings whose end time has passed, latest first
  * - cancelled: cancelled meetings, latest first
  * - all: everything in the from/to range, soonest first (for a calendar)
  */
@@ -248,6 +248,7 @@ export async function listCommitteeMeetings(
   let status: MeetingStatusValue[] | undefined;
   let fromDate = toDateOrUndefined(from);
   let toDate = toDateOrUndefined(to);
+  let endedBy: Date | undefined;
   let sortOrder: 'asc' | 'desc' = 'asc';
 
   switch (view ?? 'upcoming') {
@@ -257,7 +258,8 @@ export async function listCommitteeMeetings(
       break;
     case 'past':
       status = [MeetingStatus.SCHEDULED, MeetingStatus.COMPLETED];
-      if (!toDate || toDate > now) toDate = now;
+      // Only once the end time has passed; one in progress is still "upcoming".
+      endedBy = now;
       sortOrder = 'desc';
       break;
     case 'cancelled':
@@ -272,6 +274,7 @@ export async function listCommitteeMeetings(
     status,
     from: fromDate,
     to: toDate,
+    endedBy,
     text: text?.trim() || undefined,
     sortOrder,
     ...toPage(pageIndex, pageSize),
@@ -300,8 +303,7 @@ function toAttachment(
     size: attachment.size,
     createdAt: timestamp(attachment.createdAt),
     createdByName: nameOf(users, attachment.createdBy),
-    canDelete:
-      context.isCoordinator || attachment.createdBy === context.userId,
+    canDelete: context.isCoordinator,
   };
 }
 
@@ -375,13 +377,15 @@ function toActionItem(
   item: MeetingActionItemDocument,
   people: Names,
   users: Names,
-  meetingTitles: Map<string, string>,
+  meetingsById: Map<string, { title: string; endsAt: Date }>,
   context: ViewContext
 ) {
+  const meeting = meetingsById.get(item.meetingId);
   return {
     _id: item._id,
     meetingId: item.meetingId,
-    meetingTitle: meetingTitles.get(item.meetingId) ?? null,
+    meetingTitle: meeting?.title ?? null,
+    meetingEndsAt: timestamp(meeting?.endsAt),
     agendaItemId: item.agendaItemId ?? null,
     title: item.title,
     description: item.description ?? null,
@@ -410,12 +414,16 @@ export async function mapCommitteeActionItems(
     meetingIds.length
       ? Meetings.find(
           { _id: { $in: meetingIds } },
-          { fields: { _id: 1, title: 1 } }
+          { fields: { _id: 1, title: 1, endsAt: 1 } }
         ).fetchAsync()
       : Promise.resolve([]),
   ]);
-  const titles = new Map(meetings.map(({ _id, title }) => [_id, title]));
-  return items.map(item => toActionItem(item, people, users, titles, context));
+  const meetingsById = new Map(
+    meetings.map(({ _id, title, endsAt }) => [_id, { title, endsAt }])
+  );
+  return items.map(item =>
+    toActionItem(item, people, users, meetingsById, context)
+  );
 }
 
 export interface CommitteeActionItemsOptions {

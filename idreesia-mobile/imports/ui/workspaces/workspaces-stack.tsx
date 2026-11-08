@@ -2,39 +2,38 @@ import React from 'react';
 
 import { KeepAlive } from '../layout';
 import { matchPath, Redirect, Route, Switch, useLocation } from '../router';
-import {
-  DiscussionFeature,
-  MeetingsFeature,
-  MembersScreen,
-  NightStayReportFeature,
-  MonitoringAlertsScreen,
-  MonitoringProfilesFeature,
-  PollsFeature,
-  WorkspacesPaths,
-} from '../workspaces';
-import { HomeScreen } from './home-screen';
-import { HomePaths } from './paths';
+import { DiscussionFeature } from './discussions/discussion-feature';
+import { DocumentsFeature } from './documents/documents-feature';
+import { MeetingsFeature } from './meetings/meetings-feature';
+import { MembersScreen } from './members/members-screen';
+import { MonitoringAlertsScreen } from './monitoring-alerts/monitoring-alerts-screen';
+import { MonitoringProfilesFeature } from './monitoring-profiles/monitoring-profiles-feature';
+import { NightStayReportFeature } from './night-stay-report/night-stay-report-feature';
+import { WorkspacesPaths } from './paths';
+import { PollsFeature } from './polls/polls-feature';
+import { WorkspacesScreen } from './workspaces-screen';
 
 /**
- * The Home tab and the workspace screens opened from it. Home stays mounted
+ * The Workspaces tab and the workspace screens opened from it. The list stays mounted
  * under them (KeepAlive), so going back shows it as it was, with the same
  * workspace still expanded.
  */
-export const HomeStack = () => {
+export const WorkspacesStack = () => {
   const { pathname } = useLocation();
-  const onHome = Boolean(matchPath(pathname, { path: HomePaths.home, exact: true }));
+  const onWorkspaces = Boolean(matchPath(pathname, { path: WorkspacesPaths.root, exact: true }));
 
   return (
     <>
-      <KeepAlive active={onHome}>
-        <HomeScreen />
+      <KeepAlive active={onWorkspaces}>
+        <WorkspacesScreen />
       </KeepAlive>
       <Switch>
-        <Route exact path={HomePaths.home} render={() => null} />
+        <Route exact path={WorkspacesPaths.root} render={() => null} />
         <Route exact component={MembersScreen} path={WorkspacesPaths.committeeMembersPattern} />
         <Route component={DiscussionFeature} path={WorkspacesPaths.committeeDiscussionsPattern} />
         <Route component={MeetingsFeature} path={WorkspacesPaths.committeeMeetingsPattern} />
         <Route component={PollsFeature} path={WorkspacesPaths.committeePollsPattern} />
+        <Route component={DocumentsFeature} path={WorkspacesPaths.committeeDocumentsPattern} />
         <Route
           component={NightStayReportFeature}
           path={WorkspacesPaths.committeeNightStayReportPattern}
@@ -48,7 +47,7 @@ export const HomeStack = () => {
           component={MonitoringProfilesFeature}
           path={WorkspacesPaths.committeeMonitoringProfilesPattern}
         />
-        <Redirect to={HomePaths.home} />
+        <Redirect to={WorkspacesPaths.root} />
       </Switch>
     </>
   );

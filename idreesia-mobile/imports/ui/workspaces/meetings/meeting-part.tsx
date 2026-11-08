@@ -28,11 +28,13 @@ interface PageProps {
   part: ReturnType<typeof useMeetingPart>;
   right?: ReactNode;
   footer?: ReactNode;
+  /** What pull-to-refresh reloads; defaults to the meeting. `false` where a list inside refreshes itself. */
+  onRefresh?: (() => Promise<unknown>) | false;
   children: (meeting: Meeting) => ReactNode;
 }
 
 /** The screen shell, with the loading / error / not-found states. */
-export const MeetingPartPage = ({ title, part, right, footer, children }: PageProps) => {
+export const MeetingPartPage = ({ title, part, right, footer, onRefresh, children }: PageProps) => {
   const { meeting, loading, error, refetch, backTo } = part;
   let body: ReactNode;
   if (loading) body = <PageLoading />;
@@ -48,7 +50,13 @@ export const MeetingPartPage = ({ title, part, right, footer, children }: PagePr
   } else body = children(meeting);
 
   return (
-    <Page backTo={backTo} footer={meeting ? footer : undefined} right={meeting ? right : undefined} title={title}>
+    <Page
+      backTo={backTo}
+      footer={meeting ? footer : undefined}
+      onRefresh={meeting && onRefresh !== false ? (onRefresh ?? part.refetch) : undefined}
+      right={meeting ? right : undefined}
+      title={title}
+    >
       {body}
     </Page>
   );

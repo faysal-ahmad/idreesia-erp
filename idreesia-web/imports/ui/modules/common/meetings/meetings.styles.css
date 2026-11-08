@@ -1,3 +1,7 @@
+.meetings-board > .list-table-header {
+  margin-bottom: 16px;
+}
+
 /* Workspaces → Meetings (common/meetings) */
 
 .meetings-board .list-table-header .ant-segmented {

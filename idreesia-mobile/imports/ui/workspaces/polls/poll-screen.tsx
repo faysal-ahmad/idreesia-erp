@@ -1,11 +1,10 @@
 import React, { type ReactNode, useEffect, useMemo, useState } from 'react';
-import { ActionSheet, Button, DatePicker, Dialog, List, Selector, Tag, TextArea, Toast } from 'antd-mobile';
+import { ActionSheet, Button, DatePicker, Dialog, List, Selector, Tag, TextArea } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
 import { HistogramOutline, MoreOutline, PieOutline, TeamOutline } from 'antd-mobile-icons';
 import { useApolloClient, useMutation } from '@apollo/client/react';
 
-import { getErrorMessage } from '../../auth/accounts';
-import { Page, PageEmpty, PageError, PageLoading } from '../../layout';
+import { Page, PageEmpty, PageError, PageLoading, showError, showSuccess, showWarning } from '../../layout';
 import { useHistory, useParams } from '../../router';
 import { type PollPart, WorkspacesPaths } from '../paths';
 import { choiceHint, describeClosing, formatDateTime, formatPollTime, hasPassed, pollStatus } from './format';
@@ -112,11 +111,11 @@ export const PollScreen = ({ pollId }: Props) => {
     setBusy(true);
     try {
       await action();
-      Toast.show({ icon: 'success', content: success });
+      showSuccess(success);
       refreshList();
       return true;
     } catch (actionError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(actionError, failure) });
+      showError(actionError, failure);
       return false;
     } finally {
       setBusy(false);
@@ -143,7 +142,7 @@ export const PollScreen = ({ pollId }: Props) => {
   const submitVote = () => {
     if (questions.some(problemOf)) {
       setShowProblems(true);
-      Toast.show({ content: 'Please answer every required question.' });
+      showWarning('Please answer every required question.');
       return;
     }
     const answers = questions
@@ -158,7 +157,8 @@ export const PollScreen = ({ pollId }: Props) => {
 
   const confirmWithdraw = async () => {
     const confirmed = await Dialog.confirm({
-      content: 'Withdraw your vote? You can vote again until the poll closes.',
+      title: 'Withdraw your vote?',
+      content: 'You can vote again until the poll closes.',
       confirmText: <span className="poll-danger-text">Withdraw</span>,
       cancelText: 'Cancel',
     });
@@ -175,8 +175,15 @@ export const PollScreen = ({ pollId }: Props) => {
       return;
     }
     const confirmed = await Dialog.confirm({
-      content: `Open this poll for voting? Voting ends ${formatPollTime(poll.closesAt)}, and the questions can't change afterwards.`,
-      confirmText: 'Open voting',
+      title: 'Open for voting?',
+      content: (
+        <div className="poll-dialog">
+          <p>Voting ends</p>
+          <p className="poll-dialog-emphasis">{formatPollTime(poll.closesAt)}</p>
+          <p className="poll-dialog-note">The questions can&apos;t be changed once voting is open.</p>
+        </div>
+      ),
+      confirmText: 'Open',
       cancelText: 'Cancel',
     });
     if (confirmed) {
@@ -186,8 +193,9 @@ export const PollScreen = ({ pollId }: Props) => {
 
   const confirmClose = async () => {
     const confirmed = await Dialog.confirm({
-      content: 'Close voting now? No more votes are accepted, and the results become final.',
-      confirmText: 'Close voting',
+      title: 'Close voting now?',
+      content: 'No more votes will be accepted, and the results become final.',
+      confirmText: 'Close',
       cancelText: 'Cancel',
     });
     if (confirmed) {
@@ -222,7 +230,8 @@ export const PollScreen = ({ pollId }: Props) => {
 
   const confirmDelete = async () => {
     const confirmed = await Dialog.confirm({
-      content: 'Delete this poll? Its questions and votes are removed permanently.',
+      title: 'Delete this poll?',
+      content: 'Its questions and votes are removed permanently.',
       confirmText: <span className="poll-danger-text">Delete</span>,
       cancelText: 'Cancel',
     });
@@ -230,11 +239,11 @@ export const PollScreen = ({ pollId }: Props) => {
     setBusy(true);
     try {
       await deletePoll({ variables: { committeeId, pollId } });
-      Toast.show({ icon: 'success', content: 'Poll deleted.' });
+      showSuccess('Poll deleted.');
       await refreshList();
       history.replace(listPath);
     } catch (deleteError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(deleteError, 'Could not delete the poll.') });
+      showError(deleteError, 'Could not delete the poll.');
       setBusy(false);
     }
   };
@@ -345,6 +354,7 @@ export const PollScreen = ({ pollId }: Props) => {
               </p>
             )}
             <Selector
+              className="poll-selector"
               columns={1}
               disabled={!canVote || busy}
               multiple={question.type === 'multiple'}

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Dialog, List, SpinLoading, Toast } from 'antd-mobile';
+import { Dialog, List, SpinLoading } from 'antd-mobile';
 import { LockOutline } from 'antd-mobile-icons';
-import { getErrorMessage, logout } from '../auth/accounts';
+import { logout } from '../auth/accounts';
 import { useCurrentUser } from '../hooks';
-import { Page } from '../layout';
+import { Page, showError } from '../layout';
 import { useHistory } from '../router';
 import { AccountPaths } from './paths';
 
@@ -27,10 +27,7 @@ export const AccountScreen = () => {
     try {
       await logout();
     } catch (error) {
-      Toast.show({
-        icon: 'fail',
-        content: getErrorMessage(error, 'Could not sign out.'),
-      });
+      showError(error, 'Could not sign out.');
     }
   };
 

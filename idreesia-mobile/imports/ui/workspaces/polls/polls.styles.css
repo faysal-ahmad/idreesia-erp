@@ -296,3 +296,33 @@
   color: var(--app-color-text-secondary);
   font-size: 0.7647rem; /* 13px */
 }
+
+/* Confirmation dialogs on the poll screen */
+
+.poll-dialog p {
+  margin: 0;
+}
+
+.poll-dialog-emphasis {
+  margin: 2px 0 12px;
+  font-weight: 600;
+}
+
+.poll-dialog-note {
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+}
+
+/* Ballot options: the chosen one is filled solid so it stands out */
+.poll-selector {
+  --color: var(--app-color-surface-muted);
+  --text-color: var(--app-color-text);
+  --border: solid 1px var(--app-color-border);
+  --checked-color: var(--app-color-primary);
+  --checked-text-color: var(--app-color-on-primary);
+  --checked-border: solid 1px var(--app-color-primary);
+}
+
+.poll-selector .adm-selector-item-active {
+  font-weight: 600;
+}

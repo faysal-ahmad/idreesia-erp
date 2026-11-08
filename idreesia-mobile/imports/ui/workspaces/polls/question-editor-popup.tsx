@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Popup, Selector, Stepper, Switch, TextArea, Toast } from 'antd-mobile';
+import { Button, Form, Input, Popup, Selector, Stepper, Switch, TextArea } from 'antd-mobile';
 import { AddCircleOutline, CloseCircleOutline } from 'antd-mobile-icons';
+
+import { showWarning } from '../../layout';
 
 /** A question being edited on the poll form (not saved until the poll is). */
 export interface QuestionDraft {
@@ -73,23 +75,23 @@ export const QuestionEditorPopup = ({ question, onClose, onSave }: Props) => {
       .map(option => ({ ...option, text: option.text.trim().replace(/\s+/g, ' ') }))
       .filter(option => option.text);
     if (filled.length < 2) {
-      Toast.show({ content: 'Please add at least 2 options.' });
+      showWarning('Please add at least 2 options.');
       return;
     }
     const texts = filled.map(option => option.text.toLowerCase());
     if (new Set(texts).size !== texts.length) {
-      Toast.show({ content: 'Each option must be different.' });
+      showWarning('Each option must be different.');
       return;
     }
     const type = values.type?.[0] ?? 'single';
     const min = type === 'multiple' ? values.minChoices || null : null;
     const max = type === 'multiple' ? values.maxChoices || null : null;
     if (max && max > filled.length) {
-      Toast.show({ content: "Choose at most can't be more than the number of options." });
+      showWarning("Choose at most can't be more than the number of options.");
       return;
     }
     if (min && min > (max ?? filled.length)) {
-      Toast.show({ content: "Choose at least can't be more than choose at most." });
+      showWarning("Choose at least can't be more than choose at most.");
       return;
     }
     onSave({

@@ -12,7 +12,9 @@ import './main.css';
 import '../imports/ui/account/account-screen.styles.css';
 import '../imports/ui/chat/chat-screen.styles.css';
 import '../imports/ui/components/message-composer/message-composer.styles.css';
+import '../imports/ui/components/collapsible-section.styles.css';
 import '../imports/ui/home/home-screen.styles.css';
+import '../imports/ui/workspaces/workspaces-screen.styles.css';
 import '../imports/ui/apps/security/stay-report/stay-report.styles.css';
 import '../imports/ui/apps/security/visitors/photo-search.styles.css';
 import '../imports/ui/apps/security/visitors/visitor-detail.styles.css';
@@ -26,6 +28,7 @@ import '../imports/ui/workspaces/monitoring-profiles/monitoring-profile.styles.c
 import '../imports/ui/workspaces/monitoring-profiles/monitoring-profiles.styles.css';
 import '../imports/ui/workspaces/meetings/meetings.styles.css';
 import '../imports/ui/workspaces/polls/polls.styles.css';
+import '../imports/ui/workspaces/documents/documents.styles.css';
 import App from '../imports/ui/app';
 import { HashRouter } from '../imports/ui/router';
 import { applyTheme, watchTextScale } from '../imports/ui/theme';

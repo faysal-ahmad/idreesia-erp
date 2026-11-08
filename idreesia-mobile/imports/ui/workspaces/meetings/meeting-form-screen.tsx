@@ -1,10 +1,9 @@
 import React, { type ReactNode, useEffect, useMemo, useState } from 'react';
-import { Button, DatePicker, Form, Input, TextArea, Toast } from 'antd-mobile';
+import { Button, DatePicker, Form, Input, TextArea } from 'antd-mobile';
 import { CalendarOutline } from 'antd-mobile-icons';
 import { useApolloClient, useMutation } from '@apollo/client/react';
 
-import { getErrorMessage } from '../../auth/accounts';
-import { Page, PageEmpty, PageError, PageLoading, useNavigateBack } from '../../layout';
+import { Page, PageEmpty, PageError, PageLoading, useNavigateBack, showError, showSuccess } from '../../layout';
 import { useHistory, useParams } from '../../router';
 import { WorkspacesPaths } from '../paths';
 import { formatDay, formatTime, toDate } from './format';
@@ -17,7 +16,6 @@ interface FormValues {
   startsAt: Date;
   endsAt: Date;
   location?: string;
-  onlineUrl?: string;
   description?: string;
 }
 
@@ -29,15 +27,6 @@ const nextHour = () => {
   const date = new Date();
   date.setHours(date.getHours() + 1, 0, 0, 0);
   return date;
-};
-
-const isHttpUrl = (value: string) => {
-  try {
-    const url = new URL(value);
-    return url.protocol === 'http:' || url.protocol === 'https:';
-  } catch {
-    return false;
-  }
 };
 
 /**
@@ -78,7 +67,6 @@ export const MeetingFormScreen = () => {
             startsAt: toDate(meeting.startsAt) ?? undefined,
             endsAt: toDate(meeting.endsAt) ?? undefined,
             location: meeting.location ?? '',
-            onlineUrl: meeting.onlineUrl ?? '',
             description: meeting.description ?? '',
           }
         : {};
@@ -109,19 +97,20 @@ export const MeetingFormScreen = () => {
       startsAt: String(values.startsAt.getTime()),
       endsAt: String(values.endsAt.getTime()),
       location: values.location?.trim() || null,
-      onlineUrl: values.onlineUrl?.trim() || null,
+      // The form no longer edits the link; keep whatever an existing meeting has.
+      onlineUrl: meeting?.onlineUrl ?? null,
       description: values.description?.trim() || null,
     };
     try {
       if (isEdit) {
         await updateMeeting({ variables: { committeeId, meetingId: meetingId!, input } });
-        Toast.show({ icon: 'success', content: 'Meeting saved.' });
+        showSuccess('Meeting saved.');
         navigateBack();
       } else {
         const { data } = await createMeeting({
           variables: { committeeId, input, participantIds: invited },
         });
-        Toast.show({ icon: 'success', content: 'Meeting scheduled.' });
+        showSuccess('Meeting scheduled.');
         client.refetchQueries({ include: ['mobileWorkspaceMeetings'] });
         const newId = data?.workspaceCreateMeeting?._id;
         // Open the new meeting in place of the form, so back goes to the list.
@@ -129,7 +118,7 @@ export const MeetingFormScreen = () => {
         else navigateBack();
       }
     } catch (saveError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(saveError, 'Could not save the meeting.') });
+      showError(saveError, 'Could not save the meeting.');
     }
   };
 
@@ -200,20 +189,6 @@ export const MeetingFormScreen = () => {
         </Form.Item>
         <Form.Item label="Location" name="location">
           <Input autoCapitalize="sentences" clearable maxLength={1000} placeholder="Where it takes place" />
-        </Form.Item>
-        <Form.Item
-          label="Online meeting link"
-          name="onlineUrl"
-          rules={[
-            {
-              validator: (_, value?: string) =>
-                value?.trim() && !isHttpUrl(value.trim())
-                  ? Promise.reject(new Error('Please enter a full link, starting with https://'))
-                  : Promise.resolve(),
-            },
-          ]}
-        >
-          <Input autoCapitalize="off" autoComplete="off" clearable inputMode="url" placeholder="https://" type="url" />
         </Form.Item>
         <Form.Item label="Description" name="description">
           <TextArea autoSize={{ minRows: 2, maxRows: 6 }} maxLength={10000} placeholder="What it's about" />

@@ -254,6 +254,8 @@ interface MeetingFilterOptions {
   from?: Date;
   /** Meetings that start before this time. */
   to?: Date;
+  /** Meetings that have ended by this time. */
+  endedBy?: Date;
   status?: MeetingStatusValue | MeetingStatusValue[];
   /** Meetings that have all of these tags. */
   tags?: string[];
@@ -276,12 +278,18 @@ export interface ListMeetingsOptions
 function buildFilter({
   from,
   to,
+  endedBy,
   status,
   tags,
   metadata,
 }: MeetingFilterOptions): Record<string, unknown> {
   const selector: Record<string, unknown> = {};
-  if (from) selector.endsAt = { $gt: toDate(from, 'from') };
+  if (from || endedBy) {
+    selector.endsAt = {
+      ...(from ? { $gt: toDate(from, 'from') } : {}),
+      ...(endedBy ? { $lte: toDate(endedBy, 'endedBy') } : {}),
+    };
+  }
   if (to) selector.startsAt = { $lt: toDate(to, 'to') };
   if (status !== undefined) {
     const statuses = (Array.isArray(status) ? status : [status]).map(value =>
@@ -327,6 +335,7 @@ export async function listMeetings(
     text,
     from,
     to,
+    endedBy,
     status,
     tags,
     metadata,
@@ -339,7 +348,7 @@ export async function listMeetings(
 
   const selector: Record<string, unknown> = {
     workspaceId,
-    ...buildFilter({ from, to, status, tags, metadata }),
+    ...buildFilter({ from, to, endedBy, status, tags, metadata }),
   };
   if (participantId) {
     selector['participants.participantId'] = normalizeOpaqueId(

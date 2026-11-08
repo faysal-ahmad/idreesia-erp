@@ -14,3 +14,4 @@ export {
 export type { PutFileOptions, FileUrlOptions, FileInfo } from './file-storage';
 export { getFileExtension } from './file-extension';
 export { StorageFolders } from './folders';
+export { runWithRequestHost } from './request-host';

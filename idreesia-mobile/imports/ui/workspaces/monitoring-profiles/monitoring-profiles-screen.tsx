@@ -3,7 +3,6 @@ import { Checkbox, Image, List, SearchBar, Tag } from 'antd-mobile';
 import { toDeviceUrl } from '/imports/startup/backend';
 
 import { PagedList } from '../../components';
-import { HomePaths } from '../../home/paths';
 import { usePagedQuery } from '../../hooks';
 import { Page } from '../../layout';
 import { useHistory, useParams } from '../../router';
@@ -39,7 +38,7 @@ export const MonitoringProfilesScreen = () => {
   });
 
   return (
-    <Page backTo={HomePaths.home} title="Monitoring Profiles">
+    <Page backTo={WorkspacesPaths.root} title="Monitoring Profiles">
       <div className="list-toolbar">
         <SearchBar
           clearable

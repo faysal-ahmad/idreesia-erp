@@ -1,0 +1,175 @@
+/* Workspace → Documents (workspaces/documents). Loaded from client/main.tsx. */
+
+.documents-path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.documents-danger-text {
+  color: var(--app-color-danger);
+}
+
+.documents-card {
+  margin: 0 12px 10px;
+  padding: 12px 14px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  font-size: 0.8824rem; /* 15px */
+  line-height: 1.5;
+}
+
+.documents-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.documents-upload-name {
+  overflow: hidden;
+  color: var(--app-color-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.documents-pre-wrap {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.documents-load-more {
+  margin: 0 12px 16px;
+}
+
+/* Document screen: a summary card, then the field rows (as on meeting-screen) */
+.documents-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 0 12px 10px;
+  padding: 16px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  text-align: center;
+}
+
+.documents-summary-icon {
+  display: flex;
+  width: 56px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--app-color-primary-light);
+  color: var(--app-color-primary);
+  font-size: 28px;
+}
+
+.documents-summary-title {
+  margin: 0;
+  font-size: 1.1765rem; /* 20px */
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.documents-summary-note {
+  margin: 0;
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+}
+
+.documents-fields {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 8px;
+  margin: 0 12px;
+  padding: 2px 14px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.documents-field {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: 6em 1fr; /* fallback without subgrid */
+  grid-template-columns: subgrid;
+  gap: 8px;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--app-color-border);
+  font-size: 0.8824rem; /* 15px */
+  line-height: 1.4;
+}
+
+.documents-field:last-child {
+  border-bottom: 0;
+}
+
+.documents-field dt {
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+}
+
+.documents-field dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.documents-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Bottom-sheet forms (new folder, rename, edit document) */
+.documents-form-popup {
+  max-height: 90vh;
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom);
+  border-top-left-radius: var(--app-radius-medium);
+  border-top-right-radius: var(--app-radius-medium);
+  background: var(--app-color-background);
+}
+
+/* Folder picker for "Move to…" (popups.tsx) */
+.documents-picker {
+  display: flex;
+  max-height: 85vh;
+  flex-direction: column;
+  border-top-left-radius: var(--app-radius-medium);
+  border-top-right-radius: var(--app-radius-medium);
+}
+
+.documents-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 12px 4px 16px;
+}
+
+.documents-picker-title {
+  overflow: hidden;
+  font-size: 1rem; /* 17px */
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.documents-picker-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.documents-picker-check {
+  color: var(--app-color-primary);
+  font-size: 20px;
+}
+
+.documents-picker-footer {
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--app-color-border);
+}

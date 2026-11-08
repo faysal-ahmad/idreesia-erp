@@ -51,6 +51,8 @@ export const MOBILE_WORKSPACE_MEETING_ACTION_ITEM_FIELDS = gql`
   fragment MobileWorkspaceMeetingActionItemFields on WorkspaceMeetingActionItemType {
     _id
     meetingId
+    meetingTitle
+    meetingEndsAt
     agendaItemId
     title
     description

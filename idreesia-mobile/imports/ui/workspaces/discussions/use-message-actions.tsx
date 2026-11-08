@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { ActionSheet, Dialog, Toast } from 'antd-mobile';
+import { ActionSheet, Dialog } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
 
-import { getErrorMessage } from '../../auth/accounts';
+import { showError, showSuccess } from '../../layout';
 import { useDiscussionContext } from './discussion-context';
 import type { DiscussionMessage } from './discussion-types';
 import { EditMessagePopup } from './edit-message-popup';
@@ -29,9 +29,9 @@ const copyText = async (text: string) => {
 const run = async (action: () => Promise<void>, failure: string, success?: string) => {
   try {
     await action();
-    if (success) Toast.show({ icon: 'success', content: success });
+    if (success) showSuccess(success);
   } catch (error) {
-    Toast.show({ icon: 'fail', content: getErrorMessage(error, failure) });
+    showError(error, failure);
   }
 };
 

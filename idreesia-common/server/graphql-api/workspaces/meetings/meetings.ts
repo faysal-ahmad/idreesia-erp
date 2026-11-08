@@ -93,7 +93,7 @@ export default gql`
     size: Float
     createdAt: String
     createdByName: String
-    # Coordinators and the uploader can delete it.
+    # Only coordinators can delete it.
     canDelete: Boolean
   }
 
@@ -101,6 +101,8 @@ export default gql`
     _id: String
     meetingId: String
     meetingTitle: String
+    # When the meeting ends (ms), to tell past meetings from upcoming ones.
+    meetingEndsAt: String
     agendaItemId: String
     title: String
     description: String
@@ -328,7 +330,7 @@ export default gql`
       attachmentId: String!
       inline: Boolean
     ): WorkspaceMeetingDownloadType
-    # Coordinators and the uploader.
+    # Coordinators only.
     workspaceDeleteMeetingAttachment(
       committeeId: String!
       attachmentId: String!

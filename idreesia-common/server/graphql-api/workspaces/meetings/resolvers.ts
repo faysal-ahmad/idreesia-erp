@@ -402,7 +402,9 @@ const resolvers: ResolverMap = {
       { committeeId, meetingId, fileName, mimeType, size },
       { user }
     ) => {
-      const access = await getMeetingsAccess(user, committeeId);
+      const access = await getMeetingsAccess(user, committeeId, {
+        coordinator: true,
+      });
       await assertMeetingInWorkspace(access, meetingId);
       return createCommitteeMeetingUpload(
         meetingId,
@@ -416,7 +418,9 @@ const resolvers: ResolverMap = {
       { committeeId, uploadId },
       { user }
     ) => {
-      const access = await getMeetingsAccess(user, committeeId);
+      const access = await getMeetingsAccess(user, committeeId, {
+        coordinator: true,
+      });
       await assertUploadInWorkspace(access, uploadId);
       return completeCommitteeMeetingUpload(uploadId, access);
     },
@@ -426,7 +430,9 @@ const resolvers: ResolverMap = {
       { committeeId, uploadId },
       { user }
     ) => {
-      const access = await getMeetingsAccess(user, committeeId);
+      const access = await getMeetingsAccess(user, committeeId, {
+        coordinator: true,
+      });
       await assertUploadInWorkspace(access, uploadId);
       await abortAttachmentUpload(uploadId, access.userId);
       return true;
@@ -447,16 +453,13 @@ const resolvers: ResolverMap = {
       { committeeId, attachmentId },
       { user }
     ) => {
-      const access = await getMeetingsAccess(user, committeeId);
+      const access = await getMeetingsAccess(user, committeeId, {
+        coordinator: true,
+      });
       const attachment = await assertAttachmentInWorkspace(
         access,
         attachmentId
       );
-      if (!access.isCoordinator && attachment.createdBy !== access.userId) {
-        throw forbidden(
-          'Only coordinators and the uploader can delete an attachment.'
-        );
-      }
       await deleteAttachment(attachmentId, access.userId);
       return true;
     },

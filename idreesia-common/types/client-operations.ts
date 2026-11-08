@@ -313,11 +313,6 @@ export type MobileUpdateLoginTimeMutationVariables = Exact<{ [key: string]: neve
 
 export type MobileUpdateLoginTimeMutation = { updateLoginTime: number | null };
 
-export type MobileMyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type MobileMyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, description: string | null, features: Array<string | null> | null } | null> | null };
-
 export type MobileWorkspaceReactToDiscussionMessageMutationVariables = Exact<{
   committeeId: string;
   messageId: string;
@@ -434,6 +429,252 @@ export type MobileWorkspaceSendDiscussionMessageMutationVariables = Exact<{
 
 
 export type MobileWorkspaceSendDiscussionMessageMutation = { workspaceSendDiscussionMessage: boolean };
+
+export type MobileWorkspaceDocumentFolderFieldsFragment = { _id: string | null, name: string | null, parentId: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null };
+
+export type MobileWorkspaceDocumentFieldsFragment = { _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, note: string | null, isMine: boolean | null } | null };
+
+export type MobileWorkspaceDocumentsInfoQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDocumentsInfoQuery = { workspaceDocumentsInfo: { canManage: boolean | null, maxFileSize: number | null } | null };
+
+export type MobileWorkspaceDocumentFolderContentsQueryVariables = Exact<{
+  committeeId: string;
+  folderId?: string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspaceDocumentFolderContentsQuery = { workspaceDocumentFolderContents: { path: Array<{ _id: string | null, name: string | null, parentId: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null } | null> | null, folders: Array<{ _id: string | null, name: string | null, parentId: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null } | null> | null, documents: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, note: string | null, isMine: boolean | null } | null } | null> | null } | null } | null };
+
+export type MobileWorkspaceDocumentFoldersQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDocumentFoldersQuery = { workspaceDocumentFolders: Array<{ _id: string | null, name: string | null, parentId: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null } | null> | null };
+
+export type MobileWorkspaceDocumentSearchQueryVariables = Exact<{
+  committeeId: string;
+  text: string;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspaceDocumentSearchQuery = { workspaceDocumentSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, note: string | null, isMine: boolean | null } | null } | null> | null } | null };
+
+export type MobileWorkspaceDocumentByIdQueryVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type MobileWorkspaceDocumentByIdQuery = { workspaceDocumentById: { _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, note: string | null, isMine: boolean | null } | null } | null };
+
+export type MobileWorkspaceDocumentVersionsQueryVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type MobileWorkspaceDocumentVersionsQuery = { workspaceDocumentVersions: Array<{ _id: string | null, versionNumber: number | null, fileName: string | null, mimeType: string | null, size: number | null, comment: string | null, isCurrent: boolean | null, createdAt: string | null, createdByName: string | null } | null> | null };
+
+export type MobileWorkspaceDocumentActivityQueryVariables = Exact<{
+  committeeId: string;
+  documentId?: string | null | undefined;
+  before?: string | null | undefined;
+  limit?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspaceDocumentActivityQuery = { workspaceDocumentActivity: Array<{ _id: string | null, action: string | null, userName: string | null, at: string | null, details: string | null } | null> | null };
+
+export type MobileWorkspaceDocumentTrashQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDocumentTrashQuery = { workspaceDocumentTrash: { folders: Array<{ _id: string | null, name: string | null, parentId: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null } | null> | null, documents: Array<{ _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, note: string | null, isMine: boolean | null } | null } | null> | null } | null };
+
+export type MobileWorkspaceCreateDocumentFolderMutationVariables = Exact<{
+  committeeId: string;
+  parentId?: string | null | undefined;
+  name: string;
+}>;
+
+
+export type MobileWorkspaceCreateDocumentFolderMutation = { workspaceCreateDocumentFolder: boolean | null };
+
+export type MobileWorkspaceRenameDocumentFolderMutationVariables = Exact<{
+  committeeId: string;
+  folderId: string;
+  name: string;
+}>;
+
+
+export type MobileWorkspaceRenameDocumentFolderMutation = { workspaceRenameDocumentFolder: boolean | null };
+
+export type MobileWorkspaceMoveDocumentFolderMutationVariables = Exact<{
+  committeeId: string;
+  folderId: string;
+  parentId?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceMoveDocumentFolderMutation = { workspaceMoveDocumentFolder: boolean | null };
+
+export type MobileWorkspaceTrashDocumentFolderMutationVariables = Exact<{
+  committeeId: string;
+  folderId: string;
+}>;
+
+
+export type MobileWorkspaceTrashDocumentFolderMutation = { workspaceTrashDocumentFolder: boolean | null };
+
+export type MobileWorkspaceCreateDocumentUploadMutationVariables = Exact<{
+  committeeId: string;
+  folderId?: string | null | undefined;
+  documentId?: string | null | undefined;
+  fileName: string;
+  mimeType?: string | null | undefined;
+  size: number;
+  comment?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceCreateDocumentUploadMutation = { workspaceCreateDocumentUpload: { uploadId: string | null, url: string | null, contentType: string | null } | null };
+
+export type MobileWorkspaceCompleteDocumentUploadMutationVariables = Exact<{
+  committeeId: string;
+  uploadId: string;
+}>;
+
+
+export type MobileWorkspaceCompleteDocumentUploadMutation = { workspaceCompleteDocumentUpload: { _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, note: string | null, isMine: boolean | null } | null } | null };
+
+export type MobileWorkspaceAbortDocumentUploadMutationVariables = Exact<{
+  committeeId: string;
+  uploadId: string;
+}>;
+
+
+export type MobileWorkspaceAbortDocumentUploadMutation = { workspaceAbortDocumentUpload: boolean | null };
+
+export type MobileWorkspaceUpdateDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  name: string;
+  description?: string | null | undefined;
+  tags?: Array<string | null | undefined> | string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceUpdateDocumentMutation = { workspaceUpdateDocument: boolean | null };
+
+export type MobileWorkspaceMoveDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  folderId?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceMoveDocumentMutation = { workspaceMoveDocument: boolean | null };
+
+export type MobileWorkspaceTrashDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type MobileWorkspaceTrashDocumentMutation = { workspaceTrashDocument: boolean | null };
+
+export type MobileWorkspaceDocumentDownloadUrlMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  versionId?: string | null | undefined;
+  inline?: boolean | null | undefined;
+}>;
+
+
+export type MobileWorkspaceDocumentDownloadUrlMutation = { workspaceDocumentDownloadUrl: { url: string | null, fileName: string | null } | null };
+
+export type MobileWorkspaceRestoreDocumentVersionMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  versionId: string;
+}>;
+
+
+export type MobileWorkspaceRestoreDocumentVersionMutation = { workspaceRestoreDocumentVersion: boolean | null };
+
+export type MobileWorkspaceDeleteDocumentVersionMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  versionId: string;
+}>;
+
+
+export type MobileWorkspaceDeleteDocumentVersionMutation = { workspaceDeleteDocumentVersion: boolean | null };
+
+export type MobileWorkspaceCheckOutDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  note?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceCheckOutDocumentMutation = { workspaceCheckOutDocument: boolean | null };
+
+export type MobileWorkspaceCheckInDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type MobileWorkspaceCheckInDocumentMutation = { workspaceCheckInDocument: boolean | null };
+
+export type MobileWorkspaceForceUnlockDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type MobileWorkspaceForceUnlockDocumentMutation = { workspaceForceUnlockDocument: boolean | null };
+
+export type MobileWorkspaceRestoreDocumentTrashItemMutationVariables = Exact<{
+  committeeId: string;
+  itemId: string;
+  newName?: string | null | undefined;
+  toRoot?: boolean | null | undefined;
+}>;
+
+
+export type MobileWorkspaceRestoreDocumentTrashItemMutation = { workspaceRestoreDocumentTrashItem: boolean | null };
+
+export type MobileWorkspacePurgeDocumentTrashItemMutationVariables = Exact<{
+  committeeId: string;
+  itemId: string;
+}>;
+
+
+export type MobileWorkspacePurgeDocumentTrashItemMutation = { workspacePurgeDocumentTrashItem: boolean | null };
+
+export type MobileWorkspaceEmptyDocumentTrashMutationVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceEmptyDocumentTrashMutation = { workspaceEmptyDocumentTrash: number | null };
+
+export type MobileMyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileMyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, description: string | null, features: Array<string | null> | null } | null> | null };
 
 export type MobileWorkspaceCreateMeetingMutationVariables = Exact<{
   committeeId: string;
@@ -620,7 +861,7 @@ export type MobileWorkspaceCreateMeetingActionItemMutationVariables = Exact<{
 }>;
 
 
-export type MobileWorkspaceCreateMeetingActionItemMutation = { workspaceCreateMeetingActionItem: { _id: string | null, meetingId: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null } | null };
+export type MobileWorkspaceCreateMeetingActionItemMutation = { workspaceCreateMeetingActionItem: { _id: string | null, meetingId: string | null, meetingTitle: string | null, meetingEndsAt: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null } | null };
 
 export type MobileWorkspaceUpdateMeetingActionItemMutationVariables = Exact<{
   committeeId: string;
@@ -629,7 +870,7 @@ export type MobileWorkspaceUpdateMeetingActionItemMutationVariables = Exact<{
 }>;
 
 
-export type MobileWorkspaceUpdateMeetingActionItemMutation = { workspaceUpdateMeetingActionItem: { _id: string | null, meetingId: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null } | null };
+export type MobileWorkspaceUpdateMeetingActionItemMutation = { workspaceUpdateMeetingActionItem: { _id: string | null, meetingId: string | null, meetingTitle: string | null, meetingEndsAt: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null } | null };
 
 export type MobileWorkspaceSetMeetingActionItemStatusMutationVariables = Exact<{
   committeeId: string;
@@ -638,7 +879,7 @@ export type MobileWorkspaceSetMeetingActionItemStatusMutationVariables = Exact<{
 }>;
 
 
-export type MobileWorkspaceSetMeetingActionItemStatusMutation = { workspaceSetMeetingActionItemStatus: { _id: string | null, meetingId: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null } | null };
+export type MobileWorkspaceSetMeetingActionItemStatusMutation = { workspaceSetMeetingActionItemStatus: { _id: string | null, meetingId: string | null, meetingTitle: string | null, meetingEndsAt: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null } | null };
 
 export type MobileWorkspaceDeleteMeetingActionItemMutationVariables = Exact<{
   committeeId: string;
@@ -650,7 +891,7 @@ export type MobileWorkspaceDeleteMeetingActionItemMutation = { workspaceDeleteMe
 
 export type MobileWorkspaceMeetingFieldsFragment = { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null };
 
-export type MobileWorkspaceMeetingActionItemFieldsFragment = { _id: string | null, meetingId: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null };
+export type MobileWorkspaceMeetingActionItemFieldsFragment = { _id: string | null, meetingId: string | null, meetingTitle: string | null, meetingEndsAt: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null };
 
 export type MobileWorkspaceMeetingsInfoQueryVariables = Exact<{
   committeeId: string;
@@ -695,12 +936,14 @@ export type MobileWorkspaceMeetingAttachmentsQuery = { workspaceMeetingAttachmen
 export type MobileWorkspaceMeetingActionItemsQueryVariables = Exact<{
   committeeId: string;
   meetingId?: string | null | undefined;
+  assigneeId?: string | null | undefined;
+  status?: Array<string | null | undefined> | string | null | undefined;
   pageIndex?: number | null | undefined;
   pageSize?: number | null | undefined;
 }>;
 
 
-export type MobileWorkspaceMeetingActionItemsQuery = { workspaceMeetingActionItems: { totalResults: number | null, data: Array<{ _id: string | null, meetingId: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null } | null> | null } | null };
+export type MobileWorkspaceMeetingActionItemsQuery = { workspaceMeetingActionItems: { totalResults: number | null, data: Array<{ _id: string | null, meetingId: string | null, meetingTitle: string | null, meetingEndsAt: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null } | null> | null } | null };
 
 export type MobileWorkspaceMeetingActivityQueryVariables = Exact<{
   committeeId: string;

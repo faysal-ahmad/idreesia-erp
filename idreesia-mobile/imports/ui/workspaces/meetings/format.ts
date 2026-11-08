@@ -41,6 +41,18 @@ export const formatMeetingTime = (startsAt?: string | null, endsAt?: string | nu
   }`;
 };
 
+/** The same range on two lines: ["Sun 08-11-2026", "03:00 pm - 04:00 pm"]. */
+export const formatMeetingTimeLines = (startsAt?: string | null, endsAt?: string | null) => {
+  const start = toDate(startsAt);
+  const end = toDate(endsAt);
+  if (!start || !end) return [];
+  const day = `${WEEKDAYS[start.getDay()]} ${formatDay(start)}`;
+  if (start.toDateString() === end.toDateString()) {
+    return [day, `${formatTime(start)} - ${formatTime(end)}`];
+  }
+  return [`${day}, ${formatTime(start)}`, `to ${WEEKDAYS[end.getDay()]} ${formatDay(end)}, ${formatTime(end)}`];
+};
+
 export const hasStarted = (startsAt?: string | null) => Number(startsAt) <= Date.now();
 export const hasEnded = (endsAt?: string | null) => Number(endsAt) <= Date.now();
 
@@ -59,7 +71,7 @@ export const formatSize = (size?: number | null) => {
 
 type TagColor = 'default' | 'primary' | 'success' | 'warning' | 'danger';
 
-/** The status tag, with "In progress" / "Awaiting completion" for a scheduled meeting under way. */
+/** The status tag, with "In progress" / "Ended" by the meeting's times. */
 export const meetingStatus = (
   status?: string | null,
   startsAt?: string | null,
@@ -69,7 +81,7 @@ export const meetingStatus = (
   if (status === 'cancelled') return { label: 'Cancelled', color: 'default' };
   if (hasStarted(startsAt)) {
     return hasEnded(endsAt)
-      ? { label: 'Awaiting completion', color: 'warning' }
+      ? { label: 'Ended', color: 'default' }
       : { label: 'In progress', color: 'primary' };
   }
   return { label: 'Scheduled', color: 'primary' };

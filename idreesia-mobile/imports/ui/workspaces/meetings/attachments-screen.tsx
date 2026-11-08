@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { Dialog, ImageViewer, List, Popup, ProgressBar, SwipeAction, Toast } from 'antd-mobile';
-import { CloseOutline, FileOutline, UploadOutline } from 'antd-mobile-icons';
+import { Button, Dialog, ImageViewer, List, Popup, ProgressBar, SwipeAction } from 'antd-mobile';
+import { AudioOutline, CloseOutline, FileOutline, UploadOutline } from 'antd-mobile-icons';
 import { useApolloClient, useMutation, useQuery } from '@apollo/client/react';
 
-import { getErrorMessage } from '../../auth/accounts';
-import { PageEmpty, PageError, PageLoading } from '../../layout';
+import { useVoiceRecorder } from '../../components/message-composer/use-voice-recorder';
+import { showRecordingError } from '../../components/message-composer/show-recording-error';
+import { PageEmpty, PageError, PageLoading, showError, showSuccess } from '../../layout';
 import { formatDateTime, formatSize } from './format';
 import {
   MOBILE_MEETING_ABORT_ATTACHMENT_UPLOAD,
@@ -16,6 +17,16 @@ import {
   MOBILE_WORKSPACE_MEETING_BY_ID,
 } from './gql';
 import { MeetingPartPage, useMeetingPart } from './meeting-part';
+
+// A meeting can run long; recordings stop by themselves after this.
+const MAX_RECORDING_MS = 2 * 60 * 60 * 1000;
+
+const formatElapsed = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const rest = String(seconds % 60).padStart(2, '0');
+  return hours ? `${hours}:${String(minutes).padStart(2, '0')}:${rest}` : `${minutes}:${rest}`;
+};
 
 /** PUTs a file to a presigned storage URL, reporting progress (0-100). */
 const putFile = (url: string, file: File, contentType: string, onProgress: (percent: number) => void) =>
@@ -29,8 +40,9 @@ const putFile = (url: string, file: File, contentType: string, onProgress: (perc
     request.onload = () =>
       request.status >= 200 && request.status < 300
         ? resolve()
-        : reject(new Error(`Could not upload the file (${request.status}).`));
-    request.onerror = () => reject(new Error('Could not upload the file.'));
+        : reject(new Error(`The file storage refused the upload (error ${request.status}).`));
+    request.onerror = () =>
+      reject(new Error("The file couldn't reach storage. Check your internet connection and try again."));
     request.send(file);
   });
 
@@ -41,17 +53,20 @@ interface Preview {
 }
 
 /**
- * Files attached to a meeting. Any member can attach (from the phone's file
- * picker: photos, camera or files) and open them; coordinators and the
- * uploader can delete them.
+ * Files attached to a meeting. Coordinators attach (from the phone's file
+ * picker, or by recording audio); any member can open them; coordinators can
+ * delete them.
  */
 export const AttachmentsScreen = () => {
   const part = useMeetingPart();
-  const { committeeId, meetingId, maxFileSize, canChange } = part;
+  const { committeeId, meetingId, maxFileSize, canManage } = part;
+  const canChange = canManage && part.canChange;
   const client = useApolloClient();
   const fileInput = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState<{ name: string; percent: number } | null>(null);
   const [preview, setPreview] = useState<Preview | null>(null);
+  const [recorderOpen, setRecorderOpen] = useState(false);
+  const [starting, setStarting] = useState(false);
 
   const { data, loading, error, refetch } = useQuery(MOBILE_WORKSPACE_MEETING_ATTACHMENTS, {
     variables: { committeeId, meetingId },
@@ -80,7 +95,7 @@ export const AttachmentsScreen = () => {
 
   const uploadOne = async (file: File) => {
     if (maxFileSize && file.size > maxFileSize) {
-      throw new Error(`"${file.name}" is larger than the ${formatSize(maxFileSize)} limit.`);
+      throw new Error(`It is larger than the ${formatSize(maxFileSize)} limit.`);
     }
     const mimeType = file.type || 'application/octet-stream';
     const { data: started } = await createUpload({
@@ -100,11 +115,7 @@ export const AttachmentsScreen = () => {
     }
   };
 
-  const handleFiles = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const input = event.target;
-    const files = Array.from(input.files ?? []);
-    // Reset so picking the same file again fires a change.
-    input.value = '';
+  const uploadFiles = async (files: File[]) => {
     let uploaded = 0;
     for (const file of files) {
       setUploading({ name: file.name, percent: 0 });
@@ -112,14 +123,58 @@ export const AttachmentsScreen = () => {
         await uploadOne(file);
         uploaded += 1;
       } catch (uploadError) {
-        Toast.show({ icon: 'fail', content: getErrorMessage(uploadError, 'Could not upload the file.') });
+        showError(uploadError, file.name ? `Could not upload "${file.name}".` : 'Could not upload the file.');
       }
     }
     setUploading(null);
     if (uploaded) {
-      Toast.show({ icon: 'success', content: uploaded === 1 ? 'File attached.' : `${uploaded} files attached.` });
+      showSuccess(uploaded === 1 ? 'File attached.' : `${uploaded} files attached.`);
       await reload();
     }
+  };
+
+  const handleFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target;
+    const files = Array.from(input.files ?? []);
+    // Reset so picking the same file again fires a change.
+    input.value = '';
+    return uploadFiles(files);
+  };
+
+  // Stopping hands the recording over here; it is attached like any file.
+  const recorder = useVoiceRecorder(
+    ({ blob, fileName }) => {
+      setRecorderOpen(false);
+      const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+      const extension = fileName.split('.').pop();
+      const type = blob.type.split(';')[0] || 'audio/mp4';
+      uploadFiles([new File([blob], `Meeting recording ${stamp}.${extension}`, { type })]);
+    },
+    { maxDurationMs: MAX_RECORDING_MS },
+  );
+
+  const startRecording = async () => {
+    setStarting(true);
+    try {
+      await recorder.start();
+    } catch (recordError) {
+      showRecordingError(recordError);
+    } finally {
+      setStarting(false);
+    }
+  };
+
+  const closeRecorder = async () => {
+    if (recorder.recording) {
+      const confirmed = await Dialog.confirm({
+        content: 'Discard this recording?',
+        confirmText: <span className="meeting-danger-text">Discard</span>,
+        cancelText: 'Keep recording',
+      });
+      if (!confirmed) return;
+      recorder.cancel();
+    }
+    setRecorderOpen(false);
   };
 
   const open = async (attachment: (typeof attachments)[number]) => {
@@ -135,7 +190,7 @@ export const AttachmentsScreen = () => {
         isImage: (attachment.mimeType ?? '').startsWith('image/'),
       });
     } catch (openError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(openError, 'Could not open the file.') });
+      showError(openError, 'Could not open the file.');
     }
   };
 
@@ -148,10 +203,10 @@ export const AttachmentsScreen = () => {
     if (!confirmed) return;
     try {
       await deleteAttachment({ variables: { committeeId, attachmentId: attachment._id } });
-      Toast.show({ icon: 'success', content: 'Attachment deleted.' });
+      showSuccess('Attachment deleted.');
       await reload();
     } catch (deleteError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(deleteError, 'Could not delete the attachment.') });
+      showError(deleteError, 'Could not delete the attachment.');
     }
   };
 
@@ -205,10 +260,16 @@ export const AttachmentsScreen = () => {
   return (
     <MeetingPartPage
       part={part}
+      onRefresh={reload}
       title="Attachments"
       right={
         canChange ? (
           <div className="page-nav-actions">
+            <AudioOutline
+              aria-label="Record audio"
+              className="page-nav-action"
+              onClick={() => !uploading && setRecorderOpen(true)}
+            />
             <UploadOutline
               aria-label="Attach files"
               className="page-nav-action"
@@ -228,6 +289,34 @@ export const AttachmentsScreen = () => {
             </div>
           )}
           {renderList()}
+
+          <Popup
+            closeOnMaskClick={!recorder.recording}
+            position="bottom"
+            visible={recorderOpen}
+            onClose={closeRecorder}
+          >
+            <div className="meeting-recorder">
+              <div className="meeting-recorder-time">{formatElapsed(recorder.elapsedSeconds)}</div>
+              <div className="meeting-recorder-hint">
+                {recorder.recording
+                  ? 'Recording… keep the app open until you stop.'
+                  : 'Record and attach voice notes to the meeting.'}
+              </div>
+              {recorder.recording ? (
+                <Button block color="primary" onClick={() => recorder.stop()}>
+                  Stop and attach
+                </Button>
+              ) : (
+                <Button block color="primary" loading={starting} onClick={startRecording}>
+                  Start recording
+                </Button>
+              )}
+              <Button block fill="none" onClick={closeRecorder}>
+                {recorder.recording ? 'Discard' : 'Cancel'}
+              </Button>
+            </div>
+          </Popup>
 
           {preview?.isImage && (
             <ImageViewer image={preview.url} visible onClose={() => setPreview(null)} />

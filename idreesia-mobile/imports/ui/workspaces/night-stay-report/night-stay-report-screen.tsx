@@ -12,7 +12,6 @@ import {
   formatLongDate,
 } from '../../apps/security/visitors/format';
 import { PagedList } from '../../components';
-import { HomePaths } from '../../home/paths';
 import { usePagedQuery } from '../../hooks';
 import { Page } from '../../layout';
 import { useHistory, useParams } from '../../router';
@@ -47,7 +46,7 @@ export const NightStayReportScreen = () => {
   });
 
   return (
-    <Page backTo={HomePaths.home} title="Night Stay Report">
+    <Page backTo={WorkspacesPaths.root} title="Night Stay Report">
       <div className="list-toolbar night-stay-date-bar">
         <button
           aria-label="Previous night"

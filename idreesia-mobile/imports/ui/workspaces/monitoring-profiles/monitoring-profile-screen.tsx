@@ -1,12 +1,11 @@
 import React, { type ReactNode, useState } from 'react';
-import { ActionSheet, Button, Dialog, Form, ImageViewer, Input, Switch, Toast } from 'antd-mobile';
+import { ActionSheet, Button, Dialog, Form, ImageViewer, Input, Switch } from 'antd-mobile';
 import { AddOutline, CloseOutline, UserOutline } from 'antd-mobile-icons';
 import { useMutation, useQuery } from '@apollo/client/react';
 import type { MobileWorkspaceMonitoringProfileByIdQuery } from 'meteor/idreesia-common/types/client-operations';
 import { toDeviceUrl } from '/imports/startup/backend';
 
-import { getErrorMessage } from '../../auth/accounts';
-import { Page, PageEmpty, PageError, PageLoading } from '../../layout';
+import { Page, PageEmpty, PageError, PageLoading, showError, showSuccess } from '../../layout';
 import { useParams } from '../../router';
 import { capturePhoto, pickPhoto } from '../../utilities';
 import { WorkspacesPaths } from '../paths';
@@ -72,9 +71,9 @@ export const MonitoringProfileScreen = () => {
   const handleSave = async ({ name, isTest }: ProfileFormValues) => {
     try {
       await updateProfile({ variables: { committeeId, profileId, name: name.trim(), isTest } });
-      Toast.show({ icon: 'success', content: 'Profile saved.' });
+      showSuccess('Profile saved.');
     } catch (saveError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(saveError, 'Could not save the profile.') });
+      showError(saveError, 'Could not save the profile.');
     }
   };
 
@@ -83,7 +82,7 @@ export const MonitoringProfileScreen = () => {
     try {
       imageData = await getPhoto();
     } catch (photoError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(photoError, failure) });
+      showError(photoError, failure);
       return;
     }
     if (!imageData) return;
@@ -91,10 +90,10 @@ export const MonitoringProfileScreen = () => {
     setUploading(true);
     try {
       await addPhoto({ variables: { committeeId, profileId, imageData } });
-      Toast.show({ icon: 'success', content: 'Photo added.' });
+      showSuccess('Photo added.');
     } catch (uploadError) {
       // The server says why a photo is unusable ("The face is too small...").
-      Toast.show({ icon: 'fail', content: getErrorMessage(uploadError, 'Could not add the photo.') });
+      showError(uploadError, 'Could not add the photo.');
     } finally {
       setUploading(false);
     }
@@ -111,9 +110,9 @@ export const MonitoringProfileScreen = () => {
     setRemovingPhotoId(photo._id);
     try {
       await removePhoto({ variables: { committeeId, profileId, photoId: photo._id! } });
-      Toast.show({ icon: 'success', content: 'Photo removed.' });
+      showSuccess('Photo removed.');
     } catch (removeError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(removeError, 'Could not remove the photo.') });
+      showError(removeError, 'Could not remove the photo.');
     } finally {
       setRemovingPhotoId(null);
     }

@@ -20,7 +20,6 @@ interface FormValues {
   date: Dayjs;
   time: [Dayjs, Dayjs];
   location?: string;
-  onlineUrl?: string;
   description?: string;
   participantIds?: string[];
 }
@@ -36,12 +35,13 @@ const combine = (date: Dayjs, time: Dayjs) =>
       .valueOf()
   );
 
-const toDetails = (values: FormValues): MeetingDetails => ({
+const toDetails = (values: FormValues, meeting?: Meeting | null): MeetingDetails => ({
   title: values.title,
   startsAt: combine(values.date, values.time[0]),
   endsAt: combine(values.date, values.time[1]),
   location: values.location?.trim() || null,
-  onlineUrl: values.onlineUrl?.trim() || null,
+  // The form no longer edits the link; keep whatever an existing meeting has.
+  onlineUrl: meeting?.onlineUrl ?? null,
   description: values.description?.trim() || null,
 });
 
@@ -86,7 +86,6 @@ const MeetingFormModal = ({
         date: start,
         time: [start, dayjs(Number(meeting.endsAt))],
         location: meeting.location ?? undefined,
-        onlineUrl: meeting.onlineUrl ?? undefined,
         description: meeting.description ?? undefined,
       });
     } else {
@@ -105,7 +104,7 @@ const MeetingFormModal = ({
     const values = await form.validateFields();
     setSaving(true);
     try {
-      await onSubmit(toDetails(values), values.participantIds ?? []);
+      await onSubmit(toDetails(values, meeting), values.participantIds ?? []);
     } finally {
       setSaving(false);
     }
@@ -162,18 +161,6 @@ const MeetingFormModal = ({
         </Space>
         <Form.Item name="location" label="Location">
           <Input maxLength={1000} placeholder="Where it takes place" />
-        </Form.Item>
-        <Form.Item
-          name="onlineUrl"
-          label="Online meeting link"
-          rules={[
-            {
-              type: 'url',
-              message: 'Enter a full link, starting with https://',
-            },
-          ]}
-        >
-          <Input placeholder="https://" />
         </Form.Item>
         <Form.Item name="description" label="Description">
           <Input.TextArea rows={3} maxLength={10000} />

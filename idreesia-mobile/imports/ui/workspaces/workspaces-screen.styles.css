@@ -1,0 +1,17 @@
+/* Workspaces tab (imports/ui/workspaces/workspaces-screen.tsx) */
+
+.workspaces-empty-item .adm-list-item-content-main {
+  color: var(--app-color-text-secondary);
+  font-size: 0.8824rem; /* 15px */
+}
+
+/* A workspace's items (Members, Discussions), indented under its name so
+   their icons line up with the name's text. */
+.adm-list-item.workspaces-feature-item {
+  padding-left: 48px;
+  background: var(--app-color-surface-muted);
+}
+
+.workspaces-feature-item .list-icon {
+  font-size: 20px;
+}

@@ -5,12 +5,12 @@ import { backendUrl } from '/imports/startup/backend';
 import { AccountPaths, AccountScreen, ChangePasswordScreen } from './account';
 import { ForgotPasswordScreen, LoginScreen, RegisterScreen } from './auth/screens';
 import { ChatPaths, ChatScreen } from './chat';
-import { HomePaths, HomeStack } from './home';
+import { HomePaths, HomeScreen } from './home';
 import { useAuthState } from './hooks';
 import { AppTabBar, isTabRoot, NavigationTracker } from './layout';
 import { AppsPaths, ModulesScreen, renderModuleRoutes } from './apps';
 import { Redirect, Route, Switch, useLocation } from './router';
-import { WorkspacesPaths } from './workspaces';
+import { WorkspacesPaths, WorkspacesStack } from './workspaces';
 
 const SignedOutRoutes = () => (
   <Switch>
@@ -23,7 +23,7 @@ const SignedOutRoutes = () => (
   </Switch>
 );
 
-// Home tab (the default after signing in), Apps tab → module → feature
+// Home tab (the default after signing in), Workspaces tab, Apps tab → module → feature
 // (see imports/ui/apps), and the Account tab. The tab bar only shows on the tabs' root screens; drill-down screens
 // are full-screen with a back arrow.
 const SignedInRoutes = () => {
@@ -32,8 +32,9 @@ const SignedInRoutes = () => {
     <div className="signed-in">
       <div className="signed-in-content">
         <Switch>
-          {/* Home and the workspace screens opened from it (imports/ui/workspaces). */}
-          <Route path={[HomePaths.home, WorkspacesPaths.root]} component={HomeStack} />
+          <Route exact path={HomePaths.home} component={HomeScreen} />
+          {/* Workspaces tab and the workspace screens opened from it. */}
+          <Route path={WorkspacesPaths.root} component={WorkspacesStack} />
           <Route exact path={AppsPaths.apps} component={ModulesScreen} />
           <Route exact path={AccountPaths.account} component={AccountScreen} />
           <Route exact path={AccountPaths.changePassword} component={ChangePasswordScreen} />

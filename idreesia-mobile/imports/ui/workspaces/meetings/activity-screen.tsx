@@ -36,6 +36,13 @@ export const ActivityScreen = () => {
     (entry): entry is NonNullable<typeof entry> & { _id: string } => !!entry?._id,
   );
 
+  // Reload the newest entries and drop the older pages loaded after them.
+  const refresh = async () => {
+    setOlder([]);
+    setHasMore(true);
+    await refetch();
+  };
+
   const loadMore = async () => {
     const last = entries[entries.length - 1];
     if (!last?.at) return;
@@ -55,7 +62,7 @@ export const ActivityScreen = () => {
   };
 
   return (
-    <MeetingPartPage part={part} title="Activity">
+    <MeetingPartPage part={part} title="Activity" onRefresh={refresh}>
       {() => {
         if (loading && !data) return <PageLoading />;
         if (error && !data) return <PageError error={error} onRetry={() => refetch()} />;

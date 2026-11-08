@@ -1,4 +1,5 @@
 export { DiscussionFeature } from './discussions/discussion-feature';
+export { DocumentsFeature } from './documents/documents-feature';
 export { MembersScreen } from './members/members-screen';
 export { NightStayReportFeature } from './night-stay-report/night-stay-report-feature';
 export { WorkspacesPaths } from './paths';
@@ -6,3 +7,4 @@ export { MonitoringAlertsScreen } from './monitoring-alerts/monitoring-alerts-sc
 export { MonitoringProfilesFeature } from './monitoring-profiles/monitoring-profiles-feature';
 export { MeetingsFeature } from './meetings/meetings-feature';
 export { PollsFeature } from './polls/polls-feature';
+export { WorkspacesStack } from './workspaces-stack';

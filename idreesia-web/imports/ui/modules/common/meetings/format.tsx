@@ -66,7 +66,7 @@ export const MeetingStatusTag = ({
     return Number(endsAt) > now ? (
       <Tag color="processing">In progress</Tag>
     ) : (
-      <Tag color="orange">Awaiting completion</Tag>
+      <Tag>Ended</Tag>
     );
   }
   return <Tag color={STATUS_COLORS[status]}>{STATUS_LABELS[status]}</Tag>;

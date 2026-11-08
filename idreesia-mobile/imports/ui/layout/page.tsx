@@ -1,5 +1,5 @@
 import React, { type ReactNode, useLayoutEffect, useRef } from 'react';
-import { NavBar } from 'antd-mobile';
+import { NavBar, PullToRefresh } from 'antd-mobile';
 
 import { useNavigateBack } from './navigation';
 import { useSwipeBack } from './use-swipe-back';
@@ -15,6 +15,8 @@ interface Props {
   right?: ReactNode;
   /** Pinned to the bottom of the screen; for the page's primary action. */
   footer?: ReactNode;
+  /** Makes the body pull-to-refresh. Leave it out where a list inside does that itself. */
+  onRefresh?: () => Promise<unknown>;
   children: ReactNode;
 }
 
@@ -22,7 +24,7 @@ interface Props {
  * Shell for every signed-in screen: themed nav bar, scrolling body and an
  * optional pinned footer. See docs/mobile-ui-design-guidelines.md.
  */
-export const Page = ({ title, backTo, right, footer, children }: Props) => {
+export const Page = ({ title, backTo, right, footer, onRefresh, children }: Props) => {
   const navigateBack = useNavigateBack(backTo ?? '/');
   const pageRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -54,7 +56,15 @@ export const Page = ({ title, backTo, right, footer, children }: Props) => {
           {title}
         </NavBar>
       </header>
-      <main className="page-body">{children}</main>
+      <main className="page-body">
+        {onRefresh ? (
+          <PullToRefresh onRefresh={() => onRefresh().then(() => undefined, () => undefined)}>
+            {children}
+          </PullToRefresh>
+        ) : (
+          children
+        )}
+      </main>
       {footer && <div className="page-footer">{footer}</div>}
     </div>
   );

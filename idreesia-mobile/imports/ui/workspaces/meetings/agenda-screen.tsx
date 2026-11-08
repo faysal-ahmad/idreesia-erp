@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { ActionSheet, Button, Dialog, Form, Input, List, Picker, Popup, Stepper, TextArea, Toast } from 'antd-mobile';
+import { ActionSheet, Button, Dialog, Form, Input, List, Picker, Popup, Stepper, TextArea } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
 import { AddOutline, UnorderedListOutline } from 'antd-mobile-icons';
 import { useMutation } from '@apollo/client/react';
 
-import { getErrorMessage } from '../../auth/accounts';
-import { PageEmpty } from '../../layout';
+import { PageEmpty, showError, showSuccess } from '../../layout';
 import {
   MOBILE_MEETING_ADD_AGENDA_ITEM,
   MOBILE_MEETING_REMOVE_AGENDA_ITEM,
@@ -63,10 +62,10 @@ export const AgendaScreen = () => {
   const run = async (action: () => Promise<unknown>, success: string, failure: string) => {
     try {
       await action();
-      Toast.show({ icon: 'success', content: success });
+      showSuccess(success);
       return true;
     } catch (actionError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(actionError, failure) });
+      showError(actionError, failure);
       return false;
     }
   };

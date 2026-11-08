@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { ActionSheet, Button, DatePicker, Dialog, Form, Input, List, Picker, Popup, Tag, TextArea, Toast } from 'antd-mobile';
+import { ActionSheet, Button, DatePicker, Dialog, Form, Input, List, Picker, Popup, Tag, TextArea } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
 import { AddOutline, CheckCircleOutline } from 'antd-mobile-icons';
 import { useApolloClient, useMutation } from '@apollo/client/react';
 import type { MobileWorkspaceMeetingActionItemFieldsFragment } from 'meteor/idreesia-common/types/client-operations';
 
+import { showError, showSuccess } from '../../layout';
 import { PagedList } from '../../components';
-import { getErrorMessage } from '../../auth/accounts';
 import { usePagedQuery } from '../../hooks';
 import { ACTION_ITEM_COLORS, ACTION_ITEM_STATUS_LABELS, formatDate, formatDay, toDate } from './format';
 import {
@@ -94,11 +94,11 @@ export const ActionItemsScreen = () => {
   const run = async (action: () => Promise<unknown>, success: string, failure: string) => {
     try {
       await action();
-      Toast.show({ icon: 'success', content: success });
+      showSuccess(success);
       await reload();
       return true;
     } catch (actionError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(actionError, failure) });
+      showError(actionError, failure);
       return false;
     }
   };
@@ -184,6 +184,7 @@ export const ActionItemsScreen = () => {
   return (
     <MeetingPartPage
       part={part}
+      onRefresh={false}
       title="Action items"
       right={
         canEdit ? (

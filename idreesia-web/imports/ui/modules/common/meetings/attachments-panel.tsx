@@ -28,14 +28,14 @@ interface Uploading {
   percent: number;
 }
 
-/** Files attached to the meeting. Any member can attach and download. */
+/** Files attached to the meeting. Coordinators attach and delete; any member can download. */
 const AttachmentsPanel = ({
   provider,
   meeting,
   info,
   onMeetingChange,
 }: PanelProps) => {
-  const canChange = meeting.status !== 'cancelled';
+  const canChange = info.canManage && meeting.status !== 'cancelled';
   const [attachments, setAttachments] = useState<MeetingAttachment[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState<Uploading | null>(null);

@@ -1,7 +1,7 @@
 App.info({
-  id: 'org.idreesia.erp.mobile',
-  name: 'Idreesia Mobile',
-  description: 'Mobile client for Idreesia ERP',
+  id: 'com.easternbreeze.erp',
+  name: 'Eastern Breeze ERP',
+  description: 'Mobile client for Eastern Breeze ERP',
   author: 'Idreesia',
   email: 'support@idreesia.org',
   website: 'https://idreesia.org',
@@ -64,10 +64,10 @@ App.setPreference('AndroidWindowSplashScreenBackground', '#F1F6F5', 'android');
 // idreesia-webview-camera and requested by cordova-plugin-android-permissions.
 App.appendToConfig(`
   <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge">
-    <string>Idreesia uses the camera to take photos, such as a visitor's photo for searching or a photo you send in a message.</string>
+    <string>Eastern Breeze ERP uses the camera to take photos, such as a visitor's photo for searching or a photo you send in a message.</string>
   </edit-config>
   <edit-config target="NSMicrophoneUsageDescription" file="*-Info.plist" mode="merge">
-    <string>Idreesia uses the microphone to record voice notes you send in a message.</string>
+    <string>Eastern Breeze ERP uses the microphone to record voice notes and meeting audio.</string>
   </edit-config>
 `);
 
@@ -78,6 +78,6 @@ App.appendToConfig(`
 // Production builds use public URLs and never show the prompt.
 App.appendToConfig(`
   <edit-config target="NSLocalNetworkUsageDescription" file="*-Info.plist" mode="merge">
-    <string>During development, Idreesia connects to the developer's computer on your network to load app updates and data.</string>
+    <string>During development, Eastern Breeze ERP connects to the developer's computer on your network to load app updates and data.</string>
   </edit-config>
 `);

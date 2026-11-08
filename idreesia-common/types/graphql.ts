@@ -4275,6 +4275,7 @@ export type WorkspaceMeetingActionItemType = {
   createdByName?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   dueDate?: Maybe<Scalars['String']['output']>;
+  meetingEndsAt?: Maybe<Scalars['String']['output']>;
   meetingId?: Maybe<Scalars['String']['output']>;
   meetingTitle?: Maybe<Scalars['String']['output']>;
   status?: Maybe<Scalars['String']['output']>;

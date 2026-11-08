@@ -1,5 +1,5 @@
 import React, { type ReactNode, useState } from 'react';
-import { ActionSheet, Dialog, List, Selector, Tag, TextArea, Toast } from 'antd-mobile';
+import { ActionSheet, Dialog, List, Selector, Tag, TextArea } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
 import {
   CalendarOutline,
@@ -13,21 +13,20 @@ import {
 } from 'antd-mobile-icons';
 import { useApolloClient, useMutation } from '@apollo/client/react';
 
-import { getErrorMessage } from '../../auth/accounts';
-import { Page, PageEmpty, PageError, PageLoading } from '../../layout';
+import { Page, PageEmpty, PageError, PageLoading, showError, showSuccess } from '../../layout';
 import { useHistory, useParams } from '../../router';
 import { type MeetingPart, WorkspacesPaths } from '../paths';
-import { formatDateTime, formatMeetingTime, hasEnded, hasStarted, meetingStatus, RSVP_LABELS } from './format';
+import { formatDateTime, formatMeetingTimeLines, meetingStatus } from './format';
 import {
   MOBILE_CANCEL_MEETING,
-  MOBILE_COMPLETE_MEETING,
   MOBILE_DELETE_MEETING,
   MOBILE_MEETING_RESPOND,
   MOBILE_REOPEN_MEETING,
 } from './gql';
 import { useMeeting, useMeetingsInfo } from './use-meeting';
 
-const RSVP_CHOICES = ['accepted', 'tentative', 'declined'];
+const RSVP_CHOICES = ['accepted', 'declined', 'tentative'];
+const ATTENDING_LABELS: Record<string, string> = { accepted: 'Yes', declined: 'No', tentative: 'Maybe' };
 
 interface Props {
   meetingId: string;
@@ -48,14 +47,13 @@ export const MeetingScreen = ({ meetingId }: Props) => {
   const [busy, setBusy] = useState(false);
 
   const [respond] = useMutation(MOBILE_MEETING_RESPOND);
-  const [complete] = useMutation(MOBILE_COMPLETE_MEETING);
   const [cancel] = useMutation(MOBILE_CANCEL_MEETING);
   const [reopen] = useMutation(MOBILE_REOPEN_MEETING);
   const [remove] = useMutation(MOBILE_DELETE_MEETING);
 
   const listPath = WorkspacesPaths.committeeMeetings(committeeId);
   const page = (title: string, children: ReactNode, right?: ReactNode) => (
-    <Page backTo={listPath} right={right} title={title}>
+    <Page backTo={listPath} right={right} title={title} onRefresh={refetch}>
       {children}
     </Page>
   );
@@ -84,10 +82,10 @@ export const MeetingScreen = ({ meetingId }: Props) => {
     setBusy(true);
     try {
       await action();
-      Toast.show({ icon: 'success', content: success });
+      showSuccess(success);
       refreshList();
     } catch (actionError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(actionError, failure) });
+      showError(actionError, failure);
     } finally {
       setBusy(false);
     }
@@ -118,17 +116,6 @@ export const MeetingScreen = ({ meetingId }: Props) => {
     );
   };
 
-  const confirmComplete = async () => {
-    const confirmed = await Dialog.confirm({
-      content: "Mark this meeting completed? Its time and participants can't change afterwards, unless it's reopened.",
-      confirmText: 'Complete',
-      cancelText: 'Cancel',
-    });
-    if (confirmed) {
-      run(() => complete({ variables: { committeeId, meetingId } }), 'Meeting completed.', 'Could not complete the meeting.');
-    }
-  };
-
   const confirmDelete = async () => {
     const confirmed = await Dialog.confirm({
       content: 'Delete this meeting? Its agenda, minutes, attachments and action items are removed permanently.',
@@ -139,11 +126,11 @@ export const MeetingScreen = ({ meetingId }: Props) => {
     setBusy(true);
     try {
       await remove({ variables: { committeeId, meetingId } });
-      Toast.show({ icon: 'success', content: 'Meeting deleted.' });
+      showSuccess('Meeting deleted.');
       await refreshList();
       history.replace(listPath);
     } catch (deleteError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(deleteError, 'Could not delete the meeting.') });
+      showError(deleteError, 'Could not delete the meeting.');
       setBusy(false);
     }
   };
@@ -151,9 +138,6 @@ export const MeetingScreen = ({ meetingId }: Props) => {
   const actions: Action[] = [
     ...(meeting.status !== 'cancelled'
       ? [{ key: 'edit', text: 'Edit details', onClick: () => openPart('edit') }]
-      : []),
-    ...(isScheduled && hasStarted(meeting.startsAt)
-      ? [{ key: 'complete', text: 'Mark completed', onClick: confirmComplete }]
       : []),
     ...(isScheduled
       ? [{ key: 'cancel', text: 'Cancel meeting', onClick: confirmCancel }]
@@ -174,8 +158,12 @@ export const MeetingScreen = ({ meetingId }: Props) => {
   const accepted = participants.filter(participant => participant.rsvpStatus === 'accepted').length;
   const agendaMinutes = agenda.reduce((sum, item) => sum + (item.durationMinutes ?? 0), 0);
 
-  const fields: Array<{ label: string; value: ReactNode }> = [
-    { label: 'When', value: formatMeetingTime(meeting.startsAt, meeting.endsAt) },
+  const fields: Array<{ label?: string; value: ReactNode }> = [
+    {
+      value: formatMeetingTimeLines(meeting.startsAt, meeting.endsAt).map(line => (
+        <div key={line}>{line}</div>
+      )),
+    },
     ...(meeting.location ? [{ label: 'Location', value: meeting.location }] : []),
     ...(meeting.onlineUrl
       ? [
@@ -208,35 +196,30 @@ export const MeetingScreen = ({ meetingId }: Props) => {
             {meeting.cancellationReason ? `: ${meeting.cancellationReason}` : ''}
           </p>
         )}
-        {canManage && isScheduled && hasEnded(meeting.endsAt) && (
-          <p className="meeting-summary-note">
-            This meeting has ended. Record attendance and minutes, then mark it completed.
-          </p>
-        )}
       </section>
 
       <dl className="meeting-fields">
         {fields.map(field => (
-          <div key={field.label} className="meeting-field">
-            <dt>{field.label}</dt>
-            <dd>{field.value}</dd>
+          <div key={field.label ?? 'when'} className="meeting-field">
+            {field.label ? <dt>{field.label}</dt> : null}
+            <dd className={field.label ? undefined : 'meeting-field-full'}>{field.value}</dd>
           </div>
         ))}
       </dl>
 
       {me && isScheduled && (
         <section className="meeting-rsvp">
-          <h3 className="meeting-section-title">Your response</h3>
+          <h3 className="meeting-section-title">Attending</h3>
           <Selector
             columns={3}
             disabled={busy}
-            options={RSVP_CHOICES.map(choice => ({ value: choice, label: RSVP_LABELS[choice] }))}
+            options={RSVP_CHOICES.map(choice => ({ value: choice, label: ATTENDING_LABELS[choice] }))}
             value={me.rsvpStatus && me.rsvpStatus !== 'pending' ? [me.rsvpStatus] : []}
             onChange={([choice]) => {
               if (!choice || choice === me.rsvpStatus) return;
               run(
                 () => respond({ variables: { committeeId, meetingId, status: choice } }),
-                `Response saved: ${RSVP_LABELS[choice]}.`,
+                `Response saved: ${ATTENDING_LABELS[choice]}.`,
                 'Could not save your response.',
               );
             }}

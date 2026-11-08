@@ -1,11 +1,10 @@
 import React, { type ReactNode, useEffect, useMemo, useState } from 'react';
-import { ActionSheet, Button, DatePicker, Dialog, Form, Input, List, Switch, TextArea, Toast } from 'antd-mobile';
+import { ActionSheet, Button, DatePicker, Dialog, Form, Input, List, Switch, TextArea } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
 import { AddCircleOutline, PieOutline } from 'antd-mobile-icons';
 import { useApolloClient, useMutation } from '@apollo/client/react';
 
-import { getErrorMessage } from '../../auth/accounts';
-import { Page, PageEmpty, PageError, PageLoading, useNavigateBack } from '../../layout';
+import { Page, PageEmpty, PageError, PageLoading, useNavigateBack, showError, showSuccess } from '../../layout';
 import { useHistory, useParams } from '../../router';
 import { WorkspacesPaths } from '../paths';
 import { choiceHint, formatDay, formatTime, toDate } from './format';
@@ -140,12 +139,12 @@ export const PollFormScreen = () => {
     try {
       if (isEdit) {
         await updatePoll({ variables: { committeeId, pollId: pollId!, input } });
-        Toast.show({ icon: 'success', content: 'Poll saved.' });
+        showSuccess('Poll saved.');
         client.refetchQueries({ include: ['mobileWorkspacePolls'] });
         navigateBack();
       } else {
         const { data } = await createPoll({ variables: { committeeId, input } });
-        Toast.show({ icon: 'success', content: 'Poll saved as a draft.' });
+        showSuccess('Poll saved as a draft.');
         client.refetchQueries({ include: ['mobileWorkspacePolls'] });
         const newId = data?.workspaceCreatePoll?._id;
         // Open the new poll in place of the form, so back goes to the list.
@@ -153,7 +152,7 @@ export const PollFormScreen = () => {
         else navigateBack();
       }
     } catch (saveError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(saveError, 'Could not save the poll.') });
+      showError(saveError, 'Could not save the poll.');
     }
   };
 

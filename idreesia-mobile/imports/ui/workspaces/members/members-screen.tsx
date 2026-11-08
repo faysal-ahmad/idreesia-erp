@@ -4,7 +4,7 @@ import { Avatar, List, PullToRefresh, Tag } from 'antd-mobile';
 import { LockOutline } from 'antd-mobile-icons';
 import { toDeviceUrl } from '/imports/startup/backend';
 
-import { HomePaths } from '../../home/paths';
+import { WorkspacesPaths } from '../paths';
 import { Page, PageError, PageLoading, PageEmpty } from '../../layout';
 import { useParams } from '../../router';
 import { MOBILE_WORKSPACE_COMMITTEE_MEMBERS } from './gql';
@@ -98,7 +98,7 @@ export const MembersScreen = () => {
   }
 
   return (
-    <Page backTo={HomePaths.home} title="Members">
+    <Page backTo={WorkspacesPaths.root} title="Members">
       {content}
     </Page>
   );

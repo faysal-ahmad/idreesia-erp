@@ -3,7 +3,6 @@ import { List, Tabs, Tag } from 'antd-mobile';
 import { AddOutline, CalendarOutline } from 'antd-mobile-icons';
 
 import { PagedList } from '../../components';
-import { HomePaths } from '../../home/paths';
 import { usePagedQuery } from '../../hooks';
 import { Page } from '../../layout';
 import { useHistory, useParams } from '../../router';
@@ -40,7 +39,7 @@ export const MeetingsScreen = () => {
 
   return (
     <Page
-      backTo={HomePaths.home}
+      backTo={WorkspacesPaths.root}
       title="Meetings"
       right={
         canManage ? (

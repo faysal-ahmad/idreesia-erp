@@ -3,7 +3,6 @@ import { List, Tabs, Tag } from 'antd-mobile';
 import { AddOutline, PieOutline } from 'antd-mobile-icons';
 
 import { PagedList } from '../../components';
-import { HomePaths } from '../../home/paths';
 import { usePagedQuery } from '../../hooks';
 import { Page } from '../../layout';
 import { useHistory, useParams } from '../../router';
@@ -41,7 +40,7 @@ export const PollsScreen = () => {
 
   return (
     <Page
-      backTo={HomePaths.home}
+      backTo={WorkspacesPaths.root}
       title="Polls"
       right={
         canManage ? (

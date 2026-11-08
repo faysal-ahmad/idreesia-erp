@@ -198,3 +198,20 @@
   color: var(--app-color-text-secondary);
   font-size: 0.7647rem; /* 13px */
 }
+
+/* Shown when microphone access was refused (show-recording-error.tsx) */
+
+.microphone-help {
+  text-align: left;
+  font-size: 0.8824rem; /* 15px */
+  line-height: 1.5;
+}
+
+.microphone-help p {
+  margin: 0 0 8px;
+}
+
+.microphone-help ol {
+  margin: 0 0 8px;
+  padding-left: 22px;
+}

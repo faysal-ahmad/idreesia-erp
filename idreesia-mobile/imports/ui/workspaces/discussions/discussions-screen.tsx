@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActionSheet, Toast } from 'antd-mobile';
+import { ActionSheet } from 'antd-mobile';
 import { MoreOutline } from 'antd-mobile-icons';
 
 import { MessageComposer } from '../../components';
-import { HomePaths } from '../../home/paths';
-import { Page, PageError, PageLoading } from '../../layout';
+import { Page, PageError, PageLoading, showInfo } from '../../layout';
 import { useHistory } from '../../router';
 import { WorkspacesPaths } from '../paths';
 import { useDiscussionContext } from './discussion-context';
@@ -53,7 +52,7 @@ export const DiscussionsScreen = ({ active }: Props) => {
     ensureLoaded(messageId)
       .then(found => {
         if (!found) {
-          Toast.show({ content: 'That message is too far back to show here.' });
+          showInfo('That message is too far back to show here.');
           return;
         }
         // After the newly loaded messages have rendered.
@@ -106,7 +105,7 @@ export const DiscussionsScreen = ({ active }: Props) => {
 
   return (
     <Page
-      backTo={HomePaths.home}
+      backTo={WorkspacesPaths.root}
       footer={footer}
       right={<MoreOutline aria-label="More" className="discussion-nav-icon" onClick={() => setMenuOpen(true)} />}
       title={title ?? 'Discussions'}

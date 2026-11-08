@@ -18,7 +18,6 @@ import {
 } from 'antd';
 import {
   ArrowLeftOutlined,
-  CheckCircleOutlined,
   DeleteOutlined,
   EditOutlined,
   RollbackOutlined,
@@ -34,7 +33,6 @@ import AttachmentsPanel from './attachments-panel';
 import {
   formatDateTime,
   formatMeetingTime,
-  hasStarted,
   MeetingStatusTag,
   RSVP_LABELS,
 } from './format';
@@ -184,20 +182,6 @@ const MeetingDetail = ({ provider, meetingId, onBack }: Props) => {
           Edit
         </Button>
       ) : null}
-      {isScheduled && hasStarted(meeting.startsAt) ? (
-        <Popconfirm
-          title="Mark this meeting completed?"
-          description="Its time and participants can't change afterwards (unless reopened)."
-          okText="Complete"
-          onConfirm={() =>
-            run(() => provider.completeMeeting(meeting._id), 'Meeting completed')
-          }
-        >
-          <Button icon={<CheckCircleOutlined />} loading={busy}>
-            Complete
-          </Button>
-        </Popconfirm>
-      ) : null}
       {isScheduled ? (
         <Button
           icon={<StopOutlined />}
@@ -310,14 +294,6 @@ const MeetingDetail = ({ provider, meetingId, onBack }: Props) => {
           className="meeting-detail-alert"
           message={`Cancelled${meeting.cancelledByName ? ` by ${meeting.cancelledByName}` : ''} on ${formatDateTime(meeting.cancelledAt)}`}
           description={meeting.cancellationReason ?? undefined}
-        />
-      ) : null}
-      {canManage && isScheduled && Number(meeting.endsAt) < Date.now() ? (
-        <Alert
-          type="info"
-          showIcon
-          className="meeting-detail-alert"
-          message="This meeting has ended. Record attendance and minutes, then mark it completed."
         />
       ) : null}
 

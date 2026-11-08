@@ -2156,6 +2156,7 @@ export type WorkspaceMeetingActionItemTypeResolvers<ContextType = any, ParentTyp
   createdByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   dueDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  meetingEndsAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   meetingId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   meetingTitle?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;

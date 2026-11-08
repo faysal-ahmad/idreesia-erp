@@ -1,0 +1,36 @@
+/* CollapsibleSection (components/collapsible-section.tsx): a tappable banner heading above a card; it collapses to just the heading */
+.collapsible-section {
+  margin-bottom: 16px;
+}
+
+.collapsible-section-header {
+  display: flex;
+  width: calc(100% - 24px);
+  align-items: center;
+  gap: 8px;
+  margin: 0 12px 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--app-color-primary);
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-primary-light);
+  color: var(--app-color-primary);
+  font: inherit;
+  font-size: 0.9412rem; /* 16px */
+  font-weight: 600;
+  text-align: left;
+}
+
+.collapsible-section-title {
+  flex: 1;
+}
+
+.collapsible-section-count {
+  min-width: 22px;
+  padding: 0 7px;
+  border-radius: 11px;
+  background: var(--app-color-primary);
+  color: var(--app-color-on-primary);
+  font-size: 0.8235rem; /* 14px */
+  line-height: 22px;
+  text-align: center;
+}

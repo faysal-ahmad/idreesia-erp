@@ -130,7 +130,7 @@ body {
 
 /* PullToRefresh only reacts to drags that start inside it, and it is only as
    tall as its content. Stretch it to fill the screen so a short list (e.g.
-   Home with a few workspaces) can be pulled from the empty space below it. */
+   Workspaces with a few workspaces) can be pulled from the empty space below it. */
 .page-body:has(> .adm-pull-to-refresh) {
   display: flex;
   flex-direction: column;
@@ -188,6 +188,98 @@ body {
 
 .page-status .adm-error-block-content .adm-button {
   margin-top: 16px;
+}
+
+/* Toasts (layout/toast.tsx): a card under the nav bar, not antd-mobile's
+ * narrow centred box. Its inline `top` is overridden so the card always sits
+ * just below the nav bar (45px) and the safe area. */
+
+.app-toast {
+  --app-toast-accent: var(--app-color-primary);
+}
+
+.app-toast-success {
+  --app-toast-accent: var(--app-color-success);
+}
+
+.app-toast-error {
+  --app-toast-accent: var(--app-color-danger);
+}
+
+.app-toast-warning {
+  --app-toast-accent: var(--app-color-warning);
+}
+
+.app-toast .adm-toast-main.adm-toast-main-text {
+  top: calc(env(safe-area-inset-top) + 45px + 8px) !important;
+  width: calc(100% - 24px);
+  max-width: 480px;
+  max-height: 50%;
+  padding: 0;
+  transform: none;
+  border-radius: var(--app-radius-large);
+  background: none;
+  color: var(--app-color-text);
+  word-break: normal;
+  overflow-wrap: anywhere; /* only very long names/links break mid-word */
+  animation: app-toast-in 180ms ease-out;
+}
+
+.app-toast .adm-auto-center,
+.app-toast .adm-auto-center-content {
+  display: block;
+  width: 100%;
+}
+
+.app-toast-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--app-color-border);
+  border-left: 4px solid var(--app-toast-accent);
+  border-radius: var(--app-radius-large);
+  background: var(--app-color-surface);
+  box-shadow: var(--app-elevation);
+  text-align: left;
+}
+
+.app-toast-icon {
+  display: inline-flex;
+  flex: none;
+  margin-top: 1px;
+  color: var(--app-toast-accent);
+  font-size: 22px;
+}
+
+.app-toast-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-toast-title {
+  font-size: 0.8824rem; /* 15px */
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.app-toast-detail {
+  margin-top: 2px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+  line-height: 1.45;
+}
+
+@keyframes app-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Nav bar icon actions (Page `right`) */

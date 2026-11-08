@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { List, Tag, Toast } from 'antd-mobile';
+import { List, Tag } from 'antd-mobile';
 import { AddOutline, TeamOutline } from 'antd-mobile-icons';
 import { useMutation, useQuery } from '@apollo/client/react';
 
-import { getErrorMessage } from '../../auth/accounts';
-import { PageEmpty, PageError, PageLoading } from '../../layout';
+import { PageEmpty, PageError, PageLoading, showError, showSuccess } from '../../layout';
 import { MOBILE_ADD_POLL_VOTERS, MOBILE_WORKSPACE_POLL_VOTERS } from './gql';
 import { PollPartPage, usePollPart } from './poll-part';
 import { VoterPickerPopup } from './voter-picker-popup';
@@ -42,11 +41,11 @@ export const VotersScreen = () => {
     }
     try {
       await addVoters({ variables: { committeeId, pollId, voterIds: added } });
-      Toast.show({ icon: 'success', content: added.length === 1 ? 'Voter added.' : `${added.length} voters added.` });
+      showSuccess(added.length === 1 ? 'Voter added.' : `${added.length} voters added.`);
       setPickerOpen(false);
       refetch();
     } catch (addError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(addError, 'Could not add the voters.') });
+      showError(addError, 'Could not add the voters.');
     }
   };
 

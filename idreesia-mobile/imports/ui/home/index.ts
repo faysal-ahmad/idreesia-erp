@@ -1,2 +1,2 @@
-export { HomeStack } from './home-stack';
+export { HomeScreen } from './home-screen';
 export { HomePaths } from './paths';

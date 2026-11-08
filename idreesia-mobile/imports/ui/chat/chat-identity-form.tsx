@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, Toast } from 'antd-mobile';
+import { Button, Form, Input } from 'antd-mobile';
 
-import { getErrorMessage } from '../auth/accounts';
+import { showError } from '../layout';
 import { getOrCreateToken, saveIdentity, toE164, type ChatIdentity } from './chat-identity';
 import { registerVisitor } from './chat-api';
 
@@ -26,7 +26,7 @@ export const ChatIdentityForm = ({ onDone }: Props) => {
       await registerVisitor({ token: getOrCreateToken(), name, phone: mobileNumber });
       onDone(saveIdentity(name, mobileNumber));
     } catch (error) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(error, 'Could not start the chat.') });
+      showError(error, 'Could not start the chat.');
       setSubmitting(false);
     }
   };

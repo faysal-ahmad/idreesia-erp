@@ -116,12 +116,16 @@ export const MOBILE_WORKSPACE_MEETING_ACTION_ITEMS: TypedDocumentNode<
   query mobileWorkspaceMeetingActionItems(
     $committeeId: String!
     $meetingId: String
+    $assigneeId: String
+    $status: [String]
     $pageIndex: Int
     $pageSize: Int
   ) {
     workspaceMeetingActionItems(
       committeeId: $committeeId
       meetingId: $meetingId
+      assigneeId: $assigneeId
+      status: $status
       pageIndex: $pageIndex
       pageSize: $pageSize
     ) {

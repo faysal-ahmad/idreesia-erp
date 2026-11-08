@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { ActionSheet, Button, List, Tag, Toast } from 'antd-mobile';
+import { ActionSheet, Button, List, Tag } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
 import { EditSOutline, TeamOutline } from 'antd-mobile-icons';
 import { useMutation } from '@apollo/client/react';
 
-import { getErrorMessage } from '../../auth/accounts';
-import { PageEmpty } from '../../layout';
+import { PageEmpty, showError, showSuccess } from '../../layout';
 import { ATTENDANCE_LABELS, hasStarted, ROLE_LABELS, RSVP_COLORS, RSVP_LABELS } from './format';
 import {
   MOBILE_MEETING_MARK_ATTENDANCE,
@@ -34,10 +33,10 @@ export const ParticipantsScreen = () => {
   const run = async (action: () => Promise<unknown>, success: string, failure: string) => {
     try {
       await action();
-      Toast.show({ icon: 'success', content: success });
+      showSuccess(success);
       return true;
     } catch (actionError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(actionError, failure) });
+      showError(actionError, failure);
       return false;
     }
   };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Popup, TextArea, Toast } from 'antd-mobile';
+import { Button, Popup, TextArea } from 'antd-mobile';
 
-import { getErrorMessage } from '../../auth/accounts';
+import { showError } from '../../layout';
 
 interface Props {
   /** The text being edited; null hides the popup. */
@@ -31,7 +31,7 @@ export const EditMessagePopup = ({ initialText, onSave, onClose }: Props) => {
       await onSave(trimmed);
       onClose();
     } catch (error) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(error, 'Could not save the message.') });
+      showError(error, 'Could not save the message.');
     } finally {
       setSaving(false);
     }

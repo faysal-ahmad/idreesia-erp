@@ -5,7 +5,7 @@ import { toDeviceUrl } from '/imports/startup/backend';
 
 import { formatDateValue, formatLongDate } from '../../apps/security/visitors/format';
 import { PagedList } from '../../components';
-import { HomePaths } from '../../home/paths';
+import { WorkspacesPaths } from '../paths';
 import { usePagedQuery } from '../../hooks';
 import { Page } from '../../layout';
 import { useParams } from '../../router';
@@ -50,7 +50,7 @@ export const MonitoringAlertsScreen = () => {
   });
 
   return (
-    <Page backTo={HomePaths.home} title="Monitoring Alerts">
+    <Page backTo={WorkspacesPaths.root} title="Monitoring Alerts">
       <div className="list-toolbar monitoring-alerts-date-bar">
         <button
           aria-label="Previous day"

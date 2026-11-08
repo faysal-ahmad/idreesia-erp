@@ -42,6 +42,11 @@
 }
 
 .meeting-fields {
+  /* One label column as wide as the longest label shown (e.g. only "When"
+     and "Location"), shared by every row through subgrid. */
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 8px;
   margin: 0 12px;
   padding: 2px 14px;
   border-radius: var(--app-radius-medium);
@@ -50,8 +55,10 @@
 
 .meeting-field {
   display: grid;
-  grid-template-columns: 7.2em 1fr;
-  gap: 10px;
+  grid-column: 1 / -1;
+  grid-template-columns: 5.5em 1fr; /* fallback without subgrid */
+  grid-template-columns: subgrid;
+  gap: 8px;
   align-items: baseline;
   padding: 7px 0;
   border-bottom: 1px solid var(--app-color-border);
@@ -72,6 +79,11 @@
   margin: 0;
   overflow-wrap: anywhere;
   white-space: pre-line;
+}
+
+.meeting-field dd.meeting-field-full {
+  grid-column: 1 / -1;
+  font-weight: 500;
 }
 
 .meeting-rsvp {
@@ -199,4 +211,26 @@
   margin: 0 0 8px;
   color: var(--app-color-text-secondary);
   font-size: 0.7647rem; /* 13px */
+}
+
+/* Audio recorder sheet (attachments-screen.tsx) */
+
+.meeting-recorder {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 16px calc(12px + env(safe-area-inset-bottom));
+  text-align: center;
+}
+
+.meeting-recorder-time {
+  font-size: 2.2rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.meeting-recorder-hint {
+  margin-bottom: 6px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.8824rem; /* 15px */
 }

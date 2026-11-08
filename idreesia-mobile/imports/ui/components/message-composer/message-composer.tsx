@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { Avatar, Button, TextArea, type TextAreaRef, Toast } from 'antd-mobile';
+import { Avatar, Button, TextArea, type TextAreaRef } from 'antd-mobile';
 import { AudioOutline, CameraOutline, LeftOutline } from 'antd-mobile-icons';
 
-import { getErrorMessage } from '../../auth/accounts';
+import { showError, showInfo, showToast } from '../../layout';
 import { capturePhoto } from '../../utilities';
 import { AttachmentIcon, SendIcon } from './icons';
+import { showRecordingError } from './show-recording-error';
 import { useVoiceRecorder } from './use-voice-recorder';
 
 /** Someone who can be @mentioned. */
@@ -40,8 +41,7 @@ const dataUrlToBlob = async (dataUrl: string) => (await fetch(dataUrl)).blob();
 const formatElapsed = (seconds: number) =>
   `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 
-const showHoldHint = () =>
-  Toast.show({ content: 'Hold to record, release to send', position: 'bottom' });
+const showHoldHint = () => showInfo('Hold to record, release to send.');
 
 /**
  * Pinned under the thread: attach and the text box on the left; camera and a
@@ -69,7 +69,7 @@ export const MessageComposer = ({ onSendText, onSendFile, mentionCandidates, pla
       await action();
       return true;
     } catch (error) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(error, failure) });
+      showError(error, failure);
       return false;
     } finally {
       setSending(false);
@@ -106,9 +106,13 @@ export const MessageComposer = ({ onSendText, onSendFile, mentionCandidates, pla
 
     const tooLarge = files.filter(file => file.size > MAX_ATTACHMENT_BYTES);
     if (tooLarge.length > 0) {
-      Toast.show({
-        icon: 'fail',
-        content: `${tooLarge.map(file => file.name).join(', ')} is larger than 25 MB.`,
+      showToast({
+        kind: 'error',
+        title:
+          tooLarge.length === 1
+            ? `"${tooLarge[0].name}" is too large to send.`
+            : `${tooLarge.length} files are too large to send.`,
+        detail: 'Files can be at most 25 MB.',
       });
     }
     const toSend = files.filter(file => file.size <= MAX_ATTACHMENT_BYTES);
@@ -141,7 +145,7 @@ export const MessageComposer = ({ onSendText, onSendFile, mentionCandidates, pla
       if (!started && !cancelledBySlide.current) showHoldHint();
     } catch (error) {
       endPress();
-      Toast.show({ icon: 'fail', content: getErrorMessage(error, 'Could not start recording.') });
+      showRecordingError(error);
     }
   };
 

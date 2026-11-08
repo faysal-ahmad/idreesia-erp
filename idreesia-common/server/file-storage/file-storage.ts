@@ -11,6 +11,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 import { getFileStorageConfig } from './config';
 import { getInternalClient, getPublicClient } from './client';
+import { getRequestPublicEndpoint } from './request-host';
 
 // DeleteObjects accepts at most 1000 keys per request.
 const DELETE_BATCH_SIZE = 1000;
@@ -226,8 +227,8 @@ export async function copyFile(
  * otherwise straight from the bucket, in the same layout the SDK signs.
  */
 export function getPublicFileUrl(key: string): string {
-  const { cdnEndpoint, publicEndpoint, bucket, forcePathStyle } =
-    getFileStorageConfig();
+  const { cdnEndpoint, bucket, forcePathStyle } = getFileStorageConfig();
+  const publicEndpoint = getRequestPublicEndpoint();
   const path = key.split('/').map(encodeURIComponent).join('/');
 
   if (cdnEndpoint) {

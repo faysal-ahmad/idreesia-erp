@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Button, TextArea, Toast } from 'antd-mobile';
+import { Button, TextArea } from 'antd-mobile';
 import { EditSOutline } from 'antd-mobile-icons';
 import { useMutation } from '@apollo/client/react';
 
-import { getErrorMessage } from '../../auth/accounts';
-import { PageEmpty } from '../../layout';
+import { PageEmpty, showError, showSuccess } from '../../layout';
 import { formatDateTime } from './format';
 import { MOBILE_MEETING_SET_MINUTES } from './gql';
 import { MeetingPartPage, useMeetingPart } from './meeting-part';
@@ -26,9 +25,9 @@ export const MinutesScreen = () => {
   const save = async () => {
     try {
       await setMinutes({ variables: { committeeId, meetingId, text: text.trim() || null } });
-      Toast.show({ icon: 'success', content: 'Minutes saved.' });
+      showSuccess('Minutes saved.');
     } catch (saveError) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(saveError, 'Could not save the minutes.') });
+      showError(saveError, 'Could not save the minutes.');
     }
   };
 

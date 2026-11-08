@@ -16,6 +16,9 @@ export type MeetingPart =
   | 'action-items'
   | 'activity';
 
+/** The screens under one document. */
+export type DocumentPart = 'versions' | 'activity';
+
 export const WorkspacesPaths = {
   /** Every workspace screen is under this path. */
   root: ModulePaths.workspaces,
@@ -60,6 +63,26 @@ export const WorkspacesPaths = {
   committeePollPartPattern: (part: PollPart) => `${committee(':committeeId')}/polls/:pollId/${part}`,
   committeePollPart: (committeeId: string, pollId: string, part: PollPart) =>
     `${committee(committeeId)}/polls/${pollId}/${part}`,
+  /** Route pattern for a committee's documents (the top-level folder); their screens are under it. */
+  committeeDocumentsPattern: `${committee(':committeeId')}/documents`,
+  committeeDocuments: (committeeId: string) => `${committee(committeeId)}/documents`,
+  /** One folder of the documents. */
+  committeeDocumentFolderPattern: `${committee(':committeeId')}/documents/folders/:folderId`,
+  committeeDocumentFolder: (committeeId: string, folderId: string | null | undefined) =>
+    folderId
+      ? `${committee(committeeId)}/documents/folders/${folderId}`
+      : `${committee(committeeId)}/documents`,
+  committeeDocumentTrashPattern: `${committee(':committeeId')}/documents/trash`,
+  committeeDocumentTrash: (committeeId: string) => `${committee(committeeId)}/documents/trash`,
+  /** One document, and the screens for its parts under it. */
+  committeeDocumentPattern: `${committee(':committeeId')}/documents/files/:documentId`,
+  committeeDocument: (committeeId: string, documentId: string) =>
+    `${committee(committeeId)}/documents/files/${documentId}`,
+  /** `part`: versions or activity. */
+  committeeDocumentPartPattern: (part: DocumentPart) =>
+    `${committee(':committeeId')}/documents/files/:documentId/${part}`,
+  committeeDocumentPart: (committeeId: string, documentId: string, part: DocumentPart) =>
+    `${committee(committeeId)}/documents/files/${documentId}/${part}`,
   /** Route pattern for a committee's Night Stay Report. */
   committeeNightStayReportPattern: `${committee(':committeeId')}/night-stay-report`,
   committeeNightStayReport: (committeeId: string) => `${committee(committeeId)}/night-stay-report`,

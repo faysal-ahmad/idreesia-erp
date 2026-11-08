@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Button, List, Tag, Toast } from 'antd-mobile';
+import { Button, List, Tag } from 'antd-mobile';
 import { CameraOutline } from 'antd-mobile-icons';
 import { useApolloClient } from '@apollo/client/react';
 import { ImageVectorStatus } from 'meteor/idreesia-common/constants';
 
-import { getErrorMessage } from '../../../auth/accounts';
-import { Page, PageEmpty, PageError, PageLoading } from '../../../layout';
+import { Page, PageEmpty, PageError, PageLoading, showError } from '../../../layout';
 import { useHistory } from '../../../router';
 import { capturePhoto } from '../../../utilities';
 import { SecurityPaths } from '../paths';
@@ -84,7 +83,7 @@ export const PhotoSearchScreen = () => {
       const photo = await capturePhoto();
       if (photo) await search(photo);
     } catch (error) {
-      Toast.show({ icon: 'fail', content: getErrorMessage(error, 'Could not open the camera.') });
+      showError(error, 'Could not open the camera.');
     }
   };
 

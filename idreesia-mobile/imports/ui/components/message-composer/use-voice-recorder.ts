@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const MAX_DURATION_MS = 2 * 60 * 1000;
+const DEFAULT_MAX_DURATION_MS = 2 * 60 * 1000;
 
 // iOS WebKit records AAC in MP4; Chrome/Android record Opus in WebM.
 const MIME_CANDIDATES = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
@@ -42,6 +42,14 @@ const ensureMicrophonePermission = () =>
     );
   });
 
+/** Microphone access was refused; only the phone's settings can undo that. */
+export class MicrophoneBlockedError extends Error {
+  constructor() {
+    super('Microphone access is turned off for this app.');
+    this.name = 'MicrophoneBlockedError';
+  }
+}
+
 export interface VoiceRecording {
   blob: Blob;
   fileName: string;
@@ -50,13 +58,16 @@ export interface VoiceRecording {
 /**
  * Records a voice note with the microphone (getUserMedia + MediaRecorder).
  * `stop()` hands the recording to `onRecorded`; `cancel()` discards it.
- * Recording stops by itself after 2 minutes.
+ * Recording stops by itself after `maxDurationMs` (default 2 minutes).
  *
  * Built for press-and-hold: `stop()`/`cancel()` may arrive while `start()` is
  * still waiting for the microphone (e.g. the first-use permission prompt).
  * Such an early release discards the recording as soon as it begins.
  */
-export const useVoiceRecorder = (onRecorded: (recording: VoiceRecording) => void) => {
+export const useVoiceRecorder = (
+  onRecorded: (recording: VoiceRecording) => void,
+  { maxDurationMs = DEFAULT_MAX_DURATION_MS }: { maxDurationMs?: number } = {}
+) => {
   const [recording, setRecording] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
@@ -110,12 +121,17 @@ export const useVoiceRecorder = (onRecorded: (recording: VoiceRecording) => void
     let media: MediaStream;
     try {
       if (!(await ensureMicrophonePermission())) {
-        throw new Error('Microphone access is needed to record a voice note.');
+        throw new MicrophoneBlockedError();
       }
       try {
         media = await navigator.mediaDevices.getUserMedia({ audio: true });
-      } catch {
-        throw new Error('Microphone access is needed to record a voice note.');
+      } catch (error) {
+        // Once denied, iOS and Android never ask again; the user has to turn
+        // the permission back on in the system settings.
+        const name = (error as DOMException | undefined)?.name;
+        throw name === 'NotFoundError'
+          ? new Error('No microphone was found on this device.')
+          : new MicrophoneBlockedError();
       }
     } finally {
       starting.current = false;
@@ -148,7 +164,7 @@ export const useVoiceRecorder = (onRecorded: (recording: VoiceRecording) => void
     ticker.current = setInterval(() => {
       const elapsed = Date.now() - startedAt.current;
       setElapsedSeconds(Math.floor(elapsed / 1000));
-      if (elapsed >= MAX_DURATION_MS) stop();
+      if (elapsed >= maxDurationMs) stop();
     }, 250);
 
     // Let go before the microphone was ready: nothing worth sending.
@@ -158,7 +174,7 @@ export const useVoiceRecorder = (onRecorded: (recording: VoiceRecording) => void
       return false;
     }
     return true;
-  }, [releaseMicrophone, stop]);
+  }, [releaseMicrophone, stop, maxDurationMs]);
 
   // Never leave the microphone on after leaving the screen.
   useEffect(

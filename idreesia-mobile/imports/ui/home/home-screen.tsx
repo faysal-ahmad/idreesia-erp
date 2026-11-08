@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useQuery } from '@apollo/client/react';
 import { List, PullToRefresh } from 'antd-mobile';
 import {
+  CalendarOutline,
   DownOutline,
   ExclamationShieldOutline,
   FolderOutline,
   MessageOutline,
+  PieOutline,
   TeamOutline,
   UpOutline,
   UserContactOutline,
@@ -48,6 +50,26 @@ const getWorkspaceItems = (
           title: 'Discussions',
           icon: <MessageOutline />,
           path: WorkspacesPaths.committeeDiscussions(committeeId),
+        },
+      ]
+    : []),
+  ...(features?.includes(CommitteeFeatureKeys.MEETINGS)
+    ? [
+        {
+          key: 'meetings',
+          title: 'Meetings',
+          icon: <CalendarOutline />,
+          path: WorkspacesPaths.committeeMeetings(committeeId),
+        },
+      ]
+    : []),
+  ...(features?.includes(CommitteeFeatureKeys.POLLS)
+    ? [
+        {
+          key: 'polls',
+          title: 'Polls',
+          icon: <PieOutline />,
+          path: WorkspacesPaths.committeePolls(committeeId),
         },
       ]
     : []),

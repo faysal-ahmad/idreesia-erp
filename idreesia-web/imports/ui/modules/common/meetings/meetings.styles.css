@@ -1,0 +1,106 @@
+/* Workspaces → Meetings (common/meetings) */
+
+.meetings-board .list-table-header .ant-segmented {
+  background: #f3f4f6;
+}
+
+/* Month calendar: each day lists its meetings. */
+.meetings-calendar .meetings-calendar-day {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.meetings-calendar .meetings-calendar-item {
+  display: block;
+  width: 100%;
+  margin-bottom: 2px;
+  padding: 1px 6px;
+  overflow: hidden;
+  border: 0;
+  border-left: 3px solid #1570ef;
+  border-radius: 4px;
+  background: #eff8ff;
+  color: #344054;
+  font-size: 12px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.meetings-calendar .meetings-calendar-item:hover {
+  background: #d1e9ff;
+}
+
+.meetings-calendar .meetings-calendar-item-completed {
+  border-left-color: #079455;
+  background: #ecfdf3;
+}
+
+.meetings-calendar .meetings-calendar-item-cancelled {
+  border-left-color: #98a2b3;
+  background: #f9fafb;
+  color: #98a2b3;
+  text-decoration: line-through;
+}
+
+.meetings-calendar .meetings-calendar-time {
+  color: #667085;
+}
+
+/* Meeting page */
+.meeting-detail .meeting-detail-back {
+  padding-left: 0;
+}
+
+.meeting-detail .meeting-detail-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.meeting-detail .meeting-detail-alert {
+  margin-bottom: 12px;
+}
+
+.meeting-detail .meeting-detail-info .ant-descriptions-item-label {
+  width: 120px;
+  background: #f3f4f6;
+  color: #344054;
+}
+
+.meeting-detail .meeting-detail-rsvp {
+  margin-top: 12px;
+}
+
+.meeting-detail .ant-tabs {
+  margin-top: 8px;
+}
+
+.meeting-detail .meeting-pre-wrap {
+  white-space: pre-wrap;
+}
+
+.meeting-minutes .meeting-minutes-text {
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  background: #f9fafb;
+  white-space: pre-wrap;
+}
+
+.meeting-minutes .meeting-minutes-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.meeting-activity {
+  padding-top: 8px;
+}

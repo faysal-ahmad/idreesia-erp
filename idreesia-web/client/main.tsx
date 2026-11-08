@@ -38,6 +38,9 @@ import '../imports/ui/modules/admin/deleted-people/relation-counts-table.styles.
 import '../imports/ui/modules/admin/jobs/list/jobs-list.styles.css';
 import '../imports/ui/modules/correspondence/inbox/inbox.styles.css';
 import '../imports/ui/modules/common/discussions/discussion.styles.css';
+import '../imports/ui/modules/common/documents/document-library.styles.css';
+import '../imports/ui/modules/common/meetings/meetings.styles.css';
+import '../imports/ui/modules/common/polls/polls.styles.css';
 
 import App from '../imports/ui/app';
 import { AntdFeedbackBridge } from '../imports/ui/antd-feedback';

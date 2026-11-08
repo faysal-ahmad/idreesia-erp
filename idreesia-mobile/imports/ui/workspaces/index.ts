@@ -4,3 +4,5 @@ export { NightStayReportFeature } from './night-stay-report/night-stay-report-fe
 export { WorkspacesPaths } from './paths';
 export { MonitoringAlertsScreen } from './monitoring-alerts/monitoring-alerts-screen';
 export { MonitoringProfilesFeature } from './monitoring-profiles/monitoring-profiles-feature';
+export { MeetingsFeature } from './meetings/meetings-feature';
+export { PollsFeature } from './polls/polls-feature';

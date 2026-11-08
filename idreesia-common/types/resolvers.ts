@@ -160,10 +160,14 @@ export type ResolversTypes = ResolversObject<{
   PagedUserType: ResolverTypeWrapper<Types.PagedUserType>;
   PagedVisitorStayType: ResolverTypeWrapper<Types.PagedVisitorStayType>;
   PagedVisitorType: ResolverTypeWrapper<Types.PagedVisitorType>;
+  PagedWorkspaceDocumentType: ResolverTypeWrapper<Types.PagedWorkspaceDocumentType>;
   PagedWorkspaceKarkunType: ResolverTypeWrapper<Types.PagedWorkspaceKarkunType>;
+  PagedWorkspaceMeetingActionItemType: ResolverTypeWrapper<Types.PagedWorkspaceMeetingActionItemType>;
+  PagedWorkspaceMeetingType: ResolverTypeWrapper<Types.PagedWorkspaceMeetingType>;
   PagedWorkspaceMonitoringAlertType: ResolverTypeWrapper<Types.PagedWorkspaceMonitoringAlertType>;
   PagedWorkspaceMonitoringProfileType: ResolverTypeWrapper<Types.PagedWorkspaceMonitoringProfileType>;
   PagedWorkspaceNightStayType: ResolverTypeWrapper<Types.PagedWorkspaceNightStayType>;
+  PagedWorkspacePollType: ResolverTypeWrapper<Types.PagedWorkspacePollType>;
   PeopleTagType: ResolverTypeWrapper<Types.PeopleTagType>;
   Permission: Types.Permission;
   PersonEmployeeDataType: ResolverTypeWrapper<Types.PersonEmployeeDataType>;
@@ -217,11 +221,50 @@ export type ResolversTypes = ResolversObject<{
   VisitorStayType: ResolverTypeWrapper<Types.VisitorStayType>;
   WorkspaceCommitteeMemberType: ResolverTypeWrapper<Types.WorkspaceCommitteeMemberType>;
   WorkspaceCommitteeType: ResolverTypeWrapper<Types.WorkspaceCommitteeType>;
+  WorkspaceDocumentActivityType: ResolverTypeWrapper<Types.WorkspaceDocumentActivityType>;
+  WorkspaceDocumentDownloadType: ResolverTypeWrapper<Types.WorkspaceDocumentDownloadType>;
+  WorkspaceDocumentFolderContentsType: ResolverTypeWrapper<Types.WorkspaceDocumentFolderContentsType>;
+  WorkspaceDocumentFolderType: ResolverTypeWrapper<Types.WorkspaceDocumentFolderType>;
+  WorkspaceDocumentLockType: ResolverTypeWrapper<Types.WorkspaceDocumentLockType>;
+  WorkspaceDocumentTrashType: ResolverTypeWrapper<Types.WorkspaceDocumentTrashType>;
+  WorkspaceDocumentType: ResolverTypeWrapper<Types.WorkspaceDocumentType>;
+  WorkspaceDocumentUploadType: ResolverTypeWrapper<Types.WorkspaceDocumentUploadType>;
+  WorkspaceDocumentVersionType: ResolverTypeWrapper<Types.WorkspaceDocumentVersionType>;
+  WorkspaceDocumentsInfoType: ResolverTypeWrapper<Types.WorkspaceDocumentsInfoType>;
   WorkspaceKarkunType: ResolverTypeWrapper<Types.WorkspaceKarkunType>;
+  WorkspaceMeetingActionItemInput: Types.WorkspaceMeetingActionItemInput;
+  WorkspaceMeetingActionItemType: ResolverTypeWrapper<Types.WorkspaceMeetingActionItemType>;
+  WorkspaceMeetingActivityType: ResolverTypeWrapper<Types.WorkspaceMeetingActivityType>;
+  WorkspaceMeetingAgendaItemInput: Types.WorkspaceMeetingAgendaItemInput;
+  WorkspaceMeetingAgendaItemType: ResolverTypeWrapper<Types.WorkspaceMeetingAgendaItemType>;
+  WorkspaceMeetingAttachmentType: ResolverTypeWrapper<Types.WorkspaceMeetingAttachmentType>;
+  WorkspaceMeetingAttendanceInput: Types.WorkspaceMeetingAttendanceInput;
+  WorkspaceMeetingDownloadType: ResolverTypeWrapper<Types.WorkspaceMeetingDownloadType>;
+  WorkspaceMeetingInput: Types.WorkspaceMeetingInput;
+  WorkspaceMeetingMemberType: ResolverTypeWrapper<Types.WorkspaceMeetingMemberType>;
+  WorkspaceMeetingParticipantType: ResolverTypeWrapper<Types.WorkspaceMeetingParticipantType>;
+  WorkspaceMeetingType: ResolverTypeWrapper<Types.WorkspaceMeetingType>;
+  WorkspaceMeetingUploadType: ResolverTypeWrapper<Types.WorkspaceMeetingUploadType>;
+  WorkspaceMeetingsInfoType: ResolverTypeWrapper<Types.WorkspaceMeetingsInfoType>;
   WorkspaceMonitoringAlertType: ResolverTypeWrapper<Types.WorkspaceMonitoringAlertType>;
   WorkspaceMonitoringProfilePhotoType: ResolverTypeWrapper<Types.WorkspaceMonitoringProfilePhotoType>;
   WorkspaceMonitoringProfileType: ResolverTypeWrapper<Types.WorkspaceMonitoringProfileType>;
   WorkspaceNightStayType: ResolverTypeWrapper<Types.WorkspaceNightStayType>;
+  WorkspacePollActivityType: ResolverTypeWrapper<Types.WorkspacePollActivityType>;
+  WorkspacePollAnswerInput: Types.WorkspacePollAnswerInput;
+  WorkspacePollAnswerType: ResolverTypeWrapper<Types.WorkspacePollAnswerType>;
+  WorkspacePollInput: Types.WorkspacePollInput;
+  WorkspacePollMemberType: ResolverTypeWrapper<Types.WorkspacePollMemberType>;
+  WorkspacePollOptionInput: Types.WorkspacePollOptionInput;
+  WorkspacePollOptionResultType: ResolverTypeWrapper<Types.WorkspacePollOptionResultType>;
+  WorkspacePollOptionType: ResolverTypeWrapper<Types.WorkspacePollOptionType>;
+  WorkspacePollQuestionInput: Types.WorkspacePollQuestionInput;
+  WorkspacePollQuestionResultType: ResolverTypeWrapper<Types.WorkspacePollQuestionResultType>;
+  WorkspacePollQuestionType: ResolverTypeWrapper<Types.WorkspacePollQuestionType>;
+  WorkspacePollResultsType: ResolverTypeWrapper<Types.WorkspacePollResultsType>;
+  WorkspacePollType: ResolverTypeWrapper<Types.WorkspacePollType>;
+  WorkspacePollVoterType: ResolverTypeWrapper<Types.WorkspacePollVoterType>;
+  WorkspacePollsInfoType: ResolverTypeWrapper<Types.WorkspacePollsInfoType>;
   WorkspaceStayHistoryItemType: ResolverTypeWrapper<Types.WorkspaceStayHistoryItemType>;
 }>;
 
@@ -311,10 +354,14 @@ export type ResolversParentTypes = ResolversObject<{
   PagedUserType: Types.PagedUserType;
   PagedVisitorStayType: Types.PagedVisitorStayType;
   PagedVisitorType: Types.PagedVisitorType;
+  PagedWorkspaceDocumentType: Types.PagedWorkspaceDocumentType;
   PagedWorkspaceKarkunType: Types.PagedWorkspaceKarkunType;
+  PagedWorkspaceMeetingActionItemType: Types.PagedWorkspaceMeetingActionItemType;
+  PagedWorkspaceMeetingType: Types.PagedWorkspaceMeetingType;
   PagedWorkspaceMonitoringAlertType: Types.PagedWorkspaceMonitoringAlertType;
   PagedWorkspaceMonitoringProfileType: Types.PagedWorkspaceMonitoringProfileType;
   PagedWorkspaceNightStayType: Types.PagedWorkspaceNightStayType;
+  PagedWorkspacePollType: Types.PagedWorkspacePollType;
   PeopleTagType: Types.PeopleTagType;
   PersonEmployeeDataType: Types.PersonEmployeeDataType;
   PersonFilter: Types.PersonFilter;
@@ -367,11 +414,50 @@ export type ResolversParentTypes = ResolversObject<{
   VisitorStayType: Types.VisitorStayType;
   WorkspaceCommitteeMemberType: Types.WorkspaceCommitteeMemberType;
   WorkspaceCommitteeType: Types.WorkspaceCommitteeType;
+  WorkspaceDocumentActivityType: Types.WorkspaceDocumentActivityType;
+  WorkspaceDocumentDownloadType: Types.WorkspaceDocumentDownloadType;
+  WorkspaceDocumentFolderContentsType: Types.WorkspaceDocumentFolderContentsType;
+  WorkspaceDocumentFolderType: Types.WorkspaceDocumentFolderType;
+  WorkspaceDocumentLockType: Types.WorkspaceDocumentLockType;
+  WorkspaceDocumentTrashType: Types.WorkspaceDocumentTrashType;
+  WorkspaceDocumentType: Types.WorkspaceDocumentType;
+  WorkspaceDocumentUploadType: Types.WorkspaceDocumentUploadType;
+  WorkspaceDocumentVersionType: Types.WorkspaceDocumentVersionType;
+  WorkspaceDocumentsInfoType: Types.WorkspaceDocumentsInfoType;
   WorkspaceKarkunType: Types.WorkspaceKarkunType;
+  WorkspaceMeetingActionItemInput: Types.WorkspaceMeetingActionItemInput;
+  WorkspaceMeetingActionItemType: Types.WorkspaceMeetingActionItemType;
+  WorkspaceMeetingActivityType: Types.WorkspaceMeetingActivityType;
+  WorkspaceMeetingAgendaItemInput: Types.WorkspaceMeetingAgendaItemInput;
+  WorkspaceMeetingAgendaItemType: Types.WorkspaceMeetingAgendaItemType;
+  WorkspaceMeetingAttachmentType: Types.WorkspaceMeetingAttachmentType;
+  WorkspaceMeetingAttendanceInput: Types.WorkspaceMeetingAttendanceInput;
+  WorkspaceMeetingDownloadType: Types.WorkspaceMeetingDownloadType;
+  WorkspaceMeetingInput: Types.WorkspaceMeetingInput;
+  WorkspaceMeetingMemberType: Types.WorkspaceMeetingMemberType;
+  WorkspaceMeetingParticipantType: Types.WorkspaceMeetingParticipantType;
+  WorkspaceMeetingType: Types.WorkspaceMeetingType;
+  WorkspaceMeetingUploadType: Types.WorkspaceMeetingUploadType;
+  WorkspaceMeetingsInfoType: Types.WorkspaceMeetingsInfoType;
   WorkspaceMonitoringAlertType: Types.WorkspaceMonitoringAlertType;
   WorkspaceMonitoringProfilePhotoType: Types.WorkspaceMonitoringProfilePhotoType;
   WorkspaceMonitoringProfileType: Types.WorkspaceMonitoringProfileType;
   WorkspaceNightStayType: Types.WorkspaceNightStayType;
+  WorkspacePollActivityType: Types.WorkspacePollActivityType;
+  WorkspacePollAnswerInput: Types.WorkspacePollAnswerInput;
+  WorkspacePollAnswerType: Types.WorkspacePollAnswerType;
+  WorkspacePollInput: Types.WorkspacePollInput;
+  WorkspacePollMemberType: Types.WorkspacePollMemberType;
+  WorkspacePollOptionInput: Types.WorkspacePollOptionInput;
+  WorkspacePollOptionResultType: Types.WorkspacePollOptionResultType;
+  WorkspacePollOptionType: Types.WorkspacePollOptionType;
+  WorkspacePollQuestionInput: Types.WorkspacePollQuestionInput;
+  WorkspacePollQuestionResultType: Types.WorkspacePollQuestionResultType;
+  WorkspacePollQuestionType: Types.WorkspacePollQuestionType;
+  WorkspacePollResultsType: Types.WorkspacePollResultsType;
+  WorkspacePollType: Types.WorkspacePollType;
+  WorkspacePollVoterType: Types.WorkspacePollVoterType;
+  WorkspacePollsInfoType: Types.WorkspacePollsInfoType;
   WorkspaceStayHistoryItemType: Types.WorkspaceStayHistoryItemType;
 }>;
 
@@ -1086,15 +1172,68 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateVisitorStay?: Resolver<Types.Maybe<ResolversTypes['VisitorStayType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateVisitorStayArgs, '_id' | 'fromDate' | 'toDate'>>;
   updateWorkspaceMonitoringProfile?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMonitoringProfileType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateWorkspaceMonitoringProfileArgs, 'committeeId' | 'isTest' | 'name' | 'profileId'>>;
   verifyStockItemLevel?: Resolver<Types.Maybe<ResolversTypes['StockItem']>, ParentType, ContextType, RequireFields<Types.MutationVerifyStockItemLevelArgs, '_id' | 'physicalStoreId'>>;
+  workspaceAbortDocumentUpload?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAbortDocumentUploadArgs, 'committeeId' | 'uploadId'>>;
+  workspaceAbortMeetingAttachmentUpload?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAbortMeetingAttachmentUploadArgs, 'committeeId' | 'uploadId'>>;
   workspaceAddCommitteeMember?: Resolver<Types.Maybe<ResolversTypes['WorkspaceCommitteeType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAddCommitteeMemberArgs, 'committeeId' | 'karkunId'>>;
+  workspaceAddMeetingAgendaItem?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAddMeetingAgendaItemArgs, 'committeeId' | 'input' | 'meetingId'>>;
+  workspaceAddPollVoters?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAddPollVotersArgs, 'committeeId' | 'pollId' | 'voterIds'>>;
+  workspaceCancelMeeting?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCancelMeetingArgs, 'committeeId' | 'meetingId'>>;
+  workspaceCancelPoll?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCancelPollArgs, 'committeeId' | 'pollId'>>;
+  workspaceCastPollVote?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCastPollVoteArgs, 'answers' | 'committeeId' | 'pollId'>>;
+  workspaceCheckInDocument?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCheckInDocumentArgs, 'committeeId' | 'documentId'>>;
+  workspaceCheckOutDocument?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCheckOutDocumentArgs, 'committeeId' | 'documentId'>>;
+  workspaceClosePoll?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceClosePollArgs, 'committeeId' | 'pollId'>>;
+  workspaceCompleteDocumentUpload?: Resolver<Types.Maybe<ResolversTypes['WorkspaceDocumentType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCompleteDocumentUploadArgs, 'committeeId' | 'uploadId'>>;
+  workspaceCompleteMeeting?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCompleteMeetingArgs, 'committeeId' | 'meetingId'>>;
+  workspaceCompleteMeetingAttachmentUpload?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingAttachmentType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCompleteMeetingAttachmentUploadArgs, 'committeeId' | 'uploadId'>>;
+  workspaceCreateDocumentFolder?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCreateDocumentFolderArgs, 'committeeId' | 'name'>>;
+  workspaceCreateDocumentUpload?: Resolver<Types.Maybe<ResolversTypes['WorkspaceDocumentUploadType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCreateDocumentUploadArgs, 'committeeId' | 'fileName' | 'size'>>;
+  workspaceCreateMeeting?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCreateMeetingArgs, 'committeeId' | 'input'>>;
+  workspaceCreateMeetingActionItem?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingActionItemType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCreateMeetingActionItemArgs, 'committeeId' | 'input' | 'meetingId'>>;
+  workspaceCreateMeetingAttachmentUpload?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingUploadType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCreateMeetingAttachmentUploadArgs, 'committeeId' | 'fileName' | 'meetingId' | 'size'>>;
+  workspaceCreatePoll?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCreatePollArgs, 'committeeId' | 'input'>>;
   workspaceDeleteDiscussionMessage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationWorkspaceDeleteDiscussionMessageArgs, 'committeeId' | 'messageId'>>;
+  workspaceDeleteDocumentVersion?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceDeleteDocumentVersionArgs, 'committeeId' | 'documentId' | 'versionId'>>;
+  workspaceDeleteMeeting?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceDeleteMeetingArgs, 'committeeId' | 'meetingId'>>;
+  workspaceDeleteMeetingActionItem?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceDeleteMeetingActionItemArgs, 'actionItemId' | 'committeeId'>>;
+  workspaceDeleteMeetingAttachment?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceDeleteMeetingAttachmentArgs, 'attachmentId' | 'committeeId'>>;
+  workspaceDeletePoll?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceDeletePollArgs, 'committeeId' | 'pollId'>>;
+  workspaceDocumentDownloadUrl?: Resolver<Types.Maybe<ResolversTypes['WorkspaceDocumentDownloadType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceDocumentDownloadUrlArgs, 'committeeId' | 'documentId'>>;
   workspaceEditDiscussionMessage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationWorkspaceEditDiscussionMessageArgs, 'committeeId' | 'messageId' | 'text'>>;
+  workspaceEmptyDocumentTrash?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceEmptyDocumentTrashArgs, 'committeeId'>>;
+  workspaceForceUnlockDocument?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceForceUnlockDocumentArgs, 'committeeId' | 'documentId'>>;
+  workspaceMarkMeetingAttendance?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceMarkMeetingAttendanceArgs, 'committeeId' | 'entries' | 'meetingId'>>;
+  workspaceMeetingAttachmentDownloadUrl?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingDownloadType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceMeetingAttachmentDownloadUrlArgs, 'attachmentId' | 'committeeId'>>;
+  workspaceMoveDocument?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceMoveDocumentArgs, 'committeeId' | 'documentId'>>;
+  workspaceMoveDocumentFolder?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceMoveDocumentFolderArgs, 'committeeId' | 'folderId'>>;
+  workspaceOpenPoll?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceOpenPollArgs, 'committeeId' | 'pollId'>>;
+  workspacePurgeDocumentTrashItem?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspacePurgeDocumentTrashItemArgs, 'committeeId' | 'itemId'>>;
   workspaceReactToDiscussionMessage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationWorkspaceReactToDiscussionMessageArgs, 'committeeId' | 'emoji' | 'messageId' | 'shouldReact'>>;
   workspaceRemoveCommitteeMember?: Resolver<Types.Maybe<ResolversTypes['WorkspaceCommitteeType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceRemoveCommitteeMemberArgs, 'committeeId' | 'karkunId'>>;
+  workspaceRemoveMeetingAgendaItem?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceRemoveMeetingAgendaItemArgs, 'agendaItemId' | 'committeeId' | 'meetingId'>>;
+  workspaceRenameDocumentFolder?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceRenameDocumentFolderArgs, 'committeeId' | 'folderId' | 'name'>>;
+  workspaceReopenMeeting?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceReopenMeetingArgs, 'committeeId' | 'meetingId'>>;
+  workspaceReopenPoll?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceReopenPollArgs, 'closesAt' | 'committeeId' | 'pollId'>>;
+  workspaceReorderMeetingAgenda?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceReorderMeetingAgendaArgs, 'agendaItemIds' | 'committeeId' | 'meetingId'>>;
+  workspaceRespondToMeeting?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceRespondToMeetingArgs, 'committeeId' | 'meetingId' | 'status'>>;
+  workspaceRestoreDocumentTrashItem?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceRestoreDocumentTrashItemArgs, 'committeeId' | 'itemId'>>;
+  workspaceRestoreDocumentVersion?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceRestoreDocumentVersionArgs, 'committeeId' | 'documentId' | 'versionId'>>;
   workspaceSendDiscussionMessage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationWorkspaceSendDiscussionMessageArgs, 'committeeId' | 'text'>>;
   workspaceSetCommitteeMemberDiscussionAccess?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceSetCommitteeMemberDiscussionAccessArgs, 'committeeId' | 'hasAccess' | 'karkunId'>>;
   workspaceSetDiscussionMessagePinned?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationWorkspaceSetDiscussionMessagePinnedArgs, 'committeeId' | 'messageId' | 'pinned'>>;
   workspaceSetDiscussionMessageStarred?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationWorkspaceSetDiscussionMessageStarredArgs, 'committeeId' | 'messageId' | 'starred'>>;
+  workspaceSetMeetingActionItemStatus?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingActionItemType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceSetMeetingActionItemStatusArgs, 'actionItemId' | 'committeeId' | 'status'>>;
+  workspaceSetMeetingMinutes?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceSetMeetingMinutesArgs, 'committeeId' | 'meetingId'>>;
+  workspaceSetMeetingParticipantRole?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceSetMeetingParticipantRoleArgs, 'committeeId' | 'meetingId' | 'participantId' | 'role'>>;
+  workspaceSetMeetingParticipants?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceSetMeetingParticipantsArgs, 'committeeId' | 'meetingId' | 'participantIds'>>;
+  workspaceTrashDocument?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceTrashDocumentArgs, 'committeeId' | 'documentId'>>;
+  workspaceTrashDocumentFolder?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceTrashDocumentFolderArgs, 'committeeId' | 'folderId'>>;
+  workspaceUpdateDocument?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceUpdateDocumentArgs, 'committeeId' | 'documentId' | 'name'>>;
+  workspaceUpdateMeeting?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceUpdateMeetingArgs, 'committeeId' | 'input' | 'meetingId'>>;
+  workspaceUpdateMeetingActionItem?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingActionItemType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceUpdateMeetingActionItemArgs, 'actionItemId' | 'committeeId' | 'input'>>;
+  workspaceUpdateMeetingAgendaItem?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceUpdateMeetingAgendaItemArgs, 'agendaItemId' | 'committeeId' | 'input' | 'meetingId'>>;
+  workspaceUpdatePoll?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceUpdatePollArgs, 'committeeId' | 'input' | 'pollId'>>;
+  workspaceWithdrawPollVote?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceWithdrawPollVoteArgs, 'committeeId' | 'pollId'>>;
 }>;
 
 export type PagedAuditLogTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedAuditLogType'] = ResolversParentTypes['PagedAuditLogType']> = ResolversObject<{
@@ -1197,8 +1336,23 @@ export type PagedVisitorTypeResolvers<ContextType = any, ParentType extends Reso
   totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
+export type PagedWorkspaceDocumentTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedWorkspaceDocumentType'] = ResolversParentTypes['PagedWorkspaceDocumentType']> = ResolversObject<{
+  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceDocumentType']>>>, ParentType, ContextType>;
+  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
 export type PagedWorkspaceKarkunTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedWorkspaceKarkunType'] = ResolversParentTypes['PagedWorkspaceKarkunType']> = ResolversObject<{
   data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceKarkunType']>>>, ParentType, ContextType>;
+  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type PagedWorkspaceMeetingActionItemTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedWorkspaceMeetingActionItemType'] = ResolversParentTypes['PagedWorkspaceMeetingActionItemType']> = ResolversObject<{
+  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceMeetingActionItemType']>>>, ParentType, ContextType>;
+  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type PagedWorkspaceMeetingTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedWorkspaceMeetingType'] = ResolversParentTypes['PagedWorkspaceMeetingType']> = ResolversObject<{
+  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>>>, ParentType, ContextType>;
   totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
@@ -1214,6 +1368,11 @@ export type PagedWorkspaceMonitoringProfileTypeResolvers<ContextType = any, Pare
 
 export type PagedWorkspaceNightStayTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedWorkspaceNightStayType'] = ResolversParentTypes['PagedWorkspaceNightStayType']> = ResolversObject<{
   data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceNightStayType']>>>, ParentType, ContextType>;
+  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type PagedWorkspacePollTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedWorkspacePollType'] = ResolversParentTypes['PagedWorkspacePollType']> = ResolversObject<{
+  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollType']>>>, ParentType, ContextType>;
   totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
@@ -1489,11 +1648,33 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   workspaceDiscussionStarredMessages?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DiscussionMessageType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDiscussionStarredMessagesArgs, 'committeeId'>>;
   workspaceDiscussionSync?: Resolver<Types.Maybe<ResolversTypes['DiscussionSyncType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDiscussionSyncArgs, 'committeeId'>>;
   workspaceDiscussionThreadMessages?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DiscussionMessageType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDiscussionThreadMessagesArgs, 'committeeId' | 'threadId'>>;
+  workspaceDocumentActivity?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceDocumentActivityType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDocumentActivityArgs, 'committeeId'>>;
+  workspaceDocumentById?: Resolver<Types.Maybe<ResolversTypes['WorkspaceDocumentType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDocumentByIdArgs, 'committeeId' | 'documentId'>>;
+  workspaceDocumentFolderContents?: Resolver<Types.Maybe<ResolversTypes['WorkspaceDocumentFolderContentsType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDocumentFolderContentsArgs, 'committeeId'>>;
+  workspaceDocumentFolders?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceDocumentFolderType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDocumentFoldersArgs, 'committeeId'>>;
+  workspaceDocumentSearch?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceDocumentType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDocumentSearchArgs, 'committeeId' | 'text'>>;
+  workspaceDocumentTrash?: Resolver<Types.Maybe<ResolversTypes['WorkspaceDocumentTrashType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDocumentTrashArgs, 'committeeId'>>;
+  workspaceDocumentVersions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceDocumentVersionType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDocumentVersionsArgs, 'committeeId' | 'documentId'>>;
+  workspaceDocumentsInfo?: Resolver<Types.Maybe<ResolversTypes['WorkspaceDocumentsInfoType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDocumentsInfoArgs, 'committeeId'>>;
+  workspaceMeetingActionItems?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceMeetingActionItemType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingActionItemsArgs, 'committeeId'>>;
+  workspaceMeetingActivity?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceMeetingActivityType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingActivityArgs, 'committeeId'>>;
+  workspaceMeetingAttachments?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceMeetingAttachmentType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingAttachmentsArgs, 'committeeId' | 'meetingId'>>;
+  workspaceMeetingById?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingByIdArgs, 'committeeId' | 'meetingId'>>;
+  workspaceMeetingMembers?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceMeetingMemberType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingMembersArgs, 'committeeId'>>;
+  workspaceMeetings?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingsArgs, 'committeeId'>>;
+  workspaceMeetingsInfo?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingsInfoType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingsInfoArgs, 'committeeId'>>;
   workspaceMonitoringAlerts?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceMonitoringAlertType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMonitoringAlertsArgs, 'committeeId' | 'date'>>;
   workspaceMonitoringProfileById?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMonitoringProfileType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMonitoringProfileByIdArgs, 'committeeId' | 'profileId'>>;
   workspaceMonitoringProfiles?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceMonitoringProfileType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMonitoringProfilesArgs, 'committeeId'>>;
   workspaceNightStayById?: Resolver<Types.Maybe<ResolversTypes['WorkspaceNightStayType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceNightStayByIdArgs, 'committeeId' | 'stayId'>>;
   workspaceNightStays?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceNightStayType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceNightStaysArgs, 'committeeId' | 'stayDate'>>;
+  workspacePollActivity?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollActivityType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollActivityArgs, 'committeeId'>>;
+  workspacePollById?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollByIdArgs, 'committeeId' | 'pollId'>>;
+  workspacePollMembers?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollMemberType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollMembersArgs, 'committeeId'>>;
+  workspacePollResults?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollResultsType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollResultsArgs, 'committeeId' | 'pollId'>>;
+  workspacePollVoters?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollVoterType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollVotersArgs, 'committeeId' | 'pollId'>>;
+  workspacePolls?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspacePollType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollsArgs, 'committeeId'>>;
+  workspacePollsInfo?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollsInfoType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollsInfoArgs, 'committeeId'>>;
 }>;
 
 export type SalaryTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SalaryType'] = ResolversParentTypes['SalaryType']> = ResolversObject<{
@@ -1861,6 +2042,98 @@ export type WorkspaceCommitteeTypeResolvers<ContextType = any, ParentType extend
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
+export type WorkspaceDocumentActivityTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceDocumentActivityType'] = ResolversParentTypes['WorkspaceDocumentActivityType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  action?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  at?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  details?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  documentId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  entityId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  entityType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceDocumentDownloadTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceDocumentDownloadType'] = ResolversParentTypes['WorkspaceDocumentDownloadType']> = ResolversObject<{
+  fileName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceDocumentFolderContentsTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceDocumentFolderContentsType'] = ResolversParentTypes['WorkspaceDocumentFolderContentsType']> = ResolversObject<{
+  documents?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceDocumentType']>, ParentType, ContextType>;
+  folders?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceDocumentFolderType']>>>, ParentType, ContextType>;
+  path?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceDocumentFolderType']>>>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceDocumentFolderTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceDocumentFolderType'] = ResolversParentTypes['WorkspaceDocumentFolderType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  deletedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  deletedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  parentId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceDocumentLockTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceDocumentLockType'] = ResolversParentTypes['WorkspaceDocumentLockType']> = ResolversObject<{
+  expiresAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  isMine?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  lockedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  note?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceDocumentTrashTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceDocumentTrashType'] = ResolversParentTypes['WorkspaceDocumentTrashType']> = ResolversObject<{
+  documents?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceDocumentType']>>>, ParentType, ContextType>;
+  folders?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceDocumentFolderType']>>>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceDocumentTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceDocumentType'] = ResolversParentTypes['WorkspaceDocumentType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  currentVersionNumber?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  deletedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  deletedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  fileName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  folderId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  folderName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lock?: Resolver<Types.Maybe<ResolversTypes['WorkspaceDocumentLockType']>, ParentType, ContextType>;
+  mimeType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  size?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  tags?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceDocumentUploadTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceDocumentUploadType'] = ResolversParentTypes['WorkspaceDocumentUploadType']> = ResolversObject<{
+  contentType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  documentId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  expiresAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  uploadId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceDocumentVersionTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceDocumentVersionType'] = ResolversParentTypes['WorkspaceDocumentVersionType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  comment?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  fileName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  isCurrent?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  mimeType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  size?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  versionNumber?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceDocumentsInfoTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceDocumentsInfoType'] = ResolversParentTypes['WorkspaceDocumentsInfoType']> = ResolversObject<{
+  canManage?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  maxFileSize?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+}>;
+
 export type WorkspaceKarkunTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceKarkunType'] = ResolversParentTypes['WorkspaceKarkunType']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cnicNumber?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1869,6 +2142,124 @@ export type WorkspaceKarkunTypeResolvers<ContextType = any, ParentType extends R
   imageUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   parentName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceMeetingActionItemTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingActionItemType'] = ResolversParentTypes['WorkspaceMeetingActionItemType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  agendaItemId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  assigneeId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  assigneeName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  canChangeStatus?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  completedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  completedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  dueDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  meetingId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  meetingTitle?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceMeetingActivityTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingActivityType'] = ResolversParentTypes['WorkspaceMeetingActivityType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  action?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  at?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  details?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  entityId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  entityType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  meetingId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceMeetingAgendaItemTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingAgendaItemType'] = ResolversParentTypes['WorkspaceMeetingAgendaItemType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  durationMinutes?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  presenterId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  presenterName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceMeetingAttachmentTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingAttachmentType'] = ResolversParentTypes['WorkspaceMeetingAttachmentType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  canDelete?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  fileName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  mimeType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  size?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceMeetingDownloadTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingDownloadType'] = ResolversParentTypes['WorkspaceMeetingDownloadType']> = ResolversObject<{
+  fileName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceMeetingMemberTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingMemberType'] = ResolversParentTypes['WorkspaceMeetingMemberType']> = ResolversObject<{
+  isCoordinator?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  participantId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceMeetingParticipantTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingParticipantType'] = ResolversParentTypes['WorkspaceMeetingParticipantType']> = ResolversObject<{
+  attendanceMarkedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  attendanceMarkedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  attendanceNote?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  attendanceStatus?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  isMe?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  participantId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  role?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  rsvpComment?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  rsvpRespondedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  rsvpStatus?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceMeetingTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingType'] = ResolversParentTypes['WorkspaceMeetingType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  agenda?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceMeetingAgendaItemType']>>>, ParentType, ContextType>;
+  attachmentCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  cancellationReason?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cancelledAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cancelledByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  completedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  completedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  endsAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  location?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  minutes?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  minutesUpdatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  minutesUpdatedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  myRsvpStatus?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  onlineUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  openActionItemCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  participants?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceMeetingParticipantType']>>>, ParentType, ContextType>;
+  startsAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  timeZone?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceMeetingUploadTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingUploadType'] = ResolversParentTypes['WorkspaceMeetingUploadType']> = ResolversObject<{
+  contentType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  expiresAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  uploadId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceMeetingsInfoTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingsInfoType'] = ResolversParentTypes['WorkspaceMeetingsInfoType']> = ResolversObject<{
+  canManage?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  maxFileSize?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  myParticipantId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  timeZone?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type WorkspaceMonitoringAlertTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMonitoringAlertType'] = ResolversParentTypes['WorkspaceMonitoringAlertType']> = ResolversObject<{
@@ -1911,6 +2302,111 @@ export type WorkspaceNightStayTypeResolvers<ContextType = any, ParentType extend
   visitorImageThumbnailUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   visitorImageUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   visitorName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspacePollActivityTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollActivityType'] = ResolversParentTypes['WorkspacePollActivityType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  action?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  at?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  details?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  entityId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  entityType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  pollId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspacePollAnswerTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollAnswerType'] = ResolversParentTypes['WorkspacePollAnswerType']> = ResolversObject<{
+  optionIds?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  questionId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspacePollMemberTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollMemberType'] = ResolversParentTypes['WorkspacePollMemberType']> = ResolversObject<{
+  isCoordinator?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  voterId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspacePollOptionResultTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollOptionResultType'] = ResolversParentTypes['WorkspacePollOptionResultType']> = ResolversObject<{
+  count?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  optionId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  percentage?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  text?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  voters?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollVoterType']>>>, ParentType, ContextType>;
+}>;
+
+export type WorkspacePollOptionTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollOptionType'] = ResolversParentTypes['WorkspacePollOptionType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  text?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspacePollQuestionResultTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollQuestionResultType'] = ResolversParentTypes['WorkspacePollQuestionResultType']> = ResolversObject<{
+  answeredCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  options?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollOptionResultType']>>>, ParentType, ContextType>;
+  questionId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  text?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspacePollQuestionTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollQuestionType'] = ResolversParentTypes['WorkspacePollQuestionType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  maxChoices?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minChoices?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  options?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollOptionType']>>>, ParentType, ContextType>;
+  required?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  text?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspacePollResultsTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollResultsType'] = ResolversParentTypes['WorkspacePollResultsType']> = ResolversObject<{
+  anonymous?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  closedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  eligibleCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  nonVoters?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollVoterType']>>>, ParentType, ContextType>;
+  pollId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  questions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollQuestionResultType']>>>, ParentType, ContextType>;
+  status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  totalVoters?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  turnout?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+}>;
+
+export type WorkspacePollTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollType'] = ResolversParentTypes['WorkspacePollType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  anonymous?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  canSeeResults?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  cancellationReason?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cancelledAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cancelledByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  closedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  closedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  closesAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  eligibleCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  eligibleVoterIds?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  hasVoted?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isEligible?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  myAnswers?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollAnswerType']>>>, ParentType, ContextType>;
+  openedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  questions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollQuestionType']>>>, ParentType, ContextType>;
+  showResultsWhileOpen?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  voteCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type WorkspacePollVoterTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollVoterType'] = ResolversParentTypes['WorkspacePollVoterType']> = ResolversObject<{
+  hasVoted?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  voterId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type WorkspacePollsInfoTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollsInfoType'] = ResolversParentTypes['WorkspacePollsInfoType']> = ResolversObject<{
+  canManage?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  myVoterId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type WorkspaceStayHistoryItemTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceStayHistoryItemType'] = ResolversParentTypes['WorkspaceStayHistoryItemType']> = ResolversObject<{
@@ -1996,10 +2492,14 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PagedUserType?: PagedUserTypeResolvers<ContextType>;
   PagedVisitorStayType?: PagedVisitorStayTypeResolvers<ContextType>;
   PagedVisitorType?: PagedVisitorTypeResolvers<ContextType>;
+  PagedWorkspaceDocumentType?: PagedWorkspaceDocumentTypeResolvers<ContextType>;
   PagedWorkspaceKarkunType?: PagedWorkspaceKarkunTypeResolvers<ContextType>;
+  PagedWorkspaceMeetingActionItemType?: PagedWorkspaceMeetingActionItemTypeResolvers<ContextType>;
+  PagedWorkspaceMeetingType?: PagedWorkspaceMeetingTypeResolvers<ContextType>;
   PagedWorkspaceMonitoringAlertType?: PagedWorkspaceMonitoringAlertTypeResolvers<ContextType>;
   PagedWorkspaceMonitoringProfileType?: PagedWorkspaceMonitoringProfileTypeResolvers<ContextType>;
   PagedWorkspaceNightStayType?: PagedWorkspaceNightStayTypeResolvers<ContextType>;
+  PagedWorkspacePollType?: PagedWorkspacePollTypeResolvers<ContextType>;
   PeopleTagType?: PeopleTagTypeResolvers<ContextType>;
   PersonEmployeeDataType?: PersonEmployeeDataTypeResolvers<ContextType>;
   PersonImageVectorDataType?: PersonImageVectorDataTypeResolvers<ContextType>;
@@ -2043,11 +2543,42 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   VisitorStayType?: VisitorStayTypeResolvers<ContextType>;
   WorkspaceCommitteeMemberType?: WorkspaceCommitteeMemberTypeResolvers<ContextType>;
   WorkspaceCommitteeType?: WorkspaceCommitteeTypeResolvers<ContextType>;
+  WorkspaceDocumentActivityType?: WorkspaceDocumentActivityTypeResolvers<ContextType>;
+  WorkspaceDocumentDownloadType?: WorkspaceDocumentDownloadTypeResolvers<ContextType>;
+  WorkspaceDocumentFolderContentsType?: WorkspaceDocumentFolderContentsTypeResolvers<ContextType>;
+  WorkspaceDocumentFolderType?: WorkspaceDocumentFolderTypeResolvers<ContextType>;
+  WorkspaceDocumentLockType?: WorkspaceDocumentLockTypeResolvers<ContextType>;
+  WorkspaceDocumentTrashType?: WorkspaceDocumentTrashTypeResolvers<ContextType>;
+  WorkspaceDocumentType?: WorkspaceDocumentTypeResolvers<ContextType>;
+  WorkspaceDocumentUploadType?: WorkspaceDocumentUploadTypeResolvers<ContextType>;
+  WorkspaceDocumentVersionType?: WorkspaceDocumentVersionTypeResolvers<ContextType>;
+  WorkspaceDocumentsInfoType?: WorkspaceDocumentsInfoTypeResolvers<ContextType>;
   WorkspaceKarkunType?: WorkspaceKarkunTypeResolvers<ContextType>;
+  WorkspaceMeetingActionItemType?: WorkspaceMeetingActionItemTypeResolvers<ContextType>;
+  WorkspaceMeetingActivityType?: WorkspaceMeetingActivityTypeResolvers<ContextType>;
+  WorkspaceMeetingAgendaItemType?: WorkspaceMeetingAgendaItemTypeResolvers<ContextType>;
+  WorkspaceMeetingAttachmentType?: WorkspaceMeetingAttachmentTypeResolvers<ContextType>;
+  WorkspaceMeetingDownloadType?: WorkspaceMeetingDownloadTypeResolvers<ContextType>;
+  WorkspaceMeetingMemberType?: WorkspaceMeetingMemberTypeResolvers<ContextType>;
+  WorkspaceMeetingParticipantType?: WorkspaceMeetingParticipantTypeResolvers<ContextType>;
+  WorkspaceMeetingType?: WorkspaceMeetingTypeResolvers<ContextType>;
+  WorkspaceMeetingUploadType?: WorkspaceMeetingUploadTypeResolvers<ContextType>;
+  WorkspaceMeetingsInfoType?: WorkspaceMeetingsInfoTypeResolvers<ContextType>;
   WorkspaceMonitoringAlertType?: WorkspaceMonitoringAlertTypeResolvers<ContextType>;
   WorkspaceMonitoringProfilePhotoType?: WorkspaceMonitoringProfilePhotoTypeResolvers<ContextType>;
   WorkspaceMonitoringProfileType?: WorkspaceMonitoringProfileTypeResolvers<ContextType>;
   WorkspaceNightStayType?: WorkspaceNightStayTypeResolvers<ContextType>;
+  WorkspacePollActivityType?: WorkspacePollActivityTypeResolvers<ContextType>;
+  WorkspacePollAnswerType?: WorkspacePollAnswerTypeResolvers<ContextType>;
+  WorkspacePollMemberType?: WorkspacePollMemberTypeResolvers<ContextType>;
+  WorkspacePollOptionResultType?: WorkspacePollOptionResultTypeResolvers<ContextType>;
+  WorkspacePollOptionType?: WorkspacePollOptionTypeResolvers<ContextType>;
+  WorkspacePollQuestionResultType?: WorkspacePollQuestionResultTypeResolvers<ContextType>;
+  WorkspacePollQuestionType?: WorkspacePollQuestionTypeResolvers<ContextType>;
+  WorkspacePollResultsType?: WorkspacePollResultsTypeResolvers<ContextType>;
+  WorkspacePollType?: WorkspacePollTypeResolvers<ContextType>;
+  WorkspacePollVoterType?: WorkspacePollVoterTypeResolvers<ContextType>;
+  WorkspacePollsInfoType?: WorkspacePollsInfoTypeResolvers<ContextType>;
   WorkspaceStayHistoryItemType?: WorkspaceStayHistoryItemTypeResolvers<ContextType>;
 }>;
 

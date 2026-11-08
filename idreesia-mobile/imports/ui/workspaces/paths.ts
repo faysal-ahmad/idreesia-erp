@@ -3,6 +3,19 @@ import { ModulePaths } from 'meteor/idreesia-common/constants';
 // Same URLs as the web's Workspaces module (submodule-paths.ts there).
 const committee = (committeeId: string) => `${ModulePaths.workspaces}/committees/${committeeId}`;
 
+/** The screens under one poll. */
+export type PollPart = 'edit' | 'results' | 'voters' | 'activity';
+
+/** The screens under one meeting. */
+export type MeetingPart =
+  | 'edit'
+  | 'agenda'
+  | 'participants'
+  | 'minutes'
+  | 'attachments'
+  | 'action-items'
+  | 'activity';
+
 export const WorkspacesPaths = {
   /** Every workspace screen is under this path. */
   root: ModulePaths.workspaces,
@@ -21,6 +34,32 @@ export const WorkspacesPaths = {
   committeeDiscussionPinned: (committeeId: string) => `${committee(committeeId)}/discussions/pinned`,
   committeeDiscussionStarredPattern: `${committee(':committeeId')}/discussions/starred`,
   committeeDiscussionStarred: (committeeId: string) => `${committee(committeeId)}/discussions/starred`,
+  /** Route pattern for a committee's meetings; their screens are under it. */
+  committeeMeetingsPattern: `${committee(':committeeId')}/meetings`,
+  committeeMeetings: (committeeId: string) => `${committee(committeeId)}/meetings`,
+  committeeNewMeetingPattern: `${committee(':committeeId')}/meetings/new`,
+  committeeNewMeeting: (committeeId: string) => `${committee(committeeId)}/meetings/new`,
+  /** One meeting, and the screens for its parts under it. */
+  committeeMeetingPattern: `${committee(':committeeId')}/meetings/:meetingId`,
+  committeeMeeting: (committeeId: string, meetingId: string) =>
+    `${committee(committeeId)}/meetings/${meetingId}`,
+  /** `part`: edit, agenda, participants, minutes, attachments, action-items or activity. */
+  committeeMeetingPartPattern: (part: MeetingPart) =>
+    `${committee(':committeeId')}/meetings/:meetingId/${part}`,
+  committeeMeetingPart: (committeeId: string, meetingId: string, part: MeetingPart) =>
+    `${committee(committeeId)}/meetings/${meetingId}/${part}`,
+  /** Route pattern for a committee's polls; their screens are under it. */
+  committeePollsPattern: `${committee(':committeeId')}/polls`,
+  committeePolls: (committeeId: string) => `${committee(committeeId)}/polls`,
+  committeeNewPollPattern: `${committee(':committeeId')}/polls/new`,
+  committeeNewPoll: (committeeId: string) => `${committee(committeeId)}/polls/new`,
+  /** One poll (its questions and voting), and the screens for its parts under it. */
+  committeePollPattern: `${committee(':committeeId')}/polls/:pollId`,
+  committeePoll: (committeeId: string, pollId: string) => `${committee(committeeId)}/polls/${pollId}`,
+  /** `part`: edit, results, voters or activity. */
+  committeePollPartPattern: (part: PollPart) => `${committee(':committeeId')}/polls/:pollId/${part}`,
+  committeePollPart: (committeeId: string, pollId: string, part: PollPart) =>
+    `${committee(committeeId)}/polls/${pollId}/${part}`,
   /** Route pattern for a committee's Night Stay Report. */
   committeeNightStayReportPattern: `${committee(':committeeId')}/night-stay-report`,
   committeeNightStayReport: (committeeId: string) => `${committee(committeeId)}/night-stay-report`,

@@ -140,6 +140,12 @@ import WorkspaceCommitteeSchema from './workspaces/committee/committee';
 import WorkspaceCommitteeResolvers from './workspaces/committee/resolvers';
 import WorkspaceDiscussionsSchema from './workspaces/discussions/discussions';
 import WorkspaceDiscussionsResolvers from './workspaces/discussions/resolvers';
+import WorkspaceDocumentsSchema from './workspaces/documents/documents';
+import WorkspaceDocumentsResolvers from './workspaces/documents/resolvers';
+import WorkspaceMeetingsSchema from './workspaces/meetings/meetings';
+import WorkspaceMeetingsResolvers from './workspaces/meetings/resolvers';
+import WorkspacePollsSchema from './workspaces/polls/polls';
+import WorkspacePollsResolvers from './workspaces/polls/resolvers';
 import WorkspaceNightStayReportSchema from './workspaces/night-stay-report/night-stay-report';
 import WorkspaceNightStayReportResolvers from './workspaces/night-stay-report/resolvers';
 import WorkspaceMonitoringAlertsSchema from './workspaces/monitoring-alerts/monitoring-alerts';
@@ -236,6 +242,9 @@ const typeDefs = [
 
   WorkspaceCommitteeSchema,
   WorkspaceDiscussionsSchema,
+  WorkspaceDocumentsSchema,
+  WorkspaceMeetingsSchema,
+  WorkspacePollsSchema,
   WorkspaceNightStayReportSchema,
   WorkspaceMonitoringAlertsSchema,
   WorkspaceMonitoringProfilesSchema,
@@ -300,6 +309,9 @@ const resolvers = merge(
 
   WorkspaceCommitteeResolvers,
   WorkspaceDiscussionsResolvers,
+  WorkspaceDocumentsResolvers,
+  WorkspaceMeetingsResolvers,
+  WorkspacePollsResolvers,
   WorkspaceNightStayReportResolvers,
   WorkspaceMonitoringAlertsResolvers,
   WorkspaceMonitoringProfilesResolvers,

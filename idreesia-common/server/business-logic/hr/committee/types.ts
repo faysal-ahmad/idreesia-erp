@@ -5,15 +5,25 @@ export interface CommitteeDoc {
   members?: Array<{ karkunId: string; isCoordinator?: boolean }>;
   features?: string[];
   chatGroupId?: string;
+  dmsWorkspaceId?: string;
+  meetingsWorkspaceId?: string;
+  pollsWorkspaceId?: string;
 }
 
 /**
  * Turns a committee feature on or off outside the ERP (e.g. in chat).
  * Each returns the extra fields to `$set` on the committee, if any.
+ * `userId` is the user turning the feature on or off.
  */
 export interface CommitteeFeatureHandler {
-  enable(committee: CommitteeDoc): Promise<Record<string, unknown> | void>;
-  disable(committee: CommitteeDoc): Promise<Record<string, unknown> | void>;
+  enable(
+    committee: CommitteeDoc,
+    userId: string
+  ): Promise<Record<string, unknown> | void>;
+  disable(
+    committee: CommitteeDoc,
+    userId: string
+  ): Promise<Record<string, unknown> | void>;
   /** Called, while the feature is enabled, before a member is added. */
   memberAdded?(committee: CommitteeDoc, karkunId: string): Promise<void>;
   /** Called, while the feature is enabled, before a member is removed. */

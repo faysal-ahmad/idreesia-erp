@@ -1,6 +1,9 @@
 export const CommitteeFeatureKeys = {
   MEMBERS: 'members',
   DISCUSSIONS: 'discussions',
+  DOCUMENTS: 'documents',
+  MEETINGS: 'meetings',
+  POLLS: 'polls',
   NIGHT_STAY_REPORT: 'night-stay-report',
   MONITORING_ALERTS: 'monitoring-alerts',
   MONITORING_PROFILES: 'monitoring-profiles',
@@ -43,6 +46,27 @@ export const CommitteeFeatures: CommitteeFeature[] = [
     name: 'Discussions',
     category: CommitteeFeatureCategories.COMMUNICATION,
     description: 'A private discussion space for the committee members.',
+  },
+  {
+    key: CommitteeFeatureKeys.DOCUMENTS,
+    name: 'Documents',
+    category: CommitteeFeatureCategories.COMMUNICATION,
+    description:
+      'A shared document library for the committee members, with folders, versions and check-out.',
+  },
+  {
+    key: CommitteeFeatureKeys.MEETINGS,
+    name: 'Meetings',
+    category: CommitteeFeatureCategories.COMMUNICATION,
+    description:
+      'Committee meetings with participants, agenda, attendance, minutes, attachments and action items.',
+  },
+  {
+    key: CommitteeFeatureKeys.POLLS,
+    name: 'Polls',
+    category: CommitteeFeatureCategories.COMMUNICATION,
+    description:
+      'Polls for the committee members, named or anonymous, with results once the poll closes.',
   },
   {
     key: CommitteeFeatureKeys.NIGHT_STAY_REPORT,

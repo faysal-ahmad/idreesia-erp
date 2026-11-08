@@ -32,6 +32,8 @@ antd-mobile only ships components and theming docs. It has no guidance on page p
 | Public chat (signed out, Rocket.Chat) | `idreesia-mobile/imports/ui/chat/` |
 | Message composer (text, camera, files, voice notes) | `idreesia-mobile/imports/ui/components/message-composer/` |
 | Committee discussion (signed in) | `idreesia-mobile/imports/ui/workspaces/discussions/` |
+| Committee meetings (list → meeting → parts, bottom-sheet forms) | `idreesia-mobile/imports/ui/workspaces/meetings/` |
+| Committee polls (voting on the poll screen with a pinned submit, results with progress bars, question editor in a bottom sheet) | `idreesia-mobile/imports/ui/workspaces/polls/` |
 | Shared CSS | `idreesia-mobile/client/main.css` |
 | Page CSS example | `idreesia-mobile/imports/ui/account/account-screen.styles.css` |
 
@@ -49,6 +51,14 @@ Home tab (/home)                         ← default after signing in
 │   ├── …/discussions/search
 │   ├── …/discussions/pinned
 │   └── …/discussions/starred
+├── Workspace Meetings (/workspaces/committees/:committeeId/meetings)   ← MeetingsFeature; the list stays alive under a meeting, and the meeting under its parts:
+│   ├── …/meetings/new                    ← form (coordinators)
+│   └── …/meetings/:meetingId             ← one meeting: summary, your response, rows for its parts
+│       └── …/meetings/:meetingId/{edit,agenda,participants,minutes,attachments,action-items,activity}   ← item forms open in bottom Popups, not deeper screens
+├── Workspace Polls (/workspaces/committees/:committeeId/polls)   ← PollsFeature; the list stays alive under a poll, and the poll under its parts:
+│   ├── …/polls/new                       ← form (coordinators); questions are edited in a bottom Popup
+│   └── …/polls/:pollId                   ← one poll: summary, the questions to vote on (pinned "Submit vote"), rows for its parts
+│       └── …/polls/:pollId/{edit,results,voters,activity}   ← voters and activity are for coordinators
 ├── Workspace Night Stay Report (/workspaces/committees/:committeeId/night-stay-report)   ← NightStayReportFeature; read-only, one night at a time; report stays alive under:
 │   └── …/night-stay-report/:stayId   ← one stay, with a large photo
 └── Workspace Security Server Alerts (/workspaces/committees/:committeeId/security-server-alerts)   ← read-only, one day at a time
@@ -172,6 +182,7 @@ A feature's entry screen is usually a list. Build it from `usePagedQuery` and `P
   - In the Android app it uses cordova-plugin-camera with the camera as the only source, until `CameraView` has been tested in Android's WebView.
   - It never uses a file input, which would also offer the gallery.
   - **Exception: the public chat** (`imports/ui/chat`) also has a paperclip attach button that opens the system picker through a hidden `<input type="file" multiple>`. On iOS that offers Photo Library, Take Photo and Choose Files; on Android, the WebView's file chooser. Customers sending a message may share existing photos and documents, while record-keeping features (visitor photos) stay camera-only.
+  - **Exception: Meetings attachments** (`imports/ui/workspaces/meetings/attachments-screen.tsx`) use a hidden `<input type="file" multiple>`, like the public chat, because they are documents (agendas, reports, PDFs) rather than photos taken for a record. Files go straight to storage through a presigned URL, and open in a full-screen preview as in Discussions.
   - **Exception: Monitoring Profiles** (`imports/ui/workspaces/monitoring-profiles`) also lets users pick a photo from the gallery with `pickPhoto()` (`imports/ui/utilities`), offered next to "Take photo" in an `ActionSheet`. Enrollment photos of a watched person usually already exist, and the server rejects any photo without exactly one usable face. `pickPhoto()` uses cordova-plugin-camera's photo library on Android and an image-only file input elsewhere (the system photo picker on iOS), and returns the same scaled JPEG data URL as `capturePhoto()`. Other features stay camera-only unless asked otherwise.
   - It returns a JPEG data URL of at most 1024 px, which keeps uploads well under the 5 MB GraphQL limit.
 - Start capture from an explicit "Take photo" button rather than opening the camera on load.

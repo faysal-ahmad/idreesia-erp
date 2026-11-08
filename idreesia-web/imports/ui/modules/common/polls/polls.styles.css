@@ -1,0 +1,132 @@
+/* Workspaces → Polls (common/polls) */
+
+.polls-board .list-table-header .ant-segmented {
+  background: #f3f4f6;
+}
+
+/* Poll page */
+.poll-detail .poll-detail-back {
+  padding-left: 0;
+}
+
+.poll-detail .poll-detail-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.poll-detail .poll-detail-alert {
+  margin-bottom: 12px;
+}
+
+.poll-detail .poll-detail-info .ant-descriptions-item-label {
+  width: 120px;
+  background: #f3f4f6;
+  color: #344054;
+}
+
+.poll-detail .ant-tabs {
+  margin-top: 8px;
+}
+
+.poll-pre-wrap {
+  white-space: pre-wrap;
+}
+
+/* Voting */
+.poll-ballot {
+  max-width: 760px;
+}
+
+.poll-ballot .poll-ballot-notice {
+  margin-bottom: 16px;
+}
+
+.poll-ballot .poll-ballot-question {
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.poll-ballot .poll-ballot-question-error {
+  border-color: #f04438;
+}
+
+.poll-ballot .poll-ballot-question-title {
+  margin-bottom: 4px;
+}
+
+.poll-ballot .poll-ballot-hint {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.poll-ballot .poll-ballot-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Results */
+.poll-results {
+  max-width: 760px;
+}
+
+.poll-results .poll-results-summary {
+  margin-bottom: 16px;
+}
+
+.poll-results .poll-results-question {
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.poll-results .poll-results-option {
+  margin-top: 10px;
+}
+
+.poll-results .poll-results-option .ant-progress {
+  margin: 2px 0 0;
+}
+
+.poll-results .poll-results-voters {
+  display: block;
+  font-size: 12px;
+}
+
+/* Voters */
+.poll-voters .poll-voters-notice,
+.poll-voters .poll-voters-add {
+  margin-bottom: 12px;
+}
+
+.poll-activity {
+  padding-top: 8px;
+}
+
+/* Create / edit form: questions editor */
+.poll-form-questions .poll-form-question {
+  margin-bottom: 12px;
+  border-color: #d0d5dd;
+}
+
+.poll-form-questions .poll-form-question > .ant-card-head {
+  background: #f3f4f6;
+}
+
+.poll-form-questions .poll-form-question-settings {
+  margin-bottom: 12px;
+}
+
+.poll-form-questions .poll-form-option .ant-form-item {
+  margin-bottom: 8px;
+}

@@ -3,7 +3,10 @@ import { type History } from 'history';
 import { Menu } from 'antd';
 import {
   AlertOutlined,
+  BarChartOutlined,
+  CalendarOutlined,
   ClusterOutlined,
+  FolderOpenOutlined,
   IdcardOutlined,
   MessageOutlined,
   MoonOutlined,
@@ -32,6 +35,9 @@ type KeyPrefixHandler = [string, string, PathBuilder];
 const KeyPrefixHandlers: KeyPrefixHandler[] = [
   ['members', SubModuleNames.members, paths.committeeMembersPath],
   ['discussions', SubModuleNames.discussions, paths.committeeDiscussionsPath],
+  ['documents', SubModuleNames.documents, paths.committeeDocumentsPath],
+  ['meetings', SubModuleNames.meetings, paths.committeeMeetingsPath],
+  ['polls', SubModuleNames.polls, paths.committeePollsPath],
   [
     'night-stay-report',
     SubModuleNames.nightStayReport,
@@ -146,6 +152,33 @@ const Sidebar = ({ history }: SidebarProps) => {
               key: `discussions-${committee._id}`,
               icon: <MessageOutlined style={IconStyle} />,
               label: 'Discussions',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(CommitteeFeatureKeys.DOCUMENTS)
+        ? [
+            {
+              key: `documents-${committee._id}`,
+              icon: <FolderOpenOutlined style={IconStyle} />,
+              label: 'Documents',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(CommitteeFeatureKeys.MEETINGS)
+        ? [
+            {
+              key: `meetings-${committee._id}`,
+              icon: <CalendarOutlined style={IconStyle} />,
+              label: 'Meetings',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(CommitteeFeatureKeys.POLLS)
+        ? [
+            {
+              key: `polls-${committee._id}`,
+              icon: <BarChartOutlined style={IconStyle} />,
+              label: 'Polls',
             },
           ]
         : []),

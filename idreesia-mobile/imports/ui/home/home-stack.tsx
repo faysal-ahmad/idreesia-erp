@@ -4,10 +4,12 @@ import { KeepAlive } from '../layout';
 import { matchPath, Redirect, Route, Switch, useLocation } from '../router';
 import {
   DiscussionFeature,
+  MeetingsFeature,
   MembersScreen,
   NightStayReportFeature,
   MonitoringAlertsScreen,
   MonitoringProfilesFeature,
+  PollsFeature,
   WorkspacesPaths,
 } from '../workspaces';
 import { HomeScreen } from './home-screen';
@@ -31,6 +33,8 @@ export const HomeStack = () => {
         <Route exact path={HomePaths.home} render={() => null} />
         <Route exact component={MembersScreen} path={WorkspacesPaths.committeeMembersPattern} />
         <Route component={DiscussionFeature} path={WorkspacesPaths.committeeDiscussionsPattern} />
+        <Route component={MeetingsFeature} path={WorkspacesPaths.committeeMeetingsPattern} />
+        <Route component={PollsFeature} path={WorkspacesPaths.committeePollsPattern} />
         <Route
           component={NightStayReportFeature}
           path={WorkspacesPaths.committeeNightStayReportPattern}

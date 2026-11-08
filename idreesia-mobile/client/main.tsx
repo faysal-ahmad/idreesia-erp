@@ -24,6 +24,8 @@ import '../imports/ui/workspaces/night-stay-report/night-stay-report.styles.css'
 import '../imports/ui/workspaces/monitoring-alerts/monitoring-alerts.styles.css';
 import '../imports/ui/workspaces/monitoring-profiles/monitoring-profile.styles.css';
 import '../imports/ui/workspaces/monitoring-profiles/monitoring-profiles.styles.css';
+import '../imports/ui/workspaces/meetings/meetings.styles.css';
+import '../imports/ui/workspaces/polls/polls.styles.css';
 import App from '../imports/ui/app';
 import { HashRouter } from '../imports/ui/router';
 import { applyTheme, watchTextScale } from '../imports/ui/theme';

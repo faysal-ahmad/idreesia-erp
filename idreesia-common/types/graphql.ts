@@ -807,15 +807,68 @@ export type Mutation = {
   updateVisitorStay?: Maybe<VisitorStayType>;
   updateWorkspaceMonitoringProfile?: Maybe<WorkspaceMonitoringProfileType>;
   verifyStockItemLevel?: Maybe<StockItem>;
+  workspaceAbortDocumentUpload?: Maybe<Scalars['Boolean']['output']>;
+  workspaceAbortMeetingAttachmentUpload?: Maybe<Scalars['Boolean']['output']>;
   workspaceAddCommitteeMember?: Maybe<WorkspaceCommitteeType>;
+  workspaceAddMeetingAgendaItem?: Maybe<WorkspaceMeetingType>;
+  workspaceAddPollVoters?: Maybe<WorkspacePollType>;
+  workspaceCancelMeeting?: Maybe<WorkspaceMeetingType>;
+  workspaceCancelPoll?: Maybe<WorkspacePollType>;
+  workspaceCastPollVote?: Maybe<WorkspacePollType>;
+  workspaceCheckInDocument?: Maybe<Scalars['Boolean']['output']>;
+  workspaceCheckOutDocument?: Maybe<Scalars['Boolean']['output']>;
+  workspaceClosePoll?: Maybe<WorkspacePollType>;
+  workspaceCompleteDocumentUpload?: Maybe<WorkspaceDocumentType>;
+  workspaceCompleteMeeting?: Maybe<WorkspaceMeetingType>;
+  workspaceCompleteMeetingAttachmentUpload?: Maybe<WorkspaceMeetingAttachmentType>;
+  workspaceCreateDocumentFolder?: Maybe<Scalars['Boolean']['output']>;
+  workspaceCreateDocumentUpload?: Maybe<WorkspaceDocumentUploadType>;
+  workspaceCreateMeeting?: Maybe<WorkspaceMeetingType>;
+  workspaceCreateMeetingActionItem?: Maybe<WorkspaceMeetingActionItemType>;
+  workspaceCreateMeetingAttachmentUpload?: Maybe<WorkspaceMeetingUploadType>;
+  workspaceCreatePoll?: Maybe<WorkspacePollType>;
   workspaceDeleteDiscussionMessage: Scalars['Boolean']['output'];
+  workspaceDeleteDocumentVersion?: Maybe<Scalars['Boolean']['output']>;
+  workspaceDeleteMeeting?: Maybe<Scalars['Boolean']['output']>;
+  workspaceDeleteMeetingActionItem?: Maybe<Scalars['Boolean']['output']>;
+  workspaceDeleteMeetingAttachment?: Maybe<Scalars['Boolean']['output']>;
+  workspaceDeletePoll?: Maybe<Scalars['Boolean']['output']>;
+  workspaceDocumentDownloadUrl?: Maybe<WorkspaceDocumentDownloadType>;
   workspaceEditDiscussionMessage: Scalars['Boolean']['output'];
+  workspaceEmptyDocumentTrash?: Maybe<Scalars['Int']['output']>;
+  workspaceForceUnlockDocument?: Maybe<Scalars['Boolean']['output']>;
+  workspaceMarkMeetingAttendance?: Maybe<WorkspaceMeetingType>;
+  workspaceMeetingAttachmentDownloadUrl?: Maybe<WorkspaceMeetingDownloadType>;
+  workspaceMoveDocument?: Maybe<Scalars['Boolean']['output']>;
+  workspaceMoveDocumentFolder?: Maybe<Scalars['Boolean']['output']>;
+  workspaceOpenPoll?: Maybe<WorkspacePollType>;
+  workspacePurgeDocumentTrashItem?: Maybe<Scalars['Boolean']['output']>;
   workspaceReactToDiscussionMessage: Scalars['Boolean']['output'];
   workspaceRemoveCommitteeMember?: Maybe<WorkspaceCommitteeType>;
+  workspaceRemoveMeetingAgendaItem?: Maybe<WorkspaceMeetingType>;
+  workspaceRenameDocumentFolder?: Maybe<Scalars['Boolean']['output']>;
+  workspaceReopenMeeting?: Maybe<WorkspaceMeetingType>;
+  workspaceReopenPoll?: Maybe<WorkspacePollType>;
+  workspaceReorderMeetingAgenda?: Maybe<WorkspaceMeetingType>;
+  workspaceRespondToMeeting?: Maybe<WorkspaceMeetingType>;
+  workspaceRestoreDocumentTrashItem?: Maybe<Scalars['Boolean']['output']>;
+  workspaceRestoreDocumentVersion?: Maybe<Scalars['Boolean']['output']>;
   workspaceSendDiscussionMessage: Scalars['Boolean']['output'];
   workspaceSetCommitteeMemberDiscussionAccess?: Maybe<Scalars['Boolean']['output']>;
   workspaceSetDiscussionMessagePinned: Scalars['Boolean']['output'];
   workspaceSetDiscussionMessageStarred: Scalars['Boolean']['output'];
+  workspaceSetMeetingActionItemStatus?: Maybe<WorkspaceMeetingActionItemType>;
+  workspaceSetMeetingMinutes?: Maybe<WorkspaceMeetingType>;
+  workspaceSetMeetingParticipantRole?: Maybe<WorkspaceMeetingType>;
+  workspaceSetMeetingParticipants?: Maybe<WorkspaceMeetingType>;
+  workspaceTrashDocument?: Maybe<Scalars['Boolean']['output']>;
+  workspaceTrashDocumentFolder?: Maybe<Scalars['Boolean']['output']>;
+  workspaceUpdateDocument?: Maybe<Scalars['Boolean']['output']>;
+  workspaceUpdateMeeting?: Maybe<WorkspaceMeetingType>;
+  workspaceUpdateMeetingActionItem?: Maybe<WorkspaceMeetingActionItemType>;
+  workspaceUpdateMeetingAgendaItem?: Maybe<WorkspaceMeetingType>;
+  workspaceUpdatePoll?: Maybe<WorkspacePollType>;
+  workspaceWithdrawPollVote?: Maybe<WorkspacePollType>;
 };
 
 
@@ -1951,9 +2004,140 @@ export type MutationVerifyStockItemLevelArgs = {
 };
 
 
+export type MutationWorkspaceAbortDocumentUploadArgs = {
+  committeeId: Scalars['String']['input'];
+  uploadId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceAbortMeetingAttachmentUploadArgs = {
+  committeeId: Scalars['String']['input'];
+  uploadId: Scalars['String']['input'];
+};
+
+
 export type MutationWorkspaceAddCommitteeMemberArgs = {
   committeeId: Scalars['String']['input'];
   karkunId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceAddMeetingAgendaItemArgs = {
+  committeeId: Scalars['String']['input'];
+  input: WorkspaceMeetingAgendaItemInput;
+  meetingId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceAddPollVotersArgs = {
+  committeeId: Scalars['String']['input'];
+  pollId: Scalars['String']['input'];
+  voterIds: Array<InputMaybe<Scalars['String']['input']>>;
+};
+
+
+export type MutationWorkspaceCancelMeetingArgs = {
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+  reason?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationWorkspaceCancelPollArgs = {
+  committeeId: Scalars['String']['input'];
+  pollId: Scalars['String']['input'];
+  reason?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationWorkspaceCastPollVoteArgs = {
+  answers: Array<InputMaybe<WorkspacePollAnswerInput>>;
+  committeeId: Scalars['String']['input'];
+  pollId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceCheckInDocumentArgs = {
+  committeeId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceCheckOutDocumentArgs = {
+  committeeId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationWorkspaceClosePollArgs = {
+  committeeId: Scalars['String']['input'];
+  pollId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceCompleteDocumentUploadArgs = {
+  committeeId: Scalars['String']['input'];
+  uploadId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceCompleteMeetingArgs = {
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceCompleteMeetingAttachmentUploadArgs = {
+  committeeId: Scalars['String']['input'];
+  uploadId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceCreateDocumentFolderArgs = {
+  committeeId: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  parentId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationWorkspaceCreateDocumentUploadArgs = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  committeeId: Scalars['String']['input'];
+  documentId?: InputMaybe<Scalars['String']['input']>;
+  fileName: Scalars['String']['input'];
+  folderId?: InputMaybe<Scalars['String']['input']>;
+  mimeType?: InputMaybe<Scalars['String']['input']>;
+  size: Scalars['Float']['input'];
+};
+
+
+export type MutationWorkspaceCreateMeetingArgs = {
+  committeeId: Scalars['String']['input'];
+  input: WorkspaceMeetingInput;
+  participantIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type MutationWorkspaceCreateMeetingActionItemArgs = {
+  committeeId: Scalars['String']['input'];
+  input: WorkspaceMeetingActionItemInput;
+  meetingId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceCreateMeetingAttachmentUploadArgs = {
+  committeeId: Scalars['String']['input'];
+  fileName: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+  mimeType?: InputMaybe<Scalars['String']['input']>;
+  size: Scalars['Float']['input'];
+};
+
+
+export type MutationWorkspaceCreatePollArgs = {
+  committeeId: Scalars['String']['input'];
+  input: WorkspacePollInput;
 };
 
 
@@ -1963,10 +2147,101 @@ export type MutationWorkspaceDeleteDiscussionMessageArgs = {
 };
 
 
+export type MutationWorkspaceDeleteDocumentVersionArgs = {
+  committeeId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  versionId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceDeleteMeetingArgs = {
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceDeleteMeetingActionItemArgs = {
+  actionItemId: Scalars['String']['input'];
+  committeeId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceDeleteMeetingAttachmentArgs = {
+  attachmentId: Scalars['String']['input'];
+  committeeId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceDeletePollArgs = {
+  committeeId: Scalars['String']['input'];
+  pollId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceDocumentDownloadUrlArgs = {
+  committeeId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  inline?: InputMaybe<Scalars['Boolean']['input']>;
+  versionId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationWorkspaceEditDiscussionMessageArgs = {
   committeeId: Scalars['String']['input'];
   messageId: Scalars['String']['input'];
   text: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceEmptyDocumentTrashArgs = {
+  committeeId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceForceUnlockDocumentArgs = {
+  committeeId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceMarkMeetingAttendanceArgs = {
+  committeeId: Scalars['String']['input'];
+  entries: Array<InputMaybe<WorkspaceMeetingAttendanceInput>>;
+  meetingId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceMeetingAttachmentDownloadUrlArgs = {
+  attachmentId: Scalars['String']['input'];
+  committeeId: Scalars['String']['input'];
+  inline?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationWorkspaceMoveDocumentArgs = {
+  committeeId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  folderId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationWorkspaceMoveDocumentFolderArgs = {
+  committeeId: Scalars['String']['input'];
+  folderId: Scalars['String']['input'];
+  parentId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationWorkspaceOpenPollArgs = {
+  closesAt?: InputMaybe<Scalars['String']['input']>;
+  committeeId: Scalars['String']['input'];
+  pollId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspacePurgeDocumentTrashItemArgs = {
+  committeeId: Scalars['String']['input'];
+  itemId: Scalars['String']['input'];
 };
 
 
@@ -1981,6 +2256,64 @@ export type MutationWorkspaceReactToDiscussionMessageArgs = {
 export type MutationWorkspaceRemoveCommitteeMemberArgs = {
   committeeId: Scalars['String']['input'];
   karkunId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceRemoveMeetingAgendaItemArgs = {
+  agendaItemId: Scalars['String']['input'];
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceRenameDocumentFolderArgs = {
+  committeeId: Scalars['String']['input'];
+  folderId: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceReopenMeetingArgs = {
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceReopenPollArgs = {
+  closesAt: Scalars['String']['input'];
+  committeeId: Scalars['String']['input'];
+  pollId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceReorderMeetingAgendaArgs = {
+  agendaItemIds: Array<InputMaybe<Scalars['String']['input']>>;
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceRespondToMeetingArgs = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+  participantId?: InputMaybe<Scalars['String']['input']>;
+  status: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceRestoreDocumentTrashItemArgs = {
+  committeeId: Scalars['String']['input'];
+  itemId: Scalars['String']['input'];
+  newName?: InputMaybe<Scalars['String']['input']>;
+  toRoot?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationWorkspaceRestoreDocumentVersionArgs = {
+  committeeId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  versionId: Scalars['String']['input'];
 };
 
 
@@ -2009,6 +2342,91 @@ export type MutationWorkspaceSetDiscussionMessageStarredArgs = {
   committeeId: Scalars['String']['input'];
   messageId: Scalars['String']['input'];
   starred: Scalars['Boolean']['input'];
+};
+
+
+export type MutationWorkspaceSetMeetingActionItemStatusArgs = {
+  actionItemId: Scalars['String']['input'];
+  committeeId: Scalars['String']['input'];
+  status: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceSetMeetingMinutesArgs = {
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+  text?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationWorkspaceSetMeetingParticipantRoleArgs = {
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+  participantId: Scalars['String']['input'];
+  role: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceSetMeetingParticipantsArgs = {
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+  participantIds: Array<InputMaybe<Scalars['String']['input']>>;
+};
+
+
+export type MutationWorkspaceTrashDocumentArgs = {
+  committeeId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceTrashDocumentFolderArgs = {
+  committeeId: Scalars['String']['input'];
+  folderId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceUpdateDocumentArgs = {
+  committeeId: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  documentId: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type MutationWorkspaceUpdateMeetingArgs = {
+  committeeId: Scalars['String']['input'];
+  input: WorkspaceMeetingInput;
+  meetingId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceUpdateMeetingActionItemArgs = {
+  actionItemId: Scalars['String']['input'];
+  committeeId: Scalars['String']['input'];
+  input: WorkspaceMeetingActionItemInput;
+};
+
+
+export type MutationWorkspaceUpdateMeetingAgendaItemArgs = {
+  agendaItemId: Scalars['String']['input'];
+  committeeId: Scalars['String']['input'];
+  input: WorkspaceMeetingAgendaItemInput;
+  meetingId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceUpdatePollArgs = {
+  committeeId: Scalars['String']['input'];
+  input: WorkspacePollInput;
+  pollId: Scalars['String']['input'];
+};
+
+
+export type MutationWorkspaceWithdrawPollVoteArgs = {
+  committeeId: Scalars['String']['input'];
+  pollId: Scalars['String']['input'];
 };
 
 export type PagedAuditLogType = {
@@ -2131,9 +2549,27 @@ export type PagedVisitorType = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PagedWorkspaceDocumentType = {
+  __typename?: 'PagedWorkspaceDocumentType';
+  data?: Maybe<Array<Maybe<WorkspaceDocumentType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
 export type PagedWorkspaceKarkunType = {
   __typename?: 'PagedWorkspaceKarkunType';
   data?: Maybe<Array<Maybe<WorkspaceKarkunType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedWorkspaceMeetingActionItemType = {
+  __typename?: 'PagedWorkspaceMeetingActionItemType';
+  data?: Maybe<Array<Maybe<WorkspaceMeetingActionItemType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedWorkspaceMeetingType = {
+  __typename?: 'PagedWorkspaceMeetingType';
+  data?: Maybe<Array<Maybe<WorkspaceMeetingType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -2152,6 +2588,12 @@ export type PagedWorkspaceMonitoringProfileType = {
 export type PagedWorkspaceNightStayType = {
   __typename?: 'PagedWorkspaceNightStayType';
   data?: Maybe<Array<Maybe<WorkspaceNightStayType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedWorkspacePollType = {
+  __typename?: 'PagedWorkspacePollType';
+  data?: Maybe<Array<Maybe<WorkspacePollType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -2494,11 +2936,33 @@ export type Query = {
   workspaceDiscussionStarredMessages?: Maybe<Array<Maybe<DiscussionMessageType>>>;
   workspaceDiscussionSync?: Maybe<DiscussionSyncType>;
   workspaceDiscussionThreadMessages?: Maybe<Array<Maybe<DiscussionMessageType>>>;
+  workspaceDocumentActivity?: Maybe<Array<Maybe<WorkspaceDocumentActivityType>>>;
+  workspaceDocumentById?: Maybe<WorkspaceDocumentType>;
+  workspaceDocumentFolderContents?: Maybe<WorkspaceDocumentFolderContentsType>;
+  workspaceDocumentFolders?: Maybe<Array<Maybe<WorkspaceDocumentFolderType>>>;
+  workspaceDocumentSearch?: Maybe<PagedWorkspaceDocumentType>;
+  workspaceDocumentTrash?: Maybe<WorkspaceDocumentTrashType>;
+  workspaceDocumentVersions?: Maybe<Array<Maybe<WorkspaceDocumentVersionType>>>;
+  workspaceDocumentsInfo?: Maybe<WorkspaceDocumentsInfoType>;
+  workspaceMeetingActionItems?: Maybe<PagedWorkspaceMeetingActionItemType>;
+  workspaceMeetingActivity?: Maybe<Array<Maybe<WorkspaceMeetingActivityType>>>;
+  workspaceMeetingAttachments?: Maybe<Array<Maybe<WorkspaceMeetingAttachmentType>>>;
+  workspaceMeetingById?: Maybe<WorkspaceMeetingType>;
+  workspaceMeetingMembers?: Maybe<Array<Maybe<WorkspaceMeetingMemberType>>>;
+  workspaceMeetings?: Maybe<PagedWorkspaceMeetingType>;
+  workspaceMeetingsInfo?: Maybe<WorkspaceMeetingsInfoType>;
   workspaceMonitoringAlerts?: Maybe<PagedWorkspaceMonitoringAlertType>;
   workspaceMonitoringProfileById?: Maybe<WorkspaceMonitoringProfileType>;
   workspaceMonitoringProfiles?: Maybe<PagedWorkspaceMonitoringProfileType>;
   workspaceNightStayById?: Maybe<WorkspaceNightStayType>;
   workspaceNightStays?: Maybe<PagedWorkspaceNightStayType>;
+  workspacePollActivity?: Maybe<Array<Maybe<WorkspacePollActivityType>>>;
+  workspacePollById?: Maybe<WorkspacePollType>;
+  workspacePollMembers?: Maybe<Array<Maybe<WorkspacePollMemberType>>>;
+  workspacePollResults?: Maybe<WorkspacePollResultsType>;
+  workspacePollVoters?: Maybe<Array<Maybe<WorkspacePollVoterType>>>;
+  workspacePolls?: Maybe<PagedWorkspacePollType>;
+  workspacePollsInfo?: Maybe<WorkspacePollsInfoType>;
 };
 
 
@@ -3045,6 +3509,108 @@ export type QueryWorkspaceDiscussionThreadMessagesArgs = {
 };
 
 
+export type QueryWorkspaceDocumentActivityArgs = {
+  before?: InputMaybe<Scalars['String']['input']>;
+  committeeId: Scalars['String']['input'];
+  documentId?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryWorkspaceDocumentByIdArgs = {
+  committeeId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceDocumentFolderContentsArgs = {
+  committeeId: Scalars['String']['input'];
+  folderId?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryWorkspaceDocumentFoldersArgs = {
+  committeeId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceDocumentSearchArgs = {
+  committeeId: Scalars['String']['input'];
+  pageIndex?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  text: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceDocumentTrashArgs = {
+  committeeId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceDocumentVersionsArgs = {
+  committeeId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceDocumentsInfoArgs = {
+  committeeId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceMeetingActionItemsArgs = {
+  assigneeId?: InputMaybe<Scalars['String']['input']>;
+  committeeId: Scalars['String']['input'];
+  meetingId?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  status?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type QueryWorkspaceMeetingActivityArgs = {
+  before?: InputMaybe<Scalars['String']['input']>;
+  committeeId: Scalars['String']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  meetingId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryWorkspaceMeetingAttachmentsArgs = {
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceMeetingByIdArgs = {
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceMeetingMembersArgs = {
+  committeeId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceMeetingsArgs = {
+  committeeId: Scalars['String']['input'];
+  from?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  text?: InputMaybe<Scalars['String']['input']>;
+  to?: InputMaybe<Scalars['String']['input']>;
+  view?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryWorkspaceMeetingsInfoArgs = {
+  committeeId: Scalars['String']['input'];
+};
+
+
 export type QueryWorkspaceMonitoringAlertsArgs = {
   committeeId: Scalars['String']['input'];
   date: Scalars['String']['input'];
@@ -3085,6 +3651,51 @@ export type QueryWorkspaceNightStaysArgs = {
   sortOrder?: InputMaybe<Scalars['String']['input']>;
   stayDate: Scalars['String']['input'];
   stayReason?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryWorkspacePollActivityArgs = {
+  before?: InputMaybe<Scalars['String']['input']>;
+  committeeId: Scalars['String']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  pollId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryWorkspacePollByIdArgs = {
+  committeeId: Scalars['String']['input'];
+  pollId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspacePollMembersArgs = {
+  committeeId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspacePollResultsArgs = {
+  committeeId: Scalars['String']['input'];
+  pollId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspacePollVotersArgs = {
+  committeeId: Scalars['String']['input'];
+  pollId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspacePollsArgs = {
+  committeeId: Scalars['String']['input'];
+  pageIndex?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  text?: InputMaybe<Scalars['String']['input']>;
+  view?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryWorkspacePollsInfoArgs = {
+  committeeId: Scalars['String']['input'];
 };
 
 export type SalaryType = {
@@ -3530,6 +4141,108 @@ export type WorkspaceCommitteeType = {
   name?: Maybe<Scalars['String']['output']>;
 };
 
+export type WorkspaceDocumentActivityType = {
+  __typename?: 'WorkspaceDocumentActivityType';
+  _id?: Maybe<Scalars['String']['output']>;
+  action?: Maybe<Scalars['String']['output']>;
+  at?: Maybe<Scalars['String']['output']>;
+  details?: Maybe<Scalars['String']['output']>;
+  documentId?: Maybe<Scalars['String']['output']>;
+  entityId?: Maybe<Scalars['String']['output']>;
+  entityType?: Maybe<Scalars['String']['output']>;
+  userName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceDocumentDownloadType = {
+  __typename?: 'WorkspaceDocumentDownloadType';
+  fileName?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceDocumentFolderContentsType = {
+  __typename?: 'WorkspaceDocumentFolderContentsType';
+  documents?: Maybe<PagedWorkspaceDocumentType>;
+  folders?: Maybe<Array<Maybe<WorkspaceDocumentFolderType>>>;
+  path?: Maybe<Array<Maybe<WorkspaceDocumentFolderType>>>;
+};
+
+export type WorkspaceDocumentFolderType = {
+  __typename?: 'WorkspaceDocumentFolderType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdByName?: Maybe<Scalars['String']['output']>;
+  deletedAt?: Maybe<Scalars['String']['output']>;
+  deletedByName?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  parentId?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedByName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceDocumentLockType = {
+  __typename?: 'WorkspaceDocumentLockType';
+  expiresAt?: Maybe<Scalars['String']['output']>;
+  isMine?: Maybe<Scalars['Boolean']['output']>;
+  lockedAt?: Maybe<Scalars['String']['output']>;
+  note?: Maybe<Scalars['String']['output']>;
+  userName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceDocumentTrashType = {
+  __typename?: 'WorkspaceDocumentTrashType';
+  documents?: Maybe<Array<Maybe<WorkspaceDocumentType>>>;
+  folders?: Maybe<Array<Maybe<WorkspaceDocumentFolderType>>>;
+};
+
+export type WorkspaceDocumentType = {
+  __typename?: 'WorkspaceDocumentType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdByName?: Maybe<Scalars['String']['output']>;
+  currentVersionNumber?: Maybe<Scalars['Int']['output']>;
+  deletedAt?: Maybe<Scalars['String']['output']>;
+  deletedByName?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  fileName?: Maybe<Scalars['String']['output']>;
+  folderId?: Maybe<Scalars['String']['output']>;
+  folderName?: Maybe<Scalars['String']['output']>;
+  lock?: Maybe<WorkspaceDocumentLockType>;
+  mimeType?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  size?: Maybe<Scalars['Float']['output']>;
+  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedByName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceDocumentUploadType = {
+  __typename?: 'WorkspaceDocumentUploadType';
+  contentType?: Maybe<Scalars['String']['output']>;
+  documentId?: Maybe<Scalars['String']['output']>;
+  expiresAt?: Maybe<Scalars['String']['output']>;
+  uploadId?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceDocumentVersionType = {
+  __typename?: 'WorkspaceDocumentVersionType';
+  _id?: Maybe<Scalars['String']['output']>;
+  comment?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdByName?: Maybe<Scalars['String']['output']>;
+  fileName?: Maybe<Scalars['String']['output']>;
+  isCurrent?: Maybe<Scalars['Boolean']['output']>;
+  mimeType?: Maybe<Scalars['String']['output']>;
+  size?: Maybe<Scalars['Float']['output']>;
+  versionNumber?: Maybe<Scalars['Int']['output']>;
+};
+
+export type WorkspaceDocumentsInfoType = {
+  __typename?: 'WorkspaceDocumentsInfoType';
+  canManage?: Maybe<Scalars['Boolean']['output']>;
+  maxFileSize?: Maybe<Scalars['Float']['output']>;
+};
+
 export type WorkspaceKarkunType = {
   __typename?: 'WorkspaceKarkunType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -3539,6 +4252,164 @@ export type WorkspaceKarkunType = {
   imageUrl?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   parentName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceMeetingActionItemInput = {
+  agendaItemId?: InputMaybe<Scalars['String']['input']>;
+  assigneeId?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  dueDate?: InputMaybe<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
+};
+
+export type WorkspaceMeetingActionItemType = {
+  __typename?: 'WorkspaceMeetingActionItemType';
+  _id?: Maybe<Scalars['String']['output']>;
+  agendaItemId?: Maybe<Scalars['String']['output']>;
+  assigneeId?: Maybe<Scalars['String']['output']>;
+  assigneeName?: Maybe<Scalars['String']['output']>;
+  canChangeStatus?: Maybe<Scalars['Boolean']['output']>;
+  completedAt?: Maybe<Scalars['String']['output']>;
+  completedByName?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdByName?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  dueDate?: Maybe<Scalars['String']['output']>;
+  meetingId?: Maybe<Scalars['String']['output']>;
+  meetingTitle?: Maybe<Scalars['String']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceMeetingActivityType = {
+  __typename?: 'WorkspaceMeetingActivityType';
+  _id?: Maybe<Scalars['String']['output']>;
+  action?: Maybe<Scalars['String']['output']>;
+  at?: Maybe<Scalars['String']['output']>;
+  details?: Maybe<Scalars['String']['output']>;
+  entityId?: Maybe<Scalars['String']['output']>;
+  entityType?: Maybe<Scalars['String']['output']>;
+  meetingId?: Maybe<Scalars['String']['output']>;
+  userName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceMeetingAgendaItemInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  durationMinutes?: InputMaybe<Scalars['Int']['input']>;
+  presenterId?: InputMaybe<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
+};
+
+export type WorkspaceMeetingAgendaItemType = {
+  __typename?: 'WorkspaceMeetingAgendaItemType';
+  _id?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  durationMinutes?: Maybe<Scalars['Int']['output']>;
+  presenterId?: Maybe<Scalars['String']['output']>;
+  presenterName?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceMeetingAttachmentType = {
+  __typename?: 'WorkspaceMeetingAttachmentType';
+  _id?: Maybe<Scalars['String']['output']>;
+  canDelete?: Maybe<Scalars['Boolean']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdByName?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  fileName?: Maybe<Scalars['String']['output']>;
+  mimeType?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  size?: Maybe<Scalars['Float']['output']>;
+};
+
+export type WorkspaceMeetingAttendanceInput = {
+  note?: InputMaybe<Scalars['String']['input']>;
+  participantId: Scalars['String']['input'];
+  status?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type WorkspaceMeetingDownloadType = {
+  __typename?: 'WorkspaceMeetingDownloadType';
+  fileName?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceMeetingInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  endsAt: Scalars['String']['input'];
+  location?: InputMaybe<Scalars['String']['input']>;
+  onlineUrl?: InputMaybe<Scalars['String']['input']>;
+  startsAt: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+};
+
+export type WorkspaceMeetingMemberType = {
+  __typename?: 'WorkspaceMeetingMemberType';
+  isCoordinator?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  participantId?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceMeetingParticipantType = {
+  __typename?: 'WorkspaceMeetingParticipantType';
+  attendanceMarkedAt?: Maybe<Scalars['String']['output']>;
+  attendanceMarkedByName?: Maybe<Scalars['String']['output']>;
+  attendanceNote?: Maybe<Scalars['String']['output']>;
+  attendanceStatus?: Maybe<Scalars['String']['output']>;
+  isMe?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  participantId?: Maybe<Scalars['String']['output']>;
+  role?: Maybe<Scalars['String']['output']>;
+  rsvpComment?: Maybe<Scalars['String']['output']>;
+  rsvpRespondedAt?: Maybe<Scalars['String']['output']>;
+  rsvpStatus?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceMeetingType = {
+  __typename?: 'WorkspaceMeetingType';
+  _id?: Maybe<Scalars['String']['output']>;
+  agenda?: Maybe<Array<Maybe<WorkspaceMeetingAgendaItemType>>>;
+  attachmentCount?: Maybe<Scalars['Int']['output']>;
+  cancellationReason?: Maybe<Scalars['String']['output']>;
+  cancelledAt?: Maybe<Scalars['String']['output']>;
+  cancelledByName?: Maybe<Scalars['String']['output']>;
+  completedAt?: Maybe<Scalars['String']['output']>;
+  completedByName?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdByName?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  endsAt?: Maybe<Scalars['String']['output']>;
+  location?: Maybe<Scalars['String']['output']>;
+  minutes?: Maybe<Scalars['String']['output']>;
+  minutesUpdatedAt?: Maybe<Scalars['String']['output']>;
+  minutesUpdatedByName?: Maybe<Scalars['String']['output']>;
+  myRsvpStatus?: Maybe<Scalars['String']['output']>;
+  onlineUrl?: Maybe<Scalars['String']['output']>;
+  openActionItemCount?: Maybe<Scalars['Int']['output']>;
+  participants?: Maybe<Array<Maybe<WorkspaceMeetingParticipantType>>>;
+  startsAt?: Maybe<Scalars['String']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  timeZone?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedByName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceMeetingUploadType = {
+  __typename?: 'WorkspaceMeetingUploadType';
+  contentType?: Maybe<Scalars['String']['output']>;
+  expiresAt?: Maybe<Scalars['String']['output']>;
+  uploadId?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceMeetingsInfoType = {
+  __typename?: 'WorkspaceMeetingsInfoType';
+  canManage?: Maybe<Scalars['Boolean']['output']>;
+  maxFileSize?: Maybe<Scalars['Float']['output']>;
+  myParticipantId?: Maybe<Scalars['String']['output']>;
+  timeZone?: Maybe<Scalars['String']['output']>;
 };
 
 export type WorkspaceMonitoringAlertType = {
@@ -3585,6 +4456,153 @@ export type WorkspaceNightStayType = {
   visitorImageThumbnailUrl?: Maybe<Scalars['String']['output']>;
   visitorImageUrl?: Maybe<Scalars['String']['output']>;
   visitorName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspacePollActivityType = {
+  __typename?: 'WorkspacePollActivityType';
+  _id?: Maybe<Scalars['String']['output']>;
+  action?: Maybe<Scalars['String']['output']>;
+  at?: Maybe<Scalars['String']['output']>;
+  details?: Maybe<Scalars['String']['output']>;
+  entityId?: Maybe<Scalars['String']['output']>;
+  entityType?: Maybe<Scalars['String']['output']>;
+  pollId?: Maybe<Scalars['String']['output']>;
+  userName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspacePollAnswerInput = {
+  optionIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  questionId: Scalars['String']['input'];
+};
+
+export type WorkspacePollAnswerType = {
+  __typename?: 'WorkspacePollAnswerType';
+  optionIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  questionId?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspacePollInput = {
+  anonymous?: InputMaybe<Scalars['Boolean']['input']>;
+  closesAt: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  eligibleVoterIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  questions?: InputMaybe<Array<InputMaybe<WorkspacePollQuestionInput>>>;
+  showResultsWhileOpen?: InputMaybe<Scalars['Boolean']['input']>;
+  title: Scalars['String']['input'];
+};
+
+export type WorkspacePollMemberType = {
+  __typename?: 'WorkspacePollMemberType';
+  isCoordinator?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  voterId?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspacePollOptionInput = {
+  _id?: InputMaybe<Scalars['String']['input']>;
+  text: Scalars['String']['input'];
+};
+
+export type WorkspacePollOptionResultType = {
+  __typename?: 'WorkspacePollOptionResultType';
+  count?: Maybe<Scalars['Int']['output']>;
+  optionId?: Maybe<Scalars['String']['output']>;
+  percentage?: Maybe<Scalars['Float']['output']>;
+  text?: Maybe<Scalars['String']['output']>;
+  voters?: Maybe<Array<Maybe<WorkspacePollVoterType>>>;
+};
+
+export type WorkspacePollOptionType = {
+  __typename?: 'WorkspacePollOptionType';
+  _id?: Maybe<Scalars['String']['output']>;
+  text?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspacePollQuestionInput = {
+  _id?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  maxChoices?: InputMaybe<Scalars['Int']['input']>;
+  minChoices?: InputMaybe<Scalars['Int']['input']>;
+  options: Array<InputMaybe<WorkspacePollOptionInput>>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
+  text: Scalars['String']['input'];
+  type?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type WorkspacePollQuestionResultType = {
+  __typename?: 'WorkspacePollQuestionResultType';
+  answeredCount?: Maybe<Scalars['Int']['output']>;
+  options?: Maybe<Array<Maybe<WorkspacePollOptionResultType>>>;
+  questionId?: Maybe<Scalars['String']['output']>;
+  text?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspacePollQuestionType = {
+  __typename?: 'WorkspacePollQuestionType';
+  _id?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  maxChoices?: Maybe<Scalars['Int']['output']>;
+  minChoices?: Maybe<Scalars['Int']['output']>;
+  options?: Maybe<Array<Maybe<WorkspacePollOptionType>>>;
+  required?: Maybe<Scalars['Boolean']['output']>;
+  text?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspacePollResultsType = {
+  __typename?: 'WorkspacePollResultsType';
+  anonymous?: Maybe<Scalars['Boolean']['output']>;
+  closedAt?: Maybe<Scalars['String']['output']>;
+  eligibleCount?: Maybe<Scalars['Int']['output']>;
+  nonVoters?: Maybe<Array<Maybe<WorkspacePollVoterType>>>;
+  pollId?: Maybe<Scalars['String']['output']>;
+  questions?: Maybe<Array<Maybe<WorkspacePollQuestionResultType>>>;
+  status?: Maybe<Scalars['String']['output']>;
+  totalVoters?: Maybe<Scalars['Int']['output']>;
+  turnout?: Maybe<Scalars['Float']['output']>;
+};
+
+export type WorkspacePollType = {
+  __typename?: 'WorkspacePollType';
+  _id?: Maybe<Scalars['String']['output']>;
+  anonymous?: Maybe<Scalars['Boolean']['output']>;
+  canSeeResults?: Maybe<Scalars['Boolean']['output']>;
+  cancellationReason?: Maybe<Scalars['String']['output']>;
+  cancelledAt?: Maybe<Scalars['String']['output']>;
+  cancelledByName?: Maybe<Scalars['String']['output']>;
+  closedAt?: Maybe<Scalars['String']['output']>;
+  closedByName?: Maybe<Scalars['String']['output']>;
+  closesAt?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdByName?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  eligibleCount?: Maybe<Scalars['Int']['output']>;
+  eligibleVoterIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  hasVoted?: Maybe<Scalars['Boolean']['output']>;
+  isEligible?: Maybe<Scalars['Boolean']['output']>;
+  myAnswers?: Maybe<Array<Maybe<WorkspacePollAnswerType>>>;
+  openedAt?: Maybe<Scalars['String']['output']>;
+  questions?: Maybe<Array<Maybe<WorkspacePollQuestionType>>>;
+  showResultsWhileOpen?: Maybe<Scalars['Boolean']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedByName?: Maybe<Scalars['String']['output']>;
+  voteCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type WorkspacePollVoterType = {
+  __typename?: 'WorkspacePollVoterType';
+  hasVoted?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  voterId?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspacePollsInfoType = {
+  __typename?: 'WorkspacePollsInfoType';
+  canManage?: Maybe<Scalars['Boolean']['output']>;
+  myVoterId?: Maybe<Scalars['String']['output']>;
 };
 
 export type WorkspaceStayHistoryItemType = {

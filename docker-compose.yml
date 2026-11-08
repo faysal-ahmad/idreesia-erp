@@ -48,7 +48,8 @@ services:
       retries: 3
 
   # The RustFS image has no mc, so the default bucket is created with the
-  # AWS CLI instead.
+  # AWS CLI instead. CORS lets the browser PUT files straight to presigned
+  # URLs (DMS direct uploads); dev-only, so any origin is allowed.
   rustfs-defaultbuckets:
     image: amazon/aws-cli:2.22.0
     depends_on:
@@ -63,6 +64,7 @@ services:
       aws --endpoint-url http://rustfs:9000 s3 mb s3://idreesia-files;
       aws --endpoint-url http://rustfs:9000 s3 mb s3://rocketchat;
       aws --endpoint-url http://rustfs:9000 s3api put-bucket-policy --bucket idreesia-files --policy '{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Action\":[\"s3:GetObject\"],\"Resource\":[\"arn:aws:s3:::idreesia-files/people-images/*\",\"arn:aws:s3:::idreesia-files/stock-item-images/*\"]}]}';
+      aws --endpoint-url http://rustfs:9000 s3api put-bucket-cors --bucket idreesia-files --cors-configuration '{\"CORSRules\":[{\"AllowedOrigins\":[\"*\"],\"AllowedMethods\":[\"GET\",\"PUT\",\"HEAD\"],\"AllowedHeaders\":[\"*\"],\"ExposeHeaders\":[\"ETag\"],\"MaxAgeSeconds\":3000}]}';
       exit 0;
       "
 

@@ -5,7 +5,7 @@ import { getFileStorageConfig } from './config';
 let internalClient: S3Client | null = null;
 let publicClient: S3Client | null = null;
 
-const createClient = (endpoint: string) => {
+const createClient = (endpoint: string, signingOnly = false) => {
   const { region, accessKeyId, secretAccessKey, forcePathStyle } =
     getFileStorageConfig();
 
@@ -14,6 +14,11 @@ const createClient = (endpoint: string) => {
     region,
     forcePathStyle,
     credentials: { accessKeyId, secretAccessKey },
+    // By default the SDK adds a checksum of the (empty) body to presigned PUT
+    // URLs, which then rejects the browser's real upload.
+    ...(signingOnly
+      ? { requestChecksumCalculation: 'WHEN_REQUIRED' as const }
+      : {}),
   });
 };
 
@@ -28,7 +33,7 @@ export function getInternalClient() {
 /** Client used only to sign URLs that the browser will open. */
 export function getPublicClient() {
   if (!publicClient) {
-    publicClient = createClient(getFileStorageConfig().publicEndpoint);
+    publicClient = createClient(getFileStorageConfig().publicEndpoint, true);
   }
   return publicClient;
 }

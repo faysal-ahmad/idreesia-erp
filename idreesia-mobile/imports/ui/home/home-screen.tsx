@@ -18,9 +18,8 @@ import { useHistory } from '../router';
 import { WorkspacesPaths } from '../workspaces/paths';
 import { MOBILE_MY_COMMITTEES } from './gql';
 
-// What each workspace offers, as in the web's Workspaces sidebar: Members
-// always, the other features only when the committee has that
-// feature enabled.
+// What each workspace offers, as in the web's Workspaces sidebar: each
+// feature only when the committee has it enabled.
 interface WorkspaceItem {
   key: string;
   title: string;
@@ -32,12 +31,16 @@ const getWorkspaceItems = (
   committeeId: string,
   features: (string | null)[] | null | undefined,
 ): WorkspaceItem[] => [
-  {
-    key: 'members',
-    title: 'Members',
-    icon: <TeamOutline />,
-    path: WorkspacesPaths.committeeMembers(committeeId),
-  },
+  ...(features?.includes(CommitteeFeatureKeys.MEMBERS)
+    ? [
+        {
+          key: 'members',
+          title: 'Members',
+          icon: <TeamOutline />,
+          path: WorkspacesPaths.committeeMembers(committeeId),
+        },
+      ]
+    : []),
   ...(features?.includes(CommitteeFeatureKeys.DISCUSSIONS)
     ? [
         {

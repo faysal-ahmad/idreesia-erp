@@ -99,6 +99,7 @@ export type CityType = {
 
 export type CommitteeFeatureType = {
   __typename?: 'CommitteeFeatureType';
+  category?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   key?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;

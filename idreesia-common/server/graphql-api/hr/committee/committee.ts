@@ -18,6 +18,7 @@ type CommitteeFeatureType {
   key: String
   name: String
   description: String
+  category: String
 }
 
 type CommitteeType {

@@ -1015,7 +1015,7 @@ export type CommitteeByIdQuery = { committeeById: { _id: string | null, name: st
 export type AllCommitteeFeaturesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllCommitteeFeaturesQuery = { allCommitteeFeatures: Array<{ key: string | null, name: string | null, description: string | null } | null> | null };
+export type AllCommitteeFeaturesQuery = { allCommitteeFeatures: Array<{ key: string | null, name: string | null, description: string | null, category: string | null } | null> | null };
 
 export type EnableCommitteeFeatureMutationVariables = Exact<{
   committeeId: string;

@@ -449,6 +449,7 @@ export type CityTypeResolvers<ContextType = any, ParentType extends ResolversPar
 }>;
 
 export type CommitteeFeatureTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['CommitteeFeatureType'] = ResolversParentTypes['CommitteeFeatureType']> = ResolversObject<{
+  category?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   key?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;

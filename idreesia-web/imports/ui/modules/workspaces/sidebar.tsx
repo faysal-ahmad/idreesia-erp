@@ -130,12 +130,16 @@ const Sidebar = ({ history }: SidebarProps) => {
     icon: <ClusterOutlined style={IconStyle} />,
     label: committee.name,
     children: [
-      {
-        key: `members-${committee._id}`,
-        icon: <TeamOutlined style={IconStyle} />,
-        label: 'Members',
-      },
-      // Only for committees with the Discussions feature enabled.
+      // Each item only for committees with that feature enabled.
+      ...(committee.features?.includes(CommitteeFeatureKeys.MEMBERS)
+        ? [
+            {
+              key: `members-${committee._id}`,
+              icon: <TeamOutlined style={IconStyle} />,
+              label: 'Members',
+            },
+          ]
+        : []),
       ...(committee.features?.includes(CommitteeFeatureKeys.DISCUSSIONS)
         ? [
             {

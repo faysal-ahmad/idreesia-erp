@@ -17,6 +17,25 @@ const ItemTitle = ({ workspace, title }: { workspace?: string | null; title?: st
   </div>
 );
 
+/** Whether the user has voted; nothing for polls they can't vote in. */
+const pollVoteTag = (poll: { hasVoted?: boolean | null; isEligible?: boolean | null }) => {
+  if (poll.hasVoted) {
+    return (
+      <Tag color="success" fill="outline">
+        Voted
+      </Tag>
+    );
+  }
+  if (poll.isEligible) {
+    return (
+      <Tag color="warning" fill="outline">
+        Not voted
+      </Tag>
+    );
+  }
+  return undefined;
+};
+
 /** Home tab, the default screen after signing in. */
 export const HomeScreen = () => {
   const history = useHistory();
@@ -80,17 +99,7 @@ export const HomeScreen = () => {
                 key={poll._id}
                 className="home-item"
                 description={describeClosing(poll)}
-                extra={
-                  poll.hasVoted ? (
-                    <Tag color="success" fill="outline">
-                      Voted
-                    </Tag>
-                  ) : poll.isEligible ? (
-                    <Tag color="warning" fill="outline">
-                      Not voted
-                    </Tag>
-                  ) : undefined
-                }
+                extra={pollVoteTag(poll)}
                 onClick={() =>
                   history.push(WorkspacesPaths.committeePoll(poll.committeeId, poll._id))
                 }

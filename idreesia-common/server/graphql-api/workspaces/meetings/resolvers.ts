@@ -456,10 +456,7 @@ const resolvers: ResolverMap = {
       const access = await getMeetingsAccess(user, committeeId, {
         coordinator: true,
       });
-      const attachment = await assertAttachmentInWorkspace(
-        access,
-        attachmentId
-      );
+      await assertAttachmentInWorkspace(access, attachmentId);
       await deleteAttachment(attachmentId, access.userId);
       return true;
     },

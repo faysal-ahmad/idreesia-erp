@@ -247,7 +247,7 @@ export async function listCommitteeMeetings(
   const now = new Date();
   let status: MeetingStatusValue[] | undefined;
   let fromDate = toDateOrUndefined(from);
-  let toDate = toDateOrUndefined(to);
+  const toDate = toDateOrUndefined(to);
   let endedBy: Date | undefined;
   let sortOrder: 'asc' | 'desc' = 'asc';
 

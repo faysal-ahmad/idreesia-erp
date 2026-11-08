@@ -60,6 +60,9 @@ import './56-create-security-server-usage-indexes';
 import './57-create-chat-user-indexes';
 import './58-rename-hr-setup-data-permission';
 import './59-drop-unused-collections';
+import './60-create-dms-indexes';
+import './61-create-meetings-indexes';
+import './62-create-polls-indexes';
 
 Migrations.config({
   log: true,

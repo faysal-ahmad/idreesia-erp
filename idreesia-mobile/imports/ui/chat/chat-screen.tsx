@@ -2,8 +2,8 @@ import React, { useCallback, useRef, useState } from 'react';
 import { Dialog } from 'antd-mobile';
 import { EditSOutline } from 'antd-mobile-icons';
 
+import { MessageComposer } from '../components';
 import { Page } from '../layout';
-import { ChatComposer } from './chat-composer';
 import { addRoomId, clearIdentity, loadIdentity, type ChatIdentity } from './chat-identity';
 import { ChatIdentityForm } from './chat-identity-form';
 import { ChatThread } from './chat-thread';
@@ -61,7 +61,7 @@ const Conversation = ({ identity, onChangeNumber }: { identity: ChatIdentity; on
     <Page
       backTo={BACK_TO}
       footer={
-        <ChatComposer
+        <MessageComposer
           onSendFile={(file, fileName) => sendToRoom(roomId => uploadFile(token, roomId, file, fileName))}
           onSendText={text => sendToRoom(roomId => sendTextMessage(token, roomId, text))}
         />

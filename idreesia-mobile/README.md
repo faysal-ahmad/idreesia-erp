@@ -1,4 +1,4 @@
-# Idreesia Mobile
+# Eastern Breeze ERP (mobile)
 
 Meteor (Cordova) mobile client for Idreesia ERP, built with
 [antd-mobile](https://mobile.ant.design/).
@@ -110,4 +110,4 @@ On iOS, allow the **Local Network** prompt the first time the app runs. The
 app reaches the backend, Rocket.Chat and the mobile server through your Mac's
 LAN address. If you tapped "Don't Allow", hot code push silently stops: saved
 changes never reach the phone. Turn it back on in Settings → Privacy &
-Security → Local Network → Idreesia Mobile.
+Security → Local Network → Eastern Breeze ERP.

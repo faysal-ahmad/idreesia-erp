@@ -1,0 +1,40 @@
+/* Home tab (imports/ui/home/home-screen.tsx): compact meeting and poll rows */
+
+.home-item .adm-list-item-content-main {
+  min-width: 0;
+  padding: 8px 0;
+}
+
+.home-item .adm-list-item-description {
+  overflow: hidden;
+  margin-top: 2px;
+  font-size: 0.7647rem; /* 13px */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-item-title {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.home-item-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 75%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-item-workspace {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,0 +1,23 @@
+/* Monitoring Profiles (monitoring-profiles-screen.tsx). Loaded from client/main.tsx. */
+
+.monitoring-profile-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface-muted);
+}
+
+.monitoring-profile-test-tag {
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* "Show test" toggle on the right of the profile count */
+.monitoring-profiles-test-toggle {
+  --icon-size: 18px;
+  --font-size: 0.7647rem; /* 13px */
+  --gap: 6px;
+
+  flex-shrink: 0;
+  color: var(--app-color-text-secondary);
+}

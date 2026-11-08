@@ -8,12 +8,26 @@ import {
 import { Committees } from 'meteor/idreesia-common/server/collections/hr';
 
 import { discussionsHandler } from './discussions';
+import { documentsHandler } from './documents';
+import { meetingsHandler } from './meetings';
+import { pollsHandler } from './polls';
+import { membersHandler } from './members-feature';
+import { nightStayReportHandler } from './night-stay-report';
+import { monitoringAlertsHandler } from './monitoring-alerts';
+import { monitoringProfilesHandler } from './monitoring-profiles';
 import type { CommitteeDoc, CommitteeFeatureHandler } from './types';
 
 // Every feature needs a handler; the Record type makes a missing one a
 // compile error when a feature is added to the constants.
 const featureHandlers: Record<CommitteeFeatureKey, CommitteeFeatureHandler> = {
+  [CommitteeFeatureKeys.MEMBERS]: membersHandler,
   [CommitteeFeatureKeys.DISCUSSIONS]: discussionsHandler,
+  [CommitteeFeatureKeys.DOCUMENTS]: documentsHandler,
+  [CommitteeFeatureKeys.MEETINGS]: meetingsHandler,
+  [CommitteeFeatureKeys.POLLS]: pollsHandler,
+  [CommitteeFeatureKeys.NIGHT_STAY_REPORT]: nightStayReportHandler,
+  [CommitteeFeatureKeys.MONITORING_ALERTS]: monitoringAlertsHandler,
+  [CommitteeFeatureKeys.MONITORING_PROFILES]: monitoringProfilesHandler,
 };
 
 const loadCommittee = async (
@@ -98,7 +112,7 @@ export const enableCommitteeFeature = async (
 ): Promise<true> => {
   const { committee, handler } = await loadCommittee(committeeId, featureKey);
   const featureData = await runHandler('enable', () =>
-    handler.enable(committee)
+    handler.enable(committee, userId)
   );
 
   await Committees.updateAsync(committeeId, {
@@ -120,7 +134,7 @@ export const disableCommitteeFeature = async (
 ): Promise<true> => {
   const { committee, handler } = await loadCommittee(committeeId, featureKey);
   const featureData = await runHandler('disable', () =>
-    handler.disable(committee)
+    handler.disable(committee, userId)
   );
 
   await Committees.updateAsync(committeeId, {

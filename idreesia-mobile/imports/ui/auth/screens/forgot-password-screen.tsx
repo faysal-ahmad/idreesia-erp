@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, Result, Toast } from 'antd-mobile';
+import { Button, Form, Input, Result } from 'antd-mobile';
+import { showError } from '../../layout';
 import { Link, useHistory } from '../../router';
 
 import { AuthLayout } from '../../components';
-import { forgotPassword, getErrorMessage } from '../accounts';
+import { forgotPassword } from '../accounts';
 
 interface ForgotPasswordFormValues {
   email: string;
@@ -21,10 +22,7 @@ export const ForgotPasswordScreen = () => {
       await forgotPassword(email);
       setSentTo(email.trim());
     } catch (error) {
-      Toast.show({
-        icon: 'fail',
-        content: getErrorMessage(error, 'Could not send the reset email.'),
-      });
+      showError(error, 'Could not send the reset email.');
     } finally {
       setSubmitting(false);
     }

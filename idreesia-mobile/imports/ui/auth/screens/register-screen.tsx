@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, Result, Toast } from 'antd-mobile';
+import { Button, Form, Input, Result } from 'antd-mobile';
 import { useMutation } from '@apollo/client/react';
+import { showError } from '../../layout';
 import { Link, useHistory } from '../../router';
 
 import { AuthLayout } from '../../components';
 import { MOBILE_REGISTER_USER } from '../../gql';
-import { getErrorMessage } from '../accounts';
 
 interface RegisterFormValues {
   displayName: string;
@@ -25,10 +25,7 @@ export const RegisterScreen = () => {
       });
       setRegisteredEmail(email.trim());
     } catch (error) {
-      Toast.show({
-        icon: 'fail',
-        content: getErrorMessage(error, 'Registration failed.'),
-      });
+      showError(error, 'Registration failed.');
     }
   };
 

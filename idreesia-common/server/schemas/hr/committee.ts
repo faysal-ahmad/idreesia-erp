@@ -46,6 +46,27 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  // Documents feature: the DMS workspace made for this committee. Kept while
+  // the feature is disabled (the workspace is soft-deleted) so re-enabling
+  // restores it, with its documents, instead of creating another.
+  dmsWorkspaceId: {
+    type: String,
+    optional: true,
+  },
+  // Meetings feature: the meetings workspace made for this committee. Kept
+  // while the feature is disabled (the workspace is soft-deleted) so
+  // re-enabling restores it, with its meetings.
+  meetingsWorkspaceId: {
+    type: String,
+    optional: true,
+  },
+  // Polls feature: the polls workspace made for this committee. Kept while
+  // the feature is disabled (the workspace is soft-deleted) so re-enabling
+  // restores it, with its polls.
+  pollsWorkspaceId: {
+    type: String,
+    optional: true,
+  },
 })
   .extend(identifiable)
   .extend(timestamps);

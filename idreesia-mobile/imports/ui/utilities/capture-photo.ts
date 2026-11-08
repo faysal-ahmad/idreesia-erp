@@ -6,8 +6,8 @@ import { CameraView } from '../components/camera-view';
 // Takes a photo with the device camera and returns it as a JPEG data URL,
 // scaled down so uploads stay small (the GraphQL body limit is 5 MB, and a
 // face search doesn't need more than ~1 megapixel). Resolves to null when the
-// user cancels. Camera only: picking an existing image is deliberately not
-// offered.
+// user cancels. Camera only: picking an existing image is a separate,
+// deliberate choice (pickPhoto in pick-photo.ts).
 //
 // - The browser build and the iOS app show a full-screen live camera
 //   (CameraView). In the iOS app this avoids the native camera screen, whose
@@ -18,10 +18,10 @@ import { CameraView } from '../components/camera-view';
 // - The Android app uses cordova-plugin-camera with the camera as the only
 //   source, until the in-app camera has been tested in Android's WebView.
 
-const MAX_DIMENSION = 1024;
-const JPEG_QUALITY = 0.85;
+export const MAX_DIMENSION = 1024;
+export const JPEG_QUALITY = 0.85;
 
-interface CordovaCamera {
+export interface CordovaCamera {
   getPicture(
     onSuccess: (imageData: string) => void,
     onError: (message: string) => void,
@@ -31,18 +31,21 @@ interface CordovaCamera {
 
 declare const Camera: {
   DestinationType: { DATA_URL: number };
-  PictureSourceType: { CAMERA: number };
+  PictureSourceType: { CAMERA: number; PHOTOLIBRARY: number };
   EncodingType: { JPEG: number };
   Direction: { BACK: number };
 };
 
-const getCordovaCamera = () =>
+export const getCordovaCamera = () =>
   (navigator as Navigator & { camera?: CordovaCamera }).camera;
 
-const cordovaPlatform = () =>
+export const cordovaPlatform = () =>
   (window as Window & { cordova?: { platformId?: string } }).cordova?.platformId;
 
-const captureWithCordova = (camera: CordovaCamera) =>
+type PictureSource = 'camera' | 'library';
+
+/** A JPEG data URL from cordova-plugin-camera's camera or photo library. */
+export const getCordovaPicture = (camera: CordovaCamera, source: PictureSource) =>
   new Promise<string | null>((resolve, reject) => {
     camera.getPicture(
       imageData => resolve(`data:image/jpeg;base64,${imageData}`),
@@ -55,7 +58,10 @@ const captureWithCordova = (camera: CordovaCamera) =>
       {
         quality: Math.round(JPEG_QUALITY * 100),
         destinationType: Camera.DestinationType.DATA_URL,
-        sourceType: Camera.PictureSourceType.CAMERA,
+        sourceType:
+          source === 'camera'
+            ? Camera.PictureSourceType.CAMERA
+            : Camera.PictureSourceType.PHOTOLIBRARY,
         encodingType: Camera.EncodingType.JPEG,
         cameraDirection: Camera.Direction.BACK,
         targetWidth: MAX_DIMENSION,
@@ -66,13 +72,17 @@ const captureWithCordova = (camera: CordovaCamera) =>
     );
   });
 
-/** Scales a captured frame down to MAX_DIMENSION and encodes it as JPEG. */
-const toScaledJpegDataUrl = (frame: HTMLCanvasElement) => {
-  const scale = Math.min(1, MAX_DIMENSION / Math.max(frame.width, frame.height));
+/** Scales an image down to MAX_DIMENSION and encodes it as JPEG. */
+export const toScaledJpegDataUrl = (
+  image: CanvasImageSource,
+  width: number,
+  height: number
+) => {
+  const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height));
   const canvas = document.createElement('canvas');
-  canvas.width = Math.round(frame.width * scale);
-  canvas.height = Math.round(frame.height * scale);
-  canvas.getContext('2d')?.drawImage(frame, 0, 0, canvas.width, canvas.height);
+  canvas.width = Math.round(width * scale);
+  canvas.height = Math.round(height * scale);
+  canvas.getContext('2d')?.drawImage(image, 0, 0, canvas.width, canvas.height);
   return canvas.toDataURL('image/jpeg', JPEG_QUALITY);
 };
 
@@ -84,13 +94,13 @@ const captureWithCameraView = () =>
     const onDone = (frame: HTMLCanvasElement | null) => {
       root.unmount();
       host.remove();
-      resolve(frame ? toScaledJpegDataUrl(frame) : null);
+      resolve(frame ? toScaledJpegDataUrl(frame, frame.width, frame.height) : null);
     };
     root.render(createElement(CameraView, { onDone }));
   });
 
 export const capturePhoto = (): Promise<string | null> => {
   const camera = getCordovaCamera();
-  if (camera && cordovaPlatform() === 'android') return captureWithCordova(camera);
+  if (camera && cordovaPlatform() === 'android') return getCordovaPicture(camera, 'camera');
   return captureWithCameraView();
 };

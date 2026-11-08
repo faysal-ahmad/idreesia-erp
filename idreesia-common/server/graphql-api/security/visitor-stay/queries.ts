@@ -57,6 +57,7 @@ export async function getVisitorStays(queryString: string) {
     city,
     stayReason,
     additionalInfo,
+    excludeCancelled,
     sortBy = DEFAULT_SORT_BY,
     sortOrder = DEFAULT_SORT_ORDER,
     pageIndex = DEFAULT_PAGE_INDEX,
@@ -80,6 +81,16 @@ export async function getVisitorStays(queryString: string) {
   if (!sortByColumnMapping[sortByText as keyof typeof sortByColumnMapping])
     throw new Error('Invalid column name passed for sortBy');
 
+  // Opt-in: the reports leave cancelled stays out, while a visitor's stay
+  // history and the stays list still show them.
+  if (excludeCancelled === 'true') {
+    pipeline.push({
+      $match: {
+        cancelledDate: { $exists: false },
+      },
+    });
+  }
+
   if (visitorIdText) {
     pipeline.push({
       $match: {
@@ -88,10 +99,13 @@ export async function getVisitorStays(queryString: string) {
     });
   }
 
+  // Stays that overlap the start / end range, including ones that started
+  // before the start date or run past the end date (e.g. a long stay that
+  // covers today matches a start date of today).
   if (startDateText) {
     pipeline.push({
       $match: {
-        fromDate: {
+        toDate: {
           $gte: startOfDay(parseDate(startDateText, Formats.DATE_FORMAT)),
         },
       },
@@ -100,7 +114,7 @@ export async function getVisitorStays(queryString: string) {
   if (endDateText) {
     pipeline.push({
       $match: {
-        toDate: {
+        fromDate: {
           $lte: endOfDay(parseDate(endDateText, Formats.DATE_FORMAT)),
         },
       },

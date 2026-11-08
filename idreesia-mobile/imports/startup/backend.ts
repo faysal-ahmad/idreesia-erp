@@ -13,6 +13,29 @@ const runtimeUrl = globalThis.__meteor_runtime_config__?.DDP_DEFAULT_CONNECTION_
 
 export const backendUrl = trimTrailingSlash(settingsUrl || runtimeUrl || '');
 
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1']);
+
+/**
+ * Makes a file URL from the backend (e.g. a photo in object storage) usable
+ * on this device. In development the backend builds them from
+ * S3_PUBLIC_ENDPOINT=http://localhost:9000, but on a phone "localhost" is the
+ * phone itself. When the app reaches the backend by the Mac's LAN address
+ * (scripts/run-mobile-device.mjs), point localhost URLs at that address too.
+ * Other URLs (Spaces, the CDN) are returned unchanged.
+ */
+export const toDeviceUrl = <T extends string | null | undefined>(url: T): T => {
+  if (!url || !backendUrl) return url;
+  try {
+    const backendHost = new URL(backendUrl).hostname;
+    const parsed = new URL(url);
+    if (!LOCAL_HOSTS.has(parsed.hostname) || LOCAL_HOSTS.has(backendHost)) return url;
+    parsed.hostname = backendHost;
+    return parsed.toString() as T;
+  } catch {
+    return url;
+  }
+};
+
 /**
  * accounts-base finishes a successful login by waiting for the global
  * Meteor.userAsync() to return a user before it clears loggingIn() and runs

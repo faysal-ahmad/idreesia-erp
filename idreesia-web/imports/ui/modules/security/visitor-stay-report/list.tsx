@@ -554,9 +554,13 @@ interface ListWithDataProps extends Omit<
 
 const ListWithData = (props: ListWithDataProps) => {
   const { queryString = '' } = props;
+  // Cancelled stays aren't part of the report.
+  const reportQueryString = queryString
+    ? `${queryString}&excludeCancelled=true`
+    : 'excludeCancelled=true';
   const { data, loading, refetch } = useQuery(PAGED_VISITOR_STAYS, {
     variables: {
-      queryString,
+      queryString: reportQueryString,
     },
   });
   const [fixCitySpelling] = useMutation(FIX_CITY_SPELLING, {

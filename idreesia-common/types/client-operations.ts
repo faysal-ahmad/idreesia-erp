@@ -154,6 +154,67 @@ export type VisitorFilter = {
   updatedBetween?: string | null | undefined;
 };
 
+export type WorkspaceMeetingActionItemInput = {
+  agendaItemId?: string | null | undefined;
+  assigneeId?: string | null | undefined;
+  description?: string | null | undefined;
+  dueDate?: string | null | undefined;
+  title: string;
+};
+
+export type WorkspaceMeetingAgendaItemInput = {
+  description?: string | null | undefined;
+  durationMinutes?: number | null | undefined;
+  presenterId?: string | null | undefined;
+  title: string;
+};
+
+export type WorkspaceMeetingAttendanceInput = {
+  note?: string | null | undefined;
+  participantId: string;
+  status?: string | null | undefined;
+};
+
+export type WorkspaceMeetingInput = {
+  description?: string | null | undefined;
+  endsAt: string;
+  location?: string | null | undefined;
+  onlineUrl?: string | null | undefined;
+  startsAt: string;
+  title: string;
+};
+
+export type WorkspacePollAnswerInput = {
+  optionIds?: Array<string | null | undefined> | null | undefined;
+  questionId: string;
+};
+
+export type WorkspacePollInput = {
+  anonymous?: boolean | null | undefined;
+  closesAt: string;
+  description?: string | null | undefined;
+  eligibleVoterIds?: Array<string | null | undefined> | null | undefined;
+  questions?: Array<WorkspacePollQuestionInput | null | undefined> | null | undefined;
+  showResultsWhileOpen?: boolean | null | undefined;
+  title: string;
+};
+
+export type WorkspacePollOptionInput = {
+  _id?: string | null | undefined;
+  text: string;
+};
+
+export type WorkspacePollQuestionInput = {
+  _id?: string | null | undefined;
+  description?: string | null | undefined;
+  maxChoices?: number | null | undefined;
+  minChoices?: number | null | undefined;
+  options: Array<WorkspacePollOptionInput | null | undefined>;
+  required?: boolean | null | undefined;
+  text: string;
+  type?: string | null | undefined;
+};
+
 export type AdminAllPhysicalStoresQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -188,24 +249,6 @@ export type SecurityDistinctStayAllowedByQueryVariables = Exact<{ [key: string]:
 
 
 export type SecurityDistinctStayAllowedByQuery = { distinctStayAllowedBy: Array<string | null> | null };
-
-export type MobileCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type MobileCurrentUserQuery = { currentUser: { _id: string | null, username: string | null, displayName: string | null, email: string | null, permissions: Array<string | null> | null, instances: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null } | null } | null } | null };
-
-export type MobileRegisterUserMutationVariables = Exact<{
-  displayName: string;
-  email: string;
-}>;
-
-
-export type MobileRegisterUserMutation = { registerUser: number | null };
-
-export type MobileUpdateLoginTimeMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type MobileUpdateLoginTimeMutation = { updateLoginTime: number | null };
 
 export type MobilePagedVisitorStaysQueryVariables = Exact<{
   queryString: string;
@@ -251,6 +294,898 @@ export type MobileVisitorStaysByVisitorIdQueryVariables = Exact<{
 
 
 export type MobileVisitorStaysByVisitorIdQuery = { pagedVisitorStaysByVisitorId: { totalResults: number | null, data: Array<{ _id: string | null, fromDate: string | null, numOfDays: number | null, cancelledDate: string | null } | null> | null } | null };
+
+export type MobileCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileCurrentUserQuery = { currentUser: { _id: string | null, username: string | null, displayName: string | null, email: string | null, permissions: Array<string | null> | null, instances: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null } | null } | null } | null };
+
+export type MobileRegisterUserMutationVariables = Exact<{
+  displayName: string;
+  email: string;
+}>;
+
+
+export type MobileRegisterUserMutation = { registerUser: number | null };
+
+export type MobileUpdateLoginTimeMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileUpdateLoginTimeMutation = { updateLoginTime: number | null };
+
+export type MobileWorkspaceReactToDiscussionMessageMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+  emoji: string;
+  shouldReact: boolean;
+}>;
+
+
+export type MobileWorkspaceReactToDiscussionMessageMutation = { workspaceReactToDiscussionMessage: boolean };
+
+export type MobileWorkspaceSetDiscussionMessageStarredMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+  starred: boolean;
+}>;
+
+
+export type MobileWorkspaceSetDiscussionMessageStarredMutation = { workspaceSetDiscussionMessageStarred: boolean };
+
+export type MobileWorkspaceSetDiscussionMessagePinnedMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+  pinned: boolean;
+}>;
+
+
+export type MobileWorkspaceSetDiscussionMessagePinnedMutation = { workspaceSetDiscussionMessagePinned: boolean };
+
+export type MobileWorkspaceEditDiscussionMessageMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+  text: string;
+}>;
+
+
+export type MobileWorkspaceEditDiscussionMessageMutation = { workspaceEditDiscussionMessage: boolean };
+
+export type MobileWorkspaceDeleteDiscussionMessageMutationVariables = Exact<{
+  committeeId: string;
+  messageId: string;
+}>;
+
+
+export type MobileWorkspaceDeleteDiscussionMessageMutation = { workspaceDeleteDiscussionMessage: boolean };
+
+export type MobileWorkspaceDiscussionThreadMessagesQueryVariables = Exact<{
+  committeeId: string;
+  threadId: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionThreadMessagesQuery = { workspaceDiscussionThreadMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null };
+
+export type MobileWorkspaceDiscussionMembersQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionMembersQuery = { workspaceDiscussionMembers: Array<{ username: string | null, name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null };
+
+export type MobileWorkspaceDiscussionPinnedMessagesQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionPinnedMessagesQuery = { workspaceDiscussionPinnedMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null };
+
+export type MobileWorkspaceDiscussionStarredMessagesQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionStarredMessagesQuery = { workspaceDiscussionStarredMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null };
+
+export type MobileWorkspaceDiscussionSearchMessagesQueryVariables = Exact<{
+  committeeId: string;
+  searchText: string;
+  offset?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspaceDiscussionSearchMessagesQuery = { workspaceDiscussionSearchMessages: { hasMore: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
+
+export type MobileDiscussionMessageFieldsFragment = { _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null };
+
+export type MobileWorkspaceDiscussionInfoQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionInfoQuery = { workspaceCommitteeById: { _id: string | null, name: string | null } | null, workspaceDiscussionInfo: { canPost: boolean | null, canPin: boolean | null } | null };
+
+export type MobileWorkspaceDiscussionSyncQueryVariables = Exact<{
+  committeeId: string;
+  since?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceDiscussionSyncQuery = { workspaceDiscussionSync: { deletedIds: Array<string | null> | null, syncedAt: string | null, hasOlder: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceDiscussionOlderMessagesQueryVariables = Exact<{
+  committeeId: string;
+  before: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionOlderMessagesQuery = { workspaceDiscussionOlderMessages: { hasMore: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceSendDiscussionMessageMutationVariables = Exact<{
+  committeeId: string;
+  text: string;
+  threadId?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceSendDiscussionMessageMutation = { workspaceSendDiscussionMessage: boolean };
+
+export type MobileWorkspaceDocumentFolderFieldsFragment = { _id: string | null, name: string | null, parentId: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null };
+
+export type MobileWorkspaceDocumentFieldsFragment = { _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, note: string | null, isMine: boolean | null } | null };
+
+export type MobileWorkspaceDocumentsInfoQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDocumentsInfoQuery = { workspaceDocumentsInfo: { canManage: boolean | null, maxFileSize: number | null } | null };
+
+export type MobileWorkspaceDocumentFolderContentsQueryVariables = Exact<{
+  committeeId: string;
+  folderId?: string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspaceDocumentFolderContentsQuery = { workspaceDocumentFolderContents: { path: Array<{ _id: string | null, name: string | null, parentId: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null } | null> | null, folders: Array<{ _id: string | null, name: string | null, parentId: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null } | null> | null, documents: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, note: string | null, isMine: boolean | null } | null } | null> | null } | null } | null };
+
+export type MobileWorkspaceDocumentFoldersQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDocumentFoldersQuery = { workspaceDocumentFolders: Array<{ _id: string | null, name: string | null, parentId: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null } | null> | null };
+
+export type MobileWorkspaceDocumentSearchQueryVariables = Exact<{
+  committeeId: string;
+  text: string;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspaceDocumentSearchQuery = { workspaceDocumentSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, note: string | null, isMine: boolean | null } | null } | null> | null } | null };
+
+export type MobileWorkspaceDocumentByIdQueryVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type MobileWorkspaceDocumentByIdQuery = { workspaceDocumentById: { _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, note: string | null, isMine: boolean | null } | null } | null };
+
+export type MobileWorkspaceDocumentVersionsQueryVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type MobileWorkspaceDocumentVersionsQuery = { workspaceDocumentVersions: Array<{ _id: string | null, versionNumber: number | null, fileName: string | null, mimeType: string | null, size: number | null, comment: string | null, isCurrent: boolean | null, createdAt: string | null, createdByName: string | null } | null> | null };
+
+export type MobileWorkspaceDocumentActivityQueryVariables = Exact<{
+  committeeId: string;
+  documentId?: string | null | undefined;
+  before?: string | null | undefined;
+  limit?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspaceDocumentActivityQuery = { workspaceDocumentActivity: Array<{ _id: string | null, action: string | null, userName: string | null, at: string | null, details: string | null } | null> | null };
+
+export type MobileWorkspaceDocumentTrashQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDocumentTrashQuery = { workspaceDocumentTrash: { folders: Array<{ _id: string | null, name: string | null, parentId: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null } | null> | null, documents: Array<{ _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, note: string | null, isMine: boolean | null } | null } | null> | null } | null };
+
+export type MobileWorkspaceCreateDocumentFolderMutationVariables = Exact<{
+  committeeId: string;
+  parentId?: string | null | undefined;
+  name: string;
+}>;
+
+
+export type MobileWorkspaceCreateDocumentFolderMutation = { workspaceCreateDocumentFolder: boolean | null };
+
+export type MobileWorkspaceRenameDocumentFolderMutationVariables = Exact<{
+  committeeId: string;
+  folderId: string;
+  name: string;
+}>;
+
+
+export type MobileWorkspaceRenameDocumentFolderMutation = { workspaceRenameDocumentFolder: boolean | null };
+
+export type MobileWorkspaceMoveDocumentFolderMutationVariables = Exact<{
+  committeeId: string;
+  folderId: string;
+  parentId?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceMoveDocumentFolderMutation = { workspaceMoveDocumentFolder: boolean | null };
+
+export type MobileWorkspaceTrashDocumentFolderMutationVariables = Exact<{
+  committeeId: string;
+  folderId: string;
+}>;
+
+
+export type MobileWorkspaceTrashDocumentFolderMutation = { workspaceTrashDocumentFolder: boolean | null };
+
+export type MobileWorkspaceCreateDocumentUploadMutationVariables = Exact<{
+  committeeId: string;
+  folderId?: string | null | undefined;
+  documentId?: string | null | undefined;
+  fileName: string;
+  mimeType?: string | null | undefined;
+  size: number;
+  comment?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceCreateDocumentUploadMutation = { workspaceCreateDocumentUpload: { uploadId: string | null, url: string | null, contentType: string | null } | null };
+
+export type MobileWorkspaceCompleteDocumentUploadMutationVariables = Exact<{
+  committeeId: string;
+  uploadId: string;
+}>;
+
+
+export type MobileWorkspaceCompleteDocumentUploadMutation = { workspaceCompleteDocumentUpload: { _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, note: string | null, isMine: boolean | null } | null } | null };
+
+export type MobileWorkspaceAbortDocumentUploadMutationVariables = Exact<{
+  committeeId: string;
+  uploadId: string;
+}>;
+
+
+export type MobileWorkspaceAbortDocumentUploadMutation = { workspaceAbortDocumentUpload: boolean | null };
+
+export type MobileWorkspaceUpdateDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  name: string;
+  description?: string | null | undefined;
+  tags?: Array<string | null | undefined> | string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceUpdateDocumentMutation = { workspaceUpdateDocument: boolean | null };
+
+export type MobileWorkspaceMoveDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  folderId?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceMoveDocumentMutation = { workspaceMoveDocument: boolean | null };
+
+export type MobileWorkspaceTrashDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type MobileWorkspaceTrashDocumentMutation = { workspaceTrashDocument: boolean | null };
+
+export type MobileWorkspaceDocumentDownloadUrlMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  versionId?: string | null | undefined;
+  inline?: boolean | null | undefined;
+}>;
+
+
+export type MobileWorkspaceDocumentDownloadUrlMutation = { workspaceDocumentDownloadUrl: { url: string | null, fileName: string | null } | null };
+
+export type MobileWorkspaceRestoreDocumentVersionMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  versionId: string;
+}>;
+
+
+export type MobileWorkspaceRestoreDocumentVersionMutation = { workspaceRestoreDocumentVersion: boolean | null };
+
+export type MobileWorkspaceDeleteDocumentVersionMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  versionId: string;
+}>;
+
+
+export type MobileWorkspaceDeleteDocumentVersionMutation = { workspaceDeleteDocumentVersion: boolean | null };
+
+export type MobileWorkspaceCheckOutDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  note?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceCheckOutDocumentMutation = { workspaceCheckOutDocument: boolean | null };
+
+export type MobileWorkspaceCheckInDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type MobileWorkspaceCheckInDocumentMutation = { workspaceCheckInDocument: boolean | null };
+
+export type MobileWorkspaceForceUnlockDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type MobileWorkspaceForceUnlockDocumentMutation = { workspaceForceUnlockDocument: boolean | null };
+
+export type MobileWorkspaceRestoreDocumentTrashItemMutationVariables = Exact<{
+  committeeId: string;
+  itemId: string;
+  newName?: string | null | undefined;
+  toRoot?: boolean | null | undefined;
+}>;
+
+
+export type MobileWorkspaceRestoreDocumentTrashItemMutation = { workspaceRestoreDocumentTrashItem: boolean | null };
+
+export type MobileWorkspacePurgeDocumentTrashItemMutationVariables = Exact<{
+  committeeId: string;
+  itemId: string;
+}>;
+
+
+export type MobileWorkspacePurgeDocumentTrashItemMutation = { workspacePurgeDocumentTrashItem: boolean | null };
+
+export type MobileWorkspaceEmptyDocumentTrashMutationVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceEmptyDocumentTrashMutation = { workspaceEmptyDocumentTrash: number | null };
+
+export type MobileMyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileMyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, description: string | null, features: Array<string | null> | null } | null> | null };
+
+export type MobileWorkspaceCreateMeetingMutationVariables = Exact<{
+  committeeId: string;
+  input: Types.WorkspaceMeetingInput;
+  participantIds?: Array<string | null | undefined> | string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceCreateMeetingMutation = { workspaceCreateMeeting: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceUpdateMeetingMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  input: Types.WorkspaceMeetingInput;
+}>;
+
+
+export type MobileWorkspaceUpdateMeetingMutation = { workspaceUpdateMeeting: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceCancelMeetingMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  reason?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceCancelMeetingMutation = { workspaceCancelMeeting: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceCompleteMeetingMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+}>;
+
+
+export type MobileWorkspaceCompleteMeetingMutation = { workspaceCompleteMeeting: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceReopenMeetingMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+}>;
+
+
+export type MobileWorkspaceReopenMeetingMutation = { workspaceReopenMeeting: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceDeleteMeetingMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+}>;
+
+
+export type MobileWorkspaceDeleteMeetingMutation = { workspaceDeleteMeeting: boolean | null };
+
+export type MobileWorkspaceSetMeetingParticipantsMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  participantIds: Array<string | null | undefined> | string;
+}>;
+
+
+export type MobileWorkspaceSetMeetingParticipantsMutation = { workspaceSetMeetingParticipants: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceSetMeetingParticipantRoleMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  participantId: string;
+  role: string;
+}>;
+
+
+export type MobileWorkspaceSetMeetingParticipantRoleMutation = { workspaceSetMeetingParticipantRole: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceRespondToMeetingMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  status: string;
+}>;
+
+
+export type MobileWorkspaceRespondToMeetingMutation = { workspaceRespondToMeeting: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceMarkMeetingAttendanceMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  entries: Array<Types.WorkspaceMeetingAttendanceInput | null | undefined> | Types.WorkspaceMeetingAttendanceInput;
+}>;
+
+
+export type MobileWorkspaceMarkMeetingAttendanceMutation = { workspaceMarkMeetingAttendance: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceAddMeetingAgendaItemMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  input: Types.WorkspaceMeetingAgendaItemInput;
+}>;
+
+
+export type MobileWorkspaceAddMeetingAgendaItemMutation = { workspaceAddMeetingAgendaItem: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceUpdateMeetingAgendaItemMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  agendaItemId: string;
+  input: Types.WorkspaceMeetingAgendaItemInput;
+}>;
+
+
+export type MobileWorkspaceUpdateMeetingAgendaItemMutation = { workspaceUpdateMeetingAgendaItem: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceRemoveMeetingAgendaItemMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  agendaItemId: string;
+}>;
+
+
+export type MobileWorkspaceRemoveMeetingAgendaItemMutation = { workspaceRemoveMeetingAgendaItem: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceReorderMeetingAgendaMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  agendaItemIds: Array<string | null | undefined> | string;
+}>;
+
+
+export type MobileWorkspaceReorderMeetingAgendaMutation = { workspaceReorderMeetingAgenda: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceSetMeetingMinutesMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  text?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceSetMeetingMinutesMutation = { workspaceSetMeetingMinutes: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceCreateMeetingAttachmentUploadMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  fileName: string;
+  mimeType?: string | null | undefined;
+  size: number;
+}>;
+
+
+export type MobileWorkspaceCreateMeetingAttachmentUploadMutation = { workspaceCreateMeetingAttachmentUpload: { uploadId: string | null, url: string | null, contentType: string | null } | null };
+
+export type MobileWorkspaceCompleteMeetingAttachmentUploadMutationVariables = Exact<{
+  committeeId: string;
+  uploadId: string;
+}>;
+
+
+export type MobileWorkspaceCompleteMeetingAttachmentUploadMutation = { workspaceCompleteMeetingAttachmentUpload: { _id: string | null } | null };
+
+export type MobileWorkspaceAbortMeetingAttachmentUploadMutationVariables = Exact<{
+  committeeId: string;
+  uploadId: string;
+}>;
+
+
+export type MobileWorkspaceAbortMeetingAttachmentUploadMutation = { workspaceAbortMeetingAttachmentUpload: boolean | null };
+
+export type MobileWorkspaceMeetingAttachmentDownloadUrlMutationVariables = Exact<{
+  committeeId: string;
+  attachmentId: string;
+  inline?: boolean | null | undefined;
+}>;
+
+
+export type MobileWorkspaceMeetingAttachmentDownloadUrlMutation = { workspaceMeetingAttachmentDownloadUrl: { url: string | null, fileName: string | null } | null };
+
+export type MobileWorkspaceDeleteMeetingAttachmentMutationVariables = Exact<{
+  committeeId: string;
+  attachmentId: string;
+}>;
+
+
+export type MobileWorkspaceDeleteMeetingAttachmentMutation = { workspaceDeleteMeetingAttachment: boolean | null };
+
+export type MobileWorkspaceCreateMeetingActionItemMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  input: Types.WorkspaceMeetingActionItemInput;
+}>;
+
+
+export type MobileWorkspaceCreateMeetingActionItemMutation = { workspaceCreateMeetingActionItem: { _id: string | null, meetingId: string | null, meetingTitle: string | null, meetingEndsAt: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null } | null };
+
+export type MobileWorkspaceUpdateMeetingActionItemMutationVariables = Exact<{
+  committeeId: string;
+  actionItemId: string;
+  input: Types.WorkspaceMeetingActionItemInput;
+}>;
+
+
+export type MobileWorkspaceUpdateMeetingActionItemMutation = { workspaceUpdateMeetingActionItem: { _id: string | null, meetingId: string | null, meetingTitle: string | null, meetingEndsAt: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null } | null };
+
+export type MobileWorkspaceSetMeetingActionItemStatusMutationVariables = Exact<{
+  committeeId: string;
+  actionItemId: string;
+  status: string;
+}>;
+
+
+export type MobileWorkspaceSetMeetingActionItemStatusMutation = { workspaceSetMeetingActionItemStatus: { _id: string | null, meetingId: string | null, meetingTitle: string | null, meetingEndsAt: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null } | null };
+
+export type MobileWorkspaceDeleteMeetingActionItemMutationVariables = Exact<{
+  committeeId: string;
+  actionItemId: string;
+}>;
+
+
+export type MobileWorkspaceDeleteMeetingActionItemMutation = { workspaceDeleteMeetingActionItem: boolean | null };
+
+export type MobileWorkspaceMeetingFieldsFragment = { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null };
+
+export type MobileWorkspaceMeetingActionItemFieldsFragment = { _id: string | null, meetingId: string | null, meetingTitle: string | null, meetingEndsAt: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null };
+
+export type MobileWorkspaceMeetingsInfoQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceMeetingsInfoQuery = { workspaceMeetingsInfo: { canManage: boolean | null, myParticipantId: string | null, maxFileSize: number | null } | null };
+
+export type MobileWorkspaceMeetingMembersQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceMeetingMembersQuery = { workspaceMeetingMembers: Array<{ participantId: string | null, name: string | null, isCoordinator: boolean | null } | null> | null };
+
+export type MobileWorkspaceMeetingsQueryVariables = Exact<{
+  committeeId: string;
+  view?: string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspaceMeetingsQuery = { workspaceMeetings: { totalResults: number | null, data: Array<{ _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceMeetingByIdQueryVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+}>;
+
+
+export type MobileWorkspaceMeetingByIdQuery = { workspaceMeetingById: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, updatedAt: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type MobileWorkspaceMeetingAttachmentsQueryVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+}>;
+
+
+export type MobileWorkspaceMeetingAttachmentsQuery = { workspaceMeetingAttachments: Array<{ _id: string | null, name: string | null, fileName: string | null, mimeType: string | null, size: number | null, createdAt: string | null, createdByName: string | null, canDelete: boolean | null } | null> | null };
+
+export type MobileWorkspaceMeetingActionItemsQueryVariables = Exact<{
+  committeeId: string;
+  meetingId?: string | null | undefined;
+  assigneeId?: string | null | undefined;
+  status?: Array<string | null | undefined> | string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspaceMeetingActionItemsQuery = { workspaceMeetingActionItems: { totalResults: number | null, data: Array<{ _id: string | null, meetingId: string | null, meetingTitle: string | null, meetingEndsAt: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null } | null> | null } | null };
+
+export type MobileWorkspaceMeetingActivityQueryVariables = Exact<{
+  committeeId: string;
+  meetingId?: string | null | undefined;
+  before?: string | null | undefined;
+  limit?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspaceMeetingActivityQuery = { workspaceMeetingActivity: Array<{ _id: string | null, action: string | null, userName: string | null, at: string | null, details: string | null } | null> | null };
+
+export type MobileWorkspaceCommitteeMembersQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceCommitteeMembersQuery = { workspaceCommitteeById: { _id: string | null, name: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null } | null> | null } | null };
+
+export type MobileWorkspaceMonitoringAlertsQueryVariables = Exact<{
+  committeeId: string;
+  date: string;
+  includeTest?: boolean | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceMonitoringAlertsQuery = { workspaceMonitoringAlerts: { totalResults: number | null, data: Array<{ _id: string | null, timestamp: string | null, profileName: string | null, profileIsTest: boolean | null, channelName: string | null, similarityScore: number | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null };
+
+export type MobileWorkspaceMonitoringProfileFieldsFragment = { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null };
+
+export type MobileWorkspaceMonitoringProfileByIdQueryVariables = Exact<{
+  committeeId: string;
+  profileId: string;
+}>;
+
+
+export type MobileWorkspaceMonitoringProfileByIdQuery = { workspaceMonitoringProfileById: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null };
+
+export type UpdateMobileWorkspaceMonitoringProfileMutationVariables = Exact<{
+  committeeId: string;
+  profileId: string;
+  name: string;
+  isTest: boolean;
+}>;
+
+
+export type UpdateMobileWorkspaceMonitoringProfileMutation = { updateWorkspaceMonitoringProfile: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null };
+
+export type AddMobileWorkspaceMonitoringProfilePhotoMutationVariables = Exact<{
+  committeeId: string;
+  profileId: string;
+  imageData: string;
+}>;
+
+
+export type AddMobileWorkspaceMonitoringProfilePhotoMutation = { addWorkspaceMonitoringProfilePhoto: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null };
+
+export type RemoveMobileWorkspaceMonitoringProfilePhotoMutationVariables = Exact<{
+  committeeId: string;
+  profileId: string;
+  photoId: string;
+}>;
+
+
+export type RemoveMobileWorkspaceMonitoringProfilePhotoMutation = { removeWorkspaceMonitoringProfilePhoto: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null };
+
+export type MobileWorkspaceMonitoringProfilesQueryVariables = Exact<{
+  committeeId: string;
+  name?: string | null | undefined;
+  includeTest?: boolean | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceMonitoringProfilesQuery = { workspaceMonitoringProfiles: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceNightStayByIdQueryVariables = Exact<{
+  committeeId: string;
+  stayId: string;
+}>;
+
+
+export type MobileWorkspaceNightStayByIdQuery = { workspaceNightStayById: { _id: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, visitorName: string | null, visitorImageUrl: string | null, visitorImageThumbnailUrl: string | null, city: string | null, country: string | null, stayHistory: Array<{ _id: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null } | null> | null } | null };
+
+export type MobileWorkspaceNightStaysQueryVariables = Exact<{
+  committeeId: string;
+  stayDate: string;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceNightStaysQuery = { workspaceNightStays: { totalResults: number | null, data: Array<{ _id: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, visitorName: string | null, visitorImageUrl: string | null, visitorImageThumbnailUrl: string | null, city: string | null, country: string | null } | null> | null } | null };
+
+export type MobileWorkspacePollFieldsFragment = { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null };
+
+export type MobileWorkspacePollsInfoQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspacePollsInfoQuery = { workspacePollsInfo: { canManage: boolean | null, myVoterId: string | null } | null };
+
+export type MobileWorkspacePollMembersQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspacePollMembersQuery = { workspacePollMembers: Array<{ voterId: string | null, name: string | null, isCoordinator: boolean | null } | null> | null };
+
+export type MobileWorkspacePollsQueryVariables = Exact<{
+  committeeId: string;
+  view?: string | null | undefined;
+  text?: string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspacePollsQuery = { workspacePolls: { totalResults: number | null, data: Array<{ _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null> | null } | null };
+
+export type MobileWorkspacePollByIdQueryVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+}>;
+
+
+export type MobileWorkspacePollByIdQuery = { workspacePollById: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type MobileWorkspacePollResultsQueryVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+}>;
+
+
+export type MobileWorkspacePollResultsQuery = { workspacePollResults: { pollId: string | null, status: string | null, anonymous: boolean | null, closedAt: string | null, totalVoters: number | null, eligibleCount: number | null, turnout: number | null, nonVoters: Array<{ voterId: string | null, name: string | null } | null> | null, questions: Array<{ questionId: string | null, text: string | null, type: string | null, answeredCount: number | null, options: Array<{ optionId: string | null, text: string | null, count: number | null, percentage: number | null, voters: Array<{ voterId: string | null, name: string | null } | null> | null } | null> | null } | null> | null } | null };
+
+export type MobileWorkspacePollVotersQueryVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+}>;
+
+
+export type MobileWorkspacePollVotersQuery = { workspacePollVoters: Array<{ voterId: string | null, name: string | null, hasVoted: boolean | null } | null> | null };
+
+export type MobileWorkspacePollActivityQueryVariables = Exact<{
+  committeeId: string;
+  pollId?: string | null | undefined;
+  before?: string | null | undefined;
+  limit?: number | null | undefined;
+}>;
+
+
+export type MobileWorkspacePollActivityQuery = { workspacePollActivity: Array<{ _id: string | null, action: string | null, userName: string | null, at: string | null, details: string | null } | null> | null };
+
+export type MobileWorkspaceCreatePollMutationVariables = Exact<{
+  committeeId: string;
+  input: Types.WorkspacePollInput;
+}>;
+
+
+export type MobileWorkspaceCreatePollMutation = { workspaceCreatePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceUpdatePollMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+  input: Types.WorkspacePollInput;
+}>;
+
+
+export type MobileWorkspaceUpdatePollMutation = { workspaceUpdatePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceAddPollVotersMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+  voterIds: Array<string | null | undefined> | string;
+}>;
+
+
+export type MobileWorkspaceAddPollVotersMutation = { workspaceAddPollVoters: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceOpenPollMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+  closesAt?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceOpenPollMutation = { workspaceOpenPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceClosePollMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+}>;
+
+
+export type MobileWorkspaceClosePollMutation = { workspaceClosePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceReopenPollMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+  closesAt: string;
+}>;
+
+
+export type MobileWorkspaceReopenPollMutation = { workspaceReopenPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceCancelPollMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+  reason?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceCancelPollMutation = { workspaceCancelPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceDeletePollMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+}>;
+
+
+export type MobileWorkspaceDeletePollMutation = { workspaceDeletePoll: boolean | null };
+
+export type MobileWorkspaceCastPollVoteMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+  answers: Array<Types.WorkspacePollAnswerInput | null | undefined> | Types.WorkspacePollAnswerInput;
+}>;
+
+
+export type MobileWorkspaceCastPollVoteMutation = { workspaceCastPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type MobileWorkspaceWithdrawPollVoteMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+}>;
+
+
+export type MobileWorkspaceWithdrawPollVoteMutation = { workspaceWithdrawPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type RegisterUserMutationVariables = Exact<{
   displayName: string;
@@ -808,7 +1743,7 @@ export type CommitteeByIdQuery = { committeeById: { _id: string | null, name: st
 export type AllCommitteeFeaturesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllCommitteeFeaturesQuery = { allCommitteeFeatures: Array<{ key: string | null, name: string | null, description: string | null } | null> | null };
+export type AllCommitteeFeaturesQuery = { allCommitteeFeatures: Array<{ key: string | null, name: string | null, description: string | null, category: string | null } | null> | null };
 
 export type EnableCommitteeFeatureMutationVariables = Exact<{
   committeeId: string;
@@ -2583,10 +3518,537 @@ export type WorkspaceDeleteDiscussionMessageMutationVariables = Exact<{
 
 export type WorkspaceDeleteDiscussionMessageMutation = { workspaceDeleteDiscussionMessage: boolean };
 
+export type WorkspaceDocumentFolderFieldsFragment = { _id: string | null, name: string | null, parentId: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null };
+
+export type WorkspaceDocumentFieldsFragment = { _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, expiresAt: string | null, note: string | null, isMine: boolean | null } | null };
+
+export type WorkspaceDocumentsInfoQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspaceDocumentsInfoQuery = { workspaceDocumentsInfo: { canManage: boolean | null, maxFileSize: number | null } | null };
+
+export type WorkspaceDocumentFolderContentsQueryVariables = Exact<{
+  committeeId: string;
+  folderId?: string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type WorkspaceDocumentFolderContentsQuery = { workspaceDocumentFolderContents: { path: Array<{ _id: string | null, name: string | null, parentId: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null } | null> | null, folders: Array<{ _id: string | null, name: string | null, parentId: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null } | null> | null, documents: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, expiresAt: string | null, note: string | null, isMine: boolean | null } | null } | null> | null } | null } | null };
+
+export type WorkspaceDocumentFoldersQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspaceDocumentFoldersQuery = { workspaceDocumentFolders: Array<{ _id: string | null, name: string | null, parentId: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null } | null> | null };
+
+export type WorkspaceDocumentSearchQueryVariables = Exact<{
+  committeeId: string;
+  text: string;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type WorkspaceDocumentSearchQuery = { workspaceDocumentSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, expiresAt: string | null, note: string | null, isMine: boolean | null } | null } | null> | null } | null };
+
+export type WorkspaceDocumentByIdQueryVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type WorkspaceDocumentByIdQuery = { workspaceDocumentById: { _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, expiresAt: string | null, note: string | null, isMine: boolean | null } | null } | null };
+
+export type WorkspaceDocumentVersionsQueryVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type WorkspaceDocumentVersionsQuery = { workspaceDocumentVersions: Array<{ _id: string | null, versionNumber: number | null, fileName: string | null, mimeType: string | null, size: number | null, comment: string | null, isCurrent: boolean | null, createdAt: string | null, createdByName: string | null } | null> | null };
+
+export type WorkspaceDocumentActivityQueryVariables = Exact<{
+  committeeId: string;
+  documentId?: string | null | undefined;
+  before?: string | null | undefined;
+  limit?: number | null | undefined;
+}>;
+
+
+export type WorkspaceDocumentActivityQuery = { workspaceDocumentActivity: Array<{ _id: string | null, action: string | null, entityType: string | null, entityId: string | null, documentId: string | null, userName: string | null, at: string | null, details: string | null } | null> | null };
+
+export type WorkspaceDocumentTrashQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspaceDocumentTrashQuery = { workspaceDocumentTrash: { folders: Array<{ _id: string | null, name: string | null, parentId: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null } | null> | null, documents: Array<{ _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, expiresAt: string | null, note: string | null, isMine: boolean | null } | null } | null> | null } | null };
+
+export type WorkspaceCreateDocumentFolderMutationVariables = Exact<{
+  committeeId: string;
+  parentId?: string | null | undefined;
+  name: string;
+}>;
+
+
+export type WorkspaceCreateDocumentFolderMutation = { workspaceCreateDocumentFolder: boolean | null };
+
+export type WorkspaceRenameDocumentFolderMutationVariables = Exact<{
+  committeeId: string;
+  folderId: string;
+  name: string;
+}>;
+
+
+export type WorkspaceRenameDocumentFolderMutation = { workspaceRenameDocumentFolder: boolean | null };
+
+export type WorkspaceMoveDocumentFolderMutationVariables = Exact<{
+  committeeId: string;
+  folderId: string;
+  parentId?: string | null | undefined;
+}>;
+
+
+export type WorkspaceMoveDocumentFolderMutation = { workspaceMoveDocumentFolder: boolean | null };
+
+export type WorkspaceTrashDocumentFolderMutationVariables = Exact<{
+  committeeId: string;
+  folderId: string;
+}>;
+
+
+export type WorkspaceTrashDocumentFolderMutation = { workspaceTrashDocumentFolder: boolean | null };
+
+export type WorkspaceCreateDocumentUploadMutationVariables = Exact<{
+  committeeId: string;
+  folderId?: string | null | undefined;
+  documentId?: string | null | undefined;
+  fileName: string;
+  mimeType?: string | null | undefined;
+  size: number;
+  comment?: string | null | undefined;
+}>;
+
+
+export type WorkspaceCreateDocumentUploadMutation = { workspaceCreateDocumentUpload: { uploadId: string | null, documentId: string | null, url: string | null, contentType: string | null, expiresAt: string | null } | null };
+
+export type WorkspaceCompleteDocumentUploadMutationVariables = Exact<{
+  committeeId: string;
+  uploadId: string;
+}>;
+
+
+export type WorkspaceCompleteDocumentUploadMutation = { workspaceCompleteDocumentUpload: { _id: string | null, name: string | null, folderId: string | null, folderName: string | null, description: string | null, tags: Array<string | null> | null, fileName: string | null, mimeType: string | null, size: number | null, currentVersionNumber: number | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null, lock: { userName: string | null, lockedAt: string | null, expiresAt: string | null, note: string | null, isMine: boolean | null } | null } | null };
+
+export type WorkspaceAbortDocumentUploadMutationVariables = Exact<{
+  committeeId: string;
+  uploadId: string;
+}>;
+
+
+export type WorkspaceAbortDocumentUploadMutation = { workspaceAbortDocumentUpload: boolean | null };
+
+export type WorkspaceUpdateDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  name: string;
+  description?: string | null | undefined;
+  tags?: Array<string | null | undefined> | string | null | undefined;
+}>;
+
+
+export type WorkspaceUpdateDocumentMutation = { workspaceUpdateDocument: boolean | null };
+
+export type WorkspaceMoveDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  folderId?: string | null | undefined;
+}>;
+
+
+export type WorkspaceMoveDocumentMutation = { workspaceMoveDocument: boolean | null };
+
+export type WorkspaceTrashDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type WorkspaceTrashDocumentMutation = { workspaceTrashDocument: boolean | null };
+
+export type WorkspaceDocumentDownloadUrlMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  versionId?: string | null | undefined;
+  inline?: boolean | null | undefined;
+}>;
+
+
+export type WorkspaceDocumentDownloadUrlMutation = { workspaceDocumentDownloadUrl: { url: string | null, fileName: string | null } | null };
+
+export type WorkspaceRestoreDocumentVersionMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  versionId: string;
+}>;
+
+
+export type WorkspaceRestoreDocumentVersionMutation = { workspaceRestoreDocumentVersion: boolean | null };
+
+export type WorkspaceDeleteDocumentVersionMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  versionId: string;
+}>;
+
+
+export type WorkspaceDeleteDocumentVersionMutation = { workspaceDeleteDocumentVersion: boolean | null };
+
+export type WorkspaceCheckOutDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+  note?: string | null | undefined;
+}>;
+
+
+export type WorkspaceCheckOutDocumentMutation = { workspaceCheckOutDocument: boolean | null };
+
+export type WorkspaceCheckInDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type WorkspaceCheckInDocumentMutation = { workspaceCheckInDocument: boolean | null };
+
+export type WorkspaceForceUnlockDocumentMutationVariables = Exact<{
+  committeeId: string;
+  documentId: string;
+}>;
+
+
+export type WorkspaceForceUnlockDocumentMutation = { workspaceForceUnlockDocument: boolean | null };
+
+export type WorkspaceRestoreDocumentTrashItemMutationVariables = Exact<{
+  committeeId: string;
+  itemId: string;
+  newName?: string | null | undefined;
+  toRoot?: boolean | null | undefined;
+}>;
+
+
+export type WorkspaceRestoreDocumentTrashItemMutation = { workspaceRestoreDocumentTrashItem: boolean | null };
+
+export type WorkspacePurgeDocumentTrashItemMutationVariables = Exact<{
+  committeeId: string;
+  itemId: string;
+}>;
+
+
+export type WorkspacePurgeDocumentTrashItemMutation = { workspacePurgeDocumentTrashItem: boolean | null };
+
+export type WorkspaceEmptyDocumentTrashMutationVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspaceEmptyDocumentTrashMutation = { workspaceEmptyDocumentTrash: number | null };
+
 export type MyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, color: string | null, features: Array<string | null> | null } | null> | null };
+
+export type WorkspaceMeetingFieldsFragment = { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null };
+
+export type WorkspaceMeetingAttachmentFieldsFragment = { _id: string | null, name: string | null, description: string | null, fileName: string | null, mimeType: string | null, size: number | null, createdAt: string | null, createdByName: string | null, canDelete: boolean | null };
+
+export type WorkspaceMeetingActionItemFieldsFragment = { _id: string | null, meetingId: string | null, meetingTitle: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, createdAt: string | null, createdByName: string | null, canChangeStatus: boolean | null };
+
+export type WorkspaceMeetingsInfoQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspaceMeetingsInfoQuery = { workspaceMeetingsInfo: { canManage: boolean | null, myParticipantId: string | null, maxFileSize: number | null, timeZone: string | null } | null };
+
+export type WorkspaceMeetingMembersQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspaceMeetingMembersQuery = { workspaceMeetingMembers: Array<{ participantId: string | null, name: string | null, isCoordinator: boolean | null } | null> | null };
+
+export type WorkspaceMeetingsQueryVariables = Exact<{
+  committeeId: string;
+  view?: string | null | undefined;
+  from?: string | null | undefined;
+  to?: string | null | undefined;
+  text?: string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type WorkspaceMeetingsQuery = { workspaceMeetings: { totalResults: number | null, data: Array<{ _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null> | null } | null };
+
+export type WorkspaceMeetingByIdQueryVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+}>;
+
+
+export type WorkspaceMeetingByIdQuery = { workspaceMeetingById: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceMeetingAttachmentsQueryVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+}>;
+
+
+export type WorkspaceMeetingAttachmentsQuery = { workspaceMeetingAttachments: Array<{ _id: string | null, name: string | null, description: string | null, fileName: string | null, mimeType: string | null, size: number | null, createdAt: string | null, createdByName: string | null, canDelete: boolean | null } | null> | null };
+
+export type WorkspaceMeetingActionItemsQueryVariables = Exact<{
+  committeeId: string;
+  meetingId?: string | null | undefined;
+  assigneeId?: string | null | undefined;
+  status?: Array<string | null | undefined> | string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type WorkspaceMeetingActionItemsQuery = { workspaceMeetingActionItems: { totalResults: number | null, data: Array<{ _id: string | null, meetingId: string | null, meetingTitle: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, createdAt: string | null, createdByName: string | null, canChangeStatus: boolean | null } | null> | null } | null };
+
+export type WorkspaceMeetingActivityQueryVariables = Exact<{
+  committeeId: string;
+  meetingId?: string | null | undefined;
+  before?: string | null | undefined;
+  limit?: number | null | undefined;
+}>;
+
+
+export type WorkspaceMeetingActivityQuery = { workspaceMeetingActivity: Array<{ _id: string | null, action: string | null, entityType: string | null, entityId: string | null, meetingId: string | null, userName: string | null, at: string | null, details: string | null } | null> | null };
+
+export type WorkspaceCreateMeetingMutationVariables = Exact<{
+  committeeId: string;
+  input: Types.WorkspaceMeetingInput;
+  participantIds?: Array<string | null | undefined> | string | null | undefined;
+}>;
+
+
+export type WorkspaceCreateMeetingMutation = { workspaceCreateMeeting: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceUpdateMeetingMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  input: Types.WorkspaceMeetingInput;
+}>;
+
+
+export type WorkspaceUpdateMeetingMutation = { workspaceUpdateMeeting: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceCancelMeetingMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  reason?: string | null | undefined;
+}>;
+
+
+export type WorkspaceCancelMeetingMutation = { workspaceCancelMeeting: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceCompleteMeetingMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+}>;
+
+
+export type WorkspaceCompleteMeetingMutation = { workspaceCompleteMeeting: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceReopenMeetingMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+}>;
+
+
+export type WorkspaceReopenMeetingMutation = { workspaceReopenMeeting: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceDeleteMeetingMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+}>;
+
+
+export type WorkspaceDeleteMeetingMutation = { workspaceDeleteMeeting: boolean | null };
+
+export type WorkspaceSetMeetingParticipantsMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  participantIds: Array<string | null | undefined> | string;
+}>;
+
+
+export type WorkspaceSetMeetingParticipantsMutation = { workspaceSetMeetingParticipants: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceSetMeetingParticipantRoleMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  participantId: string;
+  role: string;
+}>;
+
+
+export type WorkspaceSetMeetingParticipantRoleMutation = { workspaceSetMeetingParticipantRole: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceRespondToMeetingMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  participantId?: string | null | undefined;
+  status: string;
+  comment?: string | null | undefined;
+}>;
+
+
+export type WorkspaceRespondToMeetingMutation = { workspaceRespondToMeeting: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceMarkMeetingAttendanceMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  entries: Array<Types.WorkspaceMeetingAttendanceInput | null | undefined> | Types.WorkspaceMeetingAttendanceInput;
+}>;
+
+
+export type WorkspaceMarkMeetingAttendanceMutation = { workspaceMarkMeetingAttendance: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceAddMeetingAgendaItemMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  input: Types.WorkspaceMeetingAgendaItemInput;
+}>;
+
+
+export type WorkspaceAddMeetingAgendaItemMutation = { workspaceAddMeetingAgendaItem: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceUpdateMeetingAgendaItemMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  agendaItemId: string;
+  input: Types.WorkspaceMeetingAgendaItemInput;
+}>;
+
+
+export type WorkspaceUpdateMeetingAgendaItemMutation = { workspaceUpdateMeetingAgendaItem: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceRemoveMeetingAgendaItemMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  agendaItemId: string;
+}>;
+
+
+export type WorkspaceRemoveMeetingAgendaItemMutation = { workspaceRemoveMeetingAgendaItem: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceReorderMeetingAgendaMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  agendaItemIds: Array<string | null | undefined> | string;
+}>;
+
+
+export type WorkspaceReorderMeetingAgendaMutation = { workspaceReorderMeetingAgenda: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceSetMeetingMinutesMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  text?: string | null | undefined;
+}>;
+
+
+export type WorkspaceSetMeetingMinutesMutation = { workspaceSetMeetingMinutes: { _id: string | null, title: string | null, description: string | null, location: string | null, onlineUrl: string | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null } | null };
+
+export type WorkspaceCreateMeetingAttachmentUploadMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  fileName: string;
+  mimeType?: string | null | undefined;
+  size: number;
+}>;
+
+
+export type WorkspaceCreateMeetingAttachmentUploadMutation = { workspaceCreateMeetingAttachmentUpload: { uploadId: string | null, url: string | null, contentType: string | null, expiresAt: string | null } | null };
+
+export type WorkspaceCompleteMeetingAttachmentUploadMutationVariables = Exact<{
+  committeeId: string;
+  uploadId: string;
+}>;
+
+
+export type WorkspaceCompleteMeetingAttachmentUploadMutation = { workspaceCompleteMeetingAttachmentUpload: { _id: string | null, name: string | null, description: string | null, fileName: string | null, mimeType: string | null, size: number | null, createdAt: string | null, createdByName: string | null, canDelete: boolean | null } | null };
+
+export type WorkspaceAbortMeetingAttachmentUploadMutationVariables = Exact<{
+  committeeId: string;
+  uploadId: string;
+}>;
+
+
+export type WorkspaceAbortMeetingAttachmentUploadMutation = { workspaceAbortMeetingAttachmentUpload: boolean | null };
+
+export type WorkspaceMeetingAttachmentDownloadUrlMutationVariables = Exact<{
+  committeeId: string;
+  attachmentId: string;
+  inline?: boolean | null | undefined;
+}>;
+
+
+export type WorkspaceMeetingAttachmentDownloadUrlMutation = { workspaceMeetingAttachmentDownloadUrl: { url: string | null, fileName: string | null } | null };
+
+export type WorkspaceDeleteMeetingAttachmentMutationVariables = Exact<{
+  committeeId: string;
+  attachmentId: string;
+}>;
+
+
+export type WorkspaceDeleteMeetingAttachmentMutation = { workspaceDeleteMeetingAttachment: boolean | null };
+
+export type WorkspaceCreateMeetingActionItemMutationVariables = Exact<{
+  committeeId: string;
+  meetingId: string;
+  input: Types.WorkspaceMeetingActionItemInput;
+}>;
+
+
+export type WorkspaceCreateMeetingActionItemMutation = { workspaceCreateMeetingActionItem: { _id: string | null, meetingId: string | null, meetingTitle: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, createdAt: string | null, createdByName: string | null, canChangeStatus: boolean | null } | null };
+
+export type WorkspaceUpdateMeetingActionItemMutationVariables = Exact<{
+  committeeId: string;
+  actionItemId: string;
+  input: Types.WorkspaceMeetingActionItemInput;
+}>;
+
+
+export type WorkspaceUpdateMeetingActionItemMutation = { workspaceUpdateMeetingActionItem: { _id: string | null, meetingId: string | null, meetingTitle: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, createdAt: string | null, createdByName: string | null, canChangeStatus: boolean | null } | null };
+
+export type WorkspaceSetMeetingActionItemStatusMutationVariables = Exact<{
+  committeeId: string;
+  actionItemId: string;
+  status: string;
+}>;
+
+
+export type WorkspaceSetMeetingActionItemStatusMutation = { workspaceSetMeetingActionItemStatus: { _id: string | null, meetingId: string | null, meetingTitle: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, createdAt: string | null, createdByName: string | null, canChangeStatus: boolean | null } | null };
+
+export type WorkspaceDeleteMeetingActionItemMutationVariables = Exact<{
+  committeeId: string;
+  actionItemId: string;
+}>;
+
+
+export type WorkspaceDeleteMeetingActionItemMutation = { workspaceDeleteMeetingActionItem: boolean | null };
 
 export type WorkspaceCommitteeMembersQueryVariables = Exact<{
   committeeId: string;
@@ -2631,3 +4093,184 @@ export type WorkspaceSetCommitteeMemberDiscussionAccessMutationVariables = Exact
 
 
 export type WorkspaceSetCommitteeMemberDiscussionAccessMutation = { workspaceSetCommitteeMemberDiscussionAccess: boolean | null };
+
+export type WorkspaceMonitoringAlertsQueryVariables = Exact<{
+  committeeId: string;
+  date: string;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type WorkspaceMonitoringAlertsQuery = { workspaceMonitoringAlerts: { totalResults: number | null, data: Array<{ _id: string | null, timestamp: string | null, profileName: string | null, profileIsTest: boolean | null, channelName: string | null, similarityScore: number | null, review: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null };
+
+export type WorkspaceMonitoringProfilesQueryVariables = Exact<{
+  committeeId: string;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type WorkspaceMonitoringProfilesQuery = { workspaceMonitoringProfiles: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null> | null } | null };
+
+export type WorkspaceNightStaysQueryVariables = Exact<{
+  committeeId: string;
+  stayDate: string;
+  name?: string | null | undefined;
+  city?: string | null | undefined;
+  stayReason?: string | null | undefined;
+  sortBy?: string | null | undefined;
+  sortOrder?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type WorkspaceNightStaysQuery = { workspaceNightStays: { totalResults: number | null, data: Array<{ _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, visitorName: string | null, visitorImageUrl: string | null, visitorImageThumbnailUrl: string | null, city: string | null, country: string | null } | null> | null } | null };
+
+export type WorkspacePollFieldsFragment = { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null };
+
+export type WorkspacePollsInfoQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspacePollsInfoQuery = { workspacePollsInfo: { canManage: boolean | null, myVoterId: string | null } | null };
+
+export type WorkspacePollMembersQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspacePollMembersQuery = { workspacePollMembers: Array<{ voterId: string | null, name: string | null, isCoordinator: boolean | null } | null> | null };
+
+export type WorkspacePollsQueryVariables = Exact<{
+  committeeId: string;
+  view?: string | null | undefined;
+  text?: string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type WorkspacePollsQuery = { workspacePolls: { totalResults: number | null, data: Array<{ _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null> | null } | null };
+
+export type WorkspacePollByIdQueryVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+}>;
+
+
+export type WorkspacePollByIdQuery = { workspacePollById: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type WorkspacePollResultsQueryVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+}>;
+
+
+export type WorkspacePollResultsQuery = { workspacePollResults: { pollId: string | null, status: string | null, anonymous: boolean | null, closedAt: string | null, totalVoters: number | null, eligibleCount: number | null, turnout: number | null, nonVoters: Array<{ voterId: string | null, name: string | null } | null> | null, questions: Array<{ questionId: string | null, text: string | null, type: string | null, answeredCount: number | null, options: Array<{ optionId: string | null, text: string | null, count: number | null, percentage: number | null, voters: Array<{ voterId: string | null, name: string | null } | null> | null } | null> | null } | null> | null } | null };
+
+export type WorkspacePollVotersQueryVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+}>;
+
+
+export type WorkspacePollVotersQuery = { workspacePollVoters: Array<{ voterId: string | null, name: string | null, hasVoted: boolean | null } | null> | null };
+
+export type WorkspacePollActivityQueryVariables = Exact<{
+  committeeId: string;
+  pollId?: string | null | undefined;
+  before?: string | null | undefined;
+  limit?: number | null | undefined;
+}>;
+
+
+export type WorkspacePollActivityQuery = { workspacePollActivity: Array<{ _id: string | null, action: string | null, entityType: string | null, entityId: string | null, pollId: string | null, userName: string | null, at: string | null, details: string | null } | null> | null };
+
+export type WorkspaceCreatePollMutationVariables = Exact<{
+  committeeId: string;
+  input: Types.WorkspacePollInput;
+}>;
+
+
+export type WorkspaceCreatePollMutation = { workspaceCreatePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type WorkspaceUpdatePollMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+  input: Types.WorkspacePollInput;
+}>;
+
+
+export type WorkspaceUpdatePollMutation = { workspaceUpdatePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type WorkspaceAddPollVotersMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+  voterIds: Array<string | null | undefined> | string;
+}>;
+
+
+export type WorkspaceAddPollVotersMutation = { workspaceAddPollVoters: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type WorkspaceOpenPollMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+  closesAt?: string | null | undefined;
+}>;
+
+
+export type WorkspaceOpenPollMutation = { workspaceOpenPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type WorkspaceClosePollMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+}>;
+
+
+export type WorkspaceClosePollMutation = { workspaceClosePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type WorkspaceReopenPollMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+  closesAt: string;
+}>;
+
+
+export type WorkspaceReopenPollMutation = { workspaceReopenPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type WorkspaceCancelPollMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+  reason?: string | null | undefined;
+}>;
+
+
+export type WorkspaceCancelPollMutation = { workspaceCancelPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type WorkspaceDeletePollMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+}>;
+
+
+export type WorkspaceDeletePollMutation = { workspaceDeletePoll: boolean | null };
+
+export type WorkspaceCastPollVoteMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+  answers: Array<Types.WorkspacePollAnswerInput | null | undefined> | Types.WorkspacePollAnswerInput;
+}>;
+
+
+export type WorkspaceCastPollVoteMutation = { workspaceCastPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type WorkspaceWithdrawPollVoteMutationVariables = Exact<{
+  committeeId: string;
+  pollId: string;
+}>;
+
+
+export type WorkspaceWithdrawPollVoteMutation = { workspaceWithdrawPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };

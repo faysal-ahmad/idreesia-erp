@@ -13,6 +13,7 @@ import {
 import {
   type CommitteeDocument,
   type WorkspaceUser,
+  assertMembersEnabled,
   getCoordinatedCommittee,
   getMemberCommittee,
   getUserCommittees,
@@ -58,7 +59,9 @@ const resolvers: ResolverMap = {
 
     // Members sorted with coordinators first, then by name. Only the fields
     // a committee member needs are exposed (no CNIC, addresses, etc).
+    // Only for committees with the Members feature enabled.
     members: async (committee: CommitteeDocument, args, { loaders }) => {
+      assertMembersEnabled(committee);
       const members = committee.members ?? [];
       const personIds = members.map(member => member.karkunId);
       const people = (await loaders.common.people.loadMany(
@@ -106,7 +109,8 @@ const resolvers: ResolverMap = {
       { committeeId, name, cnicNumber, phoneNumber, pageIndex, pageSize },
       { user }
     ) => {
-      await getCoordinatedCommittee(user, committeeId);
+      const committee = await getCoordinatedCommittee(user, committeeId);
+      assertMembersEnabled(committee);
 
       const multanCity = await Cities.findOneAsync({
         name: 'Multan',
@@ -139,7 +143,8 @@ const resolvers: ResolverMap = {
       { committeeId, karkunId },
       { user }
     ) => {
-      await getCoordinatedCommittee(user, committeeId);
+      const committee = await getCoordinatedCommittee(user, committeeId);
+      assertMembersEnabled(committee);
       await addCommitteeMember(committeeId, karkunId, user._id);
       return Committees.findOneAsync(committeeId);
     },
@@ -152,6 +157,7 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       const committee = await getCoordinatedCommittee(user, committeeId);
+      assertMembersEnabled(committee);
       const member = (committee.members ?? []).find(
         m => m.karkunId === karkunId
       );

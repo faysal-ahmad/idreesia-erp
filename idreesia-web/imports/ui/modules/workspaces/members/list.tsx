@@ -46,7 +46,7 @@ const List = () => {
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [showAddDrawer, setShowAddDrawer] = useState(false);
 
-  const { data, loading, refetch } = useQuery(WORKSPACE_COMMITTEE_MEMBERS, {
+  const { data, loading, error, refetch } = useQuery(WORKSPACE_COMMITTEE_MEMBERS, {
     variables: { committeeId: committeeId! },
     skip: !committeeId,
     fetchPolicy: 'cache-and-network',
@@ -61,6 +61,15 @@ const List = () => {
     return (
       <Flex justify="center" align="center" style={{ minHeight: 240 }}>
         <Spin />
+      </Flex>
+    );
+  }
+
+  // E.g. the Members feature is not enabled for this committee.
+  if (error && !data) {
+    return (
+      <Flex justify="center" align="center" style={{ minHeight: 240 }}>
+        <Empty description={error.message} />
       </Flex>
     );
   }

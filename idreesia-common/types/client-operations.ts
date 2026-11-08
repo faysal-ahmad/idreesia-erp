@@ -381,6 +381,66 @@ export type MobileWorkspaceCommitteeMembersQueryVariables = Exact<{
 
 export type MobileWorkspaceCommitteeMembersQuery = { workspaceCommitteeById: { _id: string | null, name: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null } | null> | null } | null };
 
+export type MobileWorkspaceMonitoringAlertsQueryVariables = Exact<{
+  committeeId: string;
+  date: string;
+  includeTest?: boolean | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceMonitoringAlertsQuery = { workspaceMonitoringAlerts: { totalResults: number | null, data: Array<{ _id: string | null, timestamp: string | null, profileName: string | null, profileIsTest: boolean | null, channelName: string | null, similarityScore: number | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null };
+
+export type MobileWorkspaceMonitoringProfileFieldsFragment = { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null };
+
+export type MobileWorkspaceMonitoringProfileByIdQueryVariables = Exact<{
+  committeeId: string;
+  profileId: string;
+}>;
+
+
+export type MobileWorkspaceMonitoringProfileByIdQuery = { workspaceMonitoringProfileById: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null };
+
+export type UpdateMobileWorkspaceMonitoringProfileMutationVariables = Exact<{
+  committeeId: string;
+  profileId: string;
+  name: string;
+  isTest: boolean;
+}>;
+
+
+export type UpdateMobileWorkspaceMonitoringProfileMutation = { updateWorkspaceMonitoringProfile: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null };
+
+export type AddMobileWorkspaceMonitoringProfilePhotoMutationVariables = Exact<{
+  committeeId: string;
+  profileId: string;
+  imageData: string;
+}>;
+
+
+export type AddMobileWorkspaceMonitoringProfilePhotoMutation = { addWorkspaceMonitoringProfilePhoto: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null };
+
+export type RemoveMobileWorkspaceMonitoringProfilePhotoMutationVariables = Exact<{
+  committeeId: string;
+  profileId: string;
+  photoId: string;
+}>;
+
+
+export type RemoveMobileWorkspaceMonitoringProfilePhotoMutation = { removeWorkspaceMonitoringProfilePhoto: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null };
+
+export type MobileWorkspaceMonitoringProfilesQueryVariables = Exact<{
+  committeeId: string;
+  name?: string | null | undefined;
+  includeTest?: boolean | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type MobileWorkspaceMonitoringProfilesQuery = { workspaceMonitoringProfiles: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null> | null } | null };
+
 export type MobileWorkspaceNightStayByIdQueryVariables = Exact<{
   committeeId: string;
   stayId: string;
@@ -2778,6 +2838,25 @@ export type WorkspaceSetCommitteeMemberDiscussionAccessMutationVariables = Exact
 
 
 export type WorkspaceSetCommitteeMemberDiscussionAccessMutation = { workspaceSetCommitteeMemberDiscussionAccess: boolean | null };
+
+export type WorkspaceMonitoringAlertsQueryVariables = Exact<{
+  committeeId: string;
+  date: string;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type WorkspaceMonitoringAlertsQuery = { workspaceMonitoringAlerts: { totalResults: number | null, data: Array<{ _id: string | null, timestamp: string | null, profileName: string | null, profileIsTest: boolean | null, channelName: string | null, similarityScore: number | null, review: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null };
+
+export type WorkspaceMonitoringProfilesQueryVariables = Exact<{
+  committeeId: string;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type WorkspaceMonitoringProfilesQuery = { workspaceMonitoringProfiles: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, photos: Array<{ _id: string | null, imageUrl: string | null, thumbnailUrl: string | null } | null> | null } | null> | null } | null };
 
 export type WorkspaceNightStaysQueryVariables = Exact<{
   committeeId: string;

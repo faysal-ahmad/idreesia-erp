@@ -22,6 +22,11 @@ interface Props<TItem> {
   emptyDescription?: ReactNode;
   /** Noun for the result count, e.g. "visitors". */
   itemsLabel: string;
+  /**
+   * Shown on the right of the result count, e.g. a filter toggle. It stays
+   * on show when there are no results, so the filter can be undone.
+   */
+  countExtra?: ReactNode;
 }
 
 /**
@@ -36,20 +41,41 @@ export const PagedList = <TItem,>({
   emptyTitle,
   emptyDescription,
   itemsLabel,
+  countExtra,
 }: Props<TItem>) => {
   const { items, totalResults, hasMore, loading, error, loadMore, refresh } = paged;
+
+  const count = (
+    <p className="paged-list-count">
+      {totalResults.toLocaleString()} {itemsLabel}
+    </p>
+  );
+  const countRow = countExtra ? (
+    <div className="paged-list-count-row">
+      {count}
+      {countExtra}
+    </div>
+  ) : (
+    count
+  );
 
   if (loading) return <PageLoading />;
   if (error) return <PageError error={error} onRetry={refresh} />;
   if (items.length === 0) {
-    return <PageEmpty description={emptyDescription} title={emptyTitle} />;
+    const empty = <PageEmpty description={emptyDescription} title={emptyTitle} />;
+    return countExtra ? (
+      <>
+        {countRow}
+        {empty}
+      </>
+    ) : (
+      empty
+    );
   }
 
   return (
     <PullToRefresh onRefresh={refresh}>
-      <p className="paged-list-count">
-        {totalResults.toLocaleString()} {itemsLabel}
-      </p>
+      {countRow}
       <List mode="card">
         {items.map(item => (
           <React.Fragment key={getKey(item)}>{renderItem(item)}</React.Fragment>

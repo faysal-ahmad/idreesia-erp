@@ -49,8 +49,9 @@ Home tab (/home)                         ← default after signing in
 │   ├── …/discussions/search
 │   ├── …/discussions/pinned
 │   └── …/discussions/starred
-└── Workspace Night Stay Report (/workspaces/committees/:committeeId/night-stay-report)   ← NightStayReportFeature; read-only, one night at a time; report stays alive under:
-    └── …/night-stay-report/:stayId   ← one stay, with a large photo
+├── Workspace Night Stay Report (/workspaces/committees/:committeeId/night-stay-report)   ← NightStayReportFeature; read-only, one night at a time; report stays alive under:
+│   └── …/night-stay-report/:stayId   ← one stay, with a large photo
+└── Workspace Security Server Alerts (/workspaces/committees/:committeeId/security-server-alerts)   ← read-only, one day at a time
 Apps tab (/apps)                         ← lists the user's modules
 └── Security (/security)                 ← module screen, lists its features
     └── Visitors (/security/visitors)    ← feature; owns every route below it
@@ -167,10 +168,11 @@ A feature's entry screen is usually a list. Build it from `usePagedQuery` and `P
 ### Camera screens
 
 - Take photos with `capturePhoto()` (`imports/ui/utilities`). It is **camera-only**: users can't pick an existing image.
-  - In the browser and the iOS app it shows `CameraView`, a full-screen live viewfinder with a shutter button. In the iOS app this avoids the native camera screen, which left the app blank for about 2 seconds after each photo. The local plugin `cordova-plugins/idreesia-webview-camera` stops iOS asking for camera permission again on every launch.
+  - In the browser and the iOS app it shows `CameraView`, a full-screen live viewfinder with a shutter button and, on devices with more than one camera, a switch-camera button (back camera first; the front camera's preview is mirrored, the photo isn't). In the iOS app this avoids the native camera screen, which left the app blank for about 2 seconds after each photo. The local plugin `cordova-plugins/idreesia-webview-camera` stops iOS asking for camera permission again on every launch.
   - In the Android app it uses cordova-plugin-camera with the camera as the only source, until `CameraView` has been tested in Android's WebView.
   - It never uses a file input, which would also offer the gallery.
   - **Exception: the public chat** (`imports/ui/chat`) also has a paperclip attach button that opens the system picker through a hidden `<input type="file" multiple>`. On iOS that offers Photo Library, Take Photo and Choose Files; on Android, the WebView's file chooser. Customers sending a message may share existing photos and documents, while record-keeping features (visitor photos) stay camera-only.
+  - **Exception: Monitoring Profiles** (`imports/ui/workspaces/monitoring-profiles`) also lets users pick a photo from the gallery with `pickPhoto()` (`imports/ui/utilities`), offered next to "Take photo" in an `ActionSheet`. Enrollment photos of a watched person usually already exist, and the server rejects any photo without exactly one usable face. `pickPhoto()` uses cordova-plugin-camera's photo library on Android and an image-only file input elsewhere (the system photo picker on iOS), and returns the same scaled JPEG data URL as `capturePhoto()`. Other features stay camera-only unless asked otherwise.
   - It returns a JPEG data URL of at most 1024 px, which keeps uploads well under the 5 MB GraphQL limit.
 - Start capture from an explicit "Take photo" button rather than opening the camera on load.
 - Show the captured photo above the results, and pin a "Retake photo" button in the `footer`.

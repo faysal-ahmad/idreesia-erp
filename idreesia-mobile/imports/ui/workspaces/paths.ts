@@ -28,4 +28,16 @@ export const WorkspacesPaths = {
   committeeNightStayPattern: `${committee(':committeeId')}/night-stay-report/:stayId`,
   committeeNightStay: (committeeId: string, stayId: string) =>
     `${committee(committeeId)}/night-stay-report/${stayId}`,
+  /** Route pattern for a committee's Monitoring Alerts. */
+  committeeMonitoringAlertsPattern: `${committee(':committeeId')}/monitoring-alerts`,
+  committeeMonitoringAlerts: (committeeId: string) =>
+    `${committee(committeeId)}/monitoring-alerts`,
+  /** Route pattern for a committee's Monitoring Profiles. */
+  committeeMonitoringProfilesPattern: `${committee(':committeeId')}/monitoring-profiles`,
+  committeeMonitoringProfiles: (committeeId: string) =>
+    `${committee(committeeId)}/monitoring-profiles`,
+  /** Route pattern for one profile, under the profiles list. */
+  committeeMonitoringProfilePattern: `${committee(':committeeId')}/monitoring-profiles/:profileId`,
+  committeeMonitoringProfile: (committeeId: string, profileId: string) =>
+    `${committee(committeeId)}/monitoring-profiles/${profileId}`,
 };

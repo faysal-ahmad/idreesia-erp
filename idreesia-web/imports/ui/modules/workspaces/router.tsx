@@ -6,6 +6,8 @@ import { default as paths } from './submodule-paths';
 import { MembersList } from './members';
 import { DiscussionsPage } from './discussions';
 import { NightStayReport } from './night-stay-report';
+import { MonitoringAlerts } from './monitoring-alerts';
+import { MonitoringProfiles } from './monitoring-profiles';
 import Landing from './landing';
 
 const Router = () => (
@@ -15,6 +17,14 @@ const Router = () => (
     <Route
       path={paths.committeeNightStayReportPath()}
       component={NightStayReport}
+    />
+    <Route
+      path={paths.committeeMonitoringAlertsPath()}
+      component={MonitoringAlerts}
+    />
+    <Route
+      path={paths.committeeMonitoringProfilesPath()}
+      component={MonitoringProfiles}
     />
     <Route path={ModulePaths.workspaces} component={Landing} />
   </Switch>

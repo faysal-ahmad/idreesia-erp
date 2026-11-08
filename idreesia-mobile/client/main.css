@@ -228,8 +228,22 @@ body {
   font-size: 0.7647rem; /* 13px */
 }
 
-.paged-list-count + .adm-list {
+.paged-list-count + .adm-list,
+.paged-list-count-row + .adm-list {
   margin-top: 6px;
+}
+
+/* The count with something on its right, e.g. a filter toggle (countExtra) */
+.paged-list-count-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 16px 0;
+}
+
+.paged-list-count-row .paged-list-count {
+  margin: 0;
 }
 
 /* Leading icon in navigation lists (modules, features) */
@@ -349,6 +363,10 @@ body {
   object-fit: cover;
 }
 
+.camera-view-video-mirrored {
+  transform: scaleX(-1);
+}
+
 .camera-view-loading,
 .camera-view-error {
   position: absolute;
@@ -373,6 +391,7 @@ body {
 }
 
 .camera-view-cancel,
+.camera-view-switch,
 .camera-view-spacer {
   display: flex;
   width: 56px;
@@ -382,6 +401,7 @@ body {
 }
 
 .camera-view-cancel,
+.camera-view-switch,
 .camera-view-shutter {
   padding: 0;
   border: 0;
@@ -392,6 +412,17 @@ body {
   background: transparent;
   color: var(--app-color-on-primary);
   font-size: 30px;
+}
+
+.camera-view-switch {
+  border-radius: 50%;
+  background: rgb(255 255 255 / 18%);
+  color: var(--app-color-on-primary);
+  font-size: 26px;
+}
+
+.camera-view-switch:disabled {
+  opacity: 0.5;
 }
 
 .camera-view-shutter {

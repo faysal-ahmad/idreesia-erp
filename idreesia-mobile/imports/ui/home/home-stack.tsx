@@ -6,6 +6,8 @@ import {
   DiscussionFeature,
   MembersScreen,
   NightStayReportFeature,
+  MonitoringAlertsScreen,
+  MonitoringProfilesFeature,
   WorkspacesPaths,
 } from '../workspaces';
 import { HomeScreen } from './home-screen';
@@ -32,6 +34,15 @@ export const HomeStack = () => {
         <Route
           component={NightStayReportFeature}
           path={WorkspacesPaths.committeeNightStayReportPattern}
+        />
+        <Route
+          exact
+          component={MonitoringAlertsScreen}
+          path={WorkspacesPaths.committeeMonitoringAlertsPattern}
+        />
+        <Route
+          component={MonitoringProfilesFeature}
+          path={WorkspacesPaths.committeeMonitoringProfilesPattern}
         />
         <Redirect to={HomePaths.home} />
       </Switch>

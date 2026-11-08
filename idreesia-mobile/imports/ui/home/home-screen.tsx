@@ -3,10 +3,12 @@ import { useQuery } from '@apollo/client/react';
 import { List, PullToRefresh } from 'antd-mobile';
 import {
   DownOutline,
+  ExclamationShieldOutline,
   FolderOutline,
   MessageOutline,
   TeamOutline,
   UpOutline,
+  UserContactOutline,
 } from 'antd-mobile-icons';
 
 import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
@@ -17,7 +19,7 @@ import { WorkspacesPaths } from '../workspaces/paths';
 import { MOBILE_MY_COMMITTEES } from './gql';
 
 // What each workspace offers, as in the web's Workspaces sidebar: Members
-// always, Discussions and Night Stay Report only when the committee has that
+// always, the other features only when the committee has that
 // feature enabled.
 interface WorkspaceItem {
   key: string;
@@ -53,6 +55,26 @@ const getWorkspaceItems = (
           title: 'Night Stay Report',
           icon: <MoonOutline />,
           path: WorkspacesPaths.committeeNightStayReport(committeeId),
+        },
+      ]
+    : []),
+  ...(features?.includes(CommitteeFeatureKeys.MONITORING_ALERTS)
+    ? [
+        {
+          key: 'monitoring-alerts',
+          title: 'Monitoring Alerts',
+          icon: <ExclamationShieldOutline />,
+          path: WorkspacesPaths.committeeMonitoringAlerts(committeeId),
+        },
+      ]
+    : []),
+  ...(features?.includes(CommitteeFeatureKeys.MONITORING_PROFILES)
+    ? [
+        {
+          key: 'monitoring-profiles',
+          title: 'Monitoring Profiles',
+          icon: <UserContactOutline />,
+          path: WorkspacesPaths.committeeMonitoringProfiles(committeeId),
         },
       ]
     : []),

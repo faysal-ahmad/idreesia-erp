@@ -18,4 +18,12 @@ export default class SubModulePaths {
   static committeeNightStayReportPath(committeeId = ':committeeId') {
     return `${SubModulePaths.committeePath(committeeId)}/night-stay-report`;
   }
+
+  static committeeMonitoringAlertsPath(committeeId = ':committeeId') {
+    return `${SubModulePaths.committeePath(committeeId)}/monitoring-alerts`;
+  }
+
+  static committeeMonitoringProfilesPath(committeeId = ':committeeId') {
+    return `${SubModulePaths.committeePath(committeeId)}/monitoring-profiles`;
+  }
 }

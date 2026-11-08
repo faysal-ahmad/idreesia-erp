@@ -2912,6 +2912,98 @@ extend type Mutation {
   ): Boolean!
 }
 
+type WorkspaceMonitoringAlertType {
+  _id: String
+  timestamp: String
+  profileName: String
+  profileIsTest: Boolean
+  channelName: String
+  similarityScore: Float
+  # CORRECT, FALSE_POSITIVE, or null when not reviewed yet.
+  review: String
+  imageUrl: String
+  thumbnailUrl: String
+}
+
+type PagedWorkspaceMonitoringAlertType {
+  data: [WorkspaceMonitoringAlertType]
+  totalResults: Int
+}
+
+extend type Query {
+  # Alerts raised on 'date' (DD-MM-YYYY), newest first. Alerts of test
+  # profiles are included unless 'includeTest' is false.
+  workspaceMonitoringAlerts(
+    committeeId: String!
+    date: String!
+    includeTest: Boolean
+    pageIndex: String
+    pageSize: String
+  ): PagedWorkspaceMonitoringAlertType
+}
+
+type WorkspaceMonitoringProfilePhotoType {
+  _id: String
+  imageUrl: String
+  # Null for photos stored before thumbnails existed; use imageUrl then.
+  thumbnailUrl: String
+}
+
+type WorkspaceMonitoringProfileType {
+  _id: String
+  name: String
+  isTest: Boolean
+  # The default photo first.
+  photos: [WorkspaceMonitoringProfilePhotoType]
+  alertsCount: Int
+}
+
+type PagedWorkspaceMonitoringProfileType {
+  data: [WorkspaceMonitoringProfileType]
+  totalResults: Int
+}
+
+extend type Query {
+  # Profiles that aren't deleted, by name. 'name' matches part of the name.
+  # Test profiles are included unless 'includeTest' is false.
+  workspaceMonitoringProfiles(
+    committeeId: String!
+    name: String
+    includeTest: Boolean
+    pageIndex: String
+    pageSize: String
+  ): PagedWorkspaceMonitoringProfileType
+
+  # Null when the profile doesn't exist or was deleted.
+  workspaceMonitoringProfileById(
+    committeeId: String!
+    profileId: String!
+  ): WorkspaceMonitoringProfileType
+}
+
+extend type Mutation {
+  updateWorkspaceMonitoringProfile(
+    committeeId: String!
+    profileId: String!
+    name: String!
+    isTest: Boolean!
+  ): WorkspaceMonitoringProfileType
+
+  # imageData is base64, optionally as a data: URL. The photo is rejected
+  # unless it has exactly one face the security server can use.
+  addWorkspaceMonitoringProfilePhoto(
+    committeeId: String!
+    profileId: String!
+    imageData: String!
+  ): WorkspaceMonitoringProfileType
+
+  removeWorkspaceMonitoringProfilePhoto(
+    committeeId: String!
+    profileId: String!
+    photoId: String!
+  ): WorkspaceMonitoringProfileType
+}
+
 # A previous stay of the same visitor, on a stay's detail screen.
 type WorkspaceStayHistoryItemType {
   _id: String

@@ -18,6 +18,18 @@ export {
   type NightStaysFilter,
 } from './night-stay-report';
 export {
+  getWorkspaceMonitoringAlerts,
+  type WorkspaceMonitoringAlertsFilter,
+} from './monitoring-alerts';
+export {
+  addWorkspaceMonitoringProfilePhoto,
+  getWorkspaceMonitoringProfileById,
+  getWorkspaceMonitoringProfiles,
+  removeWorkspaceMonitoringProfilePhoto,
+  updateWorkspaceMonitoringProfile,
+  type WorkspaceMonitoringProfilesFilter,
+} from './monitoring-profiles';
+export {
   addCommitteeMember,
   removeCommitteeMember,
   removePersonFromCommittees,

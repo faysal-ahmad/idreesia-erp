@@ -2,7 +2,9 @@ import React, { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { type History } from 'history';
 import { Menu } from 'antd';
 import {
+  AlertOutlined,
   ClusterOutlined,
+  IdcardOutlined,
   MessageOutlined,
   MoonOutlined,
   TeamOutlined,
@@ -34,6 +36,16 @@ const KeyPrefixHandlers: KeyPrefixHandler[] = [
     'night-stay-report',
     SubModuleNames.nightStayReport,
     paths.committeeNightStayReportPath,
+  ],
+  [
+    'monitoring-alerts',
+    SubModuleNames.monitoringAlerts,
+    paths.committeeMonitoringAlertsPath,
+  ],
+  [
+    'monitoring-profiles',
+    SubModuleNames.monitoringProfiles,
+    paths.committeeMonitoringProfilesPath,
   ],
 ];
 
@@ -139,6 +151,28 @@ const Sidebar = ({ history }: SidebarProps) => {
               key: `night-stay-report-${committee._id}`,
               icon: <MoonOutlined style={IconStyle} />,
               label: 'Night Stay Report',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(
+        CommitteeFeatureKeys.MONITORING_ALERTS
+      )
+        ? [
+            {
+              key: `monitoring-alerts-${committee._id}`,
+              icon: <AlertOutlined style={IconStyle} />,
+              label: 'Monitoring Alerts',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(
+        CommitteeFeatureKeys.MONITORING_PROFILES
+      )
+        ? [
+            {
+              key: `monitoring-profiles-${committee._id}`,
+              icon: <IdcardOutlined style={IconStyle} />,
+              label: 'Monitoring Profiles',
             },
           ]
         : []),

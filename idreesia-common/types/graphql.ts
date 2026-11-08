@@ -656,6 +656,7 @@ export type Mutation = {
   addSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
   addTeamCoordinator?: Maybe<TeamType>;
   addTeamMember?: Maybe<TeamType>;
+  addWorkspaceMonitoringProfilePhoto?: Maybe<WorkspaceMonitoringProfileType>;
   approveIssuanceForms?: Maybe<Array<Maybe<IssuanceForm>>>;
   approvePurchaseForms?: Maybe<Array<Maybe<PurchaseForm>>>;
   approveStockAdjustments?: Maybe<Array<Maybe<StockAdjustment>>>;
@@ -741,6 +742,7 @@ export type Mutation = {
   removeTeamCoordinator?: Maybe<TeamType>;
   removeTeamMember?: Maybe<TeamType>;
   removeVendor?: Maybe<Scalars['Int']['output']>;
+  removeWorkspaceMonitoringProfilePhoto?: Maybe<WorkspaceMonitoringProfileType>;
   resetJobDefinitionSchedule?: Maybe<JobDefinitionType>;
   resetPassword?: Maybe<UserType>;
   restorePerson?: Maybe<Scalars['Int']['output']>;
@@ -802,6 +804,7 @@ export type Mutation = {
   updateUserGroup?: Maybe<UserGroupType>;
   updateVendor?: Maybe<Vendor>;
   updateVisitorStay?: Maybe<VisitorStayType>;
+  updateWorkspaceMonitoringProfile?: Maybe<WorkspaceMonitoringProfileType>;
   verifyStockItemLevel?: Maybe<StockItem>;
   workspaceAddCommitteeMember?: Maybe<WorkspaceCommitteeType>;
   workspaceDeleteDiscussionMessage: Scalars['Boolean']['output'];
@@ -870,6 +873,13 @@ export type MutationAddTeamMemberArgs = {
   daysOfWeek: Array<Scalars['String']['input']>;
   karkunId: Scalars['String']['input'];
   teamId: Scalars['String']['input'];
+};
+
+
+export type MutationAddWorkspaceMonitoringProfilePhotoArgs = {
+  committeeId: Scalars['String']['input'];
+  imageData: Scalars['String']['input'];
+  profileId: Scalars['String']['input'];
 };
 
 
@@ -1432,6 +1442,13 @@ export type MutationRemoveVendorArgs = {
 };
 
 
+export type MutationRemoveWorkspaceMonitoringProfilePhotoArgs = {
+  committeeId: Scalars['String']['input'];
+  photoId: Scalars['String']['input'];
+  profileId: Scalars['String']['input'];
+};
+
+
 export type MutationResetJobDefinitionScheduleArgs = {
   _id: Scalars['String']['input'];
 };
@@ -1919,6 +1936,14 @@ export type MutationUpdateVisitorStayArgs = {
 };
 
 
+export type MutationUpdateWorkspaceMonitoringProfileArgs = {
+  committeeId: Scalars['String']['input'];
+  isTest: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  profileId: Scalars['String']['input'];
+};
+
+
 export type MutationVerifyStockItemLevelArgs = {
   _id: Scalars['String']['input'];
   physicalStoreId: Scalars['String']['input'];
@@ -2108,6 +2133,18 @@ export type PagedVisitorType = {
 export type PagedWorkspaceKarkunType = {
   __typename?: 'PagedWorkspaceKarkunType';
   data?: Maybe<Array<Maybe<WorkspaceKarkunType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedWorkspaceMonitoringAlertType = {
+  __typename?: 'PagedWorkspaceMonitoringAlertType';
+  data?: Maybe<Array<Maybe<WorkspaceMonitoringAlertType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedWorkspaceMonitoringProfileType = {
+  __typename?: 'PagedWorkspaceMonitoringProfileType';
+  data?: Maybe<Array<Maybe<WorkspaceMonitoringProfileType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -2456,6 +2493,9 @@ export type Query = {
   workspaceDiscussionStarredMessages?: Maybe<Array<Maybe<DiscussionMessageType>>>;
   workspaceDiscussionSync?: Maybe<DiscussionSyncType>;
   workspaceDiscussionThreadMessages?: Maybe<Array<Maybe<DiscussionMessageType>>>;
+  workspaceMonitoringAlerts?: Maybe<PagedWorkspaceMonitoringAlertType>;
+  workspaceMonitoringProfileById?: Maybe<WorkspaceMonitoringProfileType>;
+  workspaceMonitoringProfiles?: Maybe<PagedWorkspaceMonitoringProfileType>;
   workspaceNightStayById?: Maybe<WorkspaceNightStayType>;
   workspaceNightStays?: Maybe<PagedWorkspaceNightStayType>;
 };
@@ -3004,6 +3044,30 @@ export type QueryWorkspaceDiscussionThreadMessagesArgs = {
 };
 
 
+export type QueryWorkspaceMonitoringAlertsArgs = {
+  committeeId: Scalars['String']['input'];
+  date: Scalars['String']['input'];
+  includeTest?: InputMaybe<Scalars['Boolean']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryWorkspaceMonitoringProfileByIdArgs = {
+  committeeId: Scalars['String']['input'];
+  profileId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceMonitoringProfilesArgs = {
+  committeeId: Scalars['String']['input'];
+  includeTest?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryWorkspaceNightStayByIdArgs = {
   committeeId: Scalars['String']['input'];
   stayId: Scalars['String']['input'];
@@ -3474,6 +3538,35 @@ export type WorkspaceKarkunType = {
   imageUrl?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   parentName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceMonitoringAlertType = {
+  __typename?: 'WorkspaceMonitoringAlertType';
+  _id?: Maybe<Scalars['String']['output']>;
+  channelName?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  profileIsTest?: Maybe<Scalars['Boolean']['output']>;
+  profileName?: Maybe<Scalars['String']['output']>;
+  review?: Maybe<Scalars['String']['output']>;
+  similarityScore?: Maybe<Scalars['Float']['output']>;
+  thumbnailUrl?: Maybe<Scalars['String']['output']>;
+  timestamp?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceMonitoringProfilePhotoType = {
+  __typename?: 'WorkspaceMonitoringProfilePhotoType';
+  _id?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  thumbnailUrl?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceMonitoringProfileType = {
+  __typename?: 'WorkspaceMonitoringProfileType';
+  _id?: Maybe<Scalars['String']['output']>;
+  alertsCount?: Maybe<Scalars['Int']['output']>;
+  isTest?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  photos?: Maybe<Array<Maybe<WorkspaceMonitoringProfilePhotoType>>>;
 };
 
 export type WorkspaceNightStayType = {

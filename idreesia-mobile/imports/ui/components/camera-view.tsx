@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ErrorBlock, SpinLoading } from 'antd-mobile';
-import { CameraOutline, CloseOutline } from 'antd-mobile-icons';
+import { CameraOutline, CloseOutline, LoopOutline } from 'antd-mobile-icons';
 
 interface Props {
   /** Called with the captured frame (a canvas), or null when cancelled. */
@@ -21,8 +21,12 @@ const cameraErrorMessage = (error: unknown) => {
   return 'The camera could not be started.';
 };
 
+type FacingMode = 'environment' | 'user';
+
 /**
- * Full-screen live camera with a shutter button, for the browser build.
+ * Full-screen live camera with a shutter button and, on devices with more
+ * than one camera, a button to switch between the back and front cameras.
+ * Used in the browser build and the iOS app.
  * Only a photo taken here can be used: there is deliberately no way to pick
  * an existing image.
  */
@@ -30,6 +34,11 @@ export const CameraView = ({ onDone }: Props) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Starts with the back camera; the switch button flips to the front one.
+  const [facingMode, setFacingMode] = useState<FacingMode>('environment');
+  // Device labels and counts are only reliable once access is granted, so
+  // this is checked after the first stream starts.
+  const [canSwitch, setCanSwitch] = useState(false);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -38,15 +47,20 @@ export const CameraView = ({ onDone }: Props) => {
     navigator.mediaDevices
       ?.getUserMedia({
         audio: false,
-        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } },
+        video: { facingMode: { ideal: facingMode }, width: { ideal: 1280 } },
       })
       .then(mediaStream => {
         if (cancelled) {
           mediaStream.getTracks().forEach(track => track.stop());
-          return;
+          return undefined;
         }
         stream = mediaStream;
         if (videoRef.current) videoRef.current.srcObject = mediaStream;
+        return navigator.mediaDevices.enumerateDevices();
+      })
+      .then(devices => {
+        if (cancelled || !devices) return;
+        setCanSwitch(devices.filter(device => device.kind === 'videoinput').length > 1);
       })
       .catch(err => setError(cameraErrorMessage(err)));
 
@@ -56,7 +70,12 @@ export const CameraView = ({ onDone }: Props) => {
       cancelled = true;
       stream?.getTracks().forEach(track => track.stop());
     };
-  }, []);
+  }, [facingMode]);
+
+  const switchCamera = () => {
+    setReady(false);
+    setFacingMode(current => (current === 'environment' ? 'user' : 'environment'));
+  };
 
   const capture = () => {
     const video = videoRef.current;
@@ -80,7 +99,8 @@ export const CameraView = ({ onDone }: Props) => {
           autoPlay
           muted
           playsInline
-          className="camera-view-video"
+          // Mirrored like a mirror for the front camera; the photo itself isn't.
+          className={facingMode === 'user' ? 'camera-view-video camera-view-video-mirrored' : 'camera-view-video'}
           onLoadedData={() => setReady(true)}
         />
       )}
@@ -107,7 +127,19 @@ export const CameraView = ({ onDone }: Props) => {
         >
           <CameraOutline />
         </button>
-        <span className="camera-view-spacer" />
+        {canSwitch && !error ? (
+          <button
+            aria-label="Switch camera"
+            className="camera-view-switch"
+            disabled={!ready}
+            type="button"
+            onClick={switchCamera}
+          >
+            <LoopOutline />
+          </button>
+        ) : (
+          <span className="camera-view-spacer" />
+        )}
       </div>
     </div>
   );

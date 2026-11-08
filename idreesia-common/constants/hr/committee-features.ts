@@ -1,6 +1,8 @@
 export const CommitteeFeatureKeys = {
   DISCUSSIONS: 'discussions',
   NIGHT_STAY_REPORT: 'night-stay-report',
+  MONITORING_ALERTS: 'monitoring-alerts',
+  MONITORING_PROFILES: 'monitoring-profiles',
 } as const;
 
 export type CommitteeFeatureKey =
@@ -24,6 +26,16 @@ export const CommitteeFeatures: CommitteeFeature[] = [
     key: CommitteeFeatureKeys.NIGHT_STAY_REPORT,
     name: 'Night Stay Report',
     description: 'The visitors registered by Security as staying on a given night.',
+  },
+  {
+    key: CommitteeFeatureKeys.MONITORING_ALERTS,
+    name: 'Monitoring Alerts',
+    description: 'Face-match alerts raised on a given day.',
+  },
+  {
+    key: CommitteeFeatureKeys.MONITORING_PROFILES,
+    name: 'Monitoring Profiles',
+    description: 'View and edit the people being watched for, and their photos.',
   },
 ];
 

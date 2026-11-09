@@ -81,4 +81,11 @@ extend type Mutation {
     karkunId: String!
     hasAccess: Boolean!
   ): Boolean
+  # Makes a member a coordinator, or a regular member again. The last
+  # coordinator cannot be demoted.
+  workspaceSetCommitteeMemberCoordinator(
+    committeeId: String!
+    karkunId: String!
+    isCoordinator: Boolean!
+  ): Boolean
 }`;

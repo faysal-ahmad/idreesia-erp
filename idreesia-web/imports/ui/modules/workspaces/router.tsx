@@ -8,6 +8,7 @@ import { DiscussionsPage } from './discussions';
 import { DocumentsPage } from './documents';
 import { MeetingPage, MeetingsPage } from './meetings';
 import { PollPage, PollsPage } from './polls';
+import { ProjectPage, ProjectsPage } from './projects';
 import { NightStayReport } from './night-stay-report';
 import { MonitoringAlerts } from './monitoring-alerts';
 import { MonitoringProfiles } from './monitoring-profiles';
@@ -22,6 +23,8 @@ const Router = () => (
     <Route path={paths.committeeMeetingsPath()} component={MeetingsPage} />
     <Route path={paths.committeePollPath()} component={PollPage} />
     <Route path={paths.committeePollsPath()} component={PollsPage} />
+    <Route path={paths.committeeProjectPath()} component={ProjectPage} />
+    <Route path={paths.committeeProjectsPath()} component={ProjectsPage} />
     <Route
       path={paths.committeeNightStayReportPath()}
       component={NightStayReport}

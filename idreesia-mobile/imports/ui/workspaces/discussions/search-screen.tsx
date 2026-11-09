@@ -4,10 +4,8 @@ import { InfiniteScroll, SearchBar } from 'antd-mobile';
 import { SearchOutline } from 'antd-mobile-icons';
 
 import { Page, PageEmpty, PageError, PageLoading } from '../../layout';
-import { WorkspacesPaths } from '../paths';
 import { useDiscussionContext } from './discussion-context';
 import { type DiscussionMessage, toDiscussionMessages } from './discussion-types';
-import { MOBILE_WORKSPACE_DISCUSSION_SEARCH_MESSAGES } from './gql';
 import { MessageResultsList } from './message-results-list';
 import { useOpenMessage } from './use-open-message';
 
@@ -20,7 +18,7 @@ const MIN_LENGTH = 2;
  */
 export const SearchScreen = () => {
   const client = useApolloClient();
-  const { committeeId } = useDiscussionContext();
+  const { scope } = useDiscussionContext();
   const openMessage = useOpenMessage();
   const [input, setInput] = useState('');
   const [searchText, setSearchText] = useState('');
@@ -40,8 +38,8 @@ export const SearchScreen = () => {
 
   const fetchPage = async (text: string, offset: number) => {
     const { data } = await client.query({
-      query: MOBILE_WORKSPACE_DISCUSSION_SEARCH_MESSAGES,
-      variables: { committeeId, searchText: text, offset },
+      query: scope.docs.search,
+      variables: { ...scope.variables, searchText: text, offset },
       fetchPolicy: 'network-only',
     });
     const page = data?.workspaceDiscussionSearchMessages;
@@ -72,7 +70,7 @@ export const SearchScreen = () => {
       .finally(() => {
         if (current === generation.current) setLoading(false);
       });
-  }, [searchText, committeeId, attempt]);
+  }, [searchText, scope, attempt]);
 
   const loadMore = async () => {
     const current = generation.current;
@@ -108,7 +106,7 @@ export const SearchScreen = () => {
   }
 
   return (
-    <Page backTo={WorkspacesPaths.committeeDiscussions(committeeId)} title="Search messages">
+    <Page backTo={scope.paths.main} title="Search messages">
       <div className="list-toolbar">
         <SearchBar autoFocus placeholder="Search messages" value={input} onChange={setInput} />
       </div>

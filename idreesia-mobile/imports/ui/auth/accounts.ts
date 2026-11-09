@@ -1,8 +1,10 @@
 import { Accounts } from 'meteor/accounts-base';
 
-import { backendAccounts } from '/imports/startup/backend';
+import { backendAccounts, backendConnection } from '/imports/startup/backend';
 import { apolloClient } from '/imports/startup/apollo-client';
+import { clearPersistedCache } from '/imports/startup/apollo-persist';
 
+import { clearOfflineFiles } from '../offline';
 import { describeError } from '../utilities/describe-error';
 
 // Promise wrappers for the account operations the mobile app performs against
@@ -28,6 +30,32 @@ const toPromise = (
     });
   });
 
+export const SERVER_UNAVAILABLE_MESSAGE =
+  'The server is not available right now. Please check your internet connection and try again in a moment.';
+
+const CONNECT_WAIT_MS = 8000;
+
+/**
+ * DDP never fails a call while the server is unreachable: it queues it and
+ * keeps retrying, so a login would spin forever. Waits briefly for the
+ * connection and throws a readable error if it doesn't come up.
+ */
+const ensureServerReachable = async () => {
+  const connection = backendConnection;
+  if (!connection || connection.status().connected) return;
+
+  connection.reconnect();
+  const deadline = Date.now() + CONNECT_WAIT_MS;
+  while (Date.now() < deadline) {
+    // eslint-disable-next-line no-await-in-loop
+    await new Promise(resolve => {
+      setTimeout(resolve, 250);
+    });
+    if (connection.status().connected) return;
+  }
+  throw new Error(SERVER_UNAVAILABLE_MESSAGE);
+};
+
 /** A user-readable message for the error (see describeError), or the fallback. */
 export const getErrorMessage = (error: unknown, fallback: string): string =>
   describeError(error) ?? fallback;
@@ -38,6 +66,7 @@ export const loginWithPassword = async (
   password: string
 ) => {
   const accounts = requireAccounts();
+  await ensureServerReachable();
   const trimmed = userNameOrEmail.trim();
   const user = trimmed.includes('@') ? { email: trimmed } : { username: trimmed };
 
@@ -53,11 +82,15 @@ export const logout = async () => {
   const accounts = requireAccounts();
   await toPromise((callback) => accounts.logout(callback));
   await apolloClient.clearStore();
+  // Nothing of this user may stay on the device for the next one.
+  await clearPersistedCache();
+  await clearOfflineFiles();
 };
 
 /** Sends a reset-password email. The link in it opens the web app. */
 export const forgotPassword = async (email: string) => {
   const accounts = requireAccounts();
+  await ensureServerReachable();
   await toPromise((callback) =>
     accounts.connection.call('forgotPassword', { email: email.trim() }, callback)
   );
@@ -69,6 +102,7 @@ export const forgotPassword = async (email: string) => {
  */
 export const changePassword = async (oldPassword: string, newPassword: string) => {
   const accounts = requireAccounts();
+  await ensureServerReachable();
   const result = await toPromise((callback) =>
     accounts.connection.apply(
       'changePassword',

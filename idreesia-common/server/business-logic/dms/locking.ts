@@ -1,4 +1,9 @@
-import { DmsAction, DmsEntityType } from 'meteor/idreesia-common/constants/dms';
+import {
+  DMS_DEFAULT_LOCK_MINUTES,
+  DMS_MAX_LOCK_MINUTES,
+  DmsAction,
+  DmsEntityType,
+} from 'meteor/idreesia-common/constants/dms';
 import {
   DmsDocuments,
   type DmsDocumentDocument,
@@ -15,30 +20,41 @@ import {
   requireDocument,
   requireUserId,
 } from './internal';
+import {
+  notifyForceUnlocked,
+  retireLockExpiring,
+} from './notifications';
 import { uploadNewVersion, type NewVersionInput } from './versions';
 
 export interface CheckOutOptions {
-  /** Unset for a lock that lasts until checked in or force-unlocked. */
+  /**
+   * How long the lock lasts: up to DMS_MAX_LOCK_MINUTES (one week), which is
+   * also the default. Every lock expires; there are no open-ended locks.
+   */
   expiresInMinutes?: number;
   note?: string;
 }
 
 /**
  * Checks a document out to the user: until it is checked in (or the lock
- * expires, or is force-unlocked), no one else can change it. Checking out a
- * document the user already holds renews the lock.
+ * expires, or is force-unlocked), no one else can change it. A lock lasts at
+ * most a week. Checking out a document the user already holds renews the
+ * lock.
  */
 export async function checkOutDocument(
   documentId: string,
   userId: string,
-  { expiresInMinutes, note }: CheckOutOptions = {}
+  { expiresInMinutes = DMS_DEFAULT_LOCK_MINUTES, note }: CheckOutOptions = {}
 ): Promise<DmsDocumentDocument> {
   requireUserId(userId);
-  if (
-    expiresInMinutes !== undefined &&
-    (!Number.isFinite(expiresInMinutes) || expiresInMinutes <= 0)
-  ) {
+  if (!Number.isFinite(expiresInMinutes) || expiresInMinutes <= 0) {
     throw dmsError('BAD_USER_INPUT', 'expiresInMinutes must be positive');
+  }
+  if (expiresInMinutes > DMS_MAX_LOCK_MINUTES) {
+    throw dmsError(
+      'BAD_USER_INPUT',
+      `A lock can last at most ${DMS_MAX_LOCK_MINUTES} minutes (7 days)`
+    );
   }
   const document = await requireDocument(documentId);
 
@@ -46,9 +62,7 @@ export async function checkOutDocument(
   const lock: DmsDocumentLock = {
     userId,
     lockedAt: now,
-    ...(expiresInMinutes
-      ? { expiresAt: new Date(now.getTime() + expiresInMinutes * 60000) }
-      : {}),
+    expiresAt: new Date(now.getTime() + expiresInMinutes * 60000),
     ...(note?.trim() ? { note: note.trim() } : {}),
   };
   const updated = await DmsDocuments.updateAsync(
@@ -64,8 +78,10 @@ export async function checkOutDocument(
     documentId,
     action: DmsAction.DOCUMENT_CHECKED_OUT,
     userId,
-    details: { expiresAt: lock.expiresAt ?? null },
+    details: { expiresAt: lock.expiresAt },
   });
+  // A renewed lock gets a new "expires soon" warning of its own.
+  if (document.lock) await retireLockExpiring(documentId, document.lock.lockedAt);
   return requireDocument(documentId);
 }
 
@@ -110,6 +126,7 @@ export async function checkInDocument(
     userId,
     details: { withNewVersion: !!newVersion },
   });
+  await retireLockExpiring(documentId, document.lock.lockedAt);
   return requireDocument(documentId);
 }
 
@@ -138,6 +155,8 @@ export async function forceUnlockDocument(
       lockedAt: document.lock.lockedAt,
     },
   });
+  await notifyForceUnlocked({ ...document, lock: document.lock }, userId);
+  await retireLockExpiring(documentId, document.lock.lockedAt);
   return requireDocument(documentId, { includeTrashed: true });
 }
 

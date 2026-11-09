@@ -10,6 +10,7 @@ import {
   IdcardOutlined,
   MessageOutlined,
   MoonOutlined,
+  ProjectOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
 
@@ -38,6 +39,7 @@ const KeyPrefixHandlers: KeyPrefixHandler[] = [
   ['documents', SubModuleNames.documents, paths.committeeDocumentsPath],
   ['meetings', SubModuleNames.meetings, paths.committeeMeetingsPath],
   ['polls', SubModuleNames.polls, paths.committeePollsPath],
+  ['projects', SubModuleNames.projects, paths.committeeProjectsPath],
   [
     'night-stay-report',
     SubModuleNames.nightStayReport,
@@ -179,6 +181,15 @@ const Sidebar = ({ history }: SidebarProps) => {
               key: `polls-${committee._id}`,
               icon: <BarChartOutlined style={IconStyle} />,
               label: 'Polls',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(CommitteeFeatureKeys.PROJECTS)
+        ? [
+            {
+              key: `projects-${committee._id}`,
+              icon: <ProjectOutlined style={IconStyle} />,
+              label: 'Projects & Tasks',
             },
           ]
         : []),

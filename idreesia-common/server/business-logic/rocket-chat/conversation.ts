@@ -29,7 +29,7 @@ import {
   type ChatMessage,
   type MappedChatAttachment,
 } from 'meteor/idreesia-common/server/chat';
-import { withChatUserCredentials } from 'meteor/idreesia-common/server/business-logic/common/chat-user-credentials';
+import { withChatUserCredentials } from 'meteor/idreesia-common/server/business-logic/rocket-chat/user-credentials';
 import {
   getPersonImageUrls,
   type PersonImageFields,
@@ -42,29 +42,30 @@ import {
 } from 'meteor/idreesia-common/server/collections/common';
 
 /**
- * Discussions: members of something (a committee today) talking in a chat
- * private group.
+ * Shared conversation functions over a Rocket.Chat private group. Used by
+ * every headless module that is backed by a chat group (discussions,
+ * projects); each passes the group it owns. Modules never call each other.
  *
  * Nothing here checks who may take part. Callers establish that with their
  * own rules first, then pass the chat group id they resolved and the acting
  * ERP user.
  */
 
-export interface DiscussionActor {
+export interface ConversationActor {
   _id: string;
   /** Also the chat username: chat accounts are created with it. */
   username?: string | null;
   chatUserId?: string | null;
 }
 
-export interface DiscussionReaction {
+export interface ConversationReaction {
   emoji: string;
   count: number;
   usernames: string[];
   reactedByMe: boolean;
 }
 
-export interface DiscussionMessage {
+export interface ConversationMessage {
   _id: string;
   text: string;
   sentAt: string | null;
@@ -81,7 +82,7 @@ export interface DiscussionMessage {
   isPinned: boolean;
   /** Starred by the acting user. */
   isStarred: boolean;
-  reactions: DiscussionReaction[];
+  reactions: ConversationReaction[];
   /** On a thread reply: the parent message id. */
   threadId: string | null;
   /** A thread reply that is also shown in the main list. */
@@ -91,23 +92,23 @@ export interface DiscussionMessage {
   threadLastReplyAt: string | null;
 }
 
-export interface DiscussionSync {
-  messages: DiscussionMessage[];
+export interface ConversationSync {
+  messages: ConversationMessage[];
   deletedIds: string[];
   /** Pass back as `since` on the next sync. */
   syncedAt: string;
-  /** Initial load only: older messages exist (see getOlderDiscussionMessages). */
+  /** Initial load only: older messages exist (see getOlderConversationMessages). */
   hasOlder?: boolean;
 }
 
 /** A page of messages, oldest first; `hasMore` when another page exists. */
-export interface DiscussionMessagePage {
-  messages: DiscussionMessage[];
+export interface ConversationMessagePage {
+  messages: ConversationMessage[];
   hasMore: boolean;
 }
 
-export const MAX_DISCUSSION_MESSAGE_LENGTH = 5000;
-export const MAX_DISCUSSION_FILE_SIZE = 25 * 1024 * 1024;
+export const MAX_CONVERSATION_MESSAGE_LENGTH = 5000;
+export const MAX_CONVERSATION_FILE_SIZE = 25 * 1024 * 1024;
 const PAGE_SIZE = 100;
 // The chat server stamps updates with its own clock; syncing from a little
 // before "now" covers clock differences (re-delivered messages are merged).
@@ -199,8 +200,8 @@ const EMPTY_MESSAGE_EXTRAS = {
 
 const mapReactions = (
   message: ChatMessage,
-  actor: DiscussionActor
-): DiscussionReaction[] =>
+  actor: ConversationActor
+): ConversationReaction[] =>
   Object.entries(message.reactions ?? {})
     .map(([shortcode, reaction]) => {
       const usernames = reaction.usernames ?? [];
@@ -215,9 +216,9 @@ const mapReactions = (
 
 const mapMessage = (
   message: ChatMessage,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   fileUrl: ChatFileUrlBuilder
-): DiscussionMessage | null => {
+): ConversationMessage | null => {
   if (message.t) {
     const text = systemMessageText(message);
     if (!text) return null;
@@ -331,7 +332,7 @@ const getChatUserImages = async (chatUserIds: string[]) => {
   return images;
 };
 
-const addSenderImages = async (messages: DiscussionMessage[]) => {
+const addSenderImages = async (messages: ConversationMessage[]) => {
   const images = await getChatUserImages(
     messages
       .map(message => message.senderId)
@@ -348,7 +349,7 @@ const addSenderImages = async (messages: DiscussionMessage[]) => {
   });
 };
 
-export interface DiscussionMember {
+export interface ConversationMember {
   /** Chat username, used in @mentions. */
   username: string;
   name: string | null;
@@ -360,9 +361,9 @@ export interface DiscussionMember {
  * People in a discussion, for @mention suggestions. The ERP service
  * account (the group's owner) is left out.
  */
-export const getDiscussionMembers = async (
+export const getConversationMembers = async (
   chatGroupId: string
-): Promise<DiscussionMember[]> => {
+): Promise<ConversationMember[]> => {
   const serviceUserId = getChatConfig().userId;
   const members = (
     await runChatAction('load the discussion members', () =>
@@ -387,7 +388,7 @@ export const getDiscussionMembers = async (
 };
 
 /** Whether the user can post (they need their own chat account). */
-export const getDiscussionInfo = (actor: DiscussionActor) => ({
+export const getConversationInfo = (actor: ConversationActor) => ({
   canPost: !!actor.chatUserId,
 });
 
@@ -398,13 +399,13 @@ const signedFileUrlFor =
 
 const mapMessages = (
   messages: ChatMessage[],
-  actor: DiscussionActor,
+  actor: ConversationActor,
   fileUrl: ChatFileUrlBuilder
 ) =>
   addSenderImages(
     messages
       .map(message => mapMessage(message, actor, fileUrl))
-      .filter((message): message is DiscussionMessage => !!message)
+      .filter((message): message is ConversationMessage => !!message)
   );
 
 /**
@@ -414,13 +415,13 @@ const mapMessages = (
  * pins, thread replies) and the ids of deleted ones.
  *
  * `fileUrl` builds the caller's own file route; a signature query parameter
- * is added to each URL for `fetchDiscussionFile` to check.
+ * is added to each URL for `fetchConversationFile` to check.
  */
-export const syncDiscussionMessages = async (
+export const syncConversationMessages = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   { since, fileUrl }: { since?: string | null; fileUrl: ChatFileUrlBuilder }
-): Promise<DiscussionSync> => {
+): Promise<ConversationSync> => {
   const syncedAt = new Date(Date.now() - SYNC_OVERLAP_MS).toISOString();
   const signedFileUrl = signedFileUrlFor(chatGroupId, fileUrl);
 
@@ -467,7 +468,7 @@ const getGroupMessage = async (chatGroupId: string, messageId: string) => {
 // The message, after checking it is the acting user's own.
 const getOwnGroupMessage = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   messageId: string
 ) => {
   const message = await getGroupMessage(chatGroupId, messageId);
@@ -486,9 +487,9 @@ const checkMessageText = (text: string) => {
       extensions: { code: 'BAD_USER_INPUT' },
     });
   }
-  if (trimmed.length > MAX_DISCUSSION_MESSAGE_LENGTH) {
+  if (trimmed.length > MAX_CONVERSATION_MESSAGE_LENGTH) {
     throw new GraphQLError(
-      `Messages can be at most ${MAX_DISCUSSION_MESSAGE_LENGTH} characters.`,
+      `Messages can be at most ${MAX_CONVERSATION_MESSAGE_LENGTH} characters.`,
       { extensions: { code: 'BAD_USER_INPUT' } }
     );
   }
@@ -496,12 +497,12 @@ const checkMessageText = (text: string) => {
 };
 
 /** A thread: its parent message first, then the replies, oldest first. */
-export const getDiscussionThreadMessages = async (
+export const getConversationThreadMessages = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   threadId: string,
   { fileUrl }: { fileUrl: ChatFileUrlBuilder }
-): Promise<DiscussionMessage[]> => {
+): Promise<ConversationMessage[]> => {
   const parent = await getGroupMessage(chatGroupId, threadId);
   const replies = await runChatAction('load the thread', () =>
     getChatThreadMessages(threadId)
@@ -514,9 +515,9 @@ export const getDiscussionThreadMessages = async (
 };
 
 /** Adds or removes the user's reaction (an emoji character) on a message. */
-export const reactToDiscussionMessage = async (
+export const reactToConversationMessage = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   messageId: string,
   emoji: string,
   shouldReact: boolean
@@ -537,9 +538,9 @@ export const reactToDiscussionMessage = async (
 };
 
 /** Stars or unstars a message for the user. */
-export const setDiscussionMessageStarred = async (
+export const setConversationMessageStarred = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   messageId: string,
   starred: boolean
 ): Promise<true> => {
@@ -556,7 +557,7 @@ export const setDiscussionMessageStarred = async (
  * Pins or unpins a message for everyone. Done as the service account (the
  * group owner); callers decide who may pin.
  */
-export const setDiscussionMessagePinned = async (
+export const setConversationMessagePinned = async (
   chatGroupId: string,
   messageId: string,
   pinned: boolean
@@ -569,9 +570,9 @@ export const setDiscussionMessagePinned = async (
 };
 
 /** Changes the text of one of the user's own messages. */
-export const editDiscussionMessage = async (
+export const editConversationMessage = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   messageId: string,
   text: string
 ): Promise<true> => {
@@ -586,9 +587,9 @@ export const editDiscussionMessage = async (
 };
 
 /** Deletes one of the user's own messages. */
-export const deleteDiscussionMessage = async (
+export const deleteConversationMessage = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   messageId: string
 ): Promise<true> => {
   await getOwnGroupMessage(chatGroupId, actor, messageId);
@@ -604,9 +605,9 @@ export const deleteDiscussionMessage = async (
  * Posts a text message as the user; with `threadId`, as a reply in that
  * thread.
  */
-export const sendDiscussionMessage = async (
+export const sendConversationMessage = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   text: string,
   threadId?: string | null
 ): Promise<true> => {
@@ -625,13 +626,13 @@ export const sendDiscussionMessage = async (
  * Uploads a file as the user; it appears in the discussion as a message
  * (with `threadId`, as a reply in that thread).
  */
-export const uploadDiscussionFile = async (
+export const uploadConversationFile = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   file: { buffer: Buffer; fileName: string; mimeType: string },
   threadId?: string | null
 ): Promise<true> => {
-  if (file.buffer.length > MAX_DISCUSSION_FILE_SIZE) {
+  if (file.buffer.length > MAX_CONVERSATION_FILE_SIZE) {
     throw new GraphQLError('Files can be at most 25 MB.', {
       extensions: { code: 'PAYLOAD_TOO_LARGE' },
     });
@@ -647,11 +648,11 @@ export const uploadDiscussionFile = async (
 };
 
 /** Pinned messages of a discussion, oldest first. */
-export const getDiscussionPinnedMessages = async (
+export const getConversationPinnedMessages = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   { fileUrl }: { fileUrl: ChatFileUrlBuilder }
-): Promise<DiscussionMessage[]> => {
+): Promise<ConversationMessage[]> => {
   const messages = await runChatAction('load the pinned messages', () =>
     getChatPinnedMessages(chatGroupId)
   );
@@ -666,11 +667,11 @@ export const getDiscussionPinnedMessages = async (
  * The page of messages sent before `before` (an ISO time, exclusive), oldest
  * first, for loading history further back than the initial load.
  */
-export const getOlderDiscussionMessages = async (
+export const getOlderConversationMessages = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   { before, fileUrl }: { before: string; fileUrl: ChatFileUrlBuilder }
-): Promise<DiscussionMessagePage> => {
+): Promise<ConversationMessagePage> => {
   const messages = await runChatAction('load older messages', () =>
     getChatGroupMessages(chatGroupId, { latest: before, count: PAGE_SIZE })
   );
@@ -694,15 +695,15 @@ const SEARCH_PAGE_SIZE = 50;
  * /^text$/i is also accepted. Read as the service account, so users without
  * a chat account can search too.
  */
-export const searchDiscussionMessages = async (
+export const searchConversationMessages = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   {
     searchText,
     offset = 0,
     fileUrl,
   }: { searchText: string; offset?: number | null; fileUrl: ChatFileUrlBuilder }
-): Promise<DiscussionMessagePage> => {
+): Promise<ConversationMessagePage> => {
   const trimmed = (searchText ?? '').trim();
   if (!trimmed) return { messages: [], hasMore: false };
   if (trimmed.length > MAX_SEARCH_TEXT_LENGTH) {
@@ -732,11 +733,11 @@ export const searchDiscussionMessages = async (
  * Messages of a discussion starred by the user, oldest first. Users without
  * a chat account have none.
  */
-export const getDiscussionStarredMessages = async (
+export const getConversationStarredMessages = async (
   chatGroupId: string,
-  actor: DiscussionActor,
+  actor: ConversationActor,
   { fileUrl }: { fileUrl: ChatFileUrlBuilder }
-): Promise<DiscussionMessage[]> => {
+): Promise<ConversationMessage[]> => {
   if (!actor.chatUserId) return [];
   const messages = await runChatAction('load the starred messages', () =>
     withChatUserCredentials(actor, credentials =>
@@ -752,9 +753,9 @@ export const getDiscussionStarredMessages = async (
 
 /**
  * A file from a discussion, for streaming on. The signature must be the one
- * `syncDiscussionMessages` put on the file's URL for this same group.
+ * `syncConversationMessages` put on the file's URL for this same group.
  */
-export const fetchDiscussionFile = async (
+export const fetchConversationFile = async (
   chatGroupId: string,
   { fileId, fileName, signature }: { fileId: string; fileName: string; signature: string }
 ): Promise<Response> => {

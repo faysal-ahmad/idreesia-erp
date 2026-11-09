@@ -11,6 +11,7 @@ import { discussionsHandler } from './discussions';
 import { documentsHandler } from './documents';
 import { meetingsHandler } from './meetings';
 import { pollsHandler } from './polls';
+import { projectsHandler } from './projects';
 import { membersHandler } from './members-feature';
 import { nightStayReportHandler } from './night-stay-report';
 import { monitoringAlertsHandler } from './monitoring-alerts';
@@ -25,6 +26,7 @@ const featureHandlers: Record<CommitteeFeatureKey, CommitteeFeatureHandler> = {
   [CommitteeFeatureKeys.DOCUMENTS]: documentsHandler,
   [CommitteeFeatureKeys.MEETINGS]: meetingsHandler,
   [CommitteeFeatureKeys.POLLS]: pollsHandler,
+  [CommitteeFeatureKeys.PROJECTS]: projectsHandler,
   [CommitteeFeatureKeys.NIGHT_STAY_REPORT]: nightStayReportHandler,
   [CommitteeFeatureKeys.MONITORING_ALERTS]: monitoringAlertsHandler,
   [CommitteeFeatureKeys.MONITORING_PROFILES]: monitoringProfilesHandler,

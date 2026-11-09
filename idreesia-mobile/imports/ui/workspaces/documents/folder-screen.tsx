@@ -15,7 +15,8 @@ import { AddOutline, FolderOutline, MoreOutline } from 'antd-mobile-icons';
 import { useMutation, useQuery } from '@apollo/client/react';
 
 import { PagedList } from '../../components';
-import { usePagedQuery } from '../../hooks';
+import { useOfflineItem } from '../../offline';
+import { useOnlineStatus, usePagedQuery } from '../../hooks';
 import { Page, PageEmpty, PageError, PageLoading, showError, showSuccess } from '../../layout';
 import { useHistory, useParams } from '../../router';
 import { WorkspacesPaths } from '../paths';
@@ -36,6 +37,7 @@ import {
   type DocumentItem,
   hasId,
   isLockedByOther,
+  OFFLINE_FEATURE,
   useDocumentUpload,
   useRefreshDocumentLists,
 } from './use-documents';
@@ -58,6 +60,7 @@ interface RowProps {
 
 /** A document in a folder or in the search results. */
 const DocumentRow = ({ document, showFolder, onOpen, onTrash }: RowProps) => {
+  const [saved] = useOfflineItem(OFFLINE_FEATURE, document._id);
   const item = (
     <List.Item
       description={
@@ -71,10 +74,19 @@ const DocumentRow = ({ document, showFolder, onOpen, onTrash }: RowProps) => {
         </>
       }
       extra={
-        document.lock ? (
-          <Tag color={document.lock.isMine ? 'primary' : 'warning'} fill="outline">
-            {document.lock.isMine ? 'Checked out' : 'Locked'}
-          </Tag>
+        document.lock || saved ? (
+          <>
+            {saved && (
+              <Tag color={saved.version === document.currentVersionNumber ? 'success' : 'warning'} fill="outline">
+                {saved.version === document.currentVersionNumber ? 'Offline' : 'Offline (old)'}
+              </Tag>
+            )}
+            {document.lock && (
+              <Tag color={document.lock.isMine ? 'primary' : 'warning'} fill="outline">
+                {document.lock.isMine ? 'Checked out' : 'Locked'}
+              </Tag>
+            )}
+          </>
         ) : undefined
       }
       prefix={
@@ -150,6 +162,8 @@ export const FolderScreen = ({ folderId }: Props) => {
   const [renameOpen, setRenameOpen] = useState(false);
   const [moving, setMoving] = useState<MoveTarget | null>(null);
   const { uploading, upload } = useDocumentUpload(committeeId);
+  // Changes need the server; offline the library is read-only.
+  const online = useOnlineStatus();
 
   const [createFolder] = useMutation(MOBILE_WORKSPACE_CREATE_DOCUMENT_FOLDER);
   const [renameFolder] = useMutation(MOBILE_WORKSPACE_RENAME_DOCUMENT_FOLDER);
@@ -237,21 +251,28 @@ export const FolderScreen = ({ folderId }: Props) => {
   };
 
   const addActions: Action[] = [
-    { key: 'upload', text: 'Upload files', onClick: () => !uploading && fileInput.current?.click() },
-    { key: 'folder', text: 'New folder', onClick: () => setNewFolderOpen(true) },
+    { key: 'upload', text: 'Upload files', disabled: !online, onClick: () => !uploading && fileInput.current?.click() },
+    { key: 'folder', text: 'New folder', disabled: !online, onClick: () => setNewFolderOpen(true) },
   ];
 
   const menuActions: Action[] = [
     ...(current
       ? [
-          { key: 'rename', text: 'Rename folder', onClick: () => setRenameOpen(true) },
+          { key: 'rename', text: 'Rename folder', disabled: !online, onClick: () => setRenameOpen(true) },
           {
             key: 'move',
             text: 'Move folder to…',
+            disabled: !online,
             onClick: () =>
               setMoving({ kind: 'folder', id: current._id, name: current.name ?? '', currentFolderId: parentId }),
           },
-          { key: 'trash-folder', text: 'Delete folder', danger: true, onClick: () => confirmTrashFolder(current, true) },
+          {
+            key: 'trash-folder',
+            text: 'Delete folder',
+            danger: true,
+            disabled: !online,
+            onClick: () => confirmTrashFolder(current, true),
+          },
         ]
       : []),
     { key: 'trash', text: 'Trash', onClick: () => history.push(WorkspacesPaths.committeeDocumentTrash(committeeId)) },
@@ -282,13 +303,8 @@ export const FolderScreen = ({ folderId }: Props) => {
             .join(' · ')}
         </p>
         <List mode="card">
-          {folders.map(folder => (
-            <SwipeAction
-              key={folder._id}
-              rightActions={[
-                { key: 'trash', text: 'Delete', color: 'danger', onClick: () => confirmTrashFolder(folder) },
-              ]}
-            >
+          {folders.map(folder => {
+            const row = (
               <List.Item
                 description={byLine(folder.updatedByName, folder.updatedAt) || undefined}
                 prefix={
@@ -300,14 +316,26 @@ export const FolderScreen = ({ folderId }: Props) => {
               >
                 {folder.name}
               </List.Item>
-            </SwipeAction>
-          ))}
+            );
+            return online ? (
+              <SwipeAction
+                key={folder._id}
+                rightActions={[
+                  { key: 'trash', text: 'Delete', color: 'danger', onClick: () => confirmTrashFolder(folder) },
+                ]}
+              >
+                {row}
+              </SwipeAction>
+            ) : (
+              <React.Fragment key={folder._id}>{row}</React.Fragment>
+            );
+          })}
           {documents.map(document => (
             <DocumentRow
               key={document._id}
               document={document}
               onOpen={() => openDocument(document)}
-              onTrash={() => confirmTrashDocument(document)}
+              onTrash={online ? () => confirmTrashDocument(document) : undefined}
             />
           ))}
         </List>

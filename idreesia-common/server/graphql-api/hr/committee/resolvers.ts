@@ -6,6 +6,7 @@ import {
   enableCommitteeFeature,
   getCommitteeMemberAccess,
   removeCommitteeMember,
+  setCommitteeMemberCoordinator,
   setCommitteeMemberDiscussionAccess,
   type CommitteeDoc,
   type CommitteeMemberAccess,
@@ -15,21 +16,6 @@ type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
   [key: string]: ResolverField;
 }
-
-// Updates one member of a committee, failing if the karkun is not a member.
-const updateMember = async (
-  committeeId: string,
-  karkunId: string,
-  modifier: Record<string, unknown>
-) => {
-  const updated = await Committees.updateAsync(
-    { _id: committeeId, 'members.karkunId': karkunId },
-    modifier
-  );
-  if (updated === 0) {
-    throw new Error('This person is not a member of the committee.');
-  }
-};
 
 // Member access is looked up per committee, at most once per request, and
 // only when one of the access fields is asked for.
@@ -129,13 +115,13 @@ const resolvers: ResolverMap = {
       return Committees.removeAsync(_id);
     },
 
-    addCommitteeMember: async (obj, { committeeId, karkunId }) => {
-      await addCommitteeMember(committeeId, karkunId);
+    addCommitteeMember: async (obj, { committeeId, karkunId }, { user }) => {
+      await addCommitteeMember(committeeId, karkunId, user._id);
       return Committees.findOneAsync(committeeId);
     },
 
-    removeCommitteeMember: async (obj, { committeeId, karkunId }) => {
-      await removeCommitteeMember(committeeId, karkunId);
+    removeCommitteeMember: async (obj, { committeeId, karkunId }, { user }) => {
+      await removeCommitteeMember(committeeId, karkunId, user._id);
       return Committees.findOneAsync(committeeId);
     },
 
@@ -152,18 +138,32 @@ const resolvers: ResolverMap = {
       );
     },
 
-    addCommitteeCoordinator: async (obj, { committeeId, karkunId }) => {
-      await updateMember(committeeId, karkunId, {
-        $set: { 'members.$.isCoordinator': true },
-      });
+    addCommitteeCoordinator: async (
+      obj,
+      { committeeId, karkunId },
+      { user }
+    ) => {
+      await setCommitteeMemberCoordinator(
+        committeeId,
+        karkunId,
+        true,
+        user._id
+      );
 
       return Committees.findOneAsync(committeeId);
     },
 
-    removeCommitteeCoordinator: async (obj, { committeeId, karkunId }) => {
-      await updateMember(committeeId, karkunId, {
-        $unset: { 'members.$.isCoordinator': '' },
-      });
+    removeCommitteeCoordinator: async (
+      obj,
+      { committeeId, karkunId },
+      { user }
+    ) => {
+      await setCommitteeMemberCoordinator(
+        committeeId,
+        karkunId,
+        false,
+        user._id
+      );
 
       return Committees.findOneAsync(committeeId);
     },

@@ -4,10 +4,11 @@ export interface CommitteeDoc {
   name: string;
   members?: Array<{ karkunId: string; isCoordinator?: boolean }>;
   features?: string[];
-  chatGroupId?: string;
+  discussionsWorkspaceId?: string;
   dmsWorkspaceId?: string;
   meetingsWorkspaceId?: string;
   pollsWorkspaceId?: string;
+  projectsWorkspaceId?: string;
 }
 
 /**

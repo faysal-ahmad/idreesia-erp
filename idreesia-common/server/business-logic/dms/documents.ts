@@ -41,6 +41,7 @@ import {
   requireVersion,
   storeAndCommitVersion,
 } from './versions';
+import { notifyDocumentAdded } from './notifications';
 
 export const documentNameConflict = (name: string) =>
   dmsError('CONFLICT', `A document named "${name}" already exists here`);
@@ -174,6 +175,7 @@ export async function uploadDocument(
     userId,
     details: { name: spec.name, folderId: spec.folderId ?? null },
   });
+  await notifyDocumentAdded(created, userId);
   return { document: await requireDocument(created._id), version };
 }
 
@@ -374,6 +376,7 @@ export async function copyDocument(
       name: spec.name,
     },
   });
+  await notifyDocumentAdded(created, userId);
   return { document: await requireDocument(created._id), version };
 }
 

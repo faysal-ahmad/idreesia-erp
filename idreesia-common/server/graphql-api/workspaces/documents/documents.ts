@@ -224,9 +224,11 @@ export default gql`
       versionId: String!
     ): Boolean
 
+    # The lock lasts durationMinutes, at most 7 days (10080).
     workspaceCheckOutDocument(
       committeeId: String!
       documentId: String!
+      durationMinutes: Int!
       note: String
     ): Boolean
     workspaceCheckInDocument(committeeId: String!, documentId: String!): Boolean

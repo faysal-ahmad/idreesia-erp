@@ -1,6 +1,5 @@
 import { useNavigateBack } from '../../layout';
 import { useHistory } from '../../router';
-import { WorkspacesPaths } from '../paths';
 import { useDiscussionContext } from './discussion-context';
 import type { DiscussionMessage } from './discussion-types';
 
@@ -11,12 +10,12 @@ import type { DiscussionMessage } from './discussion-types';
  */
 export const useOpenMessage = () => {
   const history = useHistory();
-  const { committeeId, requestFocus } = useDiscussionContext();
-  const backToMain = useNavigateBack(WorkspacesPaths.committeeDiscussions(committeeId));
+  const { scope, requestFocus } = useDiscussionContext();
+  const backToMain = useNavigateBack(scope.paths.main);
 
   return (message: DiscussionMessage) => {
     if (message.threadId && !message.showInMainList) {
-      history.push(WorkspacesPaths.committeeDiscussionThread(committeeId, message.threadId));
+      history.push(scope.paths.thread(message.threadId));
       return;
     }
     requestFocus(message._id);

@@ -4,6 +4,7 @@ export const CommitteeFeatureKeys = {
   DOCUMENTS: 'documents',
   MEETINGS: 'meetings',
   POLLS: 'polls',
+  PROJECTS: 'projects',
   NIGHT_STAY_REPORT: 'night-stay-report',
   MONITORING_ALERTS: 'monitoring-alerts',
   MONITORING_PROFILES: 'monitoring-profiles',
@@ -67,6 +68,13 @@ export const CommitteeFeatures: CommitteeFeature[] = [
     category: CommitteeFeatureCategories.COMMUNICATION,
     description:
       'Polls for the committee members, named or anonymous, with results once the poll closes.',
+  },
+  {
+    key: CommitteeFeatureKeys.PROJECTS,
+    name: 'Projects & Tasks',
+    category: CommitteeFeatureCategories.GENERAL,
+    description:
+      'Tasks with assignees, due dates and progress, and projects that group tasks, each with a private chat for its participants.',
   },
   {
     key: CommitteeFeatureKeys.NIGHT_STAY_REPORT,

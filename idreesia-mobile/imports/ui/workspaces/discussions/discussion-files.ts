@@ -35,7 +35,8 @@ export const fetchDiscussionFile = async (url: string): Promise<Blob> => {
  * as a reply in that thread.
  */
 export const uploadDiscussionFile = async (
-  committeeId: string,
+  /** The scope's ERP upload route (see DiscussionScope.uploadPath). */
+  uploadPath: string,
   file: Blob,
   fileName: string,
   threadId?: string,
@@ -44,9 +45,10 @@ export const uploadDiscussionFile = async (
   const formData = new FormData();
   if (threadId) formData.append('threadId', threadId);
   formData.append('file', file, fileName);
-  const response = await fetch(
-    `${backendUrl}/api/workspaces/committees/${encodeURIComponent(committeeId)}/discussions/files`,
-    { method: 'POST', headers: authHeaders(), body: formData },
-  );
+  const response = await fetch(`${backendUrl}${uploadPath}`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: formData,
+  });
   if (!response.ok) throw new Error(await readError(response));
 };

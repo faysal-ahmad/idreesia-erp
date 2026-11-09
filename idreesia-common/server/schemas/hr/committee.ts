@@ -39,10 +39,10 @@ export default new SimpleSchema({
     type: String,
     allowedValues: CommitteeFeatures.map(feature => feature.key),
   },
-  // Discussions feature: the chat private group made for this committee. Kept
-  // while the feature is disabled (the group is archived) so re-enabling
-  // unarchives it instead of creating another.
-  chatGroupId: {
+  // Discussions feature: the discussions workspace made for this committee.
+  // Kept while the feature is disabled (the workspace is soft-deleted and its
+  // chat group archived) so re-enabling restores it, with its history.
+  discussionsWorkspaceId: {
     type: String,
     optional: true,
   },
@@ -64,6 +64,13 @@ export default new SimpleSchema({
   // the feature is disabled (the workspace is soft-deleted) so re-enabling
   // restores it, with its polls.
   pollsWorkspaceId: {
+    type: String,
+    optional: true,
+  },
+  // Projects feature: the projects workspace made for this committee. Kept
+  // while the feature is disabled (the workspace is soft-deleted and its
+  // projects' chat groups archived) so re-enabling restores them.
+  projectsWorkspaceId: {
     type: String,
     optional: true,
   },

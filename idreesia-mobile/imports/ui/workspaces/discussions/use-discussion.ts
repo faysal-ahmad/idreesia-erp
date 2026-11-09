@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useApolloClient } from '@apollo/client/react';
 
-import {
-  MOBILE_WORKSPACE_DISCUSSION_OLDER_MESSAGES,
-  MOBILE_WORKSPACE_DISCUSSION_SYNC,
-  MOBILE_WORKSPACE_DISCUSSION_THREAD_MESSAGES,
-} from './gql';
+import type { DiscussionScope } from './discussion-scope';
 import { type DiscussionMessage, toDiscussionMessages } from './discussion-types';
 
 // As on the web.
@@ -32,7 +28,8 @@ const oldestSentAt = (messages: DiscussionMessage[]) =>
  * id; `messages` is all of them, oldest first, and screens pick what they
  * show.
  */
-export const useDiscussion = (committeeId: string) => {
+export const useDiscussion = (scope: DiscussionScope) => {
+  const { variables } = scope;
   const client = useApolloClient();
   const [messages, setMessages] = useState<DiscussionMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,8 +62,8 @@ export const useDiscussion = (committeeId: string) => {
   const fetchSync = useCallback(
     async (since?: string) => {
       const { data } = await client.query({
-        query: MOBILE_WORKSPACE_DISCUSSION_SYNC,
-        variables: { committeeId, since: since ?? null },
+        query: scope.docs.sync,
+        variables: { ...variables, since: since ?? null },
         fetchPolicy: 'network-only',
       });
       const result = data?.workspaceDiscussionSync;
@@ -78,7 +75,7 @@ export const useDiscussion = (committeeId: string) => {
       );
       return { incoming, hasOlder: Boolean(result?.hasOlder) };
     },
-    [client, committeeId, merge],
+    [client, scope, variables, merge],
   );
 
   // What changed since the last sync. Overlapping calls are skipped; a failed
@@ -154,8 +151,8 @@ export const useDiscussion = (committeeId: string) => {
     setLoadingOlder(true);
     const request = client
       .query({
-        query: MOBILE_WORKSPACE_DISCUSSION_OLDER_MESSAGES,
-        variables: { committeeId, before },
+        query: scope.docs.older,
+        variables: { ...variables, before },
         fetchPolicy: 'network-only',
       })
       .then(({ data }) => {
@@ -172,7 +169,7 @@ export const useDiscussion = (committeeId: string) => {
       });
     olderRequest.current = request;
     return request;
-  }, [client, committeeId, merge]);
+  }, [client, scope, variables, merge]);
 
   /** Makes sure a message is loaded, paging back if needed; false if not found. */
   const ensureLoaded = useCallback(
@@ -190,13 +187,13 @@ export const useDiscussion = (committeeId: string) => {
   const loadThread = useCallback(
     async (threadId: string) => {
       const { data } = await client.query({
-        query: MOBILE_WORKSPACE_DISCUSSION_THREAD_MESSAGES,
-        variables: { committeeId, threadId },
+        query: scope.docs.thread,
+        variables: { ...variables, threadId },
         fetchPolicy: 'network-only',
       });
       merge(toDiscussionMessages(data?.workspaceDiscussionThreadMessages));
     },
-    [client, committeeId, merge],
+    [client, scope, variables, merge],
   );
 
   const getMessage = useCallback((messageId: string) => store.current.get(messageId), []);

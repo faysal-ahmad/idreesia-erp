@@ -5,11 +5,12 @@ import type { NextFunction, Request, Response } from 'express';
 import { GraphQLError } from 'graphql';
 
 import {
-  fetchDiscussionFile,
-  uploadDiscussionFile,
-  MAX_DISCUSSION_FILE_SIZE,
-} from 'meteor/idreesia-common/server/business-logic/discussions';
+  fetchConversationFile,
+  uploadConversationFile,
+  MAX_CONVERSATION_FILE_SIZE,
+} from 'meteor/idreesia-common/server/business-logic/rocket-chat';
 import { getMemberCommitteeChatGroupId } from 'meteor/idreesia-common/server/graphql-api/workspaces/discussions/access';
+import { getProjectChatAccess } from 'meteor/idreesia-common/server/graphql-api/workspaces/projects/access';
 
 import { getUser } from './get-user';
 import { noticeError } from './newrelic';
@@ -69,13 +70,25 @@ const authenticate = Meteor.bindEnvironment(
   }
 );
 
-// Resolves the committee's chat group after checking the user may take part.
+// Resolves the chat group after checking the user may take part: the
+// committee's discussion, or - on the project routes - a project's private
+// chat (participants only).
 const authorize = async (req: RequestWithUser) => {
   const committeeId = String(req.params.committeeId ?? '');
   if (!ID_PATTERN.test(committeeId)) {
     throw new GraphQLError('Invalid committee.', {
       extensions: { code: 'BAD_USER_INPUT' },
     });
+  }
+  if (req.params.projectId !== undefined) {
+    const projectId = String(req.params.projectId);
+    if (!ID_PATTERN.test(projectId)) {
+      throw new GraphQLError('Invalid project.', {
+        extensions: { code: 'BAD_USER_INPUT' },
+      });
+    }
+    return (await getProjectChatAccess(req.erpUser, committeeId, projectId))
+      .chatGroupId;
   }
   return getMemberCommitteeChatGroupId(req.erpUser, committeeId);
 };
@@ -94,7 +107,7 @@ const streamFile = Meteor.bindEnvironment(
 
     try {
       const chatGroupId = await authorize(req);
-      const upstream = await fetchDiscussionFile(chatGroupId, {
+      const upstream = await fetchConversationFile(chatGroupId, {
         fileId,
         fileName,
         signature,
@@ -136,7 +149,7 @@ const streamFile = Meteor.bindEnvironment(
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: MAX_DISCUSSION_FILE_SIZE, files: 1 },
+  limits: { fileSize: MAX_CONVERSATION_FILE_SIZE, files: 1 },
 });
 
 const receiveFile = (req: Request, res: Response, next: NextFunction) => {
@@ -168,7 +181,7 @@ const uploadFile = Meteor.bindEnvironment(
         typeof req.body?.threadId === 'string' && req.body.threadId
           ? req.body.threadId
           : null;
-      await uploadDiscussionFile(
+      await uploadConversationFile(
         chatGroupId,
         req.erpUser!,
         {
@@ -197,5 +210,15 @@ export const createWorkspaceDiscussionRouter = () => {
     streamFile
   );
   router.post('/committees/:committeeId/discussions/files', receiveFile, uploadFile);
+  // A project's private chat.
+  router.get(
+    '/committees/:committeeId/projects/:projectId/discussions/files/:fileId/:fileName',
+    streamFile
+  );
+  router.post(
+    '/committees/:committeeId/projects/:projectId/discussions/files',
+    receiveFile,
+    uploadFile
+  );
   return router;
 };

@@ -1,9 +1,10 @@
 import React from 'react';
 import { Dialog, List, SpinLoading } from 'antd-mobile';
-import { LockOutline } from 'antd-mobile-icons';
+import { DownlandOutline, LockOutline } from 'antd-mobile-icons';
 import { logout } from '../auth/accounts';
 import { useCurrentUser } from '../hooks';
 import { Page, showError } from '../layout';
+import { isOfflineStorageAvailable } from '../offline';
 import { useHistory } from '../router';
 import { AccountPaths } from './paths';
 
@@ -58,6 +59,14 @@ export const AccountScreen = () => {
           >
             Change password
           </List.Item>
+          {isOfflineStorageAvailable() && (
+            <List.Item
+              prefix={<DownlandOutline />}
+              onClick={() => history.push(AccountPaths.offlineFiles)}
+            >
+              Offline files
+            </List.Item>
+          )}
         </List>
 
         <List mode="card">

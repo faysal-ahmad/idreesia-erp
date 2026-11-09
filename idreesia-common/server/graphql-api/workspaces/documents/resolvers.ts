@@ -288,12 +288,13 @@ const resolvers: ResolverMap = {
 
     workspaceCheckOutDocument: async (
       obj,
-      { committeeId, documentId, note },
+      { committeeId, documentId, durationMinutes, note },
       { user }
     ) => {
       const access = await getDocumentsAccess(user, committeeId);
       await assertDocumentInWorkspace(access, documentId);
       await checkOutDocument(documentId, access.userId, {
+        expiresInMinutes: durationMinutes,
         note: note ?? undefined,
       });
       return true;

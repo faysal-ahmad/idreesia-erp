@@ -49,3 +49,7 @@
   color: var(--app-color-danger);
   text-align: center;
 }
+
+.offline-files-footer {
+  margin: 16px 12px;
+}

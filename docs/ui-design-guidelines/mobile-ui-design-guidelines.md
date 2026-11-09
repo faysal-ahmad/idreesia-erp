@@ -37,6 +37,10 @@ antd-mobile only ships components and theming docs. It has no guidance on page p
 | Committee meetings (list → meeting → parts, bottom-sheet forms) | `idreesia-mobile/imports/ui/workspaces/meetings/` |
 | Committee polls (voting on the poll screen with a pinned submit, results with progress bars, question editor in a bottom sheet) | `idreesia-mobile/imports/ui/workspaces/polls/` |
 | Committee documents (folder drill-down with library-wide search, presigned uploads, document → versions / activity, trash, move via a folder-picker sheet) | `idreesia-mobile/imports/ui/workspaces/documents/` |
+| Offline data (saved Apollo cache) | `idreesia-mobile/imports/startup/apollo-persist.ts` |
+| Online / offline status | `idreesia-mobile/imports/ui/hooks/use-online-status.ts` |
+| Offline files (save, open, remove; Cordova file storage) | `idreesia-mobile/imports/ui/offline/` |
+| Offline file screens (save / badge / storage list) | `idreesia-mobile/imports/ui/workspaces/documents/document-screen.tsx` + `imports/ui/account/offline-files-screen.tsx` |
 | Shared CSS | `idreesia-mobile/client/main.css` |
 | Page CSS example | `idreesia-mobile/imports/ui/account/account-screen.styles.css` |
 
@@ -160,7 +164,7 @@ A feature's entry screen is usually a list. Build it from `usePagedQuery` and `P
 - **Loading more:** use `PullToRefresh` around the list and `InfiniteScroll` below it. Don't use numbered pages.
 - **Row actions:** tapping a row opens its detail screen. Put the one or two most common actions in `SwipeAction`; everything else goes on the detail screen.
 - **Creating a record:** an add icon in the nav bar, or a pinned `footer` button if creating is the main job of the screen.
-- **States:** show `PageLoading` on the first load, `PageEmpty` when there are no results (with a create action if the user can create), and `PageError` with `onRetry` on failure.
+- **States:** show `PageLoading` on the first load, `PageEmpty` when there are no results (with a create action if the user can create), and `PageError` with `onRetry` on failure. Show `PageError` only when there is nothing to show: if the cache has data, show it (see [Offline support](#9-offline-support)).
 
 ### Detail screen
 
@@ -217,7 +221,8 @@ After a flow completes and the user needs to know what happens next (for example
 | Irreversible or destructive action | `Dialog.confirm` before doing it |
 | Flow finished and the user needs next steps | `Result` screen |
 | Screen loading / empty / failed / not allowed | `PageLoading` / `PageEmpty` / `PageError` / `NoAccess` |
-| Backend connection lost | Handled globally by `NoticeBar` in `app.tsx`; don't duplicate it |
+| Backend connection lost | Handled globally by `NoticeBar` in `app.tsx` ("Offline. Showing saved data…"); don't duplicate it. Disable actions that need the server with `useOnlineStatus()` (see [Offline support](#9-offline-support)) |
+| A file isn't saved on the device and the user is offline | `showWarning("This file isn't available offline…")`, naming what to do about it |
 | Button action in progress | `loading` on the button; disable double submits |
 
 - Never render `null` while loading, and never leave a blank screen.
@@ -237,6 +242,7 @@ After a flow completes and the user needs to know what happens next (for example
   - In CSS use `var(--app-color-…)`, `var(--app-radius-…)` and `var(--app-elevation)`.
   - In code import `palette` from `/imports/ui/theme`.
   - Never hard-code a colour.
+- **Feature icons are coloured tiles.** A workspace's expanded features (Members, Meetings, …) show their icon in white on a rounded 32 px tile, one `feature*` palette colour per feature (`workspace-feature-icon-<key>` in `workspaces-screen.styles.css`). Other lists keep the plain teal `list-icon`.
 - **Components before custom styling.** Prefer antd-mobile props such as `color="primary"` and `fill="outline"`. antd-mobile components are already themed through the `--adm-*` variables.
 - **Shared chrome** (shell, status states, auth, list icons) lives in `client/main.css`.
 - **Page-only rules** go in `*.styles.css` next to the screen, **imported only from `client/main.tsx`**. This is the same Meteor rule as the web: don't import CSS from `.tsx` files, and don't give a CSS file the same basename as a `.tsx` file.
@@ -270,10 +276,63 @@ After a flow completes and the user needs to know what happens next (for example
 - `history.push` after a save (it puts the form back on the history stack)
 - Treating UI permission checks as security
 - Importing CSS from `.tsx` files under `imports/ui`
+- Showing `PageError` when cached data exists, or `network-only` queries for data people should be able to read offline
+- Letting a write action run offline (it fails with a network error), instead of disabling it
+- Saving presigned URLs, or files outside `imports/ui/offline`, for offline use; saving files without the user choosing to
 
 ---
 
-## 9. Checklist for a new screen
+## 9. Offline support
+
+The app can be used offline for reading. Data comes from a saved copy of the Apollo cache; files are only available if the user chose to save them.
+
+### Data
+
+- **The cache is saved on the device** (`imports/startup/apollo-persist.ts`, IndexedDB). It is saved shortly after responses and when the app goes to the background, and restored before the first render. It belongs to one user: a different user, or no user, discards it, and logout wipes it. Bump `CACHE_SCHEMA_VERSION` when persisted data can no longer be read after a change.
+- **Anything the user has already opened can be read offline**, including paged lists (only the pages they loaded). A screen the user has never opened has nothing to show offline; say so with `PageEmpty`, not a blank screen.
+- **Show cached data, not an error.** Offline, a `cache-and-network` query returns the cached `data` together with a network `error`. A screen must check `error && !data` before showing `PageError`, or hide the error while data exists in its hook (`error: document ? undefined : error`, as `useDocument` does; `usePagedQuery` does the same).
+- **Use `cache-and-network` (or the default) for data people read.** `network-only` shows nothing offline. If a loader must use it (the Home tab), fall back to `fetchPolicy: 'cache-only'` when the request fails, as `home/use-home-items.ts` does. `cache-only` returns an empty result, not an error, when nothing is saved.
+- **Don't poll offline.** A failed poll should back off, not show an error toast.
+
+### Writes
+
+- **Offline is read-only.** Don't queue changes. Call `useOnlineStatus()` (`imports/ui/hooks`) and:
+  - set `disabled: !online` on `ActionSheet` actions (new, edit, move, delete, check-out…);
+  - leave out `SwipeAction` row actions;
+  - hide nav-bar icons that only write (e.g. "Empty trash").
+- **Reading screens stay available** (a trash list, versions, details). Only their actions are disabled.
+- The online status is "can the app reach the server": it is false when the device has no network or the connection to the server is down. The global banner already says so; don't add another.
+
+### Files
+
+- **Files are not available offline by default.** A module opts in by calling `imports/ui/offline`; nothing is saved without the user choosing to. Today only Documents does.
+- **The pattern** (see `documents/document-screen.tsx`):
+  - an `ActionSheet` action: "Make available offline", "Update offline copy" when a newer version exists, and "Remove offline copy";
+  - a progress card with a Cancel button while saving (reuse the `documents-card documents-upload` classes);
+  - a `Tag` on the detail screen and on list rows (`extra`): green "Offline" for a current copy, amber "Offline (old)" or "Offline copy is out of date" for an old one;
+  - **open the saved copy first**, and the network only when there is none; offline with no copy, `showWarning` that the file isn't available offline and how to fix it.
+- **Always guard with `isOfflineStorageAvailable()`.** It is false outside a Cordova app, where there is nowhere to keep files; hide the actions rather than showing ones that fail.
+- **How it works.** `saveOfflineFile` streams the response to a `.part` file in the app's private storage, checks the exact size, then moves it into place. Files live under `offline/<userId>/<feature>/<committeeId>/<itemId>/…`, listed in a per-user manifest. `useOfflineItem(feature, itemId)` / `useOfflineFiles()` give React state; `readOfflineFile` returns a `Blob` to open with `URL.createObjectURL` (revoke it when the preview closes).
+- **Rules:**
+  - Fetch the file straight away. Presigned URLs expire (about 15 minutes), so never store one.
+  - Download once, on the user's action, so each save is one entry in the server's download log; opening a saved copy logs nothing.
+  - Remove the saved copy when its item is deleted (`removeOfflineItem`).
+  - Logout deletes everything, and startup removes files left by other users. You don't need to do this yourself.
+  - Keep the storage out of the module: don't write to `cordova.file` or `localStorage` directly.
+- **Account → Offline files** lists everything saved, with sizes, and lets the user remove one or all. A new module's files appear there automatically if it passes a `name`, `size` and `committeeId`.
+
+### Adding offline files to a module
+
+1. Pick a `feature` name and an `itemId` / `fileId` (use a version number as `fileId` when files change, e.g. `v3`, and set `version`).
+2. Save with `saveOfflineFile(file, signal => fetch(url, { signal }), { onProgress, signal })`; wrap it in a hook like `useOfflineDocument`.
+3. In the open action, look up `findOfflineFile(feature, itemId, version)` first and use `readOfflineFile`.
+4. Add the actions, tags and "isn't available offline" message above.
+5. Remove the saved copy when the item is deleted.
+6. Check the bucket's CORS rule allows `GET` from the app's origin (the save uses `fetch`).
+
+---
+
+## 10. Checklist for a new screen
 
 - [ ] Registered as, or inside, a `FeatureDefinition` with the right permissions
 - [ ] Wrapped in `Page` with a clear `title` and `backTo`
@@ -282,5 +341,7 @@ After a flow completes and the user needs to know what happens next (for example
 - [ ] Lists have search, pull-to-refresh and infinite scroll where the data can grow
 - [ ] Forms are single-column, with pickers for choices, validation messages and a descriptive submit label
 - [ ] Destructive actions are confirmed
+- [ ] Offline: cached data is shown instead of an error, and write actions are disabled with `useOnlineStatus()`
+- [ ] Files stay online-only unless the module has been opted in to offline files
 - [ ] No hard-coded colours; page CSS is in a `*.styles.css` loaded from `client/main.tsx`
 - [ ] Checked at phone width (e.g. iPhone 13 emulation) in the browser build

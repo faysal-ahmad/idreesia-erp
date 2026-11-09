@@ -6,6 +6,7 @@ import {
   addCommitteeMember,
   getCommitteeMemberAccess,
   removeCommitteeMember,
+  setCommitteeMemberCoordinator,
   setCommitteeMemberDiscussionAccess,
   type CommitteeDoc,
 } from 'meteor/idreesia-common/server/business-logic/hr/committee';
@@ -149,8 +150,8 @@ const resolvers: ResolverMap = {
       return Committees.findOneAsync(committeeId);
     },
 
-    // Coordinators can remove regular members only. Coordinator status is
-    // managed from HR > Committees.
+    // Coordinators can remove regular members only; make a coordinator a
+    // regular member first.
     workspaceRemoveCommitteeMember: async (
       obj,
       { committeeId, karkunId },
@@ -183,6 +184,35 @@ const resolvers: ResolverMap = {
         karkunId,
         hasAccess
       );
+    },
+
+    // Coordinators make members coordinators, or regular members again.
+    workspaceSetCommitteeMemberCoordinator: async (
+      obj,
+      { committeeId, karkunId, isCoordinator },
+      { user }
+    ) => {
+      const committee = await getCoordinatedCommittee(user, committeeId);
+      assertMembersEnabled(committee);
+      const members = committee.members ?? [];
+      if (!members.some(m => m.karkunId === karkunId)) {
+        throw new Error('This person is not a member of the committee.');
+      }
+      if (
+        !isCoordinator &&
+        members.some(m => m.karkunId === karkunId && m.isCoordinator) &&
+        members.filter(m => m.isCoordinator).length <= 1
+      ) {
+        throw new Error('A committee needs at least one coordinator.');
+      }
+
+      await setCommitteeMemberCoordinator(
+        committeeId,
+        karkunId,
+        !!isCoordinator,
+        user._id
+      );
+      return true;
     },
   },
 };

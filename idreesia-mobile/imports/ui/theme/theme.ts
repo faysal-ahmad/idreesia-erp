@@ -28,6 +28,18 @@ export const palette = {
   warning: '#c77700',
   danger: '#d93026',
 
+  // Feature accents: the background of a feature's icon tile (white icon on
+  // top), so each feature is recognisable at a glance, e.g. in a workspace's
+  // list of features. Mid-tone, so a white icon reads on all of them.
+  featureBlue: '#3b82f6',
+  featurePurple: '#8b5cf6',
+  featureGreen: '#34a853',
+  featureOrange: '#e07a2f',
+  featureRed: '#e0483e',
+  featureTeal: '#14a3a8',
+  featureIndigo: '#5b6cdb',
+  featurePink: '#d9569b',
+
   // Neutrals (slightly teal-tinted greys to sit well next to the brand)
   text: '#1a2624',
   textSecondary: '#52645f',

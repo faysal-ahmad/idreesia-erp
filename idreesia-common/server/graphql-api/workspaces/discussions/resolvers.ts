@@ -1,19 +1,19 @@
 import {
-  deleteDiscussionMessage,
-  editDiscussionMessage,
-  getDiscussionInfo,
-  getDiscussionMembers,
-  getDiscussionPinnedMessages,
-  getDiscussionStarredMessages,
-  getDiscussionThreadMessages,
-  searchDiscussionMessages,
-  getOlderDiscussionMessages,
-  reactToDiscussionMessage,
-  sendDiscussionMessage,
-  setDiscussionMessagePinned,
-  setDiscussionMessageStarred,
-  syncDiscussionMessages,
-} from 'meteor/idreesia-common/server/business-logic/discussions';
+  deleteConversationMessage,
+  editConversationMessage,
+  getConversationInfo,
+  getConversationMembers,
+  getConversationPinnedMessages,
+  getConversationStarredMessages,
+  getConversationThreadMessages,
+  searchConversationMessages,
+  getOlderConversationMessages,
+  reactToConversationMessage,
+  sendConversationMessage,
+  setConversationMessagePinned,
+  setConversationMessageStarred,
+  syncConversationMessages,
+} from 'meteor/idreesia-common/server/business-logic/rocket-chat';
 
 import {
   canPinCommitteeDiscussion,
@@ -35,14 +35,14 @@ const resolvers: ResolverMap = {
     workspaceDiscussionInfo: async (obj, { committeeId }, { user }) => {
       await getMemberCommitteeChatGroupId(user, committeeId);
       return {
-        ...getDiscussionInfo(user),
+        ...getConversationInfo(user),
         canPin: await canPinCommitteeDiscussion(user, committeeId),
       };
     },
 
     workspaceDiscussionSync: async (obj, { committeeId, since }, { user }) => {
       const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return syncDiscussionMessages(chatGroupId, user, {
+      return syncConversationMessages(chatGroupId, user, {
         since,
         fileUrl: committeeDiscussionFileUrl(committeeId),
       });
@@ -54,14 +54,14 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return getDiscussionThreadMessages(chatGroupId, user, threadId, {
+      return getConversationThreadMessages(chatGroupId, user, threadId, {
         fileUrl: committeeDiscussionFileUrl(committeeId),
       });
     },
 
     workspaceDiscussionMembers: async (obj, { committeeId }, { user }) => {
       const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return getDiscussionMembers(chatGroupId);
+      return getConversationMembers(chatGroupId);
     },
 
     workspaceDiscussionPinnedMessages: async (
@@ -70,7 +70,7 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return getDiscussionPinnedMessages(chatGroupId, user, {
+      return getConversationPinnedMessages(chatGroupId, user, {
         fileUrl: committeeDiscussionFileUrl(committeeId),
       });
     },
@@ -81,7 +81,7 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return getDiscussionStarredMessages(chatGroupId, user, {
+      return getConversationStarredMessages(chatGroupId, user, {
         fileUrl: committeeDiscussionFileUrl(committeeId),
       });
     },
@@ -92,7 +92,7 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return getOlderDiscussionMessages(chatGroupId, user, {
+      return getOlderConversationMessages(chatGroupId, user, {
         before,
         fileUrl: committeeDiscussionFileUrl(committeeId),
       });
@@ -104,7 +104,7 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return searchDiscussionMessages(chatGroupId, user, {
+      return searchConversationMessages(chatGroupId, user, {
         searchText,
         offset,
         fileUrl: committeeDiscussionFileUrl(committeeId),
@@ -119,7 +119,7 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return sendDiscussionMessage(chatGroupId, user, text, threadId);
+      return sendConversationMessage(chatGroupId, user, text, threadId);
     },
 
     workspaceReactToDiscussionMessage: async (
@@ -128,7 +128,7 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return reactToDiscussionMessage(
+      return reactToConversationMessage(
         chatGroupId,
         user,
         messageId,
@@ -143,7 +143,7 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return setDiscussionMessageStarred(chatGroupId, user, messageId, starred);
+      return setConversationMessageStarred(chatGroupId, user, messageId, starred);
     },
 
     workspaceSetDiscussionMessagePinned: async (
@@ -155,7 +155,7 @@ const resolvers: ResolverMap = {
         user,
         committeeId
       );
-      return setDiscussionMessagePinned(chatGroupId, messageId, pinned);
+      return setConversationMessagePinned(chatGroupId, messageId, pinned);
     },
 
     workspaceEditDiscussionMessage: async (
@@ -164,7 +164,7 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return editDiscussionMessage(chatGroupId, user, messageId, text);
+      return editConversationMessage(chatGroupId, user, messageId, text);
     },
 
     workspaceDeleteDiscussionMessage: async (
@@ -173,7 +173,7 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return deleteDiscussionMessage(chatGroupId, user, messageId);
+      return deleteConversationMessage(chatGroupId, user, messageId);
     },
   },
 };

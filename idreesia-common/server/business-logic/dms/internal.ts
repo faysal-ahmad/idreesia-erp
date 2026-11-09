@@ -249,8 +249,7 @@ export async function getSubtreeFolderIds(folderId: string) {
 export const isLockActive = (
   lock: DmsDocumentLock | undefined,
   now = new Date()
-): lock is DmsDocumentLock =>
-  !!lock && (!lock.expiresAt || lock.expiresAt > now);
+): lock is DmsDocumentLock => !!lock && lock.expiresAt > now;
 
 export const isLockedByOther = (
   document: DmsDocumentDocument,
@@ -270,10 +269,7 @@ export const lockFreeSelector = (userId: string, now = new Date()) => ({
 /** Matches documents another user holds an active lock on. */
 export const lockedByOtherSelector = (userId: string, now = new Date()) => ({
   'lock.userId': { $exists: true, $ne: userId },
-  $or: [
-    { 'lock.expiresAt': { $exists: false } },
-    { 'lock.expiresAt': { $gt: now } },
-  ],
+  'lock.expiresAt': { $gt: now },
 });
 
 export const lockedError = (document: DmsDocumentDocument) =>

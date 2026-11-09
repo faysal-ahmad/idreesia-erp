@@ -1,5 +1,70 @@
 # Document Management System (DMS)
 
+## Contents
+
+- [Overview](#overview)
+  - [Workspaces](#workspaces)
+  - [Folders](#folders)
+  - [Documents and versions](#documents-and-versions)
+  - [Trash](#trash)
+  - [Tags and metadata](#tags-and-metadata)
+  - [Names](#names)
+- [Where things live](#where-things-live)
+- [Responsibilities: caller vs. module](#responsibilities-caller-vs-module)
+- [Errors](#errors)
+- [Paging and sorting](#paging-and-sorting)
+- [API reference](#api-reference)
+  - [Workspaces](#workspaces-1)
+  - [Folders](#folders-1)
+  - [Documents](#documents)
+  - [Versions](#versions)
+  - [Direct uploads (browser → storage)](#direct-uploads-browser--storage)
+  - [Check-out locks](#check-out-locks)
+  - [Trash](#trash-1)
+  - [Search](#search)
+  - [Activity log](#activity-log)
+- [Notifications](#notifications)
+- [Data model](#data-model)
+- [Integrating a feature: example](#integrating-a-feature-example)
+- [Limits and constants](#limits-and-constants)
+- [Known limitations](#known-limitations)
+
+## Overview
+
+### Workspaces
+A workspace is the top-level container. It has a name, an optional description, free-form `metadata`, and optional `settings`:
+
+| Setting | Meaning | Default |
+|---|---|---|
+| `maxFileSize` | Largest upload in bytes | `DMS_DEFAULT_MAX_FILE_SIZE` (100 MB) |
+| `allowedMimeTypes` | Exact types (`application/pdf`) or wildcards (`image/*`) | Any type |
+
+Deleting a workspace is a soft delete. While it is deleted, every operation on its folders and documents fails with `NOT_FOUND`. It can be restored, or purged, which removes everything permanently.
+
+### Folders
+Folders nest to any depth. Pass `null` (or leave the field unset) for the workspace root. Each folder stores `parentId` and `ancestorIds` (the ids of the folders above it, root first), so subtree queries and breadcrumbs are cheap.
+
+### Documents and versions
+- **Document:** the named, listable item. It holds name, description, tags, metadata, its folder, its lock, and a copy of the current version's `fileName`, `mimeType` and `size`.
+- **Version:** one stored file. Versions are numbered 1, 2, 3, … per document. `currentVersionId` and `currentVersionNumber` on the document point to the newest one.
+- **Storage key:** each version is its own object, `dms-documents/<workspaceId>/<documentId>/<versionId>.<ext>`, and is never overwritten.
+- **Checksums:** server-side uploads record a SHA-256. Direct uploads record the storage ETag, plus a SHA-256 if the client provides one.
+
+### Trash
+- **Trashing:** a trashed document, or a trashed folder with everything inside it, disappears from listings, search and normal reads.
+- **The trash item:** only the item you trashed shows in `listTrash`. Its contents carry `trashRootId` pointing at it and are restored or purged with it.
+- **Restore** puts the item back, by default in its original folder.
+- **Purge** deletes the item and its files permanently.
+
+### Tags and metadata
+- **Tags** are trimmed, lower-cased and de-duplicated. A document can have at most 50, each at most 64 characters.
+- **Metadata** is a plain object of top-level keys. Keys may use letters, digits, `_` and `-` only, at most 64 characters. Values can be any JSON value, but search only matches top-level values exactly.
+
+### Names
+Folder, document and file names are trimmed and runs of whitespace are collapsed. A name must be 1–255 characters and must not contain `/`, `\` or control characters. `.` and `..` are not allowed.
+
+## Where things live
+
 The DMS is a **headless backend module**: it stores documents in workspaces, with folders, version history, check-out locks, trash, tags, metadata, search and an activity log. It has no GraphQL API, REST routes or UI of its own. A feature that needs document storage calls its functions from its own resolvers or routes.
 
 Files live in the S3-compatible object storage (RustFS locally, DigitalOcean Spaces in production). Mongo holds only metadata and object keys.
@@ -7,6 +72,8 @@ Files live in the S3-compatible object storage (RustFS locally, DigitalOcean Spa
 | Piece | Location |
 |---|---|
 | Public API (import from here) | `idreesia-common/server/business-logic/dms/` |
+| Notifications (publishing and the scheduled job) | `idreesia-common/server/business-logic/dms/notifications.ts` |
+| Headless module wrapper (`dmsModule`) | `idreesia-common/server/business-logic/dms/module.ts` |
 | Collections and document types | `idreesia-common/server/collections/dms/` |
 | Schemas | `idreesia-common/server/schemas/dms/` |
 | Constants (actions, limits) | `idreesia-common/constants/dms.ts` |
@@ -41,40 +108,6 @@ The module is server-only. Import from the barrel above, not from individual fil
 **Every function takes the acting `userId`**, reads included. It is recorded in `createdBy` / `updatedBy` / `deletedBy`, used as the lock holder, and written to the activity log. A missing or empty `userId` fails with `BAD_USER_INPUT`. The only exception is the maintenance function `purgeExpiredUploads()`.
 
 **Workspaces are independent.** A DMS workspace has no link to ERP Workspaces (committees), profiles or any other entity. The consuming feature stores the DMS workspace id on its own records, for example `committee.dmsWorkspaceId`, and uses the `metadata` field for anything else it needs.
-
-## Concepts
-
-### Workspaces
-A workspace is the top-level container. It has a name, an optional description, free-form `metadata`, and optional `settings`:
-
-| Setting | Meaning | Default |
-|---|---|---|
-| `maxFileSize` | Largest upload in bytes | `DMS_DEFAULT_MAX_FILE_SIZE` (100 MB) |
-| `allowedMimeTypes` | Exact types (`application/pdf`) or wildcards (`image/*`) | Any type |
-
-Deleting a workspace is a soft delete. While it is deleted, every operation on its folders and documents fails with `NOT_FOUND`. It can be restored, or purged, which removes everything permanently.
-
-### Folders
-Folders nest to any depth. Pass `null` (or leave the field unset) for the workspace root. Each folder stores `parentId` and `ancestorIds` (the ids of the folders above it, root first), so subtree queries and breadcrumbs are cheap.
-
-### Documents and versions
-- **Document:** the named, listable item. It holds name, description, tags, metadata, its folder, its lock, and a copy of the current version's `fileName`, `mimeType` and `size`.
-- **Version:** one stored file. Versions are numbered 1, 2, 3, … per document. `currentVersionId` and `currentVersionNumber` on the document point to the newest one.
-- **Storage key:** each version is its own object, `dms-documents/<workspaceId>/<documentId>/<versionId>.<ext>`, and is never overwritten.
-- **Checksums:** server-side uploads record a SHA-256. Direct uploads record the storage ETag, plus a SHA-256 if the client provides one.
-
-### Trash
-- **Trashing:** a trashed document, or a trashed folder with everything inside it, disappears from listings, search and normal reads.
-- **The trash item:** only the item you trashed shows in `listTrash`. Its contents carry `trashRootId` pointing at it and are restored or purged with it.
-- **Restore** puts the item back, by default in its original folder.
-- **Purge** deletes the item and its files permanently.
-
-### Tags and metadata
-- **Tags** are trimmed, lower-cased and de-duplicated. A document can have at most 50, each at most 64 characters.
-- **Metadata** is a plain object of top-level keys. Keys may use letters, digits, `_` and `-` only, at most 64 characters. Values can be any JSON value, but search only matches top-level values exactly.
-
-### Names
-Folder, document and file names are trimmed and runs of whitespace are collapsed. A name must be 1–255 characters and must not contain `/`, `\` or control characters. `.` and `..` are not allowed.
 
 ## Errors
 
@@ -195,10 +228,10 @@ If `completeUpload` fails (e.g. the name is now taken), the upload stays pending
 
 | Function | Returns | Notes |
 |---|---|---|
-| `checkOutDocument(documentId, userId, { expiresInMinutes?, note? })` | document | Without `expiresInMinutes`, the lock lasts until checked in. When the holder calls it again, the lock is renewed. Fails with `LOCKED` if someone else holds it. |
+| `checkOutDocument(documentId, userId, { expiresInMinutes?, note? })` | document | **Every lock expires.** `expiresInMinutes` defaults to 7 days and cannot exceed 7 days (10,080 minutes); zero, negative, non-numeric or longer durations fail with `BAD_USER_INPUT`. When the holder calls it again, the lock is renewed for the new duration, counted from now. Fails with `LOCKED` if someone else holds it. |
 | `checkInDocument(documentId, userId, { newVersion? })` | document | Only the holder can check in. `newVersion` (same shape as `uploadNewVersion` input) is uploaded before the lock is released. |
 | `forceUnlockDocument(documentId, userId)` | document | Removes anyone's lock and logs who held it. The module doesn't restrict it, so callers must limit it (e.g. to managers). |
-| `getLockStatus(documentId, userId)` | `{ isLocked, isLockedByOther, lock? }` | `lock` is `{ userId, lockedAt, expiresAt?, note? }` |
+| `getLockStatus(documentId, userId)` | `{ isLocked, isLockedByOther, lock? }` | `lock` is `{ userId, lockedAt, expiresAt, note? }`; `expiresAt` is always set |
 
 **Lock rules.** While user A holds an active lock, any other user gets `LOCKED` from:
 - `updateDocument`, `moveDocument`, `trashDocument`
@@ -207,7 +240,7 @@ If `completeUpload` fails (e.g. the name is now taken), the upload stays pending
 - `restoreFromTrash` and `purgeFromTrash` of it
 - `trashFolder` or `purgeFromTrash` on any folder containing it
 
-Reads, downloads and `copyDocument` are not blocked. A lock whose `expiresAt` has passed counts as released. Locks are checked in the same database write as the change, so a lock taken concurrently can't be bypassed.
+Reads, downloads and `copyDocument` are not blocked. A lock whose `expiresAt` has passed counts as released, and nothing needs to clean it up. Locks are checked in the same database write as the change, so a lock taken concurrently can't be bypassed.
 
 ### Trash
 
@@ -262,13 +295,35 @@ The DMS logs every change automatically, plus downloads. The `action` values (`D
 
 A workspace purge deletes its activity log as well.
 
+## Notifications
+
+The DMS publishes four notifications through the shared notifier (see [headless-module-notifications.md](headless-module-notifications.md) for how that works). Publishing is **best effort**: a failure is logged and never fails the DMS operation that caused it. Recipients and actors are ERP user ids, the same ids the DMS uses everywhere else. For all four, `entityType` is `document` and `entityId` is the document id.
+
+| # | Notification | Trigger | Who gets it | Id |
+|---|---|---|---|---|
+| 1 | Your lock on "X" was removed by someone else | `forceUnlockDocument` | The previous lock holder (the user who forced it is the actor). Nothing is sent if the holder removes their own lock. | `force-unlocked:<docId>:<lockedAtMs>` |
+| 2 | Your lock on "X" expires soon | The scheduled job (below) | The lock holder | `lock-expiring:<docId>:<lockedAtMs>` |
+| 3 | New document "X" | `uploadDocument`, `copyDocument`, `completeUpload` (new document) | Everyone in the workspace; the creator is the actor and is not shown it | `document-added:<docId>` |
+| 4 | New version of "X" (version N) | `uploadNewVersion`, `restoreVersion`, `completeUpload` (new version) | Everyone in the workspace; the uploader is the actor | `version-added:<docId>` |
+
+**Details**
+- **#2 only for long locks.** To avoid noise it is sent only for a lock that lasted longer than 24 hours, once it is within 24 hours of expiring. A 1-hour lock never produces it. The notification expires when the lock does.
+- **#2 is withdrawn** when the holder checks in, when the lock is force-unlocked, and when the holder renews (a renewal changes `lockedAt`, so the old warning is retired and a new one can follow).
+- **#4 collapses.** There is one id per document, so several new versions give one notification whose details and `data: { versionNumber }` change. It shows as unread again each time.
+- **A new document is only #3.** Creating a document also creates its version 1, but version 1 never produces #4.
+- **Not notifications:** downloads, moves, renames, trash, restore, purge, and folder and workspace events. Nobody needs to act on them, and the [activity log](#activity-log) records them.
+
+**The scheduled job.** `publish-dms-lock-expiring-notifications` runs hourly (`0 * * * *`; see [jobs-scheduling.md](../jobs-scheduling.md)). It finds live documents with an active lock that expires within 24 hours and lasted longer than 24 hours, and publishes #2 for each. Running it again changes nothing, so a warning someone has read stays read.
+
+**As a headless module.** `dmsModule` (`name: 'dms'`) wraps workspace create and soft-delete for the shared `HeadlessModule` contract. `addUser` and `removeUser` do nothing, because the DMS keeps no membership (callers decide who may use a workspace). It is registered in `headless/modules.ts`.
+
 ## Data model
 
 | Collection | Holds |
 |---|---|
 | `dms-workspaces` | name, description, metadata, settings, timestamps, `deletedAt`/`deletedBy` |
 | `dms-folders` | `workspaceId`, `parentId?`, `ancestorIds`, `name`, `nameLower`, `trashed`, `trashRootId?`, timestamps |
-| `dms-documents` | `workspaceId`, `folderId?`, `name`, `nameLower`, `description?`, `tags`, `metadata?`, `versionCount`, `currentVersionId`, `currentVersionNumber`, `fileName`, `mimeType`, `size`, `lock?`, `trashed`, `trashRootId?`, timestamps |
+| `dms-documents` | `workspaceId`, `folderId?`, `name`, `nameLower`, `description?`, `tags`, `metadata?`, `versionCount`, `currentVersionId`, `currentVersionNumber`, `fileName`, `mimeType`, `size`, `lock?` (`{ userId, lockedAt, expiresAt, note? }`), `trashed`, `trashRootId?`, timestamps |
 | `dms-document-versions` | `workspaceId`, `documentId`, `versionNumber`, `status` (`pending`/`ready`), `fileKey`, `fileName`, `mimeType`, `size`, `sha256?`, `etag?`, `comment?`, `restoredFromVersionId?`, `uploadExpiresAt?` / `newDocument?` (pending direct uploads only), timestamps |
 | `dms-activities` | see [Activity log](#activity-log) |
 
@@ -341,6 +396,10 @@ All of these are in `idreesia-common/constants/dms.ts`:
 | `DMS_DOWNLOAD_URL_EXPIRY_SECONDS` | 900 (per-call override: `expiresInSec`) |
 | `DMS_DEFAULT_PAGE_SIZE` / `DMS_MAX_PAGE_SIZE` | 50 / 200 |
 | `DMS_MAX_NAME_LENGTH` | 255 |
+| `DMS_MAX_LOCK_MINUTES` | 10,080 (7 days): the longest a lock can last |
+| `DMS_DEFAULT_LOCK_MINUTES` | 10,080 (7 days): used when a check-out names no duration |
+| `DMS_LOCK_DURATION_OPTIONS` | The durations the web and mobile check-out offer: 1 hour, 4 hours, 1 day, 3 days, 7 days |
+| `DMS_MODULE` | `'dms'`: the module name notifications are keyed by |
 
 ## Known limitations
 

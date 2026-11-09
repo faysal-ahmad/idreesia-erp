@@ -6,6 +6,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 
 import { getErrorMessage } from '../../auth/accounts';
 import { Page, PageEmpty, PageError, PageLoading, showError, showSuccess, showWarning } from '../../layout';
+import { useOnlineStatus } from '../../hooks';
 import { useParams } from '../../router';
 import { WorkspacesPaths } from '../paths';
 import { byLine } from './format';
@@ -42,6 +43,8 @@ export const TrashScreen = () => {
   const { canManage } = useDocumentsInfo(committeeId);
   const refreshLists = useRefreshDocumentLists();
   const [selected, setSelected] = useState<TrashItem | null>(null);
+  // The trash can be read offline, but restoring or deleting needs the server.
+  const online = useOnlineStatus();
   // Restoring under a new name, because its own is taken.
   const [renaming, setRenaming] = useState<{ item: TrashItem; toRoot: boolean } | null>(null);
 
@@ -146,9 +149,17 @@ export const TrashScreen = () => {
 
   const actions: Action[] = selected
     ? [
-        { key: 'restore', text: 'Restore', onClick: () => restore(selected) },
+        { key: 'restore', text: 'Restore', disabled: !online, onClick: () => restore(selected) },
         ...(canManage
-          ? [{ key: 'purge', text: 'Delete forever', danger: true, onClick: () => confirmPurge(selected) }]
+          ? [
+              {
+                key: 'purge',
+                text: 'Delete forever',
+                danger: true,
+                disabled: !online,
+                onClick: () => confirmPurge(selected),
+              },
+            ]
           : []),
       ]
     : [];
@@ -189,7 +200,7 @@ export const TrashScreen = () => {
       backTo={WorkspacesPaths.committeeDocuments(committeeId)}
       title="Trash"
       right={
-        canManage && items.length ? (
+        canManage && online && items.length ? (
           <div className="page-nav-actions">
             <DeleteOutline aria-label="Empty trash" className="page-nav-action" onClick={confirmEmpty} />
           </div>

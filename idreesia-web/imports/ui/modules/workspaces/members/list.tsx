@@ -15,6 +15,8 @@ import {
   Tooltip,
 } from 'antd';
 import {
+  CrownFilled,
+  CrownOutlined,
   PlusCircleOutlined,
   SyncOutlined,
   UserDeleteOutlined,
@@ -29,6 +31,7 @@ import AddMemberDrawer from './add-member-drawer';
 import {
   WORKSPACE_COMMITTEE_MEMBERS,
   WORKSPACE_REMOVE_COMMITTEE_MEMBER,
+  WORKSPACE_SET_COMMITTEE_MEMBER_COORDINATOR,
   WORKSPACE_SET_COMMITTEE_MEMBER_DISCUSSION_ACCESS,
 } from './gql';
 
@@ -55,6 +58,7 @@ const List = () => {
   const [setDiscussionAccess] = useMutation(
     WORKSPACE_SET_COMMITTEE_MEMBER_DISCUSSION_ACCESS
   );
+  const [setCoordinator] = useMutation(WORKSPACE_SET_COMMITTEE_MEMBER_COORDINATOR);
   const [savingAccessId, setSavingAccessId] = useState<string | null>(null);
 
   if (loading && !data) {
@@ -124,6 +128,16 @@ const List = () => {
       .finally(() => setSavingAccessId(null));
   };
 
+  const handleToggleCoordinator = (karkunId: string, isCoordinator: boolean) => {
+    setCoordinator({
+      variables: { committeeId: committeeId!, karkunId, isCoordinator },
+    })
+      .then(() => refetch())
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
+  };
+
   const handleMemberAdded = () => {
     refetch();
   };
@@ -188,11 +202,35 @@ const List = () => {
       ? [
           {
             key: 'action',
-            width: 80,
-            render: (_text: unknown, record: Member) => {
-              if (record.isCoordinator) return null;
-              return (
-                <div className="list-actions-column">
+            width: 100,
+            render: (_text: unknown, record: Member) => (
+              <div className="list-actions-column">
+                <Tooltip
+                  title={
+                    record.isCoordinator
+                      ? 'Remove as Coordinator'
+                      : 'Make Coordinator'
+                  }
+                >
+                  {record.isCoordinator ? (
+                    <CrownFilled
+                      className="list-actions-icon"
+                      onClick={() =>
+                        handleToggleCoordinator(record.karkunId!, false)
+                      }
+                    />
+                  ) : (
+                    <CrownOutlined
+                      className="list-actions-icon"
+                      onClick={() =>
+                        handleToggleCoordinator(record.karkunId!, true)
+                      }
+                    />
+                  )}
+                </Tooltip>
+                {/* Coordinators are removed from the committee only after
+                    they stop being coordinators. */}
+                {record.isCoordinator ? null : (
                   <Popconfirm
                     title="Remove this person from the committee?"
                     onConfirm={() => handleRemove(record.karkunId!)}
@@ -203,9 +241,9 @@ const List = () => {
                       <UserDeleteOutlined className="list-actions-icon" />
                     </Tooltip>
                   </Popconfirm>
-                </div>
-              );
-            },
+                )}
+              </div>
+            ),
           },
         ]
       : []),

@@ -4,7 +4,7 @@ import { ModulePaths } from 'meteor/idreesia-common/constants';
 const committee = (committeeId: string) => `${ModulePaths.workspaces}/committees/${committeeId}`;
 
 /** The screens under one poll. */
-export type PollPart = 'edit' | 'results' | 'voters' | 'activity';
+export type PollPart = 'edit' | 'results' | 'activity';
 
 /** The screens under one meeting. */
 export type MeetingPart =
@@ -47,6 +47,10 @@ export const WorkspacesPaths = {
   /** Route pattern for a committee's meetings; their screens are under it. */
   committeeMeetingsPattern: `${committee(':committeeId')}/meetings`,
   committeeMeetings: (committeeId: string) => `${committee(committeeId)}/meetings`,
+  /** A committee's meeting notifications; opening it marks them read. */
+  committeeMeetingNotificationsPattern: `${committee(':committeeId')}/meetings/notifications`,
+  committeeMeetingNotifications: (committeeId: string) =>
+    `${committee(committeeId)}/meetings/notifications`,
   committeeNewMeetingPattern: `${committee(':committeeId')}/meetings/new`,
   committeeNewMeeting: (committeeId: string) => `${committee(committeeId)}/meetings/new`,
   /** One meeting, and the screens for its parts under it. */
@@ -61,12 +65,16 @@ export const WorkspacesPaths = {
   /** Route pattern for a committee's polls; their screens are under it. */
   committeePollsPattern: `${committee(':committeeId')}/polls`,
   committeePolls: (committeeId: string) => `${committee(committeeId)}/polls`,
+  /** A committee's poll notifications; opening it marks them read. */
+  committeePollNotificationsPattern: `${committee(':committeeId')}/polls/notifications`,
+  committeePollNotifications: (committeeId: string) =>
+    `${committee(committeeId)}/polls/notifications`,
   committeeNewPollPattern: `${committee(':committeeId')}/polls/new`,
   committeeNewPoll: (committeeId: string) => `${committee(committeeId)}/polls/new`,
   /** One poll (its questions and voting), and the screens for its parts under it. */
   committeePollPattern: `${committee(':committeeId')}/polls/:pollId`,
   committeePoll: (committeeId: string, pollId: string) => `${committee(committeeId)}/polls/${pollId}`,
-  /** `part`: edit, results, voters or activity. */
+  /** `part`: edit, results or activity. */
   committeePollPartPattern: (part: PollPart) => `${committee(':committeeId')}/polls/:pollId/${part}`,
   committeePollPart: (committeeId: string, pollId: string, part: PollPart) =>
     `${committee(committeeId)}/polls/${pollId}/${part}`,
@@ -75,6 +83,10 @@ export const WorkspacesPaths = {
   committeeProjects: (committeeId: string) => `${committee(committeeId)}/projects`,
   committeeNewProjectPattern: `${committee(':committeeId')}/projects/new`,
   committeeNewProject: (committeeId: string) => `${committee(committeeId)}/projects/new`,
+  /** A committee's project and task notifications; opening it marks them read. */
+  committeeProjectNotificationsPattern: `${committee(':committeeId')}/projects/notifications`,
+  committeeProjectNotifications: (committeeId: string) =>
+    `${committee(committeeId)}/projects/notifications`,
   /** One project, and the screens for its parts under it. */
   committeeProjectPattern: `${committee(':committeeId')}/projects/:projectId`,
   committeeProject: (committeeId: string, projectId: string) =>
@@ -120,6 +132,10 @@ export const WorkspacesPaths = {
     folderId
       ? `${committee(committeeId)}/documents/folders/${folderId}`
       : `${committee(committeeId)}/documents`,
+  /** A committee's document notifications; opening it marks them read. */
+  committeeDocumentNotificationsPattern: `${committee(':committeeId')}/documents/notifications`,
+  committeeDocumentNotifications: (committeeId: string) =>
+    `${committee(committeeId)}/documents/notifications`,
   committeeDocumentTrashPattern: `${committee(':committeeId')}/documents/trash`,
   committeeDocumentTrash: (committeeId: string) => `${committee(committeeId)}/documents/trash`,
   /** One document, and the screens for its parts under it. */

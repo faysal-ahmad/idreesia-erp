@@ -19,13 +19,6 @@ export interface PollsInfo {
   myVoterId: string | null;
 }
 
-/** Someone who can be made eligible to vote. */
-export interface PollMember {
-  voterId: string;
-  name: string | null;
-  isCoordinator: boolean;
-}
-
 export interface PollOption {
   _id: string;
   text: string;
@@ -53,7 +46,6 @@ export interface Poll {
   description: string | null;
   status: PollStatus;
   anonymous: boolean;
-  showResultsWhileOpen: boolean;
   closesAt: string;
   openedAt: string | null;
   closedAt: string | null;
@@ -63,9 +55,6 @@ export interface Poll {
   cancelledByName: string | null;
   cancellationReason: string | null;
   questions: PollQuestion[];
-  /** Null: every member can vote. */
-  eligibleVoterIds: string[] | null;
-  eligibleCount: number | null;
   voteCount: number;
   /** The current user can vote in it. */
   isEligible: boolean;
@@ -116,18 +105,8 @@ export interface PollDetails {
   closesAt: string;
   /** Drafts only. */
   anonymous: boolean;
-  showResultsWhileOpen: boolean;
-  /** Drafts only. Empty: every member. */
-  eligibleVoterIds: string[];
   /** Drafts only. */
   questions: PollQuestionInput[];
-}
-
-export interface PollVoter {
-  voterId: string;
-  name: string | null;
-  /** Null for anonymous polls. */
-  hasVoted: boolean | null;
 }
 
 export interface PollOptionResult {
@@ -153,10 +132,6 @@ export interface PollResults {
   anonymous: boolean;
   closedAt: string | null;
   totalVoters: number;
-  eligibleCount: number | null;
-  turnout: number | null;
-  /** Eligible voters who didn't vote; null for anonymous polls. */
-  nonVoters: Array<{ voterId: string; name: string | null }> | null;
   questions: PollQuestionResult[];
 }
 
@@ -186,18 +161,14 @@ export class PollsError extends Error {
  */
 export interface PollsDataProvider {
   getInfo(): Promise<PollsInfo>;
-  loadMembers(): Promise<PollMember[]>;
   loadPolls(query: PollsQuery): Promise<PollPage>;
   loadPoll(pollId: string): Promise<Poll>;
   loadResults(pollId: string): Promise<PollResults>;
-  /** Managers only. */
-  loadVoters(pollId: string): Promise<PollVoter[]>;
   /** Managers only. Newest first; `before` is the last entry's `at`. */
   loadActivity(pollId: string, before?: string): Promise<PollActivity[]>;
 
   createPoll(details: PollDetails): Promise<Poll>;
   updatePoll(pollId: string, details: PollDetails): Promise<Poll>;
-  addVoters(pollId: string, voterIds: string[]): Promise<Poll>;
   openPoll(pollId: string, closesAt?: string): Promise<Poll>;
   closePoll(pollId: string): Promise<Poll>;
   reopenPoll(pollId: string, closesAt: string): Promise<Poll>;

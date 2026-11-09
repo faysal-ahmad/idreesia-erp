@@ -7,6 +7,7 @@ import { useProjectDiscussionScope } from '../discussions/discussion-scope';
 import { type ProjectPart, WorkspacesPaths } from '../paths';
 import { ProjectActivityScreen } from './project-activity-screen';
 import { ProjectFormScreen } from './project-form-screen';
+import { ProjectNotificationsScreen } from './project-notifications-screen';
 import { ProjectParticipantsScreen } from './project-participants-screen';
 import { ProjectScreen } from './project-screen';
 import { ProjectTasksScreen } from './project-tasks-screen';
@@ -38,7 +39,10 @@ export const ProjectsFeature = () => {
   const { pathname } = useLocation();
   const onList = Boolean(matchPath(pathname, { path: WorkspacesPaths.committeeProjectsPattern, exact: true }));
   const onNew = Boolean(matchPath(pathname, { path: WorkspacesPaths.committeeNewProjectPattern, exact: true }));
-  const projectMatch = onNew
+  const onNotifications = Boolean(
+    matchPath(pathname, { path: WorkspacesPaths.committeeProjectNotificationsPattern, exact: true }),
+  );
+  const projectMatch = onNew || onNotifications
     ? null
     : matchPath<{ projectId: string }>(pathname, { path: WorkspacesPaths.committeeProjectPattern });
 
@@ -55,6 +59,11 @@ export const ProjectsFeature = () => {
       <Switch>
         <Route exact path={WorkspacesPaths.committeeProjectsPattern} render={() => null} />
         <Route exact component={ProjectFormScreen} path={WorkspacesPaths.committeeNewProjectPattern} />
+        <Route
+          exact
+          component={ProjectNotificationsScreen}
+          path={WorkspacesPaths.committeeProjectNotificationsPattern}
+        />
         <Route exact path={WorkspacesPaths.committeeProjectPattern} render={() => null} />
         {PART_SCREENS.map(([part, component]) => (
           <Route

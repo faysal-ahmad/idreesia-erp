@@ -1,50 +1,39 @@
 # Meetings
 
-The meetings module is a **headless backend module**. It stores meetings in workspaces, with participants (invitation responses and attendance), an agenda, minutes, action items, file attachments and an activity log. It has no GraphQL API, REST routes or UI of its own. A feature that needs meetings calls its functions from its own resolvers or routes.
+## Contents
 
-Attachment files live in the S3-compatible object storage (RustFS locally, DigitalOcean Spaces in production). Mongo holds only metadata and object keys.
+- [Overview](#overview)
+  - [Workspaces](#workspaces)
+  - [Meetings](#meetings)
+  - [Meeting status](#meeting-status)
+  - [Participants, responses and attendance](#participants-responses-and-attendance)
+  - [Agenda](#agenda)
+  - [Minutes](#minutes)
+  - [Action items](#action-items)
+  - [Attachments](#attachments)
+  - [Counters](#counters)
+  - [Text fields](#text-fields)
+- [Where things live](#where-things-live)
+- [Responsibilities: caller vs. module](#responsibilities-caller-vs-module)
+- [Errors](#errors)
+- [Paging](#paging)
+- [API reference](#api-reference)
+  - [Workspaces](#workspaces-1)
+  - [Meetings](#meetings-1)
+  - [Participants](#participants)
+  - [Agenda](#agenda-1)
+  - [Minutes](#minutes-1)
+  - [Attachments](#attachments-1)
+  - [Action items](#action-items-1)
+  - [Activity log](#activity-log)
+- [Notifications](#notifications)
+- [Data model](#data-model)
+- [Committee Meetings feature](#committee-meetings-feature)
+- [Integrating another feature](#integrating-another-feature)
+- [Limits and constants](#limits-and-constants)
+- [Known limitations](#known-limitations)
 
-| Piece | Location |
-|---|---|
-| Public API (import from here) | `idreesia-common/server/business-logic/meetings/` |
-| Collections and document types | `idreesia-common/server/collections/meetings/` |
-| Schemas | `idreesia-common/server/schemas/meetings/` |
-| Constants (statuses, actions, limits) | `idreesia-common/constants/meetings.ts` |
-| Storage helpers | `idreesia-common/server/file-storage/` |
-| Indexes | `idreesia-web/imports/startup/server/migrations/61-create-meetings-indexes.ts` |
-
-```ts
-import {
-  createMeetingsWorkspace,
-  createMeeting,
-  markAttendance,
-} from 'meteor/idreesia-common/server/business-logic/meetings';
-```
-
-The module is server-only. Import from the barrel above, not from individual files inside it. It is independent of the [DMS](dms-design-and-usage.md): the two share no code or data.
-
-## Responsibilities: caller vs. module
-
-**The caller decides access.** The module never checks whether a user may see or change a workspace, meeting, attachment or action item. Before calling it, the consuming feature must:
-- authenticate the user,
-- check its own permissions (for example "is this user a member of the committee that owns this workspace"),
-- and make sure the ids it passes belong to what the user may touch (`meeting.workspaceId`, `attachment.meetingId`, `actionItem.meetingId`).
-
-**The module enforces integrity.** Whoever calls it, the module guarantees:
-- **Valid times.** A meeting ends after it starts; its time zone is a real IANA zone.
-- **Status rules hold** (see [Meeting status](#meeting-status)).
-- **Participants are unique** within a meeting.
-- **Concurrent edits don't overwrite each other.** Changes to participants and the agenda fail with `CONFLICT` if the meeting changed since it was read.
-- **Upload limits apply** (size and MIME type, per workspace).
-- **Only the user who started a direct upload** can complete or abort it.
-
-**Every function takes the acting `userId`**, reads included. It is recorded in `createdBy` / `updatedBy`, attendance's `markedBy`, and the activity log. A missing or empty `userId` fails with `BAD_USER_INPUT`. The only exception is the maintenance function `purgeExpiredAttachmentUploads()`.
-
-**Participants are opaque ids.** A participant, an action item's assignee and an agenda item's presenter are plain strings the caller chooses, typically karkun ids. The module never looks them up. `userId` (who is acting) and `participantId` (who is invited) are separate. When a participant answers their own invitation, the caller passes both.
-
-**Workspaces are independent.** A meetings workspace has no link to ERP Workspaces (committees) or any other entity. The consuming feature stores the workspace id on its own records, for example `committee.meetingsWorkspaceId`, and uses `metadata` for anything else it needs.
-
-## Concepts
+## Overview
 
 ### Workspaces
 A workspace is the top-level container. It has a name, an optional description, free-form `metadata`, and optional `settings`:
@@ -92,6 +81,54 @@ Each meeting carries `attachmentCount` and `openActionItemCount` (action items t
 
 ### Text fields
 Titles and names are trimmed, runs of whitespace are collapsed, and they must be 1–255 characters with no control characters. File names also can't contain `/` or `\`. Descriptions are trimmed and limited to 10,000 characters. Tags and metadata follow the same rules as the DMS: tags are lower-cased, de-duplicated, at most 50 of up to 64 characters. Metadata keys use letters, digits, `_` and `-` only.
+
+## Where things live
+
+The meetings module is a **headless backend module**. It stores meetings in workspaces, with participants (invitation responses and attendance), an agenda, minutes, action items, file attachments and an activity log. It has no GraphQL API, REST routes or UI of its own. A feature that needs meetings calls its functions from its own resolvers or routes.
+
+Attachment files live in the S3-compatible object storage (RustFS locally, DigitalOcean Spaces in production). Mongo holds only metadata and object keys.
+
+| Piece | Location |
+|---|---|
+| Public API (import from here) | `idreesia-common/server/business-logic/meetings/` |
+| Notifications | `idreesia-common/server/business-logic/meetings/notifications.ts` |
+| Headless module wrapper (`meetingsModule`) | `idreesia-common/server/business-logic/meetings/module.ts` |
+| Collections and document types | `idreesia-common/server/collections/meetings/` |
+| Schemas | `idreesia-common/server/schemas/meetings/` |
+| Constants (statuses, actions, limits) | `idreesia-common/constants/meetings.ts` |
+| Storage helpers | `idreesia-common/server/file-storage/` |
+| Indexes | `idreesia-web/imports/startup/server/migrations/61-create-meetings-indexes.ts` |
+
+```ts
+import {
+  createMeetingsWorkspace,
+  createMeeting,
+  markAttendance,
+} from 'meteor/idreesia-common/server/business-logic/meetings';
+```
+
+The module is server-only. Import from the barrel above, not from individual files inside it. It is independent of the [DMS](dms-design-and-usage.md): the two share no code or data.
+
+## Responsibilities: caller vs. module
+
+**The caller decides access.** The module never checks whether a user may see or change a workspace, meeting, attachment or action item. Before calling it, the consuming feature must:
+- authenticate the user,
+- check its own permissions (for example "is this user a member of the committee that owns this workspace"),
+- and make sure the ids it passes belong to what the user may touch (`meeting.workspaceId`, `attachment.meetingId`, `actionItem.meetingId`).
+
+**The module enforces integrity.** Whoever calls it, the module guarantees:
+- **Valid times.** A meeting ends after it starts; its time zone is a real IANA zone.
+- **Status rules hold** (see [Meeting status](#meeting-status)).
+- **Participants are unique** within a meeting.
+- **Concurrent edits don't overwrite each other.** Changes to participants and the agenda fail with `CONFLICT` if the meeting changed since it was read.
+- **Upload limits apply** (size and MIME type, per workspace).
+- **Only the user who started a direct upload** can complete or abort it.
+
+**Every function takes the acting `userId`**, reads included. It is recorded in `createdBy` / `updatedBy`, attendance's `markedBy`, and the activity log. A missing or empty `userId` fails with `BAD_USER_INPUT`. The only exception is the maintenance function `purgeExpiredAttachmentUploads()`.
+
+**Participants are opaque ids.** A participant, an action item's assignee and an agenda item's presenter are plain strings the caller chooses, typically karkun ids. The module never looks them up, with one exception: [notifications](#notifications) treat a participant id as a person id to find the ERP user to notify. `userId` (who is acting) and `participantId` (who is invited) are separate. When a participant answers their own invitation, the caller passes both.
+
+**Workspaces are independent.** A meetings workspace has no link to ERP Workspaces (committees) or any other entity. The consuming feature stores the workspace id on its own records, for example `committee.meetingsWorkspaceId`, and uses `metadata` for anything else it needs.
 
 ## Errors
 
@@ -218,6 +255,25 @@ Action items can't be created or changed while their meeting is cancelled.
 | Attachments | `attachment-added`, `attachment-updated`, `attachment-deleted`, `attachment-downloaded` |
 | Action items | `action-item-created`, `action-item-updated`, `action-item-status-changed`, `action-item-deleted` |
 
+## Notifications
+
+The meetings module publishes three notifications through the shared notifier (see [headless-module-notifications.md](headless-module-notifications.md)). Publishing is **best effort**: a failure is logged and never fails the meeting operation that caused it. For all three, `entityType` is `meeting` and `entityId` is the meeting id. The user who caused the change is the actor and is never notified.
+
+| # | Notification | Trigger | Who gets it | Id |
+|---|---|---|---|---|
+| 1 | You are invited to "X" on <date> | `createMeeting` (with participants), `addParticipants` | The newly invited participants | `invited:<meetingId>:<userId>` |
+| 2 | "X" was rescheduled to <date> | `updateMeeting`, only when `startsAt` or `endsAt` actually changed | All participants | `rescheduled:<meetingId>:<userId>` |
+| 3 | "X" was cancelled | `cancelMeeting` | All participants | `cancelled:<meetingId>:<userId>` |
+
+**Details**
+- **Participants are opaque to the module, but notifications go to ERP users.** A participant id is looked up as a person id (`Users.findByPersonIds`). A participant with no ERP user is not notified.
+- **#2 collapses.** One id per meeting and user, so several reschedules give one notification whose text changes. It shows as unread again each time.
+- **Not notifications:** removing a participant, role, RSVP and attendance changes, agenda, minutes, action items, attachments, completing or reopening a meeting. Nobody needs to act on them, and the [activity log](#activity-log) records them. Reminders and action-item due dates are not sent either; the home page already shows them.
+
+**No scheduled job.** All three are published when the action happens. Nothing runs on a schedule.
+
+**As a headless module.** `meetingsModule` (`name: 'meetings'`) wraps workspace create and soft-delete for the shared `HeadlessModule` contract. `addUser` and `removeUser` do nothing, because the module keeps no membership (callers decide who may use a workspace). It is registered in `headless/modules.ts`.
+
 ## Data model
 
 | Collection | Holds |
@@ -230,7 +286,32 @@ Action items can't be created or changed while their meeting is cancelled.
 
 Change this data only through the API. Writing to the collections directly bypasses validation, status rules, counters and the activity log. `revision` goes up on every change to a meeting; changes to participants and the agenda use it to detect concurrent edits.
 
-## Integrating a feature
+## Committee Meetings feature
+
+The Workspaces module uses meetings through the **Meetings** committee feature (`CommitteeFeatureKeys.MEETINGS`):
+
+| Piece | Location |
+|---|---|
+| Feature handler, workspace lookup | `idreesia-common/server/business-logic/hr/committee/meetings.ts` |
+| View mapping (names, timestamps as strings) | `.../hr/committee/meetings-view.ts` |
+| Form input mapping | `.../hr/committee/meetings-actions.ts` |
+| GraphQL schema, access checks, resolvers | `idreesia-common/server/graphql-api/workspaces/meetings/` |
+| Reusable UI (no committee knowledge; driven by a `MeetingsDataProvider`) | `idreesia-web/imports/ui/modules/common/meetings/` |
+| Committee pages and data provider | `idreesia-web/imports/ui/modules/workspaces/meetings/` |
+| Mobile app screens (Home → workspace → Meetings) | `idreesia-mobile/imports/ui/workspaces/meetings/` |
+
+**Feature lifecycle:**
+- Enabling the feature creates a `"<committee> Meetings"` workspace with `metadata.committeeId`, and stores its id in `committee.meetingsWorkspaceId`.
+- Disabling it soft-deletes the workspace.
+- Enabling it again restores the same workspace, with its meetings.
+
+**Who can do what:**
+- **Coordinators** (and `erp-admin`) schedule, edit, cancel, complete, reopen and delete meetings, set participants and their roles, mark attendance, and manage the agenda, minutes, attachments and action items.
+- **Members** see the committee's meetings, agenda, minutes, attachments (and can download them), action items and activity. A participant answers the invitation for themselves; a coordinator can answer for anyone.
+- An action item's **assignee** (or a coordinator) changes its status.
+- **Notifications** (mobile): the meetings list has a bell with an unread count. It opens a screen listing the committee's meeting notifications, newest first. Opening it marks them read, and tapping one opens its meeting. The web app has no notifications page yet.
+
+## Integrating another feature
 
 A minimal GraphQL integration, for example a committee "Meetings" feature:
 
@@ -270,7 +351,7 @@ All of these are in `idreesia-common/constants/meetings.ts`:
 ## Known limitations
 
 - **No recurring meetings.** Each meeting is a one-off. A later version can add a series with a recurrence rule.
-- **No notifications or reminders.** The consuming feature sends any invitations or reminders itself.
+- **No reminders.** Nothing reminds participants before a meeting starts; the consuming feature does that itself. Invitations, reschedules and cancellations are [notifications](#notifications).
 - **Multi-step operations are not transactional.** For example, a deleted meeting's records are removed before its files, so a failed file deletion leaves an orphaned object in storage rather than a record pointing at a missing file.
 - **Server-side uploads and reads are not streamed.** Use direct uploads and download URLs for large files.
 - **Lists return whole meeting documents**, including minutes and the participant list.

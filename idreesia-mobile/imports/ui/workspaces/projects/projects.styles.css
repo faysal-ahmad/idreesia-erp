@@ -217,3 +217,19 @@
   color: var(--app-color-text-secondary);
   font-size: 0.7647rem; /* 13px */
 }
+
+/* Notifications (project-notifications-screen.tsx) */
+.project-notification-text {
+  white-space: normal;
+}
+
+/* Unread notifications: tinted, to tell them from the ones already read. */
+.adm-list-item.project-notification-unread {
+  background: var(--app-color-primary-light);
+}
+
+.project-notifications-more {
+  display: flex;
+  justify-content: center;
+  padding: 4px 16px 12px;
+}

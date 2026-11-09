@@ -2,7 +2,7 @@
 
 Headless modules (discussions, DMS, meetings, polls, projects, ...) hold their own data in isolated workspaces. Each of them can tell users about things that happen in those workspaces. Modules publish them to the ERP, which stores them in one place, tracks who has read them, and serves them to clients, for example for the home screen.
 
-This document describes how a module publishes notifications and how the ERP handles them. **No module produces notifications yet.** Each module will be visited separately to decide what it generates (see [Per-module notifications](#per-module-notifications)).
+This document describes how a module publishes notifications and how the ERP handles them. **Discussions is the only module that does not publish notifications yet.** Each module is visited separately to decide what it generates (see [Per-module notifications](#per-module-notifications)).
 
 ## Contents
 
@@ -173,7 +173,7 @@ All notifications go into one collection, `common-notifications`. A stored notif
 
 `markNotificationsRead(userId, scope, ids)` adds the user to `readBy` (`$addToSet`) on those notifications. It applies the same visibility rules, so a user cannot mark what they cannot see. `countUnreadNotifications(userId, scope)` counts the visible ones the user has not read.
 
-**Which committees and modules a user has.** Committee membership is by person, so the ERP goes from the user's `personId` to their committees: `getPersonNotificationScope(personId)` (`business-logic/hr/committee/workspaces.ts`) lists the `{ committeeId, module }` pairs of every committee the person belongs to, for the Discussions, DMS (Documents) and Members features that are enabled. A user with no person (for example `erp-admin`) has none and so sees no notifications.
+**Which committees and modules a user has.** Committee membership is by person, so the ERP goes from the user's `personId` to their committees: `getPersonNotificationScope(personId)` (`business-logic/hr/committee/workspaces.ts`) lists the `{ committeeId, module }` pairs of every committee the person belongs to, for the Discussions, DMS (Documents), Meetings, Polls, Projects and Members features that are enabled. A user with no person (for example `erp-admin`) has none and so sees no notifications.
 
 `business-logic/hr/committee/notifications.ts` ties these together for the logged-in user (`getMyNotifications`, `getMyUnreadNotificationCount`, `markMyNotificationsRead`).
 
@@ -195,7 +195,7 @@ Read and mark-read only; thin resolvers over the functions above. Nothing is pus
 
 If a module can produce the same notification again, derive the id from what makes it the same, for example `meeting-reminder:<meetingId>:<date>`. Republishing (for instance when a scheduled job runs again) then updates one notification rather than adding duplicates.
 
-If one notification describes a state that changes, use one stable id and publish the new details each time. Each change shows it as unread again.
+If one notification describes a state that changes, use one stable id and publish the new details each time. Each change shows it as unread again. Content the ERP already holds is skipped, so if the same text can legitimately happen again (a second comment, an assignment repeated) and should be unread again, put something that differs, such as the event time, in `data`.
 
 ### Retiring
 
@@ -227,9 +227,9 @@ yarn test:unit:watch    # re-run on change
 
 ## Status and open items
 
-What exists: the contract, the notifier, the collection and schema with indexes, the purge job, the read and mark-read functions, the GraphQL API, and the DMS as the first module that publishes notifications.
+What exists: the contract, the notifier, the collection and schema with indexes, the purge job, the read and mark-read functions, the GraphQL API, and the DMS, meetings, polls and projects modules, which publish notifications.
 
-- **Only the DMS publishes notifications.** Discussions implements `HeadlessModule` and publishes nothing yet; meetings, polls and projects do not implement it or register with the ERP.
+- **Only the DMS, meetings, polls and projects publish notifications.** Discussions, DMS, meetings, polls and projects all implement `HeadlessModule` and are registered in `headless/modules.ts`; discussions publishes nothing yet. Meetings, polls and projects keep no membership, so their `addUser` and `removeUser` do nothing.
 - **No UI shows notifications yet.**
 - **Late joiners.** A notification for everyone is visible to anyone who is in the committee later, including notifications from before they joined. Hiding those would need join dates. Not decided.
 - **Single language.** `eventDetails` is one string in one language.
@@ -242,9 +242,9 @@ To be filled in as each module is reviewed. For each module this section should 
 |---|---|
 | Discussions | Not defined yet. Mentions are a candidate (published when a message is sent). Unread counts are not, since they are live state. |
 | Documents (DMS) | Four notifications, listed in [dms-design-and-usage.md](dms-design-and-usage.md#notifications): a lock was force-unlocked, a long lock expires soon, a new document, and a new version. |
-| Meetings | Not defined yet |
-| Polls | Not defined yet |
-| Projects | Not defined yet |
+| Meetings | Three notifications, listed in [meetings-design-and-usage.md](meetings-design-and-usage.md#notifications): invited to a meeting, a meeting was rescheduled, a meeting was cancelled. |
+| Polls | Two notifications, listed in [polls-design-and-usage.md](polls-design-and-usage.md#notifications): an open poll was cancelled, and a poll was closed early so its results are available. |
+| Projects | Thirteen notifications, listed in [projects-design-and-usage.md](projects-design-and-usage.md#notifications): task assigned, unassigned, status changed, completed, due date changed, raised priority, deleted, commented; and project joined, left, status changed, updated, deleted. |
 
 ## Committee notifications (no workspace)
 

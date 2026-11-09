@@ -32,6 +32,26 @@ describe('getPersonNotificationScope', () => {
     expect(scope).toHaveLength(3);
   });
 
+  it('includes meetings, polls and projects when their feature and workspace are set', async () => {
+    const id = await committee({
+      features: ['meetings', 'polls', 'projects'],
+      meetingsWorkspaceId: 'm1',
+      pollsWorkspaceId: 'p1',
+      projectsWorkspaceId: 'pr1',
+    });
+
+    const scope = await getPersonNotificationScope('p1');
+
+    expect(scope).toEqual(
+      expect.arrayContaining([
+        { committeeId: id, module: 'meetings' },
+        { committeeId: id, module: 'polls' },
+        { committeeId: id, module: 'projects' },
+      ])
+    );
+    expect(scope).toHaveLength(3);
+  });
+
   it('leaves out features that are not enabled, even if a workspace is remembered', async () => {
     await committee({
       features: ['documents'],

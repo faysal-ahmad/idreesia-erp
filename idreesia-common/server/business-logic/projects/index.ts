@@ -83,3 +83,6 @@ export {
   deleteTaskComment,
   listTaskComments,
 } from './comments';
+
+export { PROJECTS_MODULE } from 'meteor/idreesia-common/constants/projects';
+export { projectsModule } from './module';

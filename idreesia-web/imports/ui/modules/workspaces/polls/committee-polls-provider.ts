@@ -2,11 +2,9 @@ import type { ApolloClient } from '@apollo/client';
 import type {
   WorkspacePollActivityQuery,
   WorkspacePollFieldsFragment,
-  WorkspacePollMembersQuery,
   WorkspacePollResultsQuery,
   WorkspacePollsInfoQuery,
   WorkspacePollsQuery,
-  WorkspacePollVotersQuery,
 } from 'meteor/idreesia-common/types/client-operations';
 
 import {
@@ -15,7 +13,6 @@ import {
   type PollActivity,
   type PollAnswer,
   type PollDetails,
-  type PollMember,
   type PollPage,
   type PollQuestionType,
   type PollResults,
@@ -23,11 +20,9 @@ import {
   type PollsInfo,
   type PollsQuery,
   type PollStatus,
-  type PollVoter,
 } from '/imports/ui/modules/common/polls';
 
 import {
-  WORKSPACE_ADD_POLL_VOTERS,
   WORKSPACE_CANCEL_POLL,
   WORKSPACE_CAST_POLL_VOTE,
   WORKSPACE_CLOSE_POLL,
@@ -36,9 +31,7 @@ import {
   WORKSPACE_OPEN_POLL,
   WORKSPACE_POLL_ACTIVITY,
   WORKSPACE_POLL_BY_ID,
-  WORKSPACE_POLL_MEMBERS,
   WORKSPACE_POLL_RESULTS,
-  WORKSPACE_POLL_VOTERS,
   WORKSPACE_POLLS,
   WORKSPACE_POLLS_INFO,
   WORKSPACE_REOPEN_POLL,
@@ -75,7 +68,6 @@ const mapPoll = (poll: WorkspacePollFieldsFragment): Poll => ({
   description: poll.description ?? null,
   status: (poll.status ?? 'draft') as PollStatus,
   anonymous: !!poll.anonymous,
-  showResultsWhileOpen: !!poll.showResultsWhileOpen,
   closesAt: poll.closesAt ?? '0',
   openedAt: poll.openedAt ?? null,
   closedAt: poll.closedAt ?? null,
@@ -96,10 +88,6 @@ const mapPoll = (poll: WorkspacePollFieldsFragment): Poll => ({
       text: option.text ?? '',
     })),
   })),
-  eligibleVoterIds: poll.eligibleVoterIds
-    ? poll.eligibleVoterIds.filter(notNull)
-    : null,
-  eligibleCount: poll.eligibleCount ?? null,
   voteCount: poll.voteCount ?? 0,
   isEligible: !!poll.isEligible,
   hasVoted: !!poll.hasVoted,
@@ -198,20 +186,6 @@ export default class CommitteePollsProvider implements PollsDataProvider {
     };
   }
 
-  async loadMembers(): Promise<PollMember[]> {
-    const data = await this.query<WorkspacePollMembersQuery>(
-      WORKSPACE_POLL_MEMBERS
-    );
-    return (data?.workspacePollMembers ?? [])
-      .filter(notNull)
-      .filter(member => !!member.voterId)
-      .map(member => ({
-        voterId: member.voterId!,
-        name: member.name ?? null,
-        isCoordinator: !!member.isCoordinator,
-      }));
-  }
-
   async loadPolls({ view, text, pageIndex, pageSize }: PollsQuery): Promise<PollPage> {
     const data = await this.query<WorkspacePollsQuery>(WORKSPACE_POLLS, {
       view,
@@ -250,9 +224,6 @@ export default class CommitteePollsProvider implements PollsDataProvider {
       anonymous: !!results.anonymous,
       closedAt: results.closedAt ?? null,
       totalVoters: results.totalVoters ?? 0,
-      eligibleCount: results.eligibleCount ?? null,
-      turnout: results.turnout ?? null,
-      nonVoters: mapVoters(results.nonVoters),
       questions: (results.questions ?? []).filter(notNull).map(question => ({
         questionId: question.questionId ?? '',
         text: question.text ?? '',
@@ -267,18 +238,6 @@ export default class CommitteePollsProvider implements PollsDataProvider {
         })),
       })),
     };
-  }
-
-  async loadVoters(pollId: string): Promise<PollVoter[]> {
-    const data = await this.query<WorkspacePollVotersQuery>(
-      WORKSPACE_POLL_VOTERS,
-      { pollId }
-    );
-    return (data?.workspacePollVoters ?? []).filter(notNull).map(voter => ({
-      voterId: voter.voterId ?? '',
-      name: voter.name ?? null,
-      hasVoted: voter.hasVoted ?? null,
-    }));
   }
 
   async loadActivity(pollId: string, before?: string): Promise<PollActivity[]> {
@@ -307,13 +266,6 @@ export default class CommitteePollsProvider implements PollsDataProvider {
     return this.mutatePoll(WORKSPACE_UPDATE_POLL, 'workspaceUpdatePoll', {
       pollId,
       input: details,
-    });
-  }
-
-  addVoters(pollId: string, voterIds: string[]): Promise<Poll> {
-    return this.mutatePoll(WORKSPACE_ADD_POLL_VOTERS, 'workspaceAddPollVoters', {
-      pollId,
-      voterIds,
     });
   }
 

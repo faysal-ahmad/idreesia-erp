@@ -812,7 +812,6 @@ export type Mutation = {
   workspaceAbortMeetingAttachmentUpload?: Maybe<Scalars['Boolean']['output']>;
   workspaceAddCommitteeMember?: Maybe<WorkspaceCommitteeType>;
   workspaceAddMeetingAgendaItem?: Maybe<WorkspaceMeetingType>;
-  workspaceAddPollVoters?: Maybe<WorkspacePollType>;
   workspaceAddProjectParticipants?: Maybe<WorkspaceProjectType>;
   workspaceAddTaskComment?: Maybe<WorkspaceTaskCommentType>;
   workspaceCancelMeeting?: Maybe<WorkspaceMeetingType>;
@@ -2055,13 +2054,6 @@ export type MutationWorkspaceAddMeetingAgendaItemArgs = {
 };
 
 
-export type MutationWorkspaceAddPollVotersArgs = {
-  committeeId: Scalars['String']['input'];
-  pollId: Scalars['String']['input'];
-  voterIds: Array<InputMaybe<Scalars['String']['input']>>;
-};
-
-
 export type MutationWorkspaceAddProjectParticipantsArgs = {
   committeeId: Scalars['String']['input'];
   personIds: Array<InputMaybe<Scalars['String']['input']>>;
@@ -3174,9 +3166,7 @@ export type Query = {
   workspaceNightStays?: Maybe<PagedWorkspaceNightStayType>;
   workspacePollActivity?: Maybe<Array<Maybe<WorkspacePollActivityType>>>;
   workspacePollById?: Maybe<WorkspacePollType>;
-  workspacePollMembers?: Maybe<Array<Maybe<WorkspacePollMemberType>>>;
   workspacePollResults?: Maybe<WorkspacePollResultsType>;
-  workspacePollVoters?: Maybe<Array<Maybe<WorkspacePollVoterType>>>;
   workspacePolls?: Maybe<PagedWorkspacePollType>;
   workspacePollsInfo?: Maybe<WorkspacePollsInfoType>;
   workspaceProjectById?: Maybe<WorkspaceProjectType>;
@@ -3908,18 +3898,7 @@ export type QueryWorkspacePollByIdArgs = {
 };
 
 
-export type QueryWorkspacePollMembersArgs = {
-  committeeId: Scalars['String']['input'];
-};
-
-
 export type QueryWorkspacePollResultsArgs = {
-  committeeId: Scalars['String']['input'];
-  pollId: Scalars['String']['input'];
-};
-
-
-export type QueryWorkspacePollVotersArgs = {
   committeeId: Scalars['String']['input'];
   pollId: Scalars['String']['input'];
 };
@@ -4840,17 +4819,8 @@ export type WorkspacePollInput = {
   anonymous?: InputMaybe<Scalars['Boolean']['input']>;
   closesAt: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
-  eligibleVoterIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   questions?: InputMaybe<Array<InputMaybe<WorkspacePollQuestionInput>>>;
-  showResultsWhileOpen?: InputMaybe<Scalars['Boolean']['input']>;
   title: Scalars['String']['input'];
-};
-
-export type WorkspacePollMemberType = {
-  __typename?: 'WorkspacePollMemberType';
-  isCoordinator?: Maybe<Scalars['Boolean']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  voterId?: Maybe<Scalars['String']['output']>;
 };
 
 export type WorkspacePollOptionInput = {
@@ -4909,13 +4879,10 @@ export type WorkspacePollResultsType = {
   __typename?: 'WorkspacePollResultsType';
   anonymous?: Maybe<Scalars['Boolean']['output']>;
   closedAt?: Maybe<Scalars['String']['output']>;
-  eligibleCount?: Maybe<Scalars['Int']['output']>;
-  nonVoters?: Maybe<Array<Maybe<WorkspacePollVoterType>>>;
   pollId?: Maybe<Scalars['String']['output']>;
   questions?: Maybe<Array<Maybe<WorkspacePollQuestionResultType>>>;
   status?: Maybe<Scalars['String']['output']>;
   totalVoters?: Maybe<Scalars['Int']['output']>;
-  turnout?: Maybe<Scalars['Float']['output']>;
 };
 
 export type WorkspacePollType = {
@@ -4932,14 +4899,11 @@ export type WorkspacePollType = {
   createdAt?: Maybe<Scalars['String']['output']>;
   createdByName?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
-  eligibleCount?: Maybe<Scalars['Int']['output']>;
-  eligibleVoterIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   hasVoted?: Maybe<Scalars['Boolean']['output']>;
   isEligible?: Maybe<Scalars['Boolean']['output']>;
   myAnswers?: Maybe<Array<Maybe<WorkspacePollAnswerType>>>;
   openedAt?: Maybe<Scalars['String']['output']>;
   questions?: Maybe<Array<Maybe<WorkspacePollQuestionType>>>;
-  showResultsWhileOpen?: Maybe<Scalars['Boolean']['output']>;
   status?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;

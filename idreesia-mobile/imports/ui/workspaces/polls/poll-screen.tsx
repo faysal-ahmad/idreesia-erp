@@ -1,7 +1,7 @@
 import React, { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { ActionSheet, Button, DatePicker, Dialog, List, Selector, Tag, TextArea } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
-import { HistogramOutline, MoreOutline, PieOutline, TeamOutline } from 'antd-mobile-icons';
+import { HistogramOutline, MoreOutline, PieOutline } from 'antd-mobile-icons';
 import { useApolloClient, useMutation } from '@apollo/client/react';
 
 import { Page, PageEmpty, PageError, PageLoading, showError, showSuccess, showWarning } from '../../layout';
@@ -35,7 +35,7 @@ interface Props {
 /**
  * Workspace → Polls → one poll: when voting ends, the questions to vote on
  * (or the user's vote), and rows that open its results and, for
- * coordinators, its voters and activity. Coordinators manage it from the
+ * coordinators, its activity. Coordinators manage it from the
  * "more" menu.
  */
 export const PollScreen = ({ pollId }: Props) => {
@@ -284,13 +284,7 @@ export const PollScreen = ({ pollId }: Props) => {
     },
     {
       label: 'Votes',
-      value: poll.eligibleCount
-        ? `${poll.voteCount ?? 0} of ${poll.eligibleCount} eligible`
-        : String(poll.voteCount ?? 0),
-    },
-    {
-      label: 'Results',
-      value: poll.showResultsWhileOpen ? 'Visible while voting is open' : 'Visible once voting ends',
+      value: String(poll.voteCount ?? 0),
     },
     ...(poll.description ? [{ label: 'Description', value: poll.description }] : []),
   ];
@@ -375,16 +369,6 @@ export const PollScreen = ({ pollId }: Props) => {
         >
           Results
         </List.Item>
-        {canManage && (
-          <List.Item
-            description={poll.anonymous ? 'Who can vote' : 'Who can vote, and who has'}
-            extra={poll.eligibleCount || undefined}
-            prefix={<span className="list-icon"><TeamOutline /></span>}
-            onClick={() => openPart('voters')}
-          >
-            Voters
-          </List.Item>
-        )}
         {canManage && (
           <List.Item prefix={<span className="list-icon"><HistogramOutline /></span>} onClick={() => openPart('activity')}>
             Activity

@@ -193,9 +193,7 @@ export type WorkspacePollInput = {
   anonymous?: boolean | null | undefined;
   closesAt: string;
   description?: string | null | undefined;
-  eligibleVoterIds?: Array<string | null | undefined> | null | undefined;
   questions?: Array<WorkspacePollQuestionInput | null | undefined> | null | undefined;
-  showResultsWhileOpen?: boolean | null | undefined;
   title: string;
 };
 
@@ -821,6 +819,15 @@ export type MobileWorkspaceEmptyDocumentTrashMutationVariables = Exact<{
 
 export type MobileWorkspaceEmptyDocumentTrashMutation = { workspaceEmptyDocumentTrash: number | null };
 
+export type MobileCommitteeDocumentNotificationsQueryVariables = Exact<{
+  committeeId: string;
+  limit: number;
+  offset?: number | null | undefined;
+}>;
+
+
+export type MobileCommitteeDocumentNotificationsQuery = { myNotifications: Array<{ _id: string | null, entityId: string | null, eventType: string | null, eventDetails: string | null, createdAt: string | null, isRead: boolean | null } | null> | null };
+
 export type MobileMyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1048,6 +1055,15 @@ export type MobileWorkspaceMeetingFieldsFragment = { _id: string | null, title: 
 
 export type MobileWorkspaceMeetingActionItemFieldsFragment = { _id: string | null, meetingId: string | null, meetingTitle: string | null, meetingEndsAt: string | null, agendaItemId: string | null, title: string | null, description: string | null, assigneeId: string | null, assigneeName: string | null, dueDate: string | null, status: string | null, completedAt: string | null, completedByName: string | null, canChangeStatus: boolean | null };
 
+export type MobileCommitteeMeetingNotificationsQueryVariables = Exact<{
+  committeeId: string;
+  limit: number;
+  offset?: number | null | undefined;
+}>;
+
+
+export type MobileCommitteeMeetingNotificationsQuery = { myNotifications: Array<{ _id: string | null, entityId: string | null, eventType: string | null, eventDetails: string | null, createdAt: string | null, isRead: boolean | null } | null> | null };
+
 export type MobileWorkspaceMeetingsInfoQueryVariables = Exact<{
   committeeId: string;
 }>;
@@ -1220,7 +1236,7 @@ export type MobileWorkspaceNightStaysQueryVariables = Exact<{
 
 export type MobileWorkspaceNightStaysQuery = { workspaceNightStays: { totalResults: number | null, data: Array<{ _id: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, visitorName: string | null, visitorImageUrl: string | null, visitorImageThumbnailUrl: string | null, city: string | null, country: string | null } | null> | null } | null };
 
-export type MobileWorkspacePollFieldsFragment = { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null };
+export type MobileWorkspacePollFieldsFragment = { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null };
 
 export type MobileWorkspacePollsInfoQueryVariables = Exact<{
   committeeId: string;
@@ -1228,13 +1244,6 @@ export type MobileWorkspacePollsInfoQueryVariables = Exact<{
 
 
 export type MobileWorkspacePollsInfoQuery = { workspacePollsInfo: { canManage: boolean | null, myVoterId: string | null } | null };
-
-export type MobileWorkspacePollMembersQueryVariables = Exact<{
-  committeeId: string;
-}>;
-
-
-export type MobileWorkspacePollMembersQuery = { workspacePollMembers: Array<{ voterId: string | null, name: string | null, isCoordinator: boolean | null } | null> | null };
 
 export type MobileWorkspacePollsQueryVariables = Exact<{
   committeeId: string;
@@ -1245,7 +1254,7 @@ export type MobileWorkspacePollsQueryVariables = Exact<{
 }>;
 
 
-export type MobileWorkspacePollsQuery = { workspacePolls: { totalResults: number | null, data: Array<{ _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null> | null } | null };
+export type MobileWorkspacePollsQuery = { workspacePolls: { totalResults: number | null, data: Array<{ _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null> | null } | null };
 
 export type MobileWorkspacePollByIdQueryVariables = Exact<{
   committeeId: string;
@@ -1253,7 +1262,7 @@ export type MobileWorkspacePollByIdQueryVariables = Exact<{
 }>;
 
 
-export type MobileWorkspacePollByIdQuery = { workspacePollById: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type MobileWorkspacePollByIdQuery = { workspacePollById: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type MobileWorkspacePollResultsQueryVariables = Exact<{
   committeeId: string;
@@ -1261,15 +1270,7 @@ export type MobileWorkspacePollResultsQueryVariables = Exact<{
 }>;
 
 
-export type MobileWorkspacePollResultsQuery = { workspacePollResults: { pollId: string | null, status: string | null, anonymous: boolean | null, closedAt: string | null, totalVoters: number | null, eligibleCount: number | null, turnout: number | null, nonVoters: Array<{ voterId: string | null, name: string | null } | null> | null, questions: Array<{ questionId: string | null, text: string | null, type: string | null, answeredCount: number | null, options: Array<{ optionId: string | null, text: string | null, count: number | null, percentage: number | null, voters: Array<{ voterId: string | null, name: string | null } | null> | null } | null> | null } | null> | null } | null };
-
-export type MobileWorkspacePollVotersQueryVariables = Exact<{
-  committeeId: string;
-  pollId: string;
-}>;
-
-
-export type MobileWorkspacePollVotersQuery = { workspacePollVoters: Array<{ voterId: string | null, name: string | null, hasVoted: boolean | null } | null> | null };
+export type MobileWorkspacePollResultsQuery = { workspacePollResults: { pollId: string | null, status: string | null, anonymous: boolean | null, closedAt: string | null, totalVoters: number | null, questions: Array<{ questionId: string | null, text: string | null, type: string | null, answeredCount: number | null, options: Array<{ optionId: string | null, text: string | null, count: number | null, percentage: number | null, voters: Array<{ voterId: string | null, name: string | null } | null> | null } | null> | null } | null> | null } | null };
 
 export type MobileWorkspacePollActivityQueryVariables = Exact<{
   committeeId: string;
@@ -1287,7 +1288,7 @@ export type MobileWorkspaceCreatePollMutationVariables = Exact<{
 }>;
 
 
-export type MobileWorkspaceCreatePollMutation = { workspaceCreatePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type MobileWorkspaceCreatePollMutation = { workspaceCreatePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type MobileWorkspaceUpdatePollMutationVariables = Exact<{
   committeeId: string;
@@ -1296,16 +1297,7 @@ export type MobileWorkspaceUpdatePollMutationVariables = Exact<{
 }>;
 
 
-export type MobileWorkspaceUpdatePollMutation = { workspaceUpdatePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
-
-export type MobileWorkspaceAddPollVotersMutationVariables = Exact<{
-  committeeId: string;
-  pollId: string;
-  voterIds: Array<string | null | undefined> | string;
-}>;
-
-
-export type MobileWorkspaceAddPollVotersMutation = { workspaceAddPollVoters: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type MobileWorkspaceUpdatePollMutation = { workspaceUpdatePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type MobileWorkspaceOpenPollMutationVariables = Exact<{
   committeeId: string;
@@ -1314,7 +1306,7 @@ export type MobileWorkspaceOpenPollMutationVariables = Exact<{
 }>;
 
 
-export type MobileWorkspaceOpenPollMutation = { workspaceOpenPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type MobileWorkspaceOpenPollMutation = { workspaceOpenPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type MobileWorkspaceClosePollMutationVariables = Exact<{
   committeeId: string;
@@ -1322,7 +1314,7 @@ export type MobileWorkspaceClosePollMutationVariables = Exact<{
 }>;
 
 
-export type MobileWorkspaceClosePollMutation = { workspaceClosePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type MobileWorkspaceClosePollMutation = { workspaceClosePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type MobileWorkspaceReopenPollMutationVariables = Exact<{
   committeeId: string;
@@ -1331,7 +1323,7 @@ export type MobileWorkspaceReopenPollMutationVariables = Exact<{
 }>;
 
 
-export type MobileWorkspaceReopenPollMutation = { workspaceReopenPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type MobileWorkspaceReopenPollMutation = { workspaceReopenPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type MobileWorkspaceCancelPollMutationVariables = Exact<{
   committeeId: string;
@@ -1340,7 +1332,7 @@ export type MobileWorkspaceCancelPollMutationVariables = Exact<{
 }>;
 
 
-export type MobileWorkspaceCancelPollMutation = { workspaceCancelPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type MobileWorkspaceCancelPollMutation = { workspaceCancelPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type MobileWorkspaceDeletePollMutationVariables = Exact<{
   committeeId: string;
@@ -1357,7 +1349,7 @@ export type MobileWorkspaceCastPollVoteMutationVariables = Exact<{
 }>;
 
 
-export type MobileWorkspaceCastPollVoteMutation = { workspaceCastPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type MobileWorkspaceCastPollVoteMutation = { workspaceCastPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type MobileWorkspaceWithdrawPollVoteMutationVariables = Exact<{
   committeeId: string;
@@ -1365,7 +1357,16 @@ export type MobileWorkspaceWithdrawPollVoteMutationVariables = Exact<{
 }>;
 
 
-export type MobileWorkspaceWithdrawPollVoteMutation = { workspaceWithdrawPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type MobileWorkspaceWithdrawPollVoteMutation = { workspaceWithdrawPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+
+export type MobileCommitteePollNotificationsQueryVariables = Exact<{
+  committeeId: string;
+  limit: number;
+  offset?: number | null | undefined;
+}>;
+
+
+export type MobileCommitteePollNotificationsQuery = { myNotifications: Array<{ _id: string | null, entityId: string | null, eventType: string | null, eventDetails: string | null, createdAt: string | null, isRead: boolean | null } | null> | null };
 
 export type MobileWorkspaceProjectFieldsFragment = { _id: string | null, title: string | null, objective: string | null, description: string | null, status: string | null, participantCount: number | null, isParticipant: boolean | null, canManage: boolean | null, startDate: string | null, targetDate: string | null, isOverdue: boolean | null, taskCount: number | null, doneCount: number | null, openTaskCount: number | null, progress: number | null, tags: Array<string | null> | null, completedAt: string | null, completedByName: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, participants: Array<{ personId: string | null, name: string | null } | null> | null };
 
@@ -1562,6 +1563,15 @@ export type MobileWorkspaceDeleteTaskCommentMutationVariables = Exact<{
 
 
 export type MobileWorkspaceDeleteTaskCommentMutation = { workspaceDeleteTaskComment: boolean | null };
+
+export type MobileCommitteeProjectNotificationsQueryVariables = Exact<{
+  committeeId: string;
+  limit: number;
+  offset?: number | null | undefined;
+}>;
+
+
+export type MobileCommitteeProjectNotificationsQuery = { myNotifications: Array<{ _id: string | null, entityType: string | null, entityId: string | null, eventType: string | null, eventDetails: string | null, createdAt: string | null, isRead: boolean | null } | null> | null };
 
 export type RegisterUserMutationVariables = Exact<{
   displayName: string;
@@ -4514,7 +4524,7 @@ export type WorkspaceNightStaysQueryVariables = Exact<{
 
 export type WorkspaceNightStaysQuery = { workspaceNightStays: { totalResults: number | null, data: Array<{ _id: string | null, visitorId: string | null, fromDate: string | null, toDate: string | null, numOfDays: number | null, stayReason: string | null, stayAllowedBy: string | null, visitorName: string | null, visitorImageUrl: string | null, visitorImageThumbnailUrl: string | null, city: string | null, country: string | null } | null> | null } | null };
 
-export type WorkspacePollFieldsFragment = { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null };
+export type WorkspacePollFieldsFragment = { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null };
 
 export type WorkspacePollsInfoQueryVariables = Exact<{
   committeeId: string;
@@ -4522,13 +4532,6 @@ export type WorkspacePollsInfoQueryVariables = Exact<{
 
 
 export type WorkspacePollsInfoQuery = { workspacePollsInfo: { canManage: boolean | null, myVoterId: string | null } | null };
-
-export type WorkspacePollMembersQueryVariables = Exact<{
-  committeeId: string;
-}>;
-
-
-export type WorkspacePollMembersQuery = { workspacePollMembers: Array<{ voterId: string | null, name: string | null, isCoordinator: boolean | null } | null> | null };
 
 export type WorkspacePollsQueryVariables = Exact<{
   committeeId: string;
@@ -4539,7 +4542,7 @@ export type WorkspacePollsQueryVariables = Exact<{
 }>;
 
 
-export type WorkspacePollsQuery = { workspacePolls: { totalResults: number | null, data: Array<{ _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null> | null } | null };
+export type WorkspacePollsQuery = { workspacePolls: { totalResults: number | null, data: Array<{ _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null> | null } | null };
 
 export type WorkspacePollByIdQueryVariables = Exact<{
   committeeId: string;
@@ -4547,7 +4550,7 @@ export type WorkspacePollByIdQueryVariables = Exact<{
 }>;
 
 
-export type WorkspacePollByIdQuery = { workspacePollById: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type WorkspacePollByIdQuery = { workspacePollById: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type WorkspacePollResultsQueryVariables = Exact<{
   committeeId: string;
@@ -4555,15 +4558,7 @@ export type WorkspacePollResultsQueryVariables = Exact<{
 }>;
 
 
-export type WorkspacePollResultsQuery = { workspacePollResults: { pollId: string | null, status: string | null, anonymous: boolean | null, closedAt: string | null, totalVoters: number | null, eligibleCount: number | null, turnout: number | null, nonVoters: Array<{ voterId: string | null, name: string | null } | null> | null, questions: Array<{ questionId: string | null, text: string | null, type: string | null, answeredCount: number | null, options: Array<{ optionId: string | null, text: string | null, count: number | null, percentage: number | null, voters: Array<{ voterId: string | null, name: string | null } | null> | null } | null> | null } | null> | null } | null };
-
-export type WorkspacePollVotersQueryVariables = Exact<{
-  committeeId: string;
-  pollId: string;
-}>;
-
-
-export type WorkspacePollVotersQuery = { workspacePollVoters: Array<{ voterId: string | null, name: string | null, hasVoted: boolean | null } | null> | null };
+export type WorkspacePollResultsQuery = { workspacePollResults: { pollId: string | null, status: string | null, anonymous: boolean | null, closedAt: string | null, totalVoters: number | null, questions: Array<{ questionId: string | null, text: string | null, type: string | null, answeredCount: number | null, options: Array<{ optionId: string | null, text: string | null, count: number | null, percentage: number | null, voters: Array<{ voterId: string | null, name: string | null } | null> | null } | null> | null } | null> | null } | null };
 
 export type WorkspacePollActivityQueryVariables = Exact<{
   committeeId: string;
@@ -4581,7 +4576,7 @@ export type WorkspaceCreatePollMutationVariables = Exact<{
 }>;
 
 
-export type WorkspaceCreatePollMutation = { workspaceCreatePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type WorkspaceCreatePollMutation = { workspaceCreatePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type WorkspaceUpdatePollMutationVariables = Exact<{
   committeeId: string;
@@ -4590,16 +4585,7 @@ export type WorkspaceUpdatePollMutationVariables = Exact<{
 }>;
 
 
-export type WorkspaceUpdatePollMutation = { workspaceUpdatePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
-
-export type WorkspaceAddPollVotersMutationVariables = Exact<{
-  committeeId: string;
-  pollId: string;
-  voterIds: Array<string | null | undefined> | string;
-}>;
-
-
-export type WorkspaceAddPollVotersMutation = { workspaceAddPollVoters: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type WorkspaceUpdatePollMutation = { workspaceUpdatePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type WorkspaceOpenPollMutationVariables = Exact<{
   committeeId: string;
@@ -4608,7 +4594,7 @@ export type WorkspaceOpenPollMutationVariables = Exact<{
 }>;
 
 
-export type WorkspaceOpenPollMutation = { workspaceOpenPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type WorkspaceOpenPollMutation = { workspaceOpenPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type WorkspaceClosePollMutationVariables = Exact<{
   committeeId: string;
@@ -4616,7 +4602,7 @@ export type WorkspaceClosePollMutationVariables = Exact<{
 }>;
 
 
-export type WorkspaceClosePollMutation = { workspaceClosePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type WorkspaceClosePollMutation = { workspaceClosePoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type WorkspaceReopenPollMutationVariables = Exact<{
   committeeId: string;
@@ -4625,7 +4611,7 @@ export type WorkspaceReopenPollMutationVariables = Exact<{
 }>;
 
 
-export type WorkspaceReopenPollMutation = { workspaceReopenPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type WorkspaceReopenPollMutation = { workspaceReopenPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type WorkspaceCancelPollMutationVariables = Exact<{
   committeeId: string;
@@ -4634,7 +4620,7 @@ export type WorkspaceCancelPollMutationVariables = Exact<{
 }>;
 
 
-export type WorkspaceCancelPollMutation = { workspaceCancelPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type WorkspaceCancelPollMutation = { workspaceCancelPoll: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type WorkspaceDeletePollMutationVariables = Exact<{
   committeeId: string;
@@ -4651,7 +4637,7 @@ export type WorkspaceCastPollVoteMutationVariables = Exact<{
 }>;
 
 
-export type WorkspaceCastPollVoteMutation = { workspaceCastPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type WorkspaceCastPollVoteMutation = { workspaceCastPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type WorkspaceWithdrawPollVoteMutationVariables = Exact<{
   committeeId: string;
@@ -4659,7 +4645,7 @@ export type WorkspaceWithdrawPollVoteMutationVariables = Exact<{
 }>;
 
 
-export type WorkspaceWithdrawPollVoteMutation = { workspaceWithdrawPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, showResultsWhileOpen: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, eligibleVoterIds: Array<string | null> | null, eligibleCount: number | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
+export type WorkspaceWithdrawPollVoteMutation = { workspaceWithdrawPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
 
 export type WorkspaceProjectDiscussionInfoQueryVariables = Exact<{
   committeeId: string;

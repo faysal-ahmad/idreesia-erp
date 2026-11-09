@@ -259,7 +259,6 @@ export type ResolversTypes = ResolversObject<{
   WorkspacePollAnswerInput: Types.WorkspacePollAnswerInput;
   WorkspacePollAnswerType: ResolverTypeWrapper<Types.WorkspacePollAnswerType>;
   WorkspacePollInput: Types.WorkspacePollInput;
-  WorkspacePollMemberType: ResolverTypeWrapper<Types.WorkspacePollMemberType>;
   WorkspacePollOptionInput: Types.WorkspacePollOptionInput;
   WorkspacePollOptionResultType: ResolverTypeWrapper<Types.WorkspacePollOptionResultType>;
   WorkspacePollOptionType: ResolverTypeWrapper<Types.WorkspacePollOptionType>;
@@ -467,7 +466,6 @@ export type ResolversParentTypes = ResolversObject<{
   WorkspacePollAnswerInput: Types.WorkspacePollAnswerInput;
   WorkspacePollAnswerType: Types.WorkspacePollAnswerType;
   WorkspacePollInput: Types.WorkspacePollInput;
-  WorkspacePollMemberType: Types.WorkspacePollMemberType;
   WorkspacePollOptionInput: Types.WorkspacePollOptionInput;
   WorkspacePollOptionResultType: Types.WorkspacePollOptionResultType;
   WorkspacePollOptionType: Types.WorkspacePollOptionType;
@@ -1207,7 +1205,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   workspaceAbortMeetingAttachmentUpload?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAbortMeetingAttachmentUploadArgs, 'committeeId' | 'uploadId'>>;
   workspaceAddCommitteeMember?: Resolver<Types.Maybe<ResolversTypes['WorkspaceCommitteeType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAddCommitteeMemberArgs, 'committeeId' | 'karkunId'>>;
   workspaceAddMeetingAgendaItem?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAddMeetingAgendaItemArgs, 'committeeId' | 'input' | 'meetingId'>>;
-  workspaceAddPollVoters?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAddPollVotersArgs, 'committeeId' | 'pollId' | 'voterIds'>>;
   workspaceAddProjectParticipants?: Resolver<Types.Maybe<ResolversTypes['WorkspaceProjectType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAddProjectParticipantsArgs, 'committeeId' | 'personIds' | 'projectId'>>;
   workspaceAddTaskComment?: Resolver<Types.Maybe<ResolversTypes['WorkspaceTaskCommentType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAddTaskCommentArgs, 'committeeId' | 'taskId' | 'text'>>;
   workspaceCancelMeeting?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceCancelMeetingArgs, 'committeeId' | 'meetingId'>>;
@@ -1761,9 +1758,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   workspaceNightStays?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceNightStayType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceNightStaysArgs, 'committeeId' | 'stayDate'>>;
   workspacePollActivity?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollActivityType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollActivityArgs, 'committeeId'>>;
   workspacePollById?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollByIdArgs, 'committeeId' | 'pollId'>>;
-  workspacePollMembers?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollMemberType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollMembersArgs, 'committeeId'>>;
   workspacePollResults?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollResultsType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollResultsArgs, 'committeeId' | 'pollId'>>;
-  workspacePollVoters?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollVoterType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollVotersArgs, 'committeeId' | 'pollId'>>;
   workspacePolls?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspacePollType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollsArgs, 'committeeId'>>;
   workspacePollsInfo?: Resolver<Types.Maybe<ResolversTypes['WorkspacePollsInfoType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspacePollsInfoArgs, 'committeeId'>>;
   workspaceProjectById?: Resolver<Types.Maybe<ResolversTypes['WorkspaceProjectType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceProjectByIdArgs, 'committeeId' | 'projectId'>>;
@@ -2428,12 +2423,6 @@ export type WorkspacePollAnswerTypeResolvers<ContextType = any, ParentType exten
   questionId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
-export type WorkspacePollMemberTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollMemberType'] = ResolversParentTypes['WorkspacePollMemberType']> = ResolversObject<{
-  isCoordinator?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  voterId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-}>;
-
 export type WorkspacePollOptionResultTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollOptionResultType'] = ResolversParentTypes['WorkspacePollOptionResultType']> = ResolversObject<{
   count?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   optionId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2469,13 +2458,10 @@ export type WorkspacePollQuestionTypeResolvers<ContextType = any, ParentType ext
 export type WorkspacePollResultsTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollResultsType'] = ResolversParentTypes['WorkspacePollResultsType']> = ResolversObject<{
   anonymous?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   closedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  eligibleCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  nonVoters?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollVoterType']>>>, ParentType, ContextType>;
   pollId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   questions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollQuestionResultType']>>>, ParentType, ContextType>;
   status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   totalVoters?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  turnout?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
 }>;
 
 export type WorkspacePollTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspacePollType'] = ResolversParentTypes['WorkspacePollType']> = ResolversObject<{
@@ -2491,14 +2477,11 @@ export type WorkspacePollTypeResolvers<ContextType = any, ParentType extends Res
   createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  eligibleCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  eligibleVoterIds?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   hasVoted?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isEligible?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   myAnswers?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollAnswerType']>>>, ParentType, ContextType>;
   openedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   questions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspacePollQuestionType']>>>, ParentType, ContextType>;
-  showResultsWhileOpen?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2777,7 +2760,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   WorkspaceNightStayType?: WorkspaceNightStayTypeResolvers<ContextType>;
   WorkspacePollActivityType?: WorkspacePollActivityTypeResolvers<ContextType>;
   WorkspacePollAnswerType?: WorkspacePollAnswerTypeResolvers<ContextType>;
-  WorkspacePollMemberType?: WorkspacePollMemberTypeResolvers<ContextType>;
   WorkspacePollOptionResultType?: WorkspacePollOptionResultTypeResolvers<ContextType>;
   WorkspacePollOptionType?: WorkspacePollOptionTypeResolvers<ContextType>;
   WorkspacePollQuestionResultType?: WorkspacePollQuestionResultTypeResolvers<ContextType>;

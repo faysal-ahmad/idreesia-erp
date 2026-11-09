@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { List, ProgressBar, Tabs, Tag } from 'antd-mobile';
-import { AddOutline, UnorderedListOutline } from 'antd-mobile-icons';
+import { useQuery } from '@apollo/client/react';
+import { Badge, List, ProgressBar, Tabs, Tag } from 'antd-mobile';
+import { AddOutline, BellOutline, UnorderedListOutline } from 'antd-mobile-icons';
 
 import { PagedList } from '../../components';
 import { usePagedQuery } from '../../hooks';
 import { Page } from '../../layout';
 import { useHistory, useParams } from '../../router';
+import { MOBILE_MY_NOTIFICATION_COUNTS } from '../gql';
 import { WorkspacesPaths } from '../paths';
 import { formatDay, projectStatus, toDate } from './format';
 import { MOBILE_WORKSPACE_PROJECTS } from './gql';
@@ -26,6 +28,15 @@ export const ProjectsScreen = () => {
   const history = useHistory();
   const [view, setView] = useState<View>('active');
   const { canManage } = useProjectsInfo(committeeId);
+  // Unread project and task notifications, for the bell. Best effort.
+  // cache-and-network so the count updates after reading them (this list
+  // stays mounted).
+  const { data: countData } = useQuery(MOBILE_MY_NOTIFICATION_COUNTS, {
+    fetchPolicy: 'cache-and-network',
+  });
+  const unreadCount = (countData?.myNotificationCounts ?? [])
+    .filter(row => row?.committeeId === committeeId && row.module === 'projects')
+    .reduce((total, row) => total + (row?.unreadCount ?? 0), 0);
 
   const paged = usePagedQuery(MOBILE_WORKSPACE_PROJECTS, {
     filter: { committeeId, view },
@@ -43,15 +54,22 @@ export const ProjectsScreen = () => {
       backTo={WorkspacesPaths.root}
       title="Projects"
       right={
-        canManage ? (
-          <div className="page-nav-actions">
+        <div className="page-nav-actions">
+          <Badge content={unreadCount > 0 ? unreadCount : null}>
+            <BellOutline
+              aria-label="Notifications"
+              className="page-nav-action"
+              onClick={() => history.push(WorkspacesPaths.committeeProjectNotifications(committeeId))}
+            />
+          </Badge>
+          {canManage && (
             <AddOutline
               aria-label="New project"
               className="page-nav-action"
               onClick={() => history.push(WorkspacesPaths.committeeNewProject(committeeId))}
             />
-          </div>
-        ) : undefined
+          )}
+        </div>
       }
     >
       <Tabs activeKey={view} className="projects-tabs" onChange={key => setView(key as View)}>

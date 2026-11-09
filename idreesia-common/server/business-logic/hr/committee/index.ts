@@ -87,11 +87,8 @@ export { pollsHandler, getCommitteePollsWorkspaceId } from './polls';
 export {
   getCommitteePoll,
   getCommitteePollActivity,
-  getCommitteePollMembers,
   getCommitteePollResults,
   getCommitteePollsInfo,
-  getCommitteePollVoters,
-  getCommitteeVoterIds,
   listCommitteePolls,
   toCommitteePoll,
   type CommitteePollsOptions,

@@ -1,4 +1,7 @@
 import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
+import { MEETINGS_MODULE } from 'meteor/idreesia-common/constants/meetings';
+import { POLLS_MODULE } from 'meteor/idreesia-common/constants/polls';
+import { PROJECTS_MODULE } from 'meteor/idreesia-common/constants/projects';
 import { DISCUSSIONS_MODULE } from 'meteor/idreesia-common/server/business-logic/discussions';
 import { DMS_MODULE } from 'meteor/idreesia-common/server/business-logic/dms';
 import { Committees } from 'meteor/idreesia-common/server/collections/hr';
@@ -34,6 +37,24 @@ export const getPersonNotificationScope = async (
       features.includes(CommitteeFeatureKeys.DOCUMENTS)
     ) {
       scope.push({ committeeId, module: DMS_MODULE });
+    }
+    if (
+      committee.meetingsWorkspaceId &&
+      features.includes(CommitteeFeatureKeys.MEETINGS)
+    ) {
+      scope.push({ committeeId, module: MEETINGS_MODULE });
+    }
+    if (
+      committee.pollsWorkspaceId &&
+      features.includes(CommitteeFeatureKeys.POLLS)
+    ) {
+      scope.push({ committeeId, module: POLLS_MODULE });
+    }
+    if (
+      committee.projectsWorkspaceId &&
+      features.includes(CommitteeFeatureKeys.PROJECTS)
+    ) {
+      scope.push({ committeeId, module: PROJECTS_MODULE });
     }
     if (features.includes(CommitteeFeatureKeys.MEMBERS)) {
       scope.push({ committeeId, module: MEMBERS_MODULE });

@@ -1,6 +1,8 @@
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import type {
+  MobileCommitteeProjectNotificationsQuery,
+  MobileCommitteeProjectNotificationsQueryVariables,
   MobileWorkspaceAddProjectParticipantsMutation,
   MobileWorkspaceAddProjectParticipantsMutationVariables,
   MobileWorkspaceAddTaskCommentMutation,
@@ -439,5 +441,23 @@ export const MOBILE_DELETE_TASK_COMMENT: TypedDocumentNode<
 > = gql`
   mutation mobileWorkspaceDeleteTaskComment($committeeId: String!, $commentId: String!) {
     workspaceDeleteTaskComment(committeeId: $committeeId, commentId: $commentId)
+  }
+`;
+
+// The committee's project and task notifications for the signed-in user, newest first.
+export const MOBILE_COMMITTEE_PROJECT_NOTIFICATIONS: TypedDocumentNode<
+  MobileCommitteeProjectNotificationsQuery,
+  MobileCommitteeProjectNotificationsQueryVariables
+> = gql`
+  query mobileCommitteeProjectNotifications($committeeId: String!, $limit: Int!, $offset: Int) {
+    myNotifications(committeeId: $committeeId, module: "projects", limit: $limit, offset: $offset) {
+      _id
+      entityType
+      entityId
+      eventType
+      eventDetails
+      createdAt
+      isRead
+    }
   }
 `;

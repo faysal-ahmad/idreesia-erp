@@ -10,6 +10,7 @@ import {
 } from 'meteor/idreesia-common/server/collections/projects';
 
 import { logActivity } from './activity';
+import { notifyTaskComment } from './notifications';
 import { projectsError } from './errors';
 import {
   normalizePage,
@@ -52,6 +53,7 @@ export async function addTaskComment(
     action: ProjectsAction.COMMENT_ADDED,
     userId,
   });
+  await notifyTaskComment(task, userId);
   return (await ProjectComments.findOneAsync(commentId))!;
 }
 

@@ -3,6 +3,9 @@
  * (server/business-logic/projects).
  */
 
+/** The module's name as a headless module (notifications are keyed by it). */
+export const PROJECTS_MODULE = 'projects';
+
 export const ProjectStatus = {
   PLANNED: 'planned',
   ACTIVE: 'active',

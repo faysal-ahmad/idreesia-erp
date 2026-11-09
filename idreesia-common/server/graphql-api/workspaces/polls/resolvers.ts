@@ -1,5 +1,4 @@
 import {
-  addEligibleVoters,
   cancelPoll,
   castVote,
   closePoll,
@@ -12,21 +11,16 @@ import {
   createCommitteePoll,
   getCommitteePoll,
   getCommitteePollActivity,
-  getCommitteePollMembers,
   getCommitteePollResults,
   getCommitteePollsInfo,
-  getCommitteePollVoters,
-  getCommitteeVoterIds,
   listCommitteePolls,
   parseTimestamp,
   toCommitteePoll,
   updateCommitteePoll,
-  type CommitteePollInput,
   type PollsView,
 } from 'meteor/idreesia-common/server/business-logic/hr/committee';
 
 import {
-  assertMembers,
   assertPollInWorkspace,
   getPollsAccess,
   requireVoterId,
@@ -57,28 +51,16 @@ const managedPoll = async (
   return { access, poll };
 };
 
-/** Eligible voters in the input must be members of the committee. */
-const checkInput = (access: PollsAccess, input: CommitteePollInput) => {
-  const voterIds = (input.eligibleVoterIds ?? []).filter(Boolean);
-  assertMembers(access, voterIds);
-  return { ...input, eligibleVoterIds: voterIds };
-};
-
 // Each resolver only checks access - committee membership + Polls enabled,
 // coordinators for managing polls, members voting only as themselves, ids
-// belonging to the committee's workspace, voters being committee members.
+// belonging to the committee's workspace.
 // The polls module and the committee polls logic do the work, and the
-// module enforces the poll status rules, eligibility and anonymity.
+// module enforces the poll status rules and anonymity.
 const resolvers: ResolverMap = {
   Query: {
     workspacePollsInfo: async (obj, { committeeId }, { user }) => {
       const access = await getPollsAccess(user, committeeId);
       return getCommitteePollsInfo(access);
-    },
-
-    workspacePollMembers: async (obj, { committeeId }, { user }) => {
-      const access = await getPollsAccess(user, committeeId);
-      return getCommitteePollMembers(access.committee);
     },
 
     workspacePolls: async (
@@ -107,11 +89,6 @@ const resolvers: ResolverMap = {
       return getCommitteePollResults(pollId, access);
     },
 
-    workspacePollVoters: async (obj, { committeeId, pollId }, { user }) => {
-      const { access, poll } = await managedPoll(user, committeeId, pollId);
-      return getCommitteePollVoters(poll, access.committee, access);
-    },
-
     workspacePollActivity: async (
       obj,
       { committeeId, pollId, before, limit },
@@ -136,8 +113,7 @@ const resolvers: ResolverMap = {
       });
       const poll = await createCommitteePoll(
         access.workspaceId,
-        checkInput(access, input),
-        getCommitteeVoterIds(access.committee),
+        input,
         access.userId
       );
       return view(access, poll);
@@ -153,22 +129,10 @@ const resolvers: ResolverMap = {
         access,
         await updateCommitteePoll(
           poll,
-          checkInput(access, input),
-          getCommitteeVoterIds(access.committee),
+          input,
           access.userId
         )
       );
-    },
-
-    workspaceAddPollVoters: async (
-      obj,
-      { committeeId, pollId, voterIds },
-      { user }
-    ) => {
-      const { access } = await managedPoll(user, committeeId, pollId);
-      const ids = (voterIds as string[]).filter(Boolean);
-      assertMembers(access, ids);
-      return view(access, await addEligibleVoters(pollId, ids, access.userId));
     },
 
     workspaceOpenPoll: async (

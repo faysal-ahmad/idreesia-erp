@@ -1,6 +1,8 @@
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import type {
+  MobileCommitteeDocumentNotificationsQuery,
+  MobileCommitteeDocumentNotificationsQueryVariables,
   MobileWorkspaceAbortDocumentUploadMutation,
   MobileWorkspaceAbortDocumentUploadMutationVariables,
   MobileWorkspaceCheckInDocumentMutation,
@@ -541,5 +543,22 @@ export const MOBILE_WORKSPACE_EMPTY_DOCUMENT_TRASH: TypedDocumentNode<
 > = gql`
   mutation mobileWorkspaceEmptyDocumentTrash($committeeId: String!) {
     workspaceEmptyDocumentTrash(committeeId: $committeeId)
+  }
+`;
+
+// The committee's document notifications for the signed-in user, newest first.
+export const MOBILE_COMMITTEE_DOCUMENT_NOTIFICATIONS: TypedDocumentNode<
+  MobileCommitteeDocumentNotificationsQuery,
+  MobileCommitteeDocumentNotificationsQueryVariables
+> = gql`
+  query mobileCommitteeDocumentNotifications($committeeId: String!, $limit: Int!, $offset: Int) {
+    myNotifications(committeeId: $committeeId, module: "dms", limit: $limit, offset: $offset) {
+      _id
+      entityId
+      eventType
+      eventDetails
+      createdAt
+      isRead
+    }
   }
 `;

@@ -17,6 +17,14 @@ import {
 } from 'meteor/idreesia-common/server/collections/projects';
 
 import { logActivity } from './activity';
+import {
+  notifyTaskAssigned,
+  notifyTaskDeleted,
+  notifyTaskDueDateChanged,
+  notifyTaskPriorityChanged,
+  notifyTaskStatusChanged,
+  notifyTaskUnassigned,
+} from './notifications';
 import { projectsError } from './errors';
 import {
   assertProjectOpen,
@@ -171,6 +179,7 @@ export async function createTask(
     title,
     ...(assigneeId ? { assigneeId } : {}),
   });
+  await notifyTaskAssigned(task, userId);
   return task;
 }
 
@@ -264,6 +273,16 @@ export async function updateTask(
       from: task.assigneeId ?? null,
       to: updated.assigneeId ?? null,
     });
+    if (task.assigneeId) {
+      await notifyTaskUnassigned(updated, task.assigneeId, userId);
+    }
+    await notifyTaskAssigned(updated, userId);
+  }
+  if (task.dueDate?.getTime() !== updated.dueDate?.getTime()) {
+    await notifyTaskDueDateChanged(updated, updated.dueDate, userId);
+  }
+  if (updated.priority !== task.priority) {
+    await notifyTaskPriorityChanged(updated, updated.priority, userId);
   }
   return updated;
 }
@@ -301,6 +320,7 @@ export async function setTaskStatus(
     from: task.status,
     to: next,
   });
+  await notifyTaskStatusChanged(updated, updated.status, userId);
   return updated;
 }
 
@@ -344,6 +364,7 @@ export async function setTaskProgress(
       from: task.status,
       to: updated.status,
     });
+    await notifyTaskStatusChanged(updated, updated.status, userId);
   }
   return updated;
 }
@@ -361,6 +382,7 @@ export async function deleteTask(
   await logTask(task, ProjectsAction.TASK_DELETED, userId, {
     title: task.title,
   });
+  await notifyTaskDeleted(task, userId);
 }
 
 interface TaskFilterOptions {

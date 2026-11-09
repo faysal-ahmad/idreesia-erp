@@ -1,51 +1,34 @@
 # Polls
 
-The polls module is a **headless backend module**. It stores polls in workspaces. A poll has one or more single- or multiple-choice questions, an end time, an optional list of eligible voters, and anonymous or named voting. Results become available once the poll closes. The module has no GraphQL API, REST routes or UI of its own. A feature that needs polls calls its functions from its own resolvers or routes. The Workspaces **Polls** committee feature is the first consumer (see [Committee Polls feature](#committee-polls-feature)).
+## Contents
 
-| Piece | Location |
-|---|---|
-| Public API (import from here) | `idreesia-common/server/business-logic/polls/` |
-| Collections and document types | `idreesia-common/server/collections/polls/` |
-| Schemas | `idreesia-common/server/schemas/polls/` |
-| Constants (statuses, actions, limits) | `idreesia-common/constants/polls.ts` |
-| Indexes | `idreesia-web/imports/startup/server/migrations/62-create-polls-indexes.ts` |
+- [Overview](#overview)
+  - [Workspaces](#workspaces)
+  - [Polls](#polls)
+  - [Poll status](#poll-status)
+  - [Questions](#questions)
+  - [Votes](#votes)
+  - [Anonymity](#anonymity)
+  - [Results](#results)
+  - [Text fields](#text-fields)
+- [Where things live](#where-things-live)
+- [Responsibilities: caller vs. module](#responsibilities-caller-vs-module)
+- [Errors](#errors)
+- [Paging](#paging)
+- [API reference](#api-reference)
+  - [Workspaces](#workspaces-1)
+  - [Polls](#polls-1)
+  - [Votes](#votes-1)
+  - [Results](#results-1)
+  - [Activity log](#activity-log)
+- [Notifications](#notifications)
+- [Data model](#data-model)
+- [Committee Polls feature](#committee-polls-feature)
+- [Integrating another feature](#integrating-another-feature)
+- [Limits and constants](#limits-and-constants)
+- [Known limitations](#known-limitations)
 
-```ts
-import {
-  createPollsWorkspace,
-  createPoll,
-  openPoll,
-  castVote,
-  getPollResults,
-} from 'meteor/idreesia-common/server/business-logic/polls';
-```
-
-The module is server-only. Import from the barrel above, not from individual files inside it. It is independent of the [DMS](dms-design-and-usage.md) and of [Meetings](meetings-design-and-usage.md). They share no code or data.
-
-## Responsibilities: caller vs. module
-
-**The caller decides access.** The module never checks whether a user may see or change a workspace or poll, or vote as a given voter. Before calling it, the consuming feature must:
-- authenticate the user,
-- check its own permissions (for example "is this user a member of the committee that owns this workspace"),
-- make sure the ids it passes belong to what the user may touch (`poll.workspaceId`),
-- and only pass a `voterId` the user may vote as (normally their own).
-
-**The module enforces integrity.** Whoever calls it, the module guarantees:
-- **Status rules hold** (see [Poll status](#poll-status)).
-- **No votes after the end time**, even if nobody has looked at the poll since.
-- **Eligibility.** If a poll lists eligible voters, only they can vote (`FORBIDDEN` otherwise).
-- **Valid ballots.** Every required question is answered, options belong to their question, and the number of choices fits the question.
-- **One ballot per voter.** Voting again replaces the earlier vote (a unique index backs this).
-- **Anonymity.** An anonymous poll's results and API never say who voted for what (see [Anonymity](#anonymity)).
-- **Concurrent edits don't overwrite each other.** Changes fail with `CONFLICT` if the poll changed since it was read.
-
-**Every function takes the acting `userId`**, reads included. It is recorded in `createdBy` / `updatedBy`, on ballots, and in the activity log. A missing or empty `userId` fails with `BAD_USER_INPUT`. `userId` (who is acting) and `voterId` (whose vote it is) are separate. When a member votes for themselves, the caller passes both.
-
-**Voters are opaque ids.** A voter id is a plain string the caller chooses, typically a karkun id. The module never looks it up.
-
-**Workspaces are independent.** A polls workspace has no link to ERP Workspaces (committees) or any other entity. The consuming feature stores the workspace id on its own records (for example `committee.pollsWorkspaceId`) and uses `metadata` for anything else it needs.
-
-## Concepts
+## Overview
 
 ### Workspaces
 A workspace is the top-level container. It has a name, an optional description and free-form `metadata`.
@@ -55,7 +38,6 @@ Deleting a workspace is a soft delete. While it is deleted, every operation on i
 ### Polls
 A poll has a title, an optional description, tags, metadata and an end time (`closesAt`, stored in UTC). It also has two settings:
 - `anonymous`, default `false`
-- `showResultsWhileOpen`, default `false`
 
 New polls start as drafts.
 
@@ -64,7 +46,7 @@ New polls start as drafts.
 | Status | Meaning | What can change |
 |---|---|---|
 | `draft` | Being prepared; nobody can vote | Everything |
-| `open` | Accepting votes until `closesAt` | Title, description, tags, metadata, `closesAt` (must stay in the future), `showResultsWhileOpen`, and adding eligible voters. Not the questions or `anonymous`. |
+| `open` | Accepting votes until `closesAt` | Title, description, tags, metadata, `closesAt` (must stay in the future). Not the questions or `anonymous`. |
 | `closed` | Voting has ended; results are final | Nothing, until it is reopened. It can still be deleted. |
 | `cancelled` | Won't run | Nothing. It can still be deleted. |
 
@@ -93,25 +75,70 @@ A `multiple` question can also set `minChoices` (default 1) and `maxChoices` (de
 
 Questions can only change while the poll is a draft, so every ballot matches the questions it was cast against. `setPollQuestions` replaces the whole list. Question and option ids are generated by the module. Pass an existing `_id` back to keep it. Unknown ids are replaced with new ones.
 
-### Eligible voters
-`eligibleVoterIds` is optional. A non-empty list restricts voting to those ids, and the results then report turnout and, for named polls, who didn't vote. Without a list, or with an empty one, anyone the caller lets through can vote. The list can be replaced while the poll is a draft. While it is open, voters can only be added (`addEligibleVoters`). At most 5,000 ids.
-
 ### Votes
 `castVote` records a voter's answers, replacing their earlier vote, while the poll is open. `withdrawVote` removes it. `getVote` returns a voter's own ballot (or `null`), for any poll, anonymous ones included: it is the caller's job to show it only to that voter. `voteCount` on the poll is the number of ballots.
 
 ### Anonymity
 Anonymity here means **hidden identity**. A ballot stores its `voterId`, which is how votes can be changed and counted once. The module never reveals it for an anonymous poll:
-- `getPollResults` returns counts only: no `voterIds` per option and no `nonVoterIds`.
+- `getPollResults` returns counts only: no `voterIds` per option.
 - `listBallots` fails with `FORBIDDEN`.
 - Votes on anonymous polls are not written to the activity log, so the log can't show who took part.
 
 Anyone with direct database access can still connect ballots to voters. `anonymous` can only change while the poll is a draft.
 
 ### Results
-`getPollResults` works on a closed poll, or on an open one with `showResultsWhileOpen`. Otherwise it fails with `CONFLICT`. Each option's `percentage` is of the voters who answered that question (`answeredCount`), so the percentages of a multiple-choice question can add up to more than 100.
+`getPollResults` works on a closed poll. While a poll is open it fails with `CONFLICT`, unless the caller passes `{ includeOpen: true }`, which a feature does for the people who may follow a vote in progress (the Committee Polls feature does it for coordinators). Drafts and cancelled polls never have results. Each option's `percentage` is of the voters who answered that question (`answeredCount`), so the percentages of a multiple-choice question can add up to more than 100.
 
 ### Text fields
 Titles, question and option texts are trimmed, runs of whitespace are collapsed, and control characters are rejected. Descriptions are trimmed and limited to 10,000 characters. Tags are lower-cased and de-duplicated, with at most 50 tags of up to 64 characters each. Metadata keys use letters, digits, `_` and `-` only.
+
+## Where things live
+
+The polls module is a **headless backend module**. It stores polls in workspaces. A poll has one or more single- or multiple-choice questions, an end time, and anonymous or named voting. Results become available once the poll closes. The module has no GraphQL API, REST routes or UI of its own. A feature that needs polls calls its functions from its own resolvers or routes. The Workspaces **Polls** committee feature is the first consumer (see [Committee Polls feature](#committee-polls-feature)).
+
+| Piece | Location |
+|---|---|
+| Public API (import from here) | `idreesia-common/server/business-logic/polls/` |
+| Notifications | `idreesia-common/server/business-logic/polls/notifications.ts` |
+| Headless module wrapper (`pollsModule`) | `idreesia-common/server/business-logic/polls/module.ts` |
+| Collections and document types | `idreesia-common/server/collections/polls/` |
+| Schemas | `idreesia-common/server/schemas/polls/` |
+| Constants (statuses, actions, limits) | `idreesia-common/constants/polls.ts` |
+| Indexes | `idreesia-web/imports/startup/server/migrations/62-create-polls-indexes.ts` |
+
+```ts
+import {
+  createPollsWorkspace,
+  createPoll,
+  openPoll,
+  castVote,
+  getPollResults,
+} from 'meteor/idreesia-common/server/business-logic/polls';
+```
+
+The module is server-only. Import from the barrel above, not from individual files inside it. It is independent of the [DMS](dms-design-and-usage.md) and of [Meetings](meetings-design-and-usage.md). They share no code or data.
+
+## Responsibilities: caller vs. module
+
+**The caller decides access.** The module never checks whether a user may see or change a workspace or poll, or vote as a given voter. Before calling it, the consuming feature must:
+- authenticate the user,
+- check its own permissions (for example "is this user a member of the committee that owns this workspace"),
+- make sure the ids it passes belong to what the user may touch (`poll.workspaceId`),
+- and only pass a `voterId` the user may vote as (normally their own).
+
+**The module enforces integrity.** Whoever calls it, the module guarantees:
+- **Status rules hold** (see [Poll status](#poll-status)).
+- **No votes after the end time**, even if nobody has looked at the poll since.
+- **Valid ballots.** Every required question is answered, options belong to their question, and the number of choices fits the question.
+- **One ballot per voter.** Voting again replaces the earlier vote (a unique index backs this).
+- **Anonymity.** An anonymous poll's results and API never say who voted for what (see [Anonymity](#anonymity)).
+- **Concurrent edits don't overwrite each other.** Changes fail with `CONFLICT` if the poll changed since it was read.
+
+**Every function takes the acting `userId`**, reads included. It is recorded in `createdBy` / `updatedBy`, on ballots, and in the activity log. A missing or empty `userId` fails with `BAD_USER_INPUT`. `userId` (who is acting) and `voterId` (whose vote it is) are separate. When a member votes for themselves, the caller passes both.
+
+**Voters are opaque ids.** A voter id is a plain string the caller chooses, typically a karkun id. The module never looks it up.
+
+**Workspaces are independent.** A polls workspace has no link to ERP Workspaces (committees) or any other entity. The consuming feature stores the workspace id on its own records (for example `committee.pollsWorkspaceId`) and uses `metadata` for anything else it needs.
 
 ## Errors
 
@@ -122,7 +149,7 @@ Every failure is a `GraphQLError` with `extensions.code`, so a GraphQL resolver 
 | `NOT_FOUND` | No such workspace or poll, or no vote to withdraw. Also returned when the workspace is deleted. | 404 |
 | `CONFLICT` | Not allowed in the poll's status (including voting after the end time and results before close); poll not ready to open; concurrent change ("reload and try again"); restoring a workspace that isn't deleted or purging one that is | 409 |
 | `BAD_USER_INPUT` | Invalid title, time, question, option, answer, tags or metadata | 400 |
-| `FORBIDDEN` | The voter isn't eligible; listing an anonymous poll's ballots | 403 |
+| `FORBIDDEN` | Listing an anonymous poll's ballots | 403 |
 
 Map any other error to a 500.
 
@@ -152,11 +179,10 @@ Workspace functions carry a `Polls` prefix, so a feature can import them next to
 
 | Function | Returns | Notes |
 |---|---|---|
-| `createPoll({ workspaceId, title, closesAt, description?, anonymous?, showResultsWhileOpen?, tags?, metadata?, eligibleVoterIds?, questions? }, userId)` | poll | Starts as a draft |
+| `createPoll({ workspaceId, title, closesAt, description?, anonymous?, tags?, metadata?, questions? }, userId)` | poll | Starts as a draft |
 | `getPoll(pollId, userId)` | poll | |
-| `updatePoll(pollId, { title?, description?, closesAt?, anonymous?, showResultsWhileOpen?, tags?, metadata?, eligibleVoterIds? }, userId)` | poll | Draft or open. `anonymous` and `eligibleVoterIds` are draft-only. |
+| `updatePoll(pollId, { title?, description?, closesAt?, anonymous?, tags?, metadata? }, userId)` | poll | Draft or open. `anonymous` is draft-only. |
 | `setPollQuestions(pollId, questions, userId)` | poll | Draft only. Replaces the list. |
-| `addEligibleVoters(pollId, voterIds, userId)` | poll | Draft or open; only for polls that have a list |
 | `openPoll(pollId, userId, { closesAt? })` | poll | Draft → open |
 | `closePoll(pollId, userId)` | poll | Open → closed, early |
 | `reopenPoll(pollId, { closesAt }, userId)` | poll | Closed → open |
@@ -195,8 +221,6 @@ Workspace functions carry a `Polls` prefix, so a feature can import them next to
 {
   pollId, status, anonymous, closedAt?,
   totalVoters,            // ballots
-  eligibleCount?, turnout?, // with an eligible list; turnout is 0-100
-  nonVoterIds?,           // named polls with a list
   questions: [{
     questionId, text, type, answeredCount,
     options: [{ optionId, text, count, percentage, voterIds? /* named polls */ }],
@@ -204,7 +228,7 @@ Workspace functions carry a `Polls` prefix, so a feature can import them next to
 }
 ```
 
-`canSeeResults(poll)` tells you, without a query, whether results can be read now.
+`canSeeResults(poll, { includeOpen? })` tells you, without a query, whether results can be read now.
 
 ### Activity log
 
@@ -213,15 +237,31 @@ Workspace functions carry a `Polls` prefix, so a feature can import them next to
 | Area | Actions |
 |---|---|
 | Workspace | `workspace-created`, `workspace-updated`, `workspace-deleted`, `workspace-restored` |
-| Poll | `poll-created`, `poll-updated`, `questions-updated`, `voters-added`, `poll-opened`, `poll-closed`, `poll-reopened`, `poll-cancelled`, `poll-deleted` |
+| Poll | `poll-created`, `poll-updated`, `questions-updated`, `poll-opened`, `poll-closed`, `poll-reopened`, `poll-cancelled`, `poll-deleted` |
 | Votes (named polls only) | `vote-cast`, `vote-changed`, `vote-withdrawn` |
+
+## Notifications
+
+The polls module publishes two notifications through the shared notifier (see [headless-module-notifications.md](headless-module-notifications.md)). Publishing is **best effort**: a failure is logged and never fails the poll operation that caused it. For both, `entityType` is `poll` and `entityId` is the poll id. The user who caused the change is the actor and is never notified.
+
+| # | Notification | Trigger | Who gets it | Id |
+|---|---|---|---|---|
+| 1 | Poll "X" was cancelled | `cancelPoll`, only when the poll was open | Everyone in the committee | `cancelled:<pollId>` |
+| 2 | Poll "X" is closed. Results are available | `closePoll` (an early close by a user) | Everyone in the committee | `closed:<pollId>` |
+
+**Details**
+- **One notification for the whole committee.** A poll is meant for every committee member, so each notification is stored once with no recipient. The module doesn't resolve voters to users.
+- **A draft is never announced.** Cancelling a draft sends nothing, because members never saw it.
+- **Not notifications:** a poll opening, votes, edits, question changes, reopening, deletion and the automatic close at `closesAt`. The activity log records those that a user did. The automatic close has no actor and there is no scheduled job.
+
+**As a headless module.** `pollsModule` (`name: 'polls'`) wraps workspace create and soft-delete for the shared `HeadlessModule` contract. `addUser` and `removeUser` do nothing, because the module keeps no membership. It is registered in `headless/modules.ts`.
 
 ## Data model
 
 | Collection | Holds |
 |---|---|
 | `polls-workspaces` | name, description, metadata, timestamps, `deletedAt`/`deletedBy` |
-| `polls` | `workspaceId`, title, description, tags, metadata, `anonymous`, `showResultsWhileOpen`, `eligibleVoterIds?`, embedded `questions[]` with their `options[]`, `closesAt`, `status` with opening/closing/cancellation fields, `voteCount`, `revision`, timestamps |
+| `polls` | `workspaceId`, title, description, tags, metadata, `anonymous`, embedded `questions[]` with their `options[]`, `closesAt`, `status` with opening/closing/cancellation fields, `voteCount`, `revision`, timestamps |
 | `polls-ballots` | `workspaceId`, `pollId`, `voterId`, `answers[]` (`{ questionId, optionIds[] }`), timestamps. Unique on `(pollId, voterId)`. |
 | `polls-activities` | see [Activity log](#activity-log) |
 
@@ -247,9 +287,10 @@ The Workspaces module uses polls through the **Polls** committee feature (`Commi
 - Enabling it again restores the same workspace, with its polls.
 
 **Who can do what:**
-- **Coordinators** (and `erp-admin`) create, edit, open, close, reopen, cancel and delete polls. They see drafts, the Voters tab and the Activity tab.
-- **Members** see polls that aren't drafts, vote as themselves (voter id = their karkun id), and see results when the module allows it.
-- Eligible voters must be committee members. A poll created without a voter list gets every current member. Members who join later can be added from the Voters tab.
+- **Coordinators** (and `erp-admin`) create, edit, open, close, reopen, cancel and delete polls. They see drafts, the results of an open poll and the Activity tab.
+- **Notifications** (mobile): the polls list has a bell with an unread count. It opens a screen listing the committee's poll notifications, newest first. Opening it marks them read, and tapping one opens its poll. The web app has no notifications page yet.
+- **Members** see polls that aren't drafts, vote as themselves (voter id = their karkun id), and see results once the poll has closed.
+- Every committee member can vote in every poll that isn't a draft. There is no separate voters list.
 - A user who isn't a committee member (for example `erp-admin` without membership) can view polls but can't vote.
 
 ## Integrating another feature
@@ -271,11 +312,10 @@ All of these are in `idreesia-common/constants/polls.ts`:
 | `POLLS_MAX_QUESTION_LENGTH` | 1,000 |
 | `POLLS_MAX_QUESTIONS` | 50 |
 | `POLLS_MIN_OPTIONS` / `POLLS_MAX_OPTIONS` | 2 / 50 per question |
-| `POLLS_MAX_ELIGIBLE_VOTERS` | 5,000 |
 
 ## Known limitations
 
-- **No notifications or reminders.** The consuming feature tells voters about new or closing polls itself.
+- **No reminders.** Nothing tells voters that a poll is about to close; the consuming feature does that itself. Cancelling a poll and closing it early are [notifications](#notifications).
 - **Automatic closes aren't logged.** A poll that closed at its end time has `closedAt` but no `closedBy` and no activity entry.
 - **Anonymity is at the API level.** Ballots keep the voter id so votes can be changed. Someone with database access can see who voted for what.
 - **Only choice questions.** There are no free-text, ranking or rating questions.

@@ -111,3 +111,6 @@ export type {
   UpdateActionItemInput,
   ListActionItemsOptions,
 } from './action-items';
+
+export { MEETINGS_MODULE } from 'meteor/idreesia-common/constants/meetings';
+export { meetingsModule } from './module';

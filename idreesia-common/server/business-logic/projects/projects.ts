@@ -15,6 +15,13 @@ import {
 } from 'meteor/idreesia-common/server/collections/projects';
 
 import { logActivity } from './activity';
+import {
+  notifyAddedToProject,
+  notifyProjectDeleted,
+  notifyProjectStatusChanged,
+  notifyProjectUpdated,
+  notifyRemovedFromProject,
+} from './notifications';
 import { projectsError } from './errors';
 import {
   liveWorkspaceSelector,
@@ -133,6 +140,7 @@ export async function createProject(
 
   const project = await requireProject(projectId);
   await logProject(project, ProjectsAction.PROJECT_CREATED, userId, { title });
+  await notifyAddedToProject(project, participantIds, userId);
   return project;
 }
 
@@ -211,6 +219,16 @@ export async function updateProject(
   await logProject(project, ProjectsAction.PROJECT_UPDATED, userId, {
     changed,
   });
+  const sameDate = (a?: Date, b?: Date) => a?.getTime() === b?.getTime();
+  if (
+    updated.title !== project.title ||
+    updated.objective !== project.objective ||
+    updated.description !== project.description ||
+    !sameDate(updated.startDate, project.startDate) ||
+    !sameDate(updated.targetDate, project.targetDate)
+  ) {
+    await notifyProjectUpdated(updated, userId);
+  }
   return updated;
 }
 
@@ -263,6 +281,7 @@ export async function setProjectStatus(
     from: project.status,
     to: next,
   });
+  await notifyProjectStatusChanged(updated, next, userId);
   return updated;
 }
 
@@ -287,6 +306,7 @@ export async function addProjectParticipants(
   await logProject(project, ProjectsAction.PARTICIPANTS_ADDED, userId, {
     participantIds: added,
   });
+  await notifyAddedToProject(updated, added, userId);
   return updated;
 }
 
@@ -342,6 +362,7 @@ export async function removeProjectParticipant(
   await logProject(project, ProjectsAction.PARTICIPANT_REMOVED, userId, {
     participantId: id,
   });
+  await notifyRemovedFromProject(updated, id, userId);
   return updated;
 }
 
@@ -407,6 +428,7 @@ export async function deleteProject(
     title: project.title,
     tasks,
   });
+  await notifyProjectDeleted(project, userId);
 }
 
 export interface ListProjectsOptions extends ProjectsPageOptions {

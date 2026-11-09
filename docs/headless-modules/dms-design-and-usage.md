@@ -25,7 +25,8 @@
   - [Activity log](#activity-log)
 - [Notifications](#notifications)
 - [Data model](#data-model)
-- [Integrating a feature: example](#integrating-a-feature-example)
+- [Committee Documents feature](#committee-documents-feature)
+- [Integrating another feature](#integrating-another-feature)
 - [Limits and constants](#limits-and-constants)
 - [Known limitations](#known-limitations)
 
@@ -335,7 +336,30 @@ Notes for anyone reading the collections:
 - **Pending uploads:** a version with `status: 'pending'` is an incomplete direct upload, and `listVersions` doesn't return it.
 - **Indexes:** these enforce name uniqueness, partial on `trashed: false`. There is also a text index on name, description and tags, prefixed by `workspaceId`.
 
-## Integrating a feature: example
+## Committee Documents feature
+
+The Workspaces module uses the DMS through the **Documents** committee feature (`CommitteeFeatureKeys.DOCUMENTS`):
+
+| Piece | Location |
+|---|---|
+| Feature handler, workspace lookup | `idreesia-common/server/business-logic/hr/committee/documents.ts` |
+| Library view (names, timestamps as strings) | `.../hr/committee/documents-library.ts` |
+| GraphQL schema, access checks, resolvers | `idreesia-common/server/graphql-api/workspaces/documents/` |
+| Reusable UI (no committee knowledge; driven by a `DocumentsDataProvider`) | `idreesia-web/imports/ui/modules/common/documents/` |
+| Committee pages and data provider | `idreesia-web/imports/ui/modules/workspaces/documents/` |
+| Mobile app screens (Home → workspace → Documents) | `idreesia-mobile/imports/ui/workspaces/documents/` |
+
+**Feature lifecycle:**
+- Enabling the feature creates a `"<committee> Documents"` workspace with `metadata.committeeId`, and stores its id in `committee.dmsWorkspaceId`.
+- Disabling it soft-deletes the workspace.
+- Enabling it again restores the same workspace, with its documents.
+
+**Who can do what:**
+- **Coordinators** (and `erp-admin`) also purge items from the trash, empty the trash, delete document versions and force-unlock documents.
+- **Every member** browses, searches, uploads, downloads, checks documents out and in, moves, renames and trashes and restores items, and sees the activity log.
+- **Notifications** (mobile): the documents folder list has a bell with an unread count. It opens a screen listing the committee's document notifications, newest first. Opening it marks them read, and tapping one opens its document. The web app has no notifications page yet.
+
+## Integrating another feature
 
 A minimal REST integration in `idreesia-web`. This module only provides the DMS calls; the routes and their auth are yours to write.
 

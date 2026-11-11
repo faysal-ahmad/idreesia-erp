@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { ActionSheet, Avatar, Badge, List, PullToRefresh, Tag } from 'antd-mobile';
+import { ActionSheet, Avatar, Badge, List, PullToRefresh, Tabs, Tag } from 'antd-mobile';
 import { BellOutline, LockOutline } from 'antd-mobile-icons';
 import { toDeviceUrl } from '/imports/startup/backend';
 
@@ -10,10 +10,24 @@ import { useHistory, useParams } from '../../router';
 import { MOBILE_MY_NOTIFICATION_COUNTS } from '../gql';
 import { MOBILE_SET_COMMITTEE_MEMBER_COORDINATOR, MOBILE_WORKSPACE_COMMITTEE_MEMBERS } from './gql';
 
-/** A workspace's members: coordinators first, then by name. */
+type MembersTab = 'members' | 'guests';
+
+// The roles shown on each tab. A missing role is a plain member.
+const TAB_ROLES: Record<MembersTab, string[]> = {
+  members: ['member', 'coordinator'],
+  guests: ['guest'],
+};
+
+const EMPTY_TITLES: Record<MembersTab, string> = {
+  members: 'No members yet',
+  guests: 'No guests yet',
+};
+
+/** A workspace's people, by role: coordinators first, then by name. */
 export const MembersScreen = () => {
   const { committeeId } = useParams<{ committeeId: string }>();
   const history = useHistory();
+  const [tab, setTab] = useState<MembersTab>('members');
   // Unread membership notifications, for the bell. Best effort.
   const { data: countData, refetch: refetchCounts } = useQuery(MOBILE_MY_NOTIFICATION_COUNTS, {
     fetchPolicy: 'cache-and-network',
@@ -78,6 +92,7 @@ export const MembersScreen = () => {
         (member): member is NonNullable<typeof member> & { karkunId: string } =>
           member?.karkunId != null,
       )
+      .filter(member => TAB_ROLES[tab].includes(member.role ?? 'member'))
       .sort(
         (a, b) =>
           Number(Boolean(b.isCoordinator)) - Number(Boolean(a.isCoordinator)) ||
@@ -86,6 +101,12 @@ export const MembersScreen = () => {
 
     content = (
       <PullToRefresh onRefresh={refresh}>
+        <Tabs activeKey={tab} className="members-tabs" onChange={key => setTab(key as MembersTab)}>
+          <Tabs.Tab key="members" title={`Members (${committee.memberCount ?? 0})`} />
+          <Tabs.Tab key="guests" title={`Guests (${committee.guestCount ?? 0})`} />
+        </Tabs>
+        {members.length === 0 && <PageEmpty title={EMPTY_TITLES[tab]} />}
+        {members.length > 0 && (
         <List header={committee.name} mode="card">
           {members.map(member => {
             const phones = [member.contactNumber1, member.contactNumber2].filter(
@@ -133,6 +154,7 @@ export const MembersScreen = () => {
             );
           })}
         </List>
+        )}
       </PullToRefresh>
     );
   }
@@ -163,7 +185,7 @@ export const MembersScreen = () => {
                     window.location.href = `tel:${phone}`;
                   },
                 })),
-                ...(committee?.canManageMembers
+                ...(committee?.canManageMembers && tab === 'members'
                   ? [
                       selected.isCoordinator
                         ? {

@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 
-import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
+import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import {
   discussionsModule,

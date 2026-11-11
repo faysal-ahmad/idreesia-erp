@@ -1,10 +1,7 @@
 import { GraphQLError } from 'graphql';
 
-import {
-  CommitteeFeatureKeys,
-  isCommitteeFeatureKey,
-  type CommitteeFeatureKey,
-} from 'meteor/idreesia-common/constants/hr';
+import { type CommitteeFeatureKey } from 'meteor/idreesia-common/constants/organization';
+import { CommitteeFeatureKeys, isCommitteeFeatureKey } from 'meteor/idreesia-common/constants/organization';
 import { Committees } from 'meteor/idreesia-common/server/collections/hr';
 
 import { discussionsHandler } from './discussions';

@@ -1,65 +1,31 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useMutation, useQuery } from '@apollo/client/react';
-import {
-  Button,
-  Checkbox,
-  Empty,
-  Flex,
-  Pagination,
-  Popconfirm,
-  Space,
-  Spin,
-  Table,
-  Tag,
-  Tooltip,
-} from 'antd';
-import {
-  CrownFilled,
-  CrownOutlined,
-  PlusCircleOutlined,
-  SyncOutlined,
-  UserDeleteOutlined,
-} from '@ant-design/icons';
+import { useQuery } from '@apollo/client/react';
+import { Button, Empty, Flex, Space, Spin, Tabs } from 'antd';
+import { PlusCircleOutlined, SyncOutlined } from '@ant-design/icons';
 
-import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
-import type { WorkspaceCommitteeMembersQuery } from 'meteor/idreesia-common/types/client-operations';
-import { PersonName } from '/imports/ui/modules/helpers/controls';
-import { message } from '/imports/ui/antd-feedback';
+import {
+  CommitteeFeatureKeys,
+  CommitteeMemberRoles,
+} from 'meteor/idreesia-common/constants/organization';
 
 import AddMemberDrawer from './add-member-drawer';
-import {
-  WORKSPACE_COMMITTEE_MEMBERS,
-  WORKSPACE_REMOVE_COMMITTEE_MEMBER,
-  WORKSPACE_SET_COMMITTEE_MEMBER_COORDINATOR,
-  WORKSPACE_SET_COMMITTEE_MEMBER_DISCUSSION_ACCESS,
-} from './gql';
-
-type Member = NonNullable<
-  NonNullable<
-    NonNullable<WorkspaceCommitteeMembersQuery['workspaceCommitteeById']>['members']
-  >[number]
->;
-
-const DEFAULT_PAGE_SIZE = 20;
+import MembersTable, { type Member } from './members-table';
+import { WORKSPACE_COMMITTEE_MEMBERS } from './gql';
 
 const List = () => {
   const { committeeId } = useParams<{ committeeId: string }>();
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
-  const [showAddDrawer, setShowAddDrawer] = useState(false);
+  // The role being added, while the Add drawer is open.
+  const [addRole, setAddRole] = useState<'member' | 'guest' | null>(null);
 
-  const { data, loading, error, refetch } = useQuery(WORKSPACE_COMMITTEE_MEMBERS, {
-    variables: { committeeId: committeeId! },
-    skip: !committeeId,
-    fetchPolicy: 'cache-and-network',
-  });
-  const [removeMember] = useMutation(WORKSPACE_REMOVE_COMMITTEE_MEMBER);
-  const [setDiscussionAccess] = useMutation(
-    WORKSPACE_SET_COMMITTEE_MEMBER_DISCUSSION_ACCESS
+  const { data, loading, error, refetch } = useQuery(
+    WORKSPACE_COMMITTEE_MEMBERS,
+    {
+      variables: { committeeId: committeeId! },
+      skip: !committeeId,
+      fetchPolicy: 'cache-and-network',
+    }
   );
-  const [setCoordinator] = useMutation(WORKSPACE_SET_COMMITTEE_MEMBER_COORDINATOR);
-  const [savingAccessId, setSavingAccessId] = useState<string | null>(null);
 
   if (loading && !data) {
     return (
@@ -94,221 +60,112 @@ const List = () => {
   const members = (committee.members ?? []).filter(
     (member): member is Member => member != null && member.karkunId != null
   );
-  const memberIds = members.map((member) => member.karkunId!);
+  const allMemberIds = members.map(member => member.karkunId!);
+  const withRole = (...roles: string[]) =>
+    members.filter(member => roles.includes(member.role ?? 'member'));
 
-  const totalResults = members.length;
-  const lastPageIndex = Math.max(0, Math.ceil(totalResults / pageSize) - 1);
-  const safePageIndex = Math.min(pageIndex, lastPageIndex);
-  const pageData = members.slice(
-    safePageIndex * pageSize,
-    (safePageIndex + 1) * pageSize
-  );
-
-  const handleRefresh = () => {
-    refetch();
-  };
-
-  const handleRemove = (karkunId: string) => {
-    removeMember({ variables: { committeeId: committeeId!, karkunId } })
-      .then(() => refetch())
-      .catch((error: Error) => {
-        message.error(error.message, 5);
-      });
-  };
-
-  const handleDiscussionAccessChange = (karkunId: string, hasAccess: boolean) => {
-    setSavingAccessId(karkunId);
-    setDiscussionAccess({
-      variables: { committeeId: committeeId!, karkunId, hasAccess },
-    })
-      .then(() => refetch())
-      .catch((error: Error) => {
-        message.error(error.message, 5);
-      })
-      .finally(() => setSavingAccessId(null));
-  };
-
-  const handleToggleCoordinator = (karkunId: string, isCoordinator: boolean) => {
-    setCoordinator({
-      variables: { committeeId: committeeId!, karkunId, isCoordinator },
-    })
-      .then(() => refetch())
-      .catch((error: Error) => {
-        message.error(error.message, 5);
-      });
-  };
-
-  const handleMemberAdded = () => {
-    refetch();
-  };
-
-  const onPaginationChange = (page: number, size: number) => {
-    setPageIndex(page - 1);
-    setPageSize(size);
-  };
-
-  const columns = [
-    {
-      title: 'Name',
-      key: 'name',
-      render: (_text: unknown, record: Member) => (
-        <Flex justify="space-between" align="center" gap={8}>
-          <PersonName
-            person={{
-              _id: record.karkunId,
-              name: record.name ?? '',
-              imageUrl: record.imageUrl,
-              imageThumbnailUrl: record.imageThumbnailUrl,
-            }}
-          />
-          {record.isCoordinator ? <Tag color="gold">Coordinator</Tag> : null}
-        </Flex>
-      ),
+  const common = {
+    committeeId: committeeId!,
+    canManageMembers,
+    discussionsEnabled,
+    refetch: () => {
+      refetch();
     },
-    {
-      title: 'Contact Number',
-      key: 'contactNumber',
-      width: 220,
-      render: (_text: unknown, record: Member) => (
-        <Flex vertical>
-          {record.contactNumber1 ? <span>{record.contactNumber1}</span> : null}
-          {record.contactNumber2 ? <span>{record.contactNumber2}</span> : null}
-        </Flex>
-      ),
-    },
-    {
-      title: 'Has Discussion Access',
-      key: 'hasDiscussionAccess',
-      width: 180,
-      align: 'center' as const,
-      // Editable by coordinators, for members with a chat account, while
-      // Discussions is enabled.
-      render: (_text: unknown, record: Member) => (
-        <Checkbox
-          checked={!!record.hasDiscussionAccess}
-          disabled={
-            !canManageMembers ||
-            !discussionsEnabled ||
-            !record.hasChatAccount ||
-            savingAccessId != null
-          }
-          onChange={event =>
-            handleDiscussionAccessChange(record.karkunId!, event.target.checked)
-          }
-        />
-      ),
-    },
-    ...(canManageMembers
-      ? [
-          {
-            key: 'action',
-            width: 100,
-            render: (_text: unknown, record: Member) => (
-              <div className="list-actions-column">
-                <Tooltip
-                  title={
-                    record.isCoordinator
-                      ? 'Remove as Coordinator'
-                      : 'Make Coordinator'
-                  }
-                >
-                  {record.isCoordinator ? (
-                    <CrownFilled
-                      className="list-actions-icon"
-                      onClick={() =>
-                        handleToggleCoordinator(record.karkunId!, false)
-                      }
-                    />
-                  ) : (
-                    <CrownOutlined
-                      className="list-actions-icon"
-                      onClick={() =>
-                        handleToggleCoordinator(record.karkunId!, true)
-                      }
-                    />
-                  )}
-                </Tooltip>
-                {/* Coordinators are removed from the committee only after
-                    they stop being coordinators. */}
-                {record.isCoordinator ? null : (
-                  <Popconfirm
-                    title="Remove this person from the committee?"
-                    onConfirm={() => handleRemove(record.karkunId!)}
-                    okText="Yes"
-                    cancelText="No"
-                  >
-                    <Tooltip title="Remove">
-                      <UserDeleteOutlined className="list-actions-icon" />
-                    </Tooltip>
-                  </Popconfirm>
-                )}
-              </div>
-            ),
-          },
-        ]
-      : []),
-  ];
+  };
+
+  // Observers are managed by admins, so there is no Add Observer here.
+  const addButtons = [
+    { role: CommitteeMemberRoles.MEMBER, label: 'Add Member' },
+    { role: CommitteeMemberRoles.GUEST, label: 'Add Guest' },
+  ] as const;
 
   return (
     <>
-      <div className="list-container">
-        <div className="list-table-header" style={{ marginBottom: 12 }}>
-          <Space size={12}>
-            {canManageMembers ? (
-              <Button
-                type="primary"
-                icon={<PlusCircleOutlined />}
-                onClick={() => setShowAddDrawer(true)}
-              >
-                Add Member
-              </Button>
-            ) : null}
-          </Space>
-          <div className="list-table-header-utilities">
-            <Space size={8}>
-              <Button
-                icon={<SyncOutlined />}
-                onClick={handleRefresh}
-                title="Reload Data"
-              />
-            </Space>
-          </div>
-        </div>
-        <Table
-          className="list-table"
-          rowKey="karkunId"
-          dataSource={pageData}
-          columns={columns}
-          bordered
-          size="middle"
-          tableLayout="fixed"
-          pagination={false}
-          locale={{ emptyText: 'No members yet' }}
-          footer={() => (
-            <Pagination
-              current={safePageIndex + 1}
-              pageSize={pageSize}
-              showSizeChanger
-              showTotal={(total, range) =>
-                `${range[0]}-${range[1]} of ${total} members`
-              }
-              onChange={onPaginationChange}
-              onShowSizeChange={onPaginationChange}
-              total={totalResults}
+    {canManageMembers ? (
+      <Space style={{ marginBottom: 12 }}>
+        {addButtons.map(({ role, label }) => (
+          <Button
+            key={role}
+            type="primary"
+            icon={<PlusCircleOutlined />}
+            onClick={() => setAddRole(role)}
+          >
+            {label}
+          </Button>
+        ))}
+      </Space>
+    ) : null}
+    <Tabs
+      // Every tab reads from the same query, so this reloads whichever tab is
+      // active.
+      tabBarExtraContent={
+        <Button
+          icon={<SyncOutlined />}
+          onClick={() => {
+            refetch();
+          }}
+          title="Reload Data"
+        />
+      }
+      items={[
+        {
+          key: 'members',
+          label: `Members (${committee.memberCount ?? 0})`,
+          children: (
+            <MembersTable
+              {...common}
+              members={withRole(
+                CommitteeMemberRoles.MEMBER,
+                CommitteeMemberRoles.COORDINATOR
+              )}
+              allowRoleChange
+              allowRemove
+              emptyText="No members yet"
             />
-          )}
-        />
-      </div>
-
-      {canManageMembers ? (
-        <AddMemberDrawer
-          open={showAddDrawer}
-          committeeId={committeeId!}
-          memberIds={memberIds}
-          onClose={() => setShowAddDrawer(false)}
-          onMemberAdded={handleMemberAdded}
-        />
-      ) : null}
+          ),
+        },
+        {
+          key: 'guests',
+          label: `Guests (${committee.guestCount ?? 0})`,
+          children: (
+            <MembersTable
+              {...common}
+              members={withRole(CommitteeMemberRoles.GUEST)}
+              allowRemove
+              emptyText="No guests yet"
+              note="Guests can be added to Projects and Meetings and will have access to those specific projects/meetings only. They cannot see any other data in the committee."
+            />
+          ),
+        },
+        {
+          key: 'observers',
+          label: `Observers (${committee.observerCount ?? 0})`,
+          // Observers are managed by admins; this tab is view-only.
+          children: (
+            <MembersTable
+              {...common}
+              members={withRole(CommitteeMemberRoles.OBSERVER)}
+              allowRemove={false}
+              emptyText="No observers yet"
+              note="Observer users have read-only access to all data in the committee."
+            />
+          ),
+        },
+      ]}
+    />
+    {canManageMembers ? (
+      <AddMemberDrawer
+        open={addRole != null}
+        committeeId={committeeId!}
+        memberIds={allMemberIds}
+        role={addRole ?? undefined}
+        title={addButtons.find(button => button.role === addRole)?.label}
+        onClose={() => setAddRole(null)}
+        onMemberAdded={() => {
+          refetch();
+        }}
+      />
+    ) : null}
     </>
   );
 };

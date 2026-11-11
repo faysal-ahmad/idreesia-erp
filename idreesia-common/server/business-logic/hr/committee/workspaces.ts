@@ -1,4 +1,4 @@
-import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
+import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import { MEETINGS_MODULE } from 'meteor/idreesia-common/constants/meetings';
 import { POLLS_MODULE } from 'meteor/idreesia-common/constants/polls';
 import { PROJECTS_MODULE } from 'meteor/idreesia-common/constants/projects';

@@ -17,8 +17,11 @@ export const MOBILE_WORKSPACE_COMMITTEE_MEMBERS: TypedDocumentNode<
       _id
       name
       canManageMembers
+      memberCount
+      guestCount
       members {
         karkunId
+        role
         isCoordinator
         name
         imageUrl

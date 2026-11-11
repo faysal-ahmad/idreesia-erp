@@ -94,7 +94,7 @@ export async function getCommitteeProjectMembers(committee: CommitteeDoc) {
     .map(member => ({
       personId: member.karkunId,
       name: names.get(member.karkunId) ?? null,
-      isCoordinator: !!member.isCoordinator,
+      isCoordinator: member.role === 'coordinator',
     }))
     .sort(byName);
 }

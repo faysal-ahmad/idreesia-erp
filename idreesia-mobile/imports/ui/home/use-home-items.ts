@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useApolloClient } from '@apollo/client/react';
 
-import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
+import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import type {
   MobileWorkspaceMeetingActionItemsQuery,
   MobileWorkspaceMeetingsQuery,

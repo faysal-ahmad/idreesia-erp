@@ -113,6 +113,13 @@ export type CommitteeMemberType = {
   isCoordinator?: Maybe<Scalars['Boolean']['output']>;
   karkun?: Maybe<PersonType>;
   karkunId?: Maybe<Scalars['String']['output']>;
+  role?: Maybe<Scalars['String']['output']>;
+};
+
+export type CommitteeMembersPageType = {
+  __typename?: 'CommitteeMembersPageType';
+  data?: Maybe<Array<Maybe<CommitteeMemberType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
 export type CommitteeType = {
@@ -123,8 +130,11 @@ export type CommitteeType = {
   createdBy?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   features?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  guestCount?: Maybe<Scalars['Int']['output']>;
+  memberCount?: Maybe<Scalars['Int']['output']>;
   members?: Maybe<Array<Maybe<CommitteeMemberType>>>;
   name?: Maybe<Scalars['String']['output']>;
+  observerCount?: Maybe<Scalars['Int']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
@@ -648,7 +658,6 @@ export type MehfilType = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addCommitteeCoordinator?: Maybe<CommitteeType>;
   addCommitteeMember?: Maybe<CommitteeType>;
   addHrKarkunAttachment?: Maybe<PersonType>;
   addIssuanceFormAttachment?: Maybe<IssuanceForm>;
@@ -719,7 +728,6 @@ export type Mutation = {
   removeCity?: Maybe<Scalars['Int']['output']>;
   removeCityMehfil?: Maybe<Scalars['Int']['output']>;
   removeCommittee?: Maybe<Scalars['Int']['output']>;
-  removeCommitteeCoordinator?: Maybe<CommitteeType>;
   removeCommitteeMember?: Maybe<CommitteeType>;
   removeDuty?: Maybe<Scalars['Int']['output']>;
   removeDutyLocation?: Maybe<Scalars['Int']['output']>;
@@ -752,6 +760,7 @@ export type Mutation = {
   runScheduledJobNow?: Maybe<Scalars['Boolean']['output']>;
   sendInboxMessage?: Maybe<InboxMessageType>;
   setCommitteeMemberDiscussionAccess?: Maybe<Scalars['Boolean']['output']>;
+  setCommitteeMemberRole?: Maybe<CommitteeType>;
   setDutyAttendance?: Maybe<Scalars['Boolean']['output']>;
   setDutyDayOverride?: Maybe<Scalars['Boolean']['output']>;
   setDutyDetail?: Maybe<Array<Maybe<MehfilKarkunType>>>;
@@ -892,15 +901,10 @@ export type Mutation = {
 };
 
 
-export type MutationAddCommitteeCoordinatorArgs = {
-  committeeId: Scalars['String']['input'];
-  karkunId: Scalars['String']['input'];
-};
-
-
 export type MutationAddCommitteeMemberArgs = {
   committeeId: Scalars['String']['input'];
   karkunId: Scalars['String']['input'];
+  role?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1379,12 +1383,6 @@ export type MutationRemoveCommitteeArgs = {
 };
 
 
-export type MutationRemoveCommitteeCoordinatorArgs = {
-  committeeId: Scalars['String']['input'];
-  karkunId: Scalars['String']['input'];
-};
-
-
 export type MutationRemoveCommitteeMemberArgs = {
   committeeId: Scalars['String']['input'];
   karkunId: Scalars['String']['input'];
@@ -1563,6 +1561,13 @@ export type MutationSetCommitteeMemberDiscussionAccessArgs = {
   committeeId: Scalars['String']['input'];
   hasAccess: Scalars['Boolean']['input'];
   karkunId: Scalars['String']['input'];
+};
+
+
+export type MutationSetCommitteeMemberRoleArgs = {
+  committeeId: Scalars['String']['input'];
+  karkunId: Scalars['String']['input'];
+  role: Scalars['String']['input'];
 };
 
 
@@ -2044,6 +2049,7 @@ export type MutationWorkspaceAbortMeetingAttachmentUploadArgs = {
 export type MutationWorkspaceAddCommitteeMemberArgs = {
   committeeId: Scalars['String']['input'];
   karkunId: Scalars['String']['input'];
+  role?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -3037,6 +3043,7 @@ export type Query = {
   cityMehfilById?: Maybe<CityMehfilType>;
   cityMehfilsByCityId?: Maybe<Array<Maybe<CityMehfilType>>>;
   committeeById?: Maybe<CommitteeType>;
+  committeeMembers?: Maybe<CommitteeMembersPageType>;
   currentUser?: Maybe<UserType>;
   deletedPersonById?: Maybe<PersonType>;
   deletedPersonRelationCounts?: Maybe<Array<PersonRelationCounts>>;
@@ -3220,6 +3227,14 @@ export type QueryCityMehfilsByCityIdArgs = {
 
 export type QueryCommitteeByIdArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryCommitteeMembersArgs = {
+  committeeId: Scalars['String']['input'];
+  pageIndex: Scalars['Int']['input'];
+  pageSize: Scalars['Int']['input'];
+  roles: Array<Scalars['String']['input']>;
 };
 
 
@@ -4461,6 +4476,7 @@ export type WorkspaceCommitteeMemberType = {
   isCoordinator?: Maybe<Scalars['Boolean']['output']>;
   karkunId?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  role?: Maybe<Scalars['String']['output']>;
 };
 
 export type WorkspaceCommitteeType = {
@@ -4470,8 +4486,11 @@ export type WorkspaceCommitteeType = {
   color?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   features?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  guestCount?: Maybe<Scalars['Int']['output']>;
+  memberCount?: Maybe<Scalars['Int']['output']>;
   members?: Maybe<Array<Maybe<WorkspaceCommitteeMemberType>>>;
   name?: Maybe<Scalars['String']['output']>;
+  observerCount?: Maybe<Scalars['Int']['output']>;
 };
 
 export type WorkspaceDocumentActivityType = {

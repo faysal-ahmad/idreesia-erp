@@ -2,26 +2,29 @@ import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
-import { Checkbox, Popconfirm, Row, Table, Tooltip } from 'antd';
+import { Checkbox, Popconfirm, Popover, Radio, Row, Table, Tag, Tooltip } from 'antd';
 import {
   CheckOutlined,
-  CrownFilled,
-  CrownOutlined,
   UserDeleteOutlined,
+  UserSwitchOutlined,
 } from '@ant-design/icons';
 import { message } from '/imports/ui/antd-feedback';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import type {
-  AddCommitteeCoordinatorMutation,
-  AddCommitteeCoordinatorMutationVariables,
-  RemoveCommitteeCoordinatorMutation,
-  RemoveCommitteeCoordinatorMutationVariables,
   RemoveCommitteeMemberMutation,
   RemoveCommitteeMemberMutationVariables,
+  SetCommitteeMemberRoleMutation,
+  SetCommitteeMemberRoleMutationVariables,
   SetCommitteeMemberDiscussionAccessMutation,
   SetCommitteeMemberDiscussionAccessMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
+import {
+  CommitteeMemberRoles,
+  type CommitteeMemberRole,
+} from 'meteor/idreesia-common/constants/organization';
+
+import { MEMBER_ROLE_COLORS, MEMBER_ROLE_LABELS } from './member-roles';
 
 const REMOVE_COMMITTEE_MEMBER: TypedDocumentNode<
   RemoveCommitteeMemberMutation,
@@ -34,23 +37,20 @@ const REMOVE_COMMITTEE_MEMBER: TypedDocumentNode<
   }
 `;
 
-const ADD_COMMITTEE_COORDINATOR: TypedDocumentNode<
-  AddCommitteeCoordinatorMutation,
-  AddCommitteeCoordinatorMutationVariables
+const SET_COMMITTEE_MEMBER_ROLE: TypedDocumentNode<
+  SetCommitteeMemberRoleMutation,
+  SetCommitteeMemberRoleMutationVariables
 > = gql`
-  mutation addCommitteeCoordinator($committeeId: String!, $karkunId: String!) {
-    addCommitteeCoordinator(committeeId: $committeeId, karkunId: $karkunId) {
-      _id
-    }
-  }
-`;
-
-const REMOVE_COMMITTEE_COORDINATOR: TypedDocumentNode<
-  RemoveCommitteeCoordinatorMutation,
-  RemoveCommitteeCoordinatorMutationVariables
-> = gql`
-  mutation removeCommitteeCoordinator($committeeId: String!, $karkunId: String!) {
-    removeCommitteeCoordinator(committeeId: $committeeId, karkunId: $karkunId) {
+  mutation setCommitteeMemberRole(
+    $committeeId: String!
+    $karkunId: String!
+    $role: String!
+  ) {
+    setCommitteeMemberRole(
+      committeeId: $committeeId
+      karkunId: $karkunId
+      role: $role
+    ) {
       _id
     }
   }
@@ -78,39 +78,55 @@ export interface CommitteeMember {
   name: string;
   imageUrl?: string | null;
   imageThumbnailUrl?: string | null;
-  cnicNumber?: string | null;
   contactNumber1?: string | null;
   contactNumber2?: string | null;
-  isCoordinator: boolean;
+  role: CommitteeMemberRole;
   hasLoginAccount: boolean;
   hasChatAccount: boolean;
   /** Null when Discussions is not enabled (or chat is unreachable). */
   hasDiscussionAccess: boolean | null;
 }
 
+// Only these two can be switched between; guests and observers are added or
+// removed, not changed.
+const SWITCHABLE_ROLES: CommitteeMemberRole[] = [
+  CommitteeMemberRoles.MEMBER,
+  CommitteeMemberRoles.COORDINATOR,
+];
+
 const renderCheck = (value: boolean) => (value ? <CheckOutlined /> : null);
 
 interface Props {
   committeeId: string;
   members: CommitteeMember[];
+  loading?: boolean;
+  /**
+   * Shows each member's role pill and the role switcher (member or
+   * coordinator). Off for the guests and observers tabs.
+   */
+  allowRoleChange?: boolean;
+  emptyText?: string;
 }
 
-const CommitteeMembersPanel = ({ committeeId, members }: Props) => {
+const CommitteeMembersPanel = ({
+  committeeId,
+  members,
+  loading = false,
+  allowRoleChange = false,
+  emptyText = 'No members added yet',
+}: Props) => {
   const [removeCommitteeMember] = useMutation(REMOVE_COMMITTEE_MEMBER, {
-    refetchQueries: ['listAllCommittees'],
+    refetchQueries: ['committeeById', 'committeeMembers', 'listAllCommittees'],
   });
-  const [addCommitteeCoordinator] = useMutation(ADD_COMMITTEE_COORDINATOR, {
-    refetchQueries: ['listAllCommittees'],
+  const [setMemberRole] = useMutation(SET_COMMITTEE_MEMBER_ROLE, {
+    refetchQueries: ['committeeById', 'committeeMembers', 'listAllCommittees'],
   });
+  const [roleMemberId, setRoleMemberId] = useState<string | null>(null);
   const [setDiscussionAccess] = useMutation(
     SET_COMMITTEE_MEMBER_DISCUSSION_ACCESS,
-    { refetchQueries: ['listAllCommittees'], awaitRefetchQueries: true }
+    { refetchQueries: ['committeeById', 'committeeMembers', 'listAllCommittees'], awaitRefetchQueries: true }
   );
   const [savingAccessId, setSavingAccessId] = useState<string | null>(null);
-  const [removeCommitteeCoordinator] = useMutation(
-    REMOVE_COMMITTEE_COORDINATOR,
-    { refetchQueries: ['listAllCommittees'] }
-  );
 
   const handleRemove = (karkunId: string) => {
     removeCommitteeMember({ variables: { committeeId, karkunId } }).catch(
@@ -120,16 +136,13 @@ const CommitteeMembersPanel = ({ committeeId, members }: Props) => {
     );
   };
 
-  const handleToggleCoordinator = (
-    karkunId: string,
-    isCoordinator: boolean
-  ) => {
-    const mutate = isCoordinator
-      ? removeCommitteeCoordinator
-      : addCommitteeCoordinator;
-    mutate({ variables: { committeeId, karkunId } }).catch((error: Error) => {
-      message.error(error.message, 5);
-    });
+  const handleRoleChange = (karkunId: string, role: CommitteeMemberRole) => {
+    setRoleMemberId(null);
+    setMemberRole({ variables: { committeeId, karkunId, role } }).catch(
+      (error: Error) => {
+        message.error(error.message, 5);
+      }
+    );
   };
 
   const handleDiscussionAccessChange = (
@@ -150,13 +163,22 @@ const CommitteeMembersPanel = ({ committeeId, members }: Props) => {
       dataIndex: 'name',
       key: 'name',
       render: (_text: unknown, record: CommitteeMember) => (
-        <PersonName person={record} />
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 8,
+          }}
+        >
+          <PersonName person={record} />
+          {allowRoleChange ? (
+            <Tag color={MEMBER_ROLE_COLORS[record.role]} style={{ margin: 0 }}>
+              {MEMBER_ROLE_LABELS[record.role]}
+            </Tag>
+          ) : null}
+        </div>
       ),
-    },
-    {
-      title: 'CNIC Number',
-      dataIndex: 'cnicNumber',
-      key: 'cnicNumber',
     },
     {
       title: 'Contact Number',
@@ -215,26 +237,39 @@ const CommitteeMembersPanel = ({ committeeId, members }: Props) => {
       key: 'action',
       width: 80,
       render: (_text: unknown, record: CommitteeMember) => {
-        const { isCoordinator } = record;
         return (
           <div className="list-actions-column">
-            <Tooltip
-              title={
-                isCoordinator ? 'Remove as Coordinator' : 'Make Coordinator'
+            {allowRoleChange ? (
+            <Popover
+              title="Change Role"
+              trigger="click"
+              placement="left"
+              open={roleMemberId === record._id}
+              onOpenChange={open => setRoleMemberId(open ? record._id : null)}
+              content={
+                <Radio.Group
+                  value={record.role}
+                  onChange={event =>
+                    handleRoleChange(record._id, event.target.value)
+                  }
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {SWITCHABLE_ROLES.map(role => (
+                      <Radio key={role} value={role}>
+                        <Tag color={MEMBER_ROLE_COLORS[role]}>
+                          {MEMBER_ROLE_LABELS[role]}
+                        </Tag>
+                      </Radio>
+                    ))}
+                  </div>
+                </Radio.Group>
               }
             >
-              {isCoordinator ? (
-                <CrownFilled
-                  className="list-actions-icon"
-                  onClick={() => handleToggleCoordinator(record._id, true)}
-                />
-              ) : (
-                <CrownOutlined
-                  className="list-actions-icon"
-                  onClick={() => handleToggleCoordinator(record._id, false)}
-                />
-              )}
-            </Tooltip>
+              <Tooltip title="Change Role">
+                <UserSwitchOutlined className="list-actions-icon" />
+              </Tooltip>
+            </Popover>
+            ) : null}
             <Popconfirm
               title="Remove this person from the committee?"
               onConfirm={() => handleRemove(record._id)}
@@ -255,11 +290,12 @@ const CommitteeMembersPanel = ({ committeeId, members }: Props) => {
     <Table
       rowKey="_id"
       dataSource={members}
+      loading={loading}
       columns={columns}
       size="small"
       bordered
       pagination={false}
-      locale={{ emptyText: 'No members added yet' }}
+      locale={{ emptyText }}
     />
   );
 };

@@ -1131,7 +1131,7 @@ export type MobileWorkspaceCommitteeMembersQueryVariables = Exact<{
 }>;
 
 
-export type MobileWorkspaceCommitteeMembersQuery = { workspaceCommitteeById: { _id: string | null, name: string | null, canManageMembers: boolean | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null } | null> | null } | null };
+export type MobileWorkspaceCommitteeMembersQuery = { workspaceCommitteeById: { _id: string | null, name: string | null, canManageMembers: boolean | null, memberCount: number | null, guestCount: number | null, members: Array<{ karkunId: string | null, role: string | null, isCoordinator: boolean | null, name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null } | null> | null } | null };
 
 export type MobileSetCommitteeMemberCoordinatorMutationVariables = Exact<{
   committeeId: string;
@@ -1691,6 +1691,7 @@ export type HrCommitteeKarkunSearchQuery = { pagedHrKarkuns: { totalResults: num
 export type AddCommitteeMemberMutationVariables = Exact<{
   committeeId: string;
   karkunId: string;
+  role?: string | null | undefined;
 }>;
 
 
@@ -1701,7 +1702,7 @@ export type CommitteeByIdQueryVariables = Exact<{
 }>;
 
 
-export type CommitteeByIdQuery = { committeeById: { _id: string | null, name: string | null, color: string | null, description: string | null, features: Array<string | null> | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type CommitteeByIdQuery = { committeeById: { _id: string | null, name: string | null, color: string | null, description: string | null, features: Array<string | null> | null, memberCount: number | null, guestCount: number | null, observerCount: number | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, members: Array<{ karkunId: string | null } | null> | null } | null };
 
 export type AllCommitteeFeaturesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1737,7 +1738,7 @@ export type UpdateCommitteeMutation = { updateCommittee: { _id: string | null, n
 export type ListAllCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, hasLoginAccount: boolean | null, hasChatAccount: boolean | null, hasDiscussionAccess: boolean | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null } | null> | null };
+export type ListAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null, color: string | null, memberCount: number | null, guestCount: number | null, observerCount: number | null, members: Array<{ karkunId: string | null, role: string | null, karkun: { _id: string | null, sharedData: { name: string | null } | null } | null } | null> | null } | null> | null };
 
 export type CreateCommitteeMutationVariables = Exact<{
   name: string;
@@ -1763,21 +1764,14 @@ export type RemoveCommitteeMemberMutationVariables = Exact<{
 
 export type RemoveCommitteeMemberMutation = { removeCommitteeMember: { _id: string | null } | null };
 
-export type AddCommitteeCoordinatorMutationVariables = Exact<{
+export type SetCommitteeMemberRoleMutationVariables = Exact<{
   committeeId: string;
   karkunId: string;
+  role: string;
 }>;
 
 
-export type AddCommitteeCoordinatorMutation = { addCommitteeCoordinator: { _id: string | null } | null };
-
-export type RemoveCommitteeCoordinatorMutationVariables = Exact<{
-  committeeId: string;
-  karkunId: string;
-}>;
-
-
-export type RemoveCommitteeCoordinatorMutation = { removeCommitteeCoordinator: { _id: string | null } | null };
+export type SetCommitteeMemberRoleMutation = { setCommitteeMemberRole: { _id: string | null } | null };
 
 export type SetCommitteeMemberDiscussionAccessMutationVariables = Exact<{
   committeeId: string;
@@ -1787,6 +1781,16 @@ export type SetCommitteeMemberDiscussionAccessMutationVariables = Exact<{
 
 
 export type SetCommitteeMemberDiscussionAccessMutation = { setCommitteeMemberDiscussionAccess: boolean | null };
+
+export type CommitteeMembersQueryVariables = Exact<{
+  committeeId: string;
+  roles: Array<string> | string;
+  pageIndex: number;
+  pageSize: number;
+}>;
+
+
+export type CommitteeMembersQuery = { committeeMembers: { totalResults: number | null, data: Array<{ karkunId: string | null, role: string | null, hasLoginAccount: boolean | null, hasChatAccount: boolean | null, hasDiscussionAccess: boolean | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null } | null };
 
 export type DeletedPersonByIdQueryVariables = Exact<{
   _id: string;
@@ -4442,7 +4446,7 @@ export type WorkspaceCommitteeMembersQueryVariables = Exact<{
 }>;
 
 
-export type WorkspaceCommitteeMembersQuery = { workspaceCommitteeById: { _id: string | null, canManageMembers: boolean | null, features: Array<string | null> | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null, hasChatAccount: boolean | null, hasDiscussionAccess: boolean | null } | null> | null } | null };
+export type WorkspaceCommitteeMembersQuery = { workspaceCommitteeById: { _id: string | null, canManageMembers: boolean | null, features: Array<string | null> | null, memberCount: number | null, guestCount: number | null, observerCount: number | null, members: Array<{ karkunId: string | null, role: string | null, isCoordinator: boolean | null, name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null, hasChatAccount: boolean | null, hasDiscussionAccess: boolean | null } | null> | null } | null };
 
 export type WorkspaceCommitteeKarkunSearchQueryVariables = Exact<{
   committeeId: string;
@@ -4459,6 +4463,7 @@ export type WorkspaceCommitteeKarkunSearchQuery = { workspaceCommitteeKarkunSear
 export type WorkspaceAddCommitteeMemberMutationVariables = Exact<{
   committeeId: string;
   karkunId: string;
+  role?: string | null | undefined;
 }>;
 
 

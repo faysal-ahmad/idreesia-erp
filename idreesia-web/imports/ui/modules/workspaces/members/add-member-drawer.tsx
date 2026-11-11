@@ -21,6 +21,10 @@ interface Props {
   open: boolean;
   committeeId: string;
   memberIds: string[];
+  /** The role the added people get (member or guest); defaults to member. */
+  role?: string;
+  /** The drawer's title; defaults to "Add Member". */
+  title?: string;
   onClose(): void;
   onMemberAdded(): void;
 }
@@ -29,6 +33,8 @@ const AddMemberDrawer = ({
   open,
   committeeId,
   memberIds,
+  role,
+  title = 'Add Member',
   onClose,
   onMemberAdded,
 }: Props) => {
@@ -75,7 +81,7 @@ const AddMemberDrawer = ({
 
   const handleAdd = (karkun: KarkunSelectionItem) => {
     setAddingId(karkun._id);
-    addMember({ variables: { committeeId, karkunId: karkun._id } })
+    addMember({ variables: { committeeId, karkunId: karkun._id, role } })
       .then(() => {
         message.success(`${karkun.name} added to the committee.`, 3);
         onMemberAdded();
@@ -88,7 +94,7 @@ const AddMemberDrawer = ({
 
   return (
     <Drawer
-      title="Add Member"
+      title={title}
       width={900}
       open={open}
       onClose={onClose}

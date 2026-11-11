@@ -14,7 +14,7 @@ import {
   TeamOutlined,
 } from '@ant-design/icons';
 
-import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
+import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
 import { useMyCommittees } from './hooks/use-my-committees';
 import SubModuleNames from './submodule-names';

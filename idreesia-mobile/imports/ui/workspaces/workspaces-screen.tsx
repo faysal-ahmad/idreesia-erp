@@ -16,7 +16,7 @@ import {
   UserContactOutline,
 } from 'antd-mobile-icons';
 
-import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
+import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import { MoonOutline } from '../components/icons/moon-outline';
 import { CollapsibleSection } from '../components/collapsible-section';
 import { Page, PageError, PageLoading } from '../layout';

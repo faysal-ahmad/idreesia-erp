@@ -44,8 +44,16 @@ const ADD_COMMITTEE_MEMBER: TypedDocumentNode<
   AddCommitteeMemberMutation,
   AddCommitteeMemberMutationVariables
 > = gql`
-  mutation addCommitteeMember($committeeId: String!, $karkunId: String!) {
-    addCommitteeMember(committeeId: $committeeId, karkunId: $karkunId) {
+  mutation addCommitteeMember(
+    $committeeId: String!
+    $karkunId: String!
+    $role: String
+  ) {
+    addCommitteeMember(
+      committeeId: $committeeId
+      karkunId: $karkunId
+      role: $role
+    ) {
       _id
     }
   }
@@ -56,10 +64,20 @@ const DEFAULT_PAGE_SIZE = 20;
 interface Props {
   committeeId: string | null;
   memberIds: string[];
+  /** The role the added people get; defaults to member. */
+  role?: string;
+  /** The drawer's title; defaults to "Add Member". */
+  title?: string;
   onClose(): void;
 }
 
-const AddMemberDrawer = ({ committeeId, memberIds, onClose }: Props) => {
+const AddMemberDrawer = ({
+  committeeId,
+  memberIds,
+  role,
+  title = 'Add Member',
+  onClose,
+}: Props) => {
   const open = committeeId != null;
   const [filter, setFilter] = useState<KarkunSelectionFilter>({});
   const [pageIndex, setPageIndex] = useState(0);
@@ -94,7 +112,7 @@ const AddMemberDrawer = ({ committeeId, memberIds, onClose }: Props) => {
     fetchPolicy: 'network-only',
   });
   const [addCommitteeMember] = useMutation(ADD_COMMITTEE_MEMBER, {
-    refetchQueries: ['listAllCommittees'],
+    refetchQueries: ['committeeById', 'committeeMembers', 'listAllCommittees'],
   });
 
   const karkuns: KarkunSelectionItem[] = (
@@ -125,7 +143,9 @@ const AddMemberDrawer = ({ committeeId, memberIds, onClose }: Props) => {
   const handleAdd = (karkun: KarkunSelectionItem) => {
     if (!committeeId) return;
     setAddingId(karkun._id);
-    addCommitteeMember({ variables: { committeeId, karkunId: karkun._id } })
+    addCommitteeMember({
+      variables: { committeeId, karkunId: karkun._id, role },
+    })
       .then(() => {
         message.success(`${karkun.name} added to the committee.`, 3);
       })
@@ -137,7 +157,7 @@ const AddMemberDrawer = ({ committeeId, memberIds, onClose }: Props) => {
 
   return (
     <Drawer
-      title="Add Member"
+      title={title}
       width={900}
       open={open}
       onClose={handleClose}

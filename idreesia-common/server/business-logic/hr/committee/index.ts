@@ -34,7 +34,10 @@ export {
   addCommitteeMember,
   removeCommitteeMember,
   removePersonFromCommittees,
+  getCommitteeMemberCounts,
+  getCommitteeMembersPage,
   setCommitteeMemberCoordinator,
+  setCommitteeMemberRole,
 } from './members';
 export { MEMBERS_MODULE } from './members-notifications';
 export type { CommitteeDoc, CommitteeFeatureHandler } from './types';

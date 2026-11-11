@@ -121,8 +121,8 @@ import TeamResolvers from './hr/team/resolvers';
 import DutyPlanSchema from './hr/duty-plan/duty-plan';
 import DutyPlanResolvers from './hr/duty-plan/resolvers';
 
-import CommitteeSchema from './hr/committee/committee';
-import CommitteeResolvers from './hr/committee/resolvers';
+import CommitteeSchema from './organization/committee/committee';
+import CommitteeResolvers from './organization/committee/resolvers';
 
 import JobSchema from './hr/job/job';
 import JobResolvers from './hr/job/resolvers';

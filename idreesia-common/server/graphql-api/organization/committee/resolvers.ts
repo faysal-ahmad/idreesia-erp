@@ -1,12 +1,14 @@
 import { Committees, Duties } from 'meteor/idreesia-common/server/collections/hr';
-import { CommitteeFeatures } from 'meteor/idreesia-common/constants/hr';
+import { CommitteeFeatures } from 'meteor/idreesia-common/constants/organization';
 import {
   addCommitteeMember,
   disableCommitteeFeature,
   enableCommitteeFeature,
   getCommitteeMemberAccess,
   removeCommitteeMember,
-  setCommitteeMemberCoordinator,
+  getCommitteeMemberCounts,
+  getCommitteeMembersPage,
+  setCommitteeMemberRole,
   setCommitteeMemberDiscussionAccess,
   type CommitteeDoc,
   type CommitteeMemberAccess,
@@ -46,6 +48,12 @@ const getMemberAccess = async (
 const resolvers: ResolverMap = {
   CommitteeType: {
     features: committee => committee.features ?? [],
+    memberCount: (committee: CommitteeDoc) =>
+      getCommitteeMemberCounts(committee).memberCount,
+    guestCount: (committee: CommitteeDoc) =>
+      getCommitteeMemberCounts(committee).guestCount,
+    observerCount: (committee: CommitteeDoc) =>
+      getCommitteeMemberCounts(committee).observerCount,
     members: (committee: CommitteeDoc) =>
       (committee.members ?? []).map(member => ({ ...member, committee })),
   },
@@ -55,6 +63,8 @@ const resolvers: ResolverMap = {
       if (!member.karkunId) return null;
       return loaders.common.people.load(member.karkunId);
     },
+    role: (member: { role?: string }) => member.role ?? 'member',
+    isCoordinator: (member: { role?: string }) => member.role === 'coordinator',
     hasLoginAccount: async (member: MemberWithCommittee, args, context) =>
       (await getMemberAccess(member, context))?.hasLoginAccount ?? false,
     hasChatAccount: async (member: MemberWithCommittee, args, context) =>
@@ -68,6 +78,28 @@ const resolvers: ResolverMap = {
       Committees.find({}, { sort: { name: 1 } }).fetchAsync(),
     committeeById: async (obj, { id }) => Committees.findOneAsync(id),
     allCommitteeFeatures: async () => CommitteeFeatures,
+    committeeMembers: async (
+      obj,
+      { committeeId, roles, pageIndex, pageSize }
+    ) => {
+      const committee = (await Committees.findOneAsync(
+        committeeId
+      )) as unknown as CommitteeDoc | undefined;
+      if (!committee) throw new Error('Committee not found.');
+
+      const page = await getCommitteeMembersPage(
+        committee,
+        roles,
+        pageIndex,
+        pageSize
+      );
+      // The access fields are looked up for the people on this page only.
+      const pageCommittee = { ...committee, members: page.data };
+      return {
+        totalResults: page.totalResults,
+        data: page.data.map(member => ({ ...member, committee: pageCommittee })),
+      };
+    },
   },
 
   Mutation: {
@@ -115,8 +147,12 @@ const resolvers: ResolverMap = {
       return Committees.removeAsync(_id);
     },
 
-    addCommitteeMember: async (obj, { committeeId, karkunId }, { user }) => {
-      await addCommitteeMember(committeeId, karkunId, user._id);
+    addCommitteeMember: async (
+      obj,
+      { committeeId, karkunId, role },
+      { user }
+    ) => {
+      await addCommitteeMember(committeeId, karkunId, user._id, role);
       return Committees.findOneAsync(committeeId);
     },
 
@@ -138,33 +174,12 @@ const resolvers: ResolverMap = {
       );
     },
 
-    addCommitteeCoordinator: async (
+    setCommitteeMemberRole: async (
       obj,
-      { committeeId, karkunId },
+      { committeeId, karkunId, role },
       { user }
     ) => {
-      await setCommitteeMemberCoordinator(
-        committeeId,
-        karkunId,
-        true,
-        user._id
-      );
-
-      return Committees.findOneAsync(committeeId);
-    },
-
-    removeCommitteeCoordinator: async (
-      obj,
-      { committeeId, karkunId },
-      { user }
-    ) => {
-      await setCommitteeMemberCoordinator(
-        committeeId,
-        karkunId,
-        false,
-        user._id
-      );
-
+      await setCommitteeMemberRole(committeeId, karkunId, role, user._id);
       return Committees.findOneAsync(committeeId);
     },
 

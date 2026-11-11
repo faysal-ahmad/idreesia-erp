@@ -5,6 +5,7 @@ import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic
 import {
   addCommitteeMember,
   getCommitteeMemberAccess,
+  getCommitteeMemberCounts,
   removeCommitteeMember,
   setCommitteeMemberCoordinator,
   setCommitteeMemberDiscussionAccess,
@@ -55,6 +56,16 @@ const resolvers: ResolverMap = {
     features: (committee: CommitteeDocument) =>
       (committee.features as string[] | undefined) ?? [],
 
+    memberCount: (committee: CommitteeDocument) =>
+      getCommitteeMemberCounts(committee as unknown as CommitteeDoc)
+        .memberCount,
+    guestCount: (committee: CommitteeDocument) =>
+      getCommitteeMemberCounts(committee as unknown as CommitteeDoc)
+        .guestCount,
+    observerCount: (committee: CommitteeDocument) =>
+      getCommitteeMemberCounts(committee as unknown as CommitteeDoc)
+        .observerCount,
+
     canManageMembers: (committee: CommitteeDocument, args, { user }) =>
       isCommitteeCoordinator(user as WorkspaceUser, committee),
 
@@ -79,7 +90,8 @@ const resolvers: ResolverMap = {
         const memberAccess = access.get(member.karkunId);
         return {
           karkunId: member.karkunId,
-          isCoordinator: !!member.isCoordinator,
+          isCoordinator: member.role === 'coordinator',
+          role: member.role ?? 'member',
           hasLoginAccount: memberAccess?.hasLoginAccount ?? false,
           hasChatAccount: memberAccess?.hasChatAccount ?? false,
           hasDiscussionAccess: memberAccess?.hasDiscussionAccess ?? null,
@@ -141,12 +153,15 @@ const resolvers: ResolverMap = {
   Mutation: {
     workspaceAddCommitteeMember: async (
       obj,
-      { committeeId, karkunId },
+      { committeeId, karkunId, role },
       { user }
     ) => {
       const committee = await getCoordinatedCommittee(user, committeeId);
       assertMembersEnabled(committee);
-      await addCommitteeMember(committeeId, karkunId, user._id);
+      if (role && role !== 'member' && role !== 'guest') {
+        throw new Error('Only members and guests can be added from here.');
+      }
+      await addCommitteeMember(committeeId, karkunId, user._id, role);
       return Committees.findOneAsync(committeeId);
     },
 
@@ -165,8 +180,11 @@ const resolvers: ResolverMap = {
       if (!member) {
         throw new Error('This person is not a member of the committee.');
       }
-      if (member.isCoordinator) {
+      if (member.role === 'coordinator') {
         throw new Error('Coordinators cannot be removed from here.');
+      }
+      if (member.role === 'observer') {
+        throw new Error('Observers cannot be removed from here.');
       }
 
       await removeCommitteeMember(committeeId, karkunId, user._id);
@@ -200,8 +218,10 @@ const resolvers: ResolverMap = {
       }
       if (
         !isCoordinator &&
-        members.some(m => m.karkunId === karkunId && m.isCoordinator) &&
-        members.filter(m => m.isCoordinator).length <= 1
+        members.some(
+          m => m.karkunId === karkunId && m.role === 'coordinator'
+        ) &&
+        members.filter(m => m.role === 'coordinator').length <= 1
       ) {
         throw new Error('A committee needs at least one coordinator.');
       }

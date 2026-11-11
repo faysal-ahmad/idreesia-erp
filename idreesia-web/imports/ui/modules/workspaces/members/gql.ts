@@ -25,8 +25,12 @@ export const WORKSPACE_COMMITTEE_MEMBERS: TypedDocumentNode<
       _id
       canManageMembers
       features
+      memberCount
+      guestCount
+      observerCount
       members {
         karkunId
+        role
         isCoordinator
         name
         imageUrl
@@ -81,8 +85,13 @@ export const WORKSPACE_ADD_COMMITTEE_MEMBER: TypedDocumentNode<
   mutation workspaceAddCommitteeMember(
     $committeeId: String!
     $karkunId: String!
+    $role: String
   ) {
-    workspaceAddCommitteeMember(committeeId: $committeeId, karkunId: $karkunId) {
+    workspaceAddCommitteeMember(
+      committeeId: $committeeId
+      karkunId: $karkunId
+      role: $role
+    ) {
       _id
     }
   }

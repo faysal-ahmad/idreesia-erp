@@ -2,7 +2,7 @@
 export interface CommitteeDoc {
   _id: string;
   name: string;
-  members?: Array<{ karkunId: string; isCoordinator?: boolean }>;
+  members?: Array<{ karkunId: string; role?: string }>;
   features?: string[];
   discussionsWorkspaceId?: string;
   dmsWorkspaceId?: string;

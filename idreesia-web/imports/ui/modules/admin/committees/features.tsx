@@ -5,7 +5,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { Alert, Popconfirm, Spin, Switch, Table } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
-import { CommitteeFeatureCategories } from 'meteor/idreesia-common/constants/hr';
+import { CommitteeFeatureCategories } from 'meteor/idreesia-common/constants/organization';
 
 import type {
   AllCommitteeFeaturesQuery,

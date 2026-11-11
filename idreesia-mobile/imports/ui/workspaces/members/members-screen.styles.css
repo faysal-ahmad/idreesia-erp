@@ -31,3 +31,9 @@
   justify-content: center;
   padding: 4px 16px 12px;
 }
+
+.members-tabs {
+  margin: 0 12px 4px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}

@@ -1,6 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 
-import { CommitteeFeatures } from 'meteor/idreesia-common/constants/hr';
+import { CommitteeFeatures, CommitteeMemberRoleValues } from 'meteor/idreesia-common/constants/organization';
 
 import { identifiable, timestamps } from '../common';
 
@@ -26,9 +26,11 @@ export default new SimpleSchema({
   'members.$.karkunId': {
     type: String,
   },
-  'members.$.isCoordinator': {
-    type: Boolean,
-    optional: true,
+  // One of CommitteeMemberRoles: member, coordinator, guest or observer.
+  'members.$.role': {
+    type: String,
+    allowedValues: CommitteeMemberRoleValues,
+    defaultValue: 'member',
   },
   // Keys of the features enabled for this committee (see CommitteeFeatures).
   features: {

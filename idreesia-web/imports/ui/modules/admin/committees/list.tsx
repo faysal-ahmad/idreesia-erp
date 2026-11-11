@@ -6,7 +6,6 @@ import {
   DeleteOutlined,
   PlusCircleOutlined,
   SyncOutlined,
-  UserAddOutlined,
 } from '@ant-design/icons';
 import {
   Button,
@@ -34,11 +33,7 @@ import type {
 } from 'meteor/idreesia-common/types/client-operations';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
-import AddMemberDrawer from './add-member-drawer';
 import CommitteeForm, { type CommitteeFormValues } from './committee-form';
-import CommitteeMembersPanel, {
-  type CommitteeMember,
-} from './members-panel';
 
 const DEFAULT_PAGE_SIZE = 20;
 const TABLE_HEADER_ROW_HEIGHT = 55;
@@ -53,22 +48,16 @@ const LIST_ALL_COMMITTEES: TypedDocumentNode<
       _id
       name
       color
-      description
+      memberCount
+      guestCount
+      observerCount
       members {
         karkunId
-        isCoordinator
-        hasLoginAccount
-        hasChatAccount
-        hasDiscussionAccess
+        role
         karkun {
           _id
           sharedData {
             name
-            imageUrl
-            imageThumbnailUrl
-            cnicNumber
-            contactNumber1
-            contactNumber2
           }
         }
       }
@@ -128,9 +117,6 @@ const List = () => {
   const [removeCommittee] = useMutation(REMOVE_COMMITTEE, {
     refetchQueries: ['listAllCommittees'],
   });
-  const [addMemberCommitteeId, setAddMemberCommitteeId] = useState<
-    string | null
-  >(null);
 
   const updateScrollY = () => {
     requestAnimationFrame(() => {
@@ -219,14 +205,6 @@ const List = () => {
         }
       });
 
-  const handleAddMemberClicked = (record: CommitteeRow) => {
-    setAddMemberCommitteeId(record._id);
-  };
-
-  const handleCloseAddMemberDrawer = () => {
-    setAddMemberCommitteeId(null);
-  };
-
   const handleDeleteClicked = (record: CommitteeRow) => {
     removeCommittee({
       variables: {
@@ -248,35 +226,6 @@ const List = () => {
     if (nextPageSize != null) setPageSize(nextPageSize);
   };
 
-  const getCommitteeMembers = (record: CommitteeRow): CommitteeMember[] =>
-    (record.members ?? [])
-      .filter(
-        (member): member is NonNullable<typeof member> & { karkunId: string } =>
-          member?.karkunId != null
-      )
-      .map(member => ({
-        _id: member.karkunId,
-        name: member.karkun?.sharedData?.name ?? '',
-        imageUrl: member.karkun?.sharedData?.imageUrl,
-        imageThumbnailUrl: member.karkun?.sharedData?.imageThumbnailUrl,
-        cnicNumber: member.karkun?.sharedData?.cnicNumber,
-        contactNumber1: member.karkun?.sharedData?.contactNumber1,
-        contactNumber2: member.karkun?.sharedData?.contactNumber2,
-        isCoordinator: !!member.isCoordinator,
-        hasLoginAccount: !!member.hasLoginAccount,
-        hasChatAccount: !!member.hasChatAccount,
-        hasDiscussionAccess: member.hasDiscussionAccess ?? null,
-      }));
-
-  const addMemberCommittee = allCommittees.find(
-    committee => committee._id === addMemberCommitteeId
-  );
-  const addMemberIds = addMemberCommittee
-    ? getCommitteeMembers(addMemberCommittee).map(member => member._id)
-    : [];
-
-  // Only block on the first load; a refetch (e.g. after adding a member from
-  // the drawer) must not unmount the page, or the open drawer closes.
   if (loading && !data) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
@@ -316,9 +265,9 @@ const List = () => {
       title: 'Coordinators',
       key: 'coordinators',
       render: (_text: unknown, record: CommitteeRow) =>
-        getCommitteeMembers(record)
-          .filter(member => member.isCoordinator)
-          .map(member => member.name)
+        (record.members ?? [])
+          .filter(member => member?.role === 'coordinator')
+          .map(member => member?.karkun?.sharedData?.name)
           .filter(Boolean)
           .join(', '),
     },
@@ -327,25 +276,27 @@ const List = () => {
       key: 'members',
       width: 100,
       render: (_text: unknown, record: CommitteeRow) =>
-        record.members?.length ?? 0,
+        record.memberCount ?? 0,
     },
     {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-      ellipsis: true,
+      title: 'Guests',
+      key: 'guests',
+      width: 100,
+      render: (_text: unknown, record: CommitteeRow) =>
+        record.guestCount ?? 0,
+    },
+    {
+      title: 'Observers',
+      key: 'observers',
+      width: 100,
+      render: (_text: unknown, record: CommitteeRow) =>
+        record.observerCount ?? 0,
     },
     {
       key: 'action',
-      width: 96,
+      width: 64,
       render: (_text: unknown, record: CommitteeRow) => (
         <div className="list-actions-column">
-          <Tooltip title="Add Member">
-            <UserAddOutlined
-              className="list-actions-icon"
-              onClick={() => handleAddMemberClicked(record)}
-            />
-          </Tooltip>
           <Popconfirm
             title="Are you sure you want to delete this committee?"
             onConfirm={() => {
@@ -401,14 +352,6 @@ const List = () => {
           tableLayout="fixed"
           pagination={false}
           scroll={{ y: scrollY }}
-          expandable={{
-            expandedRowRender: (record: CommitteeRow) => (
-              <CommitteeMembersPanel
-                committeeId={record._id}
-                members={getCommitteeMembers(record)}
-              />
-            ),
-          }}
           footer={() => (
             <Pagination
               current={safePageIndex + 1}
@@ -437,12 +380,6 @@ const List = () => {
       >
         <CommitteeForm form={newForm} />
       </Modal>
-
-      <AddMemberDrawer
-        committeeId={addMemberCommitteeId}
-        memberIds={addMemberIds}
-        onClose={handleCloseAddMemberDrawer}
-      />
     </>
   );
 };

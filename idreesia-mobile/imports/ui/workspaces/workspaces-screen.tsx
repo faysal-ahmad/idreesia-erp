@@ -204,7 +204,12 @@ export const WorkspacesScreen = () => {
                 <List.Item
                   key={committee._id}
                   arrowIcon={expanded ? <UpOutline /> : <DownOutline />}
-                  description={committee.description || undefined}
+                  description={
+                    <>
+                      <div>Central Committee</div>
+                      {committee.description ? <div>{committee.description}</div> : null}
+                    </>
+                  }
                   prefix={
                     <span className="list-icon">
                       <FolderOutline />

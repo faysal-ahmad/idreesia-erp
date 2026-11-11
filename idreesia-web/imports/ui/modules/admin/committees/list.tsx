@@ -32,7 +32,7 @@ import type {
   RemoveCommitteeMutation,
   RemoveCommitteeMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
 import AddMemberDrawer from './add-member-drawer';
 import CommitteeForm, { type CommitteeFormValues } from './committee-form';
@@ -106,7 +106,7 @@ type CommitteeRow = NonNullable<
 > & { _id: string; name: string };
 
 const List = () => {
-  useBreadcrumbs(['HR', 'Committees']);
+  useBreadcrumbs(['Admin', 'Central Committees']);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(360);

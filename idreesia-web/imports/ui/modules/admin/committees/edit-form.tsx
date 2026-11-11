@@ -60,7 +60,7 @@ const EditForm = ({ history, location, match }: Props) => {
   const committeeById = data?.committeeById;
   const committeeName = committeeById?.name?.trim();
 
-  useDynamicBreadcrumbs(['HR', 'Committees', committeeName || 'Edit']);
+  useDynamicBreadcrumbs(['Admin', 'Central Committees', committeeName || 'Edit']);
 
   if (loading) {
     return (

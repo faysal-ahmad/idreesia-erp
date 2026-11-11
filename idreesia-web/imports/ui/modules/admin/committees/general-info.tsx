@@ -11,7 +11,7 @@ import type {
   UpdateCommitteeMutation,
   UpdateCommitteeMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
+import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   ColorField,
   InputTextField,

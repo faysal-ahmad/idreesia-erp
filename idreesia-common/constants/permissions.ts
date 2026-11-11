@@ -14,6 +14,9 @@ const Permissions = {
   ADMIN_MANAGE_DUPLICATE_PEOPLE: 'admin-manage-duplicate-people',
   ADMIN_VIEW_SECURITY_LOGS: 'admin-view-security-logs',
 
+  ADMIN_VIEW_COMMITTEES: 'admin-view-committees',
+  ADMIN_MANAGE_COMMITTEES: 'admin-manage-committees',
+
   // ****************************************************************************************
   // HR Module
   // ****************************************************************************************
@@ -27,9 +30,6 @@ const Permissions = {
   HR_VIEW_EMPLOYEES: 'hr-view-employees',
   HR_MANAGE_EMPLOYEES: 'hr-manage-employees',
   HR_MANAGE_EMPLOYEES_SETUP_DATA: 'hr-manage-employees-setup-data',
-
-  HR_VIEW_COMMITTEES: 'hr-view-committees',
-  HR_MANAGE_COMMITTEES: 'hr-manage-committees',
 
   // ****************************************************************************************
   // Security Module

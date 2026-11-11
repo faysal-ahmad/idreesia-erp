@@ -37,38 +37,38 @@ type CommitteeType {
 
 extend type Query {
   allCommittees: [CommitteeType]
-    @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
   committeeById(id: String!): CommitteeType
-    @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
   allCommitteeFeatures: [CommitteeFeatureType]
-    @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
 }
 
 extend type Mutation {
   createCommittee(name: String!, color: String, description: String): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   updateCommittee(id: String!, name: String!, color: String, description: String): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   removeCommittee(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
 
   addCommitteeMember(committeeId: String!, karkunId: String!): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   removeCommitteeMember(committeeId: String!, karkunId: String!): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   addCommitteeCoordinator(committeeId: String!, karkunId: String!): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   removeCommitteeCoordinator(committeeId: String!, karkunId: String!): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
 
   enableCommitteeFeature(committeeId: String!, featureKey: String!): Boolean!
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   disableCommitteeFeature(committeeId: String!, featureKey: String!): Boolean!
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   setCommitteeMemberDiscussionAccess(
     committeeId: String!
     karkunId: String!
     hasAccess: Boolean!
   ): Boolean
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
 }`;

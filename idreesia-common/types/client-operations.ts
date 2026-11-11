@@ -1681,6 +1681,113 @@ export type DistinctRegionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type DistinctRegionsQuery = { distinctRegions: Array<string | null> | null };
 
+export type HrCommitteeKarkunSearchQueryVariables = Exact<{
+  filter?: Types.KarkunFilter | null | undefined;
+}>;
+
+
+export type HrCommitteeKarkunSearchQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null> | null } | null };
+
+export type AddCommitteeMemberMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type AddCommitteeMemberMutation = { addCommitteeMember: { _id: string | null } | null };
+
+export type CommitteeByIdQueryVariables = Exact<{
+  id: string;
+}>;
+
+
+export type CommitteeByIdQuery = { committeeById: { _id: string | null, name: string | null, color: string | null, description: string | null, features: Array<string | null> | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+
+export type AllCommitteeFeaturesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllCommitteeFeaturesQuery = { allCommitteeFeatures: Array<{ key: string | null, name: string | null, description: string | null, category: string | null } | null> | null };
+
+export type EnableCommitteeFeatureMutationVariables = Exact<{
+  committeeId: string;
+  featureKey: string;
+}>;
+
+
+export type EnableCommitteeFeatureMutation = { enableCommitteeFeature: boolean };
+
+export type DisableCommitteeFeatureMutationVariables = Exact<{
+  committeeId: string;
+  featureKey: string;
+}>;
+
+
+export type DisableCommitteeFeatureMutation = { disableCommitteeFeature: boolean };
+
+export type UpdateCommitteeMutationVariables = Exact<{
+  id: string;
+  name: string;
+  color?: string | null | undefined;
+  description?: string | null | undefined;
+}>;
+
+
+export type UpdateCommitteeMutation = { updateCommittee: { _id: string | null, name: string | null } | null };
+
+export type ListAllCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, hasLoginAccount: boolean | null, hasChatAccount: boolean | null, hasDiscussionAccess: boolean | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null } | null> | null };
+
+export type CreateCommitteeMutationVariables = Exact<{
+  name: string;
+  color?: string | null | undefined;
+  description?: string | null | undefined;
+}>;
+
+
+export type CreateCommitteeMutation = { createCommittee: { _id: string | null, name: string | null } | null };
+
+export type RemoveCommitteeMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type RemoveCommitteeMutation = { removeCommittee: number | null };
+
+export type RemoveCommitteeMemberMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type RemoveCommitteeMemberMutation = { removeCommitteeMember: { _id: string | null } | null };
+
+export type AddCommitteeCoordinatorMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type AddCommitteeCoordinatorMutation = { addCommitteeCoordinator: { _id: string | null } | null };
+
+export type RemoveCommitteeCoordinatorMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+}>;
+
+
+export type RemoveCommitteeCoordinatorMutation = { removeCommitteeCoordinator: { _id: string | null } | null };
+
+export type SetCommitteeMemberDiscussionAccessMutationVariables = Exact<{
+  committeeId: string;
+  karkunId: string;
+  hasAccess: boolean;
+}>;
+
+
+export type SetCommitteeMemberDiscussionAccessMutation = { setCommitteeMemberDiscussionAccess: boolean | null };
+
 export type DeletedPersonByIdQueryVariables = Exact<{
   _id: string;
 }>;
@@ -2103,113 +2210,6 @@ export type PagedHrAuditLogsQueryVariables = Exact<{
 
 
 export type PagedHrAuditLogsQuery = { pagedHrAuditLogs: { totalResults: number | null, data: Array<{ _id: string | null, entityId: string | null, entityType: string | null, operationType: string | null, auditValues: Array<string | null> | null, operationTime: string | null, operationBy: string | null, operationByName: string | null, operationByImageUrl: string | null, operationByImageThumbnailUrl: string | null } | null> | null } | null };
-
-export type HrCommitteeKarkunSearchQueryVariables = Exact<{
-  filter?: Types.KarkunFilter | null | undefined;
-}>;
-
-
-export type HrCommitteeKarkunSearchQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null> | null } | null };
-
-export type AddCommitteeMemberMutationVariables = Exact<{
-  committeeId: string;
-  karkunId: string;
-}>;
-
-
-export type AddCommitteeMemberMutation = { addCommitteeMember: { _id: string | null } | null };
-
-export type CommitteeByIdQueryVariables = Exact<{
-  id: string;
-}>;
-
-
-export type CommitteeByIdQuery = { committeeById: { _id: string | null, name: string | null, color: string | null, description: string | null, features: Array<string | null> | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
-
-export type AllCommitteeFeaturesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AllCommitteeFeaturesQuery = { allCommitteeFeatures: Array<{ key: string | null, name: string | null, description: string | null, category: string | null } | null> | null };
-
-export type EnableCommitteeFeatureMutationVariables = Exact<{
-  committeeId: string;
-  featureKey: string;
-}>;
-
-
-export type EnableCommitteeFeatureMutation = { enableCommitteeFeature: boolean };
-
-export type DisableCommitteeFeatureMutationVariables = Exact<{
-  committeeId: string;
-  featureKey: string;
-}>;
-
-
-export type DisableCommitteeFeatureMutation = { disableCommitteeFeature: boolean };
-
-export type UpdateCommitteeMutationVariables = Exact<{
-  id: string;
-  name: string;
-  color?: string | null | undefined;
-  description?: string | null | undefined;
-}>;
-
-
-export type UpdateCommitteeMutation = { updateCommittee: { _id: string | null, name: string | null } | null };
-
-export type ListAllCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ListAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null, color: string | null, description: string | null, members: Array<{ karkunId: string | null, isCoordinator: boolean | null, hasLoginAccount: boolean | null, hasChatAccount: boolean | null, hasDiscussionAccess: boolean | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null } | null> | null };
-
-export type CreateCommitteeMutationVariables = Exact<{
-  name: string;
-  color?: string | null | undefined;
-  description?: string | null | undefined;
-}>;
-
-
-export type CreateCommitteeMutation = { createCommittee: { _id: string | null, name: string | null } | null };
-
-export type RemoveCommitteeMutationVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type RemoveCommitteeMutation = { removeCommittee: number | null };
-
-export type RemoveCommitteeMemberMutationVariables = Exact<{
-  committeeId: string;
-  karkunId: string;
-}>;
-
-
-export type RemoveCommitteeMemberMutation = { removeCommitteeMember: { _id: string | null } | null };
-
-export type AddCommitteeCoordinatorMutationVariables = Exact<{
-  committeeId: string;
-  karkunId: string;
-}>;
-
-
-export type AddCommitteeCoordinatorMutation = { addCommitteeCoordinator: { _id: string | null } | null };
-
-export type RemoveCommitteeCoordinatorMutationVariables = Exact<{
-  committeeId: string;
-  karkunId: string;
-}>;
-
-
-export type RemoveCommitteeCoordinatorMutation = { removeCommitteeCoordinator: { _id: string | null } | null };
-
-export type SetCommitteeMemberDiscussionAccessMutationVariables = Exact<{
-  committeeId: string;
-  karkunId: string;
-  hasAccess: boolean;
-}>;
-
-
-export type SetCommitteeMemberDiscussionAccessMutation = { setCommitteeMemberDiscussionAccess: boolean | null };
 
 export type ComposerHrCommitteeOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 

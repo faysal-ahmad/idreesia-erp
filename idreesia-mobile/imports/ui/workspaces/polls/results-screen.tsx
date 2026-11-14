@@ -1,5 +1,5 @@
 import React from 'react';
-import { Collapse, ProgressBar } from 'antd-mobile';
+import { ProgressBar } from 'antd-mobile';
 import { PieOutline } from 'antd-mobile-icons';
 import { useQuery } from '@apollo/client/react';
 
@@ -59,18 +59,6 @@ export const ResultsScreen = () => {
                 <span className="poll-stat-value">{results.totalVoters ?? 0}</span>
                 <span className="poll-stat-label">Voters</span>
               </div>
-              {results.eligibleCount != null && (
-                <div className="poll-stat">
-                  <span className="poll-stat-value">{results.eligibleCount}</span>
-                  <span className="poll-stat-label">Eligible</span>
-                </div>
-              )}
-              {results.turnout != null && (
-                <div className="poll-stat">
-                  <span className="poll-stat-value">{results.turnout}%</span>
-                  <span className="poll-stat-label">Turnout</span>
-                </div>
-              )}
             </section>
 
             {(results.questions ?? []).map((question, index) => {
@@ -109,14 +97,6 @@ export const ResultsScreen = () => {
                 </section>
               );
             })}
-
-            {!!results.nonVoters?.length && (
-              <Collapse className="poll-non-voters">
-                <Collapse.Panel key="non-voters" title={`Did not vote (${results.nonVoters.length})`}>
-                  {names(results.nonVoters)}
-                </Collapse.Panel>
-              </Collapse>
-            )}
           </>
         );
       }}

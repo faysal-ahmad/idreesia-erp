@@ -27,6 +27,8 @@ enum Permission {
   ADMIN_MANAGE_DELETED_PEOPLE
   ADMIN_MANAGE_DUPLICATE_PEOPLE
   ADMIN_VIEW_SECURITY_LOGS
+  ADMIN_VIEW_COMMITTEES
+  ADMIN_MANAGE_COMMITTEES
 
   HR_MANAGE_KARKUNS_SETUP_DATA
   HR_DELETE_DATA
@@ -36,8 +38,6 @@ enum Permission {
   HR_VIEW_EMPLOYEES
   HR_MANAGE_EMPLOYEES
   HR_MANAGE_EMPLOYEES_SETUP_DATA
-  HR_VIEW_COMMITTEES
-  HR_MANAGE_COMMITTEES
 
   IN_MANAGE_SETUP_DATA
   IN_MANAGE_STOCK_ITEMS
@@ -743,78 +743,6 @@ type InboxAttachmentType {
 extend type Query {
   pagedHrAuditLogs(filter: AuditLogFilter): PagedAuditLogType
     @checkPermissions(permissions: [HR_VIEW_AUDIT_LOGS])
-}
-
-type CommitteeMemberType {
-  karkunId: String
-  isCoordinator: Boolean
-  karkun: PersonType
-  # The person has an ERP user.
-  hasLoginAccount: Boolean
-  # That user has a chat account.
-  hasChatAccount: Boolean
-  # That chat account is in the committee's discussion group. Null when
-  # Discussions is not enabled (or chat could not be reached).
-  hasDiscussionAccess: Boolean
-}
-
-type CommitteeFeatureType {
-  key: String
-  name: String
-  description: String
-  category: String
-}
-
-type CommitteeType {
-  _id: String
-  name: String
-  color: String
-  description: String
-  members: [CommitteeMemberType]
-  features: [String]
-
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-
-extend type Query {
-  allCommittees: [CommitteeType]
-    @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
-  committeeById(id: String!): CommitteeType
-    @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
-  allCommitteeFeatures: [CommitteeFeatureType]
-    @checkPermissions(permissions: [HR_VIEW_COMMITTEES, HR_MANAGE_COMMITTEES])
-}
-
-extend type Mutation {
-  createCommittee(name: String!, color: String, description: String): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
-  updateCommittee(id: String!, name: String!, color: String, description: String): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
-  removeCommittee(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
-
-  addCommitteeMember(committeeId: String!, karkunId: String!): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
-  removeCommitteeMember(committeeId: String!, karkunId: String!): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
-  addCommitteeCoordinator(committeeId: String!, karkunId: String!): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
-  removeCommitteeCoordinator(committeeId: String!, karkunId: String!): CommitteeType
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
-
-  enableCommitteeFeature(committeeId: String!, featureKey: String!): Boolean!
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
-  disableCommitteeFeature(committeeId: String!, featureKey: String!): Boolean!
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
-  setCommitteeMemberDiscussionAccess(
-    committeeId: String!
-    karkunId: String!
-    hasAccess: Boolean!
-  ): Boolean
-    @checkPermissions(permissions: [HR_MANAGE_COMMITTEES])
 }
 
 type DutyLocationType {
@@ -1908,6 +1836,97 @@ extend type Mutation {
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
 }
 
+type CommitteeMemberType {
+  karkunId: String
+  # member, coordinator, guest or observer.
+  role: String
+  isCoordinator: Boolean
+  karkun: PersonType
+  # The person has an ERP user.
+  hasLoginAccount: Boolean
+  # That user has a chat account.
+  hasChatAccount: Boolean
+  # That chat account is in the committee's discussion group. Null when
+  # Discussions is not enabled (or chat could not be reached).
+  hasDiscussionAccess: Boolean
+}
+
+type CommitteeFeatureType {
+  key: String
+  name: String
+  description: String
+  category: String
+}
+
+type CommitteeMembersPageType {
+  totalResults: Int
+  data: [CommitteeMemberType]
+}
+
+type CommitteeType {
+  _id: String
+  name: String
+  color: String
+  description: String
+  members: [CommitteeMemberType]
+  # Coordinators plus members.
+  memberCount: Int
+  guestCount: Int
+  observerCount: Int
+  features: [String]
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allCommittees: [CommitteeType]
+    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
+  committeeById(id: String!): CommitteeType
+    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
+  # One page of the members with any of the given roles, coordinators first
+  # and then by name.
+  committeeMembers(
+    committeeId: String!
+    roles: [String!]!
+    pageIndex: Int!
+    pageSize: Int!
+  ): CommitteeMembersPageType
+    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
+  allCommitteeFeatures: [CommitteeFeatureType]
+    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
+}
+
+extend type Mutation {
+  createCommittee(name: String!, color: String, description: String): CommitteeType
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
+  updateCommittee(id: String!, name: String!, color: String, description: String): CommitteeType
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
+  removeCommittee(_id: String!): Int
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
+
+  # role defaults to member.
+  addCommitteeMember(committeeId: String!, karkunId: String!, role: String): CommitteeType
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
+  removeCommitteeMember(committeeId: String!, karkunId: String!): CommitteeType
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
+  setCommitteeMemberRole(committeeId: String!, karkunId: String!, role: String!): CommitteeType
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
+
+  enableCommitteeFeature(committeeId: String!, featureKey: String!): Boolean!
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
+  disableCommitteeFeature(committeeId: String!, featureKey: String!): Boolean!
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
+  setCommitteeMemberDiscussionAccess(
+    committeeId: String!
+    karkunId: String!
+    hasAccess: Boolean!
+  ): Boolean
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
+}
+
 type CityMehfilType {
   _id: String
   cityId: String
@@ -2708,6 +2727,8 @@ extend type Mutation {
 type WorkspaceCommitteeMemberType {
   karkunId: String
   isCoordinator: Boolean
+  # member, coordinator, guest or observer.
+  role: String
   name: String
   imageUrl: String
   imageThumbnailUrl: String
@@ -2732,6 +2753,10 @@ type WorkspaceCommitteeType {
   # Keys of the features enabled for this committee (e.g. 'discussions').
   features: [String]
   members: [WorkspaceCommitteeMemberType]
+  # Coordinators plus members.
+  memberCount: Int
+  guestCount: Int
+  observerCount: Int
 }
 
 type WorkspaceKarkunType {
@@ -2768,9 +2793,11 @@ extend type Query {
 }
 
 extend type Mutation {
+  # role is member (the default) or guest. Observers are managed by admins.
   workspaceAddCommitteeMember(
     committeeId: String!
     karkunId: String!
+    role: String
   ): WorkspaceCommitteeType
   workspaceRemoveCommitteeMember(
     committeeId: String!
@@ -2782,6 +2809,13 @@ extend type Mutation {
     committeeId: String!
     karkunId: String!
     hasAccess: Boolean!
+  ): Boolean
+  # Makes a member a coordinator, or a regular member again. The last
+  # coordinator cannot be demoted.
+  workspaceSetCommitteeMemberCoordinator(
+    committeeId: String!
+    karkunId: String!
+    isCoordinator: Boolean!
   ): Boolean
 }
 
@@ -3134,9 +3168,11 @@ type WorkspaceDocumentsInfoType {
       versionId: String!
     ): Boolean
 
+    # The lock lasts durationMinutes, at most 7 days (10080).
     workspaceCheckOutDocument(
       committeeId: String!
       documentId: String!
+      durationMinutes: Int!
       note: String
     ): Boolean
     workspaceCheckInDocument(committeeId: String!, documentId: String!): Boolean
@@ -3663,17 +3699,56 @@ extend type Query {
   ): WorkspaceNightStayType
 }
 
+type NotificationType {
+  _id: String
+  module: String
+  # The committee the notification belongs to.
+  committeeId: String
+  entityType: String
+  entityId: String
+  eventType: String
+  eventDetails: String
+  createdAt: String
+  updatedAt: String
+  # Absent when the notification is for everyone in the workspace.
+  recipientUserId: String
+  actorUserId: String
+  # The module's structured details, as JSON.
+  data: String
+  isRead: Boolean
+}
+
+# Unread notifications in one module of one committee.
+type NotificationCountType {
+  committeeId: String
+  module: String
+  unreadCount: Int
+}
+
+extend type Query {
+  # Most recently changed first. 'limit' defaults to 100; 'offset' skips that
+  # many (for loading more). 'committeeId' and 'module' narrow it to one
+  # committee's / one module's notifications.
+  myNotifications(
+    limit: Int
+    offset: Int
+    committeeId: String
+    module: String
+  ): [NotificationType]
+  # Only the unread counts, one row per committee and module that has any.
+  myNotificationCounts: [NotificationCountType]
+  myUnreadNotificationCount: Int
+}
+
+extend type Mutation {
+  markNotificationsRead(ids: [String]!): Boolean!
+}
+
 type WorkspacePollsInfoType {
     # The logged-in user is a coordinator: can create and manage polls.
     canManage: Boolean
     # The logged-in user's voter id (karkun id), if they can vote.
     myVoterId: String
-  }
-
-  type WorkspacePollMemberType {
-    voterId: String
-    name: String
-    isCoordinator: Boolean
   }
 
   type WorkspacePollOptionType {
@@ -3705,7 +3780,6 @@ type WorkspacePollsInfoType {
     # draft, open, closed or cancelled
     status: String
     anonymous: Boolean
-    showResultsWhileOpen: Boolean
     closesAt: String
     openedAt: String
     # Set when the poll has closed. closedByName is empty when it closed
@@ -3716,8 +3790,6 @@ type WorkspacePollsInfoType {
     cancelledByName: String
     cancellationReason: String
     questions: [WorkspacePollQuestionType]
-    eligibleVoterIds: [String]
-    eligibleCount: Int
     voteCount: Int
     # The logged-in user can vote in this poll.
     isEligible: Boolean
@@ -3766,11 +3838,6 @@ type WorkspacePollsInfoType {
     anonymous: Boolean
     closedAt: String
     totalVoters: Int
-    eligibleCount: Int
-    # Percentage of eligible voters who voted.
-    turnout: Float
-    # Eligible voters who didn't vote. Unset for anonymous polls.
-    nonVoters: [WorkspacePollVoterType]
     questions: [WorkspacePollQuestionResultType]
   }
 
@@ -3811,9 +3878,6 @@ type WorkspacePollsInfoType {
     closesAt: String!
     # Drafts only.
     anonymous: Boolean
-    showResultsWhileOpen: Boolean
-    # Drafts only. Empty: every committee member.
-    eligibleVoterIds: [String]
     # Drafts only.
     questions: [WorkspacePollQuestionInput]
   }
@@ -3825,8 +3889,6 @@ type WorkspacePollsInfoType {
 
   extend type Query {
     workspacePollsInfo(committeeId: String!): WorkspacePollsInfoType
-    # The committee's members, who can be made eligible to vote.
-    workspacePollMembers(committeeId: String!): [WorkspacePollMemberType]
     # view: open (default), closed, drafts (coordinators) or all.
     workspacePolls(
       committeeId: String!
@@ -3841,11 +3903,6 @@ type WorkspacePollsInfoType {
       committeeId: String!
       pollId: String!
     ): WorkspacePollResultsType
-    # Coordinators only.
-    workspacePollVoters(
-      committeeId: String!
-      pollId: String!
-    ): [WorkspacePollVoterType]
     # Coordinators only. Newest first; pass the last entry's 'at' as
     # 'before' for the next page.
     workspacePollActivity(
@@ -3866,12 +3923,6 @@ type WorkspacePollsInfoType {
       committeeId: String!
       pollId: String!
       input: WorkspacePollInput!
-    ): WorkspacePollType
-    # Adds members to an open poll's eligible voters.
-    workspaceAddPollVoters(
-      committeeId: String!
-      pollId: String!
-      voterIds: [String]!
     ): WorkspacePollType
     workspaceOpenPoll(
       committeeId: String!
@@ -3901,4 +3952,344 @@ type WorkspacePollsInfoType {
       committeeId: String!
       pollId: String!
     ): WorkspacePollType
+  }
+
+type WorkspaceProjectsInfoType {
+    # The logged-in user is a coordinator: can create projects and standalone
+    # tasks.
+    canManage: Boolean
+    # The logged-in user's person (karkun) id.
+    myPersonId: String
+  }
+
+  type WorkspaceProjectMemberType {
+    personId: String
+    name: String
+    isCoordinator: Boolean
+  }
+
+  type WorkspaceProjectParticipantType {
+    personId: String
+    name: String
+  }
+
+  type WorkspaceProjectType {
+    _id: String
+    title: String
+    objective: String
+    description: String
+    # planned, active, on-hold, completed or cancelled
+    status: String
+    participants: [WorkspaceProjectParticipantType]
+    participantCount: Int
+    isParticipant: Boolean
+    # The logged-in user is a coordinator.
+    canManage: Boolean
+    startDate: String
+    targetDate: String
+    isOverdue: Boolean
+    taskCount: Int
+    doneCount: Int
+    openTaskCount: Int
+    # 0-100, from the project's tasks.
+    progress: Int
+    tags: [String]
+    completedAt: String
+    completedByName: String
+    createdAt: String
+    createdByName: String
+    updatedAt: String
+    updatedByName: String
+  }
+
+  type PagedWorkspaceProjectType {
+    data: [WorkspaceProjectType]
+    totalResults: Int
+  }
+
+  type WorkspaceTaskType {
+    _id: String
+    # Unset for a standalone task.
+    projectId: String
+    projectTitle: String
+    title: String
+    description: String
+    assigneeId: String
+    assigneeName: String
+    dueDate: String
+    # todo, in-progress, blocked, done or cancelled
+    status: String
+    # low, normal, high or urgent
+    priority: String
+    # 0-100
+    progress: Int
+    # Open and past its due date.
+    isOverdue: Boolean
+    tags: [String]
+    commentCount: Int
+    # The logged-in user can edit and delete the task.
+    canManage: Boolean
+    # The logged-in user can change its status and progress.
+    canUpdate: Boolean
+    completedAt: String
+    completedByName: String
+    createdAt: String
+    createdByName: String
+    updatedAt: String
+    updatedByName: String
+  }
+
+  type PagedWorkspaceTaskType {
+    data: [WorkspaceTaskType]
+    totalResults: Int
+  }
+
+  type WorkspaceTaskCommentType {
+    _id: String
+    taskId: String
+    text: String
+    authorName: String
+    isOwn: Boolean
+    canDelete: Boolean
+    createdAt: String
+  }
+
+  type PagedWorkspaceTaskCommentType {
+    data: [WorkspaceTaskCommentType]
+    totalResults: Int
+  }
+
+  type WorkspaceProjectsActivityType {
+    _id: String
+    action: String
+    entityType: String
+    entityId: String
+    projectId: String
+    taskId: String
+    userName: String
+    at: String
+    # JSON
+    details: String
+  }
+
+  input WorkspaceProjectInput {
+    title: String!
+    objective: String
+    description: String
+    participantIds: [String]
+    startDate: String
+    targetDate: String
+    tags: [String]
+  }
+
+  input WorkspaceTaskInput {
+    title: String!
+    description: String
+    # One assignee. On a project task they become a project participant.
+    assigneeId: String
+    dueDate: String
+    priority: String
+    tags: [String]
+    # On create only.
+    projectId: String
+  }
+
+  type WorkspaceProjectDiscussionInfoType {
+    canPost: Boolean
+    # Coordinators can pin messages.
+    canPin: Boolean
+  }
+
+  extend type Query {
+    workspaceProjectsInfo(committeeId: String!): WorkspaceProjectsInfoType
+    # The committee's members, who can own or take part in projects.
+    workspaceProjectMembers(committeeId: String!): [WorkspaceProjectMemberType]
+    # view: active (default), completed, mine or all.
+    workspaceProjects(
+      committeeId: String!
+      view: String
+      text: String
+      pageIndex: Int
+      pageSize: Int
+    ): PagedWorkspaceProjectType
+    workspaceProjectById(
+      committeeId: String!
+      projectId: String!
+    ): WorkspaceProjectType
+    # view: open (default), mine, overdue, done or all.
+    workspaceTasks(
+      committeeId: String!
+      view: String
+      projectId: String
+      standalone: Boolean
+      assigneeId: String
+      priority: String
+      text: String
+      pageIndex: Int
+      pageSize: Int
+    ): PagedWorkspaceTaskType
+    workspaceTaskById(committeeId: String!, taskId: String!): WorkspaceTaskType
+    workspaceTaskComments(
+      committeeId: String!
+      taskId: String!
+      pageIndex: Int
+      pageSize: Int
+    ): PagedWorkspaceTaskCommentType
+    # Coordinators only. Newest first; pass
+    # the last entry's 'at' as 'before' for the next page.
+    workspaceProjectsActivity(
+      committeeId: String!
+      projectId: String
+      taskId: String
+      before: String
+      limit: Int
+    ): [WorkspaceProjectsActivityType]
+
+    # The project's private chat; participants only.
+    workspaceProjectDiscussionInfo(
+      committeeId: String!
+      projectId: String!
+    ): WorkspaceProjectDiscussionInfoType
+    workspaceProjectDiscussionSync(
+      committeeId: String!
+      projectId: String!
+      since: String
+    ): DiscussionSyncType
+    workspaceProjectDiscussionThreadMessages(
+      committeeId: String!
+      projectId: String!
+      threadId: String!
+    ): [DiscussionMessageType]
+    workspaceProjectDiscussionMembers(
+      committeeId: String!
+      projectId: String!
+    ): [DiscussionMemberType]
+    workspaceProjectDiscussionPinnedMessages(
+      committeeId: String!
+      projectId: String!
+    ): [DiscussionMessageType]
+    workspaceProjectDiscussionStarredMessages(
+      committeeId: String!
+      projectId: String!
+    ): [DiscussionMessageType]
+    workspaceProjectDiscussionOlderMessages(
+      committeeId: String!
+      projectId: String!
+      before: String!
+    ): DiscussionMessagePageType
+    workspaceProjectDiscussionSearchMessages(
+      committeeId: String!
+      projectId: String!
+      searchText: String!
+      offset: Int
+    ): DiscussionMessagePageType
+  }
+
+  extend type Mutation {
+    # Coordinators only, like every project and task change below unless noted.
+    workspaceCreateProject(
+      committeeId: String!
+      input: WorkspaceProjectInput!
+    ): WorkspaceProjectType
+    workspaceUpdateProject(
+      committeeId: String!
+      projectId: String!
+      input: WorkspaceProjectInput!
+    ): WorkspaceProjectType
+    # force: complete the project even though tasks are still open.
+    workspaceSetProjectStatus(
+      committeeId: String!
+      projectId: String!
+      status: String!
+      force: Boolean
+    ): WorkspaceProjectType
+    workspaceAddProjectParticipants(
+      committeeId: String!
+      projectId: String!
+      personIds: [String]!
+    ): WorkspaceProjectType
+    # unassignTasks: unassign their open tasks in the project.
+    workspaceRemoveProjectParticipant(
+      committeeId: String!
+      projectId: String!
+      personId: String!
+      unassignTasks: Boolean
+    ): WorkspaceProjectType
+    # deleteTasks: delete its tasks too (default: they
+    # become standalone tasks).
+    workspaceDeleteProject(
+      committeeId: String!
+      projectId: String!
+      deleteTasks: Boolean
+    ): Boolean
+
+    workspaceCreateTask(
+      committeeId: String!
+      input: WorkspaceTaskInput!
+    ): WorkspaceTaskType
+    workspaceUpdateTask(
+      committeeId: String!
+      taskId: String!
+      input: WorkspaceTaskInput!
+    ): WorkspaceTaskType
+    workspaceDeleteTask(committeeId: String!, taskId: String!): Boolean
+    # Also by the task's assignee, for their own task.
+    workspaceSetTaskStatus(
+      committeeId: String!
+      taskId: String!
+      status: String!
+    ): WorkspaceTaskType
+    workspaceSetTaskProgress(
+      committeeId: String!
+      taskId: String!
+      progress: Int!
+    ): WorkspaceTaskType
+    # Any committee member.
+    workspaceAddTaskComment(
+      committeeId: String!
+      taskId: String!
+      text: String!
+    ): WorkspaceTaskCommentType
+    # The author or a coordinator.
+    workspaceDeleteTaskComment(
+      committeeId: String!
+      commentId: String!
+    ): Boolean
+
+    workspaceSendProjectDiscussionMessage(
+      committeeId: String!
+      projectId: String!
+      text: String!
+      threadId: String
+    ): Boolean!
+    workspaceReactToProjectDiscussionMessage(
+      committeeId: String!
+      projectId: String!
+      messageId: String!
+      emoji: String!
+      shouldReact: Boolean!
+    ): Boolean!
+    workspaceSetProjectDiscussionMessageStarred(
+      committeeId: String!
+      projectId: String!
+      messageId: String!
+      starred: Boolean!
+    ): Boolean!
+    workspaceSetProjectDiscussionMessagePinned(
+      committeeId: String!
+      projectId: String!
+      messageId: String!
+      pinned: Boolean!
+    ): Boolean!
+    workspaceEditProjectDiscussionMessage(
+      committeeId: String!
+      projectId: String!
+      messageId: String!
+      text: String!
+    ): Boolean!
+    workspaceDeleteProjectDiscussionMessage(
+      committeeId: String!
+      projectId: String!
+      messageId: String!
+    ): Boolean!
   }

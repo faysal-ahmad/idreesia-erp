@@ -29,6 +29,7 @@ import {
 import { message } from '/imports/ui/antd-feedback';
 
 import { describeActivity, formatDateTime, formatSize } from './format';
+import { CheckOutModal } from './modals';
 import type {
   DocumentActivity,
   DocumentItem,
@@ -79,6 +80,7 @@ const DocumentDrawer = ({
   const [hasMoreActivity, setHasMoreActivity] = useState(false);
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
 
   const load = useCallback(async () => {
     if (!documentId) return;
@@ -152,9 +154,7 @@ const DocumentDrawer = ({
         <Button
           icon={<LockOutlined />}
           loading={busy}
-          onClick={() =>
-            act(() => provider.checkOut(document._id), 'Checked out')
-          }
+          onClick={() => setCheckingOut(true)}
         >
           Check Out
         </Button>
@@ -202,11 +202,14 @@ const DocumentDrawer = ({
             message={
               lock.isMine
                 ? 'You have this document checked out. Check it in when you are done.'
-                : `Checked out by ${lock.userName ?? 'another user'} - it can't be changed until it is checked in.`
+                : `Checked out by ${lock.userName ?? 'another user'} - it can't be changed until it is checked in or the lock ends.`
             }
             description={
               <>
                 Since {formatDateTime(lock.lockedAt)}
+                {lock.expiresAt
+                  ? `, until ${formatDateTime(lock.expiresAt)}`
+                  : ''}
                 {lock.note ? ` - ${lock.note}` : ''}
               </>
             }
@@ -430,15 +433,28 @@ const DocumentDrawer = ({
   };
 
   return (
-    <Drawer
-      open={!!documentId}
-      title={document?.name ?? 'Document'}
-      width={640}
-      onClose={onClose}
-      destroyOnHidden
-    >
-      {renderBody()}
-    </Drawer>
+    <>
+      <Drawer
+        open={!!documentId}
+        title={document?.name ?? 'Document'}
+        width={640}
+        onClose={onClose}
+        destroyOnHidden
+      >
+        {renderBody()}
+      </Drawer>
+      <CheckOutModal
+        document={checkingOut ? document : null}
+        onCancel={() => setCheckingOut(false)}
+        onSubmit={async durationMinutes => {
+          await provider.checkOut(document!._id, durationMinutes);
+          message.success('Checked out', 2);
+          setCheckingOut(false);
+          await load();
+          onChanged();
+        }}
+      />
+    </>
   );
 };
 

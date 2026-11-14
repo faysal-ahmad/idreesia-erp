@@ -45,7 +45,7 @@ export interface DmsFolderDocument extends Timestamps {
 export interface DmsDocumentLock {
   userId: string;
   lockedAt: Date;
-  expiresAt?: Date;
+  expiresAt: Date;
   note?: string;
 }
 

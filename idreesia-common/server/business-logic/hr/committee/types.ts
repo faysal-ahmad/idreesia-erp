@@ -2,12 +2,13 @@
 export interface CommitteeDoc {
   _id: string;
   name: string;
-  members?: Array<{ karkunId: string; isCoordinator?: boolean }>;
+  members?: Array<{ karkunId: string; role?: string }>;
   features?: string[];
-  chatGroupId?: string;
+  discussionsWorkspaceId?: string;
   dmsWorkspaceId?: string;
   meetingsWorkspaceId?: string;
   pollsWorkspaceId?: string;
+  projectsWorkspaceId?: string;
 }
 
 /**

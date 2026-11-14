@@ -3,6 +3,9 @@
  * (server/business-logic/meetings).
  */
 
+/** The module's name as a headless module (notifications are keyed by it). */
+export const MEETINGS_MODULE = 'meetings';
+
 export const MeetingStatus = {
   SCHEDULED: 'scheduled',
   COMPLETED: 'completed',

@@ -103,12 +103,6 @@
   font-size: 12px;
 }
 
-/* Voters */
-.poll-voters .poll-voters-notice,
-.poll-voters .poll-voters-add {
-  margin-bottom: 12px;
-}
-
 .poll-activity {
   padding-top: 8px;
 }

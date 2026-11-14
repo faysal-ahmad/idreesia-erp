@@ -80,7 +80,6 @@ const ACTIONS: Record<string, string> = {
   'poll-created': 'created the poll',
   'poll-updated': 'edited the poll',
   'questions-updated': 'changed the questions',
-  'voters-added': 'added eligible voters',
   'poll-opened': 'opened the poll for voting',
   'poll-closed': 'closed the poll',
   'poll-reopened': 'reopened the poll',
@@ -93,10 +92,7 @@ const ACTIONS: Record<string, string> = {
 
 export const describeActivity = (entry: PollActivity) => {
   const text = ACTIONS[entry.action] ?? entry.action;
-  const { voterIds, reason } = entry.details;
-  if (entry.action === 'voters-added' && Array.isArray(voterIds)) {
-    return `${text} (${voterIds.length})`;
-  }
+  const { reason } = entry.details;
   if (entry.action === 'poll-cancelled' && typeof reason === 'string') {
     return `${text}: ${reason}`;
   }

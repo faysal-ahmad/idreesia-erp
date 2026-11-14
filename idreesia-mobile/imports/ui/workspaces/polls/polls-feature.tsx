@@ -5,15 +5,14 @@ import { matchPath, Redirect, Route, Switch, useLocation, useParams } from '../.
 import { type PollPart, WorkspacesPaths } from '../paths';
 import { ActivityScreen } from './activity-screen';
 import { PollFormScreen } from './poll-form-screen';
+import { PollNotificationsScreen } from './poll-notifications-screen';
 import { PollScreen } from './poll-screen';
 import { PollsScreen } from './polls-screen';
 import { ResultsScreen } from './results-screen';
-import { VotersScreen } from './voters-screen';
 
 const PART_SCREENS: Array<[PollPart, React.ComponentType]> = [
   ['edit', PollFormScreen],
   ['results', ResultsScreen],
-  ['voters', VotersScreen],
   ['activity', ActivityScreen],
 ];
 
@@ -31,7 +30,10 @@ export const PollsFeature = () => {
   const onNew = Boolean(
     matchPath(pathname, { path: WorkspacesPaths.committeeNewPollPattern, exact: true }),
   );
-  const pollMatch = onNew
+  const onNotifications = Boolean(
+    matchPath(pathname, { path: WorkspacesPaths.committeePollNotificationsPattern, exact: true }),
+  );
+  const pollMatch = onNew || onNotifications
     ? null
     : matchPath<{ pollId: string }>(pathname, { path: WorkspacesPaths.committeePollPattern });
 
@@ -48,6 +50,11 @@ export const PollsFeature = () => {
       <Switch>
         <Route exact path={WorkspacesPaths.committeePollsPattern} render={() => null} />
         <Route exact component={PollFormScreen} path={WorkspacesPaths.committeeNewPollPattern} />
+        <Route
+          exact
+          component={PollNotificationsScreen}
+          path={WorkspacesPaths.committeePollNotificationsPattern}
+        />
         <Route exact path={WorkspacesPaths.committeePollPattern} render={() => null} />
         {PART_SCREENS.map(([part, component]) => (
           <Route

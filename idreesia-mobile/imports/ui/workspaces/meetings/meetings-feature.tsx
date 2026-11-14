@@ -9,6 +9,7 @@ import { AgendaScreen } from './agenda-screen';
 import { AttachmentsScreen } from './attachments-screen';
 import { MeetingFormScreen } from './meeting-form-screen';
 import { MeetingScreen } from './meeting-screen';
+import { MeetingNotificationsScreen } from './meeting-notifications-screen';
 import { MeetingsScreen } from './meetings-screen';
 import { MinutesScreen } from './minutes-screen';
 import { ParticipantsScreen } from './participants-screen';
@@ -37,7 +38,10 @@ export const MeetingsFeature = () => {
   const onNew = Boolean(
     matchPath(pathname, { path: WorkspacesPaths.committeeNewMeetingPattern, exact: true }),
   );
-  const meetingMatch = onNew
+  const onNotifications = Boolean(
+    matchPath(pathname, { path: WorkspacesPaths.committeeMeetingNotificationsPattern, exact: true }),
+  );
+  const meetingMatch = onNew || onNotifications
     ? null
     : matchPath<{ meetingId: string }>(pathname, { path: WorkspacesPaths.committeeMeetingPattern });
 
@@ -54,6 +58,11 @@ export const MeetingsFeature = () => {
       <Switch>
         <Route exact path={WorkspacesPaths.committeeMeetingsPattern} render={() => null} />
         <Route exact component={MeetingFormScreen} path={WorkspacesPaths.committeeNewMeetingPattern} />
+        <Route
+          exact
+          component={MeetingNotificationsScreen}
+          path={WorkspacesPaths.committeeMeetingNotificationsPattern}
+        />
         <Route exact path={WorkspacesPaths.committeeMeetingPattern} render={() => null} />
         {PART_SCREENS.map(([part, component]) => (
           <Route

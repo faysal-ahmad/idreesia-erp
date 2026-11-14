@@ -2,7 +2,6 @@ const SubModuleNames = {
   jobs: 'Jobs',
   msDuties: 'Duties & Shifts',
   teams: 'Teams',
-  committees: 'Committees',
   employees: 'Employees',
   karkuns: 'Karkuns',
   attendanceReport: 'Attendance Report',

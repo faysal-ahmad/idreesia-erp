@@ -4,6 +4,7 @@ const SubModuleNames = {
   documents: 'Documents',
   meetings: 'Meetings',
   polls: 'Polls',
+  projects: 'Projects & Tasks',
   nightStayReport: 'Night Stay Report',
   monitoringAlerts: 'Monitoring Alerts',
   monitoringProfiles: 'Monitoring Profiles',

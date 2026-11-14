@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { List, Tabs, Tag } from 'antd-mobile';
-import { AddOutline, PieOutline } from 'antd-mobile-icons';
+import { useQuery } from '@apollo/client/react';
+import { Badge, List, Tabs, Tag } from 'antd-mobile';
+import { AddOutline, BellOutline, PieOutline } from 'antd-mobile-icons';
 
 import { PagedList } from '../../components';
 import { usePagedQuery } from '../../hooks';
 import { Page } from '../../layout';
 import { useHistory, useParams } from '../../router';
+import { MOBILE_MY_NOTIFICATION_COUNTS } from '../gql';
 import { WorkspacesPaths } from '../paths';
 import { describeClosing, pollStatus } from './format';
 import { MOBILE_WORKSPACE_POLLS } from './gql';
@@ -26,6 +28,14 @@ export const PollsScreen = () => {
   const history = useHistory();
   const [view, setView] = useState<View>('open');
   const { canManage } = usePollsInfo(committeeId);
+  // Unread poll notifications, for the bell. Best effort. cache-and-network
+  // so the count updates after reading them (this list stays mounted).
+  const { data: countData } = useQuery(MOBILE_MY_NOTIFICATION_COUNTS, {
+    fetchPolicy: 'cache-and-network',
+  });
+  const unreadCount = (countData?.myNotificationCounts ?? [])
+    .filter(row => row?.committeeId === committeeId && row.module === 'polls')
+    .reduce((total, row) => total + (row?.unreadCount ?? 0), 0);
 
   const paged = usePagedQuery(MOBILE_WORKSPACE_POLLS, {
     filter: { committeeId, view },
@@ -43,15 +53,22 @@ export const PollsScreen = () => {
       backTo={WorkspacesPaths.root}
       title="Polls"
       right={
-        canManage ? (
-          <div className="page-nav-actions">
+        <div className="page-nav-actions">
+          <Badge content={unreadCount > 0 ? unreadCount : null}>
+            <BellOutline
+              aria-label="Notifications"
+              className="page-nav-action"
+              onClick={() => history.push(WorkspacesPaths.committeePollNotifications(committeeId))}
+            />
+          </Badge>
+          {canManage && (
             <AddOutline
               aria-label="New poll"
               className="page-nav-action"
               onClick={() => history.push(WorkspacesPaths.committeeNewPoll(committeeId))}
             />
-          </div>
-        ) : undefined
+          )}
+        </div>
       }
     >
       <Tabs activeKey={view} className="polls-tabs" onChange={key => setView(key as View)}>
@@ -80,7 +97,7 @@ export const PollsScreen = () => {
                 <>
                   <div>{describeClosing(poll)}</div>
                   <div>
-                    {poll.eligibleCount ? `${poll.voteCount ?? 0} of ${poll.eligibleCount} voted` : `${poll.voteCount ?? 0} voted`}
+                    {`${poll.voteCount ?? 0} voted`}
                     {poll.anonymous ? ' · Anonymous' : ''}
                   </div>
                 </>

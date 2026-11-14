@@ -94,7 +94,7 @@ export async function getCommitteeMeetingMembers(committee: CommitteeDoc) {
     .map(member => ({
       participantId: member.karkunId,
       name: names.get(member.karkunId) ?? null,
-      isCoordinator: !!member.isCoordinator,
+      isCoordinator: member.role === 'coordinator',
     }))
     .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
 }

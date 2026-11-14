@@ -6,7 +6,6 @@ import React, {
 } from 'react';
 import { type History } from 'history';
 import {
-  ApartmentOutlined,
   AuditOutlined,
   ClusterOutlined,
   DollarOutlined,
@@ -105,18 +104,6 @@ const menuItems = [
     ],
   },
   {
-    key: 'committee-management',
-    icon: <ClusterOutlined style={IconStyle} />,
-    label: 'Committee Management',
-    children: [
-      {
-        key: 'committees',
-        icon: <ApartmentOutlined style={IconStyle} />,
-        label: 'Committees',
-      },
-    ],
-  },
-  {
     key: 'administration',
     icon: <ToolOutlined style={IconStyle} />,
     label: 'Administration',
@@ -204,12 +191,6 @@ const menuRouteMatches: MenuRouteMatch[] = [
     matches: pathname => isPath(pathname, paths.teamsPath),
   },
   {
-    key: 'committees',
-    openKeys: ['committee-management'],
-    subModuleName: SubModuleNames.committees,
-    matches: pathname => isPath(pathname, paths.committeesPath),
-  },
-  {
     key: 'audit-logs',
     openKeys: ['administration'],
     subModuleName: SubModuleNames.auditLogs,
@@ -288,10 +269,6 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'teams':
         history.push(paths.teamsPath);
-        break;
-
-      case 'committees':
-        history.push(paths.committeesPath);
         break;
 
       case 'karkuns':

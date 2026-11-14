@@ -38,6 +38,7 @@ import { message, modal } from '/imports/ui/antd-feedback';
 import DocumentDrawer from './document-drawer';
 import { FileTypeIcon, FolderIcon, formatDateTime, formatSize } from './format';
 import {
+  CheckOutModal,
   DocumentEditModal,
   MoveModal,
   NameModal,
@@ -112,6 +113,7 @@ const DocumentLibrary = ({ provider, rootName }: Props) => {
   const [moving, setMoving] = useState<MoveTarget | null>(null);
   const [editing, setEditing] = useState<DocumentItem | null>(null);
   const [newVersionOf, setNewVersionOf] = useState<DocumentItem | null>(null);
+  const [checkingOut, setCheckingOut] = useState<DocumentItem | null>(null);
   const [drawerDocumentId, setDrawerDocumentId] = useState<string | null>(null);
   const [drawerReloadKey, setDrawerReloadKey] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -355,9 +357,7 @@ const DocumentLibrary = ({ provider, rootName }: Props) => {
     if (key === 'details') setDrawerDocumentId(document._id);
     if (key === 'download') download(document);
     if (key === 'new-version') setNewVersionOf(document);
-    if (key === 'check-out') {
-      act(() => provider.checkOut(document._id), 'Checked out');
-    }
+    if (key === 'check-out') setCheckingOut(document);
     if (key === 'check-in') {
       act(() => provider.checkIn(document._id), 'Checked in');
     }
@@ -732,6 +732,16 @@ const DocumentLibrary = ({ provider, rootName }: Props) => {
           await provider.updateDocument(editing!._id, changes);
           message.success('Document saved', 2);
           setEditing(null);
+          documentChanged();
+        }}
+      />
+      <CheckOutModal
+        document={checkingOut}
+        onCancel={() => setCheckingOut(null)}
+        onSubmit={async durationMinutes => {
+          await provider.checkOut(checkingOut!._id, durationMinutes);
+          message.success('Checked out', 2);
+          setCheckingOut(null);
           documentChanged();
         }}
       />

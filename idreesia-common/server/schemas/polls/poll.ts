@@ -33,18 +33,6 @@ export default new SimpleSchema({
   anonymous: {
     type: Boolean,
   },
-  showResultsWhileOpen: {
-    type: Boolean,
-  },
-  // Opaque ids chosen by the caller (e.g. karkun ids). Unset means anyone
-  // the caller lets through can vote.
-  eligibleVoterIds: {
-    type: Array,
-    optional: true,
-  },
-  'eligibleVoterIds.$': {
-    type: String,
-  },
   // Array order is the order questions are shown in.
   questions: {
     type: Array,

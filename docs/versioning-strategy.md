@@ -75,6 +75,8 @@ ghcr.io/<owner>/idreesia-web:1
 ghcr.io/<owner>/idreesia-web:latest
 ```
 
+The mobile server image (`idreesia-mobile/Dockerfile.production`) is published with the same tags as `ghcr.io/<owner>/idreesia-mobile`. It serves hot code push to installed mobile apps and is deployed as its own App Platform component.
+
 The Rocket.Chat image (`containers/rocketchat/Dockerfile`) is published with the same tags as `ghcr.io/<owner>/idreesia-rocketchat`, so each ERP release has a matching Rocket.Chat image.
 
 ## Implementation

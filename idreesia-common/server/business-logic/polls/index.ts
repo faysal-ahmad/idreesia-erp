@@ -36,7 +36,6 @@ export {
   createPoll,
   getPoll,
   updatePoll,
-  addEligibleVoters,
   openPoll,
   closePoll,
   reopenPoll,
@@ -64,3 +63,6 @@ export type {
   PollQuestionResult,
   PollOptionResult,
 } from './results';
+
+export { POLLS_MODULE } from 'meteor/idreesia-common/constants/polls';
+export { pollsModule } from './module';

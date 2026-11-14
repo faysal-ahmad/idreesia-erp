@@ -497,11 +497,13 @@ export const WORKSPACE_CHECK_OUT_DOCUMENT: TypedDocumentNode<
   mutation workspaceCheckOutDocument(
     $committeeId: String!
     $documentId: String!
+    $durationMinutes: Int!
     $note: String
   ) {
     workspaceCheckOutDocument(
       committeeId: $committeeId
       documentId: $documentId
+      durationMinutes: $durationMinutes
       note: $note
     )
   }

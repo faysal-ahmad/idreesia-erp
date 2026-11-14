@@ -12,21 +12,10 @@ import type {
 } from '/imports/ui/modules/common/discussions';
 
 import {
-  WORKSPACE_DELETE_DISCUSSION_MESSAGE,
-  WORKSPACE_DISCUSSION_INFO,
-  WORKSPACE_DISCUSSION_MEMBERS,
-  WORKSPACE_DISCUSSION_OLDER_MESSAGES,
-  WORKSPACE_DISCUSSION_PINNED_MESSAGES,
-  WORKSPACE_DISCUSSION_SEARCH_MESSAGES,
-  WORKSPACE_DISCUSSION_STARRED_MESSAGES,
-  WORKSPACE_DISCUSSION_SYNC,
-  WORKSPACE_DISCUSSION_THREAD_MESSAGES,
-  WORKSPACE_EDIT_DISCUSSION_MESSAGE,
-  WORKSPACE_REACT_TO_DISCUSSION_MESSAGE,
-  WORKSPACE_SEND_DISCUSSION_MESSAGE,
-  WORKSPACE_SET_DISCUSSION_MESSAGE_PINNED,
-  WORKSPACE_SET_DISCUSSION_MESSAGE_STARRED,
-} from './gql';
+  committeeDiscussionScope,
+  type DiscussionOp,
+  type DiscussionScope,
+} from './discussion-scope';
 
 const POLL_INTERVAL_MS = 5_000;
 
@@ -97,36 +86,54 @@ const mapMessages = (
     .map(mapMessage);
 
 /**
- * Discussion data for a committee in Workspaces: GraphQL for messages and
- * actions, the Workspaces file routes for uploads and attachments.
+ * Discussion data for a place in Workspaces (a committee by default; see
+ * `DiscussionScope`): GraphQL for messages and actions, the Workspaces file
+ * routes for uploads and attachments.
  */
 export default class CommitteeDiscussionProvider implements DiscussionDataProvider {
   readonly pollIntervalMs = POLL_INTERVAL_MS;
 
   constructor(
     private readonly client: ApolloClient,
-    private readonly committeeId: string
+    committeeId: string,
+    private readonly scope: DiscussionScope = committeeDiscussionScope(
+      committeeId
+    )
   ) {}
 
-  async getInfo(): Promise<DiscussionInfo> {
+  private async query(
+    op: DiscussionOp,
+    variables: Record<string, unknown> = {}
+  ) {
     const { data } = await this.client.query({
-      query: WORKSPACE_DISCUSSION_INFO,
-      variables: { committeeId: this.committeeId },
+      query: op.document,
+      variables: { ...this.scope.variables, ...variables },
       fetchPolicy: 'network-only',
     });
-    return {
-      canPost: !!data?.workspaceDiscussionInfo?.canPost,
-      canPin: !!data?.workspaceDiscussionInfo?.canPin,
-    };
+     
+    return (data as any)?.[op.field];
+  }
+
+  private async mutate(op: DiscussionOp, variables: Record<string, unknown>) {
+    await this.client.mutate({
+      mutation: op.document,
+      variables: { ...this.scope.variables, ...variables },
+    });
+  }
+
+  async getInfo(): Promise<DiscussionInfo> {
+    const info = await this.query(this.scope.queries.info);
+    return { canPost: !!info?.canPost, canPin: !!info?.canPin };
   }
 
   async loadMembers(): Promise<DiscussionMember[]> {
-    const { data } = await this.client.query({
-      query: WORKSPACE_DISCUSSION_MEMBERS,
-      variables: { committeeId: this.committeeId },
-      fetchPolicy: 'network-only',
-    });
-    return (data?.workspaceDiscussionMembers ?? [])
+    const members = await this.query(this.scope.queries.members);
+    return ((members ?? []) as Array<{
+      username?: string | null;
+      name?: string | null;
+      imageUrl?: string | null;
+      imageThumbnailUrl?: string | null;
+    } | null>)
       .filter(
         (member): member is NonNullable<typeof member> & { username: string } =>
           !!member?.username
@@ -139,54 +146,35 @@ export default class CommitteeDiscussionProvider implements DiscussionDataProvid
   }
 
   async syncMessages(since?: string): Promise<DiscussionSync> {
-    const { data } = await this.client.query({
-      query: WORKSPACE_DISCUSSION_SYNC,
-      variables: { committeeId: this.committeeId, since: since ?? null },
-      fetchPolicy: 'network-only',
+    const sync = await this.query(this.scope.queries.sync, {
+      since: since ?? null,
     });
-    const sync = data?.workspaceDiscussionSync;
     return {
       messages: mapMessages(sync?.messages),
-      deletedIds: (sync?.deletedIds ?? []).filter(notNull),
+      deletedIds: ((sync?.deletedIds ?? []) as Array<string | null>).filter(
+        notNull
+      ),
       syncedAt: sync?.syncedAt ?? since ?? new Date().toISOString(),
       hasOlder: !!sync?.hasOlder,
     };
   }
 
   async loadThreadMessages(threadId: string): Promise<DiscussionMessage[]> {
-    const { data } = await this.client.query({
-      query: WORKSPACE_DISCUSSION_THREAD_MESSAGES,
-      variables: { committeeId: this.committeeId, threadId },
-      fetchPolicy: 'network-only',
-    });
-    return mapMessages(data?.workspaceDiscussionThreadMessages);
+    return mapMessages(
+      await this.query(this.scope.queries.thread, { threadId })
+    );
   }
 
   async loadPinnedMessages(): Promise<DiscussionMessage[]> {
-    const { data } = await this.client.query({
-      query: WORKSPACE_DISCUSSION_PINNED_MESSAGES,
-      variables: { committeeId: this.committeeId },
-      fetchPolicy: 'network-only',
-    });
-    return mapMessages(data?.workspaceDiscussionPinnedMessages);
+    return mapMessages(await this.query(this.scope.queries.pinned));
   }
 
   async loadStarredMessages(): Promise<DiscussionMessage[]> {
-    const { data } = await this.client.query({
-      query: WORKSPACE_DISCUSSION_STARRED_MESSAGES,
-      variables: { committeeId: this.committeeId },
-      fetchPolicy: 'network-only',
-    });
-    return mapMessages(data?.workspaceDiscussionStarredMessages);
+    return mapMessages(await this.query(this.scope.queries.starred));
   }
 
   async loadOlderMessages(before: string): Promise<DiscussionMessagePage> {
-    const { data } = await this.client.query({
-      query: WORKSPACE_DISCUSSION_OLDER_MESSAGES,
-      variables: { committeeId: this.committeeId, before },
-      fetchPolicy: 'network-only',
-    });
-    const page = data?.workspaceDiscussionOlderMessages;
+    const page = await this.query(this.scope.queries.older, { before });
     return { messages: mapMessages(page?.messages), hasMore: !!page?.hasMore };
   }
 
@@ -194,23 +182,17 @@ export default class CommitteeDiscussionProvider implements DiscussionDataProvid
     searchText: string,
     offset = 0
   ): Promise<DiscussionMessagePage> {
-    const { data } = await this.client.query({
-      query: WORKSPACE_DISCUSSION_SEARCH_MESSAGES,
-      variables: { committeeId: this.committeeId, searchText, offset },
-      fetchPolicy: 'network-only',
+    const page = await this.query(this.scope.queries.search, {
+      searchText,
+      offset,
     });
-    const page = data?.workspaceDiscussionSearchMessages;
     return { messages: mapMessages(page?.messages), hasMore: !!page?.hasMore };
   }
 
   async sendMessage(text: string, threadId?: string): Promise<void> {
-    await this.client.mutate({
-      mutation: WORKSPACE_SEND_DISCUSSION_MESSAGE,
-      variables: {
-        committeeId: this.committeeId,
-        text,
-        threadId: threadId ?? null,
-      },
+    await this.mutate(this.scope.mutations.send, {
+      text,
+      threadId: threadId ?? null,
     });
   }
 
@@ -219,48 +201,38 @@ export default class CommitteeDiscussionProvider implements DiscussionDataProvid
     emoji: string,
     shouldReact: boolean
   ): Promise<void> {
-    await this.client.mutate({
-      mutation: WORKSPACE_REACT_TO_DISCUSSION_MESSAGE,
-      variables: { committeeId: this.committeeId, messageId, emoji, shouldReact },
+    await this.mutate(this.scope.mutations.react, {
+      messageId,
+      emoji,
+      shouldReact,
     });
   }
 
   async setMessageStarred(messageId: string, starred: boolean): Promise<void> {
-    await this.client.mutate({
-      mutation: WORKSPACE_SET_DISCUSSION_MESSAGE_STARRED,
-      variables: { committeeId: this.committeeId, messageId, starred },
-    });
+    await this.mutate(this.scope.mutations.star, { messageId, starred });
   }
 
   async setMessagePinned(messageId: string, pinned: boolean): Promise<void> {
-    await this.client.mutate({
-      mutation: WORKSPACE_SET_DISCUSSION_MESSAGE_PINNED,
-      variables: { committeeId: this.committeeId, messageId, pinned },
-    });
+    await this.mutate(this.scope.mutations.pin, { messageId, pinned });
   }
 
   async editMessage(messageId: string, text: string): Promise<void> {
-    await this.client.mutate({
-      mutation: WORKSPACE_EDIT_DISCUSSION_MESSAGE,
-      variables: { committeeId: this.committeeId, messageId, text },
-    });
+    await this.mutate(this.scope.mutations.edit, { messageId, text });
   }
 
   async deleteMessage(messageId: string): Promise<void> {
-    await this.client.mutate({
-      mutation: WORKSPACE_DELETE_DISCUSSION_MESSAGE,
-      variables: { committeeId: this.committeeId, messageId },
-    });
+    await this.mutate(this.scope.mutations.delete, { messageId });
   }
 
   async uploadFile(file: File, threadId?: string): Promise<void> {
     const formData = new FormData();
     if (threadId) formData.append('threadId', threadId);
     formData.append('file', file, file.name);
-    const response = await fetch(
-      `/api/workspaces/committees/${this.committeeId}/discussions/files`,
-      { method: 'POST', headers: authHeaders(), body: formData }
-    );
+    const response = await fetch(this.scope.filesPath, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: formData,
+    });
     if (!response.ok) throw new Error(await readError(response));
   }
 

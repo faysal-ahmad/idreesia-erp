@@ -29,6 +29,7 @@ import {
   requireWorkspace,
   validateFile,
 } from './internal';
+import { notifyVersionAdded } from './notifications';
 
 export const sha256Of = (body: Buffer) =>
   createHash('sha256').update(body).digest('hex');
@@ -225,6 +226,7 @@ export async function uploadNewVersion(
     userId,
     details: { versionNumber: version.versionNumber, size: version.size },
   });
+  await notifyVersionAdded(document, version.versionNumber, userId);
   return version;
 }
 
@@ -316,6 +318,7 @@ export async function restoreVersion(
       restoredFromVersionNumber: source.versionNumber,
     },
   });
+  await notifyVersionAdded(document, version.versionNumber, userId);
   return version;
 }
 

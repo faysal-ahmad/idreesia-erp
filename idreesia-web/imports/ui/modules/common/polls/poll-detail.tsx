@@ -42,13 +42,12 @@ import {
 import type { PanelProps } from './panel-props';
 import PollFormModal from './poll-form-modal';
 import ResultsPanel from './results-panel';
-import type { Poll, PollMember, PollsDataProvider, PollsInfo } from './types';
-import VotersPanel from './voters-panel';
+import type { Poll, PollsDataProvider, PollsInfo } from './types';
 
 const showError = (error: unknown) =>
   message.error(error instanceof Error ? error.message : String(error));
 
-type TabKey = 'vote' | 'results' | 'voters' | 'activity';
+type TabKey = 'vote' | 'results' | 'activity';
 const TAB_PARAM = 'tab';
 
 /** Asking for an end time: to open a draft whose end time has passed, or to reopen. */
@@ -61,14 +60,13 @@ interface Props {
   onBack: () => void;
 }
 
-/** One poll: its details, voting, results and (for managers) voters and activity. */
+/** One poll: its details, voting, results and (for managers) activity. */
 const PollDetail = ({ provider, pollId, onBack }: Props) => {
   const history = useHistory();
   const location = useLocation();
   const tabParam = new URLSearchParams(location.search).get(TAB_PARAM);
 
   const [info, setInfo] = useState<PollsInfo | null>(null);
-  const [members, setMembers] = useState<PollMember[]>([]);
   const [poll, setPoll] = useState<Poll | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -81,14 +79,12 @@ const PollDetail = ({ provider, pollId, onBack }: Props) => {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [loadedInfo, loadedPoll, loadedMembers] = await Promise.all([
+      const [loadedInfo, loadedPoll] = await Promise.all([
         provider.getInfo(),
         provider.loadPoll(pollId),
-        provider.loadMembers(),
       ]);
       setInfo(loadedInfo);
       setPoll(loadedPoll);
-      setMembers(loadedMembers);
       setLoadError(null);
     } catch (error) {
       setLoadError(error instanceof Error ? error.message : String(error));
@@ -160,14 +156,13 @@ const PollDetail = ({ provider, pollId, onBack }: Props) => {
     provider,
     poll,
     info,
-    members,
     onPollChange: setPoll,
   };
 
   const tabKeys: TabKey[] = [
     'vote',
     'results',
-    ...(canManage ? (['voters', 'activity'] as TabKey[]) : []),
+    ...(canManage ? (['activity'] as TabKey[]) : []),
   ];
   const defaultTab: TabKey = isClosed && poll.canSeeResults ? 'results' : 'vote';
   const activeTab: TabKey = tabKeys.includes(tabParam as TabKey)
@@ -328,16 +323,7 @@ const PollDetail = ({ provider, pollId, onBack }: Props) => {
           {
             key: 'votes',
             label: 'Votes',
-            children: poll.eligibleCount
-              ? `${poll.voteCount} of ${poll.eligibleCount} eligible`
-              : poll.voteCount,
-          },
-          {
-            key: 'results',
-            label: 'Results',
-            children: poll.showResultsWhileOpen
-              ? 'Visible while voting is open'
-              : 'Visible once voting ends',
+            children: poll.voteCount,
           },
           {
             key: 'created',
@@ -377,11 +363,6 @@ const PollDetail = ({ provider, pollId, onBack }: Props) => {
           ...(canManage
             ? [
                 {
-                  key: 'voters',
-                  label: 'Voters',
-                  children: <VotersPanel {...panelProps} />,
-                },
-                {
                   key: 'activity',
                   label: 'Activity',
                   children: <ActivityPanel {...panelProps} />,
@@ -394,7 +375,6 @@ const PollDetail = ({ provider, pollId, onBack }: Props) => {
       <PollFormModal
         open={editing}
         poll={poll}
-        members={members}
         onCancel={() => setEditing(false)}
         onSubmit={async details => {
           if (await run(() => provider.updatePoll(poll._id, details), 'Poll saved')) {

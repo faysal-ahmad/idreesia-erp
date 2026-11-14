@@ -11,6 +11,11 @@ import {
 } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 
+import {
+  DMS_DEFAULT_LOCK_MINUTES,
+  DMS_LOCK_DURATION_OPTIONS,
+} from 'meteor/idreesia-common/constants/dms';
+
 import { message } from '/imports/ui/antd-feedback';
 
 import { formatSize } from './format';
@@ -84,6 +89,70 @@ export const NameModal = ({
           ]}
         >
           <Input autoFocus maxLength={255} />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+};
+
+// ---------------------------------------------------------------------------
+
+interface CheckOutModalProps {
+  /** The document to check out; the modal is open while it is set. */
+  document: DocumentItem | null;
+  onCancel: () => void;
+  /** Rejecting keeps the modal open and shows the error. */
+  onSubmit: (durationMinutes: number) => Promise<void>;
+}
+
+/** Asks how long to check a document out for (at most 7 days). */
+export const CheckOutModal = ({
+  document,
+  onCancel,
+  onSubmit,
+}: CheckOutModalProps) => {
+  const [form] = Form.useForm<{ minutes: number }>();
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (document) form.setFieldsValue({ minutes: DMS_DEFAULT_LOCK_MINUTES });
+  }, [document, form]);
+
+  const handleOk = async () => {
+    const { minutes } = await form.validateFields();
+    setSaving(true);
+    try {
+      await onSubmit(minutes);
+    } catch (error) {
+      showError(error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Modal
+      open={!!document}
+      title={document ? `Check out "${document.name}"` : 'Check out'}
+      okText="Check Out"
+      confirmLoading={saving}
+      onOk={handleOk}
+      onCancel={onCancel}
+      destroyOnHidden
+    >
+      <Form form={form} layout="vertical" onFinish={handleOk}>
+        <Form.Item
+          name="minutes"
+          label="Keep it checked out for"
+          extra="No one else can change the document until you check it in or this time is up."
+          rules={[{ required: true, message: 'Please choose a duration.' }]}
+        >
+          <Select
+            options={DMS_LOCK_DURATION_OPTIONS.map(option => ({
+              value: option.minutes,
+              label: option.label,
+            }))}
+          />
         </Form.Item>
       </Form>
     </Modal>

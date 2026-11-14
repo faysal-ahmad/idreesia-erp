@@ -6,6 +6,8 @@ import { backfillImageVectorData } from 'meteor/idreesia-common/server/business-
 import { backfillImageThumbnails } from 'meteor/idreesia-common/server/business-logic/common/backfill-image-thumbnails';
 import { moveImagesToStorage } from 'meteor/idreesia-common/server/business-logic/common/move-images-to-storage';
 import { removeMigratedImagesFromDb } from 'meteor/idreesia-common/server/business-logic/common/remove-migrated-images-from-db';
+import { publishExpiringLockNotifications } from 'meteor/idreesia-common/server/business-logic/dms';
+import { purgeNotifications } from 'meteor/idreesia-common/server/headless';
 import { createTodayDutyDayAttendances } from 'meteor/idreesia-common/server/business-logic/hr/duty-planning';
 import { getSystemUser } from './system-user';
 import { createProgressReporter } from './report-progress';
@@ -51,6 +53,25 @@ const JOB_DEFINITIONS_REGISTRY: JobDefinitionSeed[] = [
     defaultSchedule: '5 0 * * *',
     handler: async agendaJob => {
       await createTodayDutyDayAttendances(createProgressReporter(agendaJob));
+    },
+  },
+  {
+    name: 'publish-dms-lock-expiring-notifications',
+    displayName: 'Publish DMS Lock Expiring Notifications',
+    // Hourly: warns holders whose long document lock expires within a day.
+    // Republishing is a no-op, so reruns are safe.
+    defaultSchedule: '0 * * * *',
+    handler: async () => {
+      await publishExpiringLockNotifications();
+    },
+  },
+  {
+    name: 'purge-notifications',
+    displayName: 'Purge Notifications',
+    // Daily: removes expired notifications and ones older than 90 days.
+    defaultSchedule: '15 3 * * *',
+    handler: async () => {
+      await purgeNotifications();
     },
   },
   {

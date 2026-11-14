@@ -37,10 +37,10 @@ import {
   type PollsPageOptions,
   type PollsSortOrder,
 } from './internal';
+import { notifyCancelled, notifyClosed } from './notifications';
 import {
   assertQuestionsReady,
   buildQuestions,
-  normalizeVoterIds,
   type PollQuestionInput,
 } from './questions';
 
@@ -76,12 +76,8 @@ export interface CreatePollInput {
   description?: string;
   /** Results never name voters. Default false. */
   anonymous?: boolean;
-  /** Results can be seen before the poll closes. Default false. */
-  showResultsWhileOpen?: boolean;
   tags?: string[];
   metadata?: PollsMetadata;
-  /** Only these voters can vote. Unset or empty: no restriction. */
-  eligibleVoterIds?: string[];
   questions?: PollQuestionInput[];
 }
 
@@ -96,7 +92,6 @@ export async function createPoll(
   const closesAt = toDate(input.closesAt, 'End time');
   const description = normalizeText(input.description, 'Description');
   const metadata = validateMetadata(input.metadata);
-  const eligibleVoterIds = normalizeVoterIds(input.eligibleVoterIds);
 
   const date = new Date();
   const pollId = await Polls.insertAsync({
@@ -106,12 +101,6 @@ export async function createPoll(
     tags: normalizeTags(input.tags),
     ...(metadata ? { metadata } : {}),
     anonymous: toBoolean(input.anonymous, 'anonymous', false),
-    showResultsWhileOpen: toBoolean(
-      input.showResultsWhileOpen,
-      'showResultsWhileOpen',
-      false
-    ),
-    ...(eligibleVoterIds ? { eligibleVoterIds } : {}),
     questions: buildQuestions(input.questions),
     closesAt,
     status: PollStatus.DRAFT,
@@ -144,18 +133,14 @@ export interface UpdatePollInput {
   closesAt?: Date | string | number;
   /** Drafts only. */
   anonymous?: boolean;
-  showResultsWhileOpen?: boolean;
   tags?: string[];
   /** Replaces the whole object; null clears it. */
   metadata?: PollsMetadata | null;
-  /** Drafts only. Replaces the list; null or empty removes the restriction. */
-  eligibleVoterIds?: string[] | null;
 }
 
 /**
- * Changes a draft or open poll. Anonymity and the eligible voters can only
- * change while it is a draft; to add voters to an open poll, use
- * `addEligibleVoters`.
+ * Changes a draft or open poll. Anonymity can only change while it is a
+ * draft.
  */
 export async function updatePoll(
   pollId: string,
@@ -189,24 +174,11 @@ export async function updatePoll(
       $set.anonymous = anonymous;
     }
   }
-  if (changes.showResultsWhileOpen !== undefined) {
-    $set.showResultsWhileOpen = toBoolean(
-      changes.showResultsWhileOpen,
-      'showResultsWhileOpen',
-      false
-    );
-  }
   if (changes.tags !== undefined) $set.tags = normalizeTags(changes.tags);
   if (changes.metadata !== undefined) {
     const metadata = validateMetadata(changes.metadata);
     if (metadata) $set.metadata = metadata;
     else $unset.metadata = 1;
-  }
-  if (changes.eligibleVoterIds !== undefined) {
-    draftOnly = true;
-    const eligibleVoterIds = normalizeVoterIds(changes.eligibleVoterIds);
-    if (eligibleVoterIds) $set.eligibleVoterIds = eligibleVoterIds;
-    else $unset.eligibleVoterIds = 1;
   }
 
   const updated = await writePoll(
@@ -219,34 +191,6 @@ export async function updatePoll(
     key => changes[key as keyof UpdatePollInput] !== undefined
   );
   await logPoll(poll, PollsAction.POLL_UPDATED, userId, { changed });
-  return updated;
-}
-
-/** Adds voters to an open (or draft) poll's eligible list. */
-export async function addEligibleVoters(
-  pollId: string,
-  voterIds: string[],
-  userId: string
-): Promise<PollDocument> {
-  requireUserId(userId);
-  const poll = await requirePoll(pollId);
-  const ids = normalizeVoterIds(voterIds) ?? [];
-  if (!poll.eligibleVoterIds?.length) {
-    throw pollsError(
-      'CONFLICT',
-      'This poll has no eligible voter list; anyone allowed can already vote'
-    );
-  }
-  const current = new Set(poll.eligibleVoterIds);
-  const added = ids.filter(id => !current.has(id));
-  if (!added.length) return poll;
-  const updated = await writePoll(
-    poll,
-    userId,
-    { $set: { eligibleVoterIds: [...poll.eligibleVoterIds, ...added] } },
-    { allowed: EDITABLE_STATUSES }
-  );
-  await logPoll(poll, PollsAction.VOTERS_ADDED, userId, { voterIds: added });
   return updated;
 }
 
@@ -298,6 +242,7 @@ export async function closePoll(
     { allowed: OPEN_ONLY, checkRevision: false }
   );
   await logPoll(poll, PollsAction.POLL_CLOSED, userId);
+  await notifyClosed(updated, userId);
   return updated;
 }
 
@@ -352,6 +297,8 @@ export async function cancelPoll(
     userId,
     cancellationReason ? { reason: cancellationReason } : undefined
   );
+  // A draft was never visible to voters, so only an open poll is announced.
+  if (poll.status === PollStatus.OPEN) await notifyCancelled(updated, userId);
   return updated;
 }
 
@@ -503,10 +450,6 @@ export async function listVoterPolls(
   const selector: Record<string, unknown> = {
     workspaceId: workspaceSelector,
     ...buildFilter({ status, closesAfter, closesBefore, tags, metadata }),
-    $or: [
-      { eligibleVoterIds: id },
-      { eligibleVoterIds: { $exists: false } },
-    ],
   };
   if (voted !== undefined) {
     const ballots = await PollBallots.find(

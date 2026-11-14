@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "METEOR_PACKAGE_DIRS=../ meteor run --port 3200 --settings ./settings.sample.json",
+    "build-for-docker": "METEOR_PACKAGE_DIRS=../ meteor build --server-only --directory ./build",
     "start:android": "node ../scripts/run-mobile-device.mjs android",
     "start:ios": "node ../scripts/run-mobile-device.mjs ios",
     "build:android": "METEOR_PACKAGE_DIRS=../ meteor build ../build/idreesia-mobile-android --server http://localhost:3000 --directory",

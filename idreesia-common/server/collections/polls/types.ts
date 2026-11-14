@@ -50,9 +50,6 @@ export interface PollDocument extends Timestamps {
   tags: string[];
   metadata?: PollsMetadata;
   anonymous: boolean;
-  showResultsWhileOpen: boolean;
-  /** Opaque ids chosen by the caller. Unset: no restriction. */
-  eligibleVoterIds?: string[];
   questions: PollQuestion[];
   closesAt: Date;
   status: PollStatusValue;

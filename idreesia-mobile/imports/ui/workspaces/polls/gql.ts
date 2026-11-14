@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import type {
-  MobileWorkspaceAddPollVotersMutation,
-  MobileWorkspaceAddPollVotersMutationVariables,
+  MobileCommitteePollNotificationsQuery,
+  MobileCommitteePollNotificationsQueryVariables,
   MobileWorkspaceCancelPollMutation,
   MobileWorkspaceCancelPollMutationVariables,
   MobileWorkspaceCastPollVoteMutation,
@@ -19,16 +19,12 @@ import type {
   MobileWorkspacePollActivityQueryVariables,
   MobileWorkspacePollByIdQuery,
   MobileWorkspacePollByIdQueryVariables,
-  MobileWorkspacePollMembersQuery,
-  MobileWorkspacePollMembersQueryVariables,
   MobileWorkspacePollResultsQuery,
   MobileWorkspacePollResultsQueryVariables,
   MobileWorkspacePollsInfoQuery,
   MobileWorkspacePollsInfoQueryVariables,
   MobileWorkspacePollsQuery,
   MobileWorkspacePollsQueryVariables,
-  MobileWorkspacePollVotersQuery,
-  MobileWorkspacePollVotersQueryVariables,
   MobileWorkspaceReopenPollMutation,
   MobileWorkspaceReopenPollMutationVariables,
   MobileWorkspaceUpdatePollMutation,
@@ -45,7 +41,6 @@ const POLL_FIELDS = gql`
     description
     status
     anonymous
-    showResultsWhileOpen
     closesAt
     openedAt
     closedAt
@@ -66,8 +61,6 @@ const POLL_FIELDS = gql`
         text
       }
     }
-    eligibleVoterIds
-    eligibleCount
     voteCount
     isEligible
     hasVoted
@@ -91,20 +84,6 @@ export const MOBILE_WORKSPACE_POLLS_INFO: TypedDocumentNode<
     workspacePollsInfo(committeeId: $committeeId) {
       canManage
       myVoterId
-    }
-  }
-`;
-
-/** The committee members who can be made eligible to vote. */
-export const MOBILE_WORKSPACE_POLL_MEMBERS: TypedDocumentNode<
-  MobileWorkspacePollMembersQuery,
-  MobileWorkspacePollMembersQueryVariables
-> = gql`
-  query mobileWorkspacePollMembers($committeeId: String!) {
-    workspacePollMembers(committeeId: $committeeId) {
-      voterId
-      name
-      isCoordinator
     }
   }
 `;
@@ -160,12 +139,6 @@ export const MOBILE_WORKSPACE_POLL_RESULTS: TypedDocumentNode<
       anonymous
       closedAt
       totalVoters
-      eligibleCount
-      turnout
-      nonVoters {
-        voterId
-        name
-      }
       questions {
         questionId
         text
@@ -182,20 +155,6 @@ export const MOBILE_WORKSPACE_POLL_RESULTS: TypedDocumentNode<
           }
         }
       }
-    }
-  }
-`;
-
-/** Coordinators: who can vote and, for named polls, who has. */
-export const MOBILE_WORKSPACE_POLL_VOTERS: TypedDocumentNode<
-  MobileWorkspacePollVotersQuery,
-  MobileWorkspacePollVotersQueryVariables
-> = gql`
-  query mobileWorkspacePollVoters($committeeId: String!, $pollId: String!) {
-    workspacePollVoters(committeeId: $committeeId, pollId: $pollId) {
-      voterId
-      name
-      hasVoted
     }
   }
 `;
@@ -247,22 +206,6 @@ export const MOBILE_UPDATE_POLL: TypedDocumentNode<
     $input: WorkspacePollInput!
   ) {
     workspaceUpdatePoll(committeeId: $committeeId, pollId: $pollId, input: $input) {
-      ...MobileWorkspacePollFields
-    }
-  }
-  ${POLL_FIELDS}
-`;
-
-export const MOBILE_ADD_POLL_VOTERS: TypedDocumentNode<
-  MobileWorkspaceAddPollVotersMutation,
-  MobileWorkspaceAddPollVotersMutationVariables
-> = gql`
-  mutation mobileWorkspaceAddPollVoters(
-    $committeeId: String!
-    $pollId: String!
-    $voterIds: [String]!
-  ) {
-    workspaceAddPollVoters(committeeId: $committeeId, pollId: $pollId, voterIds: $voterIds) {
       ...MobileWorkspacePollFields
     }
   }
@@ -352,4 +295,21 @@ export const MOBILE_WITHDRAW_POLL_VOTE: TypedDocumentNode<
     }
   }
   ${POLL_FIELDS}
+`;
+
+// The committee's poll notifications for the signed-in user, newest first.
+export const MOBILE_COMMITTEE_POLL_NOTIFICATIONS: TypedDocumentNode<
+  MobileCommitteePollNotificationsQuery,
+  MobileCommitteePollNotificationsQueryVariables
+> = gql`
+  query mobileCommitteePollNotifications($committeeId: String!, $limit: Int!, $offset: Int) {
+    myNotifications(committeeId: $committeeId, module: "polls", limit: $limit, offset: $offset) {
+      _id
+      entityId
+      eventType
+      eventDetails
+      createdAt
+      isRead
+    }
+  }
 `;

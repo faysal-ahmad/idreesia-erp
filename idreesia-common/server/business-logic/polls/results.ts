@@ -37,22 +37,23 @@ export interface PollResults {
   closedAt?: Date;
   /** Number of ballots. */
   totalVoters: number;
-  /** Size of the eligible list, when the poll has one. */
-  eligibleCount?: number;
-  /** totalVoters / eligibleCount, 0-100, one decimal. */
-  turnout?: number;
-  /** Eligible voters who didn't vote. Named polls with a list only. */
-  nonVoterIds?: string[];
   questions: PollQuestionResult[];
 }
 
 const percent = (part: number, whole: number) =>
   whole ? Math.round((part / whole) * 1000) / 10 : 0;
 
-/** Whether a poll's results can be read now. */
-export const canSeeResults = (poll: PollDocument) =>
+/**
+ * Whether a poll's results can be read now: once it is closed, or, with
+ * `includeOpen`, while it is open. The caller sets `includeOpen` for the
+ * people who may follow a vote in progress (e.g. coordinators).
+ */
+export const canSeeResults = (
+  poll: PollDocument,
+  { includeOpen = false }: { includeOpen?: boolean } = {}
+) =>
   poll.status === PollStatus.CLOSED ||
-  (poll.status === PollStatus.OPEN && poll.showResultsWhileOpen);
+  (includeOpen && poll.status === PollStatus.OPEN);
 
 interface OptionTally {
   _id: { questionId: string; optionId: string };
@@ -66,17 +67,18 @@ interface QuestionTally {
 }
 
 /**
- * Vote counts per option, once the poll is closed (or while it is open, if
- * the poll shows results while open). Named polls also list who chose each
+ * Vote counts per option, once the poll is closed (or while it is open, with
+ * `includeOpen`). Named polls also list who chose each
  * option and who didn't vote; anonymous polls never name voters.
  */
 export async function getPollResults(
   pollId: string,
-  userId: string
+  userId: string,
+  options: { includeOpen?: boolean } = {}
 ): Promise<PollResults> {
   requireUserId(userId);
   const poll = await requirePoll(pollId);
-  if (!canSeeResults(poll)) {
+  if (!canSeeResults(poll, options)) {
     throw pollsError(
       'CONFLICT',
       poll.status === PollStatus.OPEN
@@ -150,8 +152,6 @@ export async function getPollResults(
   });
 
   const totalVoters = ballotVoters.length;
-  const eligible = poll.eligibleVoterIds?.length ? poll.eligibleVoterIds : undefined;
-  const voted = new Set(ballotVoters.map(({ voterId }) => voterId));
 
   return {
     pollId: poll._id,
@@ -159,15 +159,6 @@ export async function getPollResults(
     anonymous: poll.anonymous,
     ...(poll.closedAt ? { closedAt: poll.closedAt } : {}),
     totalVoters,
-    ...(eligible
-      ? {
-          eligibleCount: eligible.length,
-          turnout: percent(totalVoters, eligible.length),
-          ...(poll.anonymous
-            ? {}
-            : { nonVoterIds: eligible.filter(id => !voted.has(id)) }),
-        }
-      : {}),
     questions,
   };
 }

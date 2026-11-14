@@ -11,7 +11,29 @@
   gap: 4px 12px;
 }
 
-.workspace-member-phones a {
-  color: var(--app-color-primary);
-  text-decoration: none;
+/* A notification's text wraps instead of truncating. */
+.member-notification-text {
+  white-space: normal;
+}
+
+.workspace-members-bell {
+  font-size: 24px;
+}
+
+/* Unread notifications: tinted, to tell them from the ones already read. */
+.adm-list-item.member-notification-unread {
+  background: var(--app-color-primary-light);
+}
+
+/* "Load more" under the notifications list. */
+.member-notifications-more {
+  display: flex;
+  justify-content: center;
+  padding: 4px 16px 12px;
+}
+
+.members-tabs {
+  margin: 0 12px 4px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
 }

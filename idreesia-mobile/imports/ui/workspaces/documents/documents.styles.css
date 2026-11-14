@@ -173,3 +173,19 @@
   padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--app-color-border);
 }
+
+/* Notifications (document-notifications-screen.tsx) */
+.document-notification-text {
+  white-space: normal;
+}
+
+/* Unread notifications: tinted, to tell them from the ones already read. */
+.adm-list-item.document-notification-unread {
+  background: var(--app-color-primary-light);
+}
+
+.document-notifications-more {
+  display: flex;
+  justify-content: center;
+  padding: 4px 16px 12px;
+}

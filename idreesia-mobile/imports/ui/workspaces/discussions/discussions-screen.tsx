@@ -5,7 +5,6 @@ import { MoreOutline } from 'antd-mobile-icons';
 import { MessageComposer } from '../../components';
 import { Page, PageError, PageLoading, showInfo } from '../../layout';
 import { useHistory } from '../../router';
-import { WorkspacesPaths } from '../paths';
 import { useDiscussionContext } from './discussion-context';
 import { DiscussionMessageList, messageElementId } from './discussion-message-list';
 import type { DiscussionMessage } from './discussion-types';
@@ -27,12 +26,12 @@ interface Props {
 export const DiscussionsScreen = ({ active }: Props) => {
   const history = useHistory();
   const context = useDiscussionContext();
-  const { committeeId, title, canPost, members, discussion, actions, focusId, requestFocus } = context;
+  const { scope, title, canPost, members, discussion, actions, focusId, requestFocus } = context;
   const [menuOpen, setMenuOpen] = useState(false);
   const [highlightId, setHighlightId] = useState<string | null>(null);
 
   const openThread = (message: DiscussionMessage) =>
-    history.push(WorkspacesPaths.committeeDiscussionThread(committeeId, message.threadId ?? message._id));
+    history.push(scope.paths.thread(message.threadId ?? message._id));
   const messageActions = useMessageActions({ onOpenThread: openThread });
 
   const mainList = useMemo(
@@ -105,10 +104,10 @@ export const DiscussionsScreen = ({ active }: Props) => {
 
   return (
     <Page
-      backTo={WorkspacesPaths.root}
+      backTo={scope.backTo}
       footer={footer}
       right={<MoreOutline aria-label="More" className="discussion-nav-icon" onClick={() => setMenuOpen(true)} />}
-      title={title ?? 'Discussions'}
+      title={title ?? scope.defaultTitle}
     >
       {content}
       {messageActions.elements}
@@ -117,17 +116,17 @@ export const DiscussionsScreen = ({ active }: Props) => {
           {
             key: 'search',
             text: 'Search messages',
-            onClick: () => history.push(WorkspacesPaths.committeeDiscussionSearch(committeeId)),
+            onClick: () => history.push(scope.paths.search),
           },
           {
             key: 'pinned',
             text: 'Pinned messages',
-            onClick: () => history.push(WorkspacesPaths.committeeDiscussionPinned(committeeId)),
+            onClick: () => history.push(scope.paths.pinned),
           },
           {
             key: 'starred',
             text: 'Starred messages',
-            onClick: () => history.push(WorkspacesPaths.committeeDiscussionStarred(committeeId)),
+            onClick: () => history.push(scope.paths.starred),
           },
         ]}
         cancelText="Cancel"

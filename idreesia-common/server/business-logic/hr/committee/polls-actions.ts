@@ -21,19 +21,12 @@ export interface CommitteePollInput {
   description?: string | null;
   closesAt: string;
   anonymous?: boolean | null;
-  showResultsWhileOpen?: boolean | null;
-  /** Empty or unset: every current committee member. */
-  eligibleVoterIds?: string[] | null;
   questions?: PollQuestionInput[] | null;
 }
-
-const eligibleOrMembers = (ids: string[] | null | undefined, members: string[]) =>
-  ids?.length ? [...new Set(ids)] : members;
 
 export async function createCommitteePoll(
   workspaceId: string,
   input: CommitteePollInput,
-  memberIds: string[],
   userId: string
 ) {
   return createPoll(
@@ -43,8 +36,6 @@ export async function createCommitteePoll(
       description: input.description ?? undefined,
       closesAt: parseTimestamp(input.closesAt)!,
       anonymous: input.anonymous ?? false,
-      showResultsWhileOpen: input.showResultsWhileOpen ?? false,
-      eligibleVoterIds: eligibleOrMembers(input.eligibleVoterIds, memberIds),
       questions: input.questions ?? [],
     },
     userId
@@ -59,7 +50,6 @@ export async function createCommitteePoll(
 export async function updateCommitteePoll(
   poll: PollDocument,
   input: CommitteePollInput,
-  memberIds: string[],
   userId: string
 ) {
   const isDraft = poll.status === PollStatus.DRAFT;
@@ -70,14 +60,10 @@ export async function updateCommitteePoll(
     ...(closesAt && closesAt.getTime() !== poll.closesAt.getTime()
       ? { closesAt }
       : {}),
-    ...(input.showResultsWhileOpen != null
-      ? { showResultsWhileOpen: input.showResultsWhileOpen }
-      : {}),
     ...(isDraft
       ? {
           anonymous: input.anonymous ?? poll.anonymous,
-          eligibleVoterIds: eligibleOrMembers(input.eligibleVoterIds, memberIds),
-        }
+            }
       : {}),
   };
   const updated = await updatePoll(poll._id, changes, userId);

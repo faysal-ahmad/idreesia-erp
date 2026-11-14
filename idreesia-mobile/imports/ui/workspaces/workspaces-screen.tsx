@@ -22,6 +22,7 @@ import { CollapsibleSection } from '../components/collapsible-section';
 import { Page, PageError, PageLoading } from '../layout';
 import { useHistory } from '../router';
 import { WorkspacesPaths } from './paths';
+import { useOtherWorkspaceIds } from './use-other-workspace-ids';
 import { MOBILE_MY_COMMITTEES, MOBILE_MY_NOTIFICATION_COUNTS } from './gql';
 
 // What each workspace offers, as in the web's Workspaces sidebar: each
@@ -170,35 +171,33 @@ export const WorkspacesScreen = () => {
   // One workspace open at a time; opening another closes the previous one.
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const refresh = () =>
-    Promise.all([refetch(), refetchNotifications()]).then(
+  const [refreshKey, setRefreshKey] = useState(0);
+  const refresh = () => {
+    setRefreshKey(key => key + 1);
+    return Promise.all([refetch(), refetchNotifications()]).then(
       () => undefined,
       () => undefined,
     );
+  };
 
   const toggle = (committeeId: string) =>
     setExpandedId(prev => (prev === committeeId ? null : committeeId));
 
-  const committees = (data?.myCommittees ?? []).filter(
+  const allCommittees = (data?.myCommittees ?? []).filter(
     (committee): committee is NonNullable<typeof committee> & { _id: string } =>
       committee?._id != null,
   );
+  // My Workspaces: member or coordinator. Other Workspaces: guest or observer.
+  const { otherIds, rolesLoading } = useOtherWorkspaceIds(allCommittees, refreshKey);
+  const committees = allCommittees.filter(committee => !otherIds.has(committee._id));
+  const otherCommittees = allCommittees.filter(committee => otherIds.has(committee._id));
+  // Unread notifications across a section's workspaces, shown while it is collapsed.
+  const unreadIn = (rows: { _id: string }[]) =>
+    rows.reduce((sum, committee) => sum + (unread.byCommittee.get(committee._id) ?? 0), 0) || undefined;
 
-  let content;
-  if (loading && !data) {
-    content = <PageLoading />;
-  } else if (error && !data) {
-    content = <PageError error={error} onRetry={refresh} />;
-  } else {
-    content = (
-      <PullToRefresh onRefresh={refresh}>
-        <CollapsibleSection count={committees.length} title="My Workspaces">
-          {committees.length === 0 ? (
-            <List.Item className="workspaces-empty-item">
-              You aren&apos;t a member of any workspace yet.
-            </List.Item>
-          ) : (
-            committees.flatMap(committee => {
+  type CommitteeRow = (typeof allCommittees)[number];
+  const renderCommittees = (rows: CommitteeRow[]) =>
+    rows.flatMap(committee => {
               const expanded = expandedId === committee._id;
               return [
                 <List.Item
@@ -246,9 +245,30 @@ export const WorkspacesScreen = () => {
                     ))
                   : []),
               ];
-            })
+    });
+
+  let content;
+  if (loading && !data) {
+    content = <PageLoading />;
+  } else if (error && !data) {
+    content = <PageError error={error} onRetry={refresh} />;
+  } else {
+    content = (
+      <PullToRefresh onRefresh={refresh}>
+        <CollapsibleSection alert count={unreadIn(committees)} title="My Workspaces">
+          {committees.length === 0 ? (
+            <List.Item className="workspaces-empty-item">
+              {rolesLoading ? 'Loading…' : "You aren't a member of any workspace yet."}
+            </List.Item>
+          ) : (
+            renderCommittees(committees)
           )}
         </CollapsibleSection>
+        {otherCommittees.length > 0 && (
+          <CollapsibleSection alert count={unreadIn(otherCommittees)} title="Other Workspaces">
+            {renderCommittees(otherCommittees)}
+          </CollapsibleSection>
+        )}
       </PullToRefresh>
     );
   }

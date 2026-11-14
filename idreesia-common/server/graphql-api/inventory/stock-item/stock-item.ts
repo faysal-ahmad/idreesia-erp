@@ -35,18 +35,6 @@ type PagedStockItem {
   data: [StockItem]
 }
 
-type InventoryStatistics {
-  physicalStoreId: String
-  itemsWithImages: Int
-  itemsWithoutImages: Int
-  itemsWithPositiveStockLevel: Int
-  itemsWithLessThanMinStockLevel: Int
-  itemsWithNegativeStockLevel: Int
-  itemsVerifiedLessThanThreeMonthsAgo: Int
-  itemsVerifiedThreeToSixMonthsAgo: Int
-  itemsVerifiedMoreThanSixMonthsAgo: Int
-}
-
 extend type Query {
   pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
@@ -56,9 +44,6 @@ extend type Query {
 
   stockItemsById(_ids: [String]!, physicalStoreId: String!): [StockItem]
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
-
-  inventoryStatistics(physicalStoreId: String!): InventoryStatistics
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 }
 
 extend type Mutation {

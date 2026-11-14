@@ -14,6 +14,8 @@ export const useCurrentUser = () => {
     user: data?.currentUser ?? null,
     userLoading: loading,
     userError: error,
+    /** Resolves when the refetch finishes; for pull-to-refresh. */
+    refreshUser: () => refetch(),
     refetchUser: () => {
       refetch().catch(() => undefined);
     },

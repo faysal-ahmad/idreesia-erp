@@ -14,10 +14,6 @@ type Attachment {
   updatedBy: String
 }
 
-type Query {
-  attachmentsById(ids: [String]!): [Attachment]
-}
-
 type Mutation {
   updateAttachment(_id: String!, name: String, description: String): Attachment
 }

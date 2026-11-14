@@ -83,9 +83,6 @@ import SecurityVisitorResolvers from './security/visitor/resolvers';
 import SecurityVisitorStaySchema from './security/visitor-stay/visitor-stay';
 import SecurityVisitorStayResolvers from './security/visitor-stay/resolvers';
 
-import FaceVectorSchema from './security/face-vector/face-vector';
-import FaceVectorResolvers from './security/face-vector/resolvers';
-
 import SecurityServerChannelSchema from './security/security-server-channel/security-server-channel';
 import SecurityServerChannelResolvers from './security/security-server-channel/resolvers';
 
@@ -227,7 +224,6 @@ const typeDefs = [
   SecurityUserSchema,
   SecurityVisitorSchema,
   SecurityVisitorStaySchema,
-  FaceVectorSchema,
   SecurityServerChannelSchema,
   SecurityServerProfileSchema,
   SecurityServerAlertSchema,
@@ -296,7 +292,6 @@ const resolvers = merge(
   SecurityUserResolvers,
   SecurityVisitorResolvers,
   SecurityVisitorStayResolvers,
-  FaceVectorResolvers,
   SecurityServerChannelResolvers,
   SecurityServerProfileResolvers,
   SecurityServerAlertResolvers,

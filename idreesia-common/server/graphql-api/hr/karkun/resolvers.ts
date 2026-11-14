@@ -113,11 +113,6 @@ const resolvers: ResolverMap = {
     deleteHrKarkun: async (obj, { _id }, { user }) =>
       People.removePerson(_id, user),
 
-    setHrKarkunWazaifAndRaabta: async (obj, values, { user }) => {
-      const personValues = await People.karkunToPerson(values);
-      return People.updatePerson(personValues, user);
-    },
-
     setHrKarkunEmploymentInfo: async (obj, values, { user }) => {
       const personValues = await People.karkunToPerson(values);
       return People.updatePerson(personValues, user);

@@ -33,8 +33,6 @@ const ReportGenerators = {
   StockItems: exportStockItems,
   Karkuns: exportKarkuns,
   Visitors: exportVisitors,
-  OutstationKarkuns: exportKarkuns,
-  OutstationMembers: exportVisitors,
 };
 type ReportName = keyof typeof ReportGenerators;
 

@@ -68,14 +68,6 @@ extend type Mutation {
   deleteHrKarkun(_id: String!): Int
   @checkPermissions(permissions: [HR_DELETE_DATA])
 
-  setHrKarkunWazaifAndRaabta(
-    _id: String!
-    lastTarteebDate: String
-    mehfilRaabta: String
-    msRaabta: String
-  ): PersonType
-  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
-
   setHrKarkunEmploymentInfo(
     _id: String!
     isEmployee: Boolean!

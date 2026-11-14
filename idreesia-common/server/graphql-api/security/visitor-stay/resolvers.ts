@@ -182,8 +182,6 @@ const resolvers: ResolverMap = {
 
       return VisitorStays.findOneAsync(_id);
     },
-
-    deleteVisitorStay: async (obj, { _id }) => VisitorStays.removeAsync(_id),
   },
 };
 

@@ -25,7 +25,6 @@ type TeamType {
 
 extend type Query {
   allTeams: [TeamType]
-  teamById(id: String!): TeamType
 }
 
 extend type Mutation {

@@ -79,8 +79,10 @@ App.appendToConfig(`
 
 // Launch screen: the Eastern Breeze emblem (public/images/eb-logo-emblem.png)
 // centred on the app background. iOS fills the screen with a square image
-// and crops the sides, so the emblem is small relative to the canvas. Android
-// 12+ shows a 288dp icon (masked to a 192dp circle) on a solid colour.
+// and crops the sides, so the emblem is small relative to the canvas. The iOS
+// images also carry "EASTERN BREEZE" above the emblem and "FOUNDATION" below. Android
+// 12+ shows a 288dp icon (masked to a 192dp circle) on a solid colour, so it
+// has no room for text and stays emblem-only.
 App.launchScreens({
   ios_universal: 'resources/launch-screens/ios-universal.png', // 2732x2732
   ios_universal_3x: 'resources/launch-screens/ios-universal-3x.png', // 2208x2208

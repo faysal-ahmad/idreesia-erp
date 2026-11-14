@@ -18,8 +18,6 @@ const resolvers: ResolverMap = {
   Query: {
     allDutyShifts: async () =>
       DutyShifts.find({}, { sort: { dutyId: 1 } }).fetchAsync(),
-
-    dutyShiftById: async (obj, { id }) => DutyShifts.findOneAsync(id),
   },
 
   Mutation: {

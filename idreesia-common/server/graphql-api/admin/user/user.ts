@@ -77,15 +77,6 @@ extend type Mutation {
     instances: [String]!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
-  setGroups(
-    userId: String!
-    groups: [String]!
-  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
-
-  resetPassword(
-    userName: String!
-  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
-
   createChatAccount(
     userId: String!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])

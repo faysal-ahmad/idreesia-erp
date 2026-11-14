@@ -17,8 +17,6 @@ type DutyLocationType {
 
 extend type Query {
   allDutyLocations: [DutyLocationType]
-  dutyLocationsByDutyId(dutyId: String!): [DutyLocationType]
-  dutyLocationById(id: String!): DutyLocationType
 }
 
 extend type Mutation {

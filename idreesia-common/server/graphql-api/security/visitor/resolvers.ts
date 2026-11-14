@@ -39,11 +39,6 @@ const resolvers: ResolverMap = {
       return null;
     },
 
-    securityVisitorByCnicOrContactNumber: async (
-      obj,
-      { cnicNumber, contactNumber }
-    ) => People.findByCnicOrContactNumber(cnicNumber, contactNumber),
-
     securityFaceVectorFromImage: async (obj, { imageData }) => {
       const { vector, status } = computeVectorFromImageBuffer(
         Buffer.from(stripDataUrlPrefix(imageData), 'base64')

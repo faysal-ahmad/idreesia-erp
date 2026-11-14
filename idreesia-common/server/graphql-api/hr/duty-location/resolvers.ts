@@ -20,14 +20,6 @@ const resolvers: ResolverMap = {
   Query: {
     allDutyLocations: async () =>
       DutyLocations.find({}, { sort: { dutyId: 1, name: 1 } }).fetchAsync(),
-
-    dutyLocationsByDutyId: async (obj, { dutyId }) =>
-      DutyLocations.find(
-        { dutyId: { $eq: dutyId } },
-        { sort: { name: 1 } }
-      ).fetchAsync(),
-
-    dutyLocationById: async (obj, { id }) => DutyLocations.findOneAsync(id),
   },
 
   Mutation: {

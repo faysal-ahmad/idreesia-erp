@@ -86,7 +86,6 @@ const resolvers: ResolverMap = {
 
   Query: {
     allTeams: async () => Teams.find({}).fetchAsync(),
-    teamById: async (obj, { id }) => Teams.findOneAsync(id),
   },
 
   Mutation: {

@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 // Runs idreesia-mobile on a physical phone during development.
 //
-//   node scripts/run-mobile-device.mjs ios|android
+//   node scripts/run-mobile-device.mjs ios|android [--prod]
+//
+// With --prod the app talks to the production backend and chat servers
+// (the URLs in .github/workflows/release.yml) instead of this Mac. Code still
+// comes from this Mac. Anything created in the app lands in production data.
 //
 // On the phone, "localhost" is the phone itself, so the app has to reach the
 // Mac by its Wi-Fi address. This writes idreesia-mobile/settings.device.json
@@ -18,12 +22,15 @@ import { fileURLToPath } from 'node:url';
 
 const MOBILE_PORT = 3200;
 const BACKEND_PORT = 3000;
+const PROD_BACKEND_URL = 'https://idreesia.app';
+const PROD_CHAT_URL = 'https://rocketchat.idreesia.app';
 // Rocket.Chat (docker-compose), which the public chat page calls directly.
 const CHAT_PORT = 3100;
 
 const platform = process.argv[2];
+const useProd = process.argv.includes('--prod');
 if (!['ios', 'android'].includes(platform)) {
-  console.error('Usage: node scripts/run-mobile-device.mjs ios|android');
+  console.error('Usage: node scripts/run-mobile-device.mjs ios|android [--prod]');
   process.exit(1);
 }
 
@@ -47,13 +54,13 @@ const mobileDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 const settings = JSON.parse(readFileSync(path.join(mobileDir, 'settings.sample.json'), 'utf8'));
 settings.public = {
   ...settings.public,
-  backendUrl: `http://${host}:${BACKEND_PORT}`,
-  rocketChatUrl: `http://${host}:${CHAT_PORT}`,
+  backendUrl: useProd ? PROD_BACKEND_URL : `http://${host}:${BACKEND_PORT}`,
+  rocketChatUrl: useProd ? PROD_CHAT_URL : `http://${host}:${CHAT_PORT}`,
 };
 writeFileSync(path.join(mobileDir, 'settings.device.json'), `${JSON.stringify(settings, null, 2)}\n`);
 
-console.log(`Backend (idreesia-web):  http://${host}:${BACKEND_PORT}`);
-console.log(`Chat:                    http://${host}:${CHAT_PORT}`);
+console.log(`Backend (idreesia-web):  ${settings.public.backendUrl}${useProd ? '  (PRODUCTION)' : ''}`);
+console.log(`Chat:                    ${settings.public.rocketChatUrl}`);
 console.log(`Mobile server:           http://${host}:${MOBILE_PORT}`);
 
 const meteor = spawn(

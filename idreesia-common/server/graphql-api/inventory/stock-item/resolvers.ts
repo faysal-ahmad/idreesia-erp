@@ -12,7 +12,7 @@ import {
   setStockItemImage,
 } from 'meteor/idreesia-common/server/business-logic/inventory/stock-item-images';
 
-import { getPagedStockItems, getStatistics } from './queries';
+import { getPagedStockItems } from './queries';
 import { mergeStockItems, recalculateStockLevels } from './helpers';
 
 interface StockItem {
@@ -134,13 +134,6 @@ export default {
         _id: { $in: _ids },
         physicalStoreId: { $eq: physicalStoreId },
       }).fetchAsync();
-    },
-
-    inventoryStatistics: async (
-      _obj: unknown,
-      { physicalStoreId }: Pick<StockItemArgs, 'physicalStoreId'>
-    ) => {
-      return getStatistics(physicalStoreId);
     },
   },
 

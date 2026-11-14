@@ -199,7 +199,6 @@ const List = () => {
     'listAllMSDuties',
     'composerAllMSDuties',
     'composerAllDutyLocations',
-    'dutyLocationsByDutyId',
   ];
   const [createDutyLocation, { loading: creatingLocation }] = useMutation(
     CREATE_DUTY_LOCATION,

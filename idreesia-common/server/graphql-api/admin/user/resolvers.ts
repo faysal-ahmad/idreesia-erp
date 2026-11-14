@@ -168,18 +168,6 @@ export default {
       { user }: ResolverContext
     ) => Users.setInstanceAccess(params, requireUser(user), DataSource.ADMIN),
 
-    setGroups: async (
-      _obj: unknown,
-      params: { userId: string; groups: string[] },
-      { user }: ResolverContext
-    ) => Users.setGroups(params, requireUser(user), DataSource.ADMIN),
-
-    resetPassword: async (
-      _obj: unknown,
-      params: { userId?: string; userName?: string },
-      { user }: ResolverContext
-    ) => Users.resetPassword(params, requireUser(user), DataSource.ADMIN),
-
     createChatAccount: async (
       _obj: unknown,
       params: { userId: string },

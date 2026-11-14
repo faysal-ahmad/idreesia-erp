@@ -1,4 +1,3 @@
-import { Random } from 'meteor/random';
 import type { Mongo } from 'meteor/mongo';
 import { subMinutes } from 'date-fns';
 import {
@@ -87,18 +86,6 @@ interface UsersCollection extends Mongo.Collection<AppUser> {
   ): Promise<MappedUser>;
   setInstanceAccess(
     values: { userId: string; instances: string[] },
-    user: UserRef,
-    dataSource: string,
-    dataSourceDetail?: string | null
-  ): Promise<MappedUser>;
-  setGroups(
-    values: { userId: string; groups: string[] },
-    user: UserRef,
-    dataSource: string,
-    dataSourceDetail?: string | null
-  ): Promise<MappedUser>;
-  resetPassword(
-    values: { userId?: string; userName?: string },
     user: UserRef,
     dataSource: string,
     dataSourceDetail?: string | null
@@ -564,65 +551,6 @@ Users.setInstanceAccess = async (
   });
 
   return Users.findOneUser(userId);
-};
-
-Users.setGroups = async (
-  { userId, groups },
-  user,
-  dataSource,
-  dataSourceDetail = null
-) => {
-  const existingUser = await Users.findOneUser(userId);
-  await Users.updateAsync(userId, { $set: { groups } });
-
-  // Create a security log
-  const groupsAdded = difference(groups, existingUser.groups || []);
-  const groupsRemoved = difference(existingUser.groups || [], groups);
-
-  await SecurityLogs.insertAsync({
-    userId,
-    operationType: SecurityOperationType.GROUPS_CHANGED,
-    operationBy: user._id,
-    operationTime: new Date(),
-    operationDetails: {
-      groupsAdded,
-      groupsRemoved,
-    },
-    dataSource,
-    dataSourceDetail,
-  });
-
-  return Users.findOneUser(userId);
-};
-
-Users.resetPassword = async (
-  { userId, userName },
-  user,
-  dataSource,
-  dataSourceDetail = null
-) => {
-  const existingUser = userId
-    ? await Users.findOneUser(userId)
-    : await Accounts.findUserByUsername(userName);
-
-  if (!existingUser) {
-    throw new Error('User does not exist in the system.');
-  }
-
-  const password = Random.id(8);
-  await Accounts.setPasswordAsync(existingUser._id, password);
-
-  // Create a security log
-  await SecurityLogs.insertAsync({
-    userId: existingUser._id,
-    operationType: SecurityOperationType.PASSWORD_RESET,
-    operationBy: user._id,
-    operationTime: new Date(),
-    dataSource,
-    dataSourceDetail,
-  });
-
-  return Users.findOneUser(existingUser._id);
 };
 
 Users.lockAccount = async ({ userId }, user, dataSource, dataSourceDetail) => {

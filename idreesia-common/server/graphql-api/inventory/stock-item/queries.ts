@@ -9,69 +9,6 @@ interface StockItemGroupResult {
   _id: string;
 }
 
-export async function getStatistics(physicalStoreId: string) {
-  const itemsWithImages = await StockItems.find({
-    physicalStoreId: { $eq: physicalStoreId },
-    $or: [{ imageKey: { $ne: null } }, { imageId: { $ne: null } }],
-  }).countAsync();
-
-  const itemsWithoutImages = await StockItems.find({
-    physicalStoreId: { $eq: physicalStoreId },
-    imageKey: { $eq: null },
-    imageId: { $eq: null },
-  }).countAsync();
-
-  const itemsWithPositiveStockLevel = await StockItems.find({
-    physicalStoreId: { $eq: physicalStoreId },
-    currentStockLevel: { $gt: 0 },
-  }).countAsync();
-
-  const itemsWithLessThanMinStockLevel = await StockItems.find({
-    physicalStoreId: { $eq: physicalStoreId },
-    minStockLevel: { $ne: null },
-    $expr: { $gt: ['$minStockLevel', '$currentStockLevel'] },
-  }).countAsync();
-
-  const itemsWithNegativeStockLevel = await StockItems.find({
-    physicalStoreId: { $eq: physicalStoreId },
-    currentStockLevel: { $lt: 0 },
-  }).countAsync();
-
-  const m3 = subMonths(new Date(), 3);
-  const m6 = subMonths(new Date(), 6);
-
-  const itemsVerifiedLessThanThreeMonthsAgo = await StockItems.find({
-    physicalStoreId: { $eq: physicalStoreId },
-    $and: [{ verifiedOn: { $ne: null } }, { verifiedOn: { $gt: m3 } }],
-  }).countAsync();
-
-  const itemsVerifiedThreeToSixMonthsAgo = await StockItems.find({
-    physicalStoreId: { $eq: physicalStoreId },
-    $and: [
-      { verifiedOn: { $ne: null } },
-      { verifiedOn: { $gt: m6 } },
-      { verifiedOn: { $lt: m3 } },
-    ],
-  }).countAsync();
-
-  const itemsVerifiedMoreThanSixMonthsAgo = await StockItems.find({
-    physicalStoreId: { $eq: physicalStoreId },
-    $or: [{ verifiedOn: { $eq: null } }, { verifiedOn: { $lt: m6 } }],
-  }).countAsync();
-
-  return {
-    physicalStoreId,
-    itemsWithImages,
-    itemsWithoutImages,
-    itemsWithPositiveStockLevel,
-    itemsWithLessThanMinStockLevel,
-    itemsWithNegativeStockLevel,
-    itemsVerifiedLessThanThreeMonthsAgo,
-    itemsVerifiedThreeToSixMonthsAgo,
-    itemsVerifiedMoreThanSixMonthsAgo,
-  };
-}
-
 export async function getPagedStockItems(
   queryString: string,
   physicalStoreId: string

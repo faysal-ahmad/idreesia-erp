@@ -1,5 +1,4 @@
 import {
-  countUnreadNotifications,
   countUnreadNotificationsByCommittee,
   getUserNotifications,
   markNotificationsRead,
@@ -117,14 +116,6 @@ export const getMyNotifications = async (
     data: notification.data ? JSON.stringify(notification.data) : null,
     isRead: notification.isRead,
   }));
-};
-
-export const getMyUnreadNotificationCount = async (
-  user: NotificationUser | null | undefined
-): Promise<number> => {
-  const visible = await getVisibleScope(user);
-  if (!visible) return 0;
-  return countUnreadNotifications(visible.userId, visible.scope);
 };
 
 /** Marks notifications as read by the user (only ones they can see). */

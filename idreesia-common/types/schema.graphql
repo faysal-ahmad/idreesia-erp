@@ -431,15 +431,6 @@ extend type Mutation {
     instances: [String]!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
-  setGroups(
-    userId: String!
-    groups: [String]!
-  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
-
-  resetPassword(
-    userName: String!
-  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
-
   createChatAccount(
     userId: String!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
@@ -459,10 +450,6 @@ type Attachment {
   createdBy: String
   updatedAt: String
   updatedBy: String
-}
-
-type Query {
-  attachmentsById(ids: [String]!): [Attachment]
 }
 
 type Mutation {
@@ -761,8 +748,6 @@ type DutyLocationType {
 
 extend type Query {
   allDutyLocations: [DutyLocationType]
-  dutyLocationsByDutyId(dutyId: String!): [DutyLocationType]
-  dutyLocationById(id: String!): DutyLocationType
 }
 
 extend type Mutation {
@@ -933,7 +918,6 @@ type DutyShiftType {
 
 extend type Query {
   allDutyShifts: [DutyShiftType]
-  dutyShiftById(id: String!): DutyShiftType
 }
 
 extend type Mutation {
@@ -977,7 +961,6 @@ type DutyType {
 
 extend type Query {
   allMSDuties: [DutyType]
-  allMehfilDuties: [DutyType]
 }
 
 extend type Mutation {
@@ -1082,14 +1065,6 @@ extend type Mutation {
 
   deleteHrKarkun(_id: String!): Int
   @checkPermissions(permissions: [HR_DELETE_DATA])
-
-  setHrKarkunWazaifAndRaabta(
-    _id: String!
-    lastTarteebDate: String
-    mehfilRaabta: String
-    msRaabta: String
-  ): PersonType
-  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   setHrKarkunEmploymentInfo(
     _id: String!
@@ -1204,7 +1179,6 @@ type TeamType {
 
 extend type Query {
   allTeams: [TeamType]
-  teamById(id: String!): TeamType
 }
 
 extend type Mutation {
@@ -1708,18 +1682,6 @@ type PagedStockItem {
   data: [StockItem]
 }
 
-type InventoryStatistics {
-  physicalStoreId: String
-  itemsWithImages: Int
-  itemsWithoutImages: Int
-  itemsWithPositiveStockLevel: Int
-  itemsWithLessThanMinStockLevel: Int
-  itemsWithNegativeStockLevel: Int
-  itemsVerifiedLessThanThreeMonthsAgo: Int
-  itemsVerifiedThreeToSixMonthsAgo: Int
-  itemsVerifiedMoreThanSixMonthsAgo: Int
-}
-
 extend type Query {
   pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
@@ -1729,9 +1691,6 @@ extend type Query {
 
   stockItemsById(_ids: [String]!, physicalStoreId: String!): [StockItem]
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
-
-  inventoryStatistics(physicalStoreId: String!): InventoryStatistics
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 }
 
 extend type Mutation {
@@ -1949,7 +1908,6 @@ type CityMehfilType {
 extend type Query {
   allCityMehfils: [CityMehfilType]
   cityMehfilsByCityId(cityId: String!): [CityMehfilType]
-  cityMehfilById(_id: String!): CityMehfilType
 }
 
 extend type Mutation {
@@ -2034,16 +1992,6 @@ extend type Mutation {
 extend type Query {
   pagedSecurityAuditLogs(filter: AuditLogFilter): PagedAuditLogType
   @checkPermissions(permissions: [SECURITY_VIEW_AUDIT_LOGS])
-}
-
-type FaceVectorRecord {
-  personId: String!
-  vector: [Float!]!
-  computedAt: DateTime!
-}
-
-type Query {
-  faceVectors(since: DateTime, limit: Int): [FaceVectorRecord!]!
 }
 
 type MehfilDutyType {	
@@ -2602,9 +2550,6 @@ extend type Mutation {
 
   cancelVisitorStay(_id: String!): VisitorStayType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
-
-  deleteVisitorStay(_id: String!): Int
-  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
 }
 
 input VisitorFilter {
@@ -2648,9 +2593,6 @@ extend type Query {
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
   securityVisitorByCnic(cnicNumbers: [String]!): PersonType
-  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
-
-  securityVisitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): PersonType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
   # Step one of face search - embeds the captured photo and reports whether it is usable.
@@ -3737,7 +3679,6 @@ extend type Query {
   ): [NotificationType]
   # Only the unread counts, one row per committee and module that has any.
   myNotificationCounts: [NotificationCountType]
-  myUnreadNotificationCount: Int
 }
 
 extend type Mutation {

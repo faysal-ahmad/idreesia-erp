@@ -510,31 +510,6 @@ class People extends AggregatableCollection<PersonDocument> {
   // **************************************************************
   // Custom Finder Methods
   // **************************************************************
-  async findByCnicOrContactNumber(cnicNumber?: string, contactNumber?: string) {
-    let person: PersonDocument | null | undefined = null;
-
-    if (cnicNumber) {
-      person = await this.findOneAsync({
-        'sharedData.cnicNumber': { $eq: cnicNumber },
-        deletedAt: { $exists: false },
-      });
-    }
-
-    if (person) return person;
-
-    if (contactNumber) {
-      person = await this.findOneAsync({
-        $or: [
-          { 'sharedData.contactNumber1': contactNumber },
-          { 'sharedData.contactNumber2': contactNumber },
-        ],
-        deletedAt: { $exists: false },
-      });
-    }
-
-    return person;
-  }
-
   // **************************************************************
   // Query Functions
   // **************************************************************

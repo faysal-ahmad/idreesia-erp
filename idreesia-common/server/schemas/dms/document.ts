@@ -70,7 +70,6 @@ export default new SimpleSchema({
   },
   'lock.expiresAt': {
     type: Date,
-    optional: true,
   },
   'lock.note': {
     type: String,

@@ -22,6 +22,11 @@ const menuItems = [
     children: [{ key: 'physical-stores', label: 'Physical Stores' }],
   },
   {
+    key: 'organization',
+    label: 'Organization Management',
+    children: [{ key: 'committees', label: 'Central Committees' }],
+  },
+  {
     key: 'locations',
     label: 'Reference Data',
     children: [
@@ -90,6 +95,12 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['instances'],
     subModuleName: SubModuleNames.physicalStores,
     matches: (pathname) => isPath(pathname, paths.physicalStoresPath),
+  },
+  {
+    key: 'committees',
+    openKeys: ['organization'],
+    subModuleName: SubModuleNames.committees,
+    matches: (pathname) => isPath(pathname, paths.committeesPath),
   },
   {
     key: 'cities',
@@ -194,6 +205,10 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'physical-stores':
         history.push(paths.physicalStoresPath);
+        break;
+
+      case 'committees':
+        history.push(paths.committeesPath);
         break;
 
       case 'cities':

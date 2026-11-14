@@ -4,10 +4,8 @@ import { PullToRefresh } from 'antd-mobile';
 import { StarOutline, TagOutline } from 'antd-mobile-icons';
 
 import { Page, PageEmpty, PageError, PageLoading } from '../../layout';
-import { WorkspacesPaths } from '../paths';
 import { useDiscussionContext } from './discussion-context';
 import { toDiscussionMessages } from './discussion-types';
-import { MOBILE_WORKSPACE_DISCUSSION_PINNED_MESSAGES, MOBILE_WORKSPACE_DISCUSSION_STARRED_MESSAGES } from './gql';
 import { MessageResultsList } from './message-results-list';
 import { useOpenMessage } from './use-open-message';
 
@@ -20,15 +18,15 @@ interface Props {
  * own starred messages, newest first.
  */
 export const SavedMessagesScreen = ({ kind }: Props) => {
-  const { committeeId } = useDiscussionContext();
+  const { scope } = useDiscussionContext();
   const openMessage = useOpenMessage();
-  const pinned = useQuery(MOBILE_WORKSPACE_DISCUSSION_PINNED_MESSAGES, {
-    variables: { committeeId },
+  const pinned = useQuery(scope.docs.pinned, {
+    variables: scope.variables,
     fetchPolicy: 'network-only',
     skip: kind !== 'pinned',
   });
-  const starred = useQuery(MOBILE_WORKSPACE_DISCUSSION_STARRED_MESSAGES, {
-    variables: { committeeId },
+  const starred = useQuery(scope.docs.starred, {
+    variables: scope.variables,
     fetchPolicy: 'network-only',
     skip: kind !== 'starred',
   });
@@ -77,7 +75,7 @@ export const SavedMessagesScreen = ({ kind }: Props) => {
 
   return (
     <Page
-      backTo={WorkspacesPaths.committeeDiscussions(committeeId)}
+      backTo={scope.paths.main}
       title={kind === 'pinned' ? 'Pinned messages' : 'Starred messages'}
     >
       {content}

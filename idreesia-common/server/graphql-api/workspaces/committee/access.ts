@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 
-import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
+import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import { Committees } from 'meteor/idreesia-common/server/collections/hr';
 
 export interface WorkspaceUser {
@@ -12,7 +12,7 @@ export interface WorkspaceUser {
 
 interface CommitteeMember {
   karkunId: string;
-  isCoordinator?: boolean;
+  role?: string;
 }
 
 export interface CommitteeDocument {
@@ -45,7 +45,8 @@ export const isCommitteeCoordinator = (
   isErpAdmin(user) ||
   (canAccessWorkspaces(user) &&
     (committee.members ?? []).some(
-      member => member.karkunId === user!.personId && member.isCoordinator
+      member => member.karkunId === user!.personId &&
+        member.role === 'coordinator'
     ));
 
 // Returns the committees the user is currently a member of (all committees

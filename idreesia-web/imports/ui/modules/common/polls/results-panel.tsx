@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  Collapse,
   Empty,
   Flex,
   Progress,
@@ -71,12 +70,6 @@ const ResultsPanel = ({ provider, poll }: PanelProps) => {
       ) : null}
       <Space size={48} className="poll-results-summary" wrap>
         <Statistic title="Voters" value={results.totalVoters} />
-        {results.eligibleCount != null ? (
-          <Statistic title="Eligible" value={results.eligibleCount} />
-        ) : null}
-        {results.turnout != null ? (
-          <Statistic title="Turnout" value={results.turnout} suffix="%" precision={1} />
-        ) : null}
         {results.anonymous ? <Tag>Anonymous</Tag> : null}
       </Space>
 
@@ -118,19 +111,6 @@ const ResultsPanel = ({ provider, poll }: PanelProps) => {
           </div>
         );
       })}
-
-      {results.nonVoters?.length ? (
-        <Collapse
-          size="small"
-          items={[
-            {
-              key: 'non-voters',
-              label: `Did not vote (${results.nonVoters.length})`,
-              children: voterNames(results.nonVoters),
-            },
-          ]}
-        />
-      ) : null}
     </div>
   );
 };

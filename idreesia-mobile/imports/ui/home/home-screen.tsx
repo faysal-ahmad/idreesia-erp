@@ -49,10 +49,6 @@ export const HomeScreen = () => {
   } else {
     content = (
       <PullToRefresh onRefresh={refresh}>
-        <CollapsibleSection count={0} title="Notifications">
-          <List.Item className="workspaces-empty-item">No new notifications</List.Item>
-        </CollapsibleSection>
-
         <CollapsibleSection count={meetings.length} title="Upcoming Meetings">
           {meetings.length === 0 ? (
             <List.Item className="workspaces-empty-item">No upcoming meetings</List.Item>

@@ -36,15 +36,22 @@ export const Page = ({ title, backTo, right, footer, onRefresh, children }: Prop
   // arrow off screen until the next scroll. Laying the header out again once
   // after mount makes WebKit recompute its position.
   useLayoutEffect(() => {
-    const frame = requestAnimationFrame(() => {
+    const relayout = () => {
       const header = headerRef.current;
       if (!header) return;
       header.style.position = 'relative';
       // Reading a layout property forces the relayout before restoring.
       header.getBoundingClientRect();
       header.style.position = '';
-    });
-    return () => cancelAnimationFrame(frame);
+    };
+    // Once right after mount, and again shortly after: the screen underneath
+    // is hidden and the scroll position reset a moment after this one mounts.
+    const frame = requestAnimationFrame(relayout);
+    const timers = [100, 300].map(delay => setTimeout(relayout, delay));
+    return () => {
+      cancelAnimationFrame(frame);
+      timers.forEach(clearTimeout);
+    };
   }, []);
 
   return (

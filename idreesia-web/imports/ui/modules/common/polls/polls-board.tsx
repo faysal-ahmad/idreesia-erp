@@ -27,7 +27,6 @@ import { describeClosing, PollStatusTag } from './format';
 import PollFormModal from './poll-form-modal';
 import type {
   Poll,
-  PollMember,
   PollsDataProvider,
   PollsInfo,
   PollsView,
@@ -70,7 +69,6 @@ const PollsBoard = ({ provider, onOpenPoll }: Props) => {
 
   const [info, setInfo] = useState<PollsInfo | null>(null);
   const [infoError, setInfoError] = useState<string | null>(null);
-  const [members, setMembers] = useState<PollMember[]>([]);
   const [polls, setPolls] = useState<Poll[]>([]);
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -102,7 +100,6 @@ const PollsBoard = ({ provider, onOpenPoll }: Props) => {
       .getInfo()
       .then(setInfo)
       .catch(error => setInfoError(error.message));
-    provider.loadMembers().then(setMembers).catch(showError);
   }, [provider]);
 
   const load = useCallback(async () => {
@@ -175,10 +172,7 @@ const PollsBoard = ({ provider, onOpenPoll }: Props) => {
       title: 'Votes',
       key: 'votes',
       width: 100,
-      render: (_: unknown, poll: Poll) =>
-        poll.eligibleCount
-          ? `${poll.voteCount} / ${poll.eligibleCount}`
-          : poll.voteCount,
+      render: (_: unknown, poll: Poll) => poll.voteCount,
     },
     {
       title: 'My Vote',
@@ -315,7 +309,6 @@ const PollsBoard = ({ provider, onOpenPoll }: Props) => {
       </div>
       <PollFormModal
         open={creating}
-        members={members}
         onCancel={() => setCreating(false)}
         onSubmit={async details => {
           try {

@@ -5,7 +5,9 @@ import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic
 import {
   addCommitteeMember,
   getCommitteeMemberAccess,
+  getCommitteeMemberCounts,
   removeCommitteeMember,
+  setCommitteeMemberCoordinator,
   setCommitteeMemberDiscussionAccess,
   type CommitteeDoc,
 } from 'meteor/idreesia-common/server/business-logic/hr/committee';
@@ -54,6 +56,16 @@ const resolvers: ResolverMap = {
     features: (committee: CommitteeDocument) =>
       (committee.features as string[] | undefined) ?? [],
 
+    memberCount: (committee: CommitteeDocument) =>
+      getCommitteeMemberCounts(committee as unknown as CommitteeDoc)
+        .memberCount,
+    guestCount: (committee: CommitteeDocument) =>
+      getCommitteeMemberCounts(committee as unknown as CommitteeDoc)
+        .guestCount,
+    observerCount: (committee: CommitteeDocument) =>
+      getCommitteeMemberCounts(committee as unknown as CommitteeDoc)
+        .observerCount,
+
     canManageMembers: (committee: CommitteeDocument, args, { user }) =>
       isCommitteeCoordinator(user as WorkspaceUser, committee),
 
@@ -78,7 +90,8 @@ const resolvers: ResolverMap = {
         const memberAccess = access.get(member.karkunId);
         return {
           karkunId: member.karkunId,
-          isCoordinator: !!member.isCoordinator,
+          isCoordinator: member.role === 'coordinator',
+          role: member.role ?? 'member',
           hasLoginAccount: memberAccess?.hasLoginAccount ?? false,
           hasChatAccount: memberAccess?.hasChatAccount ?? false,
           hasDiscussionAccess: memberAccess?.hasDiscussionAccess ?? null,
@@ -140,17 +153,20 @@ const resolvers: ResolverMap = {
   Mutation: {
     workspaceAddCommitteeMember: async (
       obj,
-      { committeeId, karkunId },
+      { committeeId, karkunId, role },
       { user }
     ) => {
       const committee = await getCoordinatedCommittee(user, committeeId);
       assertMembersEnabled(committee);
-      await addCommitteeMember(committeeId, karkunId, user._id);
+      if (role && role !== 'member' && role !== 'guest') {
+        throw new Error('Only members and guests can be added from here.');
+      }
+      await addCommitteeMember(committeeId, karkunId, user._id, role);
       return Committees.findOneAsync(committeeId);
     },
 
-    // Coordinators can remove regular members only. Coordinator status is
-    // managed from HR > Committees.
+    // Coordinators can remove regular members only; make a coordinator a
+    // regular member first.
     workspaceRemoveCommitteeMember: async (
       obj,
       { committeeId, karkunId },
@@ -164,8 +180,11 @@ const resolvers: ResolverMap = {
       if (!member) {
         throw new Error('This person is not a member of the committee.');
       }
-      if (member.isCoordinator) {
+      if (member.role === 'coordinator') {
         throw new Error('Coordinators cannot be removed from here.');
+      }
+      if (member.role === 'observer') {
+        throw new Error('Observers cannot be removed from here.');
       }
 
       await removeCommitteeMember(committeeId, karkunId, user._id);
@@ -183,6 +202,37 @@ const resolvers: ResolverMap = {
         karkunId,
         hasAccess
       );
+    },
+
+    // Coordinators make members coordinators, or regular members again.
+    workspaceSetCommitteeMemberCoordinator: async (
+      obj,
+      { committeeId, karkunId, isCoordinator },
+      { user }
+    ) => {
+      const committee = await getCoordinatedCommittee(user, committeeId);
+      assertMembersEnabled(committee);
+      const members = committee.members ?? [];
+      if (!members.some(m => m.karkunId === karkunId)) {
+        throw new Error('This person is not a member of the committee.');
+      }
+      if (
+        !isCoordinator &&
+        members.some(
+          m => m.karkunId === karkunId && m.role === 'coordinator'
+        ) &&
+        members.filter(m => m.role === 'coordinator').length <= 1
+      ) {
+        throw new Error('A committee needs at least one coordinator.');
+      }
+
+      await setCommitteeMemberCoordinator(
+        committeeId,
+        karkunId,
+        !!isCoordinator,
+        user._id
+      );
+      return true;
     },
   },
 };

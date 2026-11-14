@@ -38,6 +38,17 @@ export default class SubModulePaths {
     return `${SubModulePaths.committeePollsPath(committeeId)}/${pollId}`;
   }
 
+  static committeeProjectsPath(committeeId = ':committeeId') {
+    return `${SubModulePaths.committeePath(committeeId)}/projects`;
+  }
+
+  static committeeProjectPath(
+    committeeId = ':committeeId',
+    projectId = ':projectId'
+  ) {
+    return `${SubModulePaths.committeeProjectsPath(committeeId)}/${projectId}`;
+  }
+
   static committeeNightStayReportPath(committeeId = ':committeeId') {
     return `${SubModulePaths.committeePath(committeeId)}/night-stay-report`;
   }

@@ -121,8 +121,8 @@ import TeamResolvers from './hr/team/resolvers';
 import DutyPlanSchema from './hr/duty-plan/duty-plan';
 import DutyPlanResolvers from './hr/duty-plan/resolvers';
 
-import CommitteeSchema from './hr/committee/committee';
-import CommitteeResolvers from './hr/committee/resolvers';
+import CommitteeSchema from './organization/committee/committee';
+import CommitteeResolvers from './organization/committee/resolvers';
 
 import JobSchema from './hr/job/job';
 import JobResolvers from './hr/job/resolvers';
@@ -136,16 +136,22 @@ import SalaryResolvers from './hr/salary/resolvers';
 /**
  * Workspaces Schema and Resolvers
  */
+// Registers every headless module (side effect).
+import 'meteor/idreesia-common/server/headless/modules';
 import WorkspaceCommitteeSchema from './workspaces/committee/committee';
 import WorkspaceCommitteeResolvers from './workspaces/committee/resolvers';
 import WorkspaceDiscussionsSchema from './workspaces/discussions/discussions';
 import WorkspaceDiscussionsResolvers from './workspaces/discussions/resolvers';
+import WorkspaceNotificationsSchema from './workspaces/notifications/notifications';
+import WorkspaceNotificationsResolvers from './workspaces/notifications/resolvers';
 import WorkspaceDocumentsSchema from './workspaces/documents/documents';
 import WorkspaceDocumentsResolvers from './workspaces/documents/resolvers';
 import WorkspaceMeetingsSchema from './workspaces/meetings/meetings';
 import WorkspaceMeetingsResolvers from './workspaces/meetings/resolvers';
 import WorkspacePollsSchema from './workspaces/polls/polls';
 import WorkspacePollsResolvers from './workspaces/polls/resolvers';
+import WorkspaceProjectsSchema from './workspaces/projects/projects';
+import WorkspaceProjectsResolvers from './workspaces/projects/resolvers';
 import WorkspaceNightStayReportSchema from './workspaces/night-stay-report/night-stay-report';
 import WorkspaceNightStayReportResolvers from './workspaces/night-stay-report/resolvers';
 import WorkspaceMonitoringAlertsSchema from './workspaces/monitoring-alerts/monitoring-alerts';
@@ -242,9 +248,11 @@ const typeDefs = [
 
   WorkspaceCommitteeSchema,
   WorkspaceDiscussionsSchema,
+  WorkspaceNotificationsSchema,
   WorkspaceDocumentsSchema,
   WorkspaceMeetingsSchema,
   WorkspacePollsSchema,
+  WorkspaceProjectsSchema,
   WorkspaceNightStayReportSchema,
   WorkspaceMonitoringAlertsSchema,
   WorkspaceMonitoringProfilesSchema,
@@ -309,9 +317,11 @@ const resolvers = merge(
 
   WorkspaceCommitteeResolvers,
   WorkspaceDiscussionsResolvers,
+  WorkspaceNotificationsResolvers,
   WorkspaceDocumentsResolvers,
   WorkspaceMeetingsResolvers,
   WorkspacePollsResolvers,
+  WorkspaceProjectsResolvers,
   WorkspaceNightStayReportResolvers,
   WorkspaceMonitoringAlertsResolvers,
   WorkspaceMonitoringProfilesResolvers,

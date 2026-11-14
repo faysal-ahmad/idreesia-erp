@@ -77,15 +77,6 @@ export const assertPollInWorkspace = async (
   return poll;
 };
 
-/** Eligible voters must be committee members. */
-export const assertMembers = (access: PollsAccess, personIds: string[]) => {
-  if (!areCommitteeMembers(access.committee, personIds)) {
-    throw new GraphQLError('Only members of this committee can be chosen.', {
-      extensions: { code: 'BAD_USER_INPUT' },
-    });
-  }
-};
-
 /** The logged-in user's voter id; they must be a member of the committee. */
 export const requireVoterId = (access: PollsAccess): string => {
   if (

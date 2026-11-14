@@ -1,0 +1,6 @@
+.meteor
+node_modules
+client
+imports
+public
+resources

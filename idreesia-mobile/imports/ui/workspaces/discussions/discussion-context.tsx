@@ -3,16 +3,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 
 import { toDeviceUrl } from '/imports/startup/backend';
 import { uploadDiscussionFile } from './discussion-files';
-import {
-  MOBILE_WORKSPACE_DELETE_DISCUSSION_MESSAGE,
-  MOBILE_WORKSPACE_DISCUSSION_INFO,
-  MOBILE_WORKSPACE_DISCUSSION_MEMBERS,
-  MOBILE_WORKSPACE_EDIT_DISCUSSION_MESSAGE,
-  MOBILE_WORKSPACE_REACT_TO_DISCUSSION_MESSAGE,
-  MOBILE_WORKSPACE_SEND_DISCUSSION_MESSAGE,
-  MOBILE_WORKSPACE_SET_DISCUSSION_MESSAGE_PINNED,
-  MOBILE_WORKSPACE_SET_DISCUSSION_MESSAGE_STARRED,
-} from './gql';
+import type { DiscussionScope } from './discussion-scope';
 import { type Discussion, useDiscussion } from './use-discussion';
 
 export interface DiscussionMember {
@@ -24,8 +15,9 @@ export interface DiscussionMember {
 
 /** Everything the discussion screens share (see discussion-feature.tsx). */
 export interface DiscussionContextValue {
+  scope: DiscussionScope;
   committeeId: string;
-  /** The committee's name; null until loaded. */
+  /** The committee's name (or the project's); null until loaded. */
   title: string | null;
   canPost: boolean;
   canPin: boolean;
@@ -61,28 +53,31 @@ export const useDiscussionContext = () => {
 };
 
 interface Props {
-  committeeId: string;
+  scope: DiscussionScope;
+  /** Overrides the screen title (a project chat is titled with the project). */
+  title?: string | null;
   children: ReactNode;
 }
 
-export const DiscussionProvider = ({ committeeId, children }: Props) => {
-  const info = useQuery(MOBILE_WORKSPACE_DISCUSSION_INFO, {
-    variables: { committeeId },
+export const DiscussionProvider = ({ scope, title, children }: Props) => {
+  const { committeeId, variables, docs } = scope;
+  const info = useQuery(docs.info, {
+    variables,
     fetchPolicy: 'cache-and-network',
   });
-  const membersQuery = useQuery(MOBILE_WORKSPACE_DISCUSSION_MEMBERS, {
-    variables: { committeeId },
+  const membersQuery = useQuery(docs.members, {
+    variables,
     fetchPolicy: 'cache-and-network',
   });
-  const discussion = useDiscussion(committeeId);
+  const discussion = useDiscussion(scope);
   const [focusId, setFocusId] = useState<string | null>(null);
 
-  const [send] = useMutation(MOBILE_WORKSPACE_SEND_DISCUSSION_MESSAGE);
-  const [react] = useMutation(MOBILE_WORKSPACE_REACT_TO_DISCUSSION_MESSAGE);
-  const [star] = useMutation(MOBILE_WORKSPACE_SET_DISCUSSION_MESSAGE_STARRED);
-  const [pin] = useMutation(MOBILE_WORKSPACE_SET_DISCUSSION_MESSAGE_PINNED);
-  const [edit] = useMutation(MOBILE_WORKSPACE_EDIT_DISCUSSION_MESSAGE);
-  const [remove] = useMutation(MOBILE_WORKSPACE_DELETE_DISCUSSION_MESSAGE);
+  const [send] = useMutation(docs.send);
+  const [react] = useMutation(docs.react);
+  const [star] = useMutation(docs.star);
+  const [pin] = useMutation(docs.pin);
+  const [edit] = useMutation(docs.edit);
+  const [remove] = useMutation(docs.remove);
 
   const { refresh } = discussion;
 
@@ -93,16 +88,17 @@ export const DiscussionProvider = ({ committeeId, children }: Props) => {
     };
     return {
       sendMessage: (text, threadId) =>
-        thenSync(send({ variables: { committeeId, text, threadId: threadId ?? null } })),
-      uploadFile: (file, fileName, threadId) => thenSync(uploadDiscussionFile(committeeId, file, fileName, threadId)),
+        thenSync(send({ variables: { ...variables, text, threadId: threadId ?? null } })),
+      uploadFile: (file, fileName, threadId) =>
+        thenSync(uploadDiscussionFile(scope.uploadPath, file, fileName, threadId)),
       react: (messageId, emoji, shouldReact) =>
-        thenSync(react({ variables: { committeeId, messageId, emoji, shouldReact } })),
-      setStarred: (messageId, starred) => thenSync(star({ variables: { committeeId, messageId, starred } })),
-      setPinned: (messageId, pinned) => thenSync(pin({ variables: { committeeId, messageId, pinned } })),
-      edit: (messageId, text) => thenSync(edit({ variables: { committeeId, messageId, text } })),
-      remove: messageId => thenSync(remove({ variables: { committeeId, messageId } })),
+        thenSync(react({ variables: { ...variables, messageId, emoji, shouldReact } })),
+      setStarred: (messageId, starred) => thenSync(star({ variables: { ...variables, messageId, starred } })),
+      setPinned: (messageId, pinned) => thenSync(pin({ variables: { ...variables, messageId, pinned } })),
+      edit: (messageId, text) => thenSync(edit({ variables: { ...variables, messageId, text } })),
+      remove: messageId => thenSync(remove({ variables: { ...variables, messageId } })),
     };
-  }, [committeeId, refresh, send, react, star, pin, edit, remove]);
+  }, [scope, variables, refresh, send, react, star, pin, edit, remove]);
 
   const members = useMemo<DiscussionMember[]>(
     () =>
@@ -118,8 +114,9 @@ export const DiscussionProvider = ({ committeeId, children }: Props) => {
 
   const value = useMemo<DiscussionContextValue>(
     () => ({
+      scope,
       committeeId,
-      title: info.data?.workspaceCommitteeById?.name ?? null,
+      title: title ?? (scope.titleFromInfo ? (info.data?.workspaceCommitteeById?.name ?? null) : null),
       canPost: Boolean(info.data?.workspaceDiscussionInfo?.canPost),
       canPin: Boolean(info.data?.workspaceDiscussionInfo?.canPin),
       infoLoading: info.loading && !info.data,
@@ -133,7 +130,7 @@ export const DiscussionProvider = ({ committeeId, children }: Props) => {
       focusId,
       requestFocus: setFocusId,
     }),
-    [committeeId, info, discussion, members, actions, focusId],
+    [scope, committeeId, title, info, discussion, members, actions, focusId],
   );
 
   return <DiscussionContext.Provider value={value}>{children}</DiscussionContext.Provider>;

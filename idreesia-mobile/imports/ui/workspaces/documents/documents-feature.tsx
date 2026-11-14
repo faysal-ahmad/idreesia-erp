@@ -4,6 +4,7 @@ import { KeepAlive } from '../../layout';
 import { matchPath, Redirect, Route, Switch, useLocation, useParams } from '../../router';
 import { type DocumentPart, WorkspacesPaths } from '../paths';
 import { DocumentActivityScreen } from './activity-screen';
+import { DocumentNotificationsScreen } from './document-notifications-screen';
 import { DocumentScreen } from './document-screen';
 import { FolderScreen } from './folder-screen';
 import { TrashScreen } from './trash-screen';
@@ -62,6 +63,11 @@ export const DocumentsFeature = () => {
       <Switch>
         <Route exact path={WorkspacesPaths.committeeDocumentsPattern} render={() => null} />
         <Route exact path={WorkspacesPaths.committeeDocumentFolderPattern} render={() => null} />
+        <Route
+          exact
+          component={DocumentNotificationsScreen}
+          path={WorkspacesPaths.committeeDocumentNotificationsPattern}
+        />
         <Route exact component={TrashScreen} path={WorkspacesPaths.committeeDocumentTrashPattern} />
         <Route exact path={WorkspacesPaths.committeeDocumentPattern} render={() => null} />
         {PART_SCREENS.map(([part, component]) => (

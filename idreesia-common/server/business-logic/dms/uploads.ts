@@ -38,6 +38,7 @@ import {
   validateFile,
 } from './internal';
 import { commitVersion } from './versions';
+import { notifyDocumentAdded, notifyVersionAdded } from './notifications';
 
 export interface CreateUploadInput {
   workspaceId: string;
@@ -272,6 +273,8 @@ export async function completeUpload(
           details: { versionNumber: version.versionNumber, size: version.size },
         }
   );
+  if (isNewDocument) await notifyDocumentAdded(document, userId);
+  else await notifyVersionAdded(document, version.versionNumber, userId);
   return { document: await requireDocument(document._id), version };
 }
 

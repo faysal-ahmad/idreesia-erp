@@ -234,3 +234,19 @@
   color: var(--app-color-text-secondary);
   font-size: 0.8824rem; /* 15px */
 }
+
+/* Notifications (meeting-notifications-screen.tsx) */
+.meeting-notification-text {
+  white-space: normal;
+}
+
+/* Unread notifications: tinted, to tell them from the ones already read. */
+.adm-list-item.meeting-notification-unread {
+  background: var(--app-color-primary-light);
+}
+
+.meeting-notifications-more {
+  display: flex;
+  justify-content: center;
+  padding: 4px 16px 12px;
+}

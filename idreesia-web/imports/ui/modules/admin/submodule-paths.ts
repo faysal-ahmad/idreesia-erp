@@ -46,6 +46,14 @@ export default class SubModulePaths {
   static peopleTagsPath = `${ModulePaths.admin}/people-tags`;
 
   // *************************************************************************************
+  // Central Committees Routes
+  // *************************************************************************************
+  static committeesPath = `${ModulePaths.admin}/committees`;
+  static committeesEditFormPath(committeeId = ':committeeId') {
+    return `${SubModulePaths.committeesPath}/${committeeId}`;
+  }
+
+  // *************************************************************************************
   // Deleted Data Routes
   // *************************************************************************************
   static deletedPeoplePath = `${ModulePaths.admin}/deleted-people`;

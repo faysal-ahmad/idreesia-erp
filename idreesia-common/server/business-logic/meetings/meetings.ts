@@ -42,6 +42,11 @@ import {
   type MeetingsPageOptions,
   type MeetingsSortOrder,
 } from './internal';
+import {
+  notifyCancelled,
+  notifyInvited,
+  notifyRescheduled,
+} from './notifications';
 import { buildParticipants, type ParticipantInput } from './participants';
 
 function validateTimes(startsAt: Date, endsAt: Date) {
@@ -119,7 +124,13 @@ export async function createMeeting(
     userId,
     details: { title, startsAt, endsAt },
   });
-  return requireMeeting(meetingId);
+  const created = await requireMeeting(meetingId);
+  await notifyInvited(
+    created,
+    created.participants.map(({ participantId }) => participantId),
+    userId
+  );
+  return created;
 }
 
 export async function getMeeting(
@@ -231,6 +242,7 @@ export async function updateMeeting(
         to: { startsAt, endsAt },
       },
     });
+    await notifyRescheduled(meeting, updated, userId);
   }
   const otherChanges = Object.keys(changes).filter(
     key => key !== 'startsAt' && key !== 'endsAt'
@@ -439,6 +451,7 @@ export async function cancelMeeting(
     userId,
     ...(cancellationReason ? { details: { reason: cancellationReason } } : {}),
   });
+  await notifyCancelled(updated, userId);
   return updated;
 }
 

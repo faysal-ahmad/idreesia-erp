@@ -472,9 +472,14 @@ export default class CommitteeDocumentsProvider implements DocumentsDataProvider
     });
   }
 
-  async checkOut(documentId: string, note?: string): Promise<void> {
+  async checkOut(
+    documentId: string,
+    durationMinutes: number,
+    note?: string
+  ): Promise<void> {
     await this.mutate(WORKSPACE_CHECK_OUT_DOCUMENT, {
       documentId,
+      durationMinutes,
       note: note ?? null,
     });
   }

@@ -12,6 +12,8 @@ import type {
   WorkspaceRemoveCommitteeMemberMutationVariables,
   WorkspaceSetCommitteeMemberDiscussionAccessMutation,
   WorkspaceSetCommitteeMemberDiscussionAccessMutationVariables,
+  WorkspaceSetCommitteeMemberCoordinatorMutation,
+  WorkspaceSetCommitteeMemberCoordinatorMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
 export const WORKSPACE_COMMITTEE_MEMBERS: TypedDocumentNode<
@@ -23,8 +25,12 @@ export const WORKSPACE_COMMITTEE_MEMBERS: TypedDocumentNode<
       _id
       canManageMembers
       features
+      memberCount
+      guestCount
+      observerCount
       members {
         karkunId
+        role
         isCoordinator
         name
         imageUrl
@@ -79,8 +85,13 @@ export const WORKSPACE_ADD_COMMITTEE_MEMBER: TypedDocumentNode<
   mutation workspaceAddCommitteeMember(
     $committeeId: String!
     $karkunId: String!
+    $role: String
   ) {
-    workspaceAddCommitteeMember(committeeId: $committeeId, karkunId: $karkunId) {
+    workspaceAddCommitteeMember(
+      committeeId: $committeeId
+      karkunId: $karkunId
+      role: $role
+    ) {
       _id
     }
   }
@@ -116,6 +127,23 @@ export const WORKSPACE_SET_COMMITTEE_MEMBER_DISCUSSION_ACCESS: TypedDocumentNode
       committeeId: $committeeId
       karkunId: $karkunId
       hasAccess: $hasAccess
+    )
+  }
+`;
+
+export const WORKSPACE_SET_COMMITTEE_MEMBER_COORDINATOR: TypedDocumentNode<
+  WorkspaceSetCommitteeMemberCoordinatorMutation,
+  WorkspaceSetCommitteeMemberCoordinatorMutationVariables
+> = gql`
+  mutation workspaceSetCommitteeMemberCoordinator(
+    $committeeId: String!
+    $karkunId: String!
+    $isCoordinator: Boolean!
+  ) {
+    workspaceSetCommitteeMemberCoordinator(
+      committeeId: $committeeId
+      karkunId: $karkunId
+      isCoordinator: $isCoordinator
     )
   }
 `;

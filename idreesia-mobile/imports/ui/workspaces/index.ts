@@ -7,4 +7,6 @@ export { MonitoringAlertsScreen } from './monitoring-alerts/monitoring-alerts-sc
 export { MonitoringProfilesFeature } from './monitoring-profiles/monitoring-profiles-feature';
 export { MeetingsFeature } from './meetings/meetings-feature';
 export { PollsFeature } from './polls/polls-feature';
+export { ProjectsFeature } from './projects/projects-feature';
+export { TasksFeature } from './projects/tasks-feature';
 export { WorkspacesStack } from './workspaces-stack';

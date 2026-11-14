@@ -32,7 +32,7 @@ import type {
   WorkspaceSetDiscussionMessageStarredMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
-const DISCUSSION_MESSAGE_FIELDS = gql`
+export const DISCUSSION_MESSAGE_FIELDS = gql`
   fragment WorkspaceDiscussionMessageFields on DiscussionMessageType {
     _id
     text

@@ -11,12 +11,6 @@ export default gql`
     myVoterId: String
   }
 
-  type WorkspacePollMemberType {
-    voterId: String
-    name: String
-    isCoordinator: Boolean
-  }
-
   type WorkspacePollOptionType {
     _id: String
     text: String
@@ -46,7 +40,6 @@ export default gql`
     # draft, open, closed or cancelled
     status: String
     anonymous: Boolean
-    showResultsWhileOpen: Boolean
     closesAt: String
     openedAt: String
     # Set when the poll has closed. closedByName is empty when it closed
@@ -57,8 +50,6 @@ export default gql`
     cancelledByName: String
     cancellationReason: String
     questions: [WorkspacePollQuestionType]
-    eligibleVoterIds: [String]
-    eligibleCount: Int
     voteCount: Int
     # The logged-in user can vote in this poll.
     isEligible: Boolean
@@ -107,11 +98,6 @@ export default gql`
     anonymous: Boolean
     closedAt: String
     totalVoters: Int
-    eligibleCount: Int
-    # Percentage of eligible voters who voted.
-    turnout: Float
-    # Eligible voters who didn't vote. Unset for anonymous polls.
-    nonVoters: [WorkspacePollVoterType]
     questions: [WorkspacePollQuestionResultType]
   }
 
@@ -152,9 +138,6 @@ export default gql`
     closesAt: String!
     # Drafts only.
     anonymous: Boolean
-    showResultsWhileOpen: Boolean
-    # Drafts only. Empty: every committee member.
-    eligibleVoterIds: [String]
     # Drafts only.
     questions: [WorkspacePollQuestionInput]
   }
@@ -166,8 +149,6 @@ export default gql`
 
   extend type Query {
     workspacePollsInfo(committeeId: String!): WorkspacePollsInfoType
-    # The committee's members, who can be made eligible to vote.
-    workspacePollMembers(committeeId: String!): [WorkspacePollMemberType]
     # view: open (default), closed, drafts (coordinators) or all.
     workspacePolls(
       committeeId: String!
@@ -182,11 +163,6 @@ export default gql`
       committeeId: String!
       pollId: String!
     ): WorkspacePollResultsType
-    # Coordinators only.
-    workspacePollVoters(
-      committeeId: String!
-      pollId: String!
-    ): [WorkspacePollVoterType]
     # Coordinators only. Newest first; pass the last entry's 'at' as
     # 'before' for the next page.
     workspacePollActivity(
@@ -207,12 +183,6 @@ export default gql`
       committeeId: String!
       pollId: String!
       input: WorkspacePollInput!
-    ): WorkspacePollType
-    # Adds members to an open poll's eligible voters.
-    workspaceAddPollVoters(
-      committeeId: String!
-      pollId: String!
-      voterIds: [String]!
     ): WorkspacePollType
     workspaceOpenPoll(
       committeeId: String!

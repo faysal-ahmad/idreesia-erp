@@ -5,7 +5,9 @@ import { ClockCircleOutline } from 'antd-mobile-icons';
 import { useMutation, useQuery } from '@apollo/client/react';
 import type { MobileWorkspaceDocumentVersionsQuery } from 'meteor/idreesia-common/types/client-operations';
 
+import { useOnlineStatus } from '../../hooks';
 import { PageEmpty, PageError, PageLoading, showError, showSuccess } from '../../layout';
+import { useOfflineItem } from '../../offline';
 import { DocumentPartPage, useDocumentPart } from './document-part';
 import { byLine, formatSize } from './format';
 import {
@@ -13,7 +15,13 @@ import {
   MOBILE_WORKSPACE_DOCUMENT_VERSIONS,
   MOBILE_WORKSPACE_RESTORE_DOCUMENT_VERSION,
 } from './gql';
-import { hasId, isLockedByOther, useDocumentPreview, useRefreshDocumentLists } from './use-documents';
+import {
+  hasId,
+  isLockedByOther,
+  OFFLINE_FEATURE,
+  useDocumentPreview,
+  useRefreshDocumentLists,
+} from './use-documents';
 
 type Version = NonNullable<NonNullable<MobileWorkspaceDocumentVersionsQuery['workspaceDocumentVersions']>[number]> & {
   _id: string;
@@ -29,6 +37,9 @@ export const VersionsScreen = () => {
   const refreshLists = useRefreshDocumentLists();
   const { open, previewElement } = useDocumentPreview(committeeId);
   const [selected, setSelected] = useState<Version | null>(null);
+  // Changes need the server; offline the versions can only be read.
+  const online = useOnlineStatus();
+  const savedCopies = useOfflineItem(OFFLINE_FEATURE, documentId);
 
   const { data, loading, error, refetch } = useQuery(MOBILE_WORKSPACE_DOCUMENT_VERSIONS, {
     variables: { committeeId, documentId },
@@ -56,14 +67,18 @@ export const VersionsScreen = () => {
     {
       key: 'open',
       text: 'Open',
-      onClick: () => open({ _id: documentId, name: version.fileName, mimeType: version.mimeType }, version._id),
+      onClick: () =>
+        open(
+          { _id: documentId, name: version.fileName, mimeType: version.mimeType },
+          { id: version._id, number: version.versionNumber ?? 0 },
+        ),
     },
     ...(!version.isCurrent
       ? [
           {
             key: 'restore',
             text: 'Make current',
-            disabled: lockedByOther,
+            disabled: !online || lockedByOther,
             onClick: async () => {
               const confirmed = await Dialog.confirm({
                 title: `Make version ${version.versionNumber} current?`,
@@ -87,7 +102,7 @@ export const VersionsScreen = () => {
             key: 'delete',
             text: 'Delete version',
             danger: true,
-            disabled: lockedByOther,
+            disabled: !online || lockedByOther,
             onClick: async () => {
               const confirmed = await Dialog.confirm({
                 content: `Delete version ${version.versionNumber} permanently?`,
@@ -129,11 +144,18 @@ export const VersionsScreen = () => {
                     </>
                   }
                   extra={
-                    version.isCurrent ? (
-                      <Tag color="primary" fill="outline">
-                        Current
-                      </Tag>
-                    ) : undefined
+                    <>
+                      {savedCopies.some(copy => copy.version === version.versionNumber) && (
+                        <Tag color="success" fill="outline">
+                          Offline
+                        </Tag>
+                      )}
+                      {version.isCurrent && (
+                        <Tag color="primary" fill="outline">
+                          Current
+                        </Tag>
+                      )}
+                    </>
                   }
                   onClick={() => setSelected(version)}
                 >

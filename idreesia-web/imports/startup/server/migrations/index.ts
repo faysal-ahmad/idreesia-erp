@@ -63,6 +63,9 @@ import './59-drop-unused-collections';
 import './60-create-dms-indexes';
 import './61-create-meetings-indexes';
 import './62-create-polls-indexes';
+import './63-create-projects-indexes';
+import './64-create-notifications-indexes';
+import './65-committee-member-roles';
 
 Migrations.config({
   log: true,

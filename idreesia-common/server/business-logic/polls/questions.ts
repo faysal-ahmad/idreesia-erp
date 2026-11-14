@@ -1,7 +1,6 @@
 import { Random } from 'meteor/random';
 
 import {
-  POLLS_MAX_ELIGIBLE_VOTERS,
   POLLS_MAX_OPTIONS,
   POLLS_MAX_QUESTION_LENGTH,
   POLLS_MAX_QUESTIONS,
@@ -21,7 +20,6 @@ import { logActivity } from './activity';
 import { pollsError } from './errors';
 import {
   DRAFT_ONLY,
-  normalizeOpaqueId,
   normalizeText,
   normalizeTitle,
   requireOneOf,
@@ -194,27 +192,6 @@ export function assertQuestionsReady(questions: PollQuestion[]) {
       { questionId: short._id }
     );
   }
-}
-
-/**
- * De-duplicated voter ids, or undefined when the list is unset or empty
- * (anyone the caller lets through can vote).
- */
-export function normalizeVoterIds(input: unknown): string[] | undefined {
-  if (input === undefined || input === null) return undefined;
-  if (!Array.isArray(input)) {
-    throw pollsError('BAD_USER_INPUT', 'Eligible voters must be a list of ids');
-  }
-  const ids = [
-    ...new Set(input.map(id => normalizeOpaqueId(id, 'Voter id'))),
-  ];
-  if (ids.length > POLLS_MAX_ELIGIBLE_VOTERS) {
-    throw pollsError(
-      'BAD_USER_INPUT',
-      `A poll can have at most ${POLLS_MAX_ELIGIBLE_VOTERS} eligible voters`
-    );
-  }
-  return ids.length ? ids : undefined;
 }
 
 /** Replaces a draft poll's questions. */

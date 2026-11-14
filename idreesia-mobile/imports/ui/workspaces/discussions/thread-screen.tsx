@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { MessageComposer } from '../../components';
 import { Page, PageError, PageLoading } from '../../layout';
 import { useParams } from '../../router';
-import { WorkspacesPaths } from '../paths';
 import { useDiscussionContext } from './discussion-context';
 import { DiscussionMessageList } from './discussion-message-list';
 import { useMessageActions } from './use-message-actions';
@@ -14,7 +13,7 @@ import { useMessageActions } from './use-message-actions';
  */
 export const ThreadScreen = () => {
   const { threadId } = useParams<{ threadId: string }>();
-  const { committeeId, canPost, members, discussion, actions } = useDiscussionContext();
+  const { scope, canPost, members, discussion, actions } = useDiscussionContext();
   const messageActions = useMessageActions({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
@@ -61,7 +60,7 @@ export const ThreadScreen = () => {
 
   return (
     <Page
-      backTo={WorkspacesPaths.committeeDiscussions(committeeId)}
+      backTo={scope.paths.main}
       footer={
         canPost && messages.length > 0 ? (
           <MessageComposer

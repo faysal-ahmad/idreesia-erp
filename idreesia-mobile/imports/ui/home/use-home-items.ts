@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useApolloClient } from '@apollo/client/react';
 
-import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
+import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import type {
   MobileWorkspaceMeetingActionItemsQuery,
   MobileWorkspaceMeetingsQuery,
@@ -39,12 +39,17 @@ export const useHomeItems = () => {
     actionItems: HomeActionItem[];
   }>({ loading: true, error: null, meetings: [], polls: [], actionItems: [] });
 
-  const load = useCallback(async () => {
-    try {
+  // Reads from the server, or (cache-only) from what was loaded before, so
+  // the Home tab still shows something when the device is offline.
+  const fetchItems = useCallback(
+    async (fetchPolicy: 'network-only' | 'cache-only') => {
       const { data } = await client.query({
         query: MOBILE_MY_COMMITTEES,
-        fetchPolicy: 'network-only',
+        fetchPolicy,
       });
+      if (fetchPolicy === 'cache-only' && !data?.myCommittees) {
+        throw new Error('Nothing is saved on this device yet.');
+      }
       const committees = (data?.myCommittees ?? []).filter(
         (committee): committee is NonNullable<typeof committee> & { _id: string } =>
           committee?._id != null,
@@ -59,14 +64,14 @@ export const useHomeItems = () => {
               ? client.query({
                   query: MOBILE_WORKSPACE_MEETINGS,
                   variables: { committeeId, view: 'upcoming', pageIndex: 0, pageSize: PAGE_SIZE },
-                  fetchPolicy: 'network-only',
+                  fetchPolicy,
                 })
               : null,
             committee.features?.includes(CommitteeFeatureKeys.POLLS)
               ? client.query({
                   query: MOBILE_WORKSPACE_POLLS,
                   variables: { committeeId, view: 'open', pageIndex: 0, pageSize: PAGE_SIZE },
-                  fetchPolicy: 'network-only',
+                  fetchPolicy,
                 })
               : null,
             // Open items assigned to the user, from meetings that have ended.
@@ -80,7 +85,7 @@ export const useHomeItems = () => {
                     pageIndex: 0,
                     pageSize: 50,
                   },
-                  fetchPolicy: 'network-only',
+                  fetchPolicy,
                 })
               : null,
           ]);
@@ -111,11 +116,24 @@ export const useHomeItems = () => {
       const actionItems = perCommittee
         .flatMap(item => item.actionItems)
         .sort((a, b) => Number(a.meetingEndsAt) - Number(b.meetingEndsAt));
-      setState({ loading: false, error: null, meetings, polls, actionItems });
+      return { meetings, polls, actionItems };
+    },
+    [client],
+  );
+
+  const load = useCallback(async () => {
+    try {
+      const items = await fetchItems('network-only');
+      setState({ loading: false, error: null, ...items });
     } catch (error) {
-      setState(prev => ({ ...prev, loading: false, error: error as Error }));
+      try {
+        const saved = await fetchItems('cache-only');
+        setState({ loading: false, error: null, ...saved });
+      } catch {
+        setState(prev => ({ ...prev, loading: false, error: error as Error }));
+      }
     }
-  }, [client]);
+  }, [fetchItems]);
 
   useEffect(() => {
     load();

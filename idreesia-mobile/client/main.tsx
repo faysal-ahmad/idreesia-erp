@@ -28,15 +28,17 @@ import '../imports/ui/workspaces/monitoring-profiles/monitoring-profile.styles.c
 import '../imports/ui/workspaces/monitoring-profiles/monitoring-profiles.styles.css';
 import '../imports/ui/workspaces/meetings/meetings.styles.css';
 import '../imports/ui/workspaces/polls/polls.styles.css';
+import '../imports/ui/workspaces/projects/projects.styles.css';
 import '../imports/ui/workspaces/documents/documents.styles.css';
 import App from '../imports/ui/app';
 import { HashRouter } from '../imports/ui/router';
 import { applyTheme, watchTextScale } from '../imports/ui/theme';
 import { apolloClient } from '../imports/startup/apollo-client';
+import { restoreApolloCache } from '../imports/startup/apollo-persist';
 
 // HashRouter: Cordova serves the bundle from a local origin with no server
 // side routing, so path-based URLs don't survive a reload there.
-Meteor.startup(() => {
+Meteor.startup(async () => {
   applyTheme();
   watchTextScale();
   // antd-mobile's built-in text (list ends, pickers, dialogs) defaults to
@@ -46,6 +48,10 @@ Meteor.startup(() => {
 
   const container = document.getElementById('render-target');
   if (!container) return;
+
+  // Load what was browsed last time, so screens can show it offline. This
+  // gives up after a few seconds and never throws, so it can't block launch.
+  await restoreApolloCache();
 
   createRoot(container).render(
     <HashRouter>

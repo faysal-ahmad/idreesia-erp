@@ -2,3 +2,4 @@ cordova-plugin-camera@8.0.0
 cordova-plugin-android-permissions@1.1.5
 idreesia-webview-camera@file://../cordova-plugins/idreesia-webview-camera
 idreesia-scene-lifecycle@file://../cordova-plugins/idreesia-scene-lifecycle
+cordova-plugin-file@8.1.3

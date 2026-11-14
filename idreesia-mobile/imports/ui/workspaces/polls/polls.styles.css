@@ -195,12 +195,6 @@
   overflow-wrap: anywhere;
 }
 
-.poll-non-voters {
-  margin: 0 12px 16px;
-  overflow: hidden;
-  border-radius: var(--app-radius-medium);
-}
-
 .poll-load-more {
   margin: 0 12px 16px;
 }
@@ -256,47 +250,6 @@
   font-size: 20px;
 }
 
-/* Voter picker (voter-picker-popup.tsx) */
-.poll-picker {
-  display: flex;
-  max-height: 85vh;
-  flex-direction: column;
-  border-top-left-radius: var(--app-radius-medium);
-  border-top-right-radius: var(--app-radius-medium);
-}
-
-.poll-picker-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 12px 4px 16px;
-}
-
-.poll-picker-title {
-  font-size: 1rem; /* 17px */
-  font-weight: 600;
-}
-
-.poll-picker-search {
-  padding: 4px 12px 8px;
-}
-
-.poll-picker-list {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.poll-picker-footer {
-  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--app-color-border);
-}
-
-.poll-picker-note {
-  margin: 0 0 8px;
-  color: var(--app-color-text-secondary);
-  font-size: 0.7647rem; /* 13px */
-}
-
 /* Confirmation dialogs on the poll screen */
 
 .poll-dialog p {
@@ -325,4 +278,20 @@
 
 .poll-selector .adm-selector-item-active {
   font-weight: 600;
+}
+
+/* Notifications (poll-notifications-screen.tsx) */
+.poll-notification-text {
+  white-space: normal;
+}
+
+/* Unread notifications: tinted, to tell them from the ones already read. */
+.adm-list-item.poll-notification-unread {
+  background: var(--app-color-primary-light);
+}
+
+.poll-notifications-more {
+  display: flex;
+  justify-content: center;
+  padding: 4px 16px 12px;
 }

@@ -77,8 +77,7 @@ const nameOf = (names: UserNames, userId?: string) =>
   (userId && names.get(userId)) || null;
 
 const isLockActive = (document: DmsDocumentDocument) =>
-  !!document.lock &&
-  (!document.lock.expiresAt || document.lock.expiresAt > new Date());
+  !!document.lock && document.lock.expiresAt > new Date();
 
 const toFolder = (folder: DmsFolderDocument, names: UserNames) => ({
   _id: folder._id,

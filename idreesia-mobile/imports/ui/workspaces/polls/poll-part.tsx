@@ -6,7 +6,7 @@ import { useParams } from '../../router';
 import { WorkspacesPaths } from '../paths';
 import { type Poll, usePoll, usePollsInfo } from './use-poll';
 
-/** What a screen under one poll (results, voters, ...) needs. */
+/** What a screen under one poll (results, activity, ...) needs. */
 export const usePollPart = () => {
   const { committeeId, pollId } = useParams<{ committeeId: string; pollId: string }>();
   const info = usePollsInfo(committeeId);

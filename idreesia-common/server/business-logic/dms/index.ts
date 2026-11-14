@@ -100,3 +100,11 @@ export type { TrashContents, RestoreOptions, EmptyTrashResult } from './trash';
 
 export { searchDocuments } from './search';
 export type { SearchDocumentsOptions, DmsSearchResult } from './search';
+
+export { DMS_MODULE } from 'meteor/idreesia-common/constants/dms';
+export { dmsModule } from './module';
+export {
+  publishExpiringLockNotifications,
+  isLockExpiringSoon,
+  LOCK_EXPIRING_WINDOW_MS,
+} from './notifications';

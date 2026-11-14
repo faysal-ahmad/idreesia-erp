@@ -27,6 +27,7 @@ import {
   statusConflict,
   writeMeeting,
 } from './internal';
+import { notifyInvited } from './notifications';
 
 export interface ParticipantInput {
   /** Any id the caller chooses (e.g. a karkun id). */
@@ -117,6 +118,11 @@ export async function addParticipants(
     userId,
     details: { participantIds: added.map(({ participantId }) => participantId) },
   });
+  await notifyInvited(
+    updated,
+    added.map(({ participantId }) => participantId),
+    userId
+  );
   return updated;
 }
 

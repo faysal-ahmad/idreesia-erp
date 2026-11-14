@@ -1,23 +1,69 @@
-import React from 'react';
-import { useQuery } from '@apollo/client/react';
-import { Avatar, List, PullToRefresh, Tag } from 'antd-mobile';
-import { LockOutline } from 'antd-mobile-icons';
+import React, { useState } from 'react';
+import { useMutation, useQuery } from '@apollo/client/react';
+import { ActionSheet, Avatar, Badge, List, PullToRefresh, Tabs, Tag } from 'antd-mobile';
+import { BellOutline, LockOutline } from 'antd-mobile-icons';
 import { toDeviceUrl } from '/imports/startup/backend';
 
 import { WorkspacesPaths } from '../paths';
-import { Page, PageError, PageLoading, PageEmpty } from '../../layout';
-import { useParams } from '../../router';
-import { MOBILE_WORKSPACE_COMMITTEE_MEMBERS } from './gql';
+import { Page, PageError, PageLoading, PageEmpty, showError, showSuccess } from '../../layout';
+import { useHistory, useParams } from '../../router';
+import { MOBILE_MY_NOTIFICATION_COUNTS } from '../gql';
+import { MOBILE_SET_COMMITTEE_MEMBER_COORDINATOR, MOBILE_WORKSPACE_COMMITTEE_MEMBERS } from './gql';
 
-/** A workspace's members: coordinators first, then by name. */
+type MembersTab = 'members' | 'guests';
+
+// The roles shown on each tab. A missing role is a plain member.
+const TAB_ROLES: Record<MembersTab, string[]> = {
+  members: ['member', 'coordinator'],
+  guests: ['guest'],
+};
+
+const EMPTY_TITLES: Record<MembersTab, string> = {
+  members: 'No members yet',
+  guests: 'No guests yet',
+};
+
+/** A workspace's people, by role: coordinators first, then by name. */
 export const MembersScreen = () => {
   const { committeeId } = useParams<{ committeeId: string }>();
+  const history = useHistory();
+  const [tab, setTab] = useState<MembersTab>('members');
+  // Unread membership notifications, for the bell. Best effort.
+  const { data: countData, refetch: refetchCounts } = useQuery(MOBILE_MY_NOTIFICATION_COUNTS, {
+    fetchPolicy: 'cache-and-network',
+  });
+  const unreadCount = (countData?.myNotificationCounts ?? [])
+    .filter(row => row?.committeeId === committeeId && row.module === 'members')
+    .reduce((total, row) => total + (row?.unreadCount ?? 0), 0);
   const { data, loading, error, refetch } = useQuery(MOBILE_WORKSPACE_COMMITTEE_MEMBERS, {
     variables: { committeeId },
     fetchPolicy: 'cache-and-network',
   });
 
-  const refresh = () => refetch().then(
+  const [setCoordinator] = useMutation(MOBILE_SET_COMMITTEE_MEMBER_COORDINATOR);
+  // The member whose actions are open: call them, and (coordinators only)
+  // change their coordinator status.
+  const [selected, setSelected] = useState<{
+    karkunId: string;
+    name: string;
+    isCoordinator: boolean;
+    phones: string[];
+  } | null>(null);
+
+  const changeCoordinator = (isCoordinator: boolean) => {
+    if (!selected) return;
+    const { karkunId, name } = selected;
+    setCoordinator({ variables: { committeeId, karkunId, isCoordinator } })
+      .then(() => {
+        showSuccess(isCoordinator ? `${name} is now a coordinator.` : `${name} is no longer a coordinator.`);
+        return refetch();
+      })
+      .catch(failure => showError(failure, 'Could not change the coordinator.'));
+  };
+
+  // Pulling to refresh also refreshes the bell's count: this screen stays
+  // mounted under its notifications, so the count wouldn't otherwise change.
+  const refresh = () => Promise.all([refetch(), refetchCounts()]).then(
     () => undefined,
     () => undefined,
   );
@@ -46,6 +92,7 @@ export const MembersScreen = () => {
         (member): member is NonNullable<typeof member> & { karkunId: string } =>
           member?.karkunId != null,
       )
+      .filter(member => TAB_ROLES[tab].includes(member.role ?? 'member'))
       .sort(
         (a, b) =>
           Number(Boolean(b.isCoordinator)) - Number(Boolean(a.isCoordinator)) ||
@@ -54,6 +101,12 @@ export const MembersScreen = () => {
 
     content = (
       <PullToRefresh onRefresh={refresh}>
+        <Tabs activeKey={tab} className="members-tabs" onChange={key => setTab(key as MembersTab)}>
+          <Tabs.Tab key="members" title={`Members (${committee.memberCount ?? 0})`} />
+          <Tabs.Tab key="guests" title={`Guests (${committee.guestCount ?? 0})`} />
+        </Tabs>
+        {members.length === 0 && <PageEmpty title={EMPTY_TITLES[tab]} />}
+        {members.length > 0 && (
         <List header={committee.name} mode="card">
           {members.map(member => {
             const phones = [member.contactNumber1, member.contactNumber2].filter(
@@ -62,14 +115,14 @@ export const MembersScreen = () => {
             return (
               <List.Item
                 key={member.karkunId}
+                arrowIcon={false}
+                clickable
                 className="workspace-member-item"
                 description={
                   phones.length > 0 && (
                     <span className="workspace-member-phones">
                       {phones.map(phone => (
-                        <a key={phone} href={`tel:${phone}`}>
-                          {phone}
-                        </a>
+                        <span key={phone}>{phone}</span>
                       ))}
                     </span>
                   )
@@ -77,9 +130,17 @@ export const MembersScreen = () => {
                 extra={
                   member.isCoordinator && (
                     <Tag color="primary" fill="outline">
-                      Coordinator
+                      CO
                     </Tag>
                   )
+                }
+                onClick={() =>
+                  setSelected({
+                    karkunId: member.karkunId,
+                    name: member.name ?? 'This person',
+                    isCoordinator: Boolean(member.isCoordinator),
+                    phones,
+                  })
                 }
                 prefix={
                   <Avatar
@@ -93,13 +154,62 @@ export const MembersScreen = () => {
             );
           })}
         </List>
+        )}
       </PullToRefresh>
     );
   }
 
   return (
-    <Page backTo={WorkspacesPaths.root} title="Members">
+    <Page
+      backTo={WorkspacesPaths.root}
+      right={
+        <Badge content={unreadCount > 0 ? unreadCount : null}>
+          <BellOutline
+            aria-label="Notifications"
+            className="workspace-members-bell"
+            onClick={() => history.push(WorkspacesPaths.committeeMemberNotifications(committeeId))}
+          />
+        </Badge>
+      }
+      title="Members"
+    >
       {content}
+      <ActionSheet
+        actions={
+          selected
+            ? [
+                ...selected.phones.map(phone => ({
+                  key: `call-${phone}`,
+                  text: `Call ${phone}`,
+                  onClick: () => {
+                    window.location.href = `tel:${phone}`;
+                  },
+                })),
+                ...(committee?.canManageMembers && tab === 'members'
+                  ? [
+                      selected.isCoordinator
+                        ? {
+                            key: 'demote',
+                            text: 'Remove as Coordinator',
+                            danger: true,
+                            onClick: () => changeCoordinator(false),
+                          }
+                        : {
+                            key: 'promote',
+                            text: 'Make Coordinator',
+                            onClick: () => changeCoordinator(true),
+                          },
+                    ]
+                  : []),
+              ]
+            : []
+        }
+        cancelText="Cancel"
+        closeOnAction
+        extra={selected?.name}
+        visible={selected != null}
+        onClose={() => setSelected(null)}
+      />
     </Page>
   );
 };

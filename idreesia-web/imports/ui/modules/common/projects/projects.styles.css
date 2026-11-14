@@ -1,0 +1,62 @@
+/* Workspaces → Projects & Tasks (common/projects) */
+
+.projects-board .list-table-header .ant-segmented,
+.tasks-board .list-table-header .ant-segmented {
+  background: #f3f4f6;
+}
+
+.tasks-board .ant-table-tbody > tr.project-task-overdue > td {
+  background: #fff6f5;
+}
+
+.project-pre-wrap {
+  white-space: pre-wrap;
+}
+
+/* Project page */
+.project-detail .project-detail-back {
+  padding-left: 0;
+}
+
+.project-detail .project-detail-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.project-detail .project-detail-alert {
+  margin-bottom: 12px;
+}
+
+.project-detail .project-detail-info .ant-descriptions-item-label {
+  width: 130px;
+  background: #f3f4f6;
+  color: #344054;
+}
+
+.project-detail .ant-tabs {
+  margin-top: 8px;
+}
+
+.project-detail .project-detail-chat {
+  height: calc(100vh - 360px);
+  min-height: 420px;
+}
+
+.project-task-drawer .project-detail-info .ant-descriptions-item-label {
+  width: 120px;
+  background: #f3f4f6;
+  color: #344054;
+}
+
+.project-task-drawer .project-task-description {
+  margin-top: 12px;
+}
+
+.project-participants .project-participants-add,
+.project-activity {
+  margin-bottom: 12px;
+}

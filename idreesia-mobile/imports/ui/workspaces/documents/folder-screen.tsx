@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActionSheet,
+  Badge,
   Dialog,
   InfiniteScroll,
   List,
@@ -11,13 +12,15 @@ import {
   Tag,
 } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
-import { AddOutline, FolderOutline, MoreOutline } from 'antd-mobile-icons';
+import { AddOutline, BellOutline, DeleteOutline, FolderOutline, MoreOutline } from 'antd-mobile-icons';
 import { useMutation, useQuery } from '@apollo/client/react';
 
 import { PagedList } from '../../components';
-import { usePagedQuery } from '../../hooks';
+import { useOfflineItem } from '../../offline';
+import { useOnlineStatus, usePagedQuery } from '../../hooks';
 import { Page, PageEmpty, PageError, PageLoading, showError, showSuccess } from '../../layout';
 import { useHistory, useParams } from '../../router';
+import { MOBILE_MY_NOTIFICATION_COUNTS } from '../gql';
 import { WorkspacesPaths } from '../paths';
 import { byLine, formatDateTime, formatSize, ROOT_NAME } from './format';
 import {
@@ -36,6 +39,7 @@ import {
   type DocumentItem,
   hasId,
   isLockedByOther,
+  OFFLINE_FEATURE,
   useDocumentUpload,
   useRefreshDocumentLists,
 } from './use-documents';
@@ -58,6 +62,7 @@ interface RowProps {
 
 /** A document in a folder or in the search results. */
 const DocumentRow = ({ document, showFolder, onOpen, onTrash }: RowProps) => {
+  const [saved] = useOfflineItem(OFFLINE_FEATURE, document._id);
   const item = (
     <List.Item
       description={
@@ -71,10 +76,19 @@ const DocumentRow = ({ document, showFolder, onOpen, onTrash }: RowProps) => {
         </>
       }
       extra={
-        document.lock ? (
-          <Tag color={document.lock.isMine ? 'primary' : 'warning'} fill="outline">
-            {document.lock.isMine ? 'Checked out' : 'Locked'}
-          </Tag>
+        document.lock || saved ? (
+          <>
+            {saved && (
+              <Tag color={saved.version === document.currentVersionNumber ? 'success' : 'warning'} fill="outline">
+                {saved.version === document.currentVersionNumber ? 'Offline' : 'Offline (old)'}
+              </Tag>
+            )}
+            {document.lock && (
+              <Tag color={document.lock.isMine ? 'primary' : 'warning'} fill="outline">
+                {document.lock.isMine ? 'Checked out' : 'Locked'}
+              </Tag>
+            )}
+          </>
         ) : undefined
       }
       prefix={
@@ -150,6 +164,16 @@ export const FolderScreen = ({ folderId }: Props) => {
   const [renameOpen, setRenameOpen] = useState(false);
   const [moving, setMoving] = useState<MoveTarget | null>(null);
   const { uploading, upload } = useDocumentUpload(committeeId);
+  // Changes need the server; offline the library is read-only.
+  const online = useOnlineStatus();
+  // Unread document notifications, for the bell. Best effort. The folders stay
+  // mounted under the notifications page, so this updates when they are read.
+  const { data: countData } = useQuery(MOBILE_MY_NOTIFICATION_COUNTS, {
+    fetchPolicy: 'cache-and-network',
+  });
+  const unreadCount = (countData?.myNotificationCounts ?? [])
+    .filter(row => row?.committeeId === committeeId && row.module === 'dms')
+    .reduce((total, row) => total + (row?.unreadCount ?? 0), 0);
 
   const [createFolder] = useMutation(MOBILE_WORKSPACE_CREATE_DOCUMENT_FOLDER);
   const [renameFolder] = useMutation(MOBILE_WORKSPACE_RENAME_DOCUMENT_FOLDER);
@@ -237,24 +261,30 @@ export const FolderScreen = ({ folderId }: Props) => {
   };
 
   const addActions: Action[] = [
-    { key: 'upload', text: 'Upload files', onClick: () => !uploading && fileInput.current?.click() },
-    { key: 'folder', text: 'New folder', onClick: () => setNewFolderOpen(true) },
+    { key: 'upload', text: 'Upload files', disabled: !online, onClick: () => !uploading && fileInput.current?.click() },
+    { key: 'folder', text: 'New folder', disabled: !online, onClick: () => setNewFolderOpen(true) },
   ];
 
   const menuActions: Action[] = [
     ...(current
       ? [
-          { key: 'rename', text: 'Rename folder', onClick: () => setRenameOpen(true) },
+          { key: 'rename', text: 'Rename folder', disabled: !online, onClick: () => setRenameOpen(true) },
           {
             key: 'move',
             text: 'Move folder to…',
+            disabled: !online,
             onClick: () =>
               setMoving({ kind: 'folder', id: current._id, name: current.name ?? '', currentFolderId: parentId }),
           },
-          { key: 'trash-folder', text: 'Delete folder', danger: true, onClick: () => confirmTrashFolder(current, true) },
+          {
+            key: 'trash-folder',
+            text: 'Delete folder',
+            danger: true,
+            disabled: !online,
+            onClick: () => confirmTrashFolder(current, true),
+          },
         ]
       : []),
-    { key: 'trash', text: 'Trash', onClick: () => history.push(WorkspacesPaths.committeeDocumentTrash(committeeId)) },
   ];
 
   // --- Body ------------------------------------------------------------------
@@ -282,13 +312,8 @@ export const FolderScreen = ({ folderId }: Props) => {
             .join(' · ')}
         </p>
         <List mode="card">
-          {folders.map(folder => (
-            <SwipeAction
-              key={folder._id}
-              rightActions={[
-                { key: 'trash', text: 'Delete', color: 'danger', onClick: () => confirmTrashFolder(folder) },
-              ]}
-            >
+          {folders.map(folder => {
+            const row = (
               <List.Item
                 description={byLine(folder.updatedByName, folder.updatedAt) || undefined}
                 prefix={
@@ -300,14 +325,26 @@ export const FolderScreen = ({ folderId }: Props) => {
               >
                 {folder.name}
               </List.Item>
-            </SwipeAction>
-          ))}
+            );
+            return online ? (
+              <SwipeAction
+                key={folder._id}
+                rightActions={[
+                  { key: 'trash', text: 'Delete', color: 'danger', onClick: () => confirmTrashFolder(folder) },
+                ]}
+              >
+                {row}
+              </SwipeAction>
+            ) : (
+              <React.Fragment key={folder._id}>{row}</React.Fragment>
+            );
+          })}
           {documents.map(document => (
             <DocumentRow
               key={document._id}
               document={document}
               onOpen={() => openDocument(document)}
-              onTrash={() => confirmTrashDocument(document)}
+              onTrash={online ? () => confirmTrashDocument(document) : undefined}
             />
           ))}
         </List>
@@ -323,7 +360,22 @@ export const FolderScreen = ({ folderId }: Props) => {
       right={
         <div className="page-nav-actions">
           <AddOutline aria-label="Add" className="page-nav-action" onClick={() => setAddOpen(true)} />
-          <MoreOutline aria-label="More" className="page-nav-action" onClick={() => setMenuOpen(true)} />
+          <Badge content={unreadCount > 0 ? unreadCount : null}>
+            <BellOutline
+              aria-label="Notifications"
+              className="page-nav-action"
+              onClick={() => history.push(WorkspacesPaths.committeeDocumentNotifications(committeeId))}
+            />
+          </Badge>
+          {/* The menu only has folder actions, so the top level has none. */}
+          {menuActions.length > 0 && (
+            <MoreOutline aria-label="More" className="page-nav-action" onClick={() => setMenuOpen(true)} />
+          )}
+          <DeleteOutline
+            aria-label="Trash"
+            className="page-nav-action"
+            onClick={() => history.push(WorkspacesPaths.committeeDocumentTrash(committeeId))}
+          />
         </div>
       }
     >

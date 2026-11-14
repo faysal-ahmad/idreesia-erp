@@ -183,7 +183,8 @@ export interface DocumentsDataProvider {
   restoreVersion(documentId: string, versionId: string): Promise<void>;
   deleteVersion(documentId: string, versionId: string): Promise<void>;
 
-  checkOut(documentId: string, note?: string): Promise<void>;
+  /** The lock lasts durationMinutes (at most 7 days). */
+  checkOut(documentId: string, durationMinutes: number, note?: string): Promise<void>;
   checkIn(documentId: string): Promise<void>;
   forceUnlock(documentId: string): Promise<void>;
 

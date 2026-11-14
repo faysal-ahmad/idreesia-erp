@@ -4,6 +4,7 @@ export {
 } from './committee-features';
 export {
   getCommitteeChatGroupId,
+  getCommitteeDiscussionsWorkspaceId,
   getCommitteeDiscussionChatUserIds,
   setCommitteeMemberDiscussionAccess,
 } from './discussions';
@@ -33,7 +34,12 @@ export {
   addCommitteeMember,
   removeCommitteeMember,
   removePersonFromCommittees,
+  getCommitteeMemberCounts,
+  getCommitteeMembersPage,
+  setCommitteeMemberCoordinator,
+  setCommitteeMemberRole,
 } from './members';
+export { MEMBERS_MODULE } from './members-notifications';
 export type { CommitteeDoc, CommitteeFeatureHandler } from './types';
 export { documentsHandler, getCommitteeDmsWorkspaceId } from './documents';
 export {
@@ -84,11 +90,8 @@ export { pollsHandler, getCommitteePollsWorkspaceId } from './polls';
 export {
   getCommitteePoll,
   getCommitteePollActivity,
-  getCommitteePollMembers,
   getCommitteePollResults,
   getCommitteePollsInfo,
-  getCommitteePollVoters,
-  getCommitteeVoterIds,
   listCommitteePolls,
   toCommitteePoll,
   type CommitteePollsOptions,
@@ -99,3 +102,49 @@ export {
   updateCommitteePoll,
   type CommitteePollInput,
 } from './polls-actions';
+export {
+  projectsHandler,
+  getCommitteeProjectsWorkspaceId,
+} from './projects';
+export {
+  getCommitteeProject,
+  getCommitteeProjectMembers,
+  getCommitteeProjectsActivity,
+  getCommitteeProjectsInfo,
+  getCommitteeTask,
+  listCommitteeProjects,
+  listCommitteeTaskComments,
+  listCommitteeTasks,
+  mapComments,
+  toCommitteeProject,
+  toCommitteeTask,
+  type CommitteeProjectsOptions,
+  type CommitteeTasksOptions,
+  type ProjectsContext,
+  type ProjectsView,
+  type TasksView,
+} from './projects-view';
+export {
+  addCommitteeProjectParticipants,
+  createCommitteeProject,
+  createCommitteeTask,
+  deleteCommitteeProject,
+  removeCommitteeProjectParticipant,
+  setCommitteeProjectStatus,
+  updateCommitteeProject,
+  updateCommitteeTask,
+  type CommitteeProjectInput,
+  type CommitteeTaskInput,
+} from './projects-actions';
+export {
+  getProjectChatGroupId,
+  tryEnsureProjectChatGroup,
+} from './projects-chat';
+export { getPersonNotificationScope } from './workspaces';
+export {
+  getMyNotifications,
+  getMyUnreadNotificationCount,
+  markMyNotificationsRead,
+  type MyNotification,
+  type NotificationUser,
+} from './notifications';

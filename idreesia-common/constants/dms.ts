@@ -3,6 +3,9 @@
  * (server/business-logic/dms).
  */
 
+/** The DMS's name as a headless module (notifications are keyed by it). */
+export const DMS_MODULE = 'dms';
+
 export const DmsEntityType = {
   WORKSPACE: 'workspace',
   FOLDER: 'folder',
@@ -57,6 +60,18 @@ export const DMS_DEFAULT_MAX_FILE_SIZE = 100 * 1024 * 1024;
 export const DMS_UPLOAD_URL_EXPIRY_SECONDS = 15 * 60;
 /** How long a presigned download URL lives. */
 export const DMS_DOWNLOAD_URL_EXPIRY_SECONDS = 15 * 60;
+/** A check-out lock lasts at most this long; every lock expires. */
+export const DMS_MAX_LOCK_MINUTES = 7 * 24 * 60;
+/** Used when a check-out doesn't say how long it should last. */
+export const DMS_DEFAULT_LOCK_MINUTES = DMS_MAX_LOCK_MINUTES;
+/** The durations a user can pick when checking a document out. */
+export const DMS_LOCK_DURATION_OPTIONS = [
+  { label: '1 hour', minutes: 60 },
+  { label: '4 hours', minutes: 4 * 60 },
+  { label: '1 day', minutes: 24 * 60 },
+  { label: '3 days', minutes: 3 * 24 * 60 },
+  { label: '7 days', minutes: DMS_MAX_LOCK_MINUTES },
+] as const;
 export const DMS_DEFAULT_PAGE_SIZE = 50;
 export const DMS_MAX_PAGE_SIZE = 200;
 export const DMS_MAX_NAME_LENGTH = 255;

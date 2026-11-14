@@ -10,6 +10,7 @@ const SubModuleNames = {
   peopleTags: 'People Tags',
   deletedPeople: 'Deleted People',
   duplicatePeople: 'Duplicate People',
+  committees: 'Central Committees',
 };
 
 export default SubModuleNames;

@@ -1,10 +1,17 @@
 import React, { type ReactNode, useRef, useState } from 'react';
-import { ActionSheet, Button, Dialog, List, ProgressBar, Tag, TextArea } from 'antd-mobile';
+import { ActionSheet, Button, Dialog, List, ProgressBar, Selector, Tag, TextArea } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
-import { ClockCircleOutline, HistogramOutline, LockOutline, MoreOutline } from 'antd-mobile-icons';
+import { ClockCircleOutline, DownlandOutline, HistogramOutline, LockOutline, MoreOutline } from 'antd-mobile-icons';
 import { useMutation } from '@apollo/client/react';
 
+import {
+  DMS_DEFAULT_LOCK_MINUTES,
+  DMS_LOCK_DURATION_OPTIONS,
+} from 'meteor/idreesia-common/constants/dms';
+
 import { Page, PageError, PageLoading, useNavigateBack, showError, showSuccess } from '../../layout';
+import { isOfflineStorageAvailable, useOfflineItem } from '../../offline';
+import { useOnlineStatus } from '../../hooks';
 import { useHistory, useParams } from '../../router';
 import { type DocumentPart, WorkspacesPaths } from '../paths';
 import { DocumentNotFound, useDocument } from './document-part';
@@ -22,9 +29,11 @@ import {
   DocumentIcon,
   type DocumentItem,
   isLockedByOther,
+  OFFLINE_FEATURE,
   useDocumentPreview,
   useDocumentsInfo,
   useDocumentUpload,
+  useOfflineDocument,
   useRefreshDocumentLists,
 } from './use-documents';
 
@@ -49,6 +58,42 @@ const askText = async (title: string, confirmText: string, placeholder: string) 
   return confirmed ? text.trim() : null;
 };
 
+/**
+ * Asks how long to check a document out for (at most 7 days) and an optional
+ * note; resolves to null when cancelled.
+ */
+const askCheckOut = async () => {
+  let minutes: number = DMS_DEFAULT_LOCK_MINUTES;
+  let note = '';
+  const confirmed = await Dialog.confirm({
+    title: 'Check out this document?',
+    content: (
+      <>
+        <p>Keep it checked out for</p>
+        <Selector
+          columns={3}
+          defaultValue={[DMS_DEFAULT_LOCK_MINUTES]}
+          options={DMS_LOCK_DURATION_OPTIONS.map(option => ({ label: option.label, value: option.minutes }))}
+          onChange={values => {
+            if (values.length) minutes = values[0];
+          }}
+        />
+        <TextArea
+          autoSize={{ minRows: 2, maxRows: 4 }}
+          maxLength={1000}
+          placeholder="Note for others, e.g. what you are changing (optional)"
+          onChange={value => {
+            note = value;
+          }}
+        />
+      </>
+    ),
+    confirmText: 'Check out',
+    cancelText: 'Cancel',
+  });
+  return confirmed ? { minutes, note: note.trim() } : null;
+};
+
 interface Props {
   documentId: string;
 }
@@ -62,10 +107,14 @@ export const DocumentScreen = ({ documentId }: Props) => {
   const { committeeId } = useParams<{ committeeId: string }>();
   const history = useHistory();
   const { canManage } = useDocumentsInfo(committeeId);
+  // Changes need the server; offline the document can only be read.
+  const online = useOnlineStatus();
   const { document, loading, error, refetch } = useDocument(committeeId, documentId);
   const refreshLists = useRefreshDocumentLists();
   const { open, previewElement } = useDocumentPreview(committeeId);
   const { uploading, upload } = useDocumentUpload(committeeId);
+  const { saving, save: saveOffline, cancel: cancelSave, remove: removeOffline } = useOfflineDocument(committeeId);
+  const [saved] = useOfflineItem(OFFLINE_FEATURE, documentId);
   const fileInput = useRef<HTMLInputElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [editing, setEditing] = useState<DocumentItem | null>(null);
@@ -136,14 +185,13 @@ export const DocumentScreen = ({ documentId }: Props) => {
   };
 
   const confirmCheckOut = async () => {
-    const note = await askText(
-      'Check out this document?',
-      'Check out',
-      'Note for others, e.g. what you are changing (optional)',
-    );
-    if (note === null) return;
+    const choice = await askCheckOut();
+    if (choice === null) return;
     run(
-      () => checkOut({ variables: { committeeId, documentId, note: note || null } }),
+      () =>
+        checkOut({
+          variables: { committeeId, documentId, durationMinutes: choice.minutes, note: choice.note || null },
+        }),
       'Checked out.',
       'Could not check out the document.',
     );
@@ -174,6 +222,8 @@ export const DocumentScreen = ({ documentId }: Props) => {
     if (!confirmed) return;
     try {
       await trashDocument({ variables: { committeeId, documentId } });
+      // A deleted document shouldn't linger on the device.
+      await removeOffline(documentId).catch(() => undefined);
       showSuccess('Moved to the trash.');
       await refreshLists();
       navigateBack();
@@ -182,33 +232,77 @@ export const DocumentScreen = ({ documentId }: Props) => {
     }
   };
 
+  const outdated = !!saved && saved.version !== document.currentVersionNumber;
+
+  const makeAvailableOffline = async () => {
+    try {
+      const done = await saveOffline(document);
+      if (done) showSuccess('Saved for offline use.');
+    } catch (saveError) {
+      showError(saveError, 'Could not save the document for offline use.');
+    }
+  };
+
+  const confirmRemoveOffline = async () => {
+    try {
+      await removeOffline(documentId);
+      showSuccess('Removed from this device.');
+    } catch (removeError) {
+      showError(removeError, 'Could not remove the saved copy.');
+    }
+  };
+
+  const offlineActions: Action[] = isOfflineStorageAvailable()
+    ? [
+        ...(!saved || outdated
+          ? [
+              {
+                key: 'offline-save',
+                text: saved ? 'Update offline copy' : 'Make available offline',
+                disabled: !online || !!saving,
+                onClick: makeAvailableOffline,
+              },
+            ]
+          : []),
+        ...(saved ? [{ key: 'offline-remove', text: 'Remove offline copy', onClick: confirmRemoveOffline }] : []),
+      ]
+    : [];
+
   let lockAction: Action | null = null;
   if (!lock) {
-    lockAction = { key: 'check-out', text: 'Check out', onClick: confirmCheckOut };
+    lockAction = { key: 'check-out', text: 'Check out', disabled: !online, onClick: confirmCheckOut };
   } else if (lock.isMine) {
     lockAction = {
       key: 'check-in',
       text: 'Check in',
+      disabled: !online,
       onClick: () =>
         run(() => checkIn({ variables: { committeeId, documentId } }), 'Checked in.', 'Could not check in the document.'),
     };
   } else if (canManage) {
-    lockAction = { key: 'force-unlock', text: 'Force unlock', danger: true, onClick: confirmForceUnlock };
+    lockAction = {
+      key: 'force-unlock',
+      text: 'Force unlock',
+      danger: true,
+      disabled: !online,
+      onClick: confirmForceUnlock,
+    };
   }
 
   const actions: Action[] = [
     {
       key: 'new-version',
       text: 'Upload new version',
-      disabled: lockedByOther || !!uploading,
+      disabled: !online || lockedByOther || !!uploading,
       onClick: () => fileInput.current?.click(),
     },
-    { key: 'edit', text: 'Edit details', disabled: lockedByOther, onClick: () => setEditing(document) },
+    { key: 'edit', text: 'Edit details', disabled: !online || lockedByOther, onClick: () => setEditing(document) },
     ...(lockAction ? [lockAction] : []),
+    ...offlineActions,
     {
       key: 'move',
       text: 'Move to…',
-      disabled: lockedByOther,
+      disabled: !online || lockedByOther,
       onClick: () =>
         setMoving({
           kind: 'document',
@@ -217,7 +311,7 @@ export const DocumentScreen = ({ documentId }: Props) => {
           currentFolderId: document.folderId ?? null,
         }),
     },
-    { key: 'trash', text: 'Delete', danger: true, disabled: lockedByOther, onClick: confirmTrash },
+    { key: 'trash', text: 'Delete', danger: true, disabled: !online || lockedByOther, onClick: confirmTrash },
   ];
 
   const tags = (document.tags ?? []).filter((tag): tag is string => !!tag);
@@ -257,6 +351,11 @@ export const DocumentScreen = ({ documentId }: Props) => {
           <DocumentIcon mimeType={document.mimeType} />
         </span>
         <h2 className="documents-summary-title">{document.name}</h2>
+        {saved && (
+          <Tag color={outdated ? 'warning' : 'success'} fill="outline">
+            <DownlandOutline /> {outdated ? 'Offline copy is out of date' : 'Available offline'}
+          </Tag>
+        )}
         {lock && (
           <Tag color={lock.isMine ? 'primary' : 'warning'} fill="outline">
             <LockOutline /> {lock.isMine ? 'Checked out by you' : `Checked out by ${lock.userName ?? 'another user'}`}
@@ -266,8 +365,9 @@ export const DocumentScreen = ({ documentId }: Props) => {
           <p className="documents-summary-note">
             {lock.isMine
               ? 'Check it in when you are done.'
-              : "It can't be changed until it is checked in."}{' '}
+              : "It can't be changed until it is checked in or the lock ends."}{' '}
             Since {formatDateTime(lock.lockedAt)}
+            {lock.expiresAt ? `, until ${formatDateTime(lock.expiresAt)}` : ''}
             {lock.note ? `: ${lock.note}` : '.'}
           </p>
         )}
@@ -277,6 +377,15 @@ export const DocumentScreen = ({ documentId }: Props) => {
         <div className="documents-card documents-upload">
           <span className="documents-upload-name">{uploading.name}</span>
           <ProgressBar percent={uploading.percent} />
+        </div>
+      )}
+      {saving && (
+        <div className="documents-card documents-upload">
+          <span className="documents-upload-name">Saving “{saving.name}” for offline use</span>
+          <ProgressBar percent={saving.percent} />
+          <Button fill="none" size="mini" onClick={cancelSave}>
+            Cancel
+          </Button>
         </div>
       )}
 

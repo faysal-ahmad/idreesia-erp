@@ -7,7 +7,6 @@ import {
   getPoll,
   getPollResults,
   getVote,
-  listBallots,
   listPolls,
   listPollsActivity,
   type PollResults,
@@ -20,7 +19,10 @@ import type {
 } from 'meteor/idreesia-common/server/collections/polls';
 
 import { getUserNames } from './documents-library';
-import type { ViewContext } from './meetings-view';
+import {
+  areCommitteeMembers,
+  type ViewContext as BaseViewContext,
+} from './meetings-view';
 import type { CommitteeDoc } from './types';
 
 /*
@@ -30,6 +32,9 @@ import type { CommitteeDoc } from './types';
  * the user may use the committee's polls (and that the ids belong to its
  * workspace) first. Anonymous polls never get voter names.
  */
+
+/** Who is looking. With the committee, `isEligible` also checks membership. */
+type ViewContext = BaseViewContext & { committee?: CommitteeDoc };
 
 type Names = Map<string, string>;
 
@@ -58,7 +63,7 @@ const byName = <T extends { name: string | null }>(a: T, b: T) =>
   (a.name ?? '').localeCompare(b.name ?? '');
 
 // ---------------------------------------------------------------------------
-// Info and members
+// Info
 // ---------------------------------------------------------------------------
 
 export function getCommitteePollsInfo(context: ViewContext) {
@@ -67,23 +72,6 @@ export function getCommitteePollsInfo(context: ViewContext) {
     myVoterId: context.personId,
   };
 }
-
-/** The committee's members, who can be made eligible to vote, by name. */
-export async function getCommitteePollMembers(committee: CommitteeDoc) {
-  const members = committee.members ?? [];
-  const names = await getPersonNames(members.map(({ karkunId }) => karkunId));
-  return members
-    .map(member => ({
-      voterId: member.karkunId,
-      name: names.get(member.karkunId) ?? null,
-      isCoordinator: !!member.isCoordinator,
-    }))
-    .sort(byName);
-}
-
-/** The current members' voter ids: the default eligible list. */
-export const getCommitteeVoterIds = (committee: CommitteeDoc) =>
-  (committee.members ?? []).map(({ karkunId }) => karkunId);
 
 // ---------------------------------------------------------------------------
 // Polls
@@ -103,16 +91,17 @@ function toPoll(
   users: Names,
   context: ViewContext
 ) {
-  const eligible = poll.eligibleVoterIds ?? null;
+  // Every committee member can vote in a poll.
   const isEligible =
-    !!context.personId && (!eligible || eligible.includes(context.personId));
+    !!context.personId &&
+    (!context.committee ||
+      areCommitteeMembers(context.committee, [context.personId]));
   return {
     _id: poll._id,
     title: poll.title,
     description: poll.description ?? null,
     status: poll.status,
     anonymous: poll.anonymous,
-    showResultsWhileOpen: poll.showResultsWhileOpen,
     closesAt: timestamp(poll.closesAt),
     openedAt: timestamp(poll.openedAt),
     closedAt: timestamp(poll.closedAt),
@@ -133,13 +122,11 @@ function toPoll(
         text: option.text,
       })),
     })),
-    eligibleVoterIds: eligible,
-    eligibleCount: eligible?.length ?? null,
     voteCount: poll.voteCount,
     isEligible,
     hasVoted: !!myBallot,
     myAnswers: myBallot?.answers ?? null,
-    canSeeResults: canSeeResults(poll),
+    canSeeResults: canSeeResults(poll, { includeOpen: context.isCoordinator }),
     createdAt: timestamp(poll.createdAt),
     createdByName: nameOf(users, poll.createdBy),
     updatedAt: timestamp(poll.updatedAt),
@@ -245,11 +232,12 @@ export async function getCommitteePollResults(
   pollId: string,
   context: ViewContext
 ) {
-  const results: PollResults = await getPollResults(pollId, context.userId);
+  const results: PollResults = await getPollResults(pollId, context.userId, {
+    includeOpen: context.isCoordinator,
+  });
   const people = results.anonymous
     ? new Map<string, string>()
     : await getPersonNames([
-        ...(results.nonVoterIds ?? []),
         ...results.questions.flatMap(question =>
           question.options.flatMap(option => option.voterIds ?? [])
         ),
@@ -267,9 +255,6 @@ export async function getCommitteePollResults(
     anonymous: results.anonymous,
     closedAt: timestamp(results.closedAt),
     totalVoters: results.totalVoters,
-    eligibleCount: results.eligibleCount ?? null,
-    turnout: results.turnout ?? null,
-    nonVoters: toVoters(results.nonVoterIds),
     questions: results.questions.map(question => ({
       questionId: question.questionId,
       text: question.text,
@@ -284,40 +269,6 @@ export async function getCommitteePollResults(
       })),
     })),
   };
-}
-
-/**
- * The eligible voters, by name. For named polls, each also says whether
- * they have voted; anonymous polls leave that unset.
- */
-export async function getCommitteePollVoters(
-  poll: PollDocument,
-  committee: CommitteeDoc,
-  context: ViewContext
-) {
-  const voterIds = poll.eligibleVoterIds ?? getCommitteeVoterIds(committee);
-  let voted: Set<string> | null = null;
-  if (!poll.anonymous) {
-    voted = new Set();
-    for (let skip = 0; ; skip += 200) {
-      const page = await listBallots(poll._id, context.userId, {
-        skip,
-        limit: 200,
-      });
-      page.data.forEach(({ voterId }) => voted!.add(voterId));
-      if (skip + page.data.length >= page.totalResults || !page.data.length) {
-        break;
-      }
-    }
-  }
-  const names = await getPersonNames(voterIds);
-  return voterIds
-    .map(voterId => ({
-      voterId,
-      name: nameOf(names, voterId),
-      hasVoted: voted ? voted.has(voterId) : null,
-    }))
-    .sort(byName);
 }
 
 // ---------------------------------------------------------------------------

@@ -1,0 +1,21 @@
+# Serves idreesia-mobile's Meteor bundle so installed mobile apps can pick up
+# hot code push. Expects ./build to hold the output of "meteor yarn run
+# build-for-docker" (run in idreesia-mobile before docker build).
+#
+# Runtime configuration (set as App Platform component env vars):
+#   ROOT_URL         the mobile server's public URL (matches MOBILE_SERVER_URL)
+#   METEOR_SETTINGS  {"public": {"backendUrl": "...", "rocketChatUrl": "..."}}
+#   MONGO_URL        Meteor's accounts packages expect one
+FROM node:24.22.1-bookworm-slim
+EXPOSE 3000
+# Meteor bundles listen on a random port unless PORT is set (App Platform sets
+# its own PORT and overrides this).
+ENV PORT=3000
+ENV TZ=Asia/Karachi
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+WORKDIR /idreesia-mobile
+COPY ./build/bundle ./bundle
+WORKDIR /idreesia-mobile/bundle/programs/server
+RUN npm install
+WORKDIR /idreesia-mobile/bundle
+CMD ["node", "main.js"]

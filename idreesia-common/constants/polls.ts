@@ -3,6 +3,9 @@
  * (server/business-logic/polls).
  */
 
+/** The module's name as a headless module (notifications are keyed by it). */
+export const POLLS_MODULE = 'polls';
+
 export const PollStatus = {
   /** Being prepared: questions can change, no voting yet. */
   DRAFT: 'draft',
@@ -40,7 +43,6 @@ export const PollsAction = {
   POLL_CREATED: 'poll-created',
   POLL_UPDATED: 'poll-updated',
   QUESTIONS_UPDATED: 'questions-updated',
-  VOTERS_ADDED: 'voters-added',
   POLL_OPENED: 'poll-opened',
   POLL_CLOSED: 'poll-closed',
   POLL_REOPENED: 'poll-reopened',
@@ -60,4 +62,3 @@ export const POLLS_MAX_QUESTION_LENGTH = 1000;
 export const POLLS_MAX_QUESTIONS = 50;
 export const POLLS_MIN_OPTIONS = 2;
 export const POLLS_MAX_OPTIONS = 50;
-export const POLLS_MAX_ELIGIBLE_VOTERS = 5000;

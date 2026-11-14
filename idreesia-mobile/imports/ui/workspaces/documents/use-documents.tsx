@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ImageViewer, Popup } from 'antd-mobile';
 import {
   AudioOutline,
@@ -14,7 +14,16 @@ import type {
   MobileWorkspaceDocumentFolderFieldsFragment,
 } from 'meteor/idreesia-common/types/client-operations';
 
-import { showError } from '../../layout';
+import { toDeviceUrl } from '/imports/startup/backend';
+
+import { useOnlineStatus } from '../../hooks';
+import { showError, showWarning } from '../../layout';
+import {
+  findOfflineFile,
+  readOfflineFile,
+  removeOfflineItem,
+  saveOfflineFile,
+} from '../../offline';
 import { formatSize } from './format';
 import {
   MOBILE_WORKSPACE_ABORT_DOCUMENT_UPLOAD,
@@ -154,10 +163,84 @@ export const useDocumentUpload = (committeeId: string) => {
   return { uploading, upload };
 };
 
+/** The module name saved files are filed under (see ../../offline). */
+export const OFFLINE_FEATURE = 'documents';
+
+/** What is needed to keep a document's current version on the device. */
+export interface OfflineDocumentSource {
+  _id: string;
+  name?: string | null;
+  fileName?: string | null;
+  mimeType?: string | null;
+  size?: number | null;
+  currentVersionNumber?: number | null;
+}
+
+/**
+ * Saving a document's current version on the device, and removing it again.
+ * The document's file is fetched once, through a short-lived link, and kept
+ * until the user removes it (or signs out).
+ */
+export const useOfflineDocument = (committeeId: string) => {
+  const [saving, setSaving] = useState<{ documentId: string; name: string; percent: number } | null>(null);
+  const controller = useRef<AbortController | null>(null);
+  const [getDownloadUrl] = useMutation(MOBILE_WORKSPACE_DOCUMENT_DOWNLOAD_URL);
+
+  useEffect(() => () => controller.current?.abort(), []);
+
+  /** Resolves to true when saved, false when cancelled; throws if it fails. */
+  const save = async (document: OfflineDocumentSource): Promise<boolean> => {
+    const name = document.name ?? document.fileName ?? 'Document';
+    const version = document.currentVersionNumber ?? 1;
+    setSaving({ documentId: document._id, name, percent: 0 });
+    const abort = new AbortController();
+    controller.current = abort;
+    try {
+      const { data } = await getDownloadUrl({
+        variables: { committeeId, documentId: document._id, versionId: null, inline: false },
+      });
+      const url = data?.workspaceDocumentDownloadUrl?.url;
+      if (!url) throw new Error('Could not start the download.');
+      await saveOfflineFile(
+        {
+          feature: OFFLINE_FEATURE,
+          committeeId,
+          itemId: document._id,
+          fileId: `v${version}`,
+          version,
+          name,
+          fileName: document.fileName ?? name,
+          mimeType: document.mimeType ?? 'application/octet-stream',
+          size: document.size ?? 0,
+        },
+        signal => fetch(toDeviceUrl(url), { signal }),
+        {
+          signal: abort.signal,
+          onProgress: percent => setSaving(current => (current ? { ...current, percent } : current)),
+        }
+      );
+      return true;
+    } catch (saveError) {
+      if (abort.signal.aborted) return false;
+      throw saveError;
+    } finally {
+      controller.current = null;
+      setSaving(null);
+    }
+  };
+
+  const cancel = () => controller.current?.abort();
+  const remove = (documentId: string) => removeOfflineItem(OFFLINE_FEATURE, documentId);
+
+  return { saving, save, cancel, remove };
+};
+
 interface Preview {
   url: string;
   name: string;
   isImage: boolean;
+  /** A blob URL made from a saved copy; revoked when the preview closes. */
+  isLocal?: boolean;
 }
 
 /**
@@ -167,28 +250,68 @@ interface Preview {
 export const useDocumentPreview = (committeeId: string) => {
   const [preview, setPreview] = useState<Preview | null>(null);
   const [getDownloadUrl] = useMutation(MOBILE_WORKSPACE_DOCUMENT_DOWNLOAD_URL);
+  const online = useOnlineStatus();
 
+  // A saved copy is shown through a blob URL; let it go when it is replaced or the screen closes.
+  const localUrl = useRef<string | null>(null);
+  const releaseLocalUrl = () => {
+    if (localUrl.current) URL.revokeObjectURL(localUrl.current);
+    localUrl.current = null;
+  };
+  useEffect(() => releaseLocalUrl, []);
+
+  /**
+   * Opens a document's current version, or one of its other versions: from the
+   * copy saved on the device if there is one, otherwise over the network.
+   */
   const open = async (
-    document: { _id: string; name?: string | null; mimeType?: string | null },
-    versionId?: string,
+    document: { _id: string; name?: string | null; mimeType?: string | null; currentVersionNumber?: number | null },
+    version?: { id: string; number: number },
   ) => {
+    const isImage = (document.mimeType ?? '').startsWith('image/');
+    const name = document.name ?? 'Document';
+    const versionNumber = version?.number ?? document.currentVersionNumber ?? undefined;
+    const saved = versionNumber != null ? findOfflineFile(OFFLINE_FEATURE, document._id, versionNumber) : undefined;
+    if (saved) {
+      try {
+        const blob = await readOfflineFile(saved);
+        releaseLocalUrl();
+        localUrl.current = URL.createObjectURL(blob);
+        setPreview({ url: localUrl.current, name, isImage, isLocal: true });
+        return;
+      } catch {
+        // The saved copy can't be read: use the network if it is there.
+      }
+    }
+    if (!online) {
+      showWarning(
+        saved
+          ? "The saved copy couldn't be opened, and you're offline."
+          : "This file isn't available offline. Open it once while online and choose “Make available offline”.",
+      );
+      return;
+    }
     try {
       const { data } = await getDownloadUrl({
-        variables: { committeeId, documentId: document._id, versionId: versionId ?? null, inline: true },
+        variables: { committeeId, documentId: document._id, versionId: version?.id ?? null, inline: true },
       });
       const url = data?.workspaceDocumentDownloadUrl?.url;
       if (!url) throw new Error('Could not open the document.');
+      releaseLocalUrl();
       setPreview({
         url,
         name: document.name ?? data?.workspaceDocumentDownloadUrl?.fileName ?? 'Document',
-        isImage: (document.mimeType ?? '').startsWith('image/'),
+        isImage,
       });
     } catch (openError) {
       showError(openError, 'Could not open the document.');
     }
   };
 
-  const close = () => setPreview(null);
+  const close = () => {
+    setPreview(null);
+    releaseLocalUrl();
+  };
 
   const previewElement = (
     <>

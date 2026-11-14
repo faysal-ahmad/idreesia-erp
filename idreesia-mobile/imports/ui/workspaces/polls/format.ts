@@ -106,10 +106,6 @@ export const describeActivity = (action: string, details: Record<string, unknown
       return 'edited the poll';
     case 'questions-updated':
       return 'changed the questions';
-    case 'voters-added':
-      return Array.isArray(details.voterIds)
-        ? `added eligible voters (${details.voterIds.length})`
-        : 'added eligible voters';
     case 'poll-opened':
       return 'opened the poll for voting';
     case 'poll-closed':

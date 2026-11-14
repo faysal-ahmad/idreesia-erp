@@ -27,7 +27,6 @@ import { Formats } from 'meteor/idreesia-common/constants';
 import type {
   Poll,
   PollDetails,
-  PollMember,
   PollQuestionInput,
   PollQuestionType,
 } from './types';
@@ -53,8 +52,6 @@ interface FormValues {
   description?: string;
   closesAt: Dayjs;
   anonymous: boolean;
-  showResultsWhileOpen: boolean;
-  eligibleVoterIds?: string[];
   questions?: QuestionValues[];
 }
 
@@ -89,18 +86,16 @@ interface Props {
   open: boolean;
   /** Edit this poll; unset to create one. */
   poll?: Poll | null;
-  /** Who can be made eligible to vote. */
-  members: PollMember[];
   onCancel: () => void;
   onSubmit: (details: PollDetails) => Promise<void>;
 }
 
 /**
- * Create or edit a poll. A draft's questions, anonymity and eligible voters
- * can all change; once it is open only its title, description, end time
- * and results setting can.
+ * Create or edit a poll. A draft's questions and anonymity can both
+ * change; once it is open only its title, description, end time and
+ * results setting can.
  */
-const PollFormModal = ({ open, poll, members, onCancel, onSubmit }: Props) => {
+const PollFormModal = ({ open, poll, onCancel, onSubmit }: Props) => {
   const [form] = Form.useForm<FormValues>();
   const [saving, setSaving] = useState(false);
   const isEdit = !!poll;
@@ -115,9 +110,6 @@ const PollFormModal = ({ open, poll, members, onCancel, onSubmit }: Props) => {
         description: poll.description ?? undefined,
         closesAt: dayjs(Number(poll.closesAt)),
         anonymous: poll.anonymous,
-        showResultsWhileOpen: poll.showResultsWhileOpen,
-        eligibleVoterIds:
-          poll.eligibleVoterIds ?? members.map(({ voterId }) => voterId),
         questions: poll.questions.map(question => ({
           _id: question._id,
           text: question.text,
@@ -133,12 +125,10 @@ const PollFormModal = ({ open, poll, members, onCancel, onSubmit }: Props) => {
       form.setFieldsValue({
         closesAt: defaultClosesAt(),
         anonymous: false,
-        showResultsWhileOpen: false,
-        eligibleVoterIds: members.map(({ voterId }) => voterId),
         questions: [newQuestion()],
       });
     }
-  }, [open, poll, members, form]);
+  }, [open, poll, form]);
 
   const handleOk = async () => {
     const values = await form.validateFields();
@@ -149,8 +139,6 @@ const PollFormModal = ({ open, poll, members, onCancel, onSubmit }: Props) => {
         description: values.description?.trim() || null,
         closesAt: String(values.closesAt.second(0).millisecond(0).valueOf()),
         anonymous: !!values.anonymous,
-        showResultsWhileOpen: !!values.showResultsWhileOpen,
-        eligibleVoterIds: values.eligibleVoterIds ?? [],
         questions: (values.questions ?? []).map(toQuestionInput),
       });
     } finally {
@@ -388,53 +376,12 @@ const PollFormModal = ({ open, poll, members, onCancel, onSubmit }: Props) => {
             name="anonymous"
             label="Anonymous"
             valuePropName="checked"
-            tooltip="Results show counts only, never who voted for what. Can't change once the poll is open."
           >
             <Switch disabled={!isDraft} />
-          </Form.Item>
-          <Form.Item
-            name="showResultsWhileOpen"
-            label="Results while open"
-            valuePropName="checked"
-            tooltip="Let members see the results before voting ends."
-          >
-            <Switch />
           </Form.Item>
         </Space>
         {isDraft ? (
           <>
-            <Form.Item
-              label={
-                <Space size={8}>
-                  <span>Eligible voters</span>
-                  <Button
-                    type="link"
-                    size="small"
-                    onClick={() =>
-                      form.setFieldsValue({
-                        eligibleVoterIds: members.map(m => m.voterId),
-                      })
-                    }
-                  >
-                    All members
-                  </Button>
-                </Space>
-              }
-              name="eligibleVoterIds"
-              extra="Leave empty to let every member vote."
-            >
-              <Select
-                mode="multiple"
-                allowClear
-                optionFilterProp="label"
-                placeholder="Every member"
-                maxTagCount="responsive"
-                options={members.map(member => ({
-                  value: member.voterId,
-                  label: member.name ?? member.voterId,
-                }))}
-              />
-            </Form.Item>
             <Typography.Title level={5}>Questions</Typography.Title>
             {questionsEditor}
           </>
@@ -442,7 +389,7 @@ const PollFormModal = ({ open, poll, members, onCancel, onSubmit }: Props) => {
           <Alert
             type="info"
             showIcon
-            message="The questions, anonymity and eligible voters can't change once the poll is open. Add voters from the Voters tab."
+            message="The questions and anonymity can't change once the poll is open."
           />
         )}
       </Form>

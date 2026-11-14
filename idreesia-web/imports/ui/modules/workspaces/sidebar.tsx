@@ -10,10 +10,11 @@ import {
   IdcardOutlined,
   MessageOutlined,
   MoonOutlined,
+  ProjectOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
 
-import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/hr';
+import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
 import { useMyCommittees } from './hooks/use-my-committees';
 import SubModuleNames from './submodule-names';
@@ -38,6 +39,7 @@ const KeyPrefixHandlers: KeyPrefixHandler[] = [
   ['documents', SubModuleNames.documents, paths.committeeDocumentsPath],
   ['meetings', SubModuleNames.meetings, paths.committeeMeetingsPath],
   ['polls', SubModuleNames.polls, paths.committeePollsPath],
+  ['projects', SubModuleNames.projects, paths.committeeProjectsPath],
   [
     'night-stay-report',
     SubModuleNames.nightStayReport,
@@ -179,6 +181,15 @@ const Sidebar = ({ history }: SidebarProps) => {
               key: `polls-${committee._id}`,
               icon: <BarChartOutlined style={IconStyle} />,
               label: 'Polls',
+            },
+          ]
+        : []),
+      ...(committee.features?.includes(CommitteeFeatureKeys.PROJECTS)
+        ? [
+            {
+              key: `projects-${committee._id}`,
+              icon: <ProjectOutlined style={IconStyle} />,
+              label: 'Projects & Tasks',
             },
           ]
         : []),

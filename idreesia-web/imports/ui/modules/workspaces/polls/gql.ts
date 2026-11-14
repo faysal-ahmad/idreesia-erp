@@ -2,8 +2,6 @@ import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 
 import type {
-  WorkspaceAddPollVotersMutation,
-  WorkspaceAddPollVotersMutationVariables,
   WorkspaceCancelPollMutation,
   WorkspaceCancelPollMutationVariables,
   WorkspaceCastPollVoteMutation,
@@ -20,12 +18,8 @@ import type {
   WorkspacePollActivityQueryVariables,
   WorkspacePollByIdQuery,
   WorkspacePollByIdQueryVariables,
-  WorkspacePollMembersQuery,
-  WorkspacePollMembersQueryVariables,
   WorkspacePollResultsQuery,
   WorkspacePollResultsQueryVariables,
-  WorkspacePollVotersQuery,
-  WorkspacePollVotersQueryVariables,
   WorkspacePollsInfoQuery,
   WorkspacePollsInfoQueryVariables,
   WorkspacePollsQuery,
@@ -45,7 +39,6 @@ const POLL_FIELDS = gql`
     description
     status
     anonymous
-    showResultsWhileOpen
     closesAt
     openedAt
     closedAt
@@ -66,8 +59,6 @@ const POLL_FIELDS = gql`
         text
       }
     }
-    eligibleVoterIds
-    eligibleCount
     voteCount
     isEligible
     hasVoted
@@ -91,19 +82,6 @@ export const WORKSPACE_POLLS_INFO: TypedDocumentNode<
     workspacePollsInfo(committeeId: $committeeId) {
       canManage
       myVoterId
-    }
-  }
-`;
-
-export const WORKSPACE_POLL_MEMBERS: TypedDocumentNode<
-  WorkspacePollMembersQuery,
-  WorkspacePollMembersQueryVariables
-> = gql`
-  query workspacePollMembers($committeeId: String!) {
-    workspacePollMembers(committeeId: $committeeId) {
-      voterId
-      name
-      isCoordinator
     }
   }
 `;
@@ -158,12 +136,6 @@ export const WORKSPACE_POLL_RESULTS: TypedDocumentNode<
       anonymous
       closedAt
       totalVoters
-      eligibleCount
-      turnout
-      nonVoters {
-        voterId
-        name
-      }
       questions {
         questionId
         text
@@ -180,19 +152,6 @@ export const WORKSPACE_POLL_RESULTS: TypedDocumentNode<
           }
         }
       }
-    }
-  }
-`;
-
-export const WORKSPACE_POLL_VOTERS: TypedDocumentNode<
-  WorkspacePollVotersQuery,
-  WorkspacePollVotersQueryVariables
-> = gql`
-  query workspacePollVoters($committeeId: String!, $pollId: String!) {
-    workspacePollVoters(committeeId: $committeeId, pollId: $pollId) {
-      voterId
-      name
-      hasVoted
     }
   }
 `;
@@ -250,26 +209,6 @@ export const WORKSPACE_UPDATE_POLL: TypedDocumentNode<
       committeeId: $committeeId
       pollId: $pollId
       input: $input
-    ) {
-      ...WorkspacePollFields
-    }
-  }
-  ${POLL_FIELDS}
-`;
-
-export const WORKSPACE_ADD_POLL_VOTERS: TypedDocumentNode<
-  WorkspaceAddPollVotersMutation,
-  WorkspaceAddPollVotersMutationVariables
-> = gql`
-  mutation workspaceAddPollVoters(
-    $committeeId: String!
-    $pollId: String!
-    $voterIds: [String]!
-  ) {
-    workspaceAddPollVoters(
-      committeeId: $committeeId
-      pollId: $pollId
-      voterIds: $voterIds
     ) {
       ...WorkspacePollFields
     }

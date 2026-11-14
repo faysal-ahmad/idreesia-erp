@@ -41,12 +41,6 @@ function assertAcceptingVotes(poll: PollDocument) {
   }
 }
 
-function assertEligible(poll: PollDocument, voterId: string) {
-  if (poll.eligibleVoterIds?.length && !poll.eligibleVoterIds.includes(voterId)) {
-    throw pollsError('FORBIDDEN', 'This voter is not eligible to vote in this poll');
-  }
-}
-
 /**
  * Checks answers against the poll's questions: every required question is
  * answered, options belong to their question, and the number of choices
@@ -163,7 +157,6 @@ export async function castVote(
   const id = normalizeOpaqueId(voterId, 'Voter id');
   const poll = await requirePoll(pollId);
   assertAcceptingVotes(poll);
-  assertEligible(poll, id);
   const validated = validateAnswers(poll, answers);
 
   const now = new Date();

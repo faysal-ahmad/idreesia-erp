@@ -10,15 +10,13 @@ import { WorkspacesPaths } from '../paths';
 import { choiceHint, formatDay, formatTime, toDate } from './format';
 import { MOBILE_CREATE_POLL, MOBILE_UPDATE_POLL } from './gql';
 import { type QuestionDraft, QuestionEditorPopup } from './question-editor-popup';
-import { usePoll, usePollsInfo } from './use-poll';
-import { VoterPickerPopup } from './voter-picker-popup';
+import { usePoll } from './use-poll';
 
 interface FormValues {
   title: string;
   description?: string;
   closesAt: Date;
   anonymous: boolean;
-  showResultsWhileOpen: boolean;
 }
 
 const MAX_QUESTIONS = 50;
@@ -34,8 +32,7 @@ const tomorrow = () => {
 
 /**
  * New poll (under /polls/new, saved as a draft) or editing one (under
- * /polls/:pollId/edit). A draft's questions, anonymity and eligible voters
- * can change; once it is open only its title, description, end time and
+ * /polls/:pollId/edit). A draft's questions and anonymity can change; once it is open only its title, description, end time and
  * results setting can.
  */
 export const PollFormScreen = () => {
@@ -44,13 +41,10 @@ export const PollFormScreen = () => {
   const history = useHistory();
   const client = useApolloClient();
   const [form] = Form.useForm<FormValues>();
-  const { members } = usePollsInfo(committeeId);
   const { poll, questions: savedQuestions, loading, error, refetch } = usePoll(committeeId, pollId ?? '', {
     skip: !isEdit,
   });
-  const [voterIds, setVoterIds] = useState<string[] | null>(null);
   const [questions, setQuestions] = useState<QuestionDraft[] | null>(null);
-  const [pickerOpen, setPickerOpen] = useState(false);
   const [closesOpen, setClosesOpen] = useState(false);
   const [editing, setEditing] = useState<QuestionDraft | 'new' | null>(null);
   const [menuQuestion, setMenuQuestion] = useState<QuestionDraft | null>(null);
@@ -62,10 +56,6 @@ export const PollFormScreen = () => {
     : WorkspacesPaths.committeePolls(committeeId);
   const navigateBack = useNavigateBack(backTo);
   const isDraft = !isEdit || poll?.status === 'draft';
-
-  // Every member can vote by default.
-  const allIds = useMemo(() => members.map(member => member.voterId), [members]);
-  const eligible = voterIds ?? (poll?.eligibleVoterIds?.filter((id): id is string => !!id) || allIds);
 
   const initialQuestions = useMemo<QuestionDraft[]>(
     () =>
@@ -92,11 +82,10 @@ export const PollFormScreen = () => {
             description: poll.description ?? '',
             closesAt: toDate(poll.closesAt) ?? undefined,
             anonymous: !!poll.anonymous,
-            showResultsWhileOpen: !!poll.showResultsWhileOpen,
           }
         : {};
     }
-    return { closesAt: tomorrow(), anonymous: false, showResultsWhileOpen: false };
+    return { closesAt: tomorrow(), anonymous: false };
   }, [isEdit, poll]);
 
   useEffect(() => {
@@ -121,8 +110,6 @@ export const PollFormScreen = () => {
       description: values.description?.trim() || null,
       closesAt: String(values.closesAt.getTime()),
       anonymous: !!values.anonymous,
-      showResultsWhileOpen: !!values.showResultsWhileOpen,
-      eligibleVoterIds: isDraft ? eligible : [],
       questions: isDraft
         ? shownQuestions.map(question => ({
             _id: question._id ?? null,
@@ -225,7 +212,6 @@ export const PollFormScreen = () => {
         </Form.Item>
         <Form.Item
           childElementPosition="right"
-          description="Results show counts only, never who voted for what."
           disabled={!isDraft}
           label="Anonymous"
           layout="horizontal"
@@ -234,23 +220,6 @@ export const PollFormScreen = () => {
         >
           <Switch />
         </Form.Item>
-        <Form.Item
-          childElementPosition="right"
-          description="Let members see the results before voting ends."
-          label="Results while open"
-          layout="horizontal"
-          name="showResultsWhileOpen"
-          valuePropName="checked"
-        >
-          <Switch />
-        </Form.Item>
-        {isDraft && (
-          <Form.Item arrowIcon label="Eligible voters" onClick={() => setPickerOpen(true)}>
-            {eligible.length === allIds.length || eligible.length === 0
-              ? `All members (${allIds.length})`
-              : `${eligible.length} of ${allIds.length} members`}
-          </Form.Item>
-        )}
         <Form.Header>Questions</Form.Header>
         {isDraft ? (
           <Form.Item>
@@ -282,8 +251,7 @@ export const PollFormScreen = () => {
         ) : (
           <Form.Item>
             <p className="poll-muted">
-              The questions, anonymity and eligible voters can&apos;t change once the poll is open. Add voters from
-              the Voters screen.
+              The questions and anonymity can&apos;t change once the poll is open.
             </p>
           </Form.Item>
         )}
@@ -307,20 +275,6 @@ export const PollFormScreen = () => {
               : shownQuestions.map(q => (q.key === saved.key ? saved : q)),
           );
           setEditing(null);
-        }}
-      />
-
-      <VoterPickerPopup
-        confirmText="Choose"
-        members={members}
-        note="Only these members can vote. Leave everyone selected to let every member vote."
-        selectedIds={eligible}
-        title="Eligible voters"
-        visible={pickerOpen}
-        onClose={() => setPickerOpen(false)}
-        onConfirm={ids => {
-          setVoterIds(ids);
-          setPickerOpen(false);
         }}
       />
     </>,

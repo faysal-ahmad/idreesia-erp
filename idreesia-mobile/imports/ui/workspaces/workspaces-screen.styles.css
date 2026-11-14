@@ -15,3 +15,60 @@
 .workspaces-feature-item .list-icon {
   font-size: 20px;
 }
+
+/* Each feature's icon: white on a coloured rounded tile. */
+.workspace-feature-icon {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-primary);
+  color: var(--app-color-on-primary);
+  font-size: 20px;
+}
+
+.workspace-feature-icon-members {
+  background: var(--app-color-feature-blue);
+}
+
+.workspace-feature-icon-discussions {
+  background: var(--app-color-feature-purple);
+}
+
+.workspace-feature-icon-meetings {
+  background: var(--app-color-feature-orange);
+}
+
+.workspace-feature-icon-polls {
+  background: var(--app-color-feature-pink);
+}
+
+.workspace-feature-icon-documents {
+  background: var(--app-color-feature-green);
+}
+
+.workspace-feature-icon-night-stay-report {
+  background: var(--app-color-feature-indigo);
+}
+
+.workspace-feature-icon-monitoring-alerts {
+  background: var(--app-color-feature-red);
+}
+
+.workspace-feature-icon-monitoring-profiles {
+  background: var(--app-color-feature-teal);
+}
+
+/* Unread-count badges on workspace headers and items: larger than the
+   antd-mobile default so the counts are easy to read. */
+.workspaces-badge .adm-badge-content {
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 24px;
+  box-sizing: border-box;
+}

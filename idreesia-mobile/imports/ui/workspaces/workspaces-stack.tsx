@@ -5,12 +5,14 @@ import { matchPath, Redirect, Route, Switch, useLocation } from '../router';
 import { DiscussionFeature } from './discussions/discussion-feature';
 import { DocumentsFeature } from './documents/documents-feature';
 import { MeetingsFeature } from './meetings/meetings-feature';
-import { MembersScreen } from './members/members-screen';
+import { MembersFeature } from './members/members-feature';
 import { MonitoringAlertsScreen } from './monitoring-alerts/monitoring-alerts-screen';
 import { MonitoringProfilesFeature } from './monitoring-profiles/monitoring-profiles-feature';
 import { NightStayReportFeature } from './night-stay-report/night-stay-report-feature';
 import { WorkspacesPaths } from './paths';
 import { PollsFeature } from './polls/polls-feature';
+import { ProjectsFeature } from './projects/projects-feature';
+import { TasksFeature } from './projects/tasks-feature';
 import { WorkspacesScreen } from './workspaces-screen';
 
 /**
@@ -29,10 +31,12 @@ export const WorkspacesStack = () => {
       </KeepAlive>
       <Switch>
         <Route exact path={WorkspacesPaths.root} render={() => null} />
-        <Route exact component={MembersScreen} path={WorkspacesPaths.committeeMembersPattern} />
+        <Route component={MembersFeature} path={WorkspacesPaths.committeeMembersPattern} />
         <Route component={DiscussionFeature} path={WorkspacesPaths.committeeDiscussionsPattern} />
         <Route component={MeetingsFeature} path={WorkspacesPaths.committeeMeetingsPattern} />
         <Route component={PollsFeature} path={WorkspacesPaths.committeePollsPattern} />
+        <Route component={ProjectsFeature} path={WorkspacesPaths.committeeProjectsPattern} />
+        <Route component={TasksFeature} path={WorkspacesPaths.committeeTasksPattern} />
         <Route component={DocumentsFeature} path={WorkspacesPaths.committeeDocumentsPattern} />
         <Route
           component={NightStayReportFeature}

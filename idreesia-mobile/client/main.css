@@ -117,6 +117,9 @@ body {
   top: 0;
   padding-top: env(safe-area-inset-top);
   background: var(--app-color-primary);
+  /* Own compositing layer, so iOS WebKit repaints the sticky header at the
+     right place instead of leaving it at a stale scroll offset. */
+  transform: translateZ(0);
 }
 
 .page-nav-bar {

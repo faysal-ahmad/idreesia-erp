@@ -6,7 +6,6 @@ export type {
   PollActivity,
   PollAnswer,
   PollDetails,
-  PollMember,
   PollOption,
   PollOptionResult,
   PollPage,
@@ -20,5 +19,4 @@ export type {
   PollsQuery,
   PollStatus,
   PollsView,
-  PollVoter,
 } from './types';

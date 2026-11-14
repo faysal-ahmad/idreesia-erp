@@ -6,6 +6,8 @@ export default gql`
 type WorkspaceCommitteeMemberType {
   karkunId: String
   isCoordinator: Boolean
+  # member, coordinator, guest or observer.
+  role: String
   name: String
   imageUrl: String
   imageThumbnailUrl: String
@@ -30,6 +32,10 @@ type WorkspaceCommitteeType {
   # Keys of the features enabled for this committee (e.g. 'discussions').
   features: [String]
   members: [WorkspaceCommitteeMemberType]
+  # Coordinators plus members.
+  memberCount: Int
+  guestCount: Int
+  observerCount: Int
 }
 
 type WorkspaceKarkunType {
@@ -66,9 +72,11 @@ extend type Query {
 }
 
 extend type Mutation {
+  # role is member (the default) or guest. Observers are managed by admins.
   workspaceAddCommitteeMember(
     committeeId: String!
     karkunId: String!
+    role: String
   ): WorkspaceCommitteeType
   workspaceRemoveCommitteeMember(
     committeeId: String!
@@ -80,5 +88,12 @@ extend type Mutation {
     committeeId: String!
     karkunId: String!
     hasAccess: Boolean!
+  ): Boolean
+  # Makes a member a coordinator, or a regular member again. The last
+  # coordinator cannot be demoted.
+  workspaceSetCommitteeMemberCoordinator(
+    committeeId: String!
+    karkunId: String!
+    isCoordinator: Boolean!
   ): Boolean
 }`;

@@ -1,1 +1,8 @@
-export { MOBILE_WORKSPACE_COMMITTEE_MEMBERS } from './committee-members';
+export {
+  MOBILE_SET_COMMITTEE_MEMBER_COORDINATOR,
+  MOBILE_WORKSPACE_COMMITTEE_MEMBERS,
+} from './committee-members';
+export {
+  MOBILE_COMMITTEE_MEMBER_NOTIFICATIONS,
+  MOBILE_MARK_NOTIFICATIONS_READ,
+} from './committee-notifications';

@@ -5,7 +5,10 @@ App.info({
   author: 'Idreesia',
   email: 'support@idreesia.org',
   website: 'https://idreesia.org',
-  version: '1.0.1',
+  // CI release builds pass the release version and a store build number that
+  // increases on every run (iOS CFBundleVersion / Android versionCode).
+  version: process.env.MOBILE_VERSION || '1.0.1',
+  buildNumber: process.env.MOBILE_BUILD_NUMBER || '1',
 });
 
 App.setPreference('Orientation', 'portrait');

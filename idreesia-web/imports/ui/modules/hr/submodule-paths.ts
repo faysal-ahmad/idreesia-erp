@@ -13,11 +13,6 @@ export default class SubModulePaths {
 
   static teamsPath = `${ModulePaths.hr}/teams`;
 
-  static committeesPath = `${ModulePaths.hr}/committees`;
-  static committeesEditFormPath(committeeId = ':committeeId') {
-    return `${SubModulePaths.committeesPath}/${committeeId}`;
-  }
-
   // ******************************************************************************
   // Employees
   // ******************************************************************************

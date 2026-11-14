@@ -1,37 +1,23 @@
 import { useQuery } from '@apollo/client/react';
-import type {
-  MobileWorkspacePollFieldsFragment,
-  MobileWorkspacePollMembersQuery,
-} from 'meteor/idreesia-common/types/client-operations';
+import type { MobileWorkspacePollFieldsFragment } from 'meteor/idreesia-common/types/client-operations';
 
 import {
   MOBILE_WORKSPACE_POLL_BY_ID,
-  MOBILE_WORKSPACE_POLL_MEMBERS,
   MOBILE_WORKSPACE_POLLS_INFO,
 } from './gql';
 
 export type Poll = MobileWorkspacePollFieldsFragment;
 export type Question = NonNullable<NonNullable<Poll['questions']>[number]>;
 type Option = NonNullable<NonNullable<Question['options']>[number]>;
-export type Member = NonNullable<
-  NonNullable<MobileWorkspacePollMembersQuery['workspacePollMembers']>[number]
-> & { voterId: string };
 
-/** Whether the user manages this committee's polls, and who can vote. */
+/** Whether the user manages this committee's polls. */
 export const usePollsInfo = (committeeId: string) => {
   const info = useQuery(MOBILE_WORKSPACE_POLLS_INFO, {
     variables: { committeeId },
     fetchPolicy: 'cache-and-network',
   });
-  const members = useQuery(MOBILE_WORKSPACE_POLL_MEMBERS, {
-    variables: { committeeId },
-    fetchPolicy: 'cache-and-network',
-  });
   return {
     canManage: !!info.data?.workspacePollsInfo?.canManage,
-    members: (members.data?.workspacePollMembers ?? []).filter(
-      (member): member is Member => !!member?.voterId,
-    ),
   };
 };
 

@@ -2,6 +2,7 @@ import { ApolloLink, ApolloClient, InMemoryCache } from '@apollo/client';
 import { HttpLink } from '@apollo/client/link/http';
 import { SetContextLink } from '@apollo/client/link/context';
 
+import { persistLink, startApolloPersistence } from './apollo-persist';
 import { backendAccounts, backendUrl } from './backend';
 
 const httpLink = new HttpLink({ uri: `${backendUrl}/graphql` });
@@ -18,7 +19,14 @@ const authLink = new SetContextLink(prevContext => {
   };
 });
 
+const cache = new InMemoryCache();
+
 export const apolloClient = new ApolloClient({
-  link: ApolloLink.from([authLink, httpLink]),
-  cache: new InMemoryCache(),
+  link: ApolloLink.from([authLink, persistLink, httpLink]),
+  cache,
 });
+
+// The cache is kept on the device so browsed data can be read offline. It is
+// restored before the first render (client/main.tsx) and wiped on logout
+// (ui/auth/accounts.ts).
+startApolloPersistence(cache);

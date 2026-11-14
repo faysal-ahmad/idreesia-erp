@@ -5,8 +5,11 @@ App.info({
   author: 'Idreesia',
   email: 'support@idreesia.org',
   website: 'https://idreesia.org',
-  // CI release builds pass the release version and a store build number that
-  // increases on every run (iOS CFBundleVersion / Android versionCode).
+  // Overwritten by the CI release workflow (.github/workflows/release.yml),
+  // which sets MOBILE_VERSION to the release version and MOBILE_BUILD_NUMBER to
+  // the run number (iOS CFBundleVersion / Android versionCode; the stores need
+  // it to increase on every upload). The fallbacks below are only used for local
+  // builds, so there is no need to bump them for a release.
   version: process.env.MOBILE_VERSION || '1.0.1',
   buildNumber: process.env.MOBILE_BUILD_NUMBER || '1',
 });
@@ -30,6 +33,17 @@ App.icons({
   iphone_2x: 'resources/icons/ios-iphone_2x.png', // 120x120
   iphone_3x: 'resources/icons/ios-iphone_3x.png', // 180x180
   ipad: 'resources/icons/ios-ipad.png', // 76x76
+  // Legacy sizes. iOS 15+ never shows these, but without them the Xcode asset
+  // catalog keeps Meteor's default comet logo in those slots.
+  ios_settings: 'resources/icons/ios-ios_settings.png', // 29x29
+  ios_spotlight: 'resources/icons/ios-ios_spotlight.png', // 40x40
+  ios_notification: 'resources/icons/ios-ios_notification.png', // 20x20
+  iphone_legacy: 'resources/icons/ios-iphone_legacy.png', // 57x57
+  iphone_legacy_2x: 'resources/icons/ios-iphone_legacy_2x.png', // 114x114
+  ipad_spotlight_legacy: 'resources/icons/ios-ipad_spotlight_legacy.png', // 50x50
+  ipad_spotlight_legacy_2x: 'resources/icons/ios-ipad_spotlight_legacy_2x.png', // 100x100
+  ipad_app_legacy: 'resources/icons/ios-ipad_app_legacy.png', // 72x72
+  ipad_app_legacy_2x: 'resources/icons/ios-ipad_app_legacy_2x.png', // 144x144
   ipad_2x: 'resources/icons/ios-ipad_2x.png', // 152x152
   ipad_pro: 'resources/icons/ios-ipad_pro.png', // 167x167
   ios_settings_2x: 'resources/icons/ios-ios_settings_2x.png', // 58x58
@@ -44,6 +58,24 @@ App.icons({
   android_xxhdpi: 'resources/icons/android_xxhdpi.png', // 144x144
   android_xxxhdpi: 'resources/icons/android_xxxhdpi.png', // 192x192
 });
+
+// Android adaptive icon (Android 8+): the emblem on the app background colour.
+// The foreground images are 108dp canvases with the emblem inside the 66dp safe
+// zone, so launchers can mask the icon to any shape without clipping it. The
+// plain icons above remain for Android 7 and older. Meteor has no API for
+// adaptive icons, so they go in as raw config; the paths are relative to
+// .meteor/local/cordova-build, where Cordova prepares the Android project.
+// The background images are solid palette.background (#F1F6F5, kept in sync
+// by hand like BackgroundColor); Cordova does not accept a colour code here.
+App.appendToConfig(`
+  <platform name="android">
+    <icon density="mdpi" background="../../../resources/icons/android-adaptive-background-mdpi.png" foreground="../../../resources/icons/android-adaptive-foreground-mdpi.png" />
+    <icon density="hdpi" background="../../../resources/icons/android-adaptive-background-hdpi.png" foreground="../../../resources/icons/android-adaptive-foreground-hdpi.png" />
+    <icon density="xhdpi" background="../../../resources/icons/android-adaptive-background-xhdpi.png" foreground="../../../resources/icons/android-adaptive-foreground-xhdpi.png" />
+    <icon density="xxhdpi" background="../../../resources/icons/android-adaptive-background-xxhdpi.png" foreground="../../../resources/icons/android-adaptive-foreground-xxhdpi.png" />
+    <icon density="xxxhdpi" background="../../../resources/icons/android-adaptive-background-xxxhdpi.png" foreground="../../../resources/icons/android-adaptive-foreground-xxxhdpi.png" />
+  </platform>
+`);
 
 // Launch screen: the Eastern Breeze emblem (public/images/eb-logo-emblem.png)
 // centred on the app background. iOS fills the screen with a square image
@@ -67,10 +99,10 @@ App.setPreference('AndroidWindowSplashScreenBackground', '#F1F6F5', 'android');
 // idreesia-webview-camera and requested by cordova-plugin-android-permissions.
 App.appendToConfig(`
   <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge">
-    <string>Eastern Breeze ERP uses the camera to take photos, such as a visitor's photo for searching or a photo you send in a message.</string>
+    <string>Eastern Breeze ERP uses the camera to take photos, that can be uploaded to discussions, meetings and document workspaces.</string>
   </edit-config>
   <edit-config target="NSMicrophoneUsageDescription" file="*-Info.plist" mode="merge">
-    <string>Eastern Breeze ERP uses the microphone to record voice notes and meeting audio.</string>
+    <string>Eastern Breeze ERP uses the microphone to record voice notes and send voice messsages in discussion groups.</string>
   </edit-config>
 `);
 
@@ -78,9 +110,24 @@ App.appendToConfig(`
 // Mac by its LAN address (scripts/run-mobile-device.mjs) - the ERP backend,
 // Rocket.Chat and the mobile server that delivers hot code push. iOS asks for
 // this permission the first time; denying it silently stops hot code push.
-// Production builds use public URLs and never show the prompt.
-App.appendToConfig(`
+// Production builds use public URLs and never show the prompt, so the
+// development-only text is left out of release builds. The CI release workflow
+// sets MOBILE_RELEASE=true.
+const isReleaseBuild = process.env.MOBILE_RELEASE === 'true';
+
+if (!isReleaseBuild) {
+  App.appendToConfig(`
   <edit-config target="NSLocalNetworkUsageDescription" file="*-Info.plist" mode="merge">
     <string>During development, Eastern Breeze ERP connects to the developer's computer on your network to load app updates and data.</string>
+  </edit-config>
+`);
+}
+
+// Export compliance (iOS): the app only uses HTTPS, which is exempt from the
+// encryption export rules. Declaring that here stops App Store Connect from
+// asking the export-compliance question on every uploaded build.
+App.appendToConfig(`
+  <edit-config target="ITSAppUsesNonExemptEncryption" file="*-Info.plist" mode="merge">
+    <false/>
   </edit-config>
 `);

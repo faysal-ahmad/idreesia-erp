@@ -32,7 +32,7 @@ export const ResetForgottenPasswordForm = () => {
     if (newPassword === confirmedNewPassword) {
       (Accounts as any).resetPassword(token, newPassword, (error?: Error) => {
         if (error) {
-          message.error(error.message, 5);
+          message.error((error as Meteor.Error).reason ?? error.message, 5);
         }
       });
     }

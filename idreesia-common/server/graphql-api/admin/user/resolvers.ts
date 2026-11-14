@@ -138,6 +138,9 @@ export default {
       });
 
       if (userId) {
+        // Self-registered accounts can't sign in until an administrator
+        // unlocks them (see idreesia-web/imports/startup/server/account-lock.ts).
+        await Meteor.users.updateAsync(userId, { $set: { locked: true } });
         await Accounts.sendEnrollmentEmail(userId);
       }
 

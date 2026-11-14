@@ -50,7 +50,7 @@ export const LoginForm = ({ history, location, setShowForm }: Props) => {
         dispatch(setLoggedInUserId(Meteor.userId()));
         updateLoginTime();
       } else {
-        message.error(error.message, 5);
+        message.error((error as Meteor.Error).reason ?? error.message, 5);
       }
     });
   };

@@ -18,6 +18,12 @@ const FormWrapperStyle: CSSProperties = {
   marginLeft: '-150px',
 };
 
+// Error code the server's login check throws for a locked account
+// (idreesia-web/imports/startup/server/account-lock.ts). Self-registered
+// accounts start locked, so setting the password succeeds but the automatic
+// login that follows is refused.
+const ACCOUNT_LOCKED_ERROR = 'account-locked';
+
 interface FormValues {
   newPassword: string;
   confirmedNewPassword: string;
@@ -31,9 +37,16 @@ export const SetInitialPasswordForm = () => {
     const { newPassword, confirmedNewPassword } = values;
     if (newPassword === confirmedNewPassword) {
       (Accounts as any).resetPassword(token, newPassword, (error?: Error) => {
-        if (error) {
-          message.error(error.message, 5);
+        if (!error) return;
+        if ((error as Meteor.Error).error === ACCOUNT_LOCKED_ERROR) {
+          form.resetFields();
+          message.warning(
+            'Your password has been updated, but your account is currently locked and needs an administrator\'s approval.',
+            10
+          );
+          return;
         }
+        message.error((error as Meteor.Error).reason ?? error.message, 5);
       });
     }
   };

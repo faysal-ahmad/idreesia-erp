@@ -25,6 +25,7 @@ import { createSecurityServerRouter } from './setup-security-server-endpoints';
 import { createCorrespondenceRouter } from './setup-correspondence-endpoints';
 import { createWorkspaceDiscussionRouter } from './setup-workspace-discussion-endpoints';
 import { getBrowserMonitoringConfig } from './newrelic';
+import { ACCOUNT_LOCKED_MESSAGE, isAccountLocked } from './account-lock';
 
 const ReportGenerators = {
   IssuanceForms: exportIsssuanceForms,
@@ -45,7 +46,9 @@ interface AccountsPrivateApi {
   _findUserByQuery(
     query: { username: string } | { email: string },
     options: { fields: Record<string, 0 | 1> }
-  ): Promise<{ _id: string; services?: { password?: unknown } } | undefined>;
+  ): Promise<
+    { _id: string; locked?: boolean; services?: { password?: unknown } } | undefined
+  >;
   _checkPasswordAsync(
     user: { _id: string; services?: unknown },
     password: string
@@ -178,7 +181,7 @@ export function setupRestEndpoints() {
 
         const user = await AccountsPrivate._findUserByQuery(
           username ? { username } : { email },
-          { fields: { services: 1 } }
+          { fields: { services: 1, locked: 1 } }
         );
 
         if (!user || !user.services?.password) {
@@ -194,6 +197,14 @@ export function setupRestEndpoints() {
         if (error) {
           res.writeHead(401);
           res.end();
+          return;
+        }
+
+        // Checked after the password so the response doesn't reveal whether
+        // an account is locked to someone who doesn't know its password.
+        if (isAccountLocked(user)) {
+          res.writeHead(403, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: ACCOUNT_LOCKED_MESSAGE }));
           return;
         }
 

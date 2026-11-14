@@ -14,6 +14,7 @@ config({
 initNewRelic();
 
 import './configure-services';
+import './account-lock';
 import './migrations';
 
 import express from 'express';

@@ -8,16 +8,15 @@ mobile app (`idreesia-mobile`) after the ERP release job succeeds:
 
 Both check out the release tag (`v<version>`), use the release version as the
 app version, and use the workflow run number as the store build number (see
-`mobile-config.js`). The files are attached to the workflow run as artifacts.
+`mobile-config.js`). The files are attached to the workflow run as artifacts, and
+the `github-release` job also attaches them to a GitHub Release for the tag.
 Uploading to Google Play / App Store Connect is still manual.
 
-## Repository variables
+## Production URLs
 
-| Name                    | Value                                                  |
-| ----------------------- | ------------------------------------------------------ |
-| `MOBILE_SERVER_URL`     | Mobile app's server URL (`meteor build --server`)      |
-| `MOBILE_BACKEND_URL`    | ERP backend URL (`public.backendUrl`)                  |
-| `MOBILE_ROCKETCHAT_URL` | Rocket.Chat URL (`public.rocketChatUrl`)               |
+Set in the `env:` block at the top of `release.yml`: `MOBILE_SERVER_URL`
+(`meteor build --server`), `MOBILE_BACKEND_URL` (`public.backendUrl`) and
+`MOBILE_ROCKETCHAT_URL` (`public.rocketChatUrl`).
 
 ## Repository secrets
 

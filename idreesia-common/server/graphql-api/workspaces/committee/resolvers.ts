@@ -1,6 +1,5 @@
 import { Committees } from 'meteor/idreesia-common/server/collections/hr';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
-import { People } from 'meteor/idreesia-common/server/collections/common';
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import {
   addCommitteeMember,
@@ -11,6 +10,9 @@ import {
   setCommitteeMemberDiscussionAccess,
   type CommitteeDoc,
 } from 'meteor/idreesia-common/server/business-logic/hr/committee';
+import {
+  searchPeople,
+} from 'meteor/idreesia-common/server/business-logic/common';
 
 import {
   type CommitteeDocument,
@@ -131,7 +133,7 @@ const resolvers: ResolverMap = {
       });
       if (!multanCity) return { data: [], totalResults: 0 };
 
-      const result = (await People.searchPeople(
+      const result = (await searchPeople(
         {
           name,
           cnicNumber,

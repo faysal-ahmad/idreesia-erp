@@ -2,7 +2,7 @@ import {
   getInboxConversation,
   getInboxConversations,
   replyToInboxConversation,
-} from './queries';
+} from 'meteor/idreesia-common/server/business-logic/correspondence/inbox';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {

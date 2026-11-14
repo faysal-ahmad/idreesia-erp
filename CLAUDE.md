@@ -12,6 +12,10 @@ Rules:
 
 ## UI design guidelines
 
-When creating or updating any UI in `idreesia-web` (list pages, edit/new form pages, filters, tables, CSS), read and follow `docs/ui-design-guidelines.md` first. It defines the shared toolbar/table/form chrome, CSS organization, visual tokens, and anti-patterns to avoid so new pages stay consistent with existing ones.
+When creating or updating any UI in `idreesia-web` (list pages, edit/new form pages, filters, tables, CSS), read and follow `docs/ui-design-guidelines/ui-design-guidelines.md` first. It defines the shared toolbar/table/form chrome, CSS organization, visual tokens, and anti-patterns to avoid so new pages stay consistent with existing ones.
 
-When creating or updating any UI in `idreesia-mobile` (screens, modules/features, navigation, forms, lists, CSS), read and follow `docs/mobile-ui-design-guidelines.md` first. It defines the module → feature structure, the `Page` shell and status states, page templates, the theme rules, and anti-patterns to avoid.
+When creating or updating any UI in `idreesia-mobile` (screens, modules/features, navigation, forms, lists, CSS), read and follow `docs/ui-design-guidelines/mobile-ui-design-guidelines.md` first. It defines the module → feature structure, the `Page` shell and status states, page templates, the theme rules, and anti-patterns to avoid.
+
+## API design guidelines
+
+When writing or changing backend code (anything under `idreesia-common/server`: collections, business logic, GraphQL schema and resolvers, data loaders, or the REST endpoints in `idreesia-web/imports/startup/server`), read and follow `docs/api-design-guidelines.md` first. It defines the layering (collections → business logic → API), what counts as business logic, thin resolvers, authorization, schema conventions, testing, and anti-patterns to avoid.

@@ -4,6 +4,11 @@ import {
   hasNonOwnedRelations,
   removeOwnedPersonRelations,
 } from 'meteor/idreesia-common/server/business-logic/admin';
+import {
+  hardRemovePerson,
+  restorePerson,
+  searchPeople,
+} from 'meteor/idreesia-common/server/business-logic/common';
 
 interface LooseRecord {
   [key: string]: any;
@@ -16,7 +21,7 @@ interface UserRef {
 export default {
   Query: {
     pagedDeletedPeople: async (_obj: unknown, { filter }: { filter: LooseRecord }) =>
-      People.searchPeople(filter, { onlyDeleted: true }),
+      searchPeople(filter, { onlyDeleted: true }),
 
     deletedPersonById: async (_obj: unknown, { _id }: { _id: string }) =>
       People.findOneAsync({ _id, deletedAt: { $exists: true } }),
@@ -57,7 +62,7 @@ export default {
       let count = 0;
       for (const _id of deletableIds) {
         await removeOwnedPersonRelations(_id);
-        count += await People.hardRemovePerson(_id, user);
+        count += await hardRemovePerson(_id, user);
       }
       return count;
     },
@@ -66,6 +71,6 @@ export default {
       _obj: unknown,
       { _id }: { _id: string },
       { user }: { user: UserRef }
-    ) => People.restorePerson(_id, user),
+    ) => restorePerson(_id, user),
   },
 };

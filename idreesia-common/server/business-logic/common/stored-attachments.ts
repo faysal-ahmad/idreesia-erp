@@ -6,6 +6,7 @@ import {
 } from 'meteor/idreesia-common/constants';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import {
+  deleteFile,
   getFile,
   getFileExtension,
   getFileUrl,
@@ -92,3 +93,21 @@ export async function createStoredAttachment({
 /** Short-lived presigned URL for downloading a stored attachment. */
 export const getAttachmentDownloadUrl = (fileKey: string) =>
   getFileUrl(fileKey);
+
+/** Deletes an attachment and its file in object storage, if it has one. */
+export async function removeAttachment(attachmentId: string): Promise<void> {
+  const attachment = await Attachments.findOneAsync(attachmentId);
+  if (attachment?.fileKey) {
+    try {
+      await deleteFile(attachment.fileKey);
+    } catch (error) {
+      // An orphaned file is harmless; failing the removal over it is not.
+      // eslint-disable-next-line no-console
+      console.error(
+        `Failed to delete attachment file ${attachment.fileKey}:`,
+        error
+      );
+    }
+  }
+  await Attachments.removeAsync(attachmentId);
+}

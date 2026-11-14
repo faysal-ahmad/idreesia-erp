@@ -5,6 +5,9 @@ import {
   MehfilKarkuns,
   MehfilDuties,
 } from 'meteor/idreesia-common/server/collections/security';
+import {
+  searchPeople,
+} from 'meteor/idreesia-common/server/business-logic/common';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -46,7 +49,7 @@ const resolvers: ResolverMap = {
       }),
 
     pagedSecurityPeople: async (obj, { filter }) =>
-      People.searchPeople(filter, {
+      searchPeople(filter, {
         includeVisitors: true,
         includeKarkuns: true,
         includeEmployees: true,

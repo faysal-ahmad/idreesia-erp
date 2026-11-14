@@ -8,7 +8,6 @@ import {
   type TaskPriorityValue,
   type TaskStatusValue,
 } from 'meteor/idreesia-common/constants/projects';
-import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import type {
   ProjectDocument,
   ProjectTaskDocument,
@@ -17,6 +16,9 @@ import {
   createNotifier,
   type ModuleNotification,
 } from 'meteor/idreesia-common/server/headless';
+import {
+  findUsersByPersonIds,
+} from 'meteor/idreesia-common/server/business-logic/admin/users';
 
 /**
  * The notifications the projects module publishes, each to the people
@@ -433,7 +435,7 @@ const recipientUserIds = async (
   actorUserId?: string
 ): Promise<string[]> => {
   if (!personIds.length) return [];
-  const users = await Users.findByPersonIds(personIds);
+  const users = await findUsersByPersonIds(personIds);
   return users.map(({ _id }) => _id).filter(id => id !== actorUserId);
 };
 

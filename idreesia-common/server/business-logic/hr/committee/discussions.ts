@@ -1,7 +1,6 @@
 import { GraphQLError } from 'graphql';
 
 import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
-import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import {
   discussionsModule,
   DISCUSSIONS_MODULE,
@@ -10,6 +9,9 @@ import {
   getDiscussionsWorkspaceChatUserIds,
   restoreDiscussionsWorkspace,
 } from 'meteor/idreesia-common/server/business-logic/discussions';
+import {
+  findUsersByPersonIds,
+} from 'meteor/idreesia-common/server/business-logic/admin/users';
 
 import type { CommitteeDoc, CommitteeFeatureHandler } from './types';
 
@@ -18,13 +20,13 @@ import type { CommitteeDoc, CommitteeFeatureHandler } from './types';
 const memberUserIds = async (committee: CommitteeDoc) => {
   const personIds = (committee.members ?? []).map(member => member.karkunId);
   if (personIds.length === 0) return [];
-  const users = await Users.findByPersonIds(personIds);
+  const users = await findUsersByPersonIds(personIds);
   return users.map(user => user._id as string);
 };
 
 // The ERP user of one person, if they have one.
 const personUserId = async (personId: string) => {
-  const [user] = await Users.findByPersonIds([personId]);
+  const [user] = await findUsersByPersonIds([personId]);
   return (user?._id as string | undefined) || null;
 };
 
@@ -139,7 +141,7 @@ export const setCommitteeMemberDiscussionAccess = async (
       extensions: { code: 'BAD_USER_INPUT' },
     });
   }
-  const [user] = await Users.findByPersonIds([karkunId]);
+  const [user] = await findUsersByPersonIds([karkunId]);
   if (!user?.chatUserId) {
     throw new GraphQLError('This member does not have a chat account.', {
       extensions: { code: 'BAD_USER_INPUT' },

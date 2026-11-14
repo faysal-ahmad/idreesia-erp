@@ -1,7 +1,17 @@
 export { default as Attachments } from './attachments';
-export { default as AuditLogs } from './audit-logs';
-export { default as People } from './people';
-export { default as SecurityLogs } from './security-logs';
+export {
+  default as AuditLogs,
+  type AuditLogDocument,
+} from './audit-logs';
+export {
+  default as People,
+  type PersonDocument,
+  type PersonInput,
+} from './people';
+export {
+  default as SecurityLogs,
+  type SecurityLogDocument,
+} from './security-logs';
 export {
   default as Notifications,
   type NotificationDocument,

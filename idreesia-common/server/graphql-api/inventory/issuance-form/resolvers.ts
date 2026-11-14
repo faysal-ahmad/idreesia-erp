@@ -1,13 +1,16 @@
+import { IssuanceForms } from 'meteor/idreesia-common/server/collections/inventory';
 import {
-  IssuanceForms,
-  StockItems,
-} from 'meteor/idreesia-common/server/collections/inventory';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
+  removeAttachment,
+} from 'meteor/idreesia-common/server/business-logic/common';
+import {
+  decrementStockLevel,
+  incrementStockLevel,
+} from 'meteor/idreesia-common/server/business-logic/inventory';
 
 import getIssuanceForms, {
   getIssuanceFormsByMonth,
   getIssuanceFormsByStockItemId,
-} from './queries';
+} from 'meteor/idreesia-common/server/business-logic/inventory/issuance-form-search';
 
 interface FormItem {
   stockItemId: string;
@@ -148,10 +151,10 @@ const resolvers: ResolverMap = {
       await Promise.all(
         items.map(({ stockItemId, quantity, isInflow }: FormItem) => {
           if (isInflow) {
-            return StockItems.incrementCurrentLevel(stockItemId, quantity);
+            return incrementStockLevel(stockItemId, quantity);
           }
 
-          return StockItems.decrementCurrentLevel(stockItemId, quantity);
+          return decrementStockLevel(stockItemId, quantity);
         })
       );
 
@@ -191,10 +194,10 @@ const resolvers: ResolverMap = {
       await Promise.all(
         existingItems.map(({ stockItemId, quantity, isInflow }: FormItem) => {
           if (isInflow) {
-            return StockItems.decrementCurrentLevel(stockItemId, quantity);
+            return decrementStockLevel(stockItemId, quantity);
           }
 
-          return StockItems.incrementCurrentLevel(stockItemId, quantity);
+          return incrementStockLevel(stockItemId, quantity);
         })
       );
 
@@ -202,10 +205,10 @@ const resolvers: ResolverMap = {
       await Promise.all(
         items.map(({ stockItemId, quantity, isInflow }: FormItem) => {
           if (isInflow) {
-            return StockItems.incrementCurrentLevel(stockItemId, quantity);
+            return incrementStockLevel(stockItemId, quantity);
           }
 
-          return StockItems.decrementCurrentLevel(stockItemId, quantity);
+          return decrementStockLevel(stockItemId, quantity);
         })
       );
 
@@ -303,7 +306,7 @@ const resolvers: ResolverMap = {
         }
       );
 
-      await Attachments.removeAttachment(attachmentId);
+      await removeAttachment(attachmentId);
       return IssuanceForms.findOneAsync(_id);
     },
 
@@ -320,10 +323,10 @@ const resolvers: ResolverMap = {
         await Promise.all(
           existingItems.map(({ stockItemId, quantity, isInflow }: FormItem) => {
             if (isInflow) {
-              return StockItems.decrementCurrentLevel(stockItemId, quantity);
+              return decrementStockLevel(stockItemId, quantity);
             }
 
-            return StockItems.incrementCurrentLevel(stockItemId, quantity);
+            return incrementStockLevel(stockItemId, quantity);
           })
         );
       });

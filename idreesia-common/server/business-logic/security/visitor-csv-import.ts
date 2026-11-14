@@ -3,6 +3,10 @@ import { subYears } from 'date-fns';
 
 import { toInteger } from 'meteor/idreesia-common/utilities/lodash';
 import { People } from 'meteor/idreesia-common/server/collections/common';
+import {
+  isCnicInUse,
+  isContactNumberInUse,
+} from 'meteor/idreesia-common/server/business-logic/common';
 
 const NAME_COLUMN = 'Name';
 const PARENT_NAME_COLUMN = 'S/O';
@@ -33,8 +37,8 @@ async function processJsonRecord(
     const referenceName = jsonRecord[REFERENCE_COLUMN];
 
     if (!cnicNumber && !phoneNumber) return false;
-    if (cnicNumber && (await People.isCnicInUse(cnicNumber))) return false;
-    if (phoneNumber && (await People.isContactNumberInUse(phoneNumber)))
+    if (cnicNumber && (await isCnicInUse(cnicNumber))) return false;
+    if (phoneNumber && (await isContactNumberInUse(phoneNumber)))
       return false;
 
     const ehadDurationYears = toInteger(ehadDuration);

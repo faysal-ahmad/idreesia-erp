@@ -5,7 +5,6 @@ import {
   getProject,
   setProjectChatGroupId,
 } from 'meteor/idreesia-common/server/business-logic/projects';
-import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import type { ProjectDocument } from 'meteor/idreesia-common/server/collections/projects';
 import {
   addChatGroupMembers,
@@ -15,6 +14,9 @@ import {
   removeChatGroupMember,
   unarchiveChatGroup,
 } from 'meteor/idreesia-common/server/chat';
+import {
+  findUsersByPersonIds,
+} from 'meteor/idreesia-common/server/business-logic/admin/users';
 
 import type { CommitteeDoc } from './types';
 
@@ -40,7 +42,7 @@ const chatGroupName = (committee: CommitteeDoc, project: ProjectDocument) => {
 
 const chatUserIdsOf = async (personIds: string[]) => {
   if (!personIds.length) return [];
-  const users = await Users.findByPersonIds(personIds);
+  const users = await findUsersByPersonIds(personIds);
   return users
     .map(user => user.chatUserId as string | undefined)
     .filter((chatUserId): chatUserId is string => !!chatUserId);

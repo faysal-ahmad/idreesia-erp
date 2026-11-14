@@ -1,10 +1,12 @@
 import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
-import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   createCommitteeNotifier,
   type CommitteeNotification,
 } from 'meteor/idreesia-common/server/headless';
+import {
+  findUsersByPersonIds,
+} from 'meteor/idreesia-common/server/business-logic/admin/users';
 
 import type { CommitteeDoc } from './types';
 
@@ -103,7 +105,7 @@ export const notifyMemberChange = async (
     const karkunName = person?.sharedData?.name ?? 'A member';
 
     const personIds = (committee.members ?? []).map(member => member.karkunId);
-    const users = await Users.findByPersonIds(personIds);
+    const users = await findUsersByPersonIds(personIds);
     const now = new Date();
 
     for (const user of users) {

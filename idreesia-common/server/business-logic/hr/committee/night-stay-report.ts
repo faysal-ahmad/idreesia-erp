@@ -1,7 +1,7 @@
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { VisitorStays } from 'meteor/idreesia-common/server/collections/security';
-import { getVisitorStays } from 'meteor/idreesia-common/server/graphql-api/security/visitor-stay/queries';
+import { getVisitorStays } from 'meteor/idreesia-common/server/business-logic/security/visitor-stay-search';
 
 import type { CommitteeFeatureHandler } from './types';
 

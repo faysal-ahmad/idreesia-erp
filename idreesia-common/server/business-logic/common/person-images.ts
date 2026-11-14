@@ -1,4 +1,8 @@
-import { StorageFolders } from 'meteor/idreesia-common/server/file-storage';
+import { Attachments } from 'meteor/idreesia-common/server/collections/common';
+import {
+  deleteFiles,
+  StorageFolders,
+} from 'meteor/idreesia-common/server/file-storage';
 
 import { getStoredImageUrl, storeImage, type StoredImage } from './stored-images';
 
@@ -36,4 +40,32 @@ export function getPersonImageUrls(
     imageThumbnailUrl:
       getStoredImageUrl(sharedData?.imageThumbnailKey) ?? imageUrl,
   };
+}
+
+/**
+ * Deletes a person's stored profile photo files - in object storage, and
+ * any legacy Attachments copies.
+ */
+export async function removePersonImageFiles(
+  sharedData: PersonImageFields | null | undefined
+): Promise<void> {
+  if (!sharedData) return;
+
+  const keysToDelete = [sharedData.imageKey, sharedData.imageThumbnailKey]
+    .filter(Boolean) as string[];
+  if (keysToDelete.length > 0) {
+    try {
+      await deleteFiles(keysToDelete);
+    } catch (error) {
+      // An orphaned file is harmless; failing the update over it is not.
+      // eslint-disable-next-line no-console
+      console.error(`Failed to delete people images ${keysToDelete}:`, error);
+    }
+  }
+
+  const attachmentIds = [sharedData.imageId, sharedData.imageThumbnailId]
+    .filter(Boolean) as string[];
+  if (attachmentIds.length > 0) {
+    await Attachments.removeAsync({ _id: { $in: attachmentIds } });
+  }
 }

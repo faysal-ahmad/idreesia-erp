@@ -1,5 +1,7 @@
-import { Users } from 'meteor/idreesia-common/server/collections/admin';
 
+import {
+  findUsersByPersonIds,
+} from 'meteor/idreesia-common/server/business-logic/admin/users';
 import { getCommitteeDiscussionChatUserIds } from './discussions';
 import type { CommitteeDoc } from './types';
 
@@ -23,7 +25,7 @@ export const getCommitteeMemberAccess = async (
   const access = new Map<string, CommitteeMemberAccess>();
   if (personIds.length === 0) return access;
 
-  const users = await Users.findByPersonIds(personIds);
+  const users = await findUsersByPersonIds(personIds);
   const userByPersonId = new Map(
     users.map(user => [user.personId as string, user])
   );

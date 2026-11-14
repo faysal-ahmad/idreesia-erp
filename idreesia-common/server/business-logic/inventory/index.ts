@@ -7,3 +7,4 @@ export {
   removeStockItemImageFiles,
   setStockItemImage,
 } from './stock-item-images';
+export { decrementStockLevel, incrementStockLevel } from './stock-levels';

@@ -12,8 +12,8 @@ import {
   setStockItemImage,
 } from 'meteor/idreesia-common/server/business-logic/inventory/stock-item-images';
 
-import { getPagedStockItems } from './queries';
-import { mergeStockItems, recalculateStockLevels } from './helpers';
+import { getPagedStockItems } from 'meteor/idreesia-common/server/business-logic/inventory/stock-item-search';
+import { mergeStockItems, recalculateStockLevels } from 'meteor/idreesia-common/server/business-logic/inventory/stock-item-maintenance';
 
 interface StockItem {
   _id: string;

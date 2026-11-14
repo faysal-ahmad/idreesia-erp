@@ -1,12 +1,17 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import {
-  setPersonImage,
-  computeVectorFromImageBuffer,
-  searchPeopleByFaceVector,
-} from 'meteor/idreesia-common/server/business-logic/common';
 import { DataSource, ImageVectorStatus } from 'meteor/idreesia-common/constants';
+import {
+  computeVectorFromImageBuffer,
+  createPerson,
+  removePerson,
+  searchPeople,
+  searchPeopleByFaceVector,
+  setPersonImage,
+  updatePerson,
+  visitorToPerson,
+} from 'meteor/idreesia-common/server/business-logic/common';
 
-import { processCsvData } from './helpers';
+import { processCsvData } from 'meteor/idreesia-common/server/business-logic/security/visitor-csv-import';
 
 // The capture control sends a canvas data URL; tolerate it with or without the prefix.
 const stripDataUrlPrefix = (imageData: string) =>
@@ -22,7 +27,7 @@ interface ResolverMap {
 const resolvers: ResolverMap = {
   Query: {
     pagedSecurityVisitors: async (obj, { filter }) =>
-      People.searchPeople(filter, {
+      searchPeople(filter, {
         includeVisitors: true,
         includeKarkuns: true,
       }),
@@ -58,8 +63,8 @@ const resolvers: ResolverMap = {
 
   Mutation: {
     createSecurityVisitor: async (obj, values, { user }) => {
-      const personValues = People.visitorToPerson(values);
-      return People.createPerson(
+      const personValues = visitorToPerson(values);
+      return createPerson(
         {
           ...personValues,
           dataSource: DataSource.SECURITY,
@@ -69,19 +74,19 @@ const resolvers: ResolverMap = {
     },
 
     updateSecurityVisitor: async (obj, values, { user }) => {
-      const personValues = People.visitorToPerson(values);
-      return People.updatePerson(personValues, user);
+      const personValues = visitorToPerson(values);
+      return updatePerson(personValues, user);
     },
 
     deleteSecurityVisitor: async (obj, { _id }, { user }) =>
-      People.removePerson(_id, user),
+      removePerson(_id, user),
 
     setSecurityVisitorImage: async (obj, { _id, imageData }, { user }) =>
       setPersonImage(user, _id, imageData),
 
     updateSecurityVisitorNotes: async (obj, values, { user }) => {
-      const personValues = People.visitorToPerson(values);
-      return People.updatePerson(personValues, user);
+      const personValues = visitorToPerson(values);
+      return updatePerson(personValues, user);
     },
 
     importSecurityVisitorsCsvData: async (obj, { csvData }, { user }) =>

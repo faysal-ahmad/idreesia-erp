@@ -1,10 +1,23 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Committees } from 'meteor/idreesia-common/server/collections/hr';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
-import { setPersonImage } from 'meteor/idreesia-common/server/business-logic/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
+import {
+  addPersonAttachment,
+  createPerson,
+  karkunToPerson,
+  removePerson,
+  removePersonAttachment,
+  searchPeople,
+  setPersonImage,
+  updatePerson,
+} from 'meteor/idreesia-common/server/business-logic/common';
 
-import { getKarkunsByPredefinedFilter } from './queries';
+import { getKarkunsByPredefinedFilter } from 'meteor/idreesia-common/server/business-logic/hr/karkun-search';
+
+// HR karkuns all belong to Multan.
+const getMultanCity = () =>
+  Cities.findOneAsync({ name: 'Multan', country: 'Pakistan' });
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -24,10 +37,7 @@ const resolvers: ResolverMap = {
     },
 
     pagedHrKarkuns: async (obj, { filter }) => {
-      const multanCity = await Cities.findOneAsync({
-        name: 'Multan',
-        country: 'Pakistan',
-      });
+      const multanCity = await getMultanCity();
 
       if (!multanCity) {
         return {
@@ -40,7 +50,7 @@ const resolvers: ResolverMap = {
         return getKarkunsByPredefinedFilter(filter);
       }
 
-      return People.searchPeople(
+      return searchPeople(
         {
           ...filter,
           cityId: multanCity._id,
@@ -65,9 +75,9 @@ const resolvers: ResolverMap = {
 
   Mutation: {
     createHrKarkun: async (obj, values, { user }) => {
-      const multanCity = await Cities.getMultanCity();
+      const multanCity = await getMultanCity();
       if (!multanCity) throw new Error('Multan city is not configured.');
-      const personValues = await People.karkunToPerson({
+      const personValues = await karkunToPerson({
         ...values,
         isKarkun: true,
         isVisitor: true,
@@ -78,7 +88,7 @@ const resolvers: ResolverMap = {
           country: multanCity.country,
         },
       });
-      return People.createPerson(personValues, user);
+      return createPerson(personValues, user);
     },
 
     promoteHrKarkun: async (obj, { _id }, { user }) => {
@@ -90,10 +100,10 @@ const resolvers: ResolverMap = {
         throw new Error('This person is already a karkun.');
       }
 
-      const multanCity = await Cities.getMultanCity();
+      const multanCity = await getMultanCity();
       if (!multanCity) throw new Error('Multan city is not configured.');
 
-      const personValues = await People.karkunToPerson({
+      const personValues = await karkunToPerson({
         _id,
         cityId: existingPerson.karkunData?.cityId || multanCity._id,
       });
@@ -102,30 +112,30 @@ const resolvers: ResolverMap = {
       if (existingPerson.visitorData?.city) {
         delete personValues.visitorData;
       }
-      return People.updatePerson(personValues, user);
+      return updatePerson(personValues, user);
     },
 
     updateHrKarkun: async (obj, values, { user }) => {
-      const personValues = await People.karkunToPerson(values);
-      return People.updatePerson(personValues, user);
+      const personValues = await karkunToPerson(values);
+      return updatePerson(personValues, user);
     },
 
     deleteHrKarkun: async (obj, { _id }, { user }) =>
-      People.removePerson(_id, user),
+      removePerson(_id, user),
 
     setHrKarkunEmploymentInfo: async (obj, values, { user }) => {
-      const personValues = await People.karkunToPerson(values);
-      return People.updatePerson(personValues, user);
+      const personValues = await karkunToPerson(values);
+      return updatePerson(personValues, user);
     },
 
     setHrKarkunProfileImage: async (obj, { _id, imageData }, { user }) =>
       setPersonImage(user, _id, imageData),
 
     addHrKarkunAttachment: async (obj, { _id, attachmentId }, { user }) =>
-      People.addAttachment({ _id, attachmentId }, user),
+      addPersonAttachment({ _id, attachmentId }, user),
 
     removeHrKarkunAttachment: async (obj, { _id, attachmentId }, { user }) =>
-      People.removeAttachment({ _id, attachmentId }, user),
+      removePersonAttachment({ _id, attachmentId }, user),
   },
 };
 

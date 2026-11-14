@@ -88,7 +88,7 @@ const JOB_DEFINITIONS_REGISTRY: JobDefinitionSeed[] = [
     displayName: 'Create Image Thumbnails',
     // No defaultSchedule - manual-only (Run Now). This is a one-time backlog for people who
     // already have an image but no thumbnail; new images get a thumbnail automatically as soon
-    // as they're set (see People.updatePerson).
+    // as they're set (see updatePerson in business-logic/common/people).
     handler: async agendaJob => {
       await backfillImageThumbnails(createProgressReporter(agendaJob));
     },

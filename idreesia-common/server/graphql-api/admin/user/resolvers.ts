@@ -7,6 +7,15 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
 import { DataSource } from 'meteor/idreesia-common/constants';
 import { ChatError } from 'meteor/idreesia-common/server/chat';
+import {
+  createChatAccount,
+  createUser,
+  findOneUser,
+  searchUsers,
+  setUserInstanceAccess,
+  setUserPermissions,
+  updateUser,
+} from 'meteor/idreesia-common/server/business-logic/admin';
 
 interface UserType {
   _id: string;
@@ -63,7 +72,7 @@ export default {
 
   Query: {
     pagedUsers: async (_obj: unknown, { filter }: { filter: Record<string, unknown> }) =>
-      Users.searchUsers(filter),
+      searchUsers(filter),
 
     userById: async (
       _obj: unknown,
@@ -74,7 +83,7 @@ export default {
         return null;
       }
 
-      const _user = await Users.findOneUser(_id);
+      const _user = await findOneUser(_id);
       if (_user.username === 'erp-admin') {
         _user.permissions = values(PermissionConstants);
       }
@@ -84,7 +93,7 @@ export default {
 
     currentUser: async (_obj: unknown, _args: unknown, { user }: ResolverContext) => {
       if (!user) return null;
-      const _user = await Users.findOneUser(user._id);
+      const _user = await findOneUser(user._id);
       if (_user.username === 'erp-admin') {
         _user.permissions = values(PermissionConstants);
       }
@@ -151,25 +160,25 @@ export default {
       _obj: unknown,
       params: Record<string, unknown>,
       { user }: ResolverContext
-    ) => Users.createUser(params, requireUser(user), DataSource.ADMIN),
+    ) => createUser(params, requireUser(user), DataSource.ADMIN),
 
     updateUser: async (
       _obj: unknown,
       params: Record<string, unknown>,
       { user }: ResolverContext
-    ) => Users.updateUser(params, requireUser(user), DataSource.ADMIN),
+    ) => updateUser(params, requireUser(user), DataSource.ADMIN),
 
     setPermissions: async (
       _obj: unknown,
       params: { userId: string; permissions: string[] },
       { user }: ResolverContext
-    ) => Users.setPermissions(params, requireUser(user), DataSource.ADMIN),
+    ) => setUserPermissions(params, requireUser(user), DataSource.ADMIN),
 
     setInstanceAccess: async (
       _obj: unknown,
       params: { userId: string; instances: string[] },
       { user }: ResolverContext
-    ) => Users.setInstanceAccess(params, requireUser(user), DataSource.ADMIN),
+    ) => setUserInstanceAccess(params, requireUser(user), DataSource.ADMIN),
 
     createChatAccount: async (
       _obj: unknown,
@@ -177,7 +186,7 @@ export default {
       { user }: ResolverContext
     ) => {
       try {
-        return await Users.createChatAccount(
+        return await createChatAccount(
           params,
           requireUser(user),
           DataSource.ADMIN

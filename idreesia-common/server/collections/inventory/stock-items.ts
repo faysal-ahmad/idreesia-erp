@@ -25,24 +25,6 @@ class StockItems extends AggregatableCollection<StockItemDocument> {
     );
     this.attachSchema(StockItemSchema);
   }
-
-  async incrementCurrentLevel(stockItemId: string, incrementBy: number) {
-    const stockItem = await this.findOneAsync(stockItemId);
-    return this.updateAsync(stockItemId, {
-      $set: {
-        currentStockLevel: (stockItem?.currentStockLevel ?? 0) + incrementBy,
-      },
-    });
-  }
-
-  async decrementCurrentLevel(stockItemId: string, decrementBy: number) {
-    const stockItem = await this.findOneAsync(stockItemId);
-    return this.updateAsync(stockItemId, {
-      $set: {
-        currentStockLevel: (stockItem?.currentStockLevel ?? 0) - decrementBy,
-      },
-    });
-  }
 }
 
 export default new StockItems();

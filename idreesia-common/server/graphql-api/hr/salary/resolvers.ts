@@ -9,7 +9,7 @@ import {
 } from 'meteor/idreesia-common/constants';
 import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries';
 import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
-import { getPagedSalariesByKarkun } from './queries';
+import { getPagedSalariesByKarkun } from 'meteor/idreesia-common/server/business-logic/hr/salary-search';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {

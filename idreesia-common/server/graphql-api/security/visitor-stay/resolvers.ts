@@ -8,7 +8,7 @@ import {
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 
-import { getVisitorStays } from './queries';
+import { getVisitorStays } from 'meteor/idreesia-common/server/business-logic/security/visitor-stay-search';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {

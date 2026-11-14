@@ -1,12 +1,13 @@
 import type DataLoader from 'dataloader';
+import { StockAdjustments } from 'meteor/idreesia-common/server/collections/inventory';
 import {
-  StockAdjustments,
-  StockItems,
-} from 'meteor/idreesia-common/server/collections/inventory';
+  decrementStockLevel,
+  incrementStockLevel,
+} from 'meteor/idreesia-common/server/business-logic/inventory';
 
 import getStockAdjustments, {
   getStockAdjustmentsByStockItemId,
-} from './queries';
+} from 'meteor/idreesia-common/server/business-logic/inventory/stock-adjustment-search';
 
 interface StockAdjustment {
   _id: string;
@@ -130,9 +131,9 @@ export default {
       });
 
       if (isInflow) {
-        await StockItems.incrementCurrentLevel(stockItemId, quantity);
+        await incrementStockLevel(stockItemId, quantity);
       } else {
-        await StockItems.decrementCurrentLevel(stockItemId, quantity);
+        await decrementStockLevel(stockItemId, quantity);
       }
 
       return StockAdjustments.findOneAsync(stockAdjustmentId);
@@ -153,12 +154,12 @@ export default {
 
       // Undo the effect of previous values
       if (typedExistingAdjustment.isInflow) {
-        await StockItems.decrementCurrentLevel(
+        await decrementStockLevel(
           typedExistingAdjustment.stockItemId,
           typedExistingAdjustment.quantity
         );
       } else {
-        await StockItems.incrementCurrentLevel(
+        await incrementStockLevel(
           typedExistingAdjustment.stockItemId,
           typedExistingAdjustment.quantity
         );
@@ -166,12 +167,12 @@ export default {
 
       // Apply the effect of new values
       if (isInflow) {
-        await StockItems.incrementCurrentLevel(
+        await incrementStockLevel(
           typedExistingAdjustment.stockItemId,
           quantity
         );
       } else {
-        await StockItems.decrementCurrentLevel(
+        await decrementStockLevel(
           typedExistingAdjustment.stockItemId,
           quantity
         );
@@ -243,12 +244,12 @@ export default {
         const existingAdjustment = existingAdjustmentRecord as unknown as StockAdjustment;
         // Undo the effect of this adjustment
         if (existingAdjustment.isInflow) {
-          await StockItems.decrementCurrentLevel(
+          await decrementStockLevel(
             existingAdjustment.stockItemId,
             existingAdjustment.quantity
           );
         } else {
-          await StockItems.incrementCurrentLevel(
+          await incrementStockLevel(
             existingAdjustment.stockItemId,
             existingAdjustment.quantity
           );

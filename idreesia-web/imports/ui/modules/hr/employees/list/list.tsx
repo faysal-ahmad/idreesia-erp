@@ -21,6 +21,7 @@ import {
   Tooltip,
 } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
+import { downloadReport } from 'meteor/idreesia-common/utilities';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
 import type { HrPeoplePagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
@@ -337,10 +338,9 @@ const List = ({
     const reportArgs = selectedRows
       .map(row => row._id)
       .filter((id): id is string => Boolean(id));
-    const url = `${
-      window.location.origin
-    }/generate-report?reportName=Karkuns&reportArgs=${reportArgs.join(',')}`;
-    window.open(url, '_blank');
+    downloadReport('Karkuns', reportArgs.join(',')).catch(() =>
+      message.error('The report could not be downloaded.', 5)
+    );
   };
 
   const onPrintSelected = () => {

@@ -20,7 +20,7 @@ describe('getRootFieldNames', () => {
     const { document, operation } = opOf(`
       query q {
         currentUser { _id }
-        ... on Query { pagedPeople { totalResults } }
+        ... on Query { pagedSecurityPeople { totalResults } }
         ...Rest
       }
       fragment Rest on Query { allTeams { _id } ...Rest }
@@ -28,7 +28,7 @@ describe('getRootFieldNames', () => {
     expect([...getRootFieldNames(document, operation)].sort()).toEqual([
       'allTeams',
       'currentUser',
-      'pagedPeople',
+      'pagedSecurityPeople',
     ]);
   });
 });
@@ -42,7 +42,7 @@ describe('isAllowedAnonymously', () => {
   it('allows only operations made entirely of anonymous fields', () => {
     expect(allowed('{ currentUser { _id } __typename }')).toBe(true);
     expect(allowed('mutation { registerUser(displayName: "a", email: "b") }')).toBe(true);
-    expect(allowed('{ currentUser { _id } pagedPeople { totalResults } }')).toBe(false);
+    expect(allowed('{ currentUser { _id } pagedSecurityPeople { totalResults } }')).toBe(false);
     expect(allowed('{ __schema { types { name } } }')).toBe(false);
   });
 });

@@ -2173,13 +2173,6 @@ export type UpdateAttachmentMutationVariables = Exact<{
 
 export type UpdateAttachmentMutation = { updateAttachment: { _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null };
 
-export type PagedPeopleQueryVariables = Exact<{
-  filter?: Types.PersonFilter | null | undefined;
-}>;
-
-
-export type PagedPeopleQuery = { pagedPeople: { totalResults: number | null, data: Array<{ _id: string | null, isVisitor: boolean | null, isKarkun: boolean | null, isEmployee: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { city: { _id: string | null, name: string | null, country: string | null } | null } | null } | null> | null } | null };
-
 export type HelperPagedHrKarkunsQueryVariables = Exact<{
   filter?: Types.KarkunFilter | null | undefined;
 }>;
@@ -2708,6 +2701,13 @@ export type PagedSecurityAuditLogsQueryVariables = Exact<{
 
 
 export type PagedSecurityAuditLogsQuery = { pagedSecurityAuditLogs: { totalResults: number | null, data: Array<{ _id: string | null, entityId: string | null, entityType: string | null, operationType: string | null, auditValues: Array<string | null> | null, operationTime: string | null, operationBy: string | null, operationByName: string | null, operationByImageUrl: string | null, operationByImageThumbnailUrl: string | null } | null> | null } | null };
+
+export type PagedSecurityPeopleQueryVariables = Exact<{
+  filter?: Types.PersonFilter | null | undefined;
+}>;
+
+
+export type PagedSecurityPeopleQuery = { pagedSecurityPeople: { totalResults: number | null, data: Array<{ _id: string | null, isVisitor: boolean | null, isKarkun: boolean | null, isEmployee: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { city: { _id: string | null, name: string | null, country: string | null } | null } | null } | null> | null } | null };
 
 export type ComposerAllSecurityMehfilDutiesQueryVariables = Exact<{
   mehfilId?: string | null | undefined;

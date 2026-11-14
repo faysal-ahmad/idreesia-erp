@@ -136,6 +136,10 @@ declare module 'meteor/accounts-base' {
 
   export const Accounts: {
     _hashPassword(password: string): HashedPassword;
+    config(options: {
+      forbidClientAccountCreation?: boolean;
+      [key: string]: unknown;
+    }): void;
     emailTemplates: {
       from?: string;
       [key: string]: unknown;

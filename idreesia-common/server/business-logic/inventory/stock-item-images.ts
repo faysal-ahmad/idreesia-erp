@@ -19,12 +19,9 @@ export interface StockItemImageFields {
   imageId?: string | null;
 }
 
-/**
- * URL of a stock item's image - from object storage, or from Attachments for
- * an image that hasn't been migrated yet.
- */
+/** URL of a stock item's image in object storage. */
 export const getStockItemImageUrl = (stockItem: StockItemImageFields) =>
-  getStoredImageUrl(stockItem.imageKey, stockItem.imageId);
+  getStoredImageUrl(stockItem.imageKey);
 
 /** Stores an image under stock-item-images/<stockItemId>/. */
 export const storeStockItemImage = (

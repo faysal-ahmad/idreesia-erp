@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { AuditOutlined, DeleteOutlined, DollarOutlined, StarOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
-import type { PagedPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
+import type { PersonType } from 'meteor/idreesia-common/types/graphql';
 import {
   Pagination,
   Popconfirm,
@@ -12,9 +12,7 @@ import {
 } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-type PersonRow = NonNullable<
-  NonNullable<NonNullable<PagedPeopleQuery['pagedPeople']>['data']>[number]
->;
+type PersonRow = PersonType;
 
 interface PagedData {
   totalResults?: number | null;

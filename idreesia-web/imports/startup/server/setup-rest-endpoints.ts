@@ -3,9 +3,17 @@ import { Accounts } from 'meteor/accounts-base';
 import express from 'express';
 import multer from 'multer';
 import bodyParser from 'body-parser';
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
+import {
+  ATTACHMENT_MAX_FILE_SIZE,
+  Permissions,
+} from 'meteor/idreesia-common/constants';
 import { kebabCase } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  hasInstanceAccess,
+  hasOnePermission,
+} from 'meteor/idreesia-common/server/graphql-api/security';
 import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
 import {
   createStoredAttachment,
@@ -26,16 +34,93 @@ import { createCorrespondenceRouter } from './setup-correspondence-endpoints';
 import { createWorkspaceDiscussionRouter } from './setup-workspace-discussion-endpoints';
 import { getBrowserMonitoringConfig } from './newrelic';
 import { ACCOUNT_LOCKED_MESSAGE, isAccountLocked } from './account-lock';
+import { getUser } from './get-user';
 
-const ReportGenerators = {
-  IssuanceForms: exportIsssuanceForms,
-  PurchaseForms: exportPurchaseForms,
-  StockAdjustments: exportStockAdjustmentForms,
-  StockItems: exportStockItems,
-  Karkuns: exportKarkuns,
-  Visitors: exportVisitors,
+interface RestUser {
+  _id: string;
+  username?: string;
+  locked?: boolean;
+  permissions?: string[];
+  instances?: string[];
+}
+
+type RequestWithUser = Request & { user: RestUser };
+
+interface ReportGenerator {
+  generate(reportArgs: string): Promise<unknown>;
+  // Same permissions as the GraphQL list query behind the page the report is
+  // downloaded from.
+  permissions: string[];
+  // Reports whose argument is a physical store id also need access to that
+  // store, like @checkInstanceAccess on the store's GraphQL queries.
+  argIsPhysicalStoreId?: boolean;
+}
+
+const ReportGenerators: Record<string, ReportGenerator> = {
+  IssuanceForms: {
+    generate: exportIsssuanceForms,
+    permissions: [
+      Permissions.IN_VIEW_ISSUANCE_FORMS,
+      Permissions.IN_MANAGE_ISSUANCE_FORMS,
+      Permissions.IN_APPROVE_ISSUANCE_FORMS,
+    ],
+  },
+  PurchaseForms: {
+    generate: exportPurchaseForms,
+    permissions: [
+      Permissions.IN_VIEW_PURCHASE_FORMS,
+      Permissions.IN_MANAGE_PURCHASE_FORMS,
+      Permissions.IN_APPROVE_PURCHASE_FORMS,
+    ],
+  },
+  StockAdjustments: {
+    generate: exportStockAdjustmentForms,
+    permissions: [
+      Permissions.IN_VIEW_STOCK_ADJUSTMENTS,
+      Permissions.IN_MANAGE_STOCK_ADJUSTMENTS,
+      Permissions.IN_APPROVE_STOCK_ADJUSTMENTS,
+    ],
+  },
+  StockItems: {
+    generate: exportStockItems,
+    permissions: [Permissions.IN_MANAGE_STOCK_ITEMS],
+    argIsPhysicalStoreId: true,
+  },
+  Karkuns: {
+    generate: exportKarkuns,
+    permissions: [
+      Permissions.HR_VIEW_KARKUNS,
+      Permissions.HR_MANAGE_KARKUNS,
+      Permissions.HR_VIEW_EMPLOYEES,
+      Permissions.HR_MANAGE_EMPLOYEES,
+    ],
+  },
+  Visitors: {
+    generate: exportVisitors,
+    permissions: [
+      Permissions.SECURITY_VIEW_VISITORS,
+      Permissions.SECURITY_MANAGE_VISITORS,
+    ],
+  },
 };
-type ReportName = keyof typeof ReportGenerators;
+
+/**
+ * Requires a valid, unlocked Meteor login token in the Authorization header -
+ * the same check the GraphQL endpoint makes - and puts the user on the request.
+ */
+const requireLogin = Meteor.bindEnvironment(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = (await getUser(req.headers.authorization)) as
+      | RestUser
+      | undefined;
+    if (!user) {
+      res.status(401).json({ error: 'Not authenticated.' });
+      return;
+    }
+    (req as RequestWithUser).user = user;
+    next();
+  }
+);
 
 // Accounts._findUserByQuery/_checkPasswordAsync/_generateStampedLoginToken/
 // _insertLoginToken/_tokenExpiration are the same building blocks the
@@ -66,25 +151,64 @@ export function setupRestEndpoints() {
   Meteor.startup(() => {
     const app = express();
     const storage = multer.memoryStorage();
-    const upload = multer({ storage });
+    const upload = multer({
+      storage,
+      limits: { fileSize: ATTACHMENT_MAX_FILE_SIZE, files: 1 },
+    });
+    const uploadSingleFile = upload.single('file');
+    // Answers multer's errors (e.g. LIMIT_FILE_SIZE) with a 4xx instead of
+    // passing them on to Express's default HTML error page.
+    const parseUploadedFile = (
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ) => {
+      uploadSingleFile(req as any, res as any, (error: unknown) => {
+        if (error instanceof multer.MulterError) {
+          const tooLarge = error.code === 'LIMIT_FILE_SIZE';
+          res
+            .status(tooLarge ? 413 : 400)
+            .end(
+              tooLarge
+                ? `The file is larger than ${
+                    ATTACHMENT_MAX_FILE_SIZE / (1024 * 1024)
+                  } MB.`
+                : error.message
+            );
+          return;
+        }
+        next(error);
+      });
+    };
 
     /**
      * Endpoint for reports generation
      */
     app.get(
       '/generate-report',
+      requireLogin,
       bodyParser.urlencoded({ extended: false }),
       Meteor.bindEnvironment(async (req: Request, res: Response) => {
+        const { user } = req as RequestWithUser;
         const { reportName, reportArgs } = req.query;
         const reportGenerator =
-          typeof reportName === 'string'
-            ? ReportGenerators[reportName as ReportName]
+          typeof reportName === 'string' &&
+          Object.prototype.hasOwnProperty.call(ReportGenerators, reportName)
+            ? ReportGenerators[reportName]
             : undefined;
         const normalizedReportArgs = Array.isArray(reportArgs)
           ? String(reportArgs[0] ?? '')
           : String(reportArgs ?? '');
         if (reportGenerator) {
-          const report = await reportGenerator(normalizedReportArgs);
+          if (
+            !hasOnePermission(user, reportGenerator.permissions) ||
+            (reportGenerator.argIsPhysicalStoreId &&
+              !hasInstanceAccess(user, normalizedReportArgs))
+          ) {
+            res.status(403).json({ error: 'Not authorized.' });
+            return;
+          }
+          const report = await reportGenerator.generate(normalizedReportArgs);
           res.writeHead(200, {
             'Content-Type': 'application/vnd.ms-excel',
             'Content-Disposition': `attachment; filename=${kebabCase(
@@ -106,6 +230,7 @@ export function setupRestEndpoints() {
      */
     app.get(
       '/download-file',
+      requireLogin,
       bodyParser.urlencoded({ extended: false }),
       Meteor.bindEnvironment(async (req: Request, res: Response) => {
         const { attachmentId } = req.query;
@@ -140,7 +265,8 @@ export function setupRestEndpoints() {
      */
     app.post(
       '/upload-file',
-      upload.single('file') as any,
+      requireLogin,
+      parseUploadedFile,
       Meteor.bindEnvironment(async (req: Request, res: Response) => {
         const { file } = req as Request & {
           file: Express.Multer.File;
@@ -229,6 +355,7 @@ export function setupRestEndpoints() {
      */
     app.post(
       '/upload-base64-file',
+      requireLogin,
       bodyParser.json({ limit: '5mb' }),
       Meteor.bindEnvironment(async (req: Request, res: Response) => {
         const { name, mimeType, data, category } = req.body;

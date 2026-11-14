@@ -14,6 +14,7 @@ import {
   Tooltip,
 } from 'antd';
 import { message, modal } from '/imports/ui/antd-feedback';
+import { downloadReport } from 'meteor/idreesia-common/utilities';
 import {
   CheckSquareOutlined,
   DeleteOutlined,
@@ -223,9 +224,8 @@ const List = ({ history, location }: Props) => {
         })
         .catch((error: Error) => message.error(error.message, 5));
     } else if (key === 'export') {
-      window.open(
-        `${window.location.origin}/generate-report?reportName=PurchaseForms&reportArgs=${_ids.join(',')}`,
-        '_blank'
+      downloadReport('PurchaseForms', _ids.join(',')).catch(() =>
+        message.error('The report could not be downloaded.', 5)
       );
     } else if (key === 'delete') {
       modal.confirm({

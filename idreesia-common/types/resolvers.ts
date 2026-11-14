@@ -1654,12 +1654,12 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   pagedInboxConversations?: Resolver<Types.Maybe<ResolversTypes['PagedInboxConversationType']>, ParentType, ContextType, Partial<Types.QueryPagedInboxConversationsArgs>>;
   pagedIssuanceForms?: Resolver<Types.Maybe<ResolversTypes['PagedIssuanceForm']>, ParentType, ContextType, RequireFields<Types.QueryPagedIssuanceFormsArgs, 'physicalStoreId'>>;
   pagedJobLogs?: Resolver<Types.Maybe<ResolversTypes['PagedJobLogsType']>, ParentType, ContextType, Partial<Types.QueryPagedJobLogsArgs>>;
-  pagedPeople?: Resolver<Types.Maybe<ResolversTypes['PagedPeopleType']>, ParentType, ContextType, Partial<Types.QueryPagedPeopleArgs>>;
   pagedPurchaseForms?: Resolver<Types.Maybe<ResolversTypes['PagedPurchaseForm']>, ParentType, ContextType, RequireFields<Types.QueryPagedPurchaseFormsArgs, 'physicalStoreId'>>;
   pagedSalariesByKarkun?: Resolver<Types.Maybe<ResolversTypes['PagedSalaryType']>, ParentType, ContextType, Partial<Types.QueryPagedSalariesByKarkunArgs>>;
   pagedScheduledJobs?: Resolver<Types.Maybe<ResolversTypes['PagedScheduledJobsType']>, ParentType, ContextType, Partial<Types.QueryPagedScheduledJobsArgs>>;
   pagedSecurityAuditLogs?: Resolver<Types.Maybe<ResolversTypes['PagedAuditLogType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityAuditLogsArgs>>;
   pagedSecurityLogs?: Resolver<Types.Maybe<ResolversTypes['PagedSecurityLogType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityLogsArgs>>;
+  pagedSecurityPeople?: Resolver<Types.Maybe<ResolversTypes['PagedPeopleType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityPeopleArgs>>;
   pagedSecurityServerAlertGroups?: Resolver<Types.Maybe<ResolversTypes['PagedSecurityServerAlertGroupType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityServerAlertGroupsArgs>>;
   pagedSecurityServerAlerts?: Resolver<Types.Maybe<ResolversTypes['PagedSecurityServerAlertType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityServerAlertsArgs>>;
   pagedSecurityServerProfiles?: Resolver<Types.Maybe<ResolversTypes['PagedSecurityServerProfileType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityServerProfilesArgs>>;

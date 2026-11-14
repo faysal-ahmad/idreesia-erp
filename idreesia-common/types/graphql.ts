@@ -3036,12 +3036,12 @@ export type Query = {
   pagedInboxConversations?: Maybe<PagedInboxConversationType>;
   pagedIssuanceForms?: Maybe<PagedIssuanceForm>;
   pagedJobLogs?: Maybe<PagedJobLogsType>;
-  pagedPeople?: Maybe<PagedPeopleType>;
   pagedPurchaseForms?: Maybe<PagedPurchaseForm>;
   pagedSalariesByKarkun?: Maybe<PagedSalaryType>;
   pagedScheduledJobs?: Maybe<PagedScheduledJobsType>;
   pagedSecurityAuditLogs?: Maybe<PagedAuditLogType>;
   pagedSecurityLogs?: Maybe<PagedSecurityLogType>;
+  pagedSecurityPeople?: Maybe<PagedPeopleType>;
   pagedSecurityServerAlertGroups?: Maybe<PagedSecurityServerAlertGroupType>;
   pagedSecurityServerAlerts?: Maybe<PagedSecurityServerAlertType>;
   pagedSecurityServerProfiles?: Maybe<PagedSecurityServerProfileType>;
@@ -3349,11 +3349,6 @@ export type QueryPagedJobLogsArgs = {
 };
 
 
-export type QueryPagedPeopleArgs = {
-  filter?: InputMaybe<PersonFilter>;
-};
-
-
 export type QueryPagedPurchaseFormsArgs = {
   physicalStoreId: Scalars['String']['input'];
   queryString?: InputMaybe<Scalars['String']['input']>;
@@ -3377,6 +3372,11 @@ export type QueryPagedSecurityAuditLogsArgs = {
 
 export type QueryPagedSecurityLogsArgs = {
   filter?: InputMaybe<SecurityLogFilter>;
+};
+
+
+export type QueryPagedSecurityPeopleArgs = {
+  filter?: InputMaybe<PersonFilter>;
 };
 
 

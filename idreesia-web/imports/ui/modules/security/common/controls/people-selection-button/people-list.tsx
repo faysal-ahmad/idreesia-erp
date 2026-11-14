@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import { useQuery } from '@apollo/client/react';
 
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
-import type { PagedPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
+import type { PagedSecurityPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   PeopleList,
   PeopleListFilter,
   PeopleFilterChips,
 } from '/imports/ui/modules/common';
 
-import { PAGED_PEOPLE } from './gql';
+import { PAGED_SECURITY_PEOPLE } from './gql';
 
 type PersonRow = NonNullable<
-  NonNullable<NonNullable<PagedPeopleQuery['pagedPeople']>['data']>[number]
+  NonNullable<NonNullable<PagedSecurityPeopleQuery['pagedSecurityPeople']>['data']>[number]
 >;
 
 interface PageParams {
@@ -46,7 +46,7 @@ const List = ({ handleSelectItem }: Props) => {
     if (Object.prototype.hasOwnProperty.call(values, 'pageSize')) setPageSize(values.pageSize ?? '20');
   };
 
-  const { data, loading, refetch } = useQuery(PAGED_PEOPLE, {
+  const { data, loading, refetch } = useQuery(PAGED_SECURITY_PEOPLE, {
     variables: {
       filter: {
         name,
@@ -60,7 +60,7 @@ const List = ({ handleSelectItem }: Props) => {
   });
 
   if (loading) return null;
-  const { pagedPeople } = data ?? {};
+  const { pagedSecurityPeople } = data ?? {};
   const numPageIndex = pageIndex ? toSafeInteger(pageIndex) : 0;
   const numPageSize = pageSize ? toSafeInteger(pageSize) : 20;
 
@@ -92,7 +92,7 @@ const List = ({ handleSelectItem }: Props) => {
       setPageParams={setPageParams}
       pageIndex={numPageIndex}
       pageSize={numPageSize}
-      pagedData={pagedPeople ?? undefined}
+      pagedData={pagedSecurityPeople ?? undefined}
     />
   );
 };

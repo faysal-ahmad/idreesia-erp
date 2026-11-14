@@ -13,6 +13,7 @@ import {
   Spin,
 } from 'antd';
 import { message, modal } from '/imports/ui/antd-feedback';
+import { downloadReport } from 'meteor/idreesia-common/utilities';
 import {
   CalculatorOutlined,
   DeleteOutlined,
@@ -307,10 +308,9 @@ const List = ({
   };
 
   const handleExportSelected = () => {
-    const url = `${
-      window.location.origin
-    }/generate-report?reportName=StockItems&reportArgs=${physicalStoreId}`;
-    window.open(url, '_blank');
+    downloadReport('StockItems', physicalStoreId).catch(() =>
+      message.error('The report could not be downloaded.', 5)
+    );
   };
 
   const onChange = (nextPageIndex: number, nextPageSize: number) => {

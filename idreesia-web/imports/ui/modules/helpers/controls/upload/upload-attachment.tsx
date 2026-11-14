@@ -2,8 +2,12 @@ import React from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import type { UploadChangeParam, UploadFile } from 'antd/es/upload';
 
-import type { AttachmentCategoryValue } from 'meteor/idreesia-common/constants';
+import {
+  ATTACHMENT_MAX_FILE_SIZE,
+  type AttachmentCategoryValue,
+} from 'meteor/idreesia-common/constants';
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
+import { getLoginHeaders } from 'meteor/idreesia-common/utilities';
 import { Button, Upload } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
@@ -27,8 +31,18 @@ const UploadAttachment = ({
     accept={accept}
     name="file"
     action="/upload-file"
+    headers={getLoginHeaders()}
     data={{ category }}
     showUploadList={false}
+    beforeUpload={file => {
+      if (file.size <= ATTACHMENT_MAX_FILE_SIZE) return true;
+      message.error(
+        `${file.name} is larger than ${
+          ATTACHMENT_MAX_FILE_SIZE / (1024 * 1024)
+        } MB.`
+      );
+      return Upload.LIST_IGNORE;
+    }}
     onChange={(info: UploadChangeParam<UploadFile>) => {
       if (info.file.status === 'done') {
         message.success(`${info.file.name} file uploaded successfully`);

@@ -24,27 +24,16 @@ export const storePersonImage = (
   storeImage(StorageFolders.PeopleImages, personId, image, mimeType, thumbnail);
 
 /**
- * URLs of a person's photo and thumbnail. Photos not yet migrated to object
- * storage are still served from Attachments through /download-file. The
- * thumbnail falls back to the full photo.
+ * URLs of a person's photo and thumbnail in object storage. The thumbnail
+ * falls back to the full photo.
  */
 export function getPersonImageUrls(
   sharedData: PersonImageFields | null | undefined
 ): PersonImageUrls {
-  if (sharedData?.imageKey) {
-    const imageUrl = getStoredImageUrl(sharedData.imageKey, null);
-    return {
-      imageUrl,
-      imageThumbnailUrl:
-        getStoredImageUrl(sharedData.imageThumbnailKey, null) ?? imageUrl,
-    };
-  }
-
-  const imageUrl = getStoredImageUrl(null, sharedData?.imageId);
+  const imageUrl = getStoredImageUrl(sharedData?.imageKey);
   return {
     imageUrl,
-    imageThumbnailUrl: imageUrl
-      ? getStoredImageUrl(null, sharedData?.imageThumbnailId) ?? imageUrl
-      : null,
+    imageThumbnailUrl:
+      getStoredImageUrl(sharedData?.imageThumbnailKey) ?? imageUrl,
   };
 }

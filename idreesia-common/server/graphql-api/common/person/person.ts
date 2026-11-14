@@ -106,7 +106,6 @@ type PagedPeopleType {
 }
 
 extend type Query {
-  pagedPeople(filter: PersonFilter): PagedPeopleType
   distinctCities: [String]
   distinctCountries: [String]
 }

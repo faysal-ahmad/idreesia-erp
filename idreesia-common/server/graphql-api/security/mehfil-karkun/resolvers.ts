@@ -44,6 +44,13 @@ const resolvers: ResolverMap = {
       MehfilKarkuns.findOneAsync({
         dutyCardBarcodeId: barcode,
       }),
+
+    pagedSecurityPeople: async (obj, { filter }) =>
+      People.searchPeople(filter, {
+        includeVisitors: true,
+        includeKarkuns: true,
+        includeEmployees: true,
+      }),
   },
 
   Mutation: {

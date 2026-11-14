@@ -30,7 +30,7 @@ import { message } from '/imports/ui/antd-feedback';
 import { type CSSProperties } from 'react';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
-import { getDownloadUrl } from 'meteor/idreesia-common/utilities';
+import { openAttachment } from 'meteor/idreesia-common/utilities';
 import type { AttachmentCategoryValue } from 'meteor/idreesia-common/constants';
 
 import {
@@ -115,8 +115,9 @@ const AttachmentsList = ({
   };
 
   const handleNameClicked = (record: Attachment) => {
-    const url = getDownloadUrl(record._id);
-    if (url) window.open(url, '_blank');
+    openAttachment(record._id).catch(() =>
+      message.error(`${record.name ?? 'The file'} could not be opened.`, 5)
+    );
   };
 
   const handleEditClicked = (record: Attachment) => {

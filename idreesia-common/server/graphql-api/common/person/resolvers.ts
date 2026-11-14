@@ -47,10 +47,6 @@ interface PersonEmployeeDataType {
   jobId?: string;
 }
 
-interface PagedPeopleArgs {
-  filter?: Record<string, unknown>;
-}
-
 interface FixCitySpellingArgs {
   existingSpelling: string;
   newSpelling: string;
@@ -169,13 +165,6 @@ export default {
   },
 
   Query: {
-    pagedPeople: async (_obj: unknown, { filter }: PagedPeopleArgs) =>
-      People.searchPeople(filter, {
-        includeVisitors: true,
-        includeKarkuns: true,
-        includeEmployees: true,
-      }),
-
     distinctCities: async () => {
       const cities = await (
         People.rawCollection() as unknown as PeopleRawCollection

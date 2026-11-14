@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { type CSSProperties } from 'react';
 
 import { Button, Drawer } from 'antd';
-import type { PagedPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
+import type { PagedSecurityPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
 import PeopleList from './people-list';
 
 const ContainerStyle: CSSProperties = {
@@ -14,7 +14,7 @@ const ContainerStyle: CSSProperties = {
 };
 
 type PersonRow = NonNullable<
-  NonNullable<NonNullable<PagedPeopleQuery['pagedPeople']>['data']>[number]
+  NonNullable<NonNullable<PagedSecurityPeopleQuery['pagedSecurityPeople']>['data']>[number]
 >;
 
 interface SelectedPerson {

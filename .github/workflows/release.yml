@@ -176,11 +176,15 @@ jobs:
       - name: Typecheck Workspace
         run: meteor yarn run typecheck
 
+      - name: Run Unit Tests
+        run: meteor yarn run test:unit
+
       - name: Build Application
         run: meteor yarn run build-for-docker
         working-directory: ./idreesia-web
 
       - name: Build Mobile Server Bundle
+        if: ${{ github.ref_name == 'master' }}
         run: meteor yarn run build-for-docker
         working-directory: ./idreesia-mobile
 

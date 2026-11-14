@@ -70,6 +70,9 @@ jobs:
         run: meteor yarn run typecheck
         working-directory: ./idreesia-mobile
 
+      - name: Run Unit Tests
+        run: meteor yarn run test:unit
+
       - name: Build Application
         run: meteor yarn run build
         working-directory: ./idreesia-web

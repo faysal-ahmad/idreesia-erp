@@ -6,6 +6,12 @@ on:
       - develop
       - master
 
+# Production URLs baked into the store builds of the mobile app.
+env:
+  MOBILE_BACKEND_URL: https://idreesia.app
+  MOBILE_SERVER_URL: https://mobile.idreesia.app
+  MOBILE_ROCKETCHAT_URL: https://rocketchat.idreesia.app
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.sha }}
   cancel-in-progress: false
@@ -259,8 +265,8 @@ jobs:
   # the same app version. The run number is the store build number, which must
   # increase with every upload.
   #
-  # Repository variables: MOBILE_SERVER_URL, MOBILE_BACKEND_URL,
-  # MOBILE_ROCKETCHAT_URL. Secrets are listed in docs/mobile-release-builds.md.
+  # URLs are set in the env block at the top. Secrets are listed in
+  # docs/mobile-release-builds.md.
   mobile-android:
     needs: release
     if: ${{ github.ref_name == 'master' }}
@@ -278,7 +284,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v3
@@ -297,14 +303,14 @@ jobs:
       - name: Write Mobile Settings
         run: |
           jq -n \
-            --arg backend "${{ vars.MOBILE_BACKEND_URL }}" \
-            --arg chat "${{ vars.MOBILE_ROCKETCHAT_URL }}" \
+            --arg backend "${{ env.MOBILE_BACKEND_URL }}" \
+            --arg chat "${{ env.MOBILE_ROCKETCHAT_URL }}" \
             '{public: {backendUrl: $backend, rocketChatUrl: $chat}}' > "$RUNNER_TEMP/mobile-settings.json"
 
       - name: Build Android Project
         run: |
           meteor build ../build/mobile-android \
-            --server "${{ vars.MOBILE_SERVER_URL }}" \
+            --server "${{ env.MOBILE_SERVER_URL }}" \
             --settings "$RUNNER_TEMP/mobile-settings.json"
         working-directory: ./idreesia-mobile
         env:
@@ -374,14 +380,14 @@ jobs:
       - name: Write Mobile Settings
         run: |
           jq -n \
-            --arg backend "${{ vars.MOBILE_BACKEND_URL }}" \
-            --arg chat "${{ vars.MOBILE_ROCKETCHAT_URL }}" \
+            --arg backend "${{ env.MOBILE_BACKEND_URL }}" \
+            --arg chat "${{ env.MOBILE_ROCKETCHAT_URL }}" \
             '{public: {backendUrl: $backend, rocketChatUrl: $chat}}' > "$RUNNER_TEMP/mobile-settings.json"
 
       - name: Build iOS Project
         run: |
           meteor build ../build/mobile-ios \
-            --server "${{ vars.MOBILE_SERVER_URL }}" \
+            --server "${{ env.MOBILE_SERVER_URL }}" \
             --settings "$RUNNER_TEMP/mobile-settings.json"
         working-directory: ./idreesia-mobile
         env:
@@ -464,3 +470,31 @@ jobs:
           name: idreesia-mobile-ios-${{ needs.release.outputs.version }}
           path: build/artifacts/*.ipa
           if-no-files-found: error
+
+  # Publishes a GitHub Release for the tag with the signed mobile builds
+  # attached. Re-runs of the same release replace the files.
+  github-release:
+    needs: [release, mobile-android, mobile-ios]
+    if: ${{ github.ref_name == 'master' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: v${{ needs.release.outputs.version }}
+    steps:
+      - name: Download Mobile Builds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: idreesia-mobile-*
+          path: mobile-builds
+          merge-multiple: true
+
+      - name: Create Or Update GitHub Release
+        run: |
+          set -euo pipefail
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+              --verify-tag --title "$TAG" --generate-notes
+          fi
+          gh release upload "$TAG" mobile-builds/* --repo "$GITHUB_REPOSITORY" --clobber

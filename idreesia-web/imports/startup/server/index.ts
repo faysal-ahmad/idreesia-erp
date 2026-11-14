@@ -29,6 +29,7 @@ import {
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
 } from 'meteor/idreesia-common/server/graphql-api/_directives';
+import { RequireAuthenticationPlugin } from 'meteor/idreesia-common/server/graphql-api/_plugins';
 import { initNewRelic } from './newrelic';
 import { setupAgenda } from './setup-agenda';
 import { setupRestEndpoints } from './setup-rest-endpoints';
@@ -56,6 +57,9 @@ if (webServerEnabled) {
   const server = new ApolloServer({
     schema: schema as any,
     formatError: apolloErrorFormatter as any,
+    // Anonymous callers may only use the allowlisted fields (currentUser,
+    // registerUser); field directives and resolver checks still apply on top.
+    plugins: [RequireAuthenticationPlugin()],
   });
 
   const startServer = async () => {

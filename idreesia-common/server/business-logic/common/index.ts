@@ -22,5 +22,5 @@ export {
   type CreateAuditLogValues,
   type SearchAuditLogsParams,
 } from './audit-logs';
-export { removeAttachment } from './stored-attachments';
+export { removeAttachment, removeAttachments } from './stored-attachments';
 export * from './people';

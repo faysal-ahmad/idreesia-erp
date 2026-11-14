@@ -28,8 +28,6 @@ export interface NightStaysFilter {
 interface StayVisitor {
   sharedData?: {
     name?: string;
-    imageId?: string;
-    imageThumbnailId?: string;
     imageKey?: string;
     imageThumbnailKey?: string;
   };

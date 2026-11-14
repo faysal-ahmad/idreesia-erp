@@ -240,15 +240,6 @@ export function setupRestEndpoints() {
             // Stored privately in object storage: hand out a short-lived
             // presigned URL rather than streaming it through this server.
             res.redirect(302, await getAttachmentDownloadUrl(attachment.fileKey));
-          } else if (attachment?.data) {
-            const imgData = Buffer.from(attachment.data, 'base64');
-            res.removeHeader('Pragma');
-            res.removeHeader('Expires');
-            res.writeHead(200, {
-              'Content-Type': attachment.mimeType,
-              'Cache-Control': `max-age=${365 * 24 * 60 * 60}`,
-            });
-            res.end(imgData);
           } else {
             res.writeHead(404);
             res.end();

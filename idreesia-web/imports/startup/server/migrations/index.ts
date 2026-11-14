@@ -66,6 +66,7 @@ import './62-create-polls-indexes';
 import './63-create-projects-indexes';
 import './64-create-notifications-indexes';
 import './65-committee-member-roles';
+import './66-unset-legacy-image-ids';
 
 Migrations.config({
   log: true,

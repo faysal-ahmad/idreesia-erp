@@ -37,8 +37,6 @@ interface PersonDocument {
     cnicNumber?: string;
     contactNumber1?: string;
     contactNumber2?: string;
-    imageId?: string;
-    imageThumbnailId?: string;
     imageKey?: string;
     imageThumbnailKey?: string;
   };

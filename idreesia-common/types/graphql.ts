@@ -2888,10 +2888,6 @@ export type PersonSharedDataType = {
   educationalQualification?: Maybe<Scalars['String']['output']>;
   ehadDate?: Maybe<Scalars['String']['output']>;
   emailAddress?: Maybe<Scalars['String']['output']>;
-  image?: Maybe<Attachment>;
-  imageId?: Maybe<Scalars['String']['output']>;
-  imageThumbnail?: Maybe<Attachment>;
-  imageThumbnailId?: Maybe<Scalars['String']['output']>;
   imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
   imageUrl?: Maybe<Scalars['String']['output']>;
   imageVectorData?: Maybe<PersonImageVectorDataType>;

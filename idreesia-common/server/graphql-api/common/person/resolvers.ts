@@ -31,8 +31,6 @@ interface Person {
 interface PersonSharedDataType {
   imageKey?: string;
   imageThumbnailKey?: string;
-  imageId?: string;
-  imageThumbnailId?: string;
   tagIds?: string[];
 }
 
@@ -76,30 +74,6 @@ export default {
       getPersonImageUrls(personSharedDataType).imageUrl,
     imageThumbnailUrl: (personSharedDataType: PersonSharedDataType) =>
       getPersonImageUrls(personSharedDataType).imageThumbnailUrl,
-    image: async (
-      personSharedDataType: PersonSharedDataType,
-      _args: unknown,
-      { loaders }: ResolverContext
-    ) => {
-      const { imageId } = personSharedDataType;
-      if (imageId) {
-        return loaders.common.attachments.load(imageId);
-      }
-
-      return null;
-    },
-    imageThumbnail: async (
-      personSharedDataType: PersonSharedDataType,
-      _args: unknown,
-      { loaders }: ResolverContext
-    ) => {
-      const { imageThumbnailId } = personSharedDataType;
-      if (imageThumbnailId) {
-        return loaders.common.attachments.load(imageThumbnailId);
-      }
-
-      return null;
-    },
     tags: async (personSharedDataType: PersonSharedDataType) => {
       const { tagIds } = personSharedDataType;
       if (tagIds && tagIds.length > 0) {

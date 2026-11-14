@@ -1,4 +1,3 @@
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
 import {
   deleteFiles,
@@ -16,7 +15,6 @@ interface UserRef {
 
 export interface StockItemImageFields {
   imageKey?: string | null;
-  imageId?: string | null;
 }
 
 /** URL of a stock item's image in object storage. */
@@ -32,9 +30,7 @@ export const storeStockItemImage = (
   storeImage(StorageFolders.StockItemImages, stockItemId, image, mimeType);
 
 /**
- * Deletes a stock item's stored image - the object storage file, and the
- * legacy Attachments copy outright (images are being moved out of Mongo,
- * not archived in it).
+ * Deletes a stock item's stored image file in object storage.
  */
 export async function removeStockItemImageFiles(
   stockItem: StockItemImageFields | null | undefined
@@ -50,9 +46,6 @@ export async function removeStockItemImageFiles(
         error
       );
     }
-  }
-  if (stockItem?.imageId) {
-    await Attachments.removeAsync(stockItem.imageId);
   }
 }
 
@@ -87,7 +80,6 @@ export async function setStockItemImage(
   const date = new Date();
   await StockItems.updateAsync(selector, {
     $set: { imageKey, updatedAt: date, updatedBy: user._id },
-    $unset: { imageId: '' },
   });
 
   await removeStockItemImageFiles(existing);

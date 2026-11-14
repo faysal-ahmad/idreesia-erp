@@ -8,7 +8,6 @@ interface StockItemDocument {
   currentStockLevel?: number;
   startingStockLevel?: number;
   physicalStoreId?: string;
-  imageId?: string;
   imageKey?: string;
   [key: string]: unknown;
 }

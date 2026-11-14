@@ -1,9 +1,7 @@
 import * as cv from '@u4/opencv4nodejs';
 
 import { ImageVectorStatus } from 'meteor/idreesia-common/constants';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import { getFile } from 'meteor/idreesia-common/server/file-storage';
-import { readAttachmentData } from './stored-attachments';
 
 import { detectFaces } from './face-detection';
 import { alignFace, embedFace } from './face-recognition';
@@ -94,33 +92,20 @@ const errorResult = (): ImageVectorData => ({
   modelVersion: MODEL_VERSION,
 });
 
-/**
- * Computes the vector of a person's stored photo - from object storage, or
- * from Attachments for a photo that hasn't been migrated yet.
- */
+/** Computes the vector of a person's stored photo in object storage. */
 export async function computeImageVectorData({
   imageKey,
-  imageId,
 }: {
   imageKey?: string | null;
-  imageId?: string | null;
 }): Promise<ImageVectorData> {
+  if (!imageKey) return errorResult();
   try {
-    if (imageKey) {
-      const { body } = await getFile(imageKey);
-      return computeVectorFromImageBuffer(body);
-    }
-
-    const attachment = imageId ? await Attachments.findOneAsync(imageId) : null;
-    if (!attachment || !attachment.mimeType.startsWith('image/')) {
-      return errorResult();
-    }
-    const bytes = await readAttachmentData(attachment);
-    return bytes ? computeVectorFromImageBuffer(bytes) : errorResult();
+    const { body } = await getFile(imageKey);
+    return computeVectorFromImageBuffer(body);
   } catch (error) {
     // Callers store this result on the person rather than handling a throw.
     // eslint-disable-next-line no-console
-    console.error(`computeImageVectorData failed for '${imageKey ?? imageId}':`, error);
+    console.error(`computeImageVectorData failed for '${imageKey}':`, error);
     return errorResult();
   }
 }

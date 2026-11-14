@@ -49,11 +49,9 @@ async function setPersonImageFiles(
       updatedAt: date,
       updatedBy: user._id,
     },
-    $unset: {
-      'sharedData.imageId': '',
-      'sharedData.imageThumbnailId': '',
-      ...(imageThumbnailKey ? {} : { 'sharedData.imageThumbnailKey': '' }),
-    },
+    ...(imageThumbnailKey
+      ? {}
+      : { $unset: { 'sharedData.imageThumbnailKey': '' } }),
   });
 
   await createAuditLog(

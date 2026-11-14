@@ -7,8 +7,7 @@ export interface AttachmentDocument {
   name?: string;
   description?: string;
   mimeType: string;
-  data?: string;
-  fileKey?: string;
+  fileKey: string;
   createdAt?: Date;
   createdBy?: string;
   updatedAt?: Date;

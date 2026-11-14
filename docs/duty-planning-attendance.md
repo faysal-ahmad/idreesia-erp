@@ -66,7 +66,7 @@ erDiagram
     PERSON {
         string _id PK
         bool isKarkun
-        object sharedData "name, imageId, imageThumbnailId"
+        object sharedData "name, imageKey, imageThumbnailKey"
     }
     DUTY_TEAM_ASSIGNMENT {
         string _id PK

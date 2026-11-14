@@ -1,4 +1,3 @@
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import {
   deleteFiles,
   StorageFolders,
@@ -9,8 +8,6 @@ import { getStoredImageUrl, storeImage, type StoredImage } from './stored-images
 export interface PersonImageFields {
   imageKey?: string | null;
   imageThumbnailKey?: string | null;
-  imageId?: string | null;
-  imageThumbnailId?: string | null;
 }
 
 export interface PersonImageUrls {
@@ -43,8 +40,7 @@ export function getPersonImageUrls(
 }
 
 /**
- * Deletes a person's stored profile photo files - in object storage, and
- * any legacy Attachments copies.
+ * Deletes a person's stored profile photo files in object storage.
  */
 export async function removePersonImageFiles(
   sharedData: PersonImageFields | null | undefined
@@ -61,11 +57,5 @@ export async function removePersonImageFiles(
       // eslint-disable-next-line no-console
       console.error(`Failed to delete people images ${keysToDelete}:`, error);
     }
-  }
-
-  const attachmentIds = [sharedData.imageId, sharedData.imageThumbnailId]
-    .filter(Boolean) as string[];
-  if (attachmentIds.length > 0) {
-    await Attachments.removeAsync({ _id: { $in: attachmentIds } });
   }
 }

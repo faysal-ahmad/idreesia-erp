@@ -9,9 +9,8 @@ import {
 import { keys, omitBy } from 'meteor/idreesia-common/utilities/lodash';
 
 import { createAuditLog } from '../audit-logs';
-import { generateImageThumbnail } from '../generate-image-thumbnail';
 import { removePersonImageFiles } from '../person-images';
-import { removeAttachment } from '../stored-attachments';
+import { removeAttachment, removeAttachments } from '../stored-attachments';
 import { getChangedPersonValues } from './person-changes';
 import { assertCnicNotInUse, assertContactNotInUse } from './person-uniqueness';
 
@@ -31,8 +30,6 @@ interface PersonAttachmentInput {
 export const PHOTO_AUDIT_FIELD = 'sharedData.image';
 export const PHOTO_AUDIT_VALUE = 'updated';
 const PHOTO_FIELDS = [
-  'sharedData.imageId',
-  'sharedData.imageThumbnailId',
   'sharedData.imageKey',
   'sharedData.imageThumbnailKey',
 ];
@@ -95,24 +92,9 @@ export async function updatePerson(values: PersonInput, user: UserRef) {
   const cnicNumber = changedValues['sharedData.cnicNumber'];
   const contactNumber1 = changedValues['sharedData.contactNumber1'];
   const contactNumber2 = changedValues['sharedData.contactNumber2'];
-  const imageId = changedValues['sharedData.imageId'];
   if (cnicNumber) await assertCnicNotInUse(cnicNumber, _id);
   if (contactNumber1) await assertContactNotInUse(contactNumber1, _id);
   if (contactNumber2) await assertContactNotInUse(contactNumber2, _id);
-
-  if (imageId) {
-    if (existingPerson?.sharedData.imageId) {
-      await removeAttachment(existingPerson.sharedData.imageId);
-    }
-    if (existingPerson?.sharedData.imageThumbnailId) {
-      await removeAttachment(existingPerson.sharedData.imageThumbnailId);
-    }
-
-    const thumbnailId = await generateImageThumbnail(imageId);
-    if (thumbnailId) {
-      changedValues['sharedData.imageThumbnailId'] = thumbnailId;
-    }
-  }
 
   const date = new Date();
   const valuesToUpdate = Object.assign({}, changedValues, {
@@ -185,12 +167,18 @@ export async function restorePerson(_id: string, user: UserRef) {
   return result;
 }
 
-/** Permanently deletes a person and their stored photo files. */
+/**
+ * Permanently deletes a person, their stored photo files and their karkun
+ * attachments.
+ */
 export async function hardRemovePerson(_id: string, user: UserRef) {
   const date = new Date();
   const existingPerson = await People.findOneAsync(_id);
   const result = await People.removeAsync(_id);
-  if (existingPerson) await removePersonImageFiles(existingPerson.sharedData);
+  if (existingPerson) {
+    await removePersonImageFiles(existingPerson.sharedData);
+    await removeAttachments(existingPerson.karkunData?.attachmentIds);
+  }
 
   await createAuditLog({
     entityId: _id,

@@ -1503,10 +1503,6 @@ export type PersonSharedDataTypeResolvers<ContextType = any, ParentType extends 
   educationalQualification?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   ehadDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   emailAddress?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  image?: Resolver<Types.Maybe<ResolversTypes['Attachment']>, ParentType, ContextType>;
-  imageId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  imageThumbnail?: Resolver<Types.Maybe<ResolversTypes['Attachment']>, ParentType, ContextType>;
-  imageThumbnailId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   imageThumbnailUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   imageUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   imageVectorData?: Resolver<Types.Maybe<ResolversTypes['PersonImageVectorDataType']>, ParentType, ContextType>;

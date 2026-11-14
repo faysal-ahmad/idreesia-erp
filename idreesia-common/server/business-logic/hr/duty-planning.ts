@@ -103,8 +103,6 @@ interface PersonDocument {
   _id: string;
   sharedData?: {
     name?: string | null;
-    imageId?: string | null;
-    imageThumbnailId?: string | null;
     imageKey?: string | null;
     imageThumbnailKey?: string | null;
   } | null;

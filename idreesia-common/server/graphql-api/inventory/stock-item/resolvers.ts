@@ -25,7 +25,6 @@ interface StockItem {
   categoryId?: string;
   minStockLevel?: number;
   currentStockLevel?: number;
-  imageId?: string;
   imageKey?: string;
 }
 

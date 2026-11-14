@@ -26,7 +26,6 @@ export function visitorToPerson(visitor: LooseRecord) {
       permanentAddress: visitor.permanentAddress,
       educationalQualification: visitor.educationalQualification,
       meansOfEarning: visitor.meansOfEarning,
-      imageId: visitor.imageId,
       tagIds: visitor.tagIds,
     },
     visitorData: {
@@ -68,7 +67,6 @@ export async function karkunToPerson(karkun: LooseRecord) {
       bloodGroup: karkun.bloodGroup,
       educationalQualification: karkun.educationalQualification,
       meansOfEarning: karkun.meansOfEarning,
-      imageId: karkun.imageId,
     },
     karkunData: {
       cityId: karkun.cityId,

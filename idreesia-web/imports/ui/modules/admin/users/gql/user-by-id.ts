@@ -18,6 +18,7 @@ const USER_BY_ID: TypedDocumentNode<
       locked
       hasChatAccount
       twoFactorEnabled
+      isSuperAdmin
       instances
       permissions
       personId

@@ -33,7 +33,7 @@ const notFound = (message: string) =>
 
 /**
  * Permission check for a committee's meetings: the user must be a member of
- * the committee (erp-admin counts as one), and the committee must have
+ * the committee (a super-admin counts as one), and the committee must have
  * Meetings enabled. With `coordinator`, only its coordinators pass - for
  * scheduling and managing meetings, attendance, agenda, minutes and action
  * items.

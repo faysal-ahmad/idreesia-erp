@@ -6,6 +6,7 @@ import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 import { difference, get } from 'meteor/idreesia-common/utilities/lodash';
 
 import { findOneUser, type MappedUser } from './map-user';
+import { assertCanManageUser, assertNotLastSuperAdmin } from './super-admin';
 
 type LooseRecord = Record<string, any>;
 
@@ -118,7 +119,16 @@ export async function updateUser(
   dataSourceDetail: string | null = null
 ): Promise<MappedUser> {
   return runInTransaction(async () => {
+    await assertCanManageUser(userId, user);
     const existingUser = await findOneUser(userId);
+
+    if (
+      locked === true &&
+      existingUser.locked !== true &&
+      existingUser.isSuperAdmin
+    ) {
+      await assertNotLastSuperAdmin(userId);
+    }
 
     // A user name can only be set once. After that it is fixed, because the
     // chat account (if any) is keyed on it.
@@ -202,7 +212,16 @@ export async function setUserPermissions(
   dataSourceDetail: string | null = null
 ): Promise<MappedUser> {
   return runInTransaction(async () => {
+    await assertCanManageUser(userId, user);
     const existingUser = await findOneUser(userId);
+
+    // A super-admin already has every permission, and the API reports all of
+    // them for one, so saving the permissions form would store the full list.
+    // Ignore the write and keep what was explicitly granted.
+    if (existingUser.isSuperAdmin) {
+      return existingUser;
+    }
+
     await Users.updateAsync(userId, { $set: { permissions } });
 
     // Create a security log
@@ -239,6 +258,7 @@ export async function setUserInstanceAccess(
   dataSourceDetail: string | null = null
 ): Promise<MappedUser> {
   return runInTransaction(async () => {
+    await assertCanManageUser(userId, user);
     const existingUser = await findOneUser(userId);
     await Users.updateAsync(userId, { $set: { instances } });
 
@@ -275,6 +295,7 @@ export async function createChatAccount(
   dataSourceDetail: string | null = null
 ): Promise<MappedUser> {
   return runInTransaction(async () => {
+    await assertCanManageUser(userId, user);
     const existingUser = await Users.findOneAsync(userId);
     if (!existingUser) {
       throw new Error('User not found.');

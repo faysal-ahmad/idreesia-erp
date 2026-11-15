@@ -12,6 +12,8 @@ const SecurityOperationTypeDisplayName = {
   [SecurityOperationType.TWO_FACTOR_ENABLED]: 'Two-Factor Enabled',
   [SecurityOperationType.TWO_FACTOR_DISABLED]: 'Two-Factor Disabled',
   [SecurityOperationType.TWO_FACTOR_RESET]: 'Two-Factor Reset',
+  [SecurityOperationType.SUPER_ADMIN_GRANTED]: 'Super Admin Granted',
+  [SecurityOperationType.SUPER_ADMIN_REVOKED]: 'Super Admin Revoked',
   [SecurityOperationType.INVALID_LOGIN_ATTEMPT]: 'Invalid Login Attempt',
   [SecurityOperationType.LOGIN]: 'Login to System',
 };

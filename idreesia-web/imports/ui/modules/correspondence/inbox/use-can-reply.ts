@@ -9,7 +9,7 @@ import { useLoggedInUser } from 'meteor/idreesia-common/hooks/common';
 const useCanReply = () => {
   const { user } = useLoggedInUser();
   if (!user) return false;
-  if (user.username === 'erp-admin') return true;
+  if (user.isSuperAdmin) return true;
   return (user.permissions ?? []).includes(
     Permissions.CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES
   );

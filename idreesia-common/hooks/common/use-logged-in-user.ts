@@ -21,6 +21,7 @@ const formQuery: TypedDocumentNode<
       _id
       username
       displayName
+      isSuperAdmin
       permissions
       instances
       karkun {

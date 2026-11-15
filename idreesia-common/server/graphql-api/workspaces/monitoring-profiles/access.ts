@@ -6,8 +6,8 @@ import { getMemberCommittee, type WorkspaceUser } from '../committee/access';
 
 /**
  * Permission check for a committee's Monitoring Profiles, for viewing
- * and editing alike: the user must be a member of the committee (erp-admin
- * counts as one), and the committee must have the Monitoring Profiles
+ * and editing alike: the user must be a member of the committee (a
+ * super-admin counts as one), and the committee must have the Monitoring Profiles
  * feature enabled.
  */
 export const assertCanUseMonitoringProfiles = async (

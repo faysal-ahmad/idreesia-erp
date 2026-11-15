@@ -12,6 +12,7 @@ import {
   Tooltip,
   type CollapseProps,
 } from 'antd';
+import { useLoggedInUser } from 'meteor/idreesia-common/hooks/common';
 import { message } from '/imports/ui/antd-feedback';
 import {
   InputTextField,
@@ -27,6 +28,7 @@ import {
   UPDATE_USER,
   CREATE_CHAT_ACCOUNT,
   RESET_TWO_FACTOR,
+  SET_SUPER_ADMIN,
 } from '../gql';
 
 interface Props {
@@ -68,6 +70,16 @@ const GeneralInfo = ({ userId, history }: Props) => {
       refetchQueries: [{ query: PAGED_USERS, variables: { filter: {} } }],
     }
   );
+  const [setSuperAdmin, { loading: settingSuperAdmin }] = useMutation(
+    SET_SUPER_ADMIN,
+    {
+      refetchQueries: [
+        { query: PAGED_USERS, variables: { filter: {} } },
+        'adminUserById',
+      ],
+    }
+  );
+  const { user: loggedInUser } = useLoggedInUser();
   const userById = data?.userById;
 
   const handleCancel = () => {
@@ -127,6 +139,21 @@ const GeneralInfo = ({ userId, history }: Props) => {
       });
   };
 
+  const handleSetSuperAdmin = (isSuperAdmin: boolean) => {
+    setSuperAdmin({
+      variables: { userId: userById?._id ?? userId, isSuperAdmin },
+    })
+      .then(() => {
+        message.success(
+          isSuperAdmin ? 'User is now a super admin' : 'Super admin removed',
+          2
+        );
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
+  };
+
   if (loading || !userById) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
@@ -172,11 +199,58 @@ const GeneralInfo = ({ userId, history }: Props) => {
     </Popconfirm>
   ) : null;
 
+  // Only a super admin can grant or revoke super admin rights, and only to a
+  // user who has two-factor authentication enabled and is not locked.
+  let superAdminButton: React.ReactNode = null;
+  if (loggedInUser?.isSuperAdmin) {
+    if (userById.isSuperAdmin) {
+      superAdminButton = (
+        <Popconfirm
+          title="Remove super admin rights from this user?"
+          description="They will keep only the permissions granted to them."
+          okText="Remove"
+          onConfirm={() => handleSetSuperAdmin(false)}
+        >
+          <Button size="large" loading={settingSuperAdmin}>
+            Remove Super Admin
+          </Button>
+        </Popconfirm>
+      );
+    } else {
+      let disabledReason: string | undefined;
+      if (userById.locked) {
+        disabledReason = 'A locked user cannot be made a super admin';
+      } else if (!userById.twoFactorEnabled) {
+        disabledReason = 'The user must enable two-factor authentication first';
+      }
+      superAdminButton = (
+        <Tooltip title={disabledReason}>
+          <Popconfirm
+            title="Make this user a super admin?"
+            description="They will have every permission and access to every instance and committee."
+            okText="Make Super Admin"
+            disabled={!!disabledReason}
+            onConfirm={() => handleSetSuperAdmin(true)}
+          >
+            <Button
+              size="large"
+              disabled={!!disabledReason}
+              loading={settingSuperAdmin}
+            >
+              Make Super Admin
+            </Button>
+          </Popconfirm>
+        </Tooltip>
+      );
+    }
+  }
+
   const extraButtons =
-    createChatAccountButton || resetTwoFactorButton ? (
+    createChatAccountButton || resetTwoFactorButton || superAdminButton ? (
       <Space>
         {createChatAccountButton}
         {resetTwoFactorButton}
+        {superAdminButton}
       </Space>
     ) : null;
 
@@ -221,6 +295,14 @@ const GeneralInfo = ({ userId, history }: Props) => {
           wrapperCol={{ span: 14 }}
         >
           {userById.twoFactorEnabled ? 'Enabled' : 'Not enabled'}
+        </Form.Item>
+
+        <Form.Item
+          label="Super Admin"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
+        >
+          {userById.isSuperAdmin ? 'Yes' : 'No'}
         </Form.Item>
 
         <InputTextField

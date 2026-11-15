@@ -164,10 +164,10 @@ const HeaderContent = ({ history, location, user }: Props) => {
       });
     }
 
-    // Add the workspaces node if the user is linked to a person (or is the
-    // erp-admin). Access to workspaces is based on committee membership, not
+    // Add the workspaces node if the user is linked to a person (or is a
+    // super-admin). Access to workspaces is based on committee membership, not
     // permissions.
-    if (user.karkun?._id || user.username === 'erp-admin') {
+    if (user.karkun?._id || user.isSuperAdmin) {
       menuItems.push({
         key: ModuleNames.workspaces,
         label: ModuleNames.workspaces,

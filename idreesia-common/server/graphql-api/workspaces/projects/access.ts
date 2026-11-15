@@ -28,7 +28,7 @@ const notFound = (message: string) =>
 
 /**
  * Permission check for a committee's projects: the user must be a member of
- * the committee (erp-admin counts as one), and the committee must have
+ * the committee (a super-admin counts as one), and the committee must have
  * Projects & Tasks enabled. With `coordinator`, only its coordinators pass.
  */
 export const getProjectsAccess = async (
@@ -104,7 +104,7 @@ export const assertMembers = (access: ProjectsAccess, personIds: string[]) => {
 
 /**
  * Access to a project's chat: the user must be a participant of the project
- * (coordinators and erp-admin included - the chat is private). Returns the
+ * (coordinators and super-admins included - the chat is private). Returns the
  * chat group to hand to the discussions business logic. Shared by the GraphQL
  * resolvers and the file routes.
  */

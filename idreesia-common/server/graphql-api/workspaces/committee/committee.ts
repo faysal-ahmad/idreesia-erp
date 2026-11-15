@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 // GraphQL operations used by the Workspaces module. Access is based on
-// committee membership (erp-admin sees everything), not on permissions.
+// committee membership (a super-admin sees everything), not on permissions.
 export default gql`
 type WorkspaceCommitteeMemberType {
   karkunId: String

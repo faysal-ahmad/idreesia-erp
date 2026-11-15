@@ -1,6 +1,9 @@
+import isSuperAdmin from './is-super-admin';
+
 interface UserWithInstances {
   username?: string;
   locked?: boolean;
+  isSuperAdmin?: boolean;
   instances?: string[];
 }
 
@@ -13,8 +16,8 @@ export default function filterByInstanceAccess<TInstance extends InstanceObject>
   user: UserWithInstances | null | undefined,
   instanceObjects: TInstance[]
 ) {
-  if (user?.username === 'erp-admin') return instanceObjects;
   if (!user || user.locked) return [];
+  if (isSuperAdmin(user)) return instanceObjects;
 
   const { instances: userInstances } = user;
   if (!userInstances) return [];

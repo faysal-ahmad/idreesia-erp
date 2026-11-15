@@ -6,7 +6,7 @@ import { getMemberCommittee, type WorkspaceUser } from '../committee/access';
 
 /**
  * Permission check for a committee's night stay report: the user must be a
- * member of the committee (erp-admin counts as one), and the committee must
+ * member of the committee (a super-admin counts as one), and the committee must
  * have the Night Stay Report feature enabled.
  */
 export const assertCanViewNightStayReport = async (

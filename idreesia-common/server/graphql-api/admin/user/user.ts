@@ -17,6 +17,7 @@ type UserType {
   groups: [String]
   hasChatAccount: Boolean
   twoFactorEnabled: Boolean
+  isSuperAdmin: Boolean
 
   person: PersonType
   karkun: PersonType
@@ -96,6 +97,11 @@ extend type Mutation {
   resetTwoFactor(
     userId: String!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  # Grants or revokes super-admin rights. No permission directive: every
+  # permission check lets a super-admin through, so the resolver itself
+  # requires the caller to be a super-admin.
+  setSuperAdmin(userId: String!, isSuperAdmin: Boolean!): UserType
 
   updateLoginTime: Int
   updateLastActiveTime: Int

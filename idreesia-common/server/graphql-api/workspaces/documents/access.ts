@@ -31,7 +31,7 @@ const notFound = (message: string) =>
 
 /**
  * Permission check for a committee's documents: the user must be a member
- * of the committee (erp-admin counts as one), and the committee must have
+ * of the committee (a super-admin counts as one), and the committee must have
  * Documents enabled. With `coordinator`, only its coordinators pass - for
  * purging, emptying the trash, deleting versions and force-unlocking.
  */

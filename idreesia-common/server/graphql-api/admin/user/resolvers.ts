@@ -15,10 +15,12 @@ import {
   resetTwoFactor,
   searchUsers,
   setUserInstanceAccess,
+  setSuperAdmin,
   setUserPermissions,
   startTwoFactorSetup,
   updateUser,
 } from 'meteor/idreesia-common/server/business-logic/admin';
+import { isSuperAdmin } from 'meteor/idreesia-common/server/graphql-api/security';
 
 interface UserType {
   _id: string;
@@ -40,6 +42,7 @@ interface ResolverContext {
     _id: string;
     username?: string;
     locked?: boolean;
+    isSuperAdmin?: boolean;
     permissions?: string[];
   };
   /** Hashed login token the request came with. */
@@ -91,7 +94,7 @@ export default {
       }
 
       const _user = await findOneUser(_id);
-      if (_user.username === 'erp-admin') {
+      if (_user.isSuperAdmin) {
         _user.permissions = values(PermissionConstants);
       }
 
@@ -101,7 +104,7 @@ export default {
     currentUser: async (_obj: unknown, _args: unknown, { user }: ResolverContext) => {
       if (!user) return null;
       const _user = await findOneUser(user._id);
-      if (_user.username === 'erp-admin') {
+      if (isSuperAdmin(_user)) {
         _user.permissions = values(PermissionConstants);
       }
 
@@ -213,6 +216,17 @@ export default {
       params: { userId: string },
       { user }: ResolverContext
     ) => resetTwoFactor(params, requireUser(user), DataSource.ADMIN),
+
+    setSuperAdmin: async (
+      _obj: unknown,
+      params: { userId: string; isSuperAdmin: boolean },
+      { user }: ResolverContext
+    ) => {
+      if (!isSuperAdmin(user)) {
+        throw new Error('Only a super admin can grant or revoke super admin rights.');
+      }
+      return setSuperAdmin(params, user!, DataSource.ADMIN);
+    },
 
     updateLoginTime: async (_obj: unknown, _args: unknown, { user }: ResolverContext) => {
       if (user) await recordUserLogin(user._id, DataSource.ADMIN);

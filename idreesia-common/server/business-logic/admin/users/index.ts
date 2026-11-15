@@ -28,6 +28,11 @@ export {
 } from './two-factor';
 export { isTwoFactorEnabled } from './two-factor-status';
 export {
+  assertCanManageUser,
+  isSuperAdmin,
+  setSuperAdmin,
+} from './super-admin';
+export {
   AttemptKind,
   clearAttempts,
   reserveAttempt,

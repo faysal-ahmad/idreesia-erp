@@ -16,6 +16,7 @@ import {
   TOO_MANY_ATTEMPTS_MESSAGE,
 } from './login-attempts';
 import { findOneUser, type MappedUser } from './map-user';
+import { assertCanManageUser } from './super-admin';
 import { isTwoFactorEnabled } from './two-factor-status';
 
 // Optional per-user two-factor authentication with an authenticator app
@@ -280,6 +281,7 @@ export async function resetTwoFactor(
   dataSourceDetail: string | null = null
 ): Promise<MappedUser> {
   return runInTransaction(async () => {
+    await assertCanManageUser(userId, user);
     const existingUser = await getUser(userId);
     if (!existingUser.services?.twoFactorAuthentication) {
       return findOneUser(userId);

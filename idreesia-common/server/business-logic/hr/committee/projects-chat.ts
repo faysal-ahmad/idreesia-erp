@@ -148,7 +148,7 @@ export async function archiveProjectChat(project: ProjectDocument) {
 
 /**
  * The chat group of a project for a participant. Only participants may use
- * it - coordinators and erp-admin must be participants too. The group is
+ * it - coordinators and super-admins must be participants too. The group is
  * created on first use if needed.
  */
 export async function getProjectChatGroupId(

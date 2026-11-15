@@ -15,6 +15,7 @@ export interface AppUser extends LooseRecord {
   instances?: string[];
   groups?: string[];
   chatUserId?: string;
+  isSuperAdmin?: boolean;
 }
 
 interface UsersCollection extends Mongo.Collection<AppUser> {

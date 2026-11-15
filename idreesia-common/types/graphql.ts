@@ -757,6 +757,7 @@ export type Mutation = {
   setSecurityUserPermissions?: Maybe<UserType>;
   setSecurityVisitorImage?: Maybe<PersonType>;
   setStockItemImage?: Maybe<StockItem>;
+  setSuperAdmin?: Maybe<UserType>;
   setUserGroupInstanceAccess?: Maybe<UserGroupType>;
   setUserGroupPermissions?: Maybe<UserGroupType>;
   startTwoFactorSetup?: Maybe<TwoFactorSetupType>;
@@ -1658,6 +1659,12 @@ export type MutationSetStockItemImageArgs = {
   _id: Scalars['String']['input'];
   imageData: Scalars['String']['input'];
   physicalStoreId: Scalars['String']['input'];
+};
+
+
+export type MutationSetSuperAdminArgs = {
+  isSuperAdmin: Scalars['Boolean']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -4309,6 +4316,7 @@ export type UserType = {
   groups?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   hasChatAccount?: Maybe<Scalars['Boolean']['output']>;
   instances?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  isSuperAdmin?: Maybe<Scalars['Boolean']['output']>;
   karkun?: Maybe<PersonType>;
   lastActiveAt?: Maybe<Scalars['String']['output']>;
   lastLoggedInAt?: Maybe<Scalars['String']['output']>;

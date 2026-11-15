@@ -2,12 +2,14 @@ import { GraphQLError } from 'graphql';
 
 import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { isSuperAdmin } from 'meteor/idreesia-common/server/business-logic/admin/users/super-admin';
 
 export interface WorkspaceUser {
   _id?: string;
   username?: string;
   personId?: string;
   locked?: boolean;
+  isSuperAdmin?: boolean;
 }
 
 interface CommitteeMember {
@@ -22,9 +24,6 @@ export interface CommitteeDocument {
   [key: string]: unknown;
 }
 
-export const isErpAdmin = (user?: WorkspaceUser | null) =>
-  user?.username === 'erp-admin';
-
 const canAccessWorkspaces = (user?: WorkspaceUser | null) =>
   !!user && !user.locked && !!user.personId;
 
@@ -32,7 +31,7 @@ export const isCommitteeMember = (
   user: WorkspaceUser | null | undefined,
   committee: CommitteeDocument
 ) =>
-  isErpAdmin(user) ||
+  isSuperAdmin(user) ||
   (canAccessWorkspaces(user) &&
     (committee.members ?? []).some(
       member => member.karkunId === user!.personId
@@ -42,7 +41,7 @@ export const isCommitteeCoordinator = (
   user: WorkspaceUser | null | undefined,
   committee: CommitteeDocument
 ) =>
-  isErpAdmin(user) ||
+  isSuperAdmin(user) ||
   (canAccessWorkspaces(user) &&
     (committee.members ?? []).some(
       member => member.karkunId === user!.personId &&
@@ -50,11 +49,11 @@ export const isCommitteeCoordinator = (
     ));
 
 // Returns the committees the user is currently a member of (all committees
-// for erp-admin).
+// for a super-admin).
 export const getUserCommittees = async (
   user: WorkspaceUser | null | undefined
 ) => {
-  if (isErpAdmin(user)) {
+  if (isSuperAdmin(user)) {
     return Committees.find({}, { sort: { name: 1 } }).fetchAsync();
   }
   if (!canAccessWorkspaces(user)) return [];

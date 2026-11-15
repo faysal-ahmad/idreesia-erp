@@ -14,7 +14,7 @@ import {
 
 /**
  * Permission check for a committee's discussions: the user must be a member
- * of the committee (erp-admin counts as one), and the committee must have
+ * of the committee (a super-admin counts as one), and the committee must have
  * Discussions enabled. Returns the chat group to hand to the discussions
  * business logic. Shared by the GraphQL resolvers and the file routes.
  */

@@ -6,7 +6,7 @@ import { getMemberCommittee, type WorkspaceUser } from '../committee/access';
 
 /**
  * Permission check for a committee's Monitoring Alerts: the user must
- * be a member of the committee (erp-admin counts as one), and the committee
+ * be a member of the committee (a super-admin counts as one), and the committee
  * must have the Monitoring Alerts feature enabled.
  */
 export const assertCanViewMonitoringAlerts = async (

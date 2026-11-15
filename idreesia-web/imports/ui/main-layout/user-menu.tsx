@@ -12,6 +12,7 @@ import {
   setActiveSubModuleName,
 } from 'meteor/idreesia-common/action-creators';
 import ChangePasswordForm from './change-password-form';
+import TwoFactorForm from './two-factor-form';
 
 const ContainerStyle: CSSProperties = {
   display: 'flex',
@@ -28,6 +29,7 @@ interface Props {
 const UserMenu = ({ history }: Props) => {
   const dispatch = useDispatch();
   const [showChangePasswordForm, setShowChangePasswordForm] = useState(false);
+  const [showTwoFactorForm, setShowTwoFactorForm] = useState(false);
   const { user, userLoading } = useLoggedInUser();
 
   if (userLoading || !user) return null;
@@ -50,6 +52,10 @@ const UserMenu = ({ history }: Props) => {
 
       case 'change-password':
         setShowChangePasswordForm(true);
+        break;
+
+      case 'two-factor':
+        setShowTwoFactorForm(true);
         break;
 
       default:
@@ -75,6 +81,7 @@ const UserMenu = ({ history }: Props) => {
 
   const menuItems = [
     { key: 'change-password', label: 'Change Password' },
+    { key: 'two-factor', label: 'Two-Factor Authentication' },
     { type: 'divider' as const },
     { key: 'logout', label: 'Logout' },
   ];
@@ -95,6 +102,10 @@ const UserMenu = ({ history }: Props) => {
         showForm={showChangePasswordForm}
         handlePasswordChanged={handleChangePasswordSuccess}
         handlePasswordChangeCancelled={handleChangePasswordCancelled}
+      />
+      <TwoFactorForm
+        showForm={showTwoFactorForm}
+        handleClose={() => setShowTwoFactorForm(false)}
       />
     </>
   );

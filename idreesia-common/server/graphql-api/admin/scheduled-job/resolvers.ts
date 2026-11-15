@@ -2,8 +2,10 @@ import type { JobState, LogLevel, JobLogEvent } from 'agenda';
 
 import agenda from 'meteor/idreesia-common/server/business-logic/jobs/agenda-instance';
 import { isJobProcessorAlive } from 'meteor/idreesia-common/server/business-logic/jobs/job-processor-heartbeat';
-import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 import { EntityType, OperationType } from 'meteor/idreesia-common/constants/audit';
+import {
+  createAuditLog,
+} from 'meteor/idreesia-common/server/business-logic/common';
 
 interface ResolverContext {
   user?: {
@@ -158,7 +160,7 @@ export default {
       // the named job. See retryFailedJob for re-running a specific row.
       await agenda.now(name);
 
-      await AuditLogs.createAuditLog({
+      await createAuditLog({
         entityId: name,
         entityType: EntityType.SCHEDULED_JOB,
         operationType: OperationType.JOB_RUN_NOW,
@@ -194,7 +196,7 @@ export default {
         undefined
       );
 
-      await AuditLogs.createAuditLog({
+      await createAuditLog({
         entityId: _id,
         entityType: EntityType.SCHEDULED_JOB,
         operationType: OperationType.JOB_RETRY,
@@ -218,7 +220,7 @@ export default {
         await agenda.disable({ id: _id });
       }
 
-      await AuditLogs.createAuditLog({
+      await createAuditLog({
         entityId: _id,
         entityType: EntityType.SCHEDULED_JOB,
         operationType: enabled ? OperationType.JOB_ENABLED : OperationType.JOB_DISABLED,

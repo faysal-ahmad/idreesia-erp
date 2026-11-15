@@ -1,5 +1,6 @@
 import { createHash } from 'crypto';
 
+import { afterCommit } from 'meteor/idreesia-common/server/collections';
 import Notifications, {
   type NotificationDocument,
 } from 'meteor/idreesia-common/server/collections/common/notifications';
@@ -46,6 +47,9 @@ const contentFields = (n: Content, committeeId: string) => ({
 });
 
 /**
+ * Notifiers publish and retire after the current transaction commits (or
+ * straight away outside one), so a rolled-back change never notifies anyone.
+ *
  * Stores notifications for one module, keyed `<module>:<id>`, so modules
  * cannot touch each other's notifications. Notifications belong to a
  * committee; the workspace a module addresses is only used to find it.
@@ -114,14 +118,15 @@ const createStore = (moduleName: string) => {
 export const createNotifier = (moduleName: string): Notifier => {
   const store = createStore(moduleName);
   return {
-    async publish({ workspaceId, ...notification }) {
-      const committeeId = await findCommitteeIdForWorkspace(
-        moduleName,
-        workspaceId
-      );
-      if (committeeId) await store.publish(notification, committeeId);
-    },
-    retire: store.retire,
+    publish: ({ workspaceId, ...notification }) =>
+      afterCommit(async () => {
+        const committeeId = await findCommitteeIdForWorkspace(
+          moduleName,
+          workspaceId
+        );
+        if (committeeId) await store.publish(notification, committeeId);
+      }),
+    retire: id => afterCommit(() => store.retire(id)),
   };
 };
 
@@ -135,8 +140,8 @@ export const createCommitteeNotifier = (
   const store = createStore(moduleName);
   return {
     publish: ({ committeeId, ...notification }) =>
-      store.publish(notification, committeeId),
-    retire: store.retire,
+      afterCommit(() => store.publish(notification, committeeId)),
+    retire: id => afterCommit(() => store.retire(id)),
   };
 };
 

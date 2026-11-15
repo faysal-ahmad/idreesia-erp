@@ -13,7 +13,7 @@ import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 // app, and a hard delete has no way to find every place it's referenced, so
 // the account must be removed/unlinked separately before the person can go.
 //
-// This clears the person's prior Audit Logs too. People.hardRemovePerson
+// This clears the person's prior Audit Logs too. hardRemovePerson
 // writes one more Audit Log entry for the delete operation itself after this
 // runs, so that final record is unaffected by this cleanup.
 export async function removeOwnedPersonRelations(personId: string): Promise<void> {

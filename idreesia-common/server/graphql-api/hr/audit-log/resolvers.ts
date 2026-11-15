@@ -1,5 +1,7 @@
-import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 import { EntityType } from 'meteor/idreesia-common/constants/audit';
+import {
+  searchAuditLogs,
+} from 'meteor/idreesia-common/server/business-logic/common';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -13,7 +15,7 @@ const resolvers: ResolverMap = {
         entityTypes: [EntityType.KARKUN],
       });
 
-      return AuditLogs.searchAuditLogs(updatedFilter);
+      return searchAuditLogs(updatedFilter);
     },
   },
 };

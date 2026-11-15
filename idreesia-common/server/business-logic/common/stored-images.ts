@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import sharp from 'sharp';
 
@@ -89,19 +88,9 @@ export async function storeImage(
   return { imageKey, imageThumbnailKey };
 }
 
-/**
- * URL of a stored image: its public object storage URL, or - for an image
- * not yet migrated - the legacy /download-file URL of its Attachments copy.
- */
+/** Public object storage URL of a stored image. */
 export function getStoredImageUrl(
-  imageKey: string | null | undefined,
-  legacyAttachmentId: string | null | undefined
+  imageKey: string | null | undefined
 ): string | null {
-  if (imageKey) return getPublicFileUrl(imageKey);
-  if (legacyAttachmentId) {
-    return Meteor.absoluteUrl(
-      `download-file?attachmentId=${encodeURIComponent(legacyAttachmentId)}`
-    );
-  }
-  return null;
+  return imageKey ? getPublicFileUrl(imageKey) : null;
 }

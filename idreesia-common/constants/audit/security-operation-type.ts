@@ -7,6 +7,12 @@ const SecurityOperationType = {
   INSTANCE_ACCESS_CHANGED: 'instance-access-changed',
   GROUPS_CHANGED: 'groups-changed',
   CHAT_ACCOUNT_CREATED: 'chat-account-created',
+  TWO_FACTOR_ENABLED: 'two-factor-enabled',
+  TWO_FACTOR_DISABLED: 'two-factor-disabled',
+  TWO_FACTOR_RESET: 'two-factor-reset',
+  SUPER_ADMIN_GRANTED: 'super-admin-granted',
+  SUPER_ADMIN_REVOKED: 'super-admin-revoked',
+  LOGIN_BLOCKS_CLEARED: 'login-blocks-cleared',
 
   LOGIN: 'login',
   INVALID_LOGIN_ATTEMPT: 'invalid-login-attempt',

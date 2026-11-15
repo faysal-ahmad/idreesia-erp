@@ -27,10 +27,7 @@ export async function backfillImageVectorData(
     {
       $and: [
         {
-          $or: [
-            { 'sharedData.imageKey': { $exists: true, $ne: null } },
-            { 'sharedData.imageId': { $exists: true, $ne: null } },
-          ],
+          'sharedData.imageKey': { $exists: true, $ne: null },
         },
         {
           $or: [
@@ -42,7 +39,7 @@ export async function backfillImageVectorData(
         },
       ],
     },
-    { fields: { 'sharedData.imageKey': 1, 'sharedData.imageId': 1 } }
+    { fields: { 'sharedData.imageKey': 1 } }
   ).fetchAsync();
 
   try {

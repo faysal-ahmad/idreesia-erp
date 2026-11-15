@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   DMS_DEFAULT_LOCK_MINUTES,
   DMS_MAX_LOCK_MINUTES,
@@ -46,43 +47,45 @@ export async function checkOutDocument(
   userId: string,
   { expiresInMinutes = DMS_DEFAULT_LOCK_MINUTES, note }: CheckOutOptions = {}
 ): Promise<DmsDocumentDocument> {
-  requireUserId(userId);
-  if (!Number.isFinite(expiresInMinutes) || expiresInMinutes <= 0) {
-    throw dmsError('BAD_USER_INPUT', 'expiresInMinutes must be positive');
-  }
-  if (expiresInMinutes > DMS_MAX_LOCK_MINUTES) {
-    throw dmsError(
-      'BAD_USER_INPUT',
-      `A lock can last at most ${DMS_MAX_LOCK_MINUTES} minutes (7 days)`
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    if (!Number.isFinite(expiresInMinutes) || expiresInMinutes <= 0) {
+      throw dmsError('BAD_USER_INPUT', 'expiresInMinutes must be positive');
+    }
+    if (expiresInMinutes > DMS_MAX_LOCK_MINUTES) {
+      throw dmsError(
+        'BAD_USER_INPUT',
+        `A lock can last at most ${DMS_MAX_LOCK_MINUTES} minutes (7 days)`
+      );
+    }
+    const document = await requireDocument(documentId);
+
+    const now = new Date();
+    const lock: DmsDocumentLock = {
+      userId,
+      lockedAt: now,
+      expiresAt: new Date(now.getTime() + expiresInMinutes * 60000),
+      ...(note?.trim() ? { note: note.trim() } : {}),
+    };
+    const updated = await DmsDocuments.updateAsync(
+      { _id: documentId, trashed: false, ...lockFreeSelector(userId, now) },
+      { $set: { lock } }
     );
-  }
-  const document = await requireDocument(documentId);
+    if (!updated) throw await diagnoseDocumentWriteFailure(documentId, userId);
 
-  const now = new Date();
-  const lock: DmsDocumentLock = {
-    userId,
-    lockedAt: now,
-    expiresAt: new Date(now.getTime() + expiresInMinutes * 60000),
-    ...(note?.trim() ? { note: note.trim() } : {}),
-  };
-  const updated = await DmsDocuments.updateAsync(
-    { _id: documentId, trashed: false, ...lockFreeSelector(userId, now) },
-    { $set: { lock } }
-  );
-  if (!updated) throw await diagnoseDocumentWriteFailure(documentId, userId);
-
-  await logActivity({
-    workspaceId: document.workspaceId,
-    entityType: DmsEntityType.DOCUMENT,
-    entityId: documentId,
-    documentId,
-    action: DmsAction.DOCUMENT_CHECKED_OUT,
-    userId,
-    details: { expiresAt: lock.expiresAt },
+    await logActivity({
+      workspaceId: document.workspaceId,
+      entityType: DmsEntityType.DOCUMENT,
+      entityId: documentId,
+      documentId,
+      action: DmsAction.DOCUMENT_CHECKED_OUT,
+      userId,
+      details: { expiresAt: lock.expiresAt },
+    });
+    // A renewed lock gets a new "expires soon" warning of its own.
+    if (document.lock) await retireLockExpiring(documentId, document.lock.lockedAt);
+    return requireDocument(documentId);
   });
-  // A renewed lock gets a new "expires soon" warning of its own.
-  if (document.lock) await retireLockExpiring(documentId, document.lock.lockedAt);
-  return requireDocument(documentId);
 }
 
 /**
@@ -94,40 +97,42 @@ export async function checkInDocument(
   userId: string,
   { newVersion }: { newVersion?: NewVersionInput } = {}
 ): Promise<DmsDocumentDocument> {
-  requireUserId(userId);
-  const document = await requireDocument(documentId);
-  if (!document.lock) {
-    throw dmsError('CONFLICT', `"${document.name}" is not checked out`);
-  }
-  if (document.lock.userId !== userId) {
-    if (isLockActive(document.lock)) throw lockedError(document);
-    throw dmsError(
-      'CONFLICT',
-      `"${document.name}" is not checked out by this user`
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const document = await requireDocument(documentId);
+    if (!document.lock) {
+      throw dmsError('CONFLICT', `"${document.name}" is not checked out`);
+    }
+    if (document.lock.userId !== userId) {
+      if (isLockActive(document.lock)) throw lockedError(document);
+      throw dmsError(
+        'CONFLICT',
+        `"${document.name}" is not checked out by this user`
+      );
+    }
+
+    if (newVersion) await uploadNewVersion(documentId, newVersion, userId);
+
+    const released = await DmsDocuments.updateAsync(
+      { _id: documentId, 'lock.userId': userId },
+      { $unset: { lock: 1 } }
     );
-  }
+    if (!released) {
+      throw dmsError('CONFLICT', 'The lock was released by another request');
+    }
 
-  if (newVersion) await uploadNewVersion(documentId, newVersion, userId);
-
-  const released = await DmsDocuments.updateAsync(
-    { _id: documentId, 'lock.userId': userId },
-    { $unset: { lock: 1 } }
-  );
-  if (!released) {
-    throw dmsError('CONFLICT', 'The lock was released by another request');
-  }
-
-  await logActivity({
-    workspaceId: document.workspaceId,
-    entityType: DmsEntityType.DOCUMENT,
-    entityId: documentId,
-    documentId,
-    action: DmsAction.DOCUMENT_CHECKED_IN,
-    userId,
-    details: { withNewVersion: !!newVersion },
+    await logActivity({
+      workspaceId: document.workspaceId,
+      entityType: DmsEntityType.DOCUMENT,
+      entityId: documentId,
+      documentId,
+      action: DmsAction.DOCUMENT_CHECKED_IN,
+      userId,
+      details: { withNewVersion: !!newVersion },
+    });
+    await retireLockExpiring(documentId, document.lock.lockedAt);
+    return requireDocument(documentId);
   });
-  await retireLockExpiring(documentId, document.lock.lockedAt);
-  return requireDocument(documentId);
 }
 
 /**
@@ -138,26 +143,28 @@ export async function forceUnlockDocument(
   documentId: string,
   userId: string
 ): Promise<DmsDocumentDocument> {
-  requireUserId(userId);
-  const document = await requireDocument(documentId, { includeTrashed: true });
-  if (!document.lock) return document;
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const document = await requireDocument(documentId, { includeTrashed: true });
+    if (!document.lock) return document;
 
-  await DmsDocuments.updateAsync(documentId, { $unset: { lock: 1 } });
-  await logActivity({
-    workspaceId: document.workspaceId,
-    entityType: DmsEntityType.DOCUMENT,
-    entityId: documentId,
-    documentId,
-    action: DmsAction.DOCUMENT_FORCE_UNLOCKED,
-    userId,
-    details: {
-      previousHolder: document.lock.userId,
-      lockedAt: document.lock.lockedAt,
-    },
+    await DmsDocuments.updateAsync(documentId, { $unset: { lock: 1 } });
+    await logActivity({
+      workspaceId: document.workspaceId,
+      entityType: DmsEntityType.DOCUMENT,
+      entityId: documentId,
+      documentId,
+      action: DmsAction.DOCUMENT_FORCE_UNLOCKED,
+      userId,
+      details: {
+        previousHolder: document.lock.userId,
+        lockedAt: document.lock.lockedAt,
+      },
+    });
+    await notifyForceUnlocked({ ...document, lock: document.lock }, userId);
+    await retireLockExpiring(documentId, document.lock.lockedAt);
+    return requireDocument(documentId, { includeTrashed: true });
   });
-  await notifyForceUnlocked({ ...document, lock: document.lock }, userId);
-  await retireLockExpiring(documentId, document.lock.lockedAt);
-  return requireDocument(documentId, { includeTrashed: true });
 }
 
 export interface LockStatus {

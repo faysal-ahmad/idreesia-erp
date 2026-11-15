@@ -10,7 +10,7 @@ import { modules } from './registry';
 /** Apps tab: the modules this user can use. */
 export const ModulesScreen = () => {
   const history = useHistory();
-  const { user, userLoading, userError, refetchUser } = useCurrentUser();
+  const { user, userLoading, userError, refetchUser, refreshUser } = useCurrentUser();
 
   let content;
   if (userLoading && !user) {
@@ -41,5 +41,5 @@ export const ModulesScreen = () => {
       );
   }
 
-  return <Page title="Apps">{content}</Page>;
+  return <Page title="Apps" onRefresh={refreshUser}>{content}</Page>;
 };

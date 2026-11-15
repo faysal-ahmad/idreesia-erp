@@ -143,7 +143,6 @@ export {
 export { getPersonNotificationScope } from './workspaces';
 export {
   getMyNotifications,
-  getMyUnreadNotificationCount,
   markMyNotificationsRead,
   type MyNotification,
   type NotificationUser,

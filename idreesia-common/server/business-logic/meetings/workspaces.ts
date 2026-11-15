@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   MeetingsAction,
   MeetingsEntityType,
@@ -16,7 +17,7 @@ import {
 import { logActivity } from './activity';
 import { meetingsError } from './errors';
 import {
-  deleteFilesQuietly,
+  deleteFilesAfterCommit,
   escapeRegExp,
   normalizePage,
   normalizeText,
@@ -75,33 +76,35 @@ export async function createMeetingsWorkspace(
   input: CreateMeetingsWorkspaceInput,
   userId: string
 ): Promise<MeetingsWorkspaceDocument> {
-  requireUserId(userId);
-  const name = normalizeTitle(input.name, 'Workspace name');
-  const description = normalizeText(input.description, 'Description');
-  const metadata = validateMetadata(input.metadata);
-  const settings = validateSettings(input.settings);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const name = normalizeTitle(input.name, 'Workspace name');
+    const description = normalizeText(input.description, 'Description');
+    const metadata = validateMetadata(input.metadata);
+    const settings = validateSettings(input.settings);
 
-  const date = new Date();
-  const workspaceId = await MeetingsWorkspaces.insertAsync({
-    name,
-    ...(description ? { description } : {}),
-    ...(metadata ? { metadata } : {}),
-    ...(settings ? { settings } : {}),
-    createdAt: date,
-    createdBy: userId,
-    updatedAt: date,
-    updatedBy: userId,
-  });
+    const date = new Date();
+    const workspaceId = await MeetingsWorkspaces.insertAsync({
+      name,
+      ...(description ? { description } : {}),
+      ...(metadata ? { metadata } : {}),
+      ...(settings ? { settings } : {}),
+      createdAt: date,
+      createdBy: userId,
+      updatedAt: date,
+      updatedBy: userId,
+    });
 
-  await logActivity({
-    workspaceId,
-    entityType: MeetingsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: MeetingsAction.WORKSPACE_CREATED,
-    userId,
-    details: { name },
+    await logActivity({
+      workspaceId,
+      entityType: MeetingsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: MeetingsAction.WORKSPACE_CREATED,
+      userId,
+      details: { name },
+    });
+    return requireWorkspace(workspaceId);
   });
-  return requireWorkspace(workspaceId);
 }
 
 export interface UpdateMeetingsWorkspaceInput {
@@ -119,47 +122,49 @@ export async function updateMeetingsWorkspace(
   changes: UpdateMeetingsWorkspaceInput,
   userId: string
 ): Promise<MeetingsWorkspaceDocument> {
-  requireUserId(userId);
-  await requireWorkspace(workspaceId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    await requireWorkspace(workspaceId);
 
-  const $set: Partial<MeetingsWorkspaceDocument> = {
-    updatedAt: new Date(),
-    updatedBy: userId,
-  };
-  const $unset: Record<string, 1> = {};
+    const $set: Partial<MeetingsWorkspaceDocument> = {
+      updatedAt: new Date(),
+      updatedBy: userId,
+    };
+    const $unset: Record<string, 1> = {};
 
-  if (changes.name !== undefined) {
-    $set.name = normalizeTitle(changes.name, 'Workspace name');
-  }
-  if (changes.description !== undefined) {
-    const description = normalizeText(changes.description, 'Description');
-    if (description) $set.description = description;
-    else $unset.description = 1;
-  }
-  if (changes.metadata !== undefined) {
-    const metadata = validateMetadata(changes.metadata);
-    if (metadata) $set.metadata = metadata;
-    else $unset.metadata = 1;
-  }
-  if (changes.settings !== undefined) {
-    const settings = validateSettings(changes.settings);
-    if (settings) $set.settings = settings;
-    else $unset.settings = 1;
-  }
+    if (changes.name !== undefined) {
+      $set.name = normalizeTitle(changes.name, 'Workspace name');
+    }
+    if (changes.description !== undefined) {
+      const description = normalizeText(changes.description, 'Description');
+      if (description) $set.description = description;
+      else $unset.description = 1;
+    }
+    if (changes.metadata !== undefined) {
+      const metadata = validateMetadata(changes.metadata);
+      if (metadata) $set.metadata = metadata;
+      else $unset.metadata = 1;
+    }
+    if (changes.settings !== undefined) {
+      const settings = validateSettings(changes.settings);
+      if (settings) $set.settings = settings;
+      else $unset.settings = 1;
+    }
 
-  await MeetingsWorkspaces.updateAsync(workspaceId, {
-    $set,
-    ...(Object.keys($unset).length ? { $unset } : {}),
+    await MeetingsWorkspaces.updateAsync(workspaceId, {
+      $set,
+      ...(Object.keys($unset).length ? { $unset } : {}),
+    });
+    await logActivity({
+      workspaceId,
+      entityType: MeetingsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: MeetingsAction.WORKSPACE_UPDATED,
+      userId,
+      details: { changed: Object.keys(changes) },
+    });
+    return requireWorkspace(workspaceId);
   });
-  await logActivity({
-    workspaceId,
-    entityType: MeetingsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: MeetingsAction.WORKSPACE_UPDATED,
-    userId,
-    details: { changed: Object.keys(changes) },
-  });
-  return requireWorkspace(workspaceId);
 }
 
 export async function getMeetingsWorkspace(
@@ -221,17 +226,19 @@ export async function deleteMeetingsWorkspace(
   workspaceId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  await requireWorkspace(workspaceId);
-  await MeetingsWorkspaces.updateAsync(workspaceId, {
-    $set: { deletedAt: new Date(), deletedBy: userId },
-  });
-  await logActivity({
-    workspaceId,
-    entityType: MeetingsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: MeetingsAction.WORKSPACE_DELETED,
-    userId,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    await requireWorkspace(workspaceId);
+    await MeetingsWorkspaces.updateAsync(workspaceId, {
+      $set: { deletedAt: new Date(), deletedBy: userId },
+    });
+    await logActivity({
+      workspaceId,
+      entityType: MeetingsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: MeetingsAction.WORKSPACE_DELETED,
+      userId,
+    });
   });
 }
 
@@ -239,25 +246,27 @@ export async function restoreMeetingsWorkspace(
   workspaceId: string,
   userId: string
 ): Promise<MeetingsWorkspaceDocument> {
-  requireUserId(userId);
-  const workspace = await requireWorkspace(workspaceId, {
-    includeDeleted: true,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const workspace = await requireWorkspace(workspaceId, {
+      includeDeleted: true,
+    });
+    if (!workspace.deletedAt) {
+      throw meetingsError('CONFLICT', 'Workspace is not deleted');
+    }
+    await MeetingsWorkspaces.updateAsync(workspaceId, {
+      $set: { updatedAt: new Date(), updatedBy: userId },
+      $unset: { deletedAt: 1, deletedBy: 1 },
+    });
+    await logActivity({
+      workspaceId,
+      entityType: MeetingsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: MeetingsAction.WORKSPACE_RESTORED,
+      userId,
+    });
+    return requireWorkspace(workspaceId);
   });
-  if (!workspace.deletedAt) {
-    throw meetingsError('CONFLICT', 'Workspace is not deleted');
-  }
-  await MeetingsWorkspaces.updateAsync(workspaceId, {
-    $set: { updatedAt: new Date(), updatedBy: userId },
-    $unset: { deletedAt: 1, deletedBy: 1 },
-  });
-  await logActivity({
-    workspaceId,
-    entityType: MeetingsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: MeetingsAction.WORKSPACE_RESTORED,
-    userId,
-  });
-  return requireWorkspace(workspaceId);
 }
 
 /**
@@ -268,27 +277,29 @@ export async function purgeMeetingsWorkspace(
   workspaceId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const workspace = await requireWorkspace(workspaceId, {
-    includeDeleted: true,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const workspace = await requireWorkspace(workspaceId, {
+      includeDeleted: true,
+    });
+    if (!workspace.deletedAt) {
+      throw meetingsError(
+        'CONFLICT',
+        'Only a deleted workspace can be purged; delete it first'
+      );
+    }
+
+    const attachments = await MeetingAttachments.find(
+      { workspaceId },
+      { fields: { fileKey: 1 } }
+    ).fetchAsync();
+
+    await MeetingAttachments.removeAsync({ workspaceId });
+    await MeetingActionItems.removeAsync({ workspaceId });
+    await Meetings.removeAsync({ workspaceId });
+    await MeetingsActivities.removeAsync({ workspaceId });
+    await MeetingsWorkspaces.removeAsync(workspaceId);
+
+    await deleteFilesAfterCommit(attachments.map(({ fileKey }) => fileKey));
   });
-  if (!workspace.deletedAt) {
-    throw meetingsError(
-      'CONFLICT',
-      'Only a deleted workspace can be purged; delete it first'
-    );
-  }
-
-  const attachments = await MeetingAttachments.find(
-    { workspaceId },
-    { fields: { fileKey: 1 } }
-  ).fetchAsync();
-
-  await MeetingAttachments.removeAsync({ workspaceId });
-  await MeetingActionItems.removeAsync({ workspaceId });
-  await Meetings.removeAsync({ workspaceId });
-  await MeetingsActivities.removeAsync({ workspaceId });
-  await MeetingsWorkspaces.removeAsync(workspaceId);
-
-  await deleteFilesQuietly(attachments.map(({ fileKey }) => fileKey));
 }

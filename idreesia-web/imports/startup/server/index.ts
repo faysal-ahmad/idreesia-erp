@@ -14,6 +14,8 @@ config({
 initNewRelic();
 
 import './configure-services';
+import './account-lock';
+import './login-throttle';
 import './migrations';
 
 import express from 'express';
@@ -29,10 +31,17 @@ import {
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
 } from 'meteor/idreesia-common/server/graphql-api/_directives';
+import { Accounts } from 'meteor/accounts-base';
+import {
+  createDepthLimitRule,
+  RequireAuthenticationPlugin,
+} from 'meteor/idreesia-common/server/graphql-api/_plugins';
 import { initNewRelic } from './newrelic';
 import { setupAgenda } from './setup-agenda';
 import { setupRestEndpoints } from './setup-rest-endpoints';
 import { getUser } from './get-user';
+import { getClientAddress } from './client-address';
+import { limitRequests, type RequestWithLoggedInUser } from './rate-limits';
 import { apolloErrorFormatter } from './apollo-error-formatter';
 
 // The jobs-only pm2 process (see ecosystem.config.js) never receives HTTP
@@ -56,6 +65,10 @@ if (webServerEnabled) {
   const server = new ApolloServer({
     schema: schema as any,
     formatError: apolloErrorFormatter as any,
+    // Anonymous callers may only use the allowlisted fields (currentUser,
+    // registerUser); field directives and resolver checks still apply on top.
+    plugins: [RequireAuthenticationPlugin()],
+    validationRules: [createDepthLimitRule()],
   });
 
   const startServer = async () => {
@@ -72,6 +85,8 @@ if (webServerEnabled) {
     app.use(
       '/graphql',
       cors(),
+      // Also resolves the login token, which the context below reuses.
+      ...limitRequests,
       // Face search posts a captured photo as a base64 variable, which blows past the 100kb
       // default at higher zoom levels. Matches the limit on /upload-base64-file.
       express.json({ limit: '5mb' }),
@@ -81,7 +96,17 @@ if (webServerEnabled) {
       (req, res, next) => runWithRequestHost(req.hostname, next),
       expressMiddleware(server, {
         context: async ({ req }) => ({
-          user: await getUser(req.headers.authorization),
+          user:
+            (req as RequestWithLoggedInUser).loggedInUser ??
+            (await getUser(req.headers.authorization)),
+          loginTokenHash: req.headers.authorization
+            ? (
+                Accounts as unknown as {
+                  _hashLoginToken(loginToken: string): string;
+                }
+              )._hashLoginToken(req.headers.authorization)
+            : null,
+          clientAddress: getClientAddress(req),
           loaders: getDataLoaders(),
         }),
       })

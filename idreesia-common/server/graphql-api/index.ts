@@ -7,6 +7,7 @@ import Permission from './_directives/permission';
 import CheckPermissionsDirective from './_directives/check-permissions';
 import CheckInstanceAccessDirective from './_directives/check-instance-access';
 
+import RootTypes from './_root-types/root-types';
 import ExternalTypes from './_external-types/external-types';
 import ExternalTypeResolvers from './_external-types/resolvers';
 
@@ -82,9 +83,6 @@ import SecurityVisitorResolvers from './security/visitor/resolvers';
 
 import SecurityVisitorStaySchema from './security/visitor-stay/visitor-stay';
 import SecurityVisitorStayResolvers from './security/visitor-stay/resolvers';
-
-import FaceVectorSchema from './security/face-vector/face-vector';
-import FaceVectorResolvers from './security/face-vector/resolvers';
 
 import SecurityServerChannelSchema from './security/security-server-channel/security-server-channel';
 import SecurityServerChannelResolvers from './security/security-server-channel/resolvers';
@@ -202,6 +200,7 @@ const typeDefs = [
   Permission,
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
+  RootTypes,
   ExternalTypes,
 
   AttachmentSchema,
@@ -227,7 +226,6 @@ const typeDefs = [
   SecurityUserSchema,
   SecurityVisitorSchema,
   SecurityVisitorStaySchema,
-  FaceVectorSchema,
   SecurityServerChannelSchema,
   SecurityServerProfileSchema,
   SecurityServerAlertSchema,
@@ -296,7 +294,6 @@ const resolvers = merge(
   SecurityUserResolvers,
   SecurityVisitorResolvers,
   SecurityVisitorStayResolvers,
-  FaceVectorResolvers,
   SecurityServerChannelResolvers,
   SecurityServerProfileResolvers,
   SecurityServerAlertResolvers,

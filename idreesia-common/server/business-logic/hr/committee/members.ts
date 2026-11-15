@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   CommitteeMemberRoles,
   CommitteeMemberRoleValues,
@@ -29,107 +30,110 @@ const loadCommittee = async (committeeId: string) => {
 const updaterFields = (userId?: string) =>
   userId ? { $set: { updatedAt: new Date(), updatedBy: userId } } : {};
 
-export const addCommitteeMember = async (
+export const addCommitteeMember = (
   committeeId: string,
   karkunId: string,
   userId?: string,
   role: CommitteeMemberRole = CommitteeMemberRoles.MEMBER
-) => {
-  if (!CommitteeMemberRoleValues.includes(role)) {
-    throw new Error('Invalid committee member role.');
-  }
-  const committee = await loadCommittee(committeeId);
-  await ensureKarkuns([karkunId]);
-  if ((committee.members ?? []).some(member => member.karkunId === karkunId)) {
-    throw new Error('This person is already a member of the committee.');
-  }
+) =>
+  runInTransaction(async () => {
+    if (!CommitteeMemberRoleValues.includes(role)) {
+      throw new Error('Invalid committee member role.');
+    }
+    const committee = await loadCommittee(committeeId);
+    await ensureKarkuns([karkunId]);
+    if ((committee.members ?? []).some(member => member.karkunId === karkunId)) {
+      throw new Error('This person is already a member of the committee.');
+    }
 
-  await runMemberHooks(committee, 'memberAdded', karkunId);
+    await runMemberHooks(committee, 'memberAdded', karkunId);
 
-  const added = await Committees.updateAsync(
-    { _id: committeeId, 'members.karkunId': { $ne: karkunId } },
-    { $push: { members: { karkunId, role } }, ...updaterFields(userId) }
-  );
-  if (added === 0) {
-    throw new Error('This person is already a member of the committee.');
-  }
+    const added = await Committees.updateAsync(
+      { _id: committeeId, 'members.karkunId': { $ne: karkunId } },
+      { $push: { members: { karkunId, role } }, ...updaterFields(userId) }
+    );
+    if (added === 0) {
+      throw new Error('This person is already a member of the committee.');
+    }
 
-  await notifyMemberChange(
-    MemberEvent.ADDED,
-    await loadCommittee(committeeId),
-    karkunId,
-    userId
-  );
-};
+    await notifyMemberChange(
+      MemberEvent.ADDED,
+      await loadCommittee(committeeId),
+      karkunId,
+      userId
+    );
+  });
 
-export const removeCommitteeMember = async (
+export const removeCommitteeMember = (
   committeeId: string,
   karkunId: string,
   userId?: string
-) => {
-  const committee = await loadCommittee(committeeId);
-  if (!(committee.members ?? []).some(member => member.karkunId === karkunId)) {
-    throw new Error('This person is not a member of the committee.');
-  }
+) =>
+  runInTransaction(async () => {
+    const committee = await loadCommittee(committeeId);
+    if (!(committee.members ?? []).some(member => member.karkunId === karkunId)) {
+      throw new Error('This person is not a member of the committee.');
+    }
 
-  await runMemberHooks(committee, 'memberRemoved', karkunId);
+    await runMemberHooks(committee, 'memberRemoved', karkunId);
 
-  await Committees.updateAsync(committeeId, {
-    $pull: { members: { karkunId } },
-    ...updaterFields(userId),
+    await Committees.updateAsync(committeeId, {
+      $pull: { members: { karkunId } },
+      ...updaterFields(userId),
+    });
+
+    await notifyMemberChange(
+      MemberEvent.REMOVED,
+      await loadCommittee(committeeId),
+      karkunId,
+      userId
+    );
   });
-
-  await notifyMemberChange(
-    MemberEvent.REMOVED,
-    await loadCommittee(committeeId),
-    karkunId,
-    userId
-  );
-};
 
 /**
  * Sets a member's role (member, coordinator, guest or observer). Does nothing
  * when the role is already as asked. Only becoming, or ceasing to be, a
  * coordinator notifies anyone.
  */
-export const setCommitteeMemberRole = async (
+export const setCommitteeMemberRole = (
   committeeId: string,
   karkunId: string,
   role: CommitteeMemberRole,
   userId?: string
-) => {
-  if (!CommitteeMemberRoleValues.includes(role)) {
-    throw new Error('Invalid committee member role.');
-  }
-  const committee = await loadCommittee(committeeId);
-  const member = (committee.members ?? []).find(m => m.karkunId === karkunId);
-  if (!member) throw new Error('This person is not a member of the committee.');
-  const previousRole = member.role ?? CommitteeMemberRoles.MEMBER;
-  if (previousRole === role) return;
-
-  await Committees.updateAsync(
-    { _id: committeeId, 'members.karkunId': karkunId },
-    {
-      $set: {
-        'members.$.role': role,
-        ...(userId ? { updatedAt: new Date(), updatedBy: userId } : {}),
-      },
+) =>
+  runInTransaction(async () => {
+    if (!CommitteeMemberRoleValues.includes(role)) {
+      throw new Error('Invalid committee member role.');
     }
-  );
+    const committee = await loadCommittee(committeeId);
+    const member = (committee.members ?? []).find(m => m.karkunId === karkunId);
+    if (!member) throw new Error('This person is not a member of the committee.');
+    const previousRole = member.role ?? CommitteeMemberRoles.MEMBER;
+    if (previousRole === role) return;
 
-  const wasCoordinator = previousRole === CommitteeMemberRoles.COORDINATOR;
-  const isCoordinator = role === CommitteeMemberRoles.COORDINATOR;
-  if (wasCoordinator === isCoordinator) return;
+    await Committees.updateAsync(
+      { _id: committeeId, 'members.karkunId': karkunId },
+      {
+        $set: {
+          'members.$.role': role,
+          ...(userId ? { updatedAt: new Date(), updatedBy: userId } : {}),
+        },
+      }
+    );
 
-  await notifyMemberChange(
-    isCoordinator
-      ? MemberEvent.COORDINATOR_ASSIGNED
-      : MemberEvent.COORDINATOR_REMOVED,
-    await loadCommittee(committeeId),
-    karkunId,
-    userId
-  );
-};
+    const wasCoordinator = previousRole === CommitteeMemberRoles.COORDINATOR;
+    const isCoordinator = role === CommitteeMemberRoles.COORDINATOR;
+    if (wasCoordinator === isCoordinator) return;
+
+    await notifyMemberChange(
+      isCoordinator
+        ? MemberEvent.COORDINATOR_ASSIGNED
+        : MemberEvent.COORDINATOR_REMOVED,
+      await loadCommittee(committeeId),
+      karkunId,
+      userId
+    );
+  });
 
 /** Makes a member a coordinator, or a plain member again. */
 export const setCommitteeMemberCoordinator = (
@@ -213,20 +217,22 @@ export const getCommitteeMembersPage = async (
 };
 
 /** Removes a person from every committee they belong to (e.g. on delete). */
-export const removePersonFromCommittees = async (personId: string) => {
-  const committees = (await Committees.find({
-    'members.karkunId': personId,
-  }).fetchAsync()) as unknown as CommitteeDoc[];
+export const removePersonFromCommittees = (personId: string) =>
+  runInTransaction(async () => {
+    const committees = (await Committees.find({
+      'members.karkunId': personId,
+    }).fetchAsync()) as unknown as CommitteeDoc[];
 
-  for (const committee of committees) {
-    await runMemberHooks(committee, 'memberRemoved', personId);
-    await Committees.updateAsync(committee._id, {
-      $pull: { members: { karkunId: personId } },
-    });
-    await notifyMemberChange(
-      MemberEvent.REMOVED,
-      await loadCommittee(committee._id),
-      personId
-    );
-  }
-};
+    for (const committee of committees) {
+      await runMemberHooks(committee, 'memberRemoved', personId);
+      await Committees.updateAsync(committee._id, {
+        $pull: { members: { karkunId: personId } },
+      });
+      await notifyMemberChange(
+        MemberEvent.REMOVED,
+        await loadCommittee(committee._id),
+        personId
+      );
+    }
+  });
+

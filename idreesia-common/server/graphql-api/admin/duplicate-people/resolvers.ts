@@ -4,6 +4,11 @@ import {
   getPersonImageUrls,
   type PersonImageFields,
 } from 'meteor/idreesia-common/server/business-logic/common/person-images';
+import {
+  findDuplicateCnics,
+  findDuplicatePhoneNumbers,
+  removePerson,
+} from 'meteor/idreesia-common/server/business-logic/common';
 
 interface UserRef {
   _id: string;
@@ -17,9 +22,9 @@ export default {
       getPersonImageUrls(person).imageThumbnailUrl,
   },
   Query: {
-    duplicateCnics: async () => People.findDuplicateCnics(),
+    duplicateCnics: async () => findDuplicateCnics(),
 
-    duplicatePhoneNumbers: async () => People.findDuplicatePhoneNumbers(),
+    duplicatePhoneNumbers: async () => findDuplicatePhoneNumbers(),
 
     duplicatePersonById: async (_obj: unknown, { _id }: { _id: string }) =>
       People.findOneAsync(_id),
@@ -45,7 +50,7 @@ export default {
     ) => {
       let count = 0;
       for (const _id of new Set(_ids.filter(Boolean))) {
-        count += await People.removePerson(_id, user);
+        count += await removePerson(_id, user);
       }
       return count;
     },

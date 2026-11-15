@@ -355,7 +355,7 @@ The Workspaces module uses the DMS through the **Documents** committee feature (
 - Enabling it again restores the same workspace, with its documents.
 
 **Who can do what:**
-- **Coordinators** (and `erp-admin`) also purge items from the trash, empty the trash, delete document versions and force-unlock documents.
+- **Coordinators** (and super-admins) also purge items from the trash, empty the trash, delete document versions and force-unlock documents.
 - **Every member** browses, searches, uploads, downloads, checks documents out and in, moves, renames and trashes and restores items, and sees the activity log.
 - **Notifications** (mobile): the documents folder list has a bell with an unread count. It opens a screen listing the committee's document notifications, newest first. Opening it marks them read, and tapping one opens its document. The web app has no notifications page yet.
 

@@ -29,7 +29,7 @@ const notFound = (message: string) =>
 
 /**
  * Permission check for a committee's polls: the user must be a member of
- * the committee (erp-admin counts as one), and the committee must have
+ * the committee (a super-admin counts as one), and the committee must have
  * Polls enabled. With `coordinator`, only its coordinators pass - for
  * creating and managing polls.
  */

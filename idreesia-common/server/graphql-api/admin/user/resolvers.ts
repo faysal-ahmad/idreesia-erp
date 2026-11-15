@@ -1,12 +1,28 @@
-import { Accounts } from 'meteor/accounts-base';
 import { values } from 'meteor/idreesia-common/utilities/lodash';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
-import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
 import { DataSource } from 'meteor/idreesia-common/constants';
 import { ChatError } from 'meteor/idreesia-common/server/chat';
+import {
+  clearLoginBlocks,
+  createChatAccount,
+  createUser,
+  disableTwoFactor,
+  enableTwoFactor,
+  findOneUser,
+  getLoginBlockStatus,
+  recordUserLogin,
+  registerUser,
+  resetTwoFactor,
+  searchUsers,
+  setUserInstanceAccess,
+  setSuperAdmin,
+  setUserPermissions,
+  startTwoFactorSetup,
+  updateUser,
+} from 'meteor/idreesia-common/server/business-logic/admin';
+import { isSuperAdmin } from 'meteor/idreesia-common/server/graphql-api/security';
 
 interface UserType {
   _id: string;
@@ -28,8 +44,13 @@ interface ResolverContext {
     _id: string;
     username?: string;
     locked?: boolean;
+    isSuperAdmin?: boolean;
     permissions?: string[];
   };
+  /** Hashed login token the request came with. */
+  loginTokenHash?: string | null;
+  /** Address of the client that sent the request. */
+  clientAddress?: string | null;
 }
 
 interface UserArgs extends Record<string, unknown> {
@@ -49,6 +70,10 @@ function requireUser(user: ResolverContext['user']) {
 export default {
   UserType: {
     hasChatAccount: (userType: UserType) => !!userType.chatUserId,
+    loginBlockedAddresses: async (userType: UserType) =>
+      (await getLoginBlockStatus(userType._id)).blockedAddresses,
+    untrustedLoginAddressesBlocked: async (userType: UserType) =>
+      (await getLoginBlockStatus(userType._id)).untrustedAddressesBlocked,
 
     person: async (userType: UserType) => {
       if (!userType.personId) return null;
@@ -63,7 +88,7 @@ export default {
 
   Query: {
     pagedUsers: async (_obj: unknown, { filter }: { filter: Record<string, unknown> }) =>
-      Users.searchUsers(filter),
+      searchUsers(filter),
 
     userById: async (
       _obj: unknown,
@@ -74,8 +99,8 @@ export default {
         return null;
       }
 
-      const _user = await Users.findOneUser(_id);
-      if (_user.username === 'erp-admin') {
+      const _user = await findOneUser(_id);
+      if (_user.isSuperAdmin) {
         _user.permissions = values(PermissionConstants);
       }
 
@@ -84,8 +109,8 @@ export default {
 
     currentUser: async (_obj: unknown, _args: unknown, { user }: ResolverContext) => {
       if (!user) return null;
-      const _user = await Users.findOneUser(user._id);
-      if (_user.username === 'erp-admin') {
+      const _user = await findOneUser(user._id);
+      if (isSuperAdmin(_user)) {
         _user.permissions = values(PermissionConstants);
       }
 
@@ -122,63 +147,33 @@ export default {
   Mutation: {
     registerUser: async (
       _obj: unknown,
-      { displayName, email }: Pick<UserArgs, 'displayName' | 'email'>
-    ) => {
-      // Check if this email is already registered for a user
-      const user = await Accounts.findUserByEmail(email);
-      if (user) {
-        throw new Error('This email address is already registered.');
-      }
-
-      const userId = await Accounts.createUserAsync({
-        email,
-        profile: {
-          name: displayName,
-        },
-      });
-
-      if (userId) {
-        await Accounts.sendEnrollmentEmail(userId);
-      }
-
-      return 1;
-    },
+      { displayName, email }: Pick<UserArgs, 'displayName' | 'email'>,
+      { clientAddress }: ResolverContext
+    ) => registerUser({ displayName, email }, clientAddress),
 
     createUser: async (
       _obj: unknown,
       params: Record<string, unknown>,
       { user }: ResolverContext
-    ) => Users.createUser(params, requireUser(user), DataSource.ADMIN),
+    ) => createUser(params, requireUser(user), DataSource.ADMIN),
 
     updateUser: async (
       _obj: unknown,
       params: Record<string, unknown>,
       { user }: ResolverContext
-    ) => Users.updateUser(params, requireUser(user), DataSource.ADMIN),
+    ) => updateUser(params, requireUser(user), DataSource.ADMIN),
 
     setPermissions: async (
       _obj: unknown,
       params: { userId: string; permissions: string[] },
       { user }: ResolverContext
-    ) => Users.setPermissions(params, requireUser(user), DataSource.ADMIN),
+    ) => setUserPermissions(params, requireUser(user), DataSource.ADMIN),
 
     setInstanceAccess: async (
       _obj: unknown,
       params: { userId: string; instances: string[] },
       { user }: ResolverContext
-    ) => Users.setInstanceAccess(params, requireUser(user), DataSource.ADMIN),
-
-    setGroups: async (
-      _obj: unknown,
-      params: { userId: string; groups: string[] },
-      { user }: ResolverContext
-    ) => Users.setGroups(params, requireUser(user), DataSource.ADMIN),
-
-    resetPassword: async (
-      _obj: unknown,
-      params: { userId?: string; userName?: string },
-      { user }: ResolverContext
-    ) => Users.resetPassword(params, requireUser(user), DataSource.ADMIN),
+    ) => setUserInstanceAccess(params, requireUser(user), DataSource.ADMIN),
 
     createChatAccount: async (
       _obj: unknown,
@@ -186,7 +181,7 @@ export default {
       { user }: ResolverContext
     ) => {
       try {
-        return await Users.createChatAccount(
+        return await createChatAccount(
           params,
           requireUser(user),
           DataSource.ADMIN
@@ -199,24 +194,54 @@ export default {
       }
     },
 
-    updateLoginTime: async (_obj: unknown, _args: unknown, { user }: ResolverContext) => {
-      if (user) {
-        const loginTime = new Date();
-        await Users.updateAsync(user._id, {
-          $set: {
-            lastLoggedInAt: loginTime,
-          },
-        });
+    startTwoFactorSetup: async (
+      _obj: unknown,
+      _args: unknown,
+      { user }: ResolverContext
+    ) => startTwoFactorSetup(requireUser(user)),
 
-        // Create a security log
-        await SecurityLogs.insertAsync({
-          userId: user._id,
-          operationType: SecurityOperationType.LOGIN,
-          operationTime: new Date(),
-          dataSource: DataSource.ADMIN,
-          dataSourceDetail: null,
-        });
+    enableTwoFactor: async (
+      _obj: unknown,
+      params: { code: string },
+      { user, loginTokenHash }: ResolverContext
+    ) =>
+      enableTwoFactor(
+        { ...params, currentLoginTokenHash: loginTokenHash },
+        requireUser(user),
+        DataSource.ADMIN
+      ),
+
+    disableTwoFactor: async (
+      _obj: unknown,
+      params: { code: string },
+      { user }: ResolverContext
+    ) => disableTwoFactor(params, requireUser(user), DataSource.ADMIN),
+
+    resetTwoFactor: async (
+      _obj: unknown,
+      params: { userId: string },
+      { user }: ResolverContext
+    ) => resetTwoFactor(params, requireUser(user), DataSource.ADMIN),
+
+    clearLoginBlocks: async (
+      _obj: unknown,
+      params: { userId: string },
+      { user }: ResolverContext
+    ) => clearLoginBlocks(params, requireUser(user), DataSource.ADMIN),
+
+    setSuperAdmin: async (
+      _obj: unknown,
+      params: { userId: string; isSuperAdmin: boolean },
+      { user }: ResolverContext
+    ) => {
+      if (!isSuperAdmin(user)) {
+        throw new Error('Only a super admin can grant or revoke super admin rights.');
       }
+      return setSuperAdmin(params, user!, DataSource.ADMIN);
+    },
+
+    updateLoginTime: async (_obj: unknown, _args: unknown, { user }: ResolverContext) => {
+      if (user) await recordUserLogin(user._id, DataSource.ADMIN);
 
       return 1;
     },

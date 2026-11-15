@@ -20,6 +20,7 @@ const PAGED_USERS: TypedDocumentNode<
         locked
         lastActiveAt
         hasChatAccount
+        twoFactorEnabled
         karkun {
           _id
           sharedData {

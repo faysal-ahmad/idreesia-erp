@@ -14,6 +14,7 @@ import {
   Tooltip,
 } from 'antd';
 import { message, modal } from '/imports/ui/antd-feedback';
+import { downloadReport } from 'meteor/idreesia-common/utilities';
 import {
   CheckSquareOutlined,
   DeleteOutlined,
@@ -289,8 +290,9 @@ const List = ({ history, location }: Props) => {
 
   const handleExportSelected = () => {
     const reportArgs = selectedRows.map((row) => row._id as string);
-    const url = `${window.location.origin}/generate-report?reportName=IssuanceForms&reportArgs=${reportArgs.join(',')}`;
-    window.open(url, '_blank');
+    downloadReport('IssuanceForms', reportArgs.join(',')).catch(() =>
+      message.error('The report could not be downloaded.', 5)
+    );
   };
 
   const handleAction = ({ key }: { key: string }) => {

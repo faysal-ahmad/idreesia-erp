@@ -1,6 +1,9 @@
+import isSuperAdmin from './is-super-admin';
+
 interface UserWithPermissions {
   username?: string;
   locked?: boolean;
+  isSuperAdmin?: boolean;
   permissions?: string[];
 }
 
@@ -8,8 +11,8 @@ export default function hasOnePermission(
   user: UserWithPermissions | null | undefined,
   permissions: string[]
 ) {
-  if (user?.username === 'erp-admin') return true;
   if (!user || user.locked === true) return false;
+  if (isSuperAdmin(user)) return true;
 
   const { permissions: userPermissions } = user;
   if (!userPermissions) return false;

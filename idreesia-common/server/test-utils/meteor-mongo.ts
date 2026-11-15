@@ -1,15 +1,17 @@
 /* eslint-disable max-classes-per-file */
 import { randomBytes } from 'node:crypto';
-import type { Db, Filter } from 'mongodb';
+import type { Db, Filter, MongoClient } from 'mongodb';
 
 // A stand-in for Meteor's `Mongo.Collection`, over the real MongoDB driver,
 // with the (async) methods the ERP's collections and business logic use.
 // Production collection classes extend it unchanged.
 
 let currentDb: Db | null = null;
+let currentClient: MongoClient | null = null;
 
-export const setTestDb = (db: Db | null) => {
+export const setTestDb = (db: Db | null, client: MongoClient | null = null) => {
   currentDb = db;
+  currentClient = client;
 };
 
 const getDb = (): Db => {
@@ -109,3 +111,12 @@ class Collection<T = any> {
 }
 
 export const Mongo = { Collection };
+
+// The client transactions use. Its default database (`client.db()`) is the
+// test database, as Meteor's is the app's.
+export const MongoInternals = {
+  defaultRemoteCollectionDriver: () => {
+    if (!currentClient) throw new Error('The test database is not connected.');
+    return { mongo: { client: currentClient } };
+  },
+};

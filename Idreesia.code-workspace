@@ -8,6 +8,12 @@
     },
     {
       "path": "../_plan_documents"
+    },
+    {
+      "path": "../public-web-app-v2"
+    },
+    {
+      "path": "../mobile-flutter-version"
     }
   ],
   "settings": {}

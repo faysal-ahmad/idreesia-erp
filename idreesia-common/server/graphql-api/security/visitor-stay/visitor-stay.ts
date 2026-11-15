@@ -71,8 +71,5 @@ extend type Mutation {
 
   cancelVisitorStay(_id: String!): VisitorStayType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
-
-  deleteVisitorStay(_id: String!): Int
-  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
 }
 `;

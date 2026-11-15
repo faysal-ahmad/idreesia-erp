@@ -175,7 +175,7 @@ All notifications go into one collection, `common-notifications`. A stored notif
 
 **Which committees and modules a user has.** Committee membership is by person, so the ERP goes from the user's `personId` to their committees: `getPersonNotificationScope(personId)` (`business-logic/hr/committee/workspaces.ts`) lists the `{ committeeId, module }` pairs of every committee the person belongs to, for the Discussions, DMS (Documents), Meetings, Polls, Projects and Members features that are enabled. A user with no person (for example `erp-admin`) has none and so sees no notifications.
 
-`business-logic/hr/committee/notifications.ts` ties these together for the logged-in user (`getMyNotifications`, `getMyUnreadNotificationCount`, `markMyNotificationsRead`).
+`business-logic/hr/committee/notifications.ts` ties these together for the logged-in user (`getMyNotifications`, `getMyNotificationCounts`, `markMyNotificationsRead`).
 
 ## The GraphQL API
 
@@ -184,7 +184,7 @@ Read and mark-read only; thin resolvers over the functions above. Nothing is pus
 | Operation | What it does |
 |---|---|
 | `myNotifications(limit: Int)` | The user's notifications, most recently changed first (default 100). Each has `_id`, `module`, `committeeId`, `entityType`, `entityId`, `eventType`, `eventDetails`, `createdAt`, `updatedAt`, `recipientUserId`, `actorUserId`, `data` (a JSON string) and `isRead`. |
-| `myUnreadNotificationCount` | How many visible notifications the user has not read. |
+| `myNotificationCounts` | Unread counts, one row per committee and module that has any. |
 | `markNotificationsRead(ids: [String]!)` | Marks them read for the user. Ids the user cannot see are ignored. |
 
 `committeeId` is the stored one (see above), so a client can navigate to the committee the notification belongs to; it is always set. There is no UI that shows notifications yet.

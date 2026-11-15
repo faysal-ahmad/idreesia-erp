@@ -11,7 +11,7 @@ import {
   SecurityServerProfiles,
 } from 'meteor/idreesia-common/server/collections/security';
 import { getFileUrl } from 'meteor/idreesia-common/server/file-storage';
-import { getSecurityServerProfiles } from 'meteor/idreesia-common/server/graphql-api/security/security-server-profile/queries';
+import { getSecurityServerProfiles } from 'meteor/idreesia-common/server/business-logic/security/security-server/profile-search';
 import type { SecurityServerProfileDocument } from 'meteor/idreesia-common/server/collections/security/security-server-profiles';
 
 import type { CommitteeFeatureHandler } from './types';

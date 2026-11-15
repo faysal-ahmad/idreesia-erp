@@ -137,23 +137,6 @@ describe('myNotifications filters', () => {
   });
 });
 
-describe('myUnreadNotificationCount', () => {
-  it('counts what the user has not read yet', async () => {
-    await publish('a');
-    await publish('b');
-    await Mutation.markNotificationsRead(null, { ids: ['dms:a'] }, context());
-
-    expect(await Query.myUnreadNotificationCount(null, {}, context())).toBe(1);
-  });
-
-  it('is zero without a person or user', async () => {
-    await publish('a');
-
-    expect(await Query.myUnreadNotificationCount(null, {}, context({ _id: 'admin' }))).toBe(0);
-    expect(await Query.myUnreadNotificationCount(null, {}, context(null))).toBe(0);
-  });
-});
-
 describe('markNotificationsRead', () => {
   it('marks them read for the user, and returns true', async () => {
     await publish('a');

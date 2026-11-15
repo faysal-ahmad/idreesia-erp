@@ -1,4 +1,9 @@
 import { PeopleTags } from 'meteor/idreesia-common/server/collections/admin';
+import {
+  createPeopleTag,
+  removePeopleTag,
+  updatePeopleTag,
+} from 'meteor/idreesia-common/server/business-logic/admin';
 
 interface UserRef {
   _id: string;
@@ -27,17 +32,17 @@ export default {
       _obj: unknown,
       params: Omit<PeopleTagArgs, '_id'>,
       { user }: ResolverContext
-    ) => PeopleTags.createTag(params, user),
+    ) => createPeopleTag(params, user),
 
     updatePeopleTag: async (
       _obj: unknown,
       params: PeopleTagArgs,
       { user }: ResolverContext
-    ) => PeopleTags.updateTag(params, user),
+    ) => updatePeopleTag(params, user),
 
     deletePeopleTag: async (
       _obj: unknown,
       { _id }: Pick<PeopleTagArgs, '_id'>
-    ) => PeopleTags.removeTag({ _id }),
+    ) => removePeopleTag({ _id }),
   },
 };

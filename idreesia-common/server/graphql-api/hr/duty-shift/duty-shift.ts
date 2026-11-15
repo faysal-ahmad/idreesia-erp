@@ -19,7 +19,6 @@ type DutyShiftType {
 
 extend type Query {
   allDutyShifts: [DutyShiftType]
-  dutyShiftById(id: String!): DutyShiftType
 }
 
 extend type Mutation {

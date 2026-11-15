@@ -1,3 +1,7 @@
+import {
+  onRollback,
+  runInTransaction,
+} from 'meteor/idreesia-common/server/collections';
 import { createHash } from 'crypto';
 import { Random } from 'meteor/random';
 
@@ -26,6 +30,7 @@ import { logActivity } from './activity';
 import { meetingsError } from './errors';
 import {
   assertStatus,
+  deleteFilesAfterCommit,
   deleteFilesQuietly,
   EDITABLE_STATUSES,
   getAttachmentFileKey,
@@ -100,30 +105,32 @@ export async function uploadAttachment(
   input: UploadAttachmentInput,
   userId: string
 ): Promise<MeetingAttachmentDocument> {
-  requireUserId(userId);
-  if (!Buffer.isBuffer(input.body)) {
-    throw meetingsError('BAD_USER_INPUT', 'The file content must be a Buffer');
-  }
-  const meeting = await requireEditableMeeting(input.meetingId);
-  const workspace = await requireWorkspace(meeting.workspaceId);
-  const fileName = normalizeFileName(input.fileName);
-  const mimeType = normalizeMimeType(input.mimeType);
-  validateFile(workspace, input.body.length, mimeType);
-  const name = normalizeTitle(input.name ?? fileName, 'Attachment name');
-  const description = normalizeText(input.description, 'Description');
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    if (!Buffer.isBuffer(input.body)) {
+      throw meetingsError('BAD_USER_INPUT', 'The file content must be a Buffer');
+    }
+    const meeting = await requireEditableMeeting(input.meetingId);
+    const workspace = await requireWorkspace(meeting.workspaceId);
+    const fileName = normalizeFileName(input.fileName);
+    const mimeType = normalizeMimeType(input.mimeType);
+    validateFile(workspace, input.body.length, mimeType);
+    const name = normalizeTitle(input.name ?? fileName, 'Attachment name');
+    const description = normalizeText(input.description, 'Description');
 
-  const attachmentId = Random.id();
-  const fileKey = getAttachmentFileKey(
-    meeting.workspaceId,
-    meeting._id,
-    attachmentId,
-    fileName,
-    mimeType
-  );
-  await putFile(fileKey, input.body, mimeType);
+    const attachmentId = Random.id();
+    const fileKey = getAttachmentFileKey(
+      meeting.workspaceId,
+      meeting._id,
+      attachmentId,
+      fileName,
+      mimeType
+    );
+    await putFile(fileKey, input.body, mimeType);
+    // Nothing refers to the stored file if the attachment isn't committed.
+    await onRollback(() => deleteFilesQuietly([fileKey]));
 
-  const date = new Date();
-  try {
+    const date = new Date();
     await MeetingAttachments.insertAsync({
       _id: attachmentId,
       workspaceId: meeting.workspaceId,
@@ -141,17 +148,14 @@ export async function uploadAttachment(
       updatedAt: date,
       updatedBy: userId,
     });
-  } catch (error) {
-    await deleteFilesQuietly([fileKey]);
-    throw error;
-  }
-  await changeAttachmentCount(meeting._id, 1);
-  await logAttachmentAdded(
-    meeting,
-    { _id: attachmentId, name, size: input.body.length },
-    userId
-  );
-  return requireAttachment(attachmentId);
+    await changeAttachmentCount(meeting._id, 1);
+    await logAttachmentAdded(
+      meeting,
+      { _id: attachmentId, name, size: input.body.length },
+      userId
+    );
+    return requireAttachment(attachmentId);
+  });
 }
 
 export interface CreateAttachmentUploadInput {
@@ -270,57 +274,59 @@ export async function completeAttachmentUpload(
   userId: string,
   { sha256 }: { sha256?: string } = {}
 ): Promise<MeetingAttachmentDocument> {
-  requireUserId(userId);
-  const upload = await requirePendingUpload(uploadId, userId);
-  if (upload.uploadExpiresAt && upload.uploadExpiresAt <= new Date()) {
-    throw meetingsError('UPLOAD_INCOMPLETE', 'The upload has expired');
-  }
-  if (sha256 !== undefined && !SHA256_PATTERN.test(sha256)) {
-    throw meetingsError(
-      'BAD_USER_INPUT',
-      'sha256 must be a hex SHA-256 digest'
-    );
-  }
-  const meeting = await requireEditableMeeting(upload.meetingId);
-  const workspace = await requireWorkspace(meeting.workspaceId);
-
-  const info = await getFileInfo(upload.fileKey);
-  if (!info) {
-    throw meetingsError(
-      'UPLOAD_INCOMPLETE',
-      'The file has not been uploaded yet'
-    );
-  }
-  if (info.size !== upload.size) {
-    throw meetingsError(
-      'UPLOAD_INCOMPLETE',
-      `The uploaded file is ${info.size} bytes, not the ${upload.size} declared`
-    );
-  }
-  validateFile(workspace, info.size, upload.mimeType);
-
-  const completed = await MeetingAttachments.updateAsync(
-    { _id: upload._id, status: MeetingAttachmentStatus.PENDING },
-    {
-      $set: {
-        status: MeetingAttachmentStatus.READY,
-        ...(sha256 ? { sha256: sha256.toLowerCase() } : {}),
-        ...(info.etag ? { etag: info.etag } : {}),
-        updatedAt: new Date(),
-        updatedBy: userId,
-      },
-      $unset: { uploadExpiresAt: 1 },
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const upload = await requirePendingUpload(uploadId, userId);
+    if (upload.uploadExpiresAt && upload.uploadExpiresAt <= new Date()) {
+      throw meetingsError('UPLOAD_INCOMPLETE', 'The upload has expired');
     }
-  );
-  if (!completed) {
-    throw meetingsError(
-      'CONFLICT',
-      'The upload was already completed or aborted'
+    if (sha256 !== undefined && !SHA256_PATTERN.test(sha256)) {
+      throw meetingsError(
+        'BAD_USER_INPUT',
+        'sha256 must be a hex SHA-256 digest'
+      );
+    }
+    const meeting = await requireEditableMeeting(upload.meetingId);
+    const workspace = await requireWorkspace(meeting.workspaceId);
+
+    const info = await getFileInfo(upload.fileKey);
+    if (!info) {
+      throw meetingsError(
+        'UPLOAD_INCOMPLETE',
+        'The file has not been uploaded yet'
+      );
+    }
+    if (info.size !== upload.size) {
+      throw meetingsError(
+        'UPLOAD_INCOMPLETE',
+        `The uploaded file is ${info.size} bytes, not the ${upload.size} declared`
+      );
+    }
+    validateFile(workspace, info.size, upload.mimeType);
+
+    const completed = await MeetingAttachments.updateAsync(
+      { _id: upload._id, status: MeetingAttachmentStatus.PENDING },
+      {
+        $set: {
+          status: MeetingAttachmentStatus.READY,
+          ...(sha256 ? { sha256: sha256.toLowerCase() } : {}),
+          ...(info.etag ? { etag: info.etag } : {}),
+          updatedAt: new Date(),
+          updatedBy: userId,
+        },
+        $unset: { uploadExpiresAt: 1 },
+      }
     );
-  }
-  await changeAttachmentCount(meeting._id, 1);
-  await logAttachmentAdded(meeting, upload, userId);
-  return requireAttachment(upload._id);
+    if (!completed) {
+      throw meetingsError(
+        'CONFLICT',
+        'The upload was already completed or aborted'
+      );
+    }
+    await changeAttachmentCount(meeting._id, 1);
+    await logAttachmentAdded(meeting, upload, userId);
+    return requireAttachment(upload._id);
+  });
 }
 
 /** Cancels a pending upload and removes anything already uploaded. */
@@ -328,13 +334,15 @@ export async function abortAttachmentUpload(
   uploadId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const upload = await requirePendingUpload(uploadId, userId);
-  await MeetingAttachments.removeAsync({
-    _id: upload._id,
-    status: MeetingAttachmentStatus.PENDING,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const upload = await requirePendingUpload(uploadId, userId);
+    await MeetingAttachments.removeAsync({
+      _id: upload._id,
+      status: MeetingAttachmentStatus.PENDING,
+    });
+    await deleteFilesAfterCommit([upload.fileKey]);
   });
-  await deleteFilesQuietly([upload.fileKey]);
 }
 
 /**
@@ -356,7 +364,7 @@ export async function purgeExpiredAttachmentUploads(): Promise<number> {
     _id: { $in: expired.map(({ _id }) => _id) },
     status: MeetingAttachmentStatus.PENDING,
   });
-  await deleteFilesQuietly(expired.map(({ fileKey }) => fileKey));
+  await deleteFilesAfterCommit(expired.map(({ fileKey }) => fileKey));
   return expired.length;
 }
 
@@ -392,38 +400,40 @@ export async function updateAttachment(
   changes: UpdateAttachmentInput,
   userId: string
 ): Promise<MeetingAttachmentDocument> {
-  requireUserId(userId);
-  const attachment = await requireAttachment(attachmentId);
-  await requireEditableMeeting(attachment.meetingId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const attachment = await requireAttachment(attachmentId);
+    await requireEditableMeeting(attachment.meetingId);
 
-  const $set: Record<string, unknown> = {
-    updatedAt: new Date(),
-    updatedBy: userId,
-  };
-  const $unset: Record<string, 1> = {};
-  if (changes.name !== undefined) {
-    $set.name = normalizeTitle(changes.name, 'Attachment name');
-  }
-  if (changes.description !== undefined) {
-    const description = normalizeText(changes.description, 'Description');
-    if (description) $set.description = description;
-    else $unset.description = 1;
-  }
+    const $set: Record<string, unknown> = {
+      updatedAt: new Date(),
+      updatedBy: userId,
+    };
+    const $unset: Record<string, 1> = {};
+    if (changes.name !== undefined) {
+      $set.name = normalizeTitle(changes.name, 'Attachment name');
+    }
+    if (changes.description !== undefined) {
+      const description = normalizeText(changes.description, 'Description');
+      if (description) $set.description = description;
+      else $unset.description = 1;
+    }
 
-  await MeetingAttachments.updateAsync(attachmentId, {
-    $set,
-    ...(Object.keys($unset).length ? { $unset } : {}),
+    await MeetingAttachments.updateAsync(attachmentId, {
+      $set,
+      ...(Object.keys($unset).length ? { $unset } : {}),
+    });
+    await logActivity({
+      workspaceId: attachment.workspaceId,
+      meetingId: attachment.meetingId,
+      entityType: MeetingsEntityType.ATTACHMENT,
+      entityId: attachmentId,
+      action: MeetingsAction.ATTACHMENT_UPDATED,
+      userId,
+      details: { changed: Object.keys(changes) },
+    });
+    return requireAttachment(attachmentId);
   });
-  await logActivity({
-    workspaceId: attachment.workspaceId,
-    meetingId: attachment.meetingId,
-    entityType: MeetingsEntityType.ATTACHMENT,
-    entityId: attachmentId,
-    action: MeetingsAction.ATTACHMENT_UPDATED,
-    userId,
-    details: { changed: Object.keys(changes) },
-  });
-  return requireAttachment(attachmentId);
 }
 
 const logDownload = (attachment: MeetingAttachmentDocument, userId: string) =>
@@ -498,24 +508,26 @@ export async function deleteAttachment(
   attachmentId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const attachment = await requireAttachment(attachmentId);
-  await requireEditableMeeting(attachment.meetingId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const attachment = await requireAttachment(attachmentId);
+    await requireEditableMeeting(attachment.meetingId);
 
-  const removed = await MeetingAttachments.removeAsync({
-    _id: attachmentId,
-    status: MeetingAttachmentStatus.READY,
+    const removed = await MeetingAttachments.removeAsync({
+      _id: attachmentId,
+      status: MeetingAttachmentStatus.READY,
+    });
+    if (!removed) return;
+    await changeAttachmentCount(attachment.meetingId, -1);
+    await logActivity({
+      workspaceId: attachment.workspaceId,
+      meetingId: attachment.meetingId,
+      entityType: MeetingsEntityType.ATTACHMENT,
+      entityId: attachmentId,
+      action: MeetingsAction.ATTACHMENT_DELETED,
+      userId,
+      details: { name: attachment.name },
+    });
+    await deleteFilesAfterCommit([attachment.fileKey]);
   });
-  if (!removed) return;
-  await changeAttachmentCount(attachment.meetingId, -1);
-  await logActivity({
-    workspaceId: attachment.workspaceId,
-    meetingId: attachment.meetingId,
-    entityType: MeetingsEntityType.ATTACHMENT,
-    entityId: attachmentId,
-    action: MeetingsAction.ATTACHMENT_DELETED,
-    userId,
-    details: { name: attachment.name },
-  });
-  await deleteFilesQuietly([attachment.fileKey]);
 }

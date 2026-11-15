@@ -2,7 +2,7 @@
 # published Linux prebuilt binaries for linux-x64 - no linux-arm64 build
 # exists, and it fails to compile from source against newer Node headers.
 # amd64 also matches what CI/production already run on, so no arch drift.
-FROM --platform=linux/amd64 node:24.22.1-bookworm-slim
+FROM --platform=linux/amd64 node:26.13.1-trixie-slim
 EXPOSE 3000
 ENV TZ=Asia/Karachi
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -36,7 +36,7 @@ WORKDIR /app
 RUN mkdir -p node_modules idreesia-web/node_modules idreesia-web/.meteor/local idreesia-common/node_modules \
   && chown -R node:node /app
 
-# node:24-bookworm-slim already ships a non-root "node" user (uid/gid 1000) -
+# node:26-trixie-slim already ships a non-root "node" user (uid/gid 1000) -
 # no need to create our own. node_modules/.meteor/local are named volumes,
 # not part of the bind-mounted repo, so whatever this container writes there
 # never touches the host filesystem's ownership.
@@ -50,7 +50,7 @@ ENV PATH="/home/node/.meteor:${PATH}"
 # below auto-switches to the pinned release's tool version - one that never
 # had yarn installed into it via "meteor npm install -g yarn" - and fails
 # with "'yarn' is not a Meteor command".
-RUN curl "https://install.meteor.com/?release=3.5.4" | sh
+RUN curl "https://install.meteor.com/?release=3.6.1" | sh
 RUN meteor npm install -g yarn
 
 # node_modules/.meteor/local are volume-backed (see docker-compose.yml), so

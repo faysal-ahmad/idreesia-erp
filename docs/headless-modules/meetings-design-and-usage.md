@@ -306,7 +306,7 @@ The Workspaces module uses meetings through the **Meetings** committee feature (
 - Enabling it again restores the same workspace, with its meetings.
 
 **Who can do what:**
-- **Coordinators** (and `erp-admin`) schedule, edit, cancel, complete, reopen and delete meetings, set participants and their roles, mark attendance, and manage the agenda, minutes, attachments and action items.
+- **Coordinators** (and super-admins) schedule, edit, cancel, complete, reopen and delete meetings, set participants and their roles, mark attendance, and manage the agenda, minutes, attachments and action items.
 - **Members** see the committee's meetings, agenda, minutes, attachments (and can download them), action items and activity. A participant answers the invitation for themselves; a coordinator can answer for anyone.
 - An action item's **assignee** (or a coordinator) changes its status.
 - **Notifications** (mobile): the meetings list has a bell with an unread count. It opens a screen listing the committee's meeting notifications, newest first. Opening it marks them read, and tapping one opens its meeting. The web app has no notifications page yet.

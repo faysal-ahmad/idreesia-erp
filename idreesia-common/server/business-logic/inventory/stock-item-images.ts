@@ -1,4 +1,4 @@
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
+import { afterCommit } from 'meteor/idreesia-common/server/collections';
 import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
 import {
   deleteFiles,
@@ -16,15 +16,11 @@ interface UserRef {
 
 export interface StockItemImageFields {
   imageKey?: string | null;
-  imageId?: string | null;
 }
 
-/**
- * URL of a stock item's image - from object storage, or from Attachments for
- * an image that hasn't been migrated yet.
- */
+/** URL of a stock item's image in object storage. */
 export const getStockItemImageUrl = (stockItem: StockItemImageFields) =>
-  getStoredImageUrl(stockItem.imageKey, stockItem.imageId);
+  getStoredImageUrl(stockItem.imageKey);
 
 /** Stores an image under stock-item-images/<stockItemId>/. */
 export const storeStockItemImage = (
@@ -35,28 +31,23 @@ export const storeStockItemImage = (
   storeImage(StorageFolders.StockItemImages, stockItemId, image, mimeType);
 
 /**
- * Deletes a stock item's stored image - the object storage file, and the
- * legacy Attachments copy outright (images are being moved out of Mongo,
- * not archived in it).
+ * Deletes a stock item's stored image file in object storage, once the
+ * current transaction commits (straight away outside one).
  */
 export async function removeStockItemImageFiles(
   stockItem: StockItemImageFields | null | undefined
 ) {
-  if (stockItem?.imageKey) {
+  const imageKey = stockItem?.imageKey;
+  if (!imageKey) return;
+  await afterCommit(async () => {
     try {
-      await deleteFiles([stockItem.imageKey]);
+      await deleteFiles([imageKey]);
     } catch (error) {
       // An orphaned file is harmless; failing the update over it is not.
       // eslint-disable-next-line no-console
-      console.error(
-        `Failed to delete stock item image ${stockItem.imageKey}:`,
-        error
-      );
+      console.error(`Failed to delete stock item image ${imageKey}:`, error);
     }
-  }
-  if (stockItem?.imageId) {
-    await Attachments.removeAsync(stockItem.imageId);
-  }
+  });
 }
 
 /**
@@ -90,7 +81,6 @@ export async function setStockItemImage(
   const date = new Date();
   await StockItems.updateAsync(selector, {
     $set: { imageKey, updatedAt: date, updatedBy: user._id },
-    $unset: { imageId: '' },
   });
 
   await removeStockItemImageFiles(existing);

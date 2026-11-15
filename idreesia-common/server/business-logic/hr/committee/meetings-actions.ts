@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   addParticipants,
   createMeeting,
@@ -35,22 +36,24 @@ export async function createCommitteeMeeting(
   timeZone: string,
   userId: string
 ) {
-  return createMeeting(
-    {
-      workspaceId,
-      title: input.title,
-      startsAt: parseTimestamp(input.startsAt)!,
-      endsAt: parseTimestamp(input.endsAt)!,
-      timeZone,
-      location: input.location ?? undefined,
-      onlineUrl: input.onlineUrl ?? undefined,
-      description: input.description ?? undefined,
-      participants: [...new Set(participantIds)].map(participantId => ({
-        participantId,
-      })),
-    },
-    userId
-  );
+  return runInTransaction(async () => {
+    return createMeeting(
+      {
+        workspaceId,
+        title: input.title,
+        startsAt: parseTimestamp(input.startsAt)!,
+        endsAt: parseTimestamp(input.endsAt)!,
+        timeZone,
+        location: input.location ?? undefined,
+        onlineUrl: input.onlineUrl ?? undefined,
+        description: input.description ?? undefined,
+        participants: [...new Set(participantIds)].map(participantId => ({
+          participantId,
+        })),
+      },
+      userId
+    );
+  });
 }
 
 /**
@@ -62,22 +65,24 @@ export async function updateCommitteeMeeting(
   input: CommitteeMeetingInput,
   userId: string
 ) {
-  const startsAt = parseTimestamp(input.startsAt);
-  const endsAt = parseTimestamp(input.endsAt);
-  const timeChanged =
-    startsAt?.getTime() !== meeting.startsAt.getTime() ||
-    endsAt?.getTime() !== meeting.endsAt.getTime();
-  return updateMeeting(
-    meeting._id,
-    {
-      title: input.title,
-      ...(timeChanged ? { startsAt, endsAt } : {}),
-      location: input.location ?? null,
-      onlineUrl: input.onlineUrl ?? null,
-      description: input.description ?? null,
-    },
-    userId
-  );
+  return runInTransaction(async () => {
+    const startsAt = parseTimestamp(input.startsAt);
+    const endsAt = parseTimestamp(input.endsAt);
+    const timeChanged =
+      startsAt?.getTime() !== meeting.startsAt.getTime() ||
+      endsAt?.getTime() !== meeting.endsAt.getTime();
+    return updateMeeting(
+      meeting._id,
+      {
+        title: input.title,
+        ...(timeChanged ? { startsAt, endsAt } : {}),
+        location: input.location ?? null,
+        onlineUrl: input.onlineUrl ?? null,
+        description: input.description ?? null,
+      },
+      userId
+    );
+  });
 }
 
 /**
@@ -90,21 +95,23 @@ export async function setCommitteeMeetingParticipants(
   participantIds: string[],
   userId: string
 ) {
-  const wanted = new Set(participantIds);
-  const current = new Set(meeting.participants.map(p => p.participantId));
-  let updated = meeting;
-  for (const participantId of current) {
-    if (!wanted.has(participantId)) {
-      updated = await removeParticipant(meeting._id, participantId, userId);
+  return runInTransaction(async () => {
+    const wanted = new Set(participantIds);
+    const current = new Set(meeting.participants.map(p => p.participantId));
+    let updated = meeting;
+    for (const participantId of current) {
+      if (!wanted.has(participantId)) {
+        updated = await removeParticipant(meeting._id, participantId, userId);
+      }
     }
-  }
-  const added = [...wanted].filter(id => !current.has(id));
-  if (added.length) {
-    updated = await addParticipants(
-      meeting._id,
-      added.map(participantId => ({ participantId })),
-      userId
-    );
-  }
-  return updated;
+    const added = [...wanted].filter(id => !current.has(id));
+    if (added.length) {
+      updated = await addParticipants(
+        meeting._id,
+        added.map(participantId => ({ participantId })),
+        userId
+      );
+    }
+    return updated;
+  });
 }

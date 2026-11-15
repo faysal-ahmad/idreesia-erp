@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { GraphQLError } from 'graphql';
 
 import { type CommitteeFeatureKey } from 'meteor/idreesia-common/constants/organization';
@@ -104,42 +105,45 @@ export const runMemberHooks = async (
  * records it (and any data the feature keeps) on the committee. Enabling an
  * already enabled feature re-runs its setup, which is safe.
  */
-export const enableCommitteeFeature = async (
+export const enableCommitteeFeature = (
   committeeId: string,
   featureKey: string,
   userId: string
-): Promise<true> => {
-  const { committee, handler } = await loadCommittee(committeeId, featureKey);
-  const featureData = await runHandler('enable', () =>
-    handler.enable(committee, userId)
-  );
+): Promise<true> =>
+  runInTransaction(async () => {
+    const { committee, handler } = await loadCommittee(committeeId, featureKey);
+    const featureData = await runHandler('enable', () =>
+      handler.enable(committee, userId)
+    );
 
-  await Committees.updateAsync(committeeId, {
-    $addToSet: { features: featureKey },
-    $set: { ...featureData, updatedAt: new Date(), updatedBy: userId },
+    await Committees.updateAsync(committeeId, {
+      $addToSet: { features: featureKey },
+      $set: { ...featureData, updatedAt: new Date(), updatedBy: userId },
+    });
+
+    return true as const;
   });
-
-  return true;
-};
 
 /**
  * Disables a feature for a committee. The feature's stored data (e.g. the
  * chat group id) is kept so a later enable can pick up where it left off.
  */
-export const disableCommitteeFeature = async (
+export const disableCommitteeFeature = (
   committeeId: string,
   featureKey: string,
   userId: string
-): Promise<true> => {
-  const { committee, handler } = await loadCommittee(committeeId, featureKey);
-  const featureData = await runHandler('disable', () =>
-    handler.disable(committee, userId)
-  );
+): Promise<true> =>
+  runInTransaction(async () => {
+    const { committee, handler } = await loadCommittee(committeeId, featureKey);
+    const featureData = await runHandler('disable', () =>
+      handler.disable(committee, userId)
+    );
 
-  await Committees.updateAsync(committeeId, {
-    $pull: { features: featureKey },
-    $set: { ...featureData, updatedAt: new Date(), updatedBy: userId },
+    await Committees.updateAsync(committeeId, {
+      $pull: { features: featureKey },
+      $set: { ...featureData, updatedAt: new Date(), updatedBy: userId },
+    });
+
+    return true as const;
   });
 
-  return true;
-};

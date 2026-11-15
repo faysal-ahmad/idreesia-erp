@@ -30,7 +30,7 @@ interface Props {
   taskId: string;
 }
 
-/** Where a task's back arrow goes: the screen that opened it, else the tasks list. */
+/** Where a task's back arrow goes: the screen that opened it, else the Tasks tab. */
 export const useTaskBackTo = (committeeId: string) => {
   const { state } = useLocation<{ from?: string } | undefined>();
   return state?.from ?? WorkspacesPaths.committeeTasks(committeeId);

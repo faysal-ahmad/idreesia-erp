@@ -36,10 +36,7 @@ import {
   type PersonImageUrls,
 } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
-import {
-  Attachments,
-  People,
-} from 'meteor/idreesia-common/server/collections/common';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 /**
  * Shared conversation functions over a Rocket.Chat private group. Used by
@@ -286,8 +283,6 @@ const getChatUserImages = async (chatUserIds: string[]) => {
       fields: {
         'sharedData.imageKey': 1,
         'sharedData.imageThumbnailKey': 1,
-        'sharedData.imageId': 1,
-        'sharedData.imageThumbnailId': 1,
       },
     }
   ).fetchAsync()) as Array<{
@@ -296,37 +291,13 @@ const getChatUserImages = async (chatUserIds: string[]) => {
   }>;
   const personById = new Map(people.map(person => [person._id, person]));
 
-  // A legacy thumbnail id can point to an attachment that no longer exists;
-  // only hand out thumbnails that do, so callers fall back to the full image.
-  const thumbnailIds = people
-    .filter(person => !person.sharedData?.imageKey)
-    .map(person => person.sharedData?.imageThumbnailId)
-    .filter((id): id is string => !!id);
-  const existingThumbnailIds = new Set(
-    thumbnailIds.length
-      ? (
-          (await Attachments.find(
-            { _id: { $in: thumbnailIds } },
-            { fields: { _id: 1 } }
-          ).fetchAsync()) as Array<{ _id: string }>
-        ).map(attachment => attachment._id)
-      : []
-  );
-
   users.forEach(user => {
     const shared = user.personId
       ? personById.get(user.personId)?.sharedData
       : undefined;
     if (!user.chatUserId || !shared) return;
 
-    const thumbnailId = shared.imageThumbnailId;
-    const urls = getPersonImageUrls({
-      ...shared,
-      imageThumbnailId:
-        thumbnailId && existingThumbnailIds.has(thumbnailId)
-          ? thumbnailId
-          : null,
-    });
+    const urls = getPersonImageUrls(shared);
     if (urls.imageUrl) images.set(user.chatUserId, urls);
   });
   return images;

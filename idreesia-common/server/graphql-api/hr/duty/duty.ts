@@ -22,7 +22,6 @@ type DutyType {
 
 extend type Query {
   allMSDuties: [DutyType]
-  allMehfilDuties: [DutyType]
 }
 
 extend type Mutation {

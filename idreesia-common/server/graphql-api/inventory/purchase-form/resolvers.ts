@@ -1,19 +1,15 @@
+import { PurchaseForms } from 'meteor/idreesia-common/server/collections/inventory';
 import {
-  PurchaseForms,
-  StockItems,
-} from 'meteor/idreesia-common/server/collections/inventory';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
+  createPurchaseForm,
+  removePurchaseFormAttachment,
+  removePurchaseForms,
+  updatePurchaseForm,
+} from 'meteor/idreesia-common/server/business-logic/inventory/purchase-forms';
 
 import getPurchaseForms, {
   getPurchaseFormsByStockItemId,
   getPurchaseFormsByMonth,
-} from './queries';
-
-interface FormItem {
-  stockItemId: string;
-  quantity: number;
-  isInflow?: boolean;
-}
+} from 'meteor/idreesia-common/server/business-logic/inventory/purchase-form-search';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -143,32 +139,19 @@ const resolvers: ResolverMap = {
       },
       { user }
     ) => {
-      const date = new Date();
-      const purchaseFormId = await PurchaseForms.insertAsync({
-        purchaseDate,
-        receivedBy,
-        purchasedBy,
-        physicalStoreId,
-        locationId,
-        vendorId,
-        items,
-        notes,
-        createdAt: date,
-        createdBy: user._id,
-        updatedAt: date,
-        updatedBy: user._id,
-      });
-
-      await Promise.all(
-        items.map(({ stockItemId, quantity, isInflow }: FormItem) => {
-          if (isInflow) {
-            return StockItems.incrementCurrentLevel(stockItemId, quantity);
-          }
-
-          return StockItems.decrementCurrentLevel(stockItemId, quantity);
-        })
+      const purchaseFormId = await createPurchaseForm(
+        {
+          purchaseDate,
+          receivedBy,
+          purchasedBy,
+          physicalStoreId,
+          locationId,
+          vendorId,
+          items,
+          notes,
+        },
+        user._id
       );
-
       return PurchaseForms.findOneAsync(purchaseFormId);
     },
 
@@ -187,59 +170,20 @@ const resolvers: ResolverMap = {
       },
       { user }
     ) => {
-      const existingForm = await PurchaseForms.findOneAsync(_id);
-      if (!existingForm) {
-        throw new Error('Purchase form not found.');
-      }
-      const typedExistingForm = existingForm as unknown as {
-        items: FormItem[];
-      };
-      const { items: existingItems } = typedExistingForm;
-      // Undo the effect of all previous items
-      await Promise.all(
-        existingItems.map(({ stockItemId, quantity, isInflow }: FormItem) => {
-          if (isInflow) {
-            return StockItems.decrementCurrentLevel(stockItemId, quantity);
-          }
-
-          return StockItems.incrementCurrentLevel(stockItemId, quantity);
-        })
-      );
-
-      // Apply the effect of new incoming items
-      await Promise.all(
-        items.map(({ stockItemId, quantity, isInflow }: FormItem) => {
-          if (isInflow) {
-            return StockItems.incrementCurrentLevel(stockItemId, quantity);
-          }
-
-          return StockItems.decrementCurrentLevel(stockItemId, quantity);
-        })
-      );
-
-      const date = new Date();
-      await PurchaseForms.updateAsync(
+      await updatePurchaseForm(
+        _id,
         {
-          _id: { $eq: _id },
-          approvedOn: { $exists: false },
-          approvedBy: { $exists: false },
+          purchaseDate,
+          receivedBy,
+          purchasedBy,
+          physicalStoreId,
+          locationId,
+          vendorId,
+          items,
+          notes,
         },
-        {
-          $set: {
-            purchaseDate,
-            receivedBy,
-            purchasedBy,
-            physicalStoreId,
-            locationId,
-            vendorId,
-            items,
-            notes,
-            updatedAt: date,
-            updatedBy: user._id,
-          },
-        }
+        user._id
       );
-
       return PurchaseForms.findOneAsync(_id);
     },
 
@@ -297,47 +241,17 @@ const resolvers: ResolverMap = {
       { _id, physicalStoreId, attachmentId },
       { user }
     ) => {
-      const date = new Date();
-      await PurchaseForms.updateAsync(
-        { _id, physicalStoreId },
-        {
-          $pull: {
-            attachmentIds: attachmentId,
-          },
-          $set: {
-            updatedAt: date,
-            updatedBy: user._id,
-          },
-        }
+      await removePurchaseFormAttachment(
+        _id,
+        physicalStoreId,
+        attachmentId,
+        user._id
       );
-
-      await Attachments.removeAttachment(attachmentId);
       return PurchaseForms.findOneAsync(_id);
     },
 
-    removePurchaseForms: async (obj, { physicalStoreId, _ids }, { user }) => {
-      const existingPurchaseForms = PurchaseForms.find({
-        _id: { $in: _ids },
-        physicalStoreId,
-        approvedOn: { $exists: false },
-        approvedBy: { $exists: false },
-      });
-
-      await existingPurchaseForms.forEachAsync(async (existingForm: any) => {
-        const { items: existingItems } = existingForm;
-        await Promise.all(
-          existingItems.map(({ stockItemId, quantity, isInflow }: FormItem) => {
-            if (isInflow) {
-              return StockItems.decrementCurrentLevel(stockItemId, quantity);
-            }
-
-            return StockItems.incrementCurrentLevel(stockItemId, quantity);
-          })
-        );
-      });
-
-      return PurchaseForms.removeAsync({ _id: { $in: _ids }, physicalStoreId });
-    },
+    removePurchaseForms: async (obj, { physicalStoreId, _ids }) =>
+      removePurchaseForms(physicalStoreId, _ids),
   },
 };
 

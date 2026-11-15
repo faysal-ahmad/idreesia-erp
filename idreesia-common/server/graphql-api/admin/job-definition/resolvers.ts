@@ -5,8 +5,10 @@ import {
   JobDefinitions,
   type JobDefinitionDocument,
 } from 'meteor/idreesia-common/server/collections/admin';
-import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 import { EntityType, OperationType } from 'meteor/idreesia-common/constants/audit';
+import {
+  createAuditLog,
+} from 'meteor/idreesia-common/server/business-logic/common';
 
 interface ResolverContext {
   user?: {
@@ -63,7 +65,7 @@ async function applySchedule(
     await agenda.cancel({ name: definition.name });
   }
 
-  await AuditLogs.createAuditLog({
+  await createAuditLog({
     entityId: _id,
     entityType: EntityType.JOB_DEFINITION,
     operationType: OperationType.JOB_SCHEDULE_UPDATED,
@@ -132,7 +134,7 @@ export default {
         }
       }
 
-      await AuditLogs.createAuditLog({
+      await createAuditLog({
         entityId: _id,
         entityType: EntityType.JOB_DEFINITION,
         operationType: enabled

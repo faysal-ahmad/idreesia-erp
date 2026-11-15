@@ -1,5 +1,8 @@
-import { People, SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
+import {
+  searchSecurityLogs,
+} from 'meteor/idreesia-common/server/business-logic/admin';
 
 interface SecurityLogFilter {
   dataSource?: string | null;
@@ -59,7 +62,7 @@ export default {
     ) => {
       const { dataSource, operationType, userId, startTime, endTime, pageIndex, pageSize } =
         filter ?? {};
-      return SecurityLogs.searchSecurityLogs({
+      return searchSecurityLogs({
         dataSources: dataSource ? [dataSource] : undefined,
         operationTypes: operationType ? [operationType] : undefined,
         userIds: userId ? [userId] : undefined,

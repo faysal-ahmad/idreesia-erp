@@ -114,7 +114,7 @@ A committee can have **Discussions** turned on from **HR → Committees → (com
 - **Membership changes made while it's on** are not yet synced to the group.
 
 **Who can do what**
-- **Reading** is open to committee members (and `erp-admin`), and only while Discussions is on. History and files are read as the service account, which owns the group, so members without a chat account can read too.
+- **Reading** is open to committee members (and super-admins), and only while Discussions is on. History and files are read as the service account, which owns the group, so members without a chat account can read too.
 - **Posting and uploading** happen as the member's own chat account, so a member needs one (see [Chat accounts](#chat-accounts-for-erp-users)). Without one, the composer explains this instead of showing.
 
 **Acting as a member (per-user tokens)**

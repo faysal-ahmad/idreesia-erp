@@ -8,12 +8,15 @@ import {
 
 import {
   getStockItemImageUrl,
-  removeStockItemImageFiles,
   setStockItemImage,
 } from 'meteor/idreesia-common/server/business-logic/inventory/stock-item-images';
 
-import { getPagedStockItems, getStatistics } from './queries';
-import { mergeStockItems, recalculateStockLevels } from './helpers';
+import { getPagedStockItems } from 'meteor/idreesia-common/server/business-logic/inventory/stock-item-search';
+import {
+  mergeStockItems,
+  recalculateStockLevels,
+  removeStockItem,
+} from 'meteor/idreesia-common/server/business-logic/inventory/stock-item-maintenance';
 
 interface StockItem {
   _id: string;
@@ -25,7 +28,6 @@ interface StockItem {
   categoryId?: string;
   minStockLevel?: number;
   currentStockLevel?: number;
-  imageId?: string;
   imageKey?: string;
 }
 
@@ -135,13 +137,6 @@ export default {
         physicalStoreId: { $eq: physicalStoreId },
       }).fetchAsync();
     },
-
-    inventoryStatistics: async (
-      _obj: unknown,
-      { physicalStoreId }: Pick<StockItemArgs, 'physicalStoreId'>
-    ) => {
-      return getStatistics(physicalStoreId);
-    },
   },
 
   Mutation: {
@@ -242,48 +237,7 @@ export default {
     removeStockItem: async (
       _obj: unknown,
       { _id, physicalStoreId }: Pick<StockItemArgs, '_id' | 'physicalStoreId'>
-    ) => {
-      // Check that there are no purchase/issuance forms, or stock adjustments
-      // against this stock item.
-      const purchaseFormsCount = await PurchaseForms.find({
-        physicalStoreId: { $eq: physicalStoreId },
-        items: {
-          $elemMatch: {
-            stockItemId: { $eq: _id },
-          },
-        },
-      }).countAsync();
-      const issuanceFormsCount = await IssuanceForms.find({
-        physicalStoreId: { $eq: physicalStoreId },
-        items: {
-          $elemMatch: {
-            stockItemId: { $eq: _id },
-          },
-        },
-      }).countAsync();
-      const stockAdjustmentsCount = await StockAdjustments.find({
-        physicalStoreId: { $eq: physicalStoreId },
-        stockItemId: { $eq: _id },
-      }).countAsync();
-
-      if (
-        purchaseFormsCount + issuanceFormsCount + stockAdjustmentsCount ===
-        0
-      ) {
-        await removeStockItemImageFiles(
-          await StockItems.findOneAsync({
-            _id: { $eq: _id },
-            physicalStoreId: { $eq: physicalStoreId },
-          })
-        );
-        return StockItems.removeAsync({
-          _id: { $eq: _id },
-          physicalStoreId: { $eq: physicalStoreId },
-        });
-      }
-
-      return 0;
-    },
+    ) => removeStockItem(_id, physicalStoreId),
 
     setStockItemImage: async (
       _obj: unknown,

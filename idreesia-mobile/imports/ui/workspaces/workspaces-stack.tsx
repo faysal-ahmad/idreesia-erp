@@ -12,7 +12,6 @@ import { NightStayReportFeature } from './night-stay-report/night-stay-report-fe
 import { WorkspacesPaths } from './paths';
 import { PollsFeature } from './polls/polls-feature';
 import { ProjectsFeature } from './projects/projects-feature';
-import { TasksFeature } from './projects/tasks-feature';
 import { WorkspacesScreen } from './workspaces-screen';
 
 /**
@@ -36,7 +35,6 @@ export const WorkspacesStack = () => {
         <Route component={MeetingsFeature} path={WorkspacesPaths.committeeMeetingsPattern} />
         <Route component={PollsFeature} path={WorkspacesPaths.committeePollsPattern} />
         <Route component={ProjectsFeature} path={WorkspacesPaths.committeeProjectsPattern} />
-        <Route component={TasksFeature} path={WorkspacesPaths.committeeTasksPattern} />
         <Route component={DocumentsFeature} path={WorkspacesPaths.committeeDocumentsPattern} />
         <Route
           component={NightStayReportFeature}

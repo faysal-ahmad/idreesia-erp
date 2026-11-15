@@ -5,6 +5,9 @@ import {
   MehfilKarkuns,
   MehfilDuties,
 } from 'meteor/idreesia-common/server/collections/security';
+import {
+  searchPeople,
+} from 'meteor/idreesia-common/server/business-logic/common';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -43,6 +46,13 @@ const resolvers: ResolverMap = {
     mehfilKarkunByBarcodeId: async (obj, { barcode }) =>
       MehfilKarkuns.findOneAsync({
         dutyCardBarcodeId: barcode,
+      }),
+
+    pagedSecurityPeople: async (obj, { filter }) =>
+      searchPeople(filter, {
+        includeVisitors: true,
+        includeKarkuns: true,
+        includeEmployees: true,
       }),
   },
 

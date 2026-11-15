@@ -1,5 +1,9 @@
-export { default as UserGroups } from './user-groups';
-export { default as Users } from './users';
+export { default as UserGroups, type UserGroupDocument } from './user-groups';
+export { default as Users, type AppUser } from './users';
+export {
+  default as LoginAttempts,
+  type LoginAttemptDocument,
+} from './login-attempts';
 export {
   default as JobDefinitions,
   type JobDefinitionDocument,

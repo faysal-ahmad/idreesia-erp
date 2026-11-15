@@ -44,9 +44,6 @@ extend type Query {
   securityVisitorByCnic(cnicNumbers: [String]!): PersonType
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
-  securityVisitorByCnicOrContactNumber(cnicNumber: String, contactNumber: String): PersonType
-  @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
-
   # Step one of face search - embeds the captured photo and reports whether it is usable.
   # Deliberately does not search, so the capture dialog can report a bad photo and let the
   # operator retake without leaving the dialog.

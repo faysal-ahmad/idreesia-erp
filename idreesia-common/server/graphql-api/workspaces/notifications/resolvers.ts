@@ -1,7 +1,6 @@
 import {
   getMyNotificationCounts,
   getMyNotifications,
-  getMyUnreadNotificationCount,
   markMyNotificationsRead,
 } from 'meteor/idreesia-common/server/business-logic/hr/committee/notifications';
 
@@ -29,9 +28,6 @@ const resolvers: ResolverMap = {
     },
 
     myNotificationCounts: async (obj, args, { user }) => getMyNotificationCounts(user),
-
-    myUnreadNotificationCount: async (obj, args, { user }) =>
-      getMyUnreadNotificationCount(user),
   },
 
   Mutation: {

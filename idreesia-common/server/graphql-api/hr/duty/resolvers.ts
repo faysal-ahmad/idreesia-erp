@@ -59,12 +59,6 @@ const resolvers: ResolverMap = {
         { isMehfilDuty: { $eq: false } },
         { sort: { name: 1 } }
       ).fetchAsync(),
-
-    allMehfilDuties: async () =>
-      Duties.find(
-        { isMehfilDuty: { $eq: true } },
-        { sort: { name: 1 } }
-      ).fetchAsync(),
   },
 
   Mutation: {

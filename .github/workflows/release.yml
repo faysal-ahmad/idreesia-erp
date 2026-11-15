@@ -6,6 +6,12 @@ on:
       - develop
       - master
 
+# Production URLs baked into the store builds of the mobile app.
+env:
+  MOBILE_BACKEND_URL: https://idreesia.app
+  MOBILE_SERVER_URL: https://mobile.idreesia.app
+  MOBILE_ROCKETCHAT_URL: https://rocketchat.idreesia.app
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.sha }}
   cancel-in-progress: false
@@ -144,7 +150,7 @@ jobs:
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v3
         with:
-          meteor-release: 3.5.4
+          meteor-release: 3.6.1
 
       - run: meteor npm install -g yarn
 
@@ -170,11 +176,15 @@ jobs:
       - name: Typecheck Workspace
         run: meteor yarn run typecheck
 
+      - name: Run Unit Tests
+        run: meteor yarn run test:unit
+
       - name: Build Application
         run: meteor yarn run build-for-docker
         working-directory: ./idreesia-web
 
       - name: Build Mobile Server Bundle
+        if: ${{ github.ref_name == 'master' }}
         run: meteor yarn run build-for-docker
         working-directory: ./idreesia-mobile
 
@@ -259,8 +269,8 @@ jobs:
   # the same app version. The run number is the store build number, which must
   # increase with every upload.
   #
-  # Repository variables: MOBILE_SERVER_URL, MOBILE_BACKEND_URL,
-  # MOBILE_ROCKETCHAT_URL. Secrets are listed in docs/mobile-release-builds.md.
+  # URLs are set in the env block at the top. Secrets are listed in
+  # docs/mobile-release-builds.md.
   mobile-android:
     needs: release
     if: ${{ github.ref_name == 'master' }}
@@ -268,6 +278,7 @@ jobs:
     env:
       MOBILE_VERSION: ${{ needs.release.outputs.version }}
       MOBILE_BUILD_NUMBER: ${{ github.run_number }}
+      MOBILE_RELEASE: 'true'
     steps:
       - name: Checkout Release Tag
         uses: actions/checkout@v7
@@ -278,12 +289,12 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v3
         with:
-          meteor-release: 3.5.4
+          meteor-release: 3.6.1
 
       - run: meteor npm install -g yarn
 
@@ -297,20 +308,34 @@ jobs:
       - name: Write Mobile Settings
         run: |
           jq -n \
-            --arg backend "${{ vars.MOBILE_BACKEND_URL }}" \
-            --arg chat "${{ vars.MOBILE_ROCKETCHAT_URL }}" \
+            --arg backend "${{ env.MOBILE_BACKEND_URL }}" \
+            --arg chat "${{ env.MOBILE_ROCKETCHAT_URL }}" \
             '{public: {backendUrl: $backend, rocketChatUrl: $chat}}' > "$RUNNER_TEMP/mobile-settings.json"
 
+      # Meteor 3.5 can't create the Cordova project from scratch while
+      # .meteor/cordova-plugins lists file:// plugins, so create it first
+      # without them. See scripts/prepare-cordova-project.sh.
+      - name: Prepare Cordova Project
+        run: scripts/prepare-cordova-project.sh android "${{ env.MOBILE_SERVER_URL }}" "$RUNNER_TEMP/mobile-settings.json"
+
+      # One Meteor build. By default it produces an unsigned .aab (for Google
+      # Play) and keeps the generated Gradle project, which is reused below for
+      # the .apk so the app is not bundled twice.
       - name: Build Android Project
         run: |
           meteor build ../build/mobile-android \
-            --server "${{ vars.MOBILE_SERVER_URL }}" \
-            --settings "$RUNNER_TEMP/mobile-settings.json"
+            --platforms android \
+            --server "${{ env.MOBILE_SERVER_URL }}" \
+            --mobile-settings "$RUNNER_TEMP/mobile-settings.json"
         working-directory: ./idreesia-mobile
         env:
           METEOR_PACKAGE_DIRS: ../
 
-      - name: Sign APK
+      - name: Build Unsigned APK
+        run: ./gradlew assembleRelease -q
+        working-directory: ./build/mobile-android/android/project
+
+      - name: Sign AAB And APK
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -320,28 +345,47 @@ jobs:
           set -euo pipefail
           echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.keystore"
           build_tools=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)
-          unsigned=$(find build/mobile-android/android -name '*-unsigned.apk' | head -n 1)
-          if [ -z "$unsigned" ]; then
-            echo "::error::Meteor did not produce an unsigned APK."
-            exit 1
-          fi
+          android_out=build/mobile-android/android
+          unsigned_aab="$android_out/app-release.aab"
+          unsigned_apk="$android_out/project/app/build/outputs/apk/release/app-release-unsigned.apk"
+          for f in "$unsigned_aab" "$unsigned_apk"; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Expected build output not found: $f"
+              exit 1
+            fi
+          done
           mkdir -p build/artifacts
-          "$build_tools/zipalign" -f -p 4 "$unsigned" build/artifacts/aligned.apk
+
+          # .apk: align, then sign with apksigner.
+          "$build_tools/zipalign" -f -p 4 "$unsigned_apk" "$RUNNER_TEMP/aligned.apk"
           "$build_tools/apksigner" sign \
             --ks "$RUNNER_TEMP/release.keystore" \
             --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
             --ks-key-alias "$ANDROID_KEY_ALIAS" \
             --key-pass env:ANDROID_KEY_PASSWORD \
             --out "build/artifacts/idreesia-mobile-${MOBILE_VERSION}.apk" \
-            build/artifacts/aligned.apk
+            "$RUNNER_TEMP/aligned.apk"
           "$build_tools/apksigner" verify "build/artifacts/idreesia-mobile-${MOBILE_VERSION}.apk"
-          rm build/artifacts/aligned.apk "$RUNNER_TEMP/release.keystore"
 
-      - name: Upload APK
+          # .aab: apksigner does not handle bundles, so use jarsigner.
+          cp "$unsigned_aab" "build/artifacts/idreesia-mobile-${MOBILE_VERSION}.aab"
+          jarsigner \
+            -keystore "$RUNNER_TEMP/release.keystore" \
+            -storepass:env ANDROID_KEYSTORE_PASSWORD \
+            -keypass:env ANDROID_KEY_PASSWORD \
+            -sigalg SHA256withRSA -digestalg SHA-256 \
+            "build/artifacts/idreesia-mobile-${MOBILE_VERSION}.aab" "$ANDROID_KEY_ALIAS"
+          jarsigner -verify "build/artifacts/idreesia-mobile-${MOBILE_VERSION}.aab"
+
+          rm "$RUNNER_TEMP/release.keystore" "$RUNNER_TEMP/aligned.apk"
+
+      - name: Upload Android Builds
         uses: actions/upload-artifact@v4
         with:
           name: idreesia-mobile-android-${{ needs.release.outputs.version }}
-          path: build/artifacts/*.apk
+          path: |
+            build/artifacts/*.apk
+            build/artifacts/*.aab
           if-no-files-found: error
 
   mobile-ios:
@@ -351,6 +395,7 @@ jobs:
     env:
       MOBILE_VERSION: ${{ needs.release.outputs.version }}
       MOBILE_BUILD_NUMBER: ${{ github.run_number }}
+      MOBILE_RELEASE: 'true'
     steps:
       - name: Checkout Release Tag
         uses: actions/checkout@v7
@@ -360,7 +405,7 @@ jobs:
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v3
         with:
-          meteor-release: 3.5.4
+          meteor-release: 3.6.1
 
       - run: meteor npm install -g yarn
 
@@ -374,15 +419,22 @@ jobs:
       - name: Write Mobile Settings
         run: |
           jq -n \
-            --arg backend "${{ vars.MOBILE_BACKEND_URL }}" \
-            --arg chat "${{ vars.MOBILE_ROCKETCHAT_URL }}" \
+            --arg backend "${{ env.MOBILE_BACKEND_URL }}" \
+            --arg chat "${{ env.MOBILE_ROCKETCHAT_URL }}" \
             '{public: {backendUrl: $backend, rocketChatUrl: $chat}}' > "$RUNNER_TEMP/mobile-settings.json"
+
+      # Meteor 3.5 can't create the Cordova project from scratch while
+      # .meteor/cordova-plugins lists file:// plugins, so create it first
+      # without them. See scripts/prepare-cordova-project.sh.
+      - name: Prepare Cordova Project
+        run: scripts/prepare-cordova-project.sh ios "${{ env.MOBILE_SERVER_URL }}" "$RUNNER_TEMP/mobile-settings.json"
 
       - name: Build iOS Project
         run: |
           meteor build ../build/mobile-ios \
-            --server "${{ vars.MOBILE_SERVER_URL }}" \
-            --settings "$RUNNER_TEMP/mobile-settings.json"
+            --platforms ios \
+            --server "${{ env.MOBILE_SERVER_URL }}" \
+            --mobile-settings "$RUNNER_TEMP/mobile-settings.json"
         working-directory: ./idreesia-mobile
         env:
           METEOR_PACKAGE_DIRS: ../
@@ -417,14 +469,18 @@ jobs:
           IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
         run: |
           set -euo pipefail
-          project_dir=$(dirname "$(find build/mobile-ios/ios/project -maxdepth 2 -name '*.xcodeproj' -not -path '*/Pods/*' | head -n 1)")
-          cd "$project_dir"
-          if [ -d *.xcworkspace ]; then
-            container=(-workspace "$(ls -d *.xcworkspace | head -n 1)")
-          else
-            container=(-project "$(ls -d *.xcodeproj | head -n 1)")
+          cd build/mobile-ios/ios/project
+          # Xcode refers to the app's own Cordova plugins (cordova-plugins/) by
+          # a relative path that only works from Meteor's working folder. Point
+          # it at the repository checkout instead.
+          sed -i '' -E "s#(\.\./)+cordova-plugins/#${GITHUB_WORKSPACE}/cordova-plugins/#g" \
+            "Eastern Breeze ERP.xcodeproj/project.pbxproj"
+          if ! grep -q "${GITHUB_WORKSPACE}/cordova-plugins/" "Eastern Breeze ERP.xcodeproj/project.pbxproj"; then
+            echo "::error::Could not rewrite the cordova-plugins paths in the Xcode project."
+            exit 1
           fi
-          scheme=$(basename "$(ls -d *.xcodeproj | head -n 1)" .xcodeproj)
+          container=(-workspace "Eastern Breeze ERP.xcworkspace")
+          scheme="Eastern Breeze ERP"
 
           cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
           <?xml version="1.0" encoding="UTF-8"?>
@@ -464,3 +520,31 @@ jobs:
           name: idreesia-mobile-ios-${{ needs.release.outputs.version }}
           path: build/artifacts/*.ipa
           if-no-files-found: error
+
+  # Publishes a GitHub Release for the tag with the signed mobile builds
+  # attached. Re-runs of the same release replace the files.
+  github-release:
+    needs: [release, mobile-android, mobile-ios]
+    if: ${{ github.ref_name == 'master' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: v${{ needs.release.outputs.version }}
+    steps:
+      - name: Download Mobile Builds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: idreesia-mobile-*
+          path: mobile-builds
+          merge-multiple: true
+
+      - name: Create Or Update GitHub Release
+        run: |
+          set -euo pipefail
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+              --verify-tag --title "$TAG" --generate-notes
+          fi
+          gh release upload "$TAG" mobile-builds/* --repo "$GITHUB_REPOSITORY" --clobber

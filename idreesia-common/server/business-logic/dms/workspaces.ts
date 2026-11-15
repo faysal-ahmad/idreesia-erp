@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { DmsAction, DmsEntityType } from 'meteor/idreesia-common/constants/dms';
 import {
   DmsActivities,
@@ -13,7 +14,7 @@ import {
 import { logActivity } from './activity';
 import { dmsError } from './errors';
 import {
-  deleteFilesQuietly,
+  deleteFilesAfterCommit,
   normalizeName,
   normalizePage,
   requireUserId,
@@ -67,33 +68,35 @@ export async function createWorkspace(
   input: CreateWorkspaceInput,
   userId: string
 ): Promise<DmsWorkspaceDocument> {
-  requireUserId(userId);
-  const { name } = normalizeName(input.name, 'Workspace name');
-  const description = trimmedOrUndefined(input.description);
-  const metadata = validateMetadata(input.metadata);
-  const settings = validateSettings(input.settings);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const { name } = normalizeName(input.name, 'Workspace name');
+    const description = trimmedOrUndefined(input.description);
+    const metadata = validateMetadata(input.metadata);
+    const settings = validateSettings(input.settings);
 
-  const date = new Date();
-  const workspaceId = await DmsWorkspaces.insertAsync({
-    name,
-    ...(description ? { description } : {}),
-    ...(metadata ? { metadata } : {}),
-    ...(settings ? { settings } : {}),
-    createdAt: date,
-    createdBy: userId,
-    updatedAt: date,
-    updatedBy: userId,
-  });
+    const date = new Date();
+    const workspaceId = await DmsWorkspaces.insertAsync({
+      name,
+      ...(description ? { description } : {}),
+      ...(metadata ? { metadata } : {}),
+      ...(settings ? { settings } : {}),
+      createdAt: date,
+      createdBy: userId,
+      updatedAt: date,
+      updatedBy: userId,
+    });
 
-  await logActivity({
-    workspaceId,
-    entityType: DmsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: DmsAction.WORKSPACE_CREATED,
-    userId,
-    details: { name },
+    await logActivity({
+      workspaceId,
+      entityType: DmsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: DmsAction.WORKSPACE_CREATED,
+      userId,
+      details: { name },
+    });
+    return requireWorkspace(workspaceId);
   });
-  return requireWorkspace(workspaceId);
 }
 
 export interface UpdateWorkspaceInput {
@@ -111,47 +114,49 @@ export async function updateWorkspace(
   changes: UpdateWorkspaceInput,
   userId: string
 ): Promise<DmsWorkspaceDocument> {
-  requireUserId(userId);
-  await requireWorkspace(workspaceId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    await requireWorkspace(workspaceId);
 
-  const $set: Partial<DmsWorkspaceDocument> = {
-    updatedAt: new Date(),
-    updatedBy: userId,
-  };
-  const $unset: Record<string, 1> = {};
+    const $set: Partial<DmsWorkspaceDocument> = {
+      updatedAt: new Date(),
+      updatedBy: userId,
+    };
+    const $unset: Record<string, 1> = {};
 
-  if (changes.name !== undefined) {
-    $set.name = normalizeName(changes.name, 'Workspace name').name;
-  }
-  if (changes.description !== undefined) {
-    const description = trimmedOrUndefined(changes.description);
-    if (description) $set.description = description;
-    else $unset.description = 1;
-  }
-  if (changes.metadata !== undefined) {
-    const metadata = validateMetadata(changes.metadata);
-    if (metadata) $set.metadata = metadata;
-    else $unset.metadata = 1;
-  }
-  if (changes.settings !== undefined) {
-    const settings = validateSettings(changes.settings);
-    if (settings) $set.settings = settings;
-    else $unset.settings = 1;
-  }
+    if (changes.name !== undefined) {
+      $set.name = normalizeName(changes.name, 'Workspace name').name;
+    }
+    if (changes.description !== undefined) {
+      const description = trimmedOrUndefined(changes.description);
+      if (description) $set.description = description;
+      else $unset.description = 1;
+    }
+    if (changes.metadata !== undefined) {
+      const metadata = validateMetadata(changes.metadata);
+      if (metadata) $set.metadata = metadata;
+      else $unset.metadata = 1;
+    }
+    if (changes.settings !== undefined) {
+      const settings = validateSettings(changes.settings);
+      if (settings) $set.settings = settings;
+      else $unset.settings = 1;
+    }
 
-  await DmsWorkspaces.updateAsync(workspaceId, {
-    $set,
-    ...(Object.keys($unset).length ? { $unset } : {}),
+    await DmsWorkspaces.updateAsync(workspaceId, {
+      $set,
+      ...(Object.keys($unset).length ? { $unset } : {}),
+    });
+    await logActivity({
+      workspaceId,
+      entityType: DmsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: DmsAction.WORKSPACE_UPDATED,
+      userId,
+      details: { changed: Object.keys(changes) },
+    });
+    return requireWorkspace(workspaceId);
   });
-  await logActivity({
-    workspaceId,
-    entityType: DmsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: DmsAction.WORKSPACE_UPDATED,
-    userId,
-    details: { changed: Object.keys(changes) },
-  });
-  return requireWorkspace(workspaceId);
 }
 
 export async function getWorkspace(
@@ -216,18 +221,20 @@ export async function deleteWorkspace(
   workspaceId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  await requireWorkspace(workspaceId);
-  const date = new Date();
-  await DmsWorkspaces.updateAsync(workspaceId, {
-    $set: { deletedAt: date, deletedBy: userId },
-  });
-  await logActivity({
-    workspaceId,
-    entityType: DmsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: DmsAction.WORKSPACE_DELETED,
-    userId,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    await requireWorkspace(workspaceId);
+    const date = new Date();
+    await DmsWorkspaces.updateAsync(workspaceId, {
+      $set: { deletedAt: date, deletedBy: userId },
+    });
+    await logActivity({
+      workspaceId,
+      entityType: DmsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: DmsAction.WORKSPACE_DELETED,
+      userId,
+    });
   });
 }
 
@@ -235,25 +242,27 @@ export async function restoreWorkspace(
   workspaceId: string,
   userId: string
 ): Promise<DmsWorkspaceDocument> {
-  requireUserId(userId);
-  const workspace = await requireWorkspace(workspaceId, {
-    includeDeleted: true,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const workspace = await requireWorkspace(workspaceId, {
+      includeDeleted: true,
+    });
+    if (!workspace.deletedAt) {
+      throw dmsError('CONFLICT', 'Workspace is not deleted');
+    }
+    await DmsWorkspaces.updateAsync(workspaceId, {
+      $set: { updatedAt: new Date(), updatedBy: userId },
+      $unset: { deletedAt: 1, deletedBy: 1 },
+    });
+    await logActivity({
+      workspaceId,
+      entityType: DmsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: DmsAction.WORKSPACE_RESTORED,
+      userId,
+    });
+    return requireWorkspace(workspaceId);
   });
-  if (!workspace.deletedAt) {
-    throw dmsError('CONFLICT', 'Workspace is not deleted');
-  }
-  await DmsWorkspaces.updateAsync(workspaceId, {
-    $set: { updatedAt: new Date(), updatedBy: userId },
-    $unset: { deletedAt: 1, deletedBy: 1 },
-  });
-  await logActivity({
-    workspaceId,
-    entityType: DmsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: DmsAction.WORKSPACE_RESTORED,
-    userId,
-  });
-  return requireWorkspace(workspaceId);
 }
 
 /**
@@ -265,27 +274,29 @@ export async function purgeWorkspace(
   workspaceId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const workspace = await requireWorkspace(workspaceId, {
-    includeDeleted: true,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const workspace = await requireWorkspace(workspaceId, {
+      includeDeleted: true,
+    });
+    if (!workspace.deletedAt) {
+      throw dmsError(
+        'CONFLICT',
+        'Only a deleted workspace can be purged; delete it first'
+      );
+    }
+
+    const versions = await DmsDocumentVersions.find(
+      { workspaceId },
+      { fields: { fileKey: 1 } }
+    ).fetchAsync();
+
+    await DmsDocumentVersions.removeAsync({ workspaceId });
+    await DmsDocuments.removeAsync({ workspaceId });
+    await DmsFolders.removeAsync({ workspaceId });
+    await DmsActivities.removeAsync({ workspaceId });
+    await DmsWorkspaces.removeAsync(workspaceId);
+
+    await deleteFilesAfterCommit(versions.map(({ fileKey }) => fileKey));
   });
-  if (!workspace.deletedAt) {
-    throw dmsError(
-      'CONFLICT',
-      'Only a deleted workspace can be purged; delete it first'
-    );
-  }
-
-  const versions = await DmsDocumentVersions.find(
-    { workspaceId },
-    { fields: { fileKey: 1 } }
-  ).fetchAsync();
-
-  await DmsDocumentVersions.removeAsync({ workspaceId });
-  await DmsDocuments.removeAsync({ workspaceId });
-  await DmsFolders.removeAsync({ workspaceId });
-  await DmsActivities.removeAsync({ workspaceId });
-  await DmsWorkspaces.removeAsync(workspaceId);
-
-  await deleteFilesQuietly(versions.map(({ fileKey }) => fileKey));
 }

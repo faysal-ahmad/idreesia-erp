@@ -271,18 +271,18 @@ The Workspaces module uses projects through the **Projects & Tasks** committee f
 - When a person leaves the committee they leave every project: they stop being a participant, lose chat access, and their open tasks are unassigned.
 
 **Who can do what:**
-- **Coordinators** (and `erp-admin`) create, edit and delete projects and tasks, change project status, manage participants and see the activity log.
+- **Coordinators** (and super-admins) create, edit and delete projects and tasks, change project status, manage participants and see the activity log.
 - A task's **assignee** changes the status and progress of their own task.
 - **Every member** sees all projects and tasks and can comment on any task. Comments can be deleted by their author or a coordinator.
 - Participants and assignees must be committee members. Assigning a project task to a member who isn't a participant makes them one.
-- **Notifications** (mobile): the projects list has a bell with an unread count (the same count shows on the committee's Projects item on the Workspaces page). It opens a screen listing the committee's project and task notifications, newest first. Opening it marks them read, and tapping one opens its task or project. A user sees them when they belong to the committee and its Projects & Tasks feature is on. The web app has no notifications page yet.
+- **Notifications** (mobile): the Projects & Tasks screen has a bell with an unread count (the same count shows on the committee's Projects & Tasks item on the Workspaces page). It opens a screen listing the committee's project and task notifications, newest first. Opening it marks them read, and tapping one opens its task or project. A user sees them when they belong to the committee and its Projects & Tasks feature is on. The web app has no notifications page yet.
 
 ### Project chat
 
 Each project gets a private chat (a Rocket.Chat private group, named `project-<committee>-<title>-<id>`) for its participants:
 - The group is created with the project. If chat is unreachable at that moment, it is created the first time a participant opens the project's chat.
 - Group members are the participants who have a chat account (same rule as committee Discussions). Adding or removing a participant adds or removes their chat access.
-- **Access is for participants only.** Coordinators and `erp-admin` get no automatic access; they can add themselves as participants. Pinning messages is for coordinators.
+- **Access is for participants only.** Coordinators and super-admins get no automatic access; they can add themselves as participants. Pinning messages is for coordinators.
 - Completing or cancelling the project archives the group (history is kept). Setting the status back to an open one unarchives it. Deleting a project archives its group.
 - Messages, reactions, pins, search and files reuse the committee Discussions business logic (`server/business-logic/discussions/`), and messages are posted as each user.
 

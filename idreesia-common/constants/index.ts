@@ -1,9 +1,15 @@
 export { default as ActionNames } from './action-names';
 export { default as AttachmentCategory } from './attachment-category';
 export type { AttachmentCategoryValue } from './attachment-category';
+export {
+  ATTACHMENT_ALLOWED_MIME_TYPES,
+  ATTACHMENT_MAX_FILE_SIZE,
+  isAllowedAttachmentMimeType,
+} from './attachment-category';
 export { default as DataSource } from './data-source';
 export { default as Formats } from './formats';
 export { default as ImageVectorStatus } from './image-vector-status';
 export { default as Permissions } from './permissions';
 export { default as ModuleNames } from './module-names';
 export { default as ModulePaths } from './module-paths';
+export { TwoFactorErrorCode } from './two-factor';

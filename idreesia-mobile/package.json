@@ -7,6 +7,8 @@
     "build-for-docker": "METEOR_PACKAGE_DIRS=../ meteor build --server-only --directory ./build",
     "start:android": "node ../scripts/run-mobile-device.mjs android",
     "start:ios": "node ../scripts/run-mobile-device.mjs ios",
+    "start:android:prod": "node ../scripts/run-mobile-device.mjs android --prod",
+    "start:ios:prod": "node ../scripts/run-mobile-device.mjs ios --prod",
     "build:android": "METEOR_PACKAGE_DIRS=../ meteor build ../build/idreesia-mobile-android --server http://localhost:3000 --directory",
     "build:ios": "METEOR_PACKAGE_DIRS=../ meteor build ../build/idreesia-mobile-ios --server http://localhost:3000 --directory",
     "typecheck": "../node_modules/.bin/tsc --noEmit --project tsconfig.json"
@@ -29,6 +31,6 @@
     "react-router-dom/react-router/path-to-regexp": "^1.9.0"
   },
   "engines": {
-    "node": "24.x"
+    "node": "26.x"
   }
 }

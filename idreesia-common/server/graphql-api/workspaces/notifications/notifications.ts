@@ -41,7 +41,6 @@ extend type Query {
   ): [NotificationType]
   # Only the unread counts, one row per committee and module that has any.
   myNotificationCounts: [NotificationCountType]
-  myUnreadNotificationCount: Int
 }
 
 extend type Mutation {

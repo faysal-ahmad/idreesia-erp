@@ -7,7 +7,7 @@ import { isProjectOpen } from './format';
 import { ProjectPartPage, useProjectPart } from './project-part';
 import { TasksList } from './tasks-list';
 
-/** A project's tasks: the same tabs as the Tasks screen, for this project only. */
+/** A project's tasks: the same tabs as the Tasks tab of the projects screen, for this project only. */
 export const ProjectTasksScreen = () => {
   const part = useProjectPart();
   const { committeeId, projectId, project } = part;

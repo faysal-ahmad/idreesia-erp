@@ -7,8 +7,6 @@ export {
   default as KarkunsListFilter,
   KarkunsFilterChips,
 } from './karkuns/list-filter';
-export { default as KarkunsGeneralInfo } from './karkuns/general-info';
-export { default as KarkunsWazaifAndRaabta } from './karkuns/wazaif-and-raabta';
 
 export { default as PersonGeneralList } from './visitors/list';
 export {

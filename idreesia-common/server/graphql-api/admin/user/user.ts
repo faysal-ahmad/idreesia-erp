@@ -16,9 +16,22 @@ type UserType {
   instances: [String]
   groups: [String]
   hasChatAccount: Boolean
+  twoFactorEnabled: Boolean
+  isSuperAdmin: Boolean
+  # Addresses currently blocked from logging in after failed attempts.
+  loginBlockedAddresses: Int
+  # Too many failed attempts across addresses: only addresses the user has
+  # logged in from before may try.
+  untrustedLoginAddressesBlocked: Boolean
 
   person: PersonType
   karkun: PersonType
+}
+
+type TwoFactorSetupType {
+  qrCodeSvg: String
+  secret: String
+  uri: String
 }
 
 type PagedUserType {
@@ -77,18 +90,28 @@ extend type Mutation {
     instances: [String]!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
-  setGroups(
-    userId: String!
-    groups: [String]!
-  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
-
-  resetPassword(
-    userName: String!
-  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
-
   createChatAccount(
     userId: String!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  # Two-factor authentication for the logged-in user's own account.
+  startTwoFactorSetup: TwoFactorSetupType
+  enableTwoFactor(code: String!): UserType
+  disableTwoFactor(code: String!): UserType
+
+  resetTwoFactor(
+    userId: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  # Lifts the blocks failed login attempts put on the user's account.
+  clearLoginBlocks(
+    userId: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  # Grants or revokes super-admin rights. No permission directive: every
+  # permission check lets a super-admin through, so the resolver itself
+  # requires the caller to be a super-admin.
+  setSuperAdmin(userId: String!, isSuperAdmin: Boolean!): UserType
 
   updateLoginTime: Int
   updateLastActiveTime: Int

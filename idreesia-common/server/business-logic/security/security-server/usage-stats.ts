@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { Random } from 'meteor/random';
 
 import {
@@ -46,64 +47,66 @@ export async function upsertSecurityServerUsageStats({
   bucketMinutes,
   buckets,
 }: UsageStatsPush): Promise<void> {
-  const externalIds = [
-    ...new Set(
-      buckets.flatMap(bucket => bucket.channels.map(c => c.channelId))
-    ),
-  ];
-  const channels = await SecurityServerChannels.find(
-    { externalId: { $in: externalIds } },
-    { fields: { _id: 1, externalId: 1 } }
-  ).fetchAsync();
-  const channelIds = new Map(channels.map(c => [c.externalId, c._id]));
+  return runInTransaction(async () => {
+    const externalIds = [
+      ...new Set(
+        buckets.flatMap(bucket => bucket.channels.map(c => c.channelId))
+      ),
+    ];
+    const channels = await SecurityServerChannels.find(
+      { externalId: { $in: externalIds } },
+      { fields: { _id: 1, externalId: 1 } }
+    ).fetchAsync();
+    const channelIds = new Map(channels.map(c => [c.externalId, c._id]));
 
-  const serverOps = buckets.flatMap(({ bucketStart, server }) =>
-    server
-      ? [
+    const serverOps = buckets.flatMap(({ bucketStart, server }) =>
+      server
+        ? [
+            {
+              updateOne: {
+                filter: { bucketStart },
+                update: {
+                  $set: { bucketMinutes, ...server },
+                  $setOnInsert: { _id: Random.id() },
+                },
+                upsert: true,
+              },
+            },
+          ]
+        : []
+    );
+    const channelOps = buckets.flatMap(({ bucketStart, channels: values }) =>
+      values.flatMap(({ channelId: externalId, ...rest }) => {
+        const channelId = channelIds.get(externalId);
+        if (!channelId) return [];
+        return [
           {
             updateOne: {
-              filter: { bucketStart },
+              filter: { channelId, bucketStart },
               update: {
-                $set: { bucketMinutes, ...server },
+                $set: { bucketMinutes, ...rest },
                 $setOnInsert: { _id: Random.id() },
               },
               upsert: true,
             },
           },
-        ]
-      : []
-  );
-  const channelOps = buckets.flatMap(({ bucketStart, channels: values }) =>
-    values.flatMap(({ channelId: externalId, ...rest }) => {
-      const channelId = channelIds.get(externalId);
-      if (!channelId) return [];
-      return [
-        {
-          updateOne: {
-            filter: { channelId, bucketStart },
-            update: {
-              $set: { bucketMinutes, ...rest },
-              $setOnInsert: { _id: Random.id() },
-            },
-            upsert: true,
-          },
-        },
-      ];
-    })
-  );
+        ];
+      })
+    );
 
-  await Promise.all([
-    serverOps.length
-      ? SecurityServerUsageServerStats.rawCollection().bulkWrite(serverOps, {
-          ordered: false,
-        })
-      : null,
-    channelOps.length
-      ? SecurityServerUsageChannelStats.rawCollection().bulkWrite(channelOps, {
-          ordered: false,
-        })
-      : null,
-  ]);
+    await Promise.all([
+      serverOps.length
+        ? SecurityServerUsageServerStats.rawCollection().bulkWrite(serverOps, {
+            ordered: false,
+          })
+        : null,
+      channelOps.length
+        ? SecurityServerUsageChannelStats.rawCollection().bulkWrite(channelOps, {
+            ordered: false,
+          })
+        : null,
+    ]);
+  });
 }
 
 // ----------------------------------------------------------------------------

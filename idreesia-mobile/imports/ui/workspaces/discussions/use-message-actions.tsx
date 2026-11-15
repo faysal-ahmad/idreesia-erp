@@ -3,28 +3,12 @@ import { ActionSheet, Dialog } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
 
 import { showError, showSuccess } from '../../layout';
+import { copyText } from '../../utilities';
 import { useDiscussionContext } from './discussion-context';
 import type { DiscussionMessage } from './discussion-types';
 import { EditMessagePopup } from './edit-message-popup';
 import type { MessageHandlers } from './discussion-message-list';
 import { ReactionPicker } from './reaction-picker';
-
-const copyText = async (text: string) => {
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch {
-    // Older WebViews: the execCommand fallback.
-    const area = document.createElement('textarea');
-    area.value = text;
-    area.setAttribute('readonly', '');
-    area.style.position = 'fixed';
-    area.style.opacity = '0';
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand('copy');
-    area.remove();
-  }
-};
 
 const run = async (action: () => Promise<void>, failure: string, success?: string) => {
   try {

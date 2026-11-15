@@ -1,9 +1,11 @@
-import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   getPersonImageUrls,
   type PersonImageFields,
 } from 'meteor/idreesia-common/server/business-logic/common/person-images';
+import {
+  findOneUser,
+} from 'meteor/idreesia-common/server/business-logic/admin';
 
 interface SecurityLogType {
   userId?: string;
@@ -18,7 +20,7 @@ interface PersonRecord {
 
 async function getUserPerson(userId: string | undefined) {
   if (!userId) return { user: null, person: null };
-  const user = await Users.findOneUser(userId);
+  const user = await findOneUser(userId);
   const person = user.personId
     ? ((await People.findOneAsync(user.personId)) as PersonRecord | null)
     : null;

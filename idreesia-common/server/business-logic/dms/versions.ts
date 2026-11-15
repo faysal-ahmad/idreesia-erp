@@ -1,3 +1,4 @@
+import { onRollback, runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { createHash } from 'crypto';
 import { Random } from 'meteor/random';
 
@@ -18,6 +19,7 @@ import { logActivity } from './activity';
 import { dmsError } from './errors';
 import {
   assertNotLockedByOther,
+  deleteFilesAfterCommit,
   deleteFilesQuietly,
   diagnoseDocumentWriteFailure,
   getVersionFileKey,
@@ -70,77 +72,79 @@ export async function commitVersion({
   pending = false,
   userId,
 }: CommitVersionParams): Promise<DmsDocumentVersionDocument> {
-  const date = new Date();
-  const reserved = await DmsDocuments.rawCollection().findOneAndUpdate(
-    { _id: document._id, trashed: false, ...lockFreeSelector(userId, date) },
-    { $inc: { versionCount: 1 } },
-    { returnDocument: 'after' }
-  );
-  if (!reserved) {
-    throw await diagnoseDocumentWriteFailure(document._id, userId);
-  }
-  const versionNumber = reserved.versionCount;
-
-  const fields = {
-    versionNumber,
-    status: DmsVersionStatus.READY,
-    fileName,
-    mimeType,
-    size,
-    ...(sha256 ? { sha256 } : {}),
-    ...(etag ? { etag } : {}),
-    ...(comment ? { comment } : {}),
-    ...(restoredFromVersionId ? { restoredFromVersionId } : {}),
-    updatedAt: date,
-    updatedBy: userId,
-  };
-  if (pending) {
-    const completed = await DmsDocumentVersions.updateAsync(
-      { _id: versionId, status: DmsVersionStatus.PENDING },
-      { $set: fields, $unset: { uploadExpiresAt: 1, newDocument: 1 } }
+  return runInTransaction(async () => {
+    const date = new Date();
+    const reserved = await DmsDocuments.rawCollection().findOneAndUpdate(
+      { _id: document._id, trashed: false, ...lockFreeSelector(userId, date) },
+      { $inc: { versionCount: 1 } },
+      { returnDocument: 'after' }
     );
-    if (!completed) {
-      throw dmsError('CONFLICT', 'The upload was already completed or aborted');
+    if (!reserved) {
+      throw await diagnoseDocumentWriteFailure(document._id, userId);
     }
-  } else {
-    await DmsDocumentVersions.insertAsync({
-      _id: versionId,
-      workspaceId: document.workspaceId,
-      documentId: document._id,
-      fileKey,
-      ...fields,
-      createdAt: date,
-      createdBy: userId,
-    });
-  }
+    const versionNumber = reserved.versionCount;
 
-  await DmsDocuments.updateAsync(
-    {
-      _id: document._id,
-      $or: [
-        { currentVersionNumber: { $exists: false } },
-        { currentVersionNumber: { $lt: versionNumber } },
-      ],
-    },
-    {
-      $set: {
-        currentVersionId: versionId,
-        currentVersionNumber: versionNumber,
-        fileName,
-        mimeType,
-        size,
-        updatedAt: date,
-        updatedBy: userId,
+    const fields = {
+      versionNumber,
+      status: DmsVersionStatus.READY,
+      fileName,
+      mimeType,
+      size,
+      ...(sha256 ? { sha256 } : {}),
+      ...(etag ? { etag } : {}),
+      ...(comment ? { comment } : {}),
+      ...(restoredFromVersionId ? { restoredFromVersionId } : {}),
+      updatedAt: date,
+      updatedBy: userId,
+    };
+    if (pending) {
+      const completed = await DmsDocumentVersions.updateAsync(
+        { _id: versionId, status: DmsVersionStatus.PENDING },
+        { $set: fields, $unset: { uploadExpiresAt: 1, newDocument: 1 } }
+      );
+      if (!completed) {
+        throw dmsError('CONFLICT', 'The upload was already completed or aborted');
+      }
+    } else {
+      await DmsDocumentVersions.insertAsync({
+        _id: versionId,
+        workspaceId: document.workspaceId,
+        documentId: document._id,
+        fileKey,
+        ...fields,
+        createdAt: date,
+        createdBy: userId,
+      });
+    }
+
+    await DmsDocuments.updateAsync(
+      {
+        _id: document._id,
+        $or: [
+          { currentVersionNumber: { $exists: false } },
+          { currentVersionNumber: { $lt: versionNumber } },
+        ],
       },
-    }
-  );
+      {
+        $set: {
+          currentVersionId: versionId,
+          currentVersionNumber: versionNumber,
+          fileName,
+          mimeType,
+          size,
+          updatedAt: date,
+          updatedBy: userId,
+        },
+      }
+    );
 
-  return (await DmsDocumentVersions.findOneAsync(versionId))!;
+    return (await DmsDocumentVersions.findOneAsync(versionId))!;
+  });
 }
 
 /**
  * Stores a file and commits it as a new version of the document, removing
- * the stored file again if the commit fails.
+ * the stored file again if the transaction rolls back.
  */
 export async function storeAndCommitVersion({
   document,
@@ -157,17 +161,18 @@ export async function storeAndCommitVersion({
   comment?: string;
   userId: string;
 }): Promise<DmsDocumentVersionDocument> {
-  const versionId = Random.id();
-  const fileKey = getVersionFileKey(
-    document.workspaceId,
-    document._id,
-    versionId,
-    fileName,
-    mimeType
-  );
-  await putFile(fileKey, body, mimeType);
-  try {
-    return await commitVersion({
+  return runInTransaction(async () => {
+    const versionId = Random.id();
+    const fileKey = getVersionFileKey(
+      document.workspaceId,
+      document._id,
+      versionId,
+      fileName,
+      mimeType
+    );
+    await putFile(fileKey, body, mimeType);
+    await onRollback(() => deleteFilesQuietly([fileKey]));
+    return commitVersion({
       document,
       versionId,
       fileKey,
@@ -178,10 +183,7 @@ export async function storeAndCommitVersion({
       comment,
       userId,
     });
-  } catch (error) {
-    await deleteFilesQuietly([fileKey]);
-    throw error;
-  }
+  });
 }
 
 export interface NewVersionInput {
@@ -198,36 +200,38 @@ export async function uploadNewVersion(
   { body, mimeType: rawMimeType, fileName, comment }: NewVersionInput,
   userId: string
 ): Promise<DmsDocumentVersionDocument> {
-  requireUserId(userId);
-  if (!Buffer.isBuffer(body)) {
-    throw dmsError('BAD_USER_INPUT', 'File content is required');
-  }
-  const document = await requireDocument(documentId);
-  assertNotLockedByOther(document, userId);
-  const workspace = await requireWorkspace(document.workspaceId);
-  const mimeType = normalizeMimeType(rawMimeType);
-  validateFile(workspace, body.length, mimeType);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    if (!Buffer.isBuffer(body)) {
+      throw dmsError('BAD_USER_INPUT', 'File content is required');
+    }
+    const document = await requireDocument(documentId);
+    assertNotLockedByOther(document, userId);
+    const workspace = await requireWorkspace(document.workspaceId);
+    const mimeType = normalizeMimeType(rawMimeType);
+    validateFile(workspace, body.length, mimeType);
 
-  const version = await storeAndCommitVersion({
-    document,
-    body,
-    fileName: fileName?.trim() || document.fileName || document.name,
-    mimeType,
-    comment: comment?.trim() || undefined,
-    userId,
-  });
+    const version = await storeAndCommitVersion({
+      document,
+      body,
+      fileName: fileName?.trim() || document.fileName || document.name,
+      mimeType,
+      comment: comment?.trim() || undefined,
+      userId,
+    });
 
-  await logActivity({
-    workspaceId: document.workspaceId,
-    entityType: DmsEntityType.VERSION,
-    entityId: version._id,
-    documentId,
-    action: DmsAction.VERSION_ADDED,
-    userId,
-    details: { versionNumber: version.versionNumber, size: version.size },
+    await logActivity({
+      workspaceId: document.workspaceId,
+      entityType: DmsEntityType.VERSION,
+      entityId: version._id,
+      documentId,
+      action: DmsAction.VERSION_ADDED,
+      userId,
+      details: { versionNumber: version.versionNumber, size: version.size },
+    });
+    await notifyVersionAdded(document, version.versionNumber, userId);
+    return version;
   });
-  await notifyVersionAdded(document, version.versionNumber, userId);
-  return version;
 }
 
 /** A document's versions, newest first. */
@@ -270,24 +274,24 @@ export async function restoreVersion(
   userId: string,
   { comment }: { comment?: string } = {}
 ): Promise<DmsDocumentVersionDocument> {
-  requireUserId(userId);
-  const document = await requireDocument(documentId);
-  assertNotLockedByOther(document, userId);
-  const source = await requireVersion(document, versionId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const document = await requireDocument(documentId);
+    assertNotLockedByOther(document, userId);
+    const source = await requireVersion(document, versionId);
 
-  const newVersionId = Random.id();
-  const fileKey = getVersionFileKey(
-    document.workspaceId,
-    documentId,
-    newVersionId,
-    source.fileName,
-    source.mimeType
-  );
-  await copyFile(source.fileKey, fileKey);
+    const newVersionId = Random.id();
+    const fileKey = getVersionFileKey(
+      document.workspaceId,
+      documentId,
+      newVersionId,
+      source.fileName,
+      source.mimeType
+    );
+    await copyFile(source.fileKey, fileKey);
+    await onRollback(() => deleteFilesQuietly([fileKey]));
 
-  let version: DmsDocumentVersionDocument;
-  try {
-    version = await commitVersion({
+    const version = await commitVersion({
       document,
       versionId: newVersionId,
       fileKey,
@@ -301,25 +305,22 @@ export async function restoreVersion(
       restoredFromVersionId: source._id,
       userId,
     });
-  } catch (error) {
-    await deleteFilesQuietly([fileKey]);
-    throw error;
-  }
 
-  await logActivity({
-    workspaceId: document.workspaceId,
-    entityType: DmsEntityType.VERSION,
-    entityId: version._id,
-    documentId,
-    action: DmsAction.VERSION_RESTORED,
-    userId,
-    details: {
-      versionNumber: version.versionNumber,
-      restoredFromVersionNumber: source.versionNumber,
-    },
+    await logActivity({
+      workspaceId: document.workspaceId,
+      entityType: DmsEntityType.VERSION,
+      entityId: version._id,
+      documentId,
+      action: DmsAction.VERSION_RESTORED,
+      userId,
+      details: {
+        versionNumber: version.versionNumber,
+        restoredFromVersionNumber: source.versionNumber,
+      },
+    });
+    await notifyVersionAdded(document, version.versionNumber, userId);
+    return version;
   });
-  await notifyVersionAdded(document, version.versionNumber, userId);
-  return version;
 }
 
 /** Permanently deletes an old version. The current version can't be deleted. */
@@ -328,29 +329,31 @@ export async function deleteVersion(
   versionId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const document = await requireDocument(documentId);
-  const version = await requireVersion(document, versionId);
-  if (version._id === document.currentVersionId) {
-    throw dmsError('CONFLICT', 'The current version cannot be deleted');
-  }
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const document = await requireDocument(documentId);
+    const version = await requireVersion(document, versionId);
+    if (version._id === document.currentVersionId) {
+      throw dmsError('CONFLICT', 'The current version cannot be deleted');
+    }
 
-  // Checks the lock in the same write. An old version can't become current
-  // again (restoring adds a copy), so the check above still holds.
-  await guardedDocumentUpdate(documentId, userId, {
-    $set: { updatedAt: new Date(), updatedBy: userId },
-  });
+    // Checks the lock in the same write. An old version can't become current
+    // again (restoring adds a copy), so the check above still holds.
+    await guardedDocumentUpdate(documentId, userId, {
+      $set: { updatedAt: new Date(), updatedBy: userId },
+    });
 
-  await DmsDocumentVersions.removeAsync(version._id);
-  await deleteFilesQuietly([version.fileKey]);
+    await DmsDocumentVersions.removeAsync(version._id);
+    await deleteFilesAfterCommit([version.fileKey]);
 
-  await logActivity({
-    workspaceId: document.workspaceId,
-    entityType: DmsEntityType.VERSION,
-    entityId: version._id,
-    documentId,
-    action: DmsAction.VERSION_DELETED,
-    userId,
-    details: { versionNumber: version.versionNumber },
+    await logActivity({
+      workspaceId: document.workspaceId,
+      entityType: DmsEntityType.VERSION,
+      entityId: version._id,
+      documentId,
+      action: DmsAction.VERSION_DELETED,
+      userId,
+      details: { versionNumber: version.versionNumber },
+    });
   });
 }

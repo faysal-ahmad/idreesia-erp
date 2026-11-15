@@ -1,3 +1,4 @@
+import { isInTransaction, runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import {
@@ -103,8 +104,6 @@ interface PersonDocument {
   _id: string;
   sharedData?: {
     name?: string | null;
-    imageId?: string | null;
-    imageThumbnailId?: string | null;
     imageKey?: string | null;
     imageThumbnailKey?: string | null;
   } | null;
@@ -376,7 +375,9 @@ async function lockDays(
         createdAt: new Date(),
       });
     } catch (error) {
-      if (!isDuplicateKey(error)) throw error;
+      // Locked concurrently. Inside a transaction the error has already
+      // aborted it, so it must propagate (the driver retries the transaction).
+      if (!isDuplicateKey(error) || isInTransaction()) throw error;
     }
   }
 }
@@ -392,25 +393,28 @@ async function findDayAttendance(key: PlanKey, shiftId: string, date: string) {
 // Locks every past and current day a team covers, so that a change to the
 // team only affects days that are still being planned.
 export async function ensureDutyDayAttendancesForTeam(teamId: string) {
+  // Indexes are created outside the transaction, which can't create them.
   await ensureDutyPlanIndexes();
-  const assignments = (await DutyTeamAssignments.find({
-    teamId,
-  }).fetchAsync()) as unknown as TeamAssignmentDocument[];
-  const today = todayInKarachi();
+  return runInTransaction(async () => {
+    const assignments = (await DutyTeamAssignments.find({
+      teamId,
+    }).fetchAsync()) as unknown as TeamAssignmentDocument[];
+    const today = todayInKarachi();
 
-  for (const assignment of assignments) {
-    if (assignment.startDate > today) continue;
-    const shift = (await DutyShifts.findOneAsync(assignment.shiftId)) as
-      | ShiftDocument
-      | undefined;
-    if (!shift) continue;
-    await lockDays(
-      { dutyId: assignment.dutyId, locationId: assignment.locationId },
-      shift,
-      assignment.startDate,
-      today
-    );
-  }
+    for (const assignment of assignments) {
+      if (assignment.startDate > today) continue;
+      const shift = (await DutyShifts.findOneAsync(assignment.shiftId)) as
+        | ShiftDocument
+        | undefined;
+      if (!shift) continue;
+      await lockDays(
+        { dutyId: assignment.dutyId, locationId: assignment.locationId },
+        shift,
+        assignment.startDate,
+        today
+      );
+    }
+  });
 }
 
 export async function createTodayDutyDayAttendances(
@@ -480,41 +484,44 @@ export async function setDutyShiftTeam(args: {
   teamId?: string | null;
   user: Actor;
 }) {
+  // Indexes are created outside the transaction, which can't create them.
   await ensureDutyPlanIndexes();
-  const key = await requireDutyAndLocation(args.dutyId, args.locationId);
-  const shift = await requireShift(key.dutyId, args.shiftId);
-  const teamId = args.teamId || null;
+  return runInTransaction(async () => {
+    const key = await requireDutyAndLocation(args.dutyId, args.locationId);
+    const shift = await requireShift(key.dutyId, args.shiftId);
+    const teamId = args.teamId || null;
 
-  if (teamId) {
-    const team = (await Teams.findOneAsync(teamId)) as TeamDocument | undefined;
-    if (!team || team.dutyId !== key.dutyId) {
-      throw new Error('Please select a team for this duty.');
+    if (teamId) {
+      const team = (await Teams.findOneAsync(teamId)) as TeamDocument | undefined;
+      if (!team || team.dutyId !== key.dutyId) {
+        throw new Error('Please select a team for this duty.');
+      }
     }
-  }
 
-  const shiftKey = { ...key, shiftId: shift._id };
-  const existing = (await DutyTeamAssignments.findOneAsync(shiftKey)) as
-    | TeamAssignmentDocument
-    | undefined;
-  if ((existing?.teamId ?? null) === teamId) return true;
+    const shiftKey = { ...key, shiftId: shift._id };
+    const existing = (await DutyTeamAssignments.findOneAsync(shiftKey)) as
+      | TeamAssignmentDocument
+      | undefined;
+    if ((existing?.teamId ?? null) === teamId) return true;
 
-  // Today is already locked, so a new team starts tomorrow. Lock the days the
-  // old team covered before it goes.
-  const today = todayInKarachi();
-  if (existing && existing.startDate <= today) {
-    await lockDays(key, shift, existing.startDate, today);
-  }
+    // Today is already locked, so a new team starts tomorrow. Lock the days the
+    // old team covered before it goes.
+    const today = todayInKarachi();
+    if (existing && existing.startDate <= today) {
+      await lockDays(key, shift, existing.startDate, today);
+    }
 
-  await DutyTeamAssignments.removeAsync(shiftKey);
-  if (teamId) {
-    await DutyTeamAssignments.insertAsync({
-      ...shiftKey,
-      teamId,
-      startDate: addCalendarDays(today, 1),
-      ...stamp(args.user._id),
-    });
-  }
-  return true;
+    await DutyTeamAssignments.removeAsync(shiftKey);
+    if (teamId) {
+      await DutyTeamAssignments.insertAsync({
+        ...shiftKey,
+        teamId,
+        startDate: addCalendarDays(today, 1),
+        ...stamp(args.user._id),
+      });
+    }
+    return true;
+  });
 }
 
 export async function setDutyDayOverride(args: {
@@ -575,46 +582,49 @@ export async function setDutyAttendance(args: {
   status?: string | null;
   user: Actor;
 }) {
+  // Indexes are created outside the transaction, which can't create them.
   await ensureDutyPlanIndexes();
-  const key = await requireDutyAndLocation(args.dutyId, args.locationId);
-  const shift = await requireShift(key.dutyId, args.shiftId);
-  assertDate(args.date, 'date');
-  if (args.date > todayInKarachi()) {
-    throw new Error('Attendance cannot be recorded for a future day.');
-  }
+  return runInTransaction(async () => {
+    const key = await requireDutyAndLocation(args.dutyId, args.locationId);
+    const shift = await requireShift(key.dutyId, args.shiftId);
+    assertDate(args.date, 'date');
+    if (args.date > todayInKarachi()) {
+      throw new Error('Attendance cannot be recorded for a future day.');
+    }
 
-  const status = args.status || null;
-  if (status && !DUTY_ATTENDANCE_STATUSES.includes(status as DutyAttendanceStatus)) {
-    throw new Error('Please select present, late, or absent.');
-  }
+    const status = args.status || null;
+    if (status && !DUTY_ATTENDANCE_STATUSES.includes(status as DutyAttendanceStatus)) {
+      throw new Error('Please select present, late, or absent.');
+    }
 
-  await lockDays(key, shift, args.date, args.date);
-  const record = await findDayAttendance(key, shift._id, args.date);
-  if (!record?.karkuns.some(karkun => karkun.karkunId === args.karkunId)) {
-    throw new Error('This karkun is not on duty for this shift.');
-  }
+    await lockDays(key, shift, args.date, args.date);
+    const record = await findDayAttendance(key, shift._id, args.date);
+    if (!record?.karkuns.some(karkun => karkun.karkunId === args.karkunId)) {
+      throw new Error('This karkun is not on duty for this shift.');
+    }
 
-  const selector = { _id: record._id, 'karkuns.karkunId': args.karkunId };
-  if (status) {
-    await DutyDayAttendances.updateAsync(selector, {
-      $set: {
-        'karkuns.$.attendance': status,
-        'karkuns.$.attendanceUpdatedAt': new Date(),
-        'karkuns.$.attendanceUpdatedBy': args.user._id,
-        ...touch(args.user._id),
-      },
-    });
-  } else {
-    await DutyDayAttendances.updateAsync(selector, {
-      $unset: {
-        'karkuns.$.attendance': '',
-        'karkuns.$.attendanceUpdatedAt': '',
-        'karkuns.$.attendanceUpdatedBy': '',
-      },
-      $set: touch(args.user._id),
-    });
-  }
-  return true;
+    const selector = { _id: record._id, 'karkuns.karkunId': args.karkunId };
+    if (status) {
+      await DutyDayAttendances.updateAsync(selector, {
+        $set: {
+          'karkuns.$.attendance': status,
+          'karkuns.$.attendanceUpdatedAt': new Date(),
+          'karkuns.$.attendanceUpdatedBy': args.user._id,
+          ...touch(args.user._id),
+        },
+      });
+    } else {
+      await DutyDayAttendances.updateAsync(selector, {
+        $unset: {
+          'karkuns.$.attendance': '',
+          'karkuns.$.attendanceUpdatedAt': '',
+          'karkuns.$.attendanceUpdatedBy': '',
+        },
+        $set: touch(args.user._id),
+      });
+    }
+    return true;
+  });
 }
 
 export async function getDutyPlanWeek(dutyId: string, locationId: string) {

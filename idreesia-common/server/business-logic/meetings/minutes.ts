@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   MeetingsAction,
   MeetingsEntityType,
@@ -23,34 +24,36 @@ export async function setMinutes(
   text: string | null,
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const minutesText = normalizeText(text, 'Minutes', MAX_MINUTES_LENGTH);
-  const meeting = await requireMeeting(meetingId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const minutesText = normalizeText(text, 'Minutes', MAX_MINUTES_LENGTH);
+    const meeting = await requireMeeting(meetingId);
 
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    minutesText
-      ? {
-          $set: {
-            minutes: {
-              text: minutesText,
-              updatedAt: new Date(),
-              updatedBy: userId,
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      minutesText
+        ? {
+            $set: {
+              minutes: {
+                text: minutesText,
+                updatedAt: new Date(),
+                updatedBy: userId,
+              },
             },
-          },
-        }
-      : { $unset: { minutes: 1 } },
-    { allowed: EDITABLE_STATUSES, checkRevision: false }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.MEETING,
-    entityId: meetingId,
-    action: MeetingsAction.MINUTES_UPDATED,
-    userId,
-    details: { cleared: !minutesText, length: minutesText?.length ?? 0 },
+          }
+        : { $unset: { minutes: 1 } },
+      { allowed: EDITABLE_STATUSES, checkRevision: false }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.MEETING,
+      entityId: meetingId,
+      action: MeetingsAction.MINUTES_UPDATED,
+      userId,
+      details: { cleared: !minutesText, length: minutesText?.length ?? 0 },
+    });
+    return updated;
   });
-  return updated;
 }

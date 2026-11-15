@@ -17,6 +17,10 @@ const USER_BY_ID: TypedDocumentNode<
       displayName
       locked
       hasChatAccount
+      twoFactorEnabled
+      isSuperAdmin
+      loginBlockedAddresses
+      untrustedLoginAddressesBlocked
       instances
       permissions
       personId

@@ -28,6 +28,11 @@ extend type Query {
 
   mehfilKarkunByBarcodeId(barcode: String!): MehfilKarkunType
   @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+
+  # People search behind the "Add Karkuns" picker on the mehfil karkuns page.
+  # Searches visitors, karkuns and employees.
+  pagedSecurityPeople(filter: PersonFilter): PagedPeopleType
+  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
 }
 
 extend type Mutation {

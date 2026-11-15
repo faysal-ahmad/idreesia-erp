@@ -12,6 +12,8 @@ import { ProjectParticipantsScreen } from './project-participants-screen';
 import { ProjectScreen } from './project-screen';
 import { ProjectTasksScreen } from './project-tasks-screen';
 import { ProjectsScreen } from './projects-screen';
+import { TaskFormScreen } from './task-form-screen';
+import { TaskScreen } from './task-screen';
 import { useProject } from './use-projects';
 
 const PART_SCREENS: Array<[ProjectPart, React.ComponentType]> = [
@@ -30,9 +32,12 @@ const ProjectChat = () => {
 };
 
 /**
- * Workspace → Projects. Owns every route under the projects path. The list
- * stays mounted (KeepAlive) under an opened project, and the project under
- * the screens for its parts and its chat, so back returns to each as it was.
+ * Workspace → Projects & Tasks. Owns every route under the projects path,
+ * tasks included. The list (both its tabs) stays mounted (KeepAlive) under
+ * an opened project or task, and the project under the screens for its parts
+ * and its chat, so back returns to each as it was. A task opened from a
+ * project (or anywhere else) returns there: its back arrow follows the
+ * `from` the opening screen passed.
  */
 export const ProjectsFeature = () => {
   const { committeeId } = useParams<{ committeeId: string }>();
@@ -42,9 +47,14 @@ export const ProjectsFeature = () => {
   const onNotifications = Boolean(
     matchPath(pathname, { path: WorkspacesPaths.committeeProjectNotificationsPattern, exact: true }),
   );
-  const projectMatch = onNew || onNotifications
+  const onTasks = Boolean(matchPath(pathname, { path: WorkspacesPaths.committeeTasksBasePattern }));
+  const onNewTask = Boolean(matchPath(pathname, { path: WorkspacesPaths.committeeNewTaskPattern, exact: true }));
+  const projectMatch = onNew || onNotifications || onTasks
     ? null
     : matchPath<{ projectId: string }>(pathname, { path: WorkspacesPaths.committeeProjectPattern });
+  const taskMatch = onNewTask
+    ? null
+    : matchPath<{ taskId: string }>(pathname, { path: WorkspacesPaths.committeeTaskPattern });
 
   return (
     <>
@@ -56,8 +66,16 @@ export const ProjectsFeature = () => {
           <ProjectScreen projectId={projectMatch.params.projectId} />
         </KeepAlive>
       )}
+      {taskMatch && (
+        <KeepAlive key={taskMatch.params.taskId} active={taskMatch.isExact}>
+          <TaskScreen taskId={taskMatch.params.taskId} />
+        </KeepAlive>
+      )}
       <Switch>
         <Route exact path={WorkspacesPaths.committeeProjectsPattern} render={() => null} />
+        <Route exact component={TaskFormScreen} path={WorkspacesPaths.committeeNewTaskPattern} />
+        <Route exact path={WorkspacesPaths.committeeTaskPattern} render={() => null} />
+        <Route exact component={TaskFormScreen} path={WorkspacesPaths.committeeTaskEditPattern} />
         <Route exact component={ProjectFormScreen} path={WorkspacesPaths.committeeNewProjectPattern} />
         <Route
           exact

@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { Random } from 'meteor/random';
 
 import {
@@ -28,7 +29,7 @@ import {
 import { dmsError } from './errors';
 import {
   assertNotLockedByOther,
-  deleteFilesQuietly,
+  deleteFilesAfterCommit,
   getVersionFileKey,
   normalizeMimeType,
   normalizeName,
@@ -189,46 +190,47 @@ export async function completeUpload(
   userId: string,
   { sha256 }: { sha256?: string } = {}
 ): Promise<DocumentWithVersion> {
-  requireUserId(userId);
-  const upload = await requirePendingUpload(uploadId, userId);
-  if (upload.uploadExpiresAt && upload.uploadExpiresAt <= new Date()) {
-    throw dmsError('UPLOAD_INCOMPLETE', 'The upload has expired');
-  }
-  if (sha256 !== undefined && !SHA256_PATTERN.test(sha256)) {
-    throw dmsError('BAD_USER_INPUT', 'sha256 must be a hex SHA-256 digest');
-  }
-  const workspace = await requireWorkspace(upload.workspaceId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const upload = await requirePendingUpload(uploadId, userId);
+    if (upload.uploadExpiresAt && upload.uploadExpiresAt <= new Date()) {
+      throw dmsError('UPLOAD_INCOMPLETE', 'The upload has expired');
+    }
+    if (sha256 !== undefined && !SHA256_PATTERN.test(sha256)) {
+      throw dmsError('BAD_USER_INPUT', 'sha256 must be a hex SHA-256 digest');
+    }
+    const workspace = await requireWorkspace(upload.workspaceId);
 
-  const info = await getFileInfo(upload.fileKey);
-  if (!info) {
-    throw dmsError('UPLOAD_INCOMPLETE', 'The file has not been uploaded yet');
-  }
-  if (info.size !== upload.size) {
-    throw dmsError(
-      'UPLOAD_INCOMPLETE',
-      `The uploaded file is ${info.size} bytes, not the ${upload.size} declared`
-    );
-  }
-  validateFile(workspace, info.size, upload.mimeType);
+    const info = await getFileInfo(upload.fileKey);
+    if (!info) {
+      throw dmsError('UPLOAD_INCOMPLETE', 'The file has not been uploaded yet');
+    }
+    if (info.size !== upload.size) {
+      throw dmsError(
+        'UPLOAD_INCOMPLETE',
+        `The uploaded file is ${info.size} bytes, not the ${upload.size} declared`
+      );
+    }
+    validateFile(workspace, info.size, upload.mimeType);
 
-  const isNewDocument = !!upload.newDocument;
-  let document: DmsDocumentDocument;
-  if (upload.newDocument) {
-    document = await insertDocument(
-      workspace._id,
-      upload.newDocument,
-      userId,
-      upload.documentId
-    );
-  } else {
-    document = await requireDocument(upload.documentId, {
-      workspaceId: workspace._id,
-    });
-  }
+    const isNewDocument = !!upload.newDocument;
+    let document: DmsDocumentDocument;
+    if (upload.newDocument) {
+      document = await insertDocument(
+        workspace._id,
+        upload.newDocument,
+        userId,
+        upload.documentId
+      );
+    } else {
+      document = await requireDocument(upload.documentId, {
+        workspaceId: workspace._id,
+      });
+    }
 
-  let version: DmsDocumentVersionDocument;
-  try {
-    version = await commitVersion({
+    // If this fails the transaction rolls back the new document too, and the
+    // upload stays pending, so it can be retried or aborted.
+    const version = await commitVersion({
       document,
       versionId: upload._id,
       fileKey: upload.fileKey,
@@ -241,41 +243,35 @@ export async function completeUpload(
       pending: true,
       userId,
     });
-  } catch (error) {
-    // The upload stays pending, so it can be retried or aborted.
-    if (isNewDocument) {
-      await DmsDocuments.removeAsync(document._id).catch(() => undefined);
-    }
-    throw error;
-  }
 
-  await logActivity(
-    isNewDocument
-      ? {
-          workspaceId: workspace._id,
-          entityType: DmsEntityType.DOCUMENT,
-          entityId: document._id,
-          documentId: document._id,
-          action: DmsAction.DOCUMENT_CREATED,
-          userId,
-          details: {
-            name: document.name,
-            folderId: document.folderId ?? null,
-          },
-        }
-      : {
-          workspaceId: workspace._id,
-          entityType: DmsEntityType.VERSION,
-          entityId: version._id,
-          documentId: document._id,
-          action: DmsAction.VERSION_ADDED,
-          userId,
-          details: { versionNumber: version.versionNumber, size: version.size },
-        }
-  );
-  if (isNewDocument) await notifyDocumentAdded(document, userId);
-  else await notifyVersionAdded(document, version.versionNumber, userId);
-  return { document: await requireDocument(document._id), version };
+    await logActivity(
+      isNewDocument
+        ? {
+            workspaceId: workspace._id,
+            entityType: DmsEntityType.DOCUMENT,
+            entityId: document._id,
+            documentId: document._id,
+            action: DmsAction.DOCUMENT_CREATED,
+            userId,
+            details: {
+              name: document.name,
+              folderId: document.folderId ?? null,
+            },
+          }
+        : {
+            workspaceId: workspace._id,
+            entityType: DmsEntityType.VERSION,
+            entityId: version._id,
+            documentId: document._id,
+            action: DmsAction.VERSION_ADDED,
+            userId,
+            details: { versionNumber: version.versionNumber, size: version.size },
+          }
+    );
+    if (isNewDocument) await notifyDocumentAdded(document, userId);
+    else await notifyVersionAdded(document, version.versionNumber, userId);
+    return { document: await requireDocument(document._id), version };
+  });
 }
 
 /** Cancels a pending upload and removes anything already uploaded. */
@@ -283,13 +279,15 @@ export async function abortUpload(
   uploadId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const upload = await requirePendingUpload(uploadId, userId);
-  await DmsDocumentVersions.removeAsync({
-    _id: upload._id,
-    status: DmsVersionStatus.PENDING,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const upload = await requirePendingUpload(uploadId, userId);
+    await DmsDocumentVersions.removeAsync({
+      _id: upload._id,
+      status: DmsVersionStatus.PENDING,
+    });
+    await deleteFilesAfterCommit([upload.fileKey]);
   });
-  await deleteFilesQuietly([upload.fileKey]);
 }
 
 /**
@@ -298,19 +296,21 @@ export async function abortUpload(
  * Returns how many were removed.
  */
 export async function purgeExpiredUploads(): Promise<number> {
-  const expired = await DmsDocumentVersions.find(
-    {
-      status: DmsVersionStatus.PENDING,
-      uploadExpiresAt: { $lte: new Date() },
-    },
-    { fields: { _id: 1, fileKey: 1 } }
-  ).fetchAsync();
-  if (!expired.length) return 0;
+  return runInTransaction(async () => {
+    const expired = await DmsDocumentVersions.find(
+      {
+        status: DmsVersionStatus.PENDING,
+        uploadExpiresAt: { $lte: new Date() },
+      },
+      { fields: { _id: 1, fileKey: 1 } }
+    ).fetchAsync();
+    if (!expired.length) return 0;
 
-  await DmsDocumentVersions.removeAsync({
-    _id: { $in: expired.map(({ _id }) => _id) },
-    status: DmsVersionStatus.PENDING,
+    await DmsDocumentVersions.removeAsync({
+      _id: { $in: expired.map(({ _id }) => _id) },
+      status: DmsVersionStatus.PENDING,
+    });
+    await deleteFilesAfterCommit(expired.map(({ fileKey }) => fileKey));
+    return expired.length;
   });
-  await deleteFilesQuietly(expired.map(({ fileKey }) => fileKey));
-  return expired.length;
 }

@@ -1,6 +1,4 @@
-export { canDeleteKarkun } from './can-delete-karkun';
 export { ensureKarkuns } from './ensure-karkuns';
-export { deleteKarkun } from './delete-karkun';
 export { createMonthlySalaries } from './create-monthly-salaries';
 export { exportKarkuns } from './karkuns-exporter';
 export {
@@ -19,3 +17,9 @@ export {
   shiftIsPlanned,
   teamIsAssigned,
 } from './duty-planning';
+export {
+  addTeamMember,
+  removeTeamMember,
+  updateTeamMember,
+  updateTeamMemberDays,
+} from './teams';

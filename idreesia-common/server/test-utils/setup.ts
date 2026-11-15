@@ -13,9 +13,13 @@ let client: MongoClient;
 let db: Db;
 
 beforeAll(async () => {
-  client = await MongoClient.connect(inject('mongoUri'));
-  db = client.db(`test_${Math.random().toString(36).slice(2)}`);
-  setTestDb(db);
+  // The database is named in the URI so that it is the client's default, as
+  // the app's is in Meteor's.
+  const uri = new URL(inject('mongoUri'));
+  uri.pathname = `/test_${Math.random().toString(36).slice(2)}`;
+  client = await MongoClient.connect(uri.toString());
+  db = client.db();
+  setTestDb(db, client);
 });
 
 afterEach(async () => {

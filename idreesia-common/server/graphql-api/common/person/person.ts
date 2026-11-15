@@ -21,15 +21,11 @@ type PersonSharedDataType {
   ehadDate: String
   deathDate: String
   referenceName: String
-  imageId: String
-  imageThumbnailId: String
   imageUrl: String
   imageThumbnailUrl: String
   imageVectorData: PersonImageVectorDataType
   tagIds: [String]
 
-  image: Attachment
-  imageThumbnail: Attachment
   tags: [PeopleTagType]
 }
 
@@ -106,12 +102,12 @@ type PagedPeopleType {
 }
 
 extend type Query {
-  pagedPeople(filter: PersonFilter): PagedPeopleType
   distinctCities: [String]
   distinctCountries: [String]
 }
 
 extend type Mutation {
   fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
+    @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 }
 `;

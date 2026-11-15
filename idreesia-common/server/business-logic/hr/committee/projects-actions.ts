@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   addProjectParticipants,
   createProject,
@@ -59,21 +60,23 @@ export async function createCommitteeProject(
   input: CommitteeProjectInput,
   userId: string
 ) {
-  const project = await createProject(
-    {
-      workspaceId,
-      title: input.title,
-      objective: input.objective ?? undefined,
-      description: input.description ?? undefined,
-      participantIds: input.participantIds ?? [],
-      startDate: parseTimestamp(input.startDate),
-      targetDate: parseTimestamp(input.targetDate),
-      tags: input.tags ?? [],
-    },
-    userId
-  );
-  await tryEnsureProjectChatGroup(committee, project, userId);
-  return project;
+  return runInTransaction(async () => {
+    const project = await createProject(
+      {
+        workspaceId,
+        title: input.title,
+        objective: input.objective ?? undefined,
+        description: input.description ?? undefined,
+        participantIds: input.participantIds ?? [],
+        startDate: parseTimestamp(input.startDate),
+        targetDate: parseTimestamp(input.targetDate),
+        tags: input.tags ?? [],
+      },
+      userId
+    );
+    await tryEnsureProjectChatGroup(committee, project, userId);
+    return project;
+  });
 }
 
 /** Saves the edit form. Participants are handled separately. */
@@ -103,9 +106,11 @@ export async function setCommitteeProjectStatus(
   force: boolean,
   userId: string
 ) {
-  const project = await setProjectStatus(projectId, status, userId, { force });
-  await syncProjectChatArchive(project);
-  return project;
+  return runInTransaction(async () => {
+    const project = await setProjectStatus(projectId, status, userId, { force });
+    await syncProjectChatArchive(project);
+    return project;
+  });
 }
 
 /** Archives the chat group (its history is kept), then deletes the project. */
@@ -114,8 +119,10 @@ export async function deleteCommitteeProject(
   options: DeleteProjectOptions,
   userId: string
 ) {
-  await archiveProjectChat(project);
-  await deleteProject(project._id, userId, options);
+  return runInTransaction(async () => {
+    await archiveProjectChat(project);
+    await deleteProject(project._id, userId, options);
+  });
 }
 
 /** Adds participants and gives them access to the project's chat. */
@@ -124,11 +131,13 @@ export async function addCommitteeProjectParticipants(
   personIds: string[],
   userId: string
 ) {
-  const added = personIds.filter(id => !project.participantIds.includes(id));
-  if (!added.length) return project;
-  // Chat first, so a chat failure leaves the project unchanged.
-  await addProjectChatMembers(project, added);
-  return addProjectParticipants(project._id, added, userId);
+  return runInTransaction(async () => {
+    const added = personIds.filter(id => !project.participantIds.includes(id));
+    if (!added.length) return project;
+    // Chat first, so a chat failure leaves the project unchanged.
+    await addProjectChatMembers(project, added);
+    return addProjectParticipants(project._id, added, userId);
+  });
 }
 
 /** Removes a participant and their access to the project's chat. */
@@ -138,13 +147,15 @@ export async function removeCommitteeProjectParticipant(
   unassignTasks: boolean,
   userId: string
 ) {
-  // The module refuses to remove a person with open tasks; make sure it
-  // will accept before touching chat.
-  const updated = await removeProjectParticipant(project._id, personId, userId, {
-    unassignTasks,
+  return runInTransaction(async () => {
+    // The module refuses to remove a person with open tasks; make sure it
+    // will accept before touching chat.
+    const updated = await removeProjectParticipant(project._id, personId, userId, {
+      unassignTasks,
+    });
+    await removeProjectChatMember(project, personId);
+    return updated;
   });
-  await removeProjectChatMember(project, personId);
-  return updated;
 }
 
 /** A project task can only go to a participant: make the assignee one. */
@@ -164,20 +175,22 @@ export async function createCommitteeTask(
   input: CommitteeTaskInput,
   userId: string
 ) {
-  await ensureParticipant(project, input.assigneeId, userId);
-  return createTask(
-    {
-      workspaceId,
-      projectId: project?._id,
-      title: input.title,
-      description: input.description ?? undefined,
-      assigneeId: input.assigneeId || undefined,
-      dueDate: parseTimestamp(input.dueDate),
-      priority: (input.priority as never) || undefined,
-      tags: input.tags ?? [],
-    },
-    userId
-  );
+  return runInTransaction(async () => {
+    await ensureParticipant(project, input.assigneeId, userId);
+    return createTask(
+      {
+        workspaceId,
+        projectId: project?._id,
+        title: input.title,
+        description: input.description ?? undefined,
+        assigneeId: input.assigneeId || undefined,
+        dueDate: parseTimestamp(input.dueDate),
+        priority: (input.priority as never) || undefined,
+        tags: input.tags ?? [],
+      },
+      userId
+    );
+  });
 }
 
 /** Saves the full edit form (coordinators). */
@@ -187,17 +200,19 @@ export async function updateCommitteeTask(
   input: CommitteeTaskInput,
   userId: string
 ) {
-  await ensureParticipant(project, input.assigneeId, userId);
-  return updateTask(
-    task._id,
-    {
-      title: input.title,
-      description: input.description ?? null,
-      assigneeId: input.assigneeId || null,
-      dueDate: parseTimestamp(input.dueDate) ?? null,
-      ...(input.priority ? { priority: input.priority as never } : {}),
-      ...(input.tags ? { tags: input.tags } : {}),
-    },
-    userId
-  );
+  return runInTransaction(async () => {
+    await ensureParticipant(project, input.assigneeId, userId);
+    return updateTask(
+      task._id,
+      {
+        title: input.title,
+        description: input.description ?? null,
+        assigneeId: input.assigneeId || null,
+        dueDate: parseTimestamp(input.dueDate) ?? null,
+        ...(input.priority ? { priority: input.priority as never } : {}),
+        ...(input.tags ? { tags: input.tags } : {}),
+      },
+      userId
+    );
+  });
 }

@@ -1,6 +1,10 @@
 import filter from 'lodash/filter';
-import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { DataSource, ModuleNames } from 'meteor/idreesia-common/constants';
+import {
+  findOneUser,
+  searchUsers,
+  setUserPermissions,
+} from 'meteor/idreesia-common/server/business-logic/admin';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -13,7 +17,7 @@ const resolvers: ResolverMap = {
       const usersFilter = {
         moduleAccess: ModuleNames.security,
       };
-      return Users.searchUsers(usersFilter);
+      return searchUsers(usersFilter);
     },
   },
 
@@ -24,7 +28,7 @@ const resolvers: ResolverMap = {
       { user }
     ) => {
       // Get the existing permissions for the user
-      const userWithPermissions = await Users.findOneUser(userId);
+      const userWithPermissions = await findOneUser(userId);
       const existingPermissions = userWithPermissions.permissions ?? [];
       // Filter out the existing permissions for the security module
       const filteredPermissions = filter(
@@ -33,7 +37,7 @@ const resolvers: ResolverMap = {
       );
       // Concatenate the new security permissions with this list
       const newPermissions = filteredPermissions.concat(permissions);
-      return Users.setPermissions(
+      return setUserPermissions(
         { userId, permissions: newPermissions },
         user,
         DataSource.SECURITY

@@ -1,3 +1,4 @@
+import { afterCommit } from 'meteor/idreesia-common/server/collections';
 import { Random } from 'meteor/random';
 
 import {
@@ -6,7 +7,7 @@ import {
 } from 'meteor/idreesia-common/constants';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import {
-  getFile,
+  deleteFiles,
   getFileExtension,
   getFileUrl,
   putFile,
@@ -35,23 +36,6 @@ export const getAttachmentFileKey = (
   name: string | undefined,
   mimeType: string
 ) => `${folder}/${attachmentId}.${getFileExtension(name, mimeType)}`;
-
-interface AttachmentContent {
-  data?: string;
-  fileKey?: string;
-}
-
-/**
- * An attachment's bytes - from object storage, or from its legacy base64
- * `data` when it hasn't been migrated. Null when it has neither.
- */
-export async function readAttachmentData(
-  attachment: AttachmentContent | null | undefined
-): Promise<Buffer | null> {
-  if (attachment?.fileKey) return (await getFile(attachment.fileKey)).body;
-  if (attachment?.data) return Buffer.from(attachment.data, 'base64');
-  return null;
-}
 
 /**
  * Stores an uploaded file privately in its category's folder and records
@@ -92,3 +76,38 @@ export async function createStoredAttachment({
 /** Short-lived presigned URL for downloading a stored attachment. */
 export const getAttachmentDownloadUrl = (fileKey: string) =>
   getFileUrl(fileKey);
+
+/**
+ * Deletes attachments, and their files in object storage once the current
+ * transaction commits (straight away outside one).
+ */
+export async function removeAttachments(
+  attachmentIds: string[] | null | undefined
+): Promise<void> {
+  const ids = (attachmentIds ?? []).filter(Boolean);
+  if (ids.length === 0) return;
+
+  const attachments = await Attachments.find(
+    { _id: { $in: ids } },
+    { fields: { fileKey: 1 } }
+  ).fetchAsync();
+  const fileKeys = attachments
+    .map(attachment => attachment.fileKey)
+    .filter(Boolean);
+  await Attachments.removeAsync({ _id: { $in: ids } });
+  if (fileKeys.length > 0) {
+    await afterCommit(async () => {
+      try {
+        await deleteFiles(fileKeys);
+      } catch (error) {
+        // An orphaned file is harmless; failing the removal over it is not.
+        // eslint-disable-next-line no-console
+        console.error(`Failed to delete attachment files ${fileKeys}:`, error);
+      }
+    });
+  }
+}
+
+/** Deletes an attachment and its file in object storage. */
+export const removeAttachment = (attachmentId: string) =>
+  removeAttachments([attachmentId]);

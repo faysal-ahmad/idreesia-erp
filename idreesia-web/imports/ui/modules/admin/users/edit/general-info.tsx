@@ -6,11 +6,13 @@ import {
   Button,
   Collapse,
   Form,
+  Popconfirm,
   Space,
   Spin,
   Tooltip,
   type CollapseProps,
 } from 'antd';
+import { useLoggedInUser } from 'meteor/idreesia-common/hooks/common';
 import { message } from '/imports/ui/antd-feedback';
 import {
   InputTextField,
@@ -25,6 +27,9 @@ import {
   PAGED_USERS,
   UPDATE_USER,
   CREATE_CHAT_ACCOUNT,
+  RESET_TWO_FACTOR,
+  SET_SUPER_ADMIN,
+  CLEAR_LOGIN_BLOCKS,
 } from '../gql';
 
 interface Props {
@@ -60,6 +65,25 @@ const GeneralInfo = ({ userId, history }: Props) => {
       ],
     }
   );
+  const [resetTwoFactor, { loading: resettingTwoFactor }] = useMutation(
+    RESET_TWO_FACTOR,
+    {
+      refetchQueries: [{ query: PAGED_USERS, variables: { filter: {} } }],
+    }
+  );
+  const [clearLoginBlocks, { loading: clearingLoginBlocks }] = useMutation(
+    CLEAR_LOGIN_BLOCKS
+  );
+  const [setSuperAdmin, { loading: settingSuperAdmin }] = useMutation(
+    SET_SUPER_ADMIN,
+    {
+      refetchQueries: [
+        { query: PAGED_USERS, variables: { filter: {} } },
+        'adminUserById',
+      ],
+    }
+  );
+  const { user: loggedInUser } = useLoggedInUser();
   const userById = data?.userById;
 
   const handleCancel = () => {
@@ -107,6 +131,45 @@ const GeneralInfo = ({ userId, history }: Props) => {
       });
   };
 
+  // For a user who lost the phone with their authenticator app; they can
+  // then log in with only their password and set it up again.
+  const handleResetTwoFactor = () => {
+    resetTwoFactor({ variables: { userId: userById?._id ?? userId } })
+      .then(() => {
+        message.success('Two-factor authentication turned off', 2);
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
+  };
+
+  // For a user kept locked out by failed login attempts, e.g. someone else
+  // trying wrong passwords on their account.
+  const handleClearLoginBlocks = () => {
+    clearLoginBlocks({ variables: { userId: userById?._id ?? userId } })
+      .then(() => {
+        message.success('Login blocks cleared', 2);
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
+  };
+
+  const handleSetSuperAdmin = (isSuperAdmin: boolean) => {
+    setSuperAdmin({
+      variables: { userId: userById?._id ?? userId, isSuperAdmin },
+    })
+      .then(() => {
+        message.success(
+          isSuperAdmin ? 'User is now a super admin' : 'Super admin removed',
+          2
+        );
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
+  };
+
   if (loading || !userById) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
@@ -138,6 +201,105 @@ const GeneralInfo = ({ userId, history }: Props) => {
       </Button>
     </Tooltip>
   );
+
+  const resetTwoFactorButton = userById.twoFactorEnabled ? (
+    <Popconfirm
+      title="Turn off two-factor authentication for this user?"
+      description="They will be able to log in with only their password."
+      okText="Turn Off"
+      onConfirm={handleResetTwoFactor}
+    >
+      <Button size="large" loading={resettingTwoFactor}>
+        Reset Two-Factor
+      </Button>
+    </Popconfirm>
+  ) : null;
+
+  const blockedAddresses = userById.loginBlockedAddresses ?? 0;
+  const isLoginBlocked =
+    blockedAddresses > 0 || !!userById.untrustedLoginAddressesBlocked;
+  const loginBlockStatus = [
+    blockedAddresses > 0
+      ? `Blocked from ${blockedAddresses} ${blockedAddresses === 1 ? 'address' : 'addresses'}`
+      : null,
+    userById.untrustedLoginAddressesBlocked
+      ? 'Only addresses used before can log in (too many failed attempts)'
+      : null,
+  ]
+    .filter(Boolean)
+    .join('. ');
+
+  const clearLoginBlocksButton = isLoginBlocked ? (
+    <Popconfirm
+      title="Clear this user's login blocks?"
+      description="Failed login attempts will no longer block any address."
+      okText="Clear"
+      onConfirm={handleClearLoginBlocks}
+    >
+      <Button size="large" loading={clearingLoginBlocks}>
+        Clear Login Blocks
+      </Button>
+    </Popconfirm>
+  ) : null;
+
+  // Only a super admin can grant or revoke super admin rights, and only to a
+  // user who has two-factor authentication enabled and is not locked.
+  let superAdminButton: React.ReactNode = null;
+  if (loggedInUser?.isSuperAdmin) {
+    if (userById.isSuperAdmin) {
+      superAdminButton = (
+        <Popconfirm
+          title="Remove super admin rights from this user?"
+          description="They will keep only the permissions granted to them."
+          okText="Remove"
+          onConfirm={() => handleSetSuperAdmin(false)}
+        >
+          <Button size="large" loading={settingSuperAdmin}>
+            Remove Super Admin
+          </Button>
+        </Popconfirm>
+      );
+    } else {
+      let disabledReason: string | undefined;
+      if (userById.locked) {
+        disabledReason = 'A locked user cannot be made a super admin';
+      } else if (!userById.twoFactorEnabled) {
+        disabledReason = 'The user must enable two-factor authentication first';
+      }
+      superAdminButton = (
+        <Tooltip title={disabledReason}>
+          <Popconfirm
+            title="Make this user a super admin?"
+            description="They will have every permission and access to every instance and committee."
+            okText="Make Super Admin"
+            disabled={!!disabledReason}
+            onConfirm={() => handleSetSuperAdmin(true)}
+          >
+            <Button
+              size="large"
+              disabled={!!disabledReason}
+              loading={settingSuperAdmin}
+            >
+              Make Super Admin
+            </Button>
+          </Popconfirm>
+        </Tooltip>
+      );
+    }
+  }
+
+  const extraButtons =
+    createChatAccountButton ||
+    resetTwoFactorButton ||
+    clearLoginBlocksButton ||
+    superAdminButton ? (
+      <Space>
+        {createChatAccountButton}
+        {resetTwoFactorButton}
+        {clearLoginBlocksButton}
+        {superAdminButton}
+      </Space>
+    ) : null;
 
   const karkunField = userById.personId ? (
     <InputTextField
@@ -172,6 +334,31 @@ const GeneralInfo = ({ userId, history }: Props) => {
           fieldLabel="Locked"
           initialValue={userById.locked ?? undefined}
         />
+
+        {/* Read-only status (not a form field), so it updates after a reset. */}
+        <Form.Item
+          label="Two-Factor"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
+        >
+          {userById.twoFactorEnabled ? 'Enabled' : 'Not enabled'}
+        </Form.Item>
+
+        <Form.Item
+          label="Login"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
+        >
+          {isLoginBlocked ? loginBlockStatus : 'Not blocked'}
+        </Form.Item>
+
+        <Form.Item
+          label="Super Admin"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
+        >
+          {userById.isSuperAdmin ? 'Yes' : 'No'}
+        </Form.Item>
 
         <InputTextField
           fieldName="password"
@@ -214,7 +401,7 @@ const GeneralInfo = ({ userId, history }: Props) => {
             handleCancel={handleCancel}
             isFieldsTouched={isFieldsTouched}
             fullWidth
-            extra={createChatAccountButton}
+            extra={extraButtons}
           />
         </Space>
       </Form>

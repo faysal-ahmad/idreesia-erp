@@ -1,10 +1,12 @@
 import { MEETINGS_MODULE, MeetingsAction } from 'meteor/idreesia-common/constants/meetings';
-import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import type { MeetingDocument } from 'meteor/idreesia-common/server/collections/meetings';
 import {
   createNotifier,
   type ModuleNotification,
 } from 'meteor/idreesia-common/server/headless';
+import {
+  findUsersByPersonIds,
+} from 'meteor/idreesia-common/server/business-logic/admin/users';
 
 /**
  * The notifications the meetings module publishes, each to the participants
@@ -140,7 +142,7 @@ const recipientUserIds = async (
   actorUserId: string
 ): Promise<string[]> => {
   if (!participantIds.length) return [];
-  const users = await Users.findByPersonIds(participantIds);
+  const users = await findUsersByPersonIds(participantIds);
   return users.map(({ _id }) => _id).filter(id => id !== actorUserId);
 };
 

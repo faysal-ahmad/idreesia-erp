@@ -26,10 +26,8 @@ import type {
   MehfilByIdQuery,
   MehfilKarkunsByMehfilIdQuery,
 } from 'meteor/idreesia-common/types/client-operations';
-import {
-  PersonName,
-  PeopleSelectionButton,
-} from '/imports/ui/modules/helpers/controls';
+import { PersonName } from '/imports/ui/modules/helpers/controls';
+import { PeopleSelectionButton } from '/imports/ui/modules/security/common/controls';
 import type { SecurityMehfilDuty } from '/imports/ui/modules/security/common/hooks';
 
 import { MEHFIL_KARKUNS_BY_MEHFIL_ID } from './gql';

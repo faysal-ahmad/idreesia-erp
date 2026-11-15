@@ -1,5 +1,5 @@
 import { getFileUrl } from 'meteor/idreesia-common/server/file-storage';
-import { getSecurityServerAlerts } from 'meteor/idreesia-common/server/graphql-api/security/security-server-alert/queries';
+import { getSecurityServerAlerts } from 'meteor/idreesia-common/server/business-logic/security/security-server/alert-search';
 
 import type { CommitteeFeatureHandler } from './types';
 

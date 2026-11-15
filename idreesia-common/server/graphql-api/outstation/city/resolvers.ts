@@ -4,6 +4,10 @@ import {
 } from 'meteor/idreesia-common/server/collections/outstation';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
+import {
+  deleteCity,
+  searchCities,
+} from 'meteor/idreesia-common/server/business-logic/outstation';
 
 interface CityType {
   _id: string;
@@ -61,7 +65,7 @@ export default {
     allCities: async () => Cities.find({}, { sort: { name: 1 } }).fetchAsync(),
 
     pagedCities: async (_obj: unknown, { filter }: Pick<CityArgs, 'filter'>) =>
-      Cities.searchCities(filter ?? {}),
+      searchCities(filter ?? {}),
 
     cityById: async (_obj: unknown, { _id }: Pick<CityArgs, '_id'>) =>
       Cities.findOneAsync(_id),
@@ -154,14 +158,7 @@ export default {
       return Cities.findOneAsync(_id);
     },
 
-    removeCity: async (_obj: unknown, { _id }: Pick<CityArgs, '_id'>) => {
-      if (!(await Cities.canSafelyDeleteCity(_id))) {
-        throw new Error(
-          'This City cannot be deleted as there is currently data associated with it.'
-        );
-      }
-
-      return Cities.removeAsync(_id);
-    },
+    removeCity: async (_obj: unknown, { _id }: Pick<CityArgs, '_id'>) =>
+      deleteCity(_id),
   },
 };

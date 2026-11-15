@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   createPoll,
   setPollQuestions,
@@ -29,17 +30,19 @@ export async function createCommitteePoll(
   input: CommitteePollInput,
   userId: string
 ) {
-  return createPoll(
-    {
-      workspaceId,
-      title: input.title,
-      description: input.description ?? undefined,
-      closesAt: parseTimestamp(input.closesAt)!,
-      anonymous: input.anonymous ?? false,
-      questions: input.questions ?? [],
-    },
-    userId
-  );
+  return runInTransaction(async () => {
+    return createPoll(
+      {
+        workspaceId,
+        title: input.title,
+        description: input.description ?? undefined,
+        closesAt: parseTimestamp(input.closesAt)!,
+        anonymous: input.anonymous ?? false,
+        questions: input.questions ?? [],
+      },
+      userId
+    );
+  });
 }
 
 /**
@@ -52,23 +55,25 @@ export async function updateCommitteePoll(
   input: CommitteePollInput,
   userId: string
 ) {
-  const isDraft = poll.status === PollStatus.DRAFT;
-  const closesAt = parseTimestamp(input.closesAt);
-  const changes: UpdatePollInput = {
-    title: input.title,
-    description: input.description ?? null,
-    ...(closesAt && closesAt.getTime() !== poll.closesAt.getTime()
-      ? { closesAt }
-      : {}),
-    ...(isDraft
-      ? {
-          anonymous: input.anonymous ?? poll.anonymous,
-            }
-      : {}),
-  };
-  const updated = await updatePoll(poll._id, changes, userId);
-  if (isDraft && input.questions) {
-    return setPollQuestions(poll._id, input.questions, userId);
-  }
-  return updated;
+  return runInTransaction(async () => {
+    const isDraft = poll.status === PollStatus.DRAFT;
+    const closesAt = parseTimestamp(input.closesAt);
+    const changes: UpdatePollInput = {
+      title: input.title,
+      description: input.description ?? null,
+      ...(closesAt && closesAt.getTime() !== poll.closesAt.getTime()
+        ? { closesAt }
+        : {}),
+      ...(isDraft
+        ? {
+            anonymous: input.anonymous ?? poll.anonymous,
+              }
+        : {}),
+    };
+    const updated = await updatePoll(poll._id, changes, userId);
+    if (isDraft && input.questions) {
+      return setPollQuestions(poll._id, input.questions, userId);
+    }
+    return updated;
+  });
 }

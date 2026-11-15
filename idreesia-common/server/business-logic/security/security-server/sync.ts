@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   SecurityServerChannels,
   SecurityServerProfiles,
@@ -195,41 +196,43 @@ export async function upsertSecurityServerChannelFromSync(
   localId: string,
   push: ChannelSyncPush
 ): Promise<string | null> {
-  const existing = await findForSync<SecurityServerChannelDocument>(
-    SecurityServerChannels,
-    localId,
-    push.erpId
-  );
+  return runInTransaction(async () => {
+    const existing = await findForSync<SecurityServerChannelDocument>(
+      SecurityServerChannels,
+      localId,
+      push.erpId
+    );
 
-  if (push.deleted) {
-    if (existing && !existing.deletedAt) {
-      await deleteSecurityServerChannel(user, existing._id);
+    if (push.deleted) {
+      if (existing && !existing.deletedAt) {
+        await deleteSecurityServerChannel(user, existing._id);
+      }
+      return existing?._id ?? null;
     }
-    return existing?._id ?? null;
-  }
 
-  const values: ChannelValues = {
-    name: push.name,
-    enabled: push.enabled,
-    similarityThreshold: push.similarityThreshold,
-    recognitionFps: push.recognitionFps,
-    minFaceSizePx: push.minFaceSizePx ?? null,
-    minFaceQuality: push.minFaceQuality ?? null,
-    connection: push.connection,
-  };
-  if (!existing) {
-    const channelId = await createSecurityServerChannel(user, values);
-    await SecurityServerChannels.updateAsync(channelId, {
-      $set: { externalId: localId },
-    });
-    return channelId;
-  }
+    const values: ChannelValues = {
+      name: push.name,
+      enabled: push.enabled,
+      similarityThreshold: push.similarityThreshold,
+      recognitionFps: push.recognitionFps,
+      minFaceSizePx: push.minFaceSizePx ?? null,
+      minFaceQuality: push.minFaceQuality ?? null,
+      connection: push.connection,
+    };
+    if (!existing) {
+      const channelId = await createSecurityServerChannel(user, values);
+      await SecurityServerChannels.updateAsync(channelId, {
+        $set: { externalId: localId },
+      });
+      return channelId;
+    }
 
-  await linkAndRestore(SecurityServerChannels, existing, user, localId);
-  if (channelDiffers(existing, values)) {
-    await updateSecurityServerChannel(user, existing._id, values);
-  }
-  return existing._id;
+    await linkAndRestore(SecurityServerChannels, existing, user, localId);
+    if (channelDiffers(existing, values)) {
+      await updateSecurityServerChannel(user, existing._id, values);
+    }
+    return existing._id;
+  });
 }
 
 export interface ProfileSyncImage {
@@ -299,77 +302,79 @@ export async function upsertSecurityServerProfileFromSync(
   localId: string,
   push: ProfileSyncPush
 ): Promise<ProfileSyncResult> {
-  const existing = await findForSync<SecurityServerProfileDocument>(
-    SecurityServerProfiles,
-    localId,
-    push.erpId
-  );
+  return runInTransaction(async () => {
+    const existing = await findForSync<SecurityServerProfileDocument>(
+      SecurityServerProfiles,
+      localId,
+      push.erpId
+    );
 
-  if (push.deleted) {
-    if (existing && !existing.deletedAt) {
-      await deleteSecurityServerProfile(user, existing._id);
-    }
-    return { _id: existing?._id ?? null, images: [], missingImages: [] };
-  }
-
-  const { name, isTest, images } = push;
-  let profileId: string;
-  if (!existing) {
-    profileId = await createSecurityServerProfile(user, { name, isTest });
-    await SecurityServerProfiles.updateAsync(profileId, {
-      $set: { externalId: localId },
-    });
-  } else {
-    profileId = existing._id;
-    await linkAndRestore(SecurityServerProfiles, existing, user, localId);
-    if (existing.name !== name.trim() || existing.isTest !== isTest) {
-      await updateSecurityServerProfile(user, profileId, { name, isTest });
-    }
-  }
-
-  const profile = (await SecurityServerProfiles.findOneAsync(profileId))!;
-  const result: ProfileSyncResult = {
-    _id: profileId,
-    images: [],
-    missingImages: [],
-  };
-  const kept = new Set<string>();
-
-  for (const image of images) {
-    const match =
-      profile.images.find(({ externalId }) => externalId === image.localId) ??
-      (image.erpId
-        ? profile.images.find(({ _id }) => _id === image.erpId)
-        : undefined);
-
-    if (match) {
-      kept.add(match._id);
-      if (match.externalId !== image.localId) {
-        await SecurityServerProfiles.updateAsync(
-          { _id: profileId, 'images._id': match._id },
-          { $set: { 'images.$.externalId': image.localId } }
-        );
+    if (push.deleted) {
+      if (existing && !existing.deletedAt) {
+        await deleteSecurityServerProfile(user, existing._id);
       }
-      result.images.push({ localId: image.localId, _id: match._id });
-    } else if (image.data) {
-      const imageId = await storeSecurityServerProfileImage(
-        user,
-        profileId,
-        image.data,
-        image.localId
-      );
-      kept.add(imageId);
-      result.images.push({ localId: image.localId, _id: imageId });
-    } else {
-      result.missingImages.push(image.localId);
+      return { _id: existing?._id ?? null, images: [], missingImages: [] };
     }
-  }
 
-  for (const image of profile.images.filter(({ _id }) => !kept.has(_id))) {
-    await removeSecurityServerProfileImage(user, profileId, image._id);
-  }
+    const { name, isTest, images } = push;
+    let profileId: string;
+    if (!existing) {
+      profileId = await createSecurityServerProfile(user, { name, isTest });
+      await SecurityServerProfiles.updateAsync(profileId, {
+        $set: { externalId: localId },
+      });
+    } else {
+      profileId = existing._id;
+      await linkAndRestore(SecurityServerProfiles, existing, user, localId);
+      if (existing.name !== name.trim() || existing.isTest !== isTest) {
+        await updateSecurityServerProfile(user, profileId, { name, isTest });
+      }
+    }
 
-  await applyPushedDefaultImage(profileId, push.defaultImageId, result);
+    const profile = (await SecurityServerProfiles.findOneAsync(profileId))!;
+    const result: ProfileSyncResult = {
+      _id: profileId,
+      images: [],
+      missingImages: [],
+    };
+    const kept = new Set<string>();
 
-  return result;
+    for (const image of images) {
+      const match =
+        profile.images.find(({ externalId }) => externalId === image.localId) ??
+        (image.erpId
+          ? profile.images.find(({ _id }) => _id === image.erpId)
+          : undefined);
+
+      if (match) {
+        kept.add(match._id);
+        if (match.externalId !== image.localId) {
+          await SecurityServerProfiles.updateAsync(
+            { _id: profileId, 'images._id': match._id },
+            { $set: { 'images.$.externalId': image.localId } }
+          );
+        }
+        result.images.push({ localId: image.localId, _id: match._id });
+      } else if (image.data) {
+        const imageId = await storeSecurityServerProfileImage(
+          user,
+          profileId,
+          image.data,
+          image.localId
+        );
+        kept.add(imageId);
+        result.images.push({ localId: image.localId, _id: imageId });
+      } else {
+        result.missingImages.push(image.localId);
+      }
+    }
+
+    for (const image of profile.images.filter(({ _id }) => !kept.has(_id))) {
+      await removeSecurityServerProfileImage(user, profileId, image._id);
+    }
+
+    await applyPushedDefaultImage(profileId, push.defaultImageId, result);
+
+    return result;
+  });
 }

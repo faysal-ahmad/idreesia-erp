@@ -12,6 +12,7 @@ export {
 export {
   createChatAccount,
   createUser,
+  recordUserLogin,
   setUserInstanceAccess,
   setUserPermissions,
   updateUser,

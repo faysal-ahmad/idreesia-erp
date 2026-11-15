@@ -30,3 +30,10 @@ export type {
   ConversationSync,
 } from './conversation';
 export { withChatUserCredentials } from './user-credentials';
+export {
+  addChatGroupMembersWithRollback,
+  archiveChatGroupWithRollback,
+  createChatGroupWithRollback,
+  removeChatGroupMemberWithRollback,
+  unarchiveChatGroupWithRollback,
+} from './chat-group-changes';

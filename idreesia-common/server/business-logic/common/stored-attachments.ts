@@ -1,3 +1,4 @@
+import { afterCommit } from 'meteor/idreesia-common/server/collections';
 import { Random } from 'meteor/random';
 
 import {
@@ -76,7 +77,10 @@ export async function createStoredAttachment({
 export const getAttachmentDownloadUrl = (fileKey: string) =>
   getFileUrl(fileKey);
 
-/** Deletes attachments and their files in object storage. */
+/**
+ * Deletes attachments, and their files in object storage once the current
+ * transaction commits (straight away outside one).
+ */
 export async function removeAttachments(
   attachmentIds: string[] | null | undefined
 ): Promise<void> {
@@ -90,16 +94,18 @@ export async function removeAttachments(
   const fileKeys = attachments
     .map(attachment => attachment.fileKey)
     .filter(Boolean);
-  if (fileKeys.length > 0) {
-    try {
-      await deleteFiles(fileKeys);
-    } catch (error) {
-      // An orphaned file is harmless; failing the removal over it is not.
-      // eslint-disable-next-line no-console
-      console.error(`Failed to delete attachment files ${fileKeys}:`, error);
-    }
-  }
   await Attachments.removeAsync({ _id: { $in: ids } });
+  if (fileKeys.length > 0) {
+    await afterCommit(async () => {
+      try {
+        await deleteFiles(fileKeys);
+      } catch (error) {
+        // An orphaned file is harmless; failing the removal over it is not.
+        // eslint-disable-next-line no-console
+        console.error(`Failed to delete attachment files ${fileKeys}:`, error);
+      }
+    });
+  }
 }
 
 /** Deletes an attachment and its file in object storage. */

@@ -1,14 +1,20 @@
 import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
 
+/** A stock item's quantity moving into (inflow) or out of the store. */
+export interface StockMovement {
+  stockItemId: string;
+  quantity: number;
+  isInflow?: boolean;
+}
+
+// $inc, so concurrent changes to the same item (or one form listing an item
+// twice) all count.
 export async function incrementStockLevel(
   stockItemId: string,
   incrementBy: number
 ) {
-  const stockItem = await StockItems.findOneAsync(stockItemId);
   return StockItems.updateAsync(stockItemId, {
-    $set: {
-      currentStockLevel: (stockItem?.currentStockLevel ?? 0) + incrementBy,
-    },
+    $inc: { currentStockLevel: incrementBy },
   });
 }
 
@@ -16,10 +22,19 @@ export async function decrementStockLevel(
   stockItemId: string,
   decrementBy: number
 ) {
-  const stockItem = await StockItems.findOneAsync(stockItemId);
-  return StockItems.updateAsync(stockItemId, {
-    $set: {
-      currentStockLevel: (stockItem?.currentStockLevel ?? 0) - decrementBy,
-    },
-  });
+  return incrementStockLevel(stockItemId, -decrementBy);
+}
+
+/** Applies the stock levels changes of a form's movements. */
+export async function applyStockMovements(movements: StockMovement[]) {
+  for (const { stockItemId, quantity, isInflow } of movements) {
+    await incrementStockLevel(stockItemId, isInflow ? quantity : -quantity);
+  }
+}
+
+/** Undoes the stock levels changes of a form's movements. */
+export async function revertStockMovements(movements: StockMovement[]) {
+  for (const { stockItemId, quantity, isInflow } of movements) {
+    await incrementStockLevel(stockItemId, isInflow ? -quantity : quantity);
+  }
 }

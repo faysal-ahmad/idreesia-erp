@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   PollsAction,
   PollsEntityType,
@@ -86,35 +87,37 @@ export async function createPoll(
   input: CreatePollInput,
   userId: string
 ): Promise<PollDocument> {
-  requireUserId(userId);
-  const workspace = await requireWorkspace(input.workspaceId);
-  const title = normalizeTitle(input.title, 'Poll title');
-  const closesAt = toDate(input.closesAt, 'End time');
-  const description = normalizeText(input.description, 'Description');
-  const metadata = validateMetadata(input.metadata);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const workspace = await requireWorkspace(input.workspaceId);
+    const title = normalizeTitle(input.title, 'Poll title');
+    const closesAt = toDate(input.closesAt, 'End time');
+    const description = normalizeText(input.description, 'Description');
+    const metadata = validateMetadata(input.metadata);
 
-  const date = new Date();
-  const pollId = await Polls.insertAsync({
-    workspaceId: workspace._id,
-    title,
-    ...(description ? { description } : {}),
-    tags: normalizeTags(input.tags),
-    ...(metadata ? { metadata } : {}),
-    anonymous: toBoolean(input.anonymous, 'anonymous', false),
-    questions: buildQuestions(input.questions),
-    closesAt,
-    status: PollStatus.DRAFT,
-    voteCount: 0,
-    revision: 0,
-    createdAt: date,
-    createdBy: userId,
-    updatedAt: date,
-    updatedBy: userId,
+    const date = new Date();
+    const pollId = await Polls.insertAsync({
+      workspaceId: workspace._id,
+      title,
+      ...(description ? { description } : {}),
+      tags: normalizeTags(input.tags),
+      ...(metadata ? { metadata } : {}),
+      anonymous: toBoolean(input.anonymous, 'anonymous', false),
+      questions: buildQuestions(input.questions),
+      closesAt,
+      status: PollStatus.DRAFT,
+      voteCount: 0,
+      revision: 0,
+      createdAt: date,
+      createdBy: userId,
+      updatedAt: date,
+      updatedBy: userId,
+    });
+
+    const poll = await requirePoll(pollId);
+    await logPoll(poll, PollsAction.POLL_CREATED, userId, { title, closesAt });
+    return poll;
   });
-
-  const poll = await requirePoll(pollId);
-  await logPoll(poll, PollsAction.POLL_CREATED, userId, { title, closesAt });
-  return poll;
 }
 
 export async function getPoll(
@@ -147,51 +150,53 @@ export async function updatePoll(
   changes: UpdatePollInput,
   userId: string
 ): Promise<PollDocument> {
-  requireUserId(userId);
-  const poll = await requirePoll(pollId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const poll = await requirePoll(pollId);
 
-  const $set: Record<string, unknown> = {};
-  const $unset: Record<string, 1> = {};
-  let draftOnly = false;
+    const $set: Record<string, unknown> = {};
+    const $unset: Record<string, 1> = {};
+    let draftOnly = false;
 
-  if (changes.title !== undefined) {
-    $set.title = normalizeTitle(changes.title, 'Poll title');
-  }
-  if (changes.description !== undefined) {
-    const description = normalizeText(changes.description, 'Description');
-    if (description) $set.description = description;
-    else $unset.description = 1;
-  }
-  if (changes.closesAt !== undefined) {
-    const closesAt = toDate(changes.closesAt, 'End time');
-    if (poll.status === PollStatus.OPEN) requireFuture(closesAt);
-    $set.closesAt = closesAt;
-  }
-  if (changes.anonymous !== undefined) {
-    const anonymous = toBoolean(changes.anonymous, 'anonymous', false);
-    if (anonymous !== poll.anonymous) {
-      draftOnly = true;
-      $set.anonymous = anonymous;
+    if (changes.title !== undefined) {
+      $set.title = normalizeTitle(changes.title, 'Poll title');
     }
-  }
-  if (changes.tags !== undefined) $set.tags = normalizeTags(changes.tags);
-  if (changes.metadata !== undefined) {
-    const metadata = validateMetadata(changes.metadata);
-    if (metadata) $set.metadata = metadata;
-    else $unset.metadata = 1;
-  }
+    if (changes.description !== undefined) {
+      const description = normalizeText(changes.description, 'Description');
+      if (description) $set.description = description;
+      else $unset.description = 1;
+    }
+    if (changes.closesAt !== undefined) {
+      const closesAt = toDate(changes.closesAt, 'End time');
+      if (poll.status === PollStatus.OPEN) requireFuture(closesAt);
+      $set.closesAt = closesAt;
+    }
+    if (changes.anonymous !== undefined) {
+      const anonymous = toBoolean(changes.anonymous, 'anonymous', false);
+      if (anonymous !== poll.anonymous) {
+        draftOnly = true;
+        $set.anonymous = anonymous;
+      }
+    }
+    if (changes.tags !== undefined) $set.tags = normalizeTags(changes.tags);
+    if (changes.metadata !== undefined) {
+      const metadata = validateMetadata(changes.metadata);
+      if (metadata) $set.metadata = metadata;
+      else $unset.metadata = 1;
+    }
 
-  const updated = await writePoll(
-    poll,
-    userId,
-    { $set, $unset },
-    { allowed: draftOnly ? DRAFT_ONLY : EDITABLE_STATUSES }
-  );
-  const changed = Object.keys(changes).filter(
-    key => changes[key as keyof UpdatePollInput] !== undefined
-  );
-  await logPoll(poll, PollsAction.POLL_UPDATED, userId, { changed });
-  return updated;
+    const updated = await writePoll(
+      poll,
+      userId,
+      { $set, $unset },
+      { allowed: draftOnly ? DRAFT_ONLY : EDITABLE_STATUSES }
+    );
+    const changed = Object.keys(changes).filter(
+      key => changes[key as keyof UpdatePollInput] !== undefined
+    );
+    await logPoll(poll, PollsAction.POLL_UPDATED, userId, { changed });
+    return updated;
+  });
 }
 
 /** Starts voting on a draft poll, optionally with a new end time. */
@@ -200,26 +205,28 @@ export async function openPoll(
   userId: string,
   { closesAt }: { closesAt?: Date | string | number } = {}
 ): Promise<PollDocument> {
-  requireUserId(userId);
-  const poll = await requirePoll(pollId);
-  const end = closesAt !== undefined ? toDate(closesAt, 'End time') : poll.closesAt;
-  requireFuture(end);
-  assertQuestionsReady(poll.questions);
-  const updated = await writePoll(
-    poll,
-    userId,
-    {
-      $set: {
-        status: PollStatus.OPEN,
-        closesAt: end,
-        openedAt: new Date(),
-        openedBy: userId,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const poll = await requirePoll(pollId);
+    const end = closesAt !== undefined ? toDate(closesAt, 'End time') : poll.closesAt;
+    requireFuture(end);
+    assertQuestionsReady(poll.questions);
+    const updated = await writePoll(
+      poll,
+      userId,
+      {
+        $set: {
+          status: PollStatus.OPEN,
+          closesAt: end,
+          openedAt: new Date(),
+          openedBy: userId,
+        },
       },
-    },
-    { allowed: DRAFT_ONLY }
-  );
-  await logPoll(poll, PollsAction.POLL_OPENED, userId, { closesAt: end });
-  return updated;
+      { allowed: DRAFT_ONLY }
+    );
+    await logPoll(poll, PollsAction.POLL_OPENED, userId, { closesAt: end });
+    return updated;
+  });
 }
 
 /** Ends voting on an open poll before its end time. */
@@ -227,23 +234,25 @@ export async function closePoll(
   pollId: string,
   userId: string
 ): Promise<PollDocument> {
-  requireUserId(userId);
-  const poll = await requirePoll(pollId);
-  const updated = await writePoll(
-    poll,
-    userId,
-    {
-      $set: {
-        status: PollStatus.CLOSED,
-        closedAt: new Date(),
-        closedBy: userId,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const poll = await requirePoll(pollId);
+    const updated = await writePoll(
+      poll,
+      userId,
+      {
+        $set: {
+          status: PollStatus.CLOSED,
+          closedAt: new Date(),
+          closedBy: userId,
+        },
       },
-    },
-    { allowed: OPEN_ONLY, checkRevision: false }
-  );
-  await logPoll(poll, PollsAction.POLL_CLOSED, userId);
-  await notifyClosed(updated, userId);
-  return updated;
+      { allowed: OPEN_ONLY, checkRevision: false }
+    );
+    await logPoll(poll, PollsAction.POLL_CLOSED, userId);
+    await notifyClosed(updated, userId);
+    return updated;
+  });
 }
 
 /** Opens a closed poll again until a new end time. Votes are kept. */
@@ -252,21 +261,23 @@ export async function reopenPoll(
   { closesAt }: { closesAt: Date | string | number },
   userId: string
 ): Promise<PollDocument> {
-  requireUserId(userId);
-  const end = toDate(closesAt, 'End time');
-  requireFuture(end);
-  const poll = await requirePoll(pollId);
-  const updated = await writePoll(
-    poll,
-    userId,
-    {
-      $set: { status: PollStatus.OPEN, closesAt: end },
-      $unset: { closedAt: 1, closedBy: 1 },
-    },
-    { allowed: [PollStatus.CLOSED], checkRevision: false }
-  );
-  await logPoll(poll, PollsAction.POLL_REOPENED, userId, { closesAt: end });
-  return updated;
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const end = toDate(closesAt, 'End time');
+    requireFuture(end);
+    const poll = await requirePoll(pollId);
+    const updated = await writePoll(
+      poll,
+      userId,
+      {
+        $set: { status: PollStatus.OPEN, closesAt: end },
+        $unset: { closedAt: 1, closedBy: 1 },
+      },
+      { allowed: [PollStatus.CLOSED], checkRevision: false }
+    );
+    await logPoll(poll, PollsAction.POLL_REOPENED, userId, { closesAt: end });
+    return updated;
+  });
 }
 
 /** Cancels a draft or open poll. A cancelled poll is read-only. */
@@ -275,40 +286,44 @@ export async function cancelPoll(
   userId: string,
   { reason }: { reason?: string } = {}
 ): Promise<PollDocument> {
-  requireUserId(userId);
-  const cancellationReason = normalizeText(reason, 'Reason');
-  const poll = await requirePoll(pollId);
-  const updated = await writePoll(
-    poll,
-    userId,
-    {
-      $set: {
-        status: PollStatus.CANCELLED,
-        cancelledAt: new Date(),
-        cancelledBy: userId,
-        ...(cancellationReason ? { cancellationReason } : {}),
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const cancellationReason = normalizeText(reason, 'Reason');
+    const poll = await requirePoll(pollId);
+    const updated = await writePoll(
+      poll,
+      userId,
+      {
+        $set: {
+          status: PollStatus.CANCELLED,
+          cancelledAt: new Date(),
+          cancelledBy: userId,
+          ...(cancellationReason ? { cancellationReason } : {}),
+        },
       },
-    },
-    { allowed: EDITABLE_STATUSES, checkRevision: false }
-  );
-  await logPoll(
-    poll,
-    PollsAction.POLL_CANCELLED,
-    userId,
-    cancellationReason ? { reason: cancellationReason } : undefined
-  );
-  // A draft was never visible to voters, so only an open poll is announced.
-  if (poll.status === PollStatus.OPEN) await notifyCancelled(updated, userId);
-  return updated;
+      { allowed: EDITABLE_STATUSES, checkRevision: false }
+    );
+    await logPoll(
+      poll,
+      PollsAction.POLL_CANCELLED,
+      userId,
+      cancellationReason ? { reason: cancellationReason } : undefined
+    );
+    // A draft was never visible to voters, so only an open poll is announced.
+    if (poll.status === PollStatus.OPEN) await notifyCancelled(updated, userId);
+    return updated;
+  });
 }
 
 /** Permanently deletes a poll and its ballots. Its activity is kept. */
 export async function deletePoll(pollId: string, userId: string): Promise<void> {
-  requireUserId(userId);
-  const poll = await requirePoll(pollId);
-  await PollBallots.removeAsync({ pollId });
-  await Polls.removeAsync(pollId);
-  await logPoll(poll, PollsAction.POLL_DELETED, userId, { title: poll.title });
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const poll = await requirePoll(pollId);
+    await PollBallots.removeAsync({ pollId });
+    await Polls.removeAsync(pollId);
+    await logPoll(poll, PollsAction.POLL_DELETED, userId, { title: poll.title });
+  });
 }
 
 interface PollFilterOptions {

@@ -1,3 +1,4 @@
+import { afterCommit } from 'meteor/idreesia-common/server/collections';
 import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
 import {
   deleteFiles,
@@ -30,23 +31,23 @@ export const storeStockItemImage = (
   storeImage(StorageFolders.StockItemImages, stockItemId, image, mimeType);
 
 /**
- * Deletes a stock item's stored image file in object storage.
+ * Deletes a stock item's stored image file in object storage, once the
+ * current transaction commits (straight away outside one).
  */
 export async function removeStockItemImageFiles(
   stockItem: StockItemImageFields | null | undefined
 ) {
-  if (stockItem?.imageKey) {
+  const imageKey = stockItem?.imageKey;
+  if (!imageKey) return;
+  await afterCommit(async () => {
     try {
-      await deleteFiles([stockItem.imageKey]);
+      await deleteFiles([imageKey]);
     } catch (error) {
       // An orphaned file is harmless; failing the update over it is not.
       // eslint-disable-next-line no-console
-      console.error(
-        `Failed to delete stock item image ${stockItem.imageKey}:`,
-        error
-      );
+      console.error(`Failed to delete stock item image ${imageKey}:`, error);
     }
-  }
+  });
 }
 
 /**

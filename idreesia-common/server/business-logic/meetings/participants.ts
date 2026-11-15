@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   MEETINGS_MAX_PARTICIPANTS,
   MeetingAttendanceStatus,
@@ -98,32 +99,34 @@ export async function addParticipants(
   inputs: ParticipantInput[],
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const meeting = await requireMeeting(meetingId);
-  const added = buildParticipants(inputs, meeting.participants);
-  if (!added.length) return meeting;
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const meeting = await requireMeeting(meetingId);
+    const added = buildParticipants(inputs, meeting.participants);
+    if (!added.length) return meeting;
 
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    { $set: { participants: [...meeting.participants, ...added] } },
-    { allowed: SCHEDULED_ONLY }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.PARTICIPANT,
-    entityId: meetingId,
-    action: MeetingsAction.PARTICIPANTS_ADDED,
-    userId,
-    details: { participantIds: added.map(({ participantId }) => participantId) },
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      { $set: { participants: [...meeting.participants, ...added] } },
+      { allowed: SCHEDULED_ONLY }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.PARTICIPANT,
+      entityId: meetingId,
+      action: MeetingsAction.PARTICIPANTS_ADDED,
+      userId,
+      details: { participantIds: added.map(({ participantId }) => participantId) },
+    });
+    await notifyInvited(
+      updated,
+      added.map(({ participantId }) => participantId),
+      userId
+    );
+    return updated;
   });
-  await notifyInvited(
-    updated,
-    added.map(({ participantId }) => participantId),
-    userId
-  );
-  return updated;
 }
 
 export async function removeParticipant(
@@ -131,26 +134,28 @@ export async function removeParticipant(
   participantId: string,
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const meeting = await requireMeeting(meetingId);
-  const index = findParticipant(meeting, participantId);
-  const participants = meeting.participants.filter((_, i) => i !== index);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const meeting = await requireMeeting(meetingId);
+    const index = findParticipant(meeting, participantId);
+    const participants = meeting.participants.filter((_, i) => i !== index);
 
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    { $set: { participants } },
-    { allowed: SCHEDULED_ONLY }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.PARTICIPANT,
-    entityId: participantId,
-    action: MeetingsAction.PARTICIPANT_REMOVED,
-    userId,
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      { $set: { participants } },
+      { allowed: SCHEDULED_ONLY }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.PARTICIPANT,
+      entityId: participantId,
+      action: MeetingsAction.PARTICIPANT_REMOVED,
+      userId,
+    });
+    return updated;
   });
-  return updated;
 }
 
 export async function setParticipantRole(
@@ -159,32 +164,34 @@ export async function setParticipantRole(
   role: MeetingParticipantRoleValue,
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const newRole = requireOneOf(role, MeetingParticipantRole, 'Role');
-  const meeting = await requireMeeting(meetingId);
-  const index = findParticipant(meeting, participantId);
-  const previous = meeting.participants[index].role;
-  if (previous === newRole) return meeting;
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const newRole = requireOneOf(role, MeetingParticipantRole, 'Role');
+    const meeting = await requireMeeting(meetingId);
+    const index = findParticipant(meeting, participantId);
+    const previous = meeting.participants[index].role;
+    if (previous === newRole) return meeting;
 
-  const participants = meeting.participants.map((participant, i) =>
-    i === index ? { ...participant, role: newRole } : participant
-  );
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    { $set: { participants } },
-    { allowed: SCHEDULED_ONLY }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.PARTICIPANT,
-    entityId: participantId,
-    action: MeetingsAction.PARTICIPANT_ROLE_CHANGED,
-    userId,
-    details: { from: previous, to: newRole },
+    const participants = meeting.participants.map((participant, i) =>
+      i === index ? { ...participant, role: newRole } : participant
+    );
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      { $set: { participants } },
+      { allowed: SCHEDULED_ONLY }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.PARTICIPANT,
+      entityId: participantId,
+      action: MeetingsAction.PARTICIPANT_ROLE_CHANGED,
+      userId,
+      details: { from: previous, to: newRole },
+    });
+    return updated;
   });
-  return updated;
 }
 
 export interface InvitationResponse {
@@ -202,42 +209,44 @@ export async function respondToInvitation(
   { status, comment }: InvitationResponse,
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const rsvpStatus = requireOneOf(status, MeetingRsvpStatus, 'Response');
-  const rsvpComment = normalizeText(comment, 'Comment');
-  const meeting = await requireMeeting(meetingId);
-  const index = findParticipant(meeting, participantId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const rsvpStatus = requireOneOf(status, MeetingRsvpStatus, 'Response');
+    const rsvpComment = normalizeText(comment, 'Comment');
+    const meeting = await requireMeeting(meetingId);
+    const index = findParticipant(meeting, participantId);
 
-  const participants = meeting.participants.map((participant, i) =>
-    i === index
-      ? {
-          ...participant,
-          rsvp: {
-            status: rsvpStatus,
-            ...(rsvpStatus !== MeetingRsvpStatus.PENDING
-              ? { respondedAt: new Date() }
-              : {}),
-            ...(rsvpComment ? { comment: rsvpComment } : {}),
-          },
-        }
-      : participant
-  );
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    { $set: { participants } },
-    { allowed: SCHEDULED_ONLY }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.PARTICIPANT,
-    entityId: participantId,
-    action: MeetingsAction.INVITATION_RESPONDED,
-    userId,
-    details: { status: rsvpStatus },
+    const participants = meeting.participants.map((participant, i) =>
+      i === index
+        ? {
+            ...participant,
+            rsvp: {
+              status: rsvpStatus,
+              ...(rsvpStatus !== MeetingRsvpStatus.PENDING
+                ? { respondedAt: new Date() }
+                : {}),
+              ...(rsvpComment ? { comment: rsvpComment } : {}),
+            },
+          }
+        : participant
+    );
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      { $set: { participants } },
+      { allowed: SCHEDULED_ONLY }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.PARTICIPANT,
+      entityId: participantId,
+      action: MeetingsAction.INVITATION_RESPONDED,
+      userId,
+      details: { status: rsvpStatus },
+    });
+    return updated;
   });
-  return updated;
 }
 
 export interface AttendanceEntry {
@@ -256,71 +265,73 @@ export async function markAttendance(
   entries: AttendanceEntry[],
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  if (!Array.isArray(entries) || !entries.length) {
-    throw meetingsError('BAD_USER_INPUT', 'At least one entry is required');
-  }
-  const meeting = await requireMeeting(meetingId);
-  if (!EDITABLE_STATUSES.includes(meeting.status)) {
-    throw statusConflict(meeting, EDITABLE_STATUSES);
-  }
-  const now = new Date();
-  if (meeting.startsAt > now) {
-    throw meetingsError(
-      'CONFLICT',
-      "Attendance can't be recorded before the meeting starts"
-    );
-  }
-
-  const participants = meeting.participants.map(participant => ({
-    ...participant,
-  }));
-  const seen = new Set<string>();
-  entries.forEach(entry => {
-    const participantId = normalizeOpaqueId(
-      entry?.participantId,
-      'Participant id'
-    );
-    if (seen.has(participantId)) {
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    if (!Array.isArray(entries) || !entries.length) {
+      throw meetingsError('BAD_USER_INPUT', 'At least one entry is required');
+    }
+    const meeting = await requireMeeting(meetingId);
+    if (!EDITABLE_STATUSES.includes(meeting.status)) {
+      throw statusConflict(meeting, EDITABLE_STATUSES);
+    }
+    const now = new Date();
+    if (meeting.startsAt > now) {
       throw meetingsError(
-        'BAD_USER_INPUT',
-        `Participant ${participantId} is listed more than once`
+        'CONFLICT',
+        "Attendance can't be recorded before the meeting starts"
       );
     }
-    seen.add(participantId);
-    const index = findParticipant(meeting, participantId);
-    if (entry.status === null) {
-      delete participants[index].attendance;
-      return;
-    }
-    const note = normalizeText(entry.note, 'Note');
-    participants[index].attendance = {
-      status: requireOneOf(entry.status, MeetingAttendanceStatus, 'Attendance'),
-      ...(note ? { note } : {}),
-      markedAt: now,
-      markedBy: userId,
-    };
-  });
 
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    { $set: { participants } },
-    { allowed: EDITABLE_STATUSES }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.MEETING,
-    entityId: meetingId,
-    action: MeetingsAction.ATTENDANCE_MARKED,
-    userId,
-    details: {
-      entries: entries.map(({ participantId, status }) => ({
-        participantId,
-        status,
-      })),
-    },
+    const participants = meeting.participants.map(participant => ({
+      ...participant,
+    }));
+    const seen = new Set<string>();
+    entries.forEach(entry => {
+      const participantId = normalizeOpaqueId(
+        entry?.participantId,
+        'Participant id'
+      );
+      if (seen.has(participantId)) {
+        throw meetingsError(
+          'BAD_USER_INPUT',
+          `Participant ${participantId} is listed more than once`
+        );
+      }
+      seen.add(participantId);
+      const index = findParticipant(meeting, participantId);
+      if (entry.status === null) {
+        delete participants[index].attendance;
+        return;
+      }
+      const note = normalizeText(entry.note, 'Note');
+      participants[index].attendance = {
+        status: requireOneOf(entry.status, MeetingAttendanceStatus, 'Attendance'),
+        ...(note ? { note } : {}),
+        markedAt: now,
+        markedBy: userId,
+      };
+    });
+
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      { $set: { participants } },
+      { allowed: EDITABLE_STATUSES }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.MEETING,
+      entityId: meetingId,
+      action: MeetingsAction.ATTENDANCE_MARKED,
+      userId,
+      details: {
+        entries: entries.map(({ participantId, status }) => ({
+          participantId,
+          status,
+        })),
+      },
+    });
+    return updated;
   });
-  return updated;
 }

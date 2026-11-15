@@ -1,3 +1,4 @@
+import { afterCommit } from 'meteor/idreesia-common/server/collections';
 import {
   deleteFiles,
   StorageFolders,
@@ -50,12 +51,15 @@ export async function removePersonImageFiles(
   const keysToDelete = [sharedData.imageKey, sharedData.imageThumbnailKey]
     .filter(Boolean) as string[];
   if (keysToDelete.length > 0) {
-    try {
-      await deleteFiles(keysToDelete);
-    } catch (error) {
-      // An orphaned file is harmless; failing the update over it is not.
-      // eslint-disable-next-line no-console
-      console.error(`Failed to delete people images ${keysToDelete}:`, error);
-    }
+    // Once the current transaction commits (straight away outside one).
+    await afterCommit(async () => {
+      try {
+        await deleteFiles(keysToDelete);
+      } catch (error) {
+        // An orphaned file is harmless; failing the update over it is not.
+        // eslint-disable-next-line no-console
+        console.error(`Failed to delete people images ${keysToDelete}:`, error);
+      }
+    });
   }
 }

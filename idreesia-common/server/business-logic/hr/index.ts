@@ -17,3 +17,9 @@ export {
   shiftIsPlanned,
   teamIsAssigned,
 } from './duty-planning';
+export {
+  addTeamMember,
+  removeTeamMember,
+  updateTeamMember,
+  updateTeamMemberDays,
+} from './teams';

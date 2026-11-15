@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   PollsAction,
   PollsEntityType,
@@ -35,31 +36,33 @@ export async function createPollsWorkspace(
   input: CreatePollsWorkspaceInput,
   userId: string
 ): Promise<PollsWorkspaceDocument> {
-  requireUserId(userId);
-  const name = normalizeTitle(input.name, 'Workspace name');
-  const description = normalizeText(input.description, 'Description');
-  const metadata = validateMetadata(input.metadata);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const name = normalizeTitle(input.name, 'Workspace name');
+    const description = normalizeText(input.description, 'Description');
+    const metadata = validateMetadata(input.metadata);
 
-  const date = new Date();
-  const workspaceId = await PollsWorkspaces.insertAsync({
-    name,
-    ...(description ? { description } : {}),
-    ...(metadata ? { metadata } : {}),
-    createdAt: date,
-    createdBy: userId,
-    updatedAt: date,
-    updatedBy: userId,
-  });
+    const date = new Date();
+    const workspaceId = await PollsWorkspaces.insertAsync({
+      name,
+      ...(description ? { description } : {}),
+      ...(metadata ? { metadata } : {}),
+      createdAt: date,
+      createdBy: userId,
+      updatedAt: date,
+      updatedBy: userId,
+    });
 
-  await logActivity({
-    workspaceId,
-    entityType: PollsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: PollsAction.WORKSPACE_CREATED,
-    userId,
-    details: { name },
+    await logActivity({
+      workspaceId,
+      entityType: PollsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: PollsAction.WORKSPACE_CREATED,
+      userId,
+      details: { name },
+    });
+    return requireWorkspace(workspaceId);
   });
-  return requireWorkspace(workspaceId);
 }
 
 export interface UpdatePollsWorkspaceInput {
@@ -75,42 +78,44 @@ export async function updatePollsWorkspace(
   changes: UpdatePollsWorkspaceInput,
   userId: string
 ): Promise<PollsWorkspaceDocument> {
-  requireUserId(userId);
-  await requireWorkspace(workspaceId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    await requireWorkspace(workspaceId);
 
-  const $set: Partial<PollsWorkspaceDocument> = {
-    updatedAt: new Date(),
-    updatedBy: userId,
-  };
-  const $unset: Record<string, 1> = {};
+    const $set: Partial<PollsWorkspaceDocument> = {
+      updatedAt: new Date(),
+      updatedBy: userId,
+    };
+    const $unset: Record<string, 1> = {};
 
-  if (changes.name !== undefined) {
-    $set.name = normalizeTitle(changes.name, 'Workspace name');
-  }
-  if (changes.description !== undefined) {
-    const description = normalizeText(changes.description, 'Description');
-    if (description) $set.description = description;
-    else $unset.description = 1;
-  }
-  if (changes.metadata !== undefined) {
-    const metadata = validateMetadata(changes.metadata);
-    if (metadata) $set.metadata = metadata;
-    else $unset.metadata = 1;
-  }
+    if (changes.name !== undefined) {
+      $set.name = normalizeTitle(changes.name, 'Workspace name');
+    }
+    if (changes.description !== undefined) {
+      const description = normalizeText(changes.description, 'Description');
+      if (description) $set.description = description;
+      else $unset.description = 1;
+    }
+    if (changes.metadata !== undefined) {
+      const metadata = validateMetadata(changes.metadata);
+      if (metadata) $set.metadata = metadata;
+      else $unset.metadata = 1;
+    }
 
-  await PollsWorkspaces.updateAsync(workspaceId, {
-    $set,
-    ...(Object.keys($unset).length ? { $unset } : {}),
+    await PollsWorkspaces.updateAsync(workspaceId, {
+      $set,
+      ...(Object.keys($unset).length ? { $unset } : {}),
+    });
+    await logActivity({
+      workspaceId,
+      entityType: PollsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: PollsAction.WORKSPACE_UPDATED,
+      userId,
+      details: { changed: Object.keys(changes) },
+    });
+    return requireWorkspace(workspaceId);
   });
-  await logActivity({
-    workspaceId,
-    entityType: PollsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: PollsAction.WORKSPACE_UPDATED,
-    userId,
-    details: { changed: Object.keys(changes) },
-  });
-  return requireWorkspace(workspaceId);
 }
 
 export async function getPollsWorkspace(
@@ -172,17 +177,19 @@ export async function deletePollsWorkspace(
   workspaceId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  await requireWorkspace(workspaceId);
-  await PollsWorkspaces.updateAsync(workspaceId, {
-    $set: { deletedAt: new Date(), deletedBy: userId },
-  });
-  await logActivity({
-    workspaceId,
-    entityType: PollsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: PollsAction.WORKSPACE_DELETED,
-    userId,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    await requireWorkspace(workspaceId);
+    await PollsWorkspaces.updateAsync(workspaceId, {
+      $set: { deletedAt: new Date(), deletedBy: userId },
+    });
+    await logActivity({
+      workspaceId,
+      entityType: PollsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: PollsAction.WORKSPACE_DELETED,
+      userId,
+    });
   });
 }
 
@@ -190,25 +197,27 @@ export async function restorePollsWorkspace(
   workspaceId: string,
   userId: string
 ): Promise<PollsWorkspaceDocument> {
-  requireUserId(userId);
-  const workspace = await requireWorkspace(workspaceId, {
-    includeDeleted: true,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const workspace = await requireWorkspace(workspaceId, {
+      includeDeleted: true,
+    });
+    if (!workspace.deletedAt) {
+      throw pollsError('CONFLICT', 'Workspace is not deleted');
+    }
+    await PollsWorkspaces.updateAsync(workspaceId, {
+      $set: { updatedAt: new Date(), updatedBy: userId },
+      $unset: { deletedAt: 1, deletedBy: 1 },
+    });
+    await logActivity({
+      workspaceId,
+      entityType: PollsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: PollsAction.WORKSPACE_RESTORED,
+      userId,
+    });
+    return requireWorkspace(workspaceId);
   });
-  if (!workspace.deletedAt) {
-    throw pollsError('CONFLICT', 'Workspace is not deleted');
-  }
-  await PollsWorkspaces.updateAsync(workspaceId, {
-    $set: { updatedAt: new Date(), updatedBy: userId },
-    $unset: { deletedAt: 1, deletedBy: 1 },
-  });
-  await logActivity({
-    workspaceId,
-    entityType: PollsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: PollsAction.WORKSPACE_RESTORED,
-    userId,
-  });
-  return requireWorkspace(workspaceId);
 }
 
 /**
@@ -219,19 +228,21 @@ export async function purgePollsWorkspace(
   workspaceId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const workspace = await requireWorkspace(workspaceId, {
-    includeDeleted: true,
-  });
-  if (!workspace.deletedAt) {
-    throw pollsError(
-      'CONFLICT',
-      'Only a deleted workspace can be purged; delete it first'
-    );
-  }
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const workspace = await requireWorkspace(workspaceId, {
+      includeDeleted: true,
+    });
+    if (!workspace.deletedAt) {
+      throw pollsError(
+        'CONFLICT',
+        'Only a deleted workspace can be purged; delete it first'
+      );
+    }
 
-  await PollBallots.removeAsync({ workspaceId });
-  await Polls.removeAsync({ workspaceId });
-  await PollsActivities.removeAsync({ workspaceId });
-  await PollsWorkspaces.removeAsync(workspaceId);
+    await PollBallots.removeAsync({ workspaceId });
+    await Polls.removeAsync({ workspaceId });
+    await PollsActivities.removeAsync({ workspaceId });
+    await PollsWorkspaces.removeAsync(workspaceId);
+  });
 }

@@ -264,6 +264,12 @@ declare module 'meteor/mongo' {
     getText(path: string): string;
     absoluteFilePath(path: string): string;
   };
+
+  export const MongoInternals: {
+    defaultRemoteCollectionDriver(): {
+      mongo: { client: import('mongodb').MongoClient };
+    };
+  };
 }
 
 declare module 'meteor/react-meteor-data' {

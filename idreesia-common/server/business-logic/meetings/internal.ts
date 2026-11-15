@@ -1,3 +1,4 @@
+import { afterCommit } from 'meteor/idreesia-common/server/collections';
 import {
   MEETINGS_DEFAULT_MAX_FILE_SIZE,
   MEETINGS_DEFAULT_PAGE_SIZE,
@@ -420,8 +421,8 @@ export const getAttachmentFileKey = (
   `${StorageFolders.MeetingAttachments}/${workspaceId}/${meetingId}/${attachmentId}.${getFileExtension(fileName, mimeType)}`;
 
 /**
- * Deletes stored files after their records are gone. A leftover file is
- * harmless, so failures are only reported.
+ * Deletes stored files now, e.g. a file stored for a record that was never
+ * committed. A leftover file is harmless, so failures are only reported.
  */
 export async function deleteFilesQuietly(keys: string[]) {
   if (!keys.length) return;
@@ -435,6 +436,13 @@ export async function deleteFilesQuietly(keys: string[]) {
     );
   }
 }
+
+/**
+ * Deletes stored files whose records are being removed, once the current
+ * transaction commits (never if it rolls back).
+ */
+export const deleteFilesAfterCommit = (keys: string[]) =>
+  afterCommit(() => deleteFilesQuietly(keys));
 
 // ---------------------------------------------------------------------------
 // Paging

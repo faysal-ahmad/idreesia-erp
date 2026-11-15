@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   SecurityServerAlerts,
   SecurityServerChannels,
@@ -67,42 +68,44 @@ export async function updateSecurityServerChannel(
     connection,
   }: ChannelValues
 ): Promise<void> {
-  const existing = await getActiveChannel(channelId);
-  // An empty password means "keep the one already stored".
-  const password = connection.password || existing.connection.password;
-  const trimmedName = name.trim();
+  return runInTransaction(async () => {
+    const existing = await getActiveChannel(channelId);
+    // An empty password means "keep the one already stored".
+    const password = connection.password || existing.connection.password;
+    const trimmedName = name.trim();
 
-  // Optional settings left null are unset, so the security server's default
-  // applies.
-  const unset = {
-    ...(similarityThreshold == null
-      ? { similarityThreshold: '' as const }
-      : {}),
-    ...(minFaceSizePx == null ? { minFaceSizePx: '' as const } : {}),
-    ...(minFaceQuality == null ? { minFaceQuality: '' as const } : {}),
-  };
-  await SecurityServerChannels.updateAsync(channelId, {
-    $set: {
-      name: trimmedName,
-      enabled,
-      ...(similarityThreshold != null ? { similarityThreshold } : {}),
-      recognitionFps,
-      ...(minFaceSizePx != null ? { minFaceSizePx } : {}),
-      ...(minFaceQuality != null ? { minFaceQuality } : {}),
-      connection: toConnection(connection, password),
-      updatedAt: new Date(),
-      updatedBy: user._id,
-    },
-    ...(Object.keys(unset).length > 0 ? { $unset: unset } : {}),
+    // Optional settings left null are unset, so the security server's default
+    // applies.
+    const unset = {
+      ...(similarityThreshold == null
+        ? { similarityThreshold: '' as const }
+        : {}),
+      ...(minFaceSizePx == null ? { minFaceSizePx: '' as const } : {}),
+      ...(minFaceQuality == null ? { minFaceQuality: '' as const } : {}),
+    };
+    await SecurityServerChannels.updateAsync(channelId, {
+      $set: {
+        name: trimmedName,
+        enabled,
+        ...(similarityThreshold != null ? { similarityThreshold } : {}),
+        recognitionFps,
+        ...(minFaceSizePx != null ? { minFaceSizePx } : {}),
+        ...(minFaceQuality != null ? { minFaceQuality } : {}),
+        connection: toConnection(connection, password),
+        updatedAt: new Date(),
+        updatedBy: user._id,
+      },
+      ...(Object.keys(unset).length > 0 ? { $unset: unset } : {}),
+    });
+
+    if (existing.name !== trimmedName) {
+      await SecurityServerAlerts.updateAsync(
+        { channelId },
+        { $set: { channelName: trimmedName } },
+        { multi: true }
+      );
+    }
   });
-
-  if (existing.name !== trimmedName) {
-    await SecurityServerAlerts.updateAsync(
-      { channelId },
-      { $set: { channelName: trimmedName } },
-      { multi: true }
-    );
-  }
 }
 
 /** Soft-deletes the channel; its alerts are kept. */

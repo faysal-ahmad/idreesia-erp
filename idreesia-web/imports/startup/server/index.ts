@@ -41,6 +41,7 @@ import { setupAgenda } from './setup-agenda';
 import { setupRestEndpoints } from './setup-rest-endpoints';
 import { getUser } from './get-user';
 import { getClientAddress } from './client-address';
+import { limitRequests, type RequestWithLoggedInUser } from './rate-limits';
 import { apolloErrorFormatter } from './apollo-error-formatter';
 
 // The jobs-only pm2 process (see ecosystem.config.js) never receives HTTP
@@ -84,6 +85,8 @@ if (webServerEnabled) {
     app.use(
       '/graphql',
       cors(),
+      // Also resolves the login token, which the context below reuses.
+      ...limitRequests,
       // Face search posts a captured photo as a base64 variable, which blows past the 100kb
       // default at higher zoom levels. Matches the limit on /upload-base64-file.
       express.json({ limit: '5mb' }),
@@ -93,7 +96,9 @@ if (webServerEnabled) {
       (req, res, next) => runWithRequestHost(req.hostname, next),
       expressMiddleware(server, {
         context: async ({ req }) => ({
-          user: await getUser(req.headers.authorization),
+          user:
+            (req as RequestWithLoggedInUser).loggedInUser ??
+            (await getUser(req.headers.authorization)),
           loginTokenHash: req.headers.authorization
             ? (
                 Accounts as unknown as {

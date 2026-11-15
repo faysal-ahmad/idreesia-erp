@@ -2,14 +2,17 @@ import { randomBytes } from 'crypto';
 import { GraphQLError } from 'graphql';
 
 import {
-  addChatGroupMembers,
-  archiveChatGroup,
-  createChatGroup,
   findChatGroup,
   getChatGroupMemberIds,
-  removeChatGroupMember,
-  unarchiveChatGroup,
 } from 'meteor/idreesia-common/server/chat';
+import {
+  addChatGroupMembersWithRollback,
+  archiveChatGroupWithRollback,
+  createChatGroupWithRollback,
+  removeChatGroupMemberWithRollback,
+  unarchiveChatGroupWithRollback,
+} from 'meteor/idreesia-common/server/business-logic/rocket-chat/chat-group-changes';
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import {
   DiscussionsWorkspaces,
@@ -73,27 +76,30 @@ export const findDiscussionsWorkspace = async (
  * Brings a soft-deleted workspace back, unarchiving its chat group (or
  * creating a new one if it no longer exists).
  */
-export const restoreDiscussionsWorkspace = async (
+export const restoreDiscussionsWorkspace = (
   workspaceId: string,
   userId: string
-): Promise<WorkspaceRef> => {
-  const workspace = await requireWorkspace(workspaceId, {
-    includeDeleted: true,
-  });
-  const group = await findChatGroup(workspace.chatGroupId);
-  let chatGroupId = workspace.chatGroupId;
-  if (!group) {
-    chatGroupId = (await createChatGroup(chatGroupName(workspace.name)))._id;
-  } else if (group.archived) {
-    await unarchiveChatGroup(group._id);
-  }
+): Promise<WorkspaceRef> =>
+  runInTransaction(async () => {
+    const workspace = await requireWorkspace(workspaceId, {
+      includeDeleted: true,
+    });
+    const group = await findChatGroup(workspace.chatGroupId);
+    let chatGroupId = workspace.chatGroupId;
+    if (!group) {
+      chatGroupId = (
+        await createChatGroupWithRollback(chatGroupName(workspace.name))
+      )._id;
+    } else if (group.archived) {
+      await unarchiveChatGroupWithRollback(group._id);
+    }
 
-  await DiscussionsWorkspaces.updateAsync(workspaceId, {
-    $set: { chatGroupId, updatedAt: new Date(), updatedBy: userId },
-    $unset: { deletedAt: 1, deletedBy: 1 },
+    await DiscussionsWorkspaces.updateAsync(workspaceId, {
+      $set: { chatGroupId, updatedAt: new Date(), updatedBy: userId },
+      $unset: { deletedAt: 1, deletedBy: 1 },
+    });
+    return toRef(workspaceId);
   });
-  return toRef(workspaceId);
-};
 
 const chatUserIdOf = async (userId: string): Promise<string | null> => {
   const user = (await Users.findOneAsync(userId, {
@@ -111,48 +117,53 @@ export const getDiscussionsWorkspaceChatUserIds = async (
 export const discussionsModule: HeadlessModule = {
   name: DISCUSSIONS_MODULE,
 
-  async createWorkspace({ name, createdBy, metadata }) {
-    const group = await createChatGroup(chatGroupName(name));
-    const date = new Date();
-    const workspaceId = await DiscussionsWorkspaces.insertAsync({
-      name,
-      chatGroupId: group._id,
-      ...(metadata ? { metadata } : {}),
-      createdAt: date,
-      createdBy,
-      updatedAt: date,
-      updatedBy: createdBy,
-    });
-    return toRef(workspaceId);
-  },
+  createWorkspace: ({ name, createdBy, metadata }) =>
+    runInTransaction(async () => {
+      const group = await createChatGroupWithRollback(chatGroupName(name));
+      const date = new Date();
+      const workspaceId = await DiscussionsWorkspaces.insertAsync({
+        name,
+        chatGroupId: group._id,
+        ...(metadata ? { metadata } : {}),
+        createdAt: date,
+        createdBy,
+        updatedAt: date,
+        updatedBy: createdBy,
+      });
+      return toRef(workspaceId);
+    }),
 
   // Archives the chat group (keeping its history) and soft-deletes the
   // workspace; restoreDiscussionsWorkspace brings both back.
-  async archiveWorkspace({ workspaceId }, userId) {
-    const workspace = await requireWorkspace(workspaceId, {
-      includeDeleted: true,
-    });
-    if (workspace.deletedAt) return;
-    const group = await findChatGroup(workspace.chatGroupId);
-    if (group && !group.archived) await archiveChatGroup(group._id);
-    await DiscussionsWorkspaces.updateAsync(workspaceId, {
-      $set: { deletedAt: new Date(), deletedBy: userId },
-    });
-  },
+  archiveWorkspace: ({ workspaceId }, userId) =>
+    runInTransaction(async () => {
+      const workspace = await requireWorkspace(workspaceId, {
+        includeDeleted: true,
+      });
+      if (workspace.deletedAt) return;
+      const group = await findChatGroup(workspace.chatGroupId);
+      if (group && !group.archived) {
+        await archiveChatGroupWithRollback(group._id);
+      }
+      await DiscussionsWorkspaces.updateAsync(workspaceId, {
+        $set: { deletedAt: new Date(), deletedBy: userId },
+      });
+    }),
 
   // Users without a chat account have nothing to add or remove.
   async addUser({ workspaceId }, userId) {
     const chatUserId = await chatUserIdOf(userId);
     if (!chatUserId) return;
-    await addChatGroupMembers(await getDiscussionChatGroupId(workspaceId), [
-      chatUserId,
-    ]);
+    await addChatGroupMembersWithRollback(
+      await getDiscussionChatGroupId(workspaceId),
+      [chatUserId]
+    );
   },
 
   async removeUser({ workspaceId }, userId) {
     const chatUserId = await chatUserIdOf(userId);
     if (!chatUserId) return;
-    await removeChatGroupMember(
+    await removeChatGroupMemberWithRollback(
       await getDiscussionChatGroupId(workspaceId),
       chatUserId
     );

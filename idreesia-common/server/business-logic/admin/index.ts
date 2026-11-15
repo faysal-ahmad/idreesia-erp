@@ -4,6 +4,7 @@ export {
   type PersonRelationCount,
   type PersonRelationCounts,
 } from './get-person-relation-counts';
+export { hardDeletePerson } from './hard-delete-person';
 export { removeOwnedPersonRelations } from './remove-owned-person-relations';
 export * from './users';
 export {

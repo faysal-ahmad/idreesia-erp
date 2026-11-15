@@ -93,6 +93,36 @@ It contains **no methods**: no create/update/search/validation and no helpers. T
   - For changes to tracked entities, call `createAuditLog` (`business-logic/common/audit-logs.ts`).
   - For account, permission and instance-access changes, insert into `SecurityLogs` with `dataSource` and `dataSourceDetail`.
 - **Files.** Store files in object storage under a folder declared in `StorageFolders`, one folder per feature. Don't put new files in the `Attachments` collection. Serve private files through short-lived presigned URLs.
+- **Transactions.** See [Transactions](#transactions) below.
+
+### Transactions
+
+Any operation that writes more than one collection, or more than one document that must stay consistent (a record and a counter, a parent and its children), runs in a MongoDB transaction: `runInTransaction` from `server/collections/transactions.ts`.
+
+- **Wrap the whole operation**, reads included, so its checks and its writes see the same data:
+
+  ```ts
+  export async function addTaskComment(taskId: string, text: string, userId: string) {
+    return runInTransaction(async () => {
+      const task = await requireTask(taskId);
+      const commentId = await ProjectComments.insertAsync({ ... });
+      await ProjectTasks.updateAsync(taskId, { $inc: { commentCount: 1 } });
+      await logActivity({ ... });
+      ...
+    });
+  }
+  ```
+
+- **The transaction is ambient.** Collection calls made inside it use its session on their own: `insertAsync`, `updateAsync`, `removeAsync`, `findOneAsync`, `find`, `countAsync`, `aggregate` and `rawCollection()` calls, `Meteor.users` and `Accounts` included. Collection2 validation still runs. Reads see the operation's own uncommitted writes.
+- **Nesting joins.** A wrapped function called from another one runs in the caller's transaction, so composites (e.g. the committee actions in `hr/committee/`) are atomic as a whole.
+- **Effects outside the database** can't be rolled back, and the driver may run the function more than once on transient errors:
+  - Deleting files, notifications, and anything else that must only happen once the change is kept: `afterCommit(fn)`. The module notifiers and the `deleteFilesAfterCommit` / `removeAttachments` helpers already do this.
+  - Creating something outside (storing a file, a chat group, a chat membership): do it inside the transaction, then register its undo with `onRollback(fn)`. The chat helpers in `business-logic/rocket-chat/chat-group-changes.ts` do this for chat groups.
+- **Don't catch a database error inside a transaction and carry on.** The server has already aborted the transaction, so later writes fail. Catching and rethrowing (e.g. a duplicate key turned into `CONFLICT`) is fine.
+- **Don't create indexes inside a transaction.** Create them first, as the duty planning functions do with `ensureDutyPlanIndexes()`.
+- **Keep transactions short.** A transaction is aborted after 60 seconds. Long jobs and best-effort loops (backfills, imports where each row stands alone) use one transaction per item, or none.
+- **Activity logs** written inside a transaction are part of the change: if the log can't be written, the change isn't either.
+- MongoDB needs a replica set for transactions. Atlas and Meteor's bundled development database are one; `MONGO_URL` must point at a replica set everywhere else too. The unit tests run on a one-node replica set.
 
 ---
 
@@ -180,6 +210,7 @@ Don't add endpoints in the older ad-hoc style of `setup-rest-endpoints.ts`.
 - Unit tests sit next to the business logic as `*.test.ts` and run with `yarn test:unit`.
 - They use vitest against an in-memory MongoDB; see `vitest.config.ts` and `server/test-utils/`.
 - Mock object storage with `vi.mock('meteor/idreesia-common/server/file-storage', ...)` pointing at `test-utils/file-storage-mock.ts`.
+- For an operation in a transaction, test that a failure part-way leaves nothing behind: make its last write fail (e.g. `vi.spyOn(ProjectsActivities, 'insertAsync').mockRejectedValueOnce(...)`) and check the earlier writes were rolled back. See the `transactions.test.ts` files.
 - Test validation rules, change detection and search filters through the business-logic functions. Resolvers are thin enough not to need their own tests.
 
 ---
@@ -187,7 +218,7 @@ Don't add endpoints in the older ad-hoc style of `setup-rest-endpoints.ts`.
 ## 10. Checklist for a new API feature
 
 1. Collection: schema, document type, and an export from the module index. No methods.
-2. Business logic: functions for every write, rule and search, with tests.
+2. Business logic: functions for every write, rule and search, with tests. Operations that write more than one collection or document run in `runInTransaction`.
 3. SDL: a paged type with `data`, a permission directive or access check on every operation, then `yarn codegen`.
 4. Resolvers: access check plus a plain find or a single business-logic call.
 5. Files, if any: a new `StorageFolders` entry and presigned URLs.
@@ -205,3 +236,5 @@ Don't add endpoints in the older ad-hoc style of `setup-rest-endpoints.ts`.
 - A mutation with no permission directive or access assertion.
 - New files stored in the `Attachments` collection.
 - Collections importing other collections or business logic.
+- Writing several collections, or a record and its counter, outside `runInTransaction`.
+- Deleting files, sending notifications or archiving chat inside a transaction without `afterCommit` (or creating them without `onRollback`).

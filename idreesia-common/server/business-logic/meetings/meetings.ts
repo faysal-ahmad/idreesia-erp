@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   MEETINGS_DEFAULT_TIME_ZONE,
   MeetingRsvpStatus,
@@ -19,7 +20,7 @@ import { logActivity } from './activity';
 import { buildAgenda, type AgendaItemInput } from './agenda';
 import { meetingsError } from './errors';
 import {
-  deleteFilesQuietly,
+  deleteFilesAfterCommit,
   EDITABLE_STATUSES,
   liveWorkspaceSelector,
   METADATA_KEY_PATTERN,
@@ -77,60 +78,62 @@ export async function createMeeting(
   input: CreateMeetingInput,
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const workspace = await requireWorkspace(input.workspaceId);
-  const title = normalizeTitle(input.title, 'Meeting title');
-  const startsAt = toDate(input.startsAt, 'Start time');
-  const endsAt = toDate(input.endsAt, 'End time');
-  validateTimes(startsAt, endsAt);
-  const timeZone = validateTimeZone(
-    input.timeZone ?? MEETINGS_DEFAULT_TIME_ZONE
-  );
-  const description = normalizeText(input.description, 'Description');
-  const location = normalizeText(input.location, 'Location', 1000);
-  const onlineUrl = normalizeUrl(input.onlineUrl, 'Online meeting link');
-  const metadata = validateMetadata(input.metadata);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const workspace = await requireWorkspace(input.workspaceId);
+    const title = normalizeTitle(input.title, 'Meeting title');
+    const startsAt = toDate(input.startsAt, 'Start time');
+    const endsAt = toDate(input.endsAt, 'End time');
+    validateTimes(startsAt, endsAt);
+    const timeZone = validateTimeZone(
+      input.timeZone ?? MEETINGS_DEFAULT_TIME_ZONE
+    );
+    const description = normalizeText(input.description, 'Description');
+    const location = normalizeText(input.location, 'Location', 1000);
+    const onlineUrl = normalizeUrl(input.onlineUrl, 'Online meeting link');
+    const metadata = validateMetadata(input.metadata);
 
-  const date = new Date();
-  const meetingId = await Meetings.insertAsync({
-    workspaceId: workspace._id,
-    title,
-    ...(description ? { description } : {}),
-    ...(location ? { location } : {}),
-    ...(onlineUrl ? { onlineUrl } : {}),
-    startsAt,
-    endsAt,
-    timeZone,
-    status: MeetingStatus.SCHEDULED,
-    tags: normalizeTags(input.tags),
-    ...(metadata ? { metadata } : {}),
-    participants: buildParticipants(input.participants),
-    agenda: buildAgenda(input.agenda),
-    attachmentCount: 0,
-    openActionItemCount: 0,
-    revision: 0,
-    createdAt: date,
-    createdBy: userId,
-    updatedAt: date,
-    updatedBy: userId,
-  });
+    const date = new Date();
+    const meetingId = await Meetings.insertAsync({
+      workspaceId: workspace._id,
+      title,
+      ...(description ? { description } : {}),
+      ...(location ? { location } : {}),
+      ...(onlineUrl ? { onlineUrl } : {}),
+      startsAt,
+      endsAt,
+      timeZone,
+      status: MeetingStatus.SCHEDULED,
+      tags: normalizeTags(input.tags),
+      ...(metadata ? { metadata } : {}),
+      participants: buildParticipants(input.participants),
+      agenda: buildAgenda(input.agenda),
+      attachmentCount: 0,
+      openActionItemCount: 0,
+      revision: 0,
+      createdAt: date,
+      createdBy: userId,
+      updatedAt: date,
+      updatedBy: userId,
+    });
 
-  await logActivity({
-    workspaceId: workspace._id,
-    meetingId,
-    entityType: MeetingsEntityType.MEETING,
-    entityId: meetingId,
-    action: MeetingsAction.MEETING_CREATED,
-    userId,
-    details: { title, startsAt, endsAt },
+    await logActivity({
+      workspaceId: workspace._id,
+      meetingId,
+      entityType: MeetingsEntityType.MEETING,
+      entityId: meetingId,
+      action: MeetingsAction.MEETING_CREATED,
+      userId,
+      details: { title, startsAt, endsAt },
+    });
+    const created = await requireMeeting(meetingId);
+    await notifyInvited(
+      created,
+      created.participants.map(({ participantId }) => participantId),
+      userId
+    );
+    return created;
   });
-  const created = await requireMeeting(meetingId);
-  await notifyInvited(
-    created,
-    created.participants.map(({ participantId }) => participantId),
-    userId
-  );
-  return created;
 }
 
 export async function getMeeting(
@@ -168,97 +171,99 @@ export async function updateMeeting(
   changes: UpdateMeetingInput,
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const meeting = await requireMeeting(meetingId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const meeting = await requireMeeting(meetingId);
 
-  const $set: Record<string, unknown> = {};
-  const $unset: Record<string, 1> = {};
-  const setOrUnset = (field: string, value: unknown) => {
-    if (value) $set[field] = value;
-    else $unset[field] = 1;
-  };
+    const $set: Record<string, unknown> = {};
+    const $unset: Record<string, 1> = {};
+    const setOrUnset = (field: string, value: unknown) => {
+      if (value) $set[field] = value;
+      else $unset[field] = 1;
+    };
 
-  if (changes.title !== undefined) {
-    $set.title = normalizeTitle(changes.title, 'Meeting title');
-  }
-  const reschedules =
-    changes.startsAt !== undefined || changes.endsAt !== undefined;
-  const startsAt =
-    changes.startsAt !== undefined
-      ? toDate(changes.startsAt, 'Start time')
-      : meeting.startsAt;
-  const endsAt =
-    changes.endsAt !== undefined
-      ? toDate(changes.endsAt, 'End time')
-      : meeting.endsAt;
-  if (reschedules) {
-    validateTimes(startsAt, endsAt);
-    $set.startsAt = startsAt;
-    $set.endsAt = endsAt;
-  }
-  if (changes.timeZone !== undefined) {
-    $set.timeZone = validateTimeZone(changes.timeZone);
-  }
-  if (changes.description !== undefined) {
-    setOrUnset(
-      'description',
-      normalizeText(changes.description, 'Description')
-    );
-  }
-  if (changes.location !== undefined) {
-    setOrUnset('location', normalizeText(changes.location, 'Location', 1000));
-  }
-  if (changes.onlineUrl !== undefined) {
-    setOrUnset(
-      'onlineUrl',
-      normalizeUrl(changes.onlineUrl, 'Online meeting link')
-    );
-  }
-  if (changes.tags !== undefined) $set.tags = normalizeTags(changes.tags);
-  if (changes.metadata !== undefined) {
-    setOrUnset('metadata', validateMetadata(changes.metadata));
-  }
-
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    { $set, $unset },
-    {
-      allowed: reschedules ? SCHEDULED_ONLY : EDITABLE_STATUSES,
-      checkRevision: false,
+    if (changes.title !== undefined) {
+      $set.title = normalizeTitle(changes.title, 'Meeting title');
     }
-  );
+    const reschedules =
+      changes.startsAt !== undefined || changes.endsAt !== undefined;
+    const startsAt =
+      changes.startsAt !== undefined
+        ? toDate(changes.startsAt, 'Start time')
+        : meeting.startsAt;
+    const endsAt =
+      changes.endsAt !== undefined
+        ? toDate(changes.endsAt, 'End time')
+        : meeting.endsAt;
+    if (reschedules) {
+      validateTimes(startsAt, endsAt);
+      $set.startsAt = startsAt;
+      $set.endsAt = endsAt;
+    }
+    if (changes.timeZone !== undefined) {
+      $set.timeZone = validateTimeZone(changes.timeZone);
+    }
+    if (changes.description !== undefined) {
+      setOrUnset(
+        'description',
+        normalizeText(changes.description, 'Description')
+      );
+    }
+    if (changes.location !== undefined) {
+      setOrUnset('location', normalizeText(changes.location, 'Location', 1000));
+    }
+    if (changes.onlineUrl !== undefined) {
+      setOrUnset(
+        'onlineUrl',
+        normalizeUrl(changes.onlineUrl, 'Online meeting link')
+      );
+    }
+    if (changes.tags !== undefined) $set.tags = normalizeTags(changes.tags);
+    if (changes.metadata !== undefined) {
+      setOrUnset('metadata', validateMetadata(changes.metadata));
+    }
 
-  if (reschedules) {
-    await logActivity({
-      workspaceId: meeting.workspaceId,
-      meetingId,
-      entityType: MeetingsEntityType.MEETING,
-      entityId: meetingId,
-      action: MeetingsAction.MEETING_RESCHEDULED,
+    const updated = await writeMeeting(
+      meeting,
       userId,
-      details: {
-        from: { startsAt: meeting.startsAt, endsAt: meeting.endsAt },
-        to: { startsAt, endsAt },
-      },
-    });
-    await notifyRescheduled(meeting, updated, userId);
-  }
-  const otherChanges = Object.keys(changes).filter(
-    key => key !== 'startsAt' && key !== 'endsAt'
-  );
-  if (otherChanges.length) {
-    await logActivity({
-      workspaceId: meeting.workspaceId,
-      meetingId,
-      entityType: MeetingsEntityType.MEETING,
-      entityId: meetingId,
-      action: MeetingsAction.MEETING_UPDATED,
-      userId,
-      details: { changed: otherChanges },
-    });
-  }
-  return updated;
+      { $set, $unset },
+      {
+        allowed: reschedules ? SCHEDULED_ONLY : EDITABLE_STATUSES,
+        checkRevision: false,
+      }
+    );
+
+    if (reschedules) {
+      await logActivity({
+        workspaceId: meeting.workspaceId,
+        meetingId,
+        entityType: MeetingsEntityType.MEETING,
+        entityId: meetingId,
+        action: MeetingsAction.MEETING_RESCHEDULED,
+        userId,
+        details: {
+          from: { startsAt: meeting.startsAt, endsAt: meeting.endsAt },
+          to: { startsAt, endsAt },
+        },
+      });
+      await notifyRescheduled(meeting, updated, userId);
+    }
+    const otherChanges = Object.keys(changes).filter(
+      key => key !== 'startsAt' && key !== 'endsAt'
+    );
+    if (otherChanges.length) {
+      await logActivity({
+        workspaceId: meeting.workspaceId,
+        meetingId,
+        entityType: MeetingsEntityType.MEETING,
+        entityId: meetingId,
+        action: MeetingsAction.MEETING_UPDATED,
+        userId,
+        details: { changed: otherChanges },
+      });
+    }
+    return updated;
+  });
 }
 
 interface MeetingFilterOptions {
@@ -426,33 +431,35 @@ export async function cancelMeeting(
   userId: string,
   { reason }: { reason?: string } = {}
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const cancellationReason = normalizeText(reason, 'Reason');
-  const meeting = await requireMeeting(meetingId);
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    {
-      $set: {
-        status: MeetingStatus.CANCELLED,
-        cancelledAt: new Date(),
-        cancelledBy: userId,
-        ...(cancellationReason ? { cancellationReason } : {}),
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const cancellationReason = normalizeText(reason, 'Reason');
+    const meeting = await requireMeeting(meetingId);
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      {
+        $set: {
+          status: MeetingStatus.CANCELLED,
+          cancelledAt: new Date(),
+          cancelledBy: userId,
+          ...(cancellationReason ? { cancellationReason } : {}),
+        },
       },
-    },
-    { allowed: SCHEDULED_ONLY, checkRevision: false }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.MEETING,
-    entityId: meetingId,
-    action: MeetingsAction.MEETING_CANCELLED,
-    userId,
-    ...(cancellationReason ? { details: { reason: cancellationReason } } : {}),
+      { allowed: SCHEDULED_ONLY, checkRevision: false }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.MEETING,
+      entityId: meetingId,
+      action: MeetingsAction.MEETING_CANCELLED,
+      userId,
+      ...(cancellationReason ? { details: { reason: cancellationReason } } : {}),
+    });
+    await notifyCancelled(updated, userId);
+    return updated;
   });
-  await notifyCancelled(updated, userId);
-  return updated;
 }
 
 /** Marks a scheduled meeting that has started as completed. */
@@ -460,35 +467,37 @@ export async function completeMeeting(
   meetingId: string,
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const meeting = await requireMeeting(meetingId);
-  if (meeting.status === MeetingStatus.SCHEDULED && meeting.startsAt > new Date()) {
-    throw meetingsError(
-      'CONFLICT',
-      "A meeting can't be completed before it starts"
-    );
-  }
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    {
-      $set: {
-        status: MeetingStatus.COMPLETED,
-        completedAt: new Date(),
-        completedBy: userId,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const meeting = await requireMeeting(meetingId);
+    if (meeting.status === MeetingStatus.SCHEDULED && meeting.startsAt > new Date()) {
+      throw meetingsError(
+        'CONFLICT',
+        "A meeting can't be completed before it starts"
+      );
+    }
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      {
+        $set: {
+          status: MeetingStatus.COMPLETED,
+          completedAt: new Date(),
+          completedBy: userId,
+        },
       },
-    },
-    { allowed: SCHEDULED_ONLY, checkRevision: false }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.MEETING,
-    entityId: meetingId,
-    action: MeetingsAction.MEETING_COMPLETED,
-    userId,
+      { allowed: SCHEDULED_ONLY, checkRevision: false }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.MEETING,
+      entityId: meetingId,
+      action: MeetingsAction.MEETING_COMPLETED,
+      userId,
+    });
+    return updated;
   });
-  return updated;
 }
 
 /** Puts a cancelled or completed meeting back to scheduled. */
@@ -496,37 +505,39 @@ export async function reopenMeeting(
   meetingId: string,
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const meeting = await requireMeeting(meetingId);
-  const previousStatus = meeting.status;
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    {
-      $set: { status: MeetingStatus.SCHEDULED },
-      $unset: {
-        cancelledAt: 1,
-        cancelledBy: 1,
-        cancellationReason: 1,
-        completedAt: 1,
-        completedBy: 1,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const meeting = await requireMeeting(meetingId);
+    const previousStatus = meeting.status;
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      {
+        $set: { status: MeetingStatus.SCHEDULED },
+        $unset: {
+          cancelledAt: 1,
+          cancelledBy: 1,
+          cancellationReason: 1,
+          completedAt: 1,
+          completedBy: 1,
+        },
       },
-    },
-    {
-      allowed: [MeetingStatus.CANCELLED, MeetingStatus.COMPLETED],
-      checkRevision: false,
-    }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.MEETING,
-    entityId: meetingId,
-    action: MeetingsAction.MEETING_REOPENED,
-    userId,
-    details: { from: previousStatus },
+      {
+        allowed: [MeetingStatus.CANCELLED, MeetingStatus.COMPLETED],
+        checkRevision: false,
+      }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.MEETING,
+      entityId: meetingId,
+      action: MeetingsAction.MEETING_REOPENED,
+      userId,
+      details: { from: previousStatus },
+    });
+    return updated;
   });
-  return updated;
 }
 
 /**
@@ -537,24 +548,26 @@ export async function deleteMeeting(
   meetingId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const meeting = await requireMeeting(meetingId);
-  const attachments = await MeetingAttachments.find(
-    { meetingId },
-    { fields: { fileKey: 1 } }
-  ).fetchAsync();
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const meeting = await requireMeeting(meetingId);
+    const attachments = await MeetingAttachments.find(
+      { meetingId },
+      { fields: { fileKey: 1 } }
+    ).fetchAsync();
 
-  await Meetings.removeAsync(meetingId);
-  await MeetingAttachments.removeAsync({ meetingId });
-  await MeetingActionItems.removeAsync({ meetingId });
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.MEETING,
-    entityId: meetingId,
-    action: MeetingsAction.MEETING_DELETED,
-    userId,
-    details: { title: meeting.title, startsAt: meeting.startsAt },
+    await Meetings.removeAsync(meetingId);
+    await MeetingAttachments.removeAsync({ meetingId });
+    await MeetingActionItems.removeAsync({ meetingId });
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.MEETING,
+      entityId: meetingId,
+      action: MeetingsAction.MEETING_DELETED,
+      userId,
+      details: { title: meeting.title, startsAt: meeting.startsAt },
+    });
+    await deleteFilesAfterCommit(attachments.map(({ fileKey }) => fileKey));
   });
-  await deleteFilesQuietly(attachments.map(({ fileKey }) => fileKey));
 }

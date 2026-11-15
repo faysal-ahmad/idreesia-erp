@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   StockItems,
   IssuanceForms,
@@ -204,20 +205,54 @@ export async function mergeStockItems(
   _idsToMerge: string[],
   physicalStoreId: string
 ) {
-  await mergeIssuanceForms(_idToKeep, _idsToMerge, physicalStoreId);
-  await mergePurchaseForms(_idToKeep, _idsToMerge, physicalStoreId);
-  await mergeStockAdjustments(_idToKeep, _idsToMerge, physicalStoreId);
-  await mergeStartingStockLevels(_idToKeep, _idsToMerge, physicalStoreId);
-  await recalculateStockLevels(_idToKeep, physicalStoreId);
+  return runInTransaction(async () => {
+    await mergeIssuanceForms(_idToKeep, _idsToMerge, physicalStoreId);
+    await mergePurchaseForms(_idToKeep, _idsToMerge, physicalStoreId);
+    await mergeStockAdjustments(_idToKeep, _idsToMerge, physicalStoreId);
+    await mergeStartingStockLevels(_idToKeep, _idsToMerge, physicalStoreId);
+    await recalculateStockLevels(_idToKeep, physicalStoreId);
 
-  const mergedItems = await StockItems.find({
-    _id: { $in: _idsToMerge },
-  }).fetchAsync();
-  for (const mergedItem of mergedItems) {
-    await removeStockItemImageFiles(mergedItem);
-  }
+    const mergedItems = await StockItems.find({
+      _id: { $in: _idsToMerge },
+    }).fetchAsync();
+    for (const mergedItem of mergedItems) {
+      await removeStockItemImageFiles(mergedItem);
+    }
 
-  return StockItems.removeAsync({
-    _id: { $in: _idsToMerge },
+    return StockItems.removeAsync({
+      _id: { $in: _idsToMerge },
+    });
+  });
+}
+
+/**
+ * Removes a stock item that no form or adjustment refers to, and its image.
+ * Returns how many items were removed (0 when it is still in use).
+ */
+export async function removeStockItem(
+  stockItemId: string,
+  physicalStoreId: string
+): Promise<number> {
+  return runInTransaction(async () => {
+    const usedBy = { physicalStoreId: { $eq: physicalStoreId } };
+    const inForms = {
+      ...usedBy,
+      items: { $elemMatch: { stockItemId: { $eq: stockItemId } } },
+    };
+    const usageCount =
+      (await PurchaseForms.find(inForms).countAsync()) +
+      (await IssuanceForms.find(inForms).countAsync()) +
+      (await StockAdjustments.find({
+        ...usedBy,
+        stockItemId: { $eq: stockItemId },
+      }).countAsync());
+    if (usageCount > 0) return 0;
+
+    const selector = {
+      _id: { $eq: stockItemId },
+      physicalStoreId: { $eq: physicalStoreId },
+    };
+    await removeStockItemImageFiles(await StockItems.findOneAsync(selector));
+    return StockItems.removeAsync(selector);
   });
 }

@@ -1,3 +1,4 @@
+import { isInTransaction, runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   PollsAction,
   PollsEntityType,
@@ -153,42 +154,46 @@ export async function castVote(
   answers: PollAnswerInput[],
   userId: string
 ): Promise<{ ballot: PollBallotDocument; isNew: boolean }> {
-  requireUserId(userId);
-  const id = normalizeOpaqueId(voterId, 'Voter id');
-  const poll = await requirePoll(pollId);
-  assertAcceptingVotes(poll);
-  const validated = validateAnswers(poll, answers);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const id = normalizeOpaqueId(voterId, 'Voter id');
+    const poll = await requirePoll(pollId);
+    assertAcceptingVotes(poll);
+    const validated = validateAnswers(poll, answers);
 
-  const now = new Date();
-  const update = async () => {
-    await PollBallots.updateAsync(
-      { pollId, voterId: id },
-      { $set: { answers: validated, updatedAt: now, updatedBy: userId } }
-    );
-    await logVote(poll, PollsAction.VOTE_CHANGED, userId);
-    return { ballot: (await getBallot(pollId, id))!, isNew: false };
-  };
+    const now = new Date();
+    const update = async () => {
+      await PollBallots.updateAsync(
+        { pollId, voterId: id },
+        { $set: { answers: validated, updatedAt: now, updatedBy: userId } }
+      );
+      await logVote(poll, PollsAction.VOTE_CHANGED, userId);
+      return { ballot: (await getBallot(pollId, id))!, isNew: false };
+    };
 
-  if (await getBallot(pollId, id)) return update();
-  try {
-    await PollBallots.insertAsync({
-      workspaceId: poll.workspaceId,
-      pollId,
-      voterId: id,
-      answers: validated,
-      createdAt: now,
-      createdBy: userId,
-      updatedAt: now,
-      updatedBy: userId,
-    });
-  } catch (error) {
-    // A concurrent request recorded this voter's first vote.
-    if (isDuplicateKeyError(error)) return update();
-    throw error;
-  }
-  await Polls.updateAsync(pollId, { $inc: { voteCount: 1 } });
-  await logVote(poll, PollsAction.VOTE_CAST, userId);
-  return { ballot: (await getBallot(pollId, id))!, isNew: true };
+    if (await getBallot(pollId, id)) return update();
+    try {
+      await PollBallots.insertAsync({
+        workspaceId: poll.workspaceId,
+        pollId,
+        voterId: id,
+        answers: validated,
+        createdAt: now,
+        createdBy: userId,
+        updatedAt: now,
+        updatedBy: userId,
+      });
+    } catch (error) {
+      // A concurrent request recorded this voter's first vote. Inside a
+      // transaction the error has already aborted it, so it propagates and the
+      // driver retries the transaction, which then finds the ballot.
+      if (isDuplicateKeyError(error) && !isInTransaction()) return update();
+      throw error;
+    }
+    await Polls.updateAsync(pollId, { $inc: { voteCount: 1 } });
+    await logVote(poll, PollsAction.VOTE_CAST, userId);
+    return { ballot: (await getBallot(pollId, id))!, isNew: true };
+  });
 }
 
 /** Removes a voter's vote while the poll is open. */
@@ -197,14 +202,16 @@ export async function withdrawVote(
   voterId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const id = normalizeOpaqueId(voterId, 'Voter id');
-  const poll = await requirePoll(pollId);
-  assertAcceptingVotes(poll);
-  const removed = await PollBallots.removeAsync({ pollId, voterId: id });
-  if (!removed) throw pollsError('NOT_FOUND', 'No vote to withdraw');
-  await Polls.updateAsync(pollId, { $inc: { voteCount: -1 } });
-  await logVote(poll, PollsAction.VOTE_WITHDRAWN, userId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const id = normalizeOpaqueId(voterId, 'Voter id');
+    const poll = await requirePoll(pollId);
+    assertAcceptingVotes(poll);
+    const removed = await PollBallots.removeAsync({ pollId, voterId: id });
+    if (!removed) throw pollsError('NOT_FOUND', 'No vote to withdraw');
+    await Polls.updateAsync(pollId, { $inc: { voteCount: -1 } });
+    await logVote(poll, PollsAction.VOTE_WITHDRAWN, userId);
+  });
 }
 
 const getBallot = (pollId: string, voterId: string) =>

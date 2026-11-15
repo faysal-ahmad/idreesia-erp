@@ -45,6 +45,7 @@ import { createWorkspaceDiscussionRouter } from './setup-workspace-discussion-en
 import { getBrowserMonitoringConfig } from './newrelic';
 import { ACCOUNT_LOCKED_MESSAGE, isAccountLocked } from './account-lock';
 import { getUser } from './get-user';
+import { limitRequests, limitUploads } from './rate-limits';
 
 interface RestUser {
   _id: string;
@@ -174,6 +175,23 @@ export function setupRestEndpoints() {
       limits: { fileSize: ATTACHMENT_MAX_FILE_SIZE, files: 1 },
     });
     const uploadSingleFile = upload.single('file');
+
+    // Request rate limits (rate-limits.ts) for every endpoint below except
+    // the security server's push endpoints. Registered by method so that
+    // page loads of the same paths (served by Meteor) aren't counted.
+    app.get(['/generate-report', '/download-file'], limitRequests);
+    app.get('/api/monitoring-config', limitRequests);
+    app.post(['/login', '/upload-file', '/upload-base64-file'], limitRequests);
+    app.use(['/api/correspondence', '/api/workspaces'], limitRequests);
+    app.post(
+      [
+        '/upload-file',
+        '/upload-base64-file',
+        '/api/workspaces/committees/:committeeId/discussions/files',
+      ],
+      limitUploads
+    );
+
     // Answers multer's errors (e.g. LIMIT_FILE_SIZE) with a 4xx instead of
     // passing them on to Express's default HTML error page.
     const parseUploadedFile = (

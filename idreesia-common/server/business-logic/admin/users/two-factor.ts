@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import * as OTPAuth from 'otpauth';
 import QRCode from 'qrcode-svg';
 
@@ -210,23 +211,27 @@ export async function enableTwoFactor(
   }
   await checkCodeEnteredByUser(user._id, secret, code);
 
-  await Users.updateAsync(user._id, {
-    $set: { 'services.twoFactorAuthentication.type': 'otp' },
-    $pull: {
-      'services.resume.loginTokens': currentLoginTokenHash
-        ? { hashedToken: { $ne: currentLoginTokenHash } }
-        : {},
-    },
-  });
-  await logOperation(
-    user._id,
-    SecurityOperationType.TWO_FACTOR_ENABLED,
-    user._id,
-    dataSource,
-    dataSourceDetail
-  );
+  // The attempt bookkeeping above is kept even if this fails; the change
+  // and its security log are one transaction.
+  return runInTransaction(async () => {
+    await Users.updateAsync(user._id, {
+      $set: { 'services.twoFactorAuthentication.type': 'otp' },
+      $pull: {
+        'services.resume.loginTokens': currentLoginTokenHash
+          ? { hashedToken: { $ne: currentLoginTokenHash } }
+          : {},
+      },
+    });
+    await logOperation(
+      user._id,
+      SecurityOperationType.TWO_FACTOR_ENABLED,
+      user._id,
+      dataSource,
+      dataSourceDetail
+    );
 
-  return findOneUser(user._id);
+    return findOneUser(user._id);
+  });
 }
 
 /** The user turns two-factor off; needs a current code from the app. */
@@ -246,18 +251,22 @@ export async function disableTwoFactor(
     code
   );
 
-  await Users.updateAsync(user._id, {
-    $unset: { 'services.twoFactorAuthentication': '' },
-  });
-  await logOperation(
-    user._id,
-    SecurityOperationType.TWO_FACTOR_DISABLED,
-    user._id,
-    dataSource,
-    dataSourceDetail
-  );
+  // The attempt bookkeeping above is kept even if this fails; the change
+  // and its security log are one transaction.
+  return runInTransaction(async () => {
+    await Users.updateAsync(user._id, {
+      $unset: { 'services.twoFactorAuthentication': '' },
+    });
+    await logOperation(
+      user._id,
+      SecurityOperationType.TWO_FACTOR_DISABLED,
+      user._id,
+      dataSource,
+      dataSourceDetail
+    );
 
-  return findOneUser(user._id);
+    return findOneUser(user._id);
+  });
 }
 
 /**
@@ -270,21 +279,23 @@ export async function resetTwoFactor(
   dataSource: string,
   dataSourceDetail: string | null = null
 ): Promise<MappedUser> {
-  const existingUser = await getUser(userId);
-  if (!existingUser.services?.twoFactorAuthentication) {
+  return runInTransaction(async () => {
+    const existingUser = await getUser(userId);
+    if (!existingUser.services?.twoFactorAuthentication) {
+      return findOneUser(userId);
+    }
+
+    await Users.updateAsync(userId, {
+      $unset: { 'services.twoFactorAuthentication': '' },
+    });
+    await logOperation(
+      userId,
+      SecurityOperationType.TWO_FACTOR_RESET,
+      user._id,
+      dataSource,
+      dataSourceDetail
+    );
+
     return findOneUser(userId);
-  }
-
-  await Users.updateAsync(userId, {
-    $unset: { 'services.twoFactorAuthentication': '' },
   });
-  await logOperation(
-    userId,
-    SecurityOperationType.TWO_FACTOR_RESET,
-    user._id,
-    dataSource,
-    dataSourceDetail
-  );
-
-  return findOneUser(userId);
 }

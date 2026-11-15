@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   ProjectsAction,
   ProjectsEntityType,
@@ -36,31 +37,33 @@ export async function createProjectsWorkspace(
   input: CreateProjectsWorkspaceInput,
   userId: string
 ): Promise<ProjectsWorkspaceDocument> {
-  requireUserId(userId);
-  const name = normalizeTitle(input.name, 'Workspace name');
-  const description = normalizeText(input.description, 'Description');
-  const metadata = validateMetadata(input.metadata);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const name = normalizeTitle(input.name, 'Workspace name');
+    const description = normalizeText(input.description, 'Description');
+    const metadata = validateMetadata(input.metadata);
 
-  const date = new Date();
-  const workspaceId = await ProjectsWorkspaces.insertAsync({
-    name,
-    ...(description ? { description } : {}),
-    ...(metadata ? { metadata } : {}),
-    createdAt: date,
-    createdBy: userId,
-    updatedAt: date,
-    updatedBy: userId,
-  });
+    const date = new Date();
+    const workspaceId = await ProjectsWorkspaces.insertAsync({
+      name,
+      ...(description ? { description } : {}),
+      ...(metadata ? { metadata } : {}),
+      createdAt: date,
+      createdBy: userId,
+      updatedAt: date,
+      updatedBy: userId,
+    });
 
-  await logActivity({
-    workspaceId,
-    entityType: ProjectsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: ProjectsAction.WORKSPACE_CREATED,
-    userId,
-    details: { name },
+    await logActivity({
+      workspaceId,
+      entityType: ProjectsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: ProjectsAction.WORKSPACE_CREATED,
+      userId,
+      details: { name },
+    });
+    return requireWorkspace(workspaceId);
   });
-  return requireWorkspace(workspaceId);
 }
 
 export interface UpdateProjectsWorkspaceInput {
@@ -76,42 +79,44 @@ export async function updateProjectsWorkspace(
   changes: UpdateProjectsWorkspaceInput,
   userId: string
 ): Promise<ProjectsWorkspaceDocument> {
-  requireUserId(userId);
-  await requireWorkspace(workspaceId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    await requireWorkspace(workspaceId);
 
-  const $set: Partial<ProjectsWorkspaceDocument> = {
-    updatedAt: new Date(),
-    updatedBy: userId,
-  };
-  const $unset: Record<string, 1> = {};
+    const $set: Partial<ProjectsWorkspaceDocument> = {
+      updatedAt: new Date(),
+      updatedBy: userId,
+    };
+    const $unset: Record<string, 1> = {};
 
-  if (changes.name !== undefined) {
-    $set.name = normalizeTitle(changes.name, 'Workspace name');
-  }
-  if (changes.description !== undefined) {
-    const description = normalizeText(changes.description, 'Description');
-    if (description) $set.description = description;
-    else $unset.description = 1;
-  }
-  if (changes.metadata !== undefined) {
-    const metadata = validateMetadata(changes.metadata);
-    if (metadata) $set.metadata = metadata;
-    else $unset.metadata = 1;
-  }
+    if (changes.name !== undefined) {
+      $set.name = normalizeTitle(changes.name, 'Workspace name');
+    }
+    if (changes.description !== undefined) {
+      const description = normalizeText(changes.description, 'Description');
+      if (description) $set.description = description;
+      else $unset.description = 1;
+    }
+    if (changes.metadata !== undefined) {
+      const metadata = validateMetadata(changes.metadata);
+      if (metadata) $set.metadata = metadata;
+      else $unset.metadata = 1;
+    }
 
-  await ProjectsWorkspaces.updateAsync(workspaceId, {
-    $set,
-    ...(Object.keys($unset).length ? { $unset } : {}),
+    await ProjectsWorkspaces.updateAsync(workspaceId, {
+      $set,
+      ...(Object.keys($unset).length ? { $unset } : {}),
+    });
+    await logActivity({
+      workspaceId,
+      entityType: ProjectsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: ProjectsAction.WORKSPACE_UPDATED,
+      userId,
+      details: { changed: Object.keys(changes) },
+    });
+    return requireWorkspace(workspaceId);
   });
-  await logActivity({
-    workspaceId,
-    entityType: ProjectsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: ProjectsAction.WORKSPACE_UPDATED,
-    userId,
-    details: { changed: Object.keys(changes) },
-  });
-  return requireWorkspace(workspaceId);
 }
 
 export async function getProjectsWorkspace(
@@ -173,17 +178,19 @@ export async function deleteProjectsWorkspace(
   workspaceId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  await requireWorkspace(workspaceId);
-  await ProjectsWorkspaces.updateAsync(workspaceId, {
-    $set: { deletedAt: new Date(), deletedBy: userId },
-  });
-  await logActivity({
-    workspaceId,
-    entityType: ProjectsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: ProjectsAction.WORKSPACE_DELETED,
-    userId,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    await requireWorkspace(workspaceId);
+    await ProjectsWorkspaces.updateAsync(workspaceId, {
+      $set: { deletedAt: new Date(), deletedBy: userId },
+    });
+    await logActivity({
+      workspaceId,
+      entityType: ProjectsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: ProjectsAction.WORKSPACE_DELETED,
+      userId,
+    });
   });
 }
 
@@ -191,25 +198,27 @@ export async function restoreProjectsWorkspace(
   workspaceId: string,
   userId: string
 ): Promise<ProjectsWorkspaceDocument> {
-  requireUserId(userId);
-  const workspace = await requireWorkspace(workspaceId, {
-    includeDeleted: true,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const workspace = await requireWorkspace(workspaceId, {
+      includeDeleted: true,
+    });
+    if (!workspace.deletedAt) {
+      throw projectsError('CONFLICT', 'Workspace is not deleted');
+    }
+    await ProjectsWorkspaces.updateAsync(workspaceId, {
+      $set: { updatedAt: new Date(), updatedBy: userId },
+      $unset: { deletedAt: 1, deletedBy: 1 },
+    });
+    await logActivity({
+      workspaceId,
+      entityType: ProjectsEntityType.WORKSPACE,
+      entityId: workspaceId,
+      action: ProjectsAction.WORKSPACE_RESTORED,
+      userId,
+    });
+    return requireWorkspace(workspaceId);
   });
-  if (!workspace.deletedAt) {
-    throw projectsError('CONFLICT', 'Workspace is not deleted');
-  }
-  await ProjectsWorkspaces.updateAsync(workspaceId, {
-    $set: { updatedAt: new Date(), updatedBy: userId },
-    $unset: { deletedAt: 1, deletedBy: 1 },
-  });
-  await logActivity({
-    workspaceId,
-    entityType: ProjectsEntityType.WORKSPACE,
-    entityId: workspaceId,
-    action: ProjectsAction.WORKSPACE_RESTORED,
-    userId,
-  });
-  return requireWorkspace(workspaceId);
 }
 
 /**
@@ -220,20 +229,22 @@ export async function purgeProjectsWorkspace(
   workspaceId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const workspace = await requireWorkspace(workspaceId, {
-    includeDeleted: true,
-  });
-  if (!workspace.deletedAt) {
-    throw projectsError(
-      'CONFLICT',
-      'Only a deleted workspace can be purged; delete it first'
-    );
-  }
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const workspace = await requireWorkspace(workspaceId, {
+      includeDeleted: true,
+    });
+    if (!workspace.deletedAt) {
+      throw projectsError(
+        'CONFLICT',
+        'Only a deleted workspace can be purged; delete it first'
+      );
+    }
 
-  await ProjectComments.removeAsync({ workspaceId });
-  await ProjectTasks.removeAsync({ workspaceId });
-  await Projects.removeAsync({ workspaceId });
-  await ProjectsActivities.removeAsync({ workspaceId });
-  await ProjectsWorkspaces.removeAsync(workspaceId);
+    await ProjectComments.removeAsync({ workspaceId });
+    await ProjectTasks.removeAsync({ workspaceId });
+    await Projects.removeAsync({ workspaceId });
+    await ProjectsActivities.removeAsync({ workspaceId });
+    await ProjectsWorkspaces.removeAsync(workspaceId);
+  });
 }

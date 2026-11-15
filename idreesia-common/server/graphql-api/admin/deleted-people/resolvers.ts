@@ -1,11 +1,9 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   getPersonRelationCounts,
-  hasNonOwnedRelations,
-  removeOwnedPersonRelations,
+  hardDeletePerson,
 } from 'meteor/idreesia-common/server/business-logic/admin';
 import {
-  hardRemovePerson,
   restorePerson,
   searchPeople,
 } from 'meteor/idreesia-common/server/business-logic/common';
@@ -43,26 +41,13 @@ export default {
       { user }: { user: UserRef }
     ) => {
       const ids = Array.from(new Set(_ids.filter(Boolean)));
-      if (ids.length === 0) return 0;
 
-      // Skip anyone who isn't soft deleted or still has data records that
-      // are not owned by them - only the rest of the batch is removed.
-      const deletedPeople = await People.find(
-        { _id: { $in: ids }, deletedAt: { $exists: true } },
-        { fields: { _id: 1 } }
-      ).fetchAsync();
-      const deletedIds: string[] = deletedPeople.map(
-        (person: { _id: string }) => person._id
-      );
-      const countsByPersonId = await getPersonRelationCounts(deletedIds);
-      const deletableIds = deletedIds.filter(
-        _id => !hasNonOwnedRelations(countsByPersonId[_id]?.counts ?? [])
-      );
-
+      // Each person is deleted in a transaction of their own. Anyone who
+      // isn't soft deleted or still has data records that are not owned by
+      // them is skipped - only the rest of the batch is removed.
       let count = 0;
-      for (const _id of deletableIds) {
-        await removeOwnedPersonRelations(_id);
-        count += await hardRemovePerson(_id, user);
+      for (const _id of ids) {
+        count += await hardDeletePerson(_id, user);
       }
       return count;
     },

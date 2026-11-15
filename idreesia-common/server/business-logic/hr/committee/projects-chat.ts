@@ -6,14 +6,15 @@ import {
   setProjectChatGroupId,
 } from 'meteor/idreesia-common/server/business-logic/projects';
 import type { ProjectDocument } from 'meteor/idreesia-common/server/collections/projects';
+import { findChatGroup } from 'meteor/idreesia-common/server/chat';
 import {
-  addChatGroupMembers,
-  archiveChatGroup,
-  createChatGroup,
-  findChatGroup,
-  removeChatGroupMember,
-  unarchiveChatGroup,
-} from 'meteor/idreesia-common/server/chat';
+  addChatGroupMembersWithRollback,
+  archiveChatGroupWithRollback,
+  createChatGroupWithRollback,
+  removeChatGroupMemberWithRollback,
+  unarchiveChatGroupWithRollback,
+} from 'meteor/idreesia-common/server/business-logic/rocket-chat/chat-group-changes';
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   findUsersByPersonIds,
 } from 'meteor/idreesia-common/server/business-logic/admin/users';
@@ -26,6 +27,8 @@ import type { CommitteeDoc } from './types';
  * keeps the group in step with the project. Group membership = the
  * participants who have a chat account. Coordinators get no automatic access.
  * Completed and cancelled projects have their group archived.
+ *
+ * Chat changes made inside a transaction are undone if it rolls back.
  */
 
 // Chat room names allow letters, digits, '-', '_' and '.', and must be unique.
@@ -62,22 +65,26 @@ export async function ensureProjectChatGroup(
   project: ProjectDocument,
   userId: string
 ): Promise<string> {
-  let group = project.chatGroupId
-    ? await findChatGroup(project.chatGroupId)
-    : null;
+  return runInTransaction(async () => {
+    let group = project.chatGroupId
+      ? await findChatGroup(project.chatGroupId)
+      : null;
 
-  if (!group) {
-    group = await createChatGroup(chatGroupName(committee, project));
-    await setProjectChatGroupId(project._id, group._id, userId);
-  } else if (group.archived && !isClosed(project)) {
-    await unarchiveChatGroup(group._id);
-  }
+    if (!group) {
+      group = await createChatGroupWithRollback(
+        chatGroupName(committee, project)
+      );
+      await setProjectChatGroupId(project._id, group._id, userId);
+    } else if (group.archived && !isClosed(project)) {
+      await unarchiveChatGroupWithRollback(group._id);
+    }
 
-  await addChatGroupMembers(
-    group._id,
-    await chatUserIdsOf(project.participantIds)
-  );
-  return group._id;
+    await addChatGroupMembersWithRollback(
+      group._id,
+      await chatUserIdsOf(project.participantIds)
+    );
+    return group._id;
+  });
 }
 
 /** Creates the chat group without failing the caller if chat is down. */
@@ -101,7 +108,10 @@ export async function addProjectChatMembers(
   personIds: string[]
 ) {
   if (!project.chatGroupId) return;
-  await addChatGroupMembers(project.chatGroupId, await chatUserIdsOf(personIds));
+  await addChatGroupMembersWithRollback(
+    project.chatGroupId,
+    await chatUserIdsOf(personIds)
+  );
 }
 
 /** Removes a person from the project's chat group (if it has one). */
@@ -111,7 +121,9 @@ export async function removeProjectChatMember(
 ) {
   if (!project.chatGroupId) return;
   const [chatUserId] = await chatUserIdsOf([personId]);
-  if (chatUserId) await removeChatGroupMember(project.chatGroupId, chatUserId);
+  if (chatUserId) {
+    await removeChatGroupMemberWithRollback(project.chatGroupId, chatUserId);
+  }
 }
 
 /** Archives (closed project) or unarchives (open project) the group. */
@@ -119,15 +131,19 @@ export async function syncProjectChatArchive(project: ProjectDocument) {
   if (!project.chatGroupId) return;
   const group = await findChatGroup(project.chatGroupId);
   if (!group) return;
-  if (isClosed(project) && !group.archived) await archiveChatGroup(group._id);
-  if (!isClosed(project) && group.archived) await unarchiveChatGroup(group._id);
+  if (isClosed(project) && !group.archived) {
+    await archiveChatGroupWithRollback(group._id);
+  }
+  if (!isClosed(project) && group.archived) {
+    await unarchiveChatGroupWithRollback(group._id);
+  }
 }
 
 /** Archives the group regardless of status (feature off, project deleted). */
 export async function archiveProjectChat(project: ProjectDocument) {
   if (!project.chatGroupId) return;
   const group = await findChatGroup(project.chatGroupId);
-  if (group && !group.archived) await archiveChatGroup(group._id);
+  if (group && !group.archived) await archiveChatGroupWithRollback(group._id);
 }
 
 /**

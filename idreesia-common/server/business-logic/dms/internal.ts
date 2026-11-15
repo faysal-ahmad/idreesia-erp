@@ -1,3 +1,4 @@
+import { afterCommit } from 'meteor/idreesia-common/server/collections';
 import {
   DMS_DEFAULT_MAX_FILE_SIZE,
   DMS_DEFAULT_PAGE_SIZE,
@@ -342,6 +343,13 @@ export async function deleteFilesQuietly(keys: string[]) {
     console.error(`[dms] Could not delete ${keys.length} stored files`, error);
   }
 }
+
+/**
+ * Deletes stored files whose records are being removed, once the current
+ * transaction commits (never if it rolls back).
+ */
+export const deleteFilesAfterCommit = (keys: string[]) =>
+  afterCommit(() => deleteFilesQuietly(keys));
 
 // ---------------------------------------------------------------------------
 // Paging and sorting

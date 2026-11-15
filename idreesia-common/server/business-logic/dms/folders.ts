@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { DmsAction, DmsEntityType } from 'meteor/idreesia-common/constants/dms';
 import {
   DmsDocuments,
@@ -68,40 +69,42 @@ export async function createFolder(
   { workspaceId, parentId, name: rawName }: CreateFolderInput,
   userId: string
 ): Promise<DmsFolderDocument> {
-  requireUserId(userId);
-  await requireWorkspace(workspaceId);
-  const parent = await resolveTargetFolder(workspaceId, parentId);
-  const { name, nameLower } = normalizeName(rawName, 'Folder name');
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    await requireWorkspace(workspaceId);
+    const parent = await resolveTargetFolder(workspaceId, parentId);
+    const { name, nameLower } = normalizeName(rawName, 'Folder name');
 
-  const date = new Date();
-  let folderId: string;
-  try {
-    folderId = await DmsFolders.insertAsync({
+    const date = new Date();
+    let folderId: string;
+    try {
+      folderId = await DmsFolders.insertAsync({
+        workspaceId,
+        ...(parent ? { parentId: parent._id } : {}),
+        ancestorIds: ancestorIdsUnder(parent),
+        name,
+        nameLower,
+        trashed: false,
+        createdAt: date,
+        createdBy: userId,
+        updatedAt: date,
+        updatedBy: userId,
+      });
+    } catch (error) {
+      if (isDuplicateKeyError(error)) throw nameConflict(name);
+      throw error;
+    }
+
+    await logActivity({
       workspaceId,
-      ...(parent ? { parentId: parent._id } : {}),
-      ancestorIds: ancestorIdsUnder(parent),
-      name,
-      nameLower,
-      trashed: false,
-      createdAt: date,
-      createdBy: userId,
-      updatedAt: date,
-      updatedBy: userId,
+      entityType: DmsEntityType.FOLDER,
+      entityId: folderId,
+      action: DmsAction.FOLDER_CREATED,
+      userId,
+      details: { name, parentId: parent?._id ?? null },
     });
-  } catch (error) {
-    if (isDuplicateKeyError(error)) throw nameConflict(name);
-    throw error;
-  }
-
-  await logActivity({
-    workspaceId,
-    entityType: DmsEntityType.FOLDER,
-    entityId: folderId,
-    action: DmsAction.FOLDER_CREATED,
-    userId,
-    details: { name, parentId: parent?._id ?? null },
+    return requireFolder(folderId);
   });
-  return requireFolder(folderId);
 }
 
 export async function getFolder(
@@ -118,29 +121,31 @@ export async function renameFolder(
   newName: string,
   userId: string
 ): Promise<DmsFolderDocument> {
-  requireUserId(userId);
-  const folder = await requireFolder(folderId);
-  const { name, nameLower } = normalizeName(newName, 'Folder name');
-  if (name === folder.name) return folder;
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const folder = await requireFolder(folderId);
+    const { name, nameLower } = normalizeName(newName, 'Folder name');
+    if (name === folder.name) return folder;
 
-  try {
-    await DmsFolders.updateAsync(folderId, {
-      $set: { name, nameLower, updatedAt: new Date(), updatedBy: userId },
+    try {
+      await DmsFolders.updateAsync(folderId, {
+        $set: { name, nameLower, updatedAt: new Date(), updatedBy: userId },
+      });
+    } catch (error) {
+      if (isDuplicateKeyError(error)) throw nameConflict(name);
+      throw error;
+    }
+
+    await logActivity({
+      workspaceId: folder.workspaceId,
+      entityType: DmsEntityType.FOLDER,
+      entityId: folderId,
+      action: DmsAction.FOLDER_RENAMED,
+      userId,
+      details: { from: folder.name, to: name },
     });
-  } catch (error) {
-    if (isDuplicateKeyError(error)) throw nameConflict(name);
-    throw error;
-  }
-
-  await logActivity({
-    workspaceId: folder.workspaceId,
-    entityType: DmsEntityType.FOLDER,
-    entityId: folderId,
-    action: DmsAction.FOLDER_RENAMED,
-    userId,
-    details: { from: folder.name, to: name },
+    return requireFolder(folderId);
   });
-  return requireFolder(folderId);
 }
 
 /** Checks that `folder` may be placed in `target` (not in its own subtree). */
@@ -165,38 +170,40 @@ export async function moveFolder(
   newParentId: string | null,
   userId: string
 ): Promise<DmsFolderDocument> {
-  requireUserId(userId);
-  const folder = await requireFolder(folderId);
-  const target = await resolveTargetFolder(folder.workspaceId, newParentId);
-  if ((target?._id ?? null) === (folder.parentId ?? null)) return folder;
-  assertNotIntoOwnSubtree(folder, target);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const folder = await requireFolder(folderId);
+    const target = await resolveTargetFolder(folder.workspaceId, newParentId);
+    if ((target?._id ?? null) === (folder.parentId ?? null)) return folder;
+    assertNotIntoOwnSubtree(folder, target);
 
-  const ancestorIds = ancestorIdsUnder(target);
-  try {
-    await DmsFolders.updateAsync(folderId, {
-      $set: {
-        ancestorIds,
-        updatedAt: new Date(),
-        updatedBy: userId,
-        ...(target ? { parentId: target._id } : {}),
-      },
-      ...(target ? {} : { $unset: { parentId: 1 } }),
+    const ancestorIds = ancestorIdsUnder(target);
+    try {
+      await DmsFolders.updateAsync(folderId, {
+        $set: {
+          ancestorIds,
+          updatedAt: new Date(),
+          updatedBy: userId,
+          ...(target ? { parentId: target._id } : {}),
+        },
+        ...(target ? {} : { $unset: { parentId: 1 } }),
+      });
+    } catch (error) {
+      if (isDuplicateKeyError(error)) throw nameConflict(folder.name);
+      throw error;
+    }
+    await rewriteDescendantAncestors(folderId, ancestorIds);
+
+    await logActivity({
+      workspaceId: folder.workspaceId,
+      entityType: DmsEntityType.FOLDER,
+      entityId: folderId,
+      action: DmsAction.FOLDER_MOVED,
+      userId,
+      details: { from: folder.parentId ?? null, to: target?._id ?? null },
     });
-  } catch (error) {
-    if (isDuplicateKeyError(error)) throw nameConflict(folder.name);
-    throw error;
-  }
-  await rewriteDescendantAncestors(folderId, ancestorIds);
-
-  await logActivity({
-    workspaceId: folder.workspaceId,
-    entityType: DmsEntityType.FOLDER,
-    entityId: folderId,
-    action: DmsAction.FOLDER_MOVED,
-    userId,
-    details: { from: folder.parentId ?? null, to: target?._id ?? null },
+    return requireFolder(folderId);
   });
-  return requireFolder(folderId);
 }
 
 /** The folders from the workspace root down to (and including) this one. */

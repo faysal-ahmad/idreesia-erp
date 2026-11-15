@@ -1,3 +1,5 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
+import { deleteFiles } from 'meteor/idreesia-common/server/file-storage';
 import {
   EntityType,
   OperationType,
@@ -33,41 +35,43 @@ async function setPersonImageFiles(
   { imageKey, imageThumbnailKey, imageVectorData }: PersonImageInput,
   user: UserRef
 ) {
-  const existingPerson = await People.findOneAsync(_id);
-  if (!existingPerson) {
-    throw new Error(`Person '${_id}' was not found.`);
-  }
+  return runInTransaction(async () => {
+    const existingPerson = await People.findOneAsync(_id);
+    if (!existingPerson) {
+      throw new Error(`Person '${_id}' was not found.`);
+    }
 
-  const date = new Date();
-  await People.updateAsync(_id, {
-    $set: {
-      'sharedData.imageKey': imageKey,
-      'sharedData.imageVectorData': imageVectorData,
+    const date = new Date();
+    await People.updateAsync(_id, {
+      $set: {
+        'sharedData.imageKey': imageKey,
+        'sharedData.imageVectorData': imageVectorData,
+        ...(imageThumbnailKey
+          ? { 'sharedData.imageThumbnailKey': imageThumbnailKey }
+          : {}),
+        updatedAt: date,
+        updatedBy: user._id,
+      },
       ...(imageThumbnailKey
-        ? { 'sharedData.imageThumbnailKey': imageThumbnailKey }
-        : {}),
-      updatedAt: date,
-      updatedBy: user._id,
-    },
-    ...(imageThumbnailKey
-      ? {}
-      : { $unset: { 'sharedData.imageThumbnailKey': '' } }),
+        ? {}
+        : { $unset: { 'sharedData.imageThumbnailKey': '' } }),
+    });
+
+    await createAuditLog(
+      {
+        entityId: _id,
+        entityType: EntityType.PERSON,
+        operationType: OperationType.UPDATE,
+        operationBy: user._id,
+        operationTime: date,
+        auditValues: { [PHOTO_AUDIT_FIELD]: PHOTO_AUDIT_VALUE },
+      },
+      existingPerson
+    );
+
+    await removePersonImageFiles(existingPerson.sharedData);
+    return People.findOneAsync(_id);
   });
-
-  await createAuditLog(
-    {
-      entityId: _id,
-      entityType: EntityType.PERSON,
-      operationType: OperationType.UPDATE,
-      operationBy: user._id,
-      operationTime: date,
-      auditValues: { [PHOTO_AUDIT_FIELD]: PHOTO_AUDIT_VALUE },
-    },
-    existingPerson
-  );
-
-  await removePersonImageFiles(existingPerson.sharedData);
-  return People.findOneAsync(_id);
 }
 
 /**
@@ -99,9 +103,17 @@ export async function setPersonImage(
     thumbnail
   );
 
-  return setPersonImageFiles(
-    personId,
-    { imageKey, imageThumbnailKey, imageVectorData },
-    user
-  );
+  try {
+    return await setPersonImageFiles(
+      personId,
+      { imageKey, imageThumbnailKey, imageVectorData },
+      user
+    );
+  } catch (error) {
+    // Nothing refers to the new photo: the person wasn't updated.
+    await deleteFiles(
+      [imageKey, imageThumbnailKey].filter(Boolean) as string[]
+    ).catch(() => undefined);
+    throw error;
+  }
 }

@@ -1,9 +1,7 @@
 import { values } from 'meteor/idreesia-common/utilities/lodash';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
-import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
 import { DataSource } from 'meteor/idreesia-common/constants';
 import { ChatError } from 'meteor/idreesia-common/server/chat';
 import {
@@ -12,6 +10,7 @@ import {
   disableTwoFactor,
   enableTwoFactor,
   findOneUser,
+  recordUserLogin,
   registerUser,
   resetTwoFactor,
   searchUsers,
@@ -216,23 +215,7 @@ export default {
     ) => resetTwoFactor(params, requireUser(user), DataSource.ADMIN),
 
     updateLoginTime: async (_obj: unknown, _args: unknown, { user }: ResolverContext) => {
-      if (user) {
-        const loginTime = new Date();
-        await Users.updateAsync(user._id, {
-          $set: {
-            lastLoggedInAt: loginTime,
-          },
-        });
-
-        // Create a security log
-        await SecurityLogs.insertAsync({
-          userId: user._id,
-          operationType: SecurityOperationType.LOGIN,
-          operationTime: new Date(),
-          dataSource: DataSource.ADMIN,
-          dataSourceDetail: null,
-        });
-      }
+      if (user) await recordUserLogin(user._id, DataSource.ADMIN);
 
       return 1;
     },

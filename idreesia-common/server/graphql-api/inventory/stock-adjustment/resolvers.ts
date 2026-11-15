@@ -1,9 +1,10 @@
 import type DataLoader from 'dataloader';
 import { StockAdjustments } from 'meteor/idreesia-common/server/collections/inventory';
 import {
-  decrementStockLevel,
-  incrementStockLevel,
-} from 'meteor/idreesia-common/server/business-logic/inventory';
+  createStockAdjustment,
+  removeStockAdjustments,
+  updateStockAdjustment,
+} from 'meteor/idreesia-common/server/business-logic/inventory/stock-adjustments';
 
 import getStockAdjustments, {
   getStockAdjustmentsByStockItemId,
@@ -115,27 +116,12 @@ export default {
       }: StockAdjustmentArgs,
       { user }: ResolverContext
     ) => {
-      const date = new Date();
-      const stockAdjustmentId = await StockAdjustments.insertAsync({
+      const stockAdjustmentId = await createStockAdjustment(
         physicalStoreId,
         stockItemId,
-        adjustmentDate,
-        adjustedBy,
-        quantity,
-        isInflow,
-        adjustmentReason,
-        createdAt: date,
-        createdBy: user._id,
-        updatedAt: date,
-        updatedBy: user._id,
-      });
-
-      if (isInflow) {
-        await incrementStockLevel(stockItemId, quantity);
-      } else {
-        await decrementStockLevel(stockItemId, quantity);
-      }
-
+        { adjustmentDate, adjustedBy, quantity, isInflow, adjustmentReason },
+        user._id
+      );
       return StockAdjustments.findOneAsync(stockAdjustmentId);
     },
 
@@ -145,59 +131,11 @@ export default {
         StockAdjustmentArgs,
       { user }: ResolverContext
     ) => {
-      const existingAdjustment = await StockAdjustments.findOneAsync(_id);
-      if (!existingAdjustment) {
-        throw new Error('Stock adjustment not found.');
-      }
-      const typedExistingAdjustment =
-        existingAdjustment as unknown as StockAdjustment;
-
-      // Undo the effect of previous values
-      if (typedExistingAdjustment.isInflow) {
-        await decrementStockLevel(
-          typedExistingAdjustment.stockItemId,
-          typedExistingAdjustment.quantity
-        );
-      } else {
-        await incrementStockLevel(
-          typedExistingAdjustment.stockItemId,
-          typedExistingAdjustment.quantity
-        );
-      }
-
-      // Apply the effect of new values
-      if (isInflow) {
-        await incrementStockLevel(
-          typedExistingAdjustment.stockItemId,
-          quantity
-        );
-      } else {
-        await decrementStockLevel(
-          typedExistingAdjustment.stockItemId,
-          quantity
-        );
-      }
-
-      const date = new Date();
-      await StockAdjustments.updateAsync(
-        {
-          _id: { $eq: _id },
-          approvedOn: { $eq: null },
-          approvedBy: { $eq: null },
-        },
-        {
-          $set: {
-            adjustmentDate,
-            adjustedBy,
-            quantity,
-            isInflow,
-            adjustmentReason,
-            updatedAt: date,
-            updatedBy: user._id,
-          },
-        }
+      await updateStockAdjustment(
+        _id,
+        { adjustmentDate, adjustedBy, quantity, isInflow, adjustmentReason },
+        user._id
       );
-
       return StockAdjustments.findOneAsync(_id);
     },
 
@@ -232,34 +170,6 @@ export default {
     removeStockAdjustments: async (
       _obj: unknown,
       { _ids, physicalStoreId }: Pick<StockAdjustmentArgs, '_ids' | 'physicalStoreId'>
-    ) => {
-      const existingAdjustments = StockAdjustments.find({
-        _id: { $in: _ids },
-        physicalStoreId,
-        approvedOn: { $exists: false },
-        approvedBy: { $exists: false },
-      });
-
-      await existingAdjustments.forEachAsync(async (existingAdjustmentRecord: unknown) => {
-        const existingAdjustment = existingAdjustmentRecord as unknown as StockAdjustment;
-        // Undo the effect of this adjustment
-        if (existingAdjustment.isInflow) {
-          await decrementStockLevel(
-            existingAdjustment.stockItemId,
-            existingAdjustment.quantity
-          );
-        } else {
-          await incrementStockLevel(
-            existingAdjustment.stockItemId,
-            existingAdjustment.quantity
-          );
-        }
-      });
-
-      return StockAdjustments.removeAsync({
-        _id: { $in: _ids },
-        physicalStoreId,
-      });
-    },
+    ) => removeStockAdjustments(physicalStoreId, _ids),
   },
 };

@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   Cities,
   CityMehfils,
@@ -68,4 +69,19 @@ export async function canSafelyDeleteCity(cityId: string): Promise<boolean> {
   if (karkun) return false;
 
   return true;
+}
+
+/**
+ * Deletes a city no mehfils or karkuns refer to. The check and the delete are
+ * one transaction, so nothing can start referring to it in between.
+ */
+export async function deleteCity(cityId: string): Promise<number> {
+  return runInTransaction(async () => {
+    if (!(await canSafelyDeleteCity(cityId))) {
+      throw new Error(
+        'This City cannot be deleted as there is currently data associated with it.'
+      );
+    }
+    return Cities.removeAsync(cityId);
+  });
 }

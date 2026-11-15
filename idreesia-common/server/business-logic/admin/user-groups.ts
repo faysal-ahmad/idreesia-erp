@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { parse } from 'query-string';
 import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
 import {
@@ -102,15 +103,17 @@ export async function updateUserGroup(
 
 /** Deletes a group, unless users are still assigned to it. */
 export async function removeUserGroup({ _id }: { _id: string }) {
-  const groupUserCount = await Users.find({
-    groups: { $in: [_id] },
-  }).countAsync();
+  return runInTransaction(async () => {
+    const groupUserCount = await Users.find({
+      groups: { $in: [_id] },
+    }).countAsync();
 
-  if (groupUserCount > 0) {
-    throw new Error(`This Group is currently in use and cannot be deleted.`);
-  }
+    if (groupUserCount > 0) {
+      throw new Error(`This Group is currently in use and cannot be deleted.`);
+    }
 
-  return UserGroups.removeAsync(_id);
+    return UserGroups.removeAsync(_id);
+  });
 }
 
 export async function setUserGroupPermissions(
@@ -119,33 +122,35 @@ export async function setUserGroupPermissions(
   dataSource: string,
   dataSourceDetail: string | null = null
 ) {
-  const existingGroup = await UserGroups.findOneAsync(_id);
-  await UserGroups.updateAsync(_id, { $set: { permissions } });
+  return runInTransaction(async () => {
+    const existingGroup = await UserGroups.findOneAsync(_id);
+    await UserGroups.updateAsync(_id, { $set: { permissions } });
 
-  // Create a security log
-  const permissionsAdded = difference(
-    permissions,
-    existingGroup?.permissions || []
-  );
-  const permissionsRemoved = difference(
-    existingGroup?.permissions || [],
-    permissions
-  );
+    // Create a security log
+    const permissionsAdded = difference(
+      permissions,
+      existingGroup?.permissions || []
+    );
+    const permissionsRemoved = difference(
+      existingGroup?.permissions || [],
+      permissions
+    );
 
-  await SecurityLogs.insertAsync({
-    groupId: _id,
-    operationType: SecurityOperationType.PERMISSIONS_CHANGED,
-    operationBy: user._id,
-    operationTime: new Date(),
-    operationDetails: {
-      permissionsAdded,
-      permissionsRemoved,
-    },
-    dataSource,
-    dataSourceDetail,
+    await SecurityLogs.insertAsync({
+      groupId: _id,
+      operationType: SecurityOperationType.PERMISSIONS_CHANGED,
+      operationBy: user._id,
+      operationTime: new Date(),
+      operationDetails: {
+        permissionsAdded,
+        permissionsRemoved,
+      },
+      dataSource,
+      dataSourceDetail,
+    });
+
+    return UserGroups.findOneAsync(_id);
   });
-
-  return UserGroups.findOneAsync(_id);
 }
 
 export async function setUserGroupInstanceAccess(
@@ -154,28 +159,30 @@ export async function setUserGroupInstanceAccess(
   dataSource: string,
   dataSourceDetail: string | null = null
 ) {
-  const existingGroup = await UserGroups.findOneAsync(_id);
-  await UserGroups.updateAsync(_id, { $set: { instances } });
+  return runInTransaction(async () => {
+    const existingGroup = await UserGroups.findOneAsync(_id);
+    await UserGroups.updateAsync(_id, { $set: { instances } });
 
-  // Create a security log
-  const instancesAdded = difference(instances, existingGroup?.instances || []);
-  const instancesRemoved = difference(
-    existingGroup?.instances || [],
-    instances
-  );
+    // Create a security log
+    const instancesAdded = difference(instances, existingGroup?.instances || []);
+    const instancesRemoved = difference(
+      existingGroup?.instances || [],
+      instances
+    );
 
-  await SecurityLogs.insertAsync({
-    groupId: _id,
-    operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
-    operationBy: user._id,
-    operationTime: new Date(),
-    operationDetails: {
-      instancesAdded,
-      instancesRemoved,
-    },
-    dataSource,
-    dataSourceDetail,
+    await SecurityLogs.insertAsync({
+      groupId: _id,
+      operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
+      operationBy: user._id,
+      operationTime: new Date(),
+      operationDetails: {
+        instancesAdded,
+        instancesRemoved,
+      },
+      dataSource,
+      dataSourceDetail,
+    });
+
+    return UserGroups.findOneAsync(_id);
   });
-
-  return UserGroups.findOneAsync(_id);
 }

@@ -17,6 +17,10 @@ export default defineConfig({
       { find: 'meteor/mongo', replacement: `${testUtils}/meteor-mongo.ts` },
       { find: 'meteor/random', replacement: `${testUtils}/meteor-random.ts` },
       { find: 'sharp', replacement: `${testUtils}/stub-package.ts` },
+      {
+        find: 'meteor/accounts-base',
+        replacement: `${testUtils}/stub-package.ts`,
+      },
       { find: 'meteor/meteor', replacement: `${testUtils}/meteor-meteor.ts` },
     ],
   },

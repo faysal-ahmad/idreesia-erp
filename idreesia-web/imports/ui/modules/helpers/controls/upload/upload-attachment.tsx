@@ -3,6 +3,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import type { UploadChangeParam, UploadFile } from 'antd/es/upload';
 
 import {
+  ATTACHMENT_ALLOWED_MIME_TYPES,
   ATTACHMENT_MAX_FILE_SIZE,
   type AttachmentCategoryValue,
 } from 'meteor/idreesia-common/constants';
@@ -22,7 +23,8 @@ interface Props {
 
 const UploadAttachment = ({
   category,
-  accept = '*',
+  // The types the server accepts (see /upload-file).
+  accept = ATTACHMENT_ALLOWED_MIME_TYPES.join(','),
   onUploadFinish = noop,
   disabled = false,
   buttonText = 'Upload Picture',

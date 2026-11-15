@@ -1,4 +1,3 @@
-import { Accounts } from 'meteor/accounts-base';
 import { values } from 'meteor/idreesia-common/utilities/lodash';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
@@ -13,6 +12,7 @@ import {
   disableTwoFactor,
   enableTwoFactor,
   findOneUser,
+  registerUser,
   resetTwoFactor,
   searchUsers,
   setUserInstanceAccess,
@@ -43,6 +43,10 @@ interface ResolverContext {
     locked?: boolean;
     permissions?: string[];
   };
+  /** Hashed login token the request came with. */
+  loginTokenHash?: string | null;
+  /** Address of the client that sent the request. */
+  clientAddress?: string | null;
 }
 
 interface UserArgs extends Record<string, unknown> {
@@ -135,30 +139,9 @@ export default {
   Mutation: {
     registerUser: async (
       _obj: unknown,
-      { displayName, email }: Pick<UserArgs, 'displayName' | 'email'>
-    ) => {
-      // Check if this email is already registered for a user
-      const user = await Accounts.findUserByEmail(email);
-      if (user) {
-        throw new Error('This email address is already registered.');
-      }
-
-      const userId = await Accounts.createUserAsync({
-        email,
-        profile: {
-          name: displayName,
-        },
-      });
-
-      if (userId) {
-        // Self-registered accounts can't sign in until an administrator
-        // unlocks them (see idreesia-web/imports/startup/server/account-lock.ts).
-        await Meteor.users.updateAsync(userId, { $set: { locked: true } });
-        await Accounts.sendEnrollmentEmail(userId);
-      }
-
-      return 1;
-    },
+      { displayName, email }: Pick<UserArgs, 'displayName' | 'email'>,
+      { clientAddress }: ResolverContext
+    ) => registerUser({ displayName, email }, clientAddress),
 
     createUser: async (
       _obj: unknown,
@@ -212,8 +195,13 @@ export default {
     enableTwoFactor: async (
       _obj: unknown,
       params: { code: string },
-      { user }: ResolverContext
-    ) => enableTwoFactor(params, requireUser(user), DataSource.ADMIN),
+      { user, loginTokenHash }: ResolverContext
+    ) =>
+      enableTwoFactor(
+        { ...params, currentLoginTokenHash: loginTokenHash },
+        requireUser(user),
+        DataSource.ADMIN
+      ),
 
     disableTwoFactor: async (
       _obj: unknown,

@@ -1,7 +1,11 @@
 export { default as ActionNames } from './action-names';
 export { default as AttachmentCategory } from './attachment-category';
 export type { AttachmentCategoryValue } from './attachment-category';
-export { ATTACHMENT_MAX_FILE_SIZE } from './attachment-category';
+export {
+  ATTACHMENT_ALLOWED_MIME_TYPES,
+  ATTACHMENT_MAX_FILE_SIZE,
+  isAllowedAttachmentMimeType,
+} from './attachment-category';
 export { default as DataSource } from './data-source';
 export { default as Formats } from './formats';
 export { default as ImageVectorStatus } from './image-vector-status';

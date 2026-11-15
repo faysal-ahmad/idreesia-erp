@@ -17,6 +17,7 @@ export {
   updateUser,
 } from './user-mutations';
 export {
+  consumeTwoFactorCode,
   disableTwoFactor,
   enableTwoFactor,
   isTwoFactorCodeValid,
@@ -25,3 +26,12 @@ export {
   type TwoFactorSetup,
 } from './two-factor';
 export { isTwoFactorEnabled } from './two-factor-status';
+export {
+  AttemptKind,
+  clearAttempts,
+  reserveAttempt,
+  TOO_MANY_ATTEMPTS_ERROR,
+  TOO_MANY_ATTEMPTS_MESSAGE,
+  type AttemptKindValue,
+} from './login-attempts';
+export { registerUser } from './register-user';

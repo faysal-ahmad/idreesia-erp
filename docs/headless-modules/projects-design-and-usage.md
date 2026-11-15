@@ -275,7 +275,7 @@ The Workspaces module uses projects through the **Projects & Tasks** committee f
 - A task's **assignee** changes the status and progress of their own task.
 - **Every member** sees all projects and tasks and can comment on any task. Comments can be deleted by their author or a coordinator.
 - Participants and assignees must be committee members. Assigning a project task to a member who isn't a participant makes them one.
-- **Notifications** (mobile): the projects list has a bell with an unread count (the same count shows on the committee's Projects item on the Workspaces page). It opens a screen listing the committee's project and task notifications, newest first. Opening it marks them read, and tapping one opens its task or project. A user sees them when they belong to the committee and its Projects & Tasks feature is on. The web app has no notifications page yet.
+- **Notifications** (mobile): the Projects & Tasks screen has a bell with an unread count (the same count shows on the committee's Projects & Tasks item on the Workspaces page). It opens a screen listing the committee's project and task notifications, newest first. Opening it marks them read, and tapping one opens its task or project. A user sees them when they belong to the committee and its Projects & Tasks feature is on. The web app has no notifications page yet.
 
 ### Project chat
 

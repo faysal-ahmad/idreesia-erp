@@ -8,6 +8,12 @@ import {
 } from 'meteor/idreesia-common/server/collections/admin';
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 
+import {
+  AttemptKind,
+  clearAttempts,
+  reserveAttempt,
+  TOO_MANY_ATTEMPTS_MESSAGE,
+} from './login-attempts';
 import { findOneUser, type MappedUser } from './map-user';
 import { isTwoFactorEnabled } from './two-factor-status';
 
@@ -47,19 +53,78 @@ const getTotp = (secret: string | OTPAuth.Secret, label = 'OTPAuth') =>
     period: TOTP_PERIOD,
   });
 
-/** Checks a code from the authenticator app against a base32 secret. */
-export const isTwoFactorCodeValid = (secret: string, code: string) => {
+/**
+ * The time step (30-second period since the epoch) a code from the
+ * authenticator app belongs to, or null if it isn't valid now.
+ */
+const matchTwoFactorCode = (
+  secret: string,
+  code: string,
+  timestamp = Date.now()
+): number | null => {
   try {
-    return (
-      getTotp(secret).validate({
-        token: code.replace(/\W+/g, ''),
-        window: TOTP_WINDOW,
-      }) !== null
-    );
+    const delta = getTotp(secret).validate({
+      token: code.replace(/\W+/g, ''),
+      timestamp,
+      window: TOTP_WINDOW,
+    });
+    return delta === null
+      ? null
+      : Math.floor(timestamp / 1000 / TOTP_PERIOD) + delta;
   } catch {
-    return false;
+    return null;
   }
 };
+
+/** Checks a code from the authenticator app against a base32 secret. */
+export const isTwoFactorCodeValid = (secret: string, code: string) =>
+  matchTwoFactorCode(secret, code) !== null;
+
+/**
+ * Checks a code from the authenticator app and uses it up: a code is accepted
+ * only if it is newer than the last one the user used, so a code seen by
+ * someone else can't be replayed within its validity window.
+ */
+export async function consumeTwoFactorCode(
+  userId: string,
+  secret: string,
+  code: string
+): Promise<boolean> {
+  const step = matchTwoFactorCode(secret, code);
+  if (step === null) return false;
+
+  const lastUsedStepField = 'services.twoFactorAuthentication.lastUsedStep';
+  const updated = await Users.updateAsync(
+    {
+      _id: userId,
+      'services.twoFactorAuthentication.secret': secret,
+      $or: [
+        { [lastUsedStepField]: { $exists: false } },
+        { [lastUsedStepField]: { $lt: step } },
+      ],
+    },
+    { $set: { [lastUsedStepField]: step } }
+  );
+  return updated > 0;
+}
+
+/**
+ * Throttles and checks a code entered while logged in (to enable or disable
+ * two-factor). Throws when attempts are blocked or the code is wrong.
+ */
+async function checkCodeEnteredByUser(
+  userId: string,
+  secret: string,
+  code: string
+) {
+  if (!(await reserveAttempt(userId, AttemptKind.TWO_FACTOR_CODE))) {
+    throw new Error(TOO_MANY_ATTEMPTS_MESSAGE);
+  }
+  if (!(await consumeTwoFactorCode(userId, secret, code))) {
+    throw new Error('Invalid verification code.');
+  }
+  await clearAttempts(userId, AttemptKind.TWO_FACTOR_CODE);
+}
 
 async function getUser(userId: string): Promise<AppUser> {
   const user = await Users.findOneAsync(userId);
@@ -119,9 +184,17 @@ export async function startTwoFactorSetup(
   };
 }
 
-/** Turns two-factor on once the user proves the app produces valid codes. */
+/**
+ * Turns two-factor on once the user proves the app produces valid codes, and
+ * signs the user out everywhere else: sessions started before two-factor was
+ * on never passed it. `currentLoginTokenHash` is the hashed login token of the
+ * request making the change, which stays valid.
+ */
 export async function enableTwoFactor(
-  { code }: { code: string },
+  {
+    code,
+    currentLoginTokenHash,
+  }: { code: string; currentLoginTokenHash?: string | null },
   user: UserRef,
   dataSource: string,
   dataSourceDetail: string | null = null
@@ -135,12 +208,15 @@ export async function enableTwoFactor(
   if (!secret) {
     throw new Error('Start the two-factor setup first.');
   }
-  if (!isTwoFactorCodeValid(secret, code)) {
-    throw new Error('Invalid verification code.');
-  }
+  await checkCodeEnteredByUser(user._id, secret, code);
 
   await Users.updateAsync(user._id, {
-    $set: { 'services.twoFactorAuthentication': { secret, type: 'otp' } },
+    $set: { 'services.twoFactorAuthentication.type': 'otp' },
+    $pull: {
+      'services.resume.loginTokens': currentLoginTokenHash
+        ? { hashedToken: { $ne: currentLoginTokenHash } }
+        : {},
+    },
   });
   await logOperation(
     user._id,
@@ -164,14 +240,11 @@ export async function disableTwoFactor(
   if (!isTwoFactorEnabled(existingUser)) {
     throw new Error('Two-factor authentication is not enabled.');
   }
-  if (
-    !isTwoFactorCodeValid(
-      existingUser.services.twoFactorAuthentication.secret,
-      code
-    )
-  ) {
-    throw new Error('Invalid verification code.');
-  }
+  await checkCodeEnteredByUser(
+    user._id,
+    existingUser.services.twoFactorAuthentication.secret,
+    code
+  );
 
   await Users.updateAsync(user._id, {
     $unset: { 'services.twoFactorAuthentication': '' },

@@ -5,7 +5,13 @@ import { Accounts } from 'meteor/accounts-base';
 // that registerUser applies. Every account is created on the server
 // (registerUser, the admin createUser mutation, migrations) through
 // Accounts.createUserAsync, which this setting does not affect.
-Accounts.config({ forbidClientAccountCreation: true });
+//
+// Login tokens (Meteor sessions and REST /login tokens) last 30 days instead
+// of Meteor's default 90, so a leaked or forgotten session ends sooner.
+Accounts.config({
+  forbidClientAccountCreation: true,
+  loginExpirationInDays: 30,
+});
 
 // Update default values for the email workflows
 Accounts.emailTemplates.from = 'erp-admin@idreesia.com';

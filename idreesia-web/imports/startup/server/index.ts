@@ -15,6 +15,7 @@ initNewRelic();
 
 import './configure-services';
 import './account-lock';
+import './login-throttle';
 import './migrations';
 
 import express from 'express';
@@ -30,11 +31,16 @@ import {
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
 } from 'meteor/idreesia-common/server/graphql-api/_directives';
-import { RequireAuthenticationPlugin } from 'meteor/idreesia-common/server/graphql-api/_plugins';
+import { Accounts } from 'meteor/accounts-base';
+import {
+  createDepthLimitRule,
+  RequireAuthenticationPlugin,
+} from 'meteor/idreesia-common/server/graphql-api/_plugins';
 import { initNewRelic } from './newrelic';
 import { setupAgenda } from './setup-agenda';
 import { setupRestEndpoints } from './setup-rest-endpoints';
 import { getUser } from './get-user';
+import { getClientAddress } from './client-address';
 import { apolloErrorFormatter } from './apollo-error-formatter';
 
 // The jobs-only pm2 process (see ecosystem.config.js) never receives HTTP
@@ -61,6 +67,7 @@ if (webServerEnabled) {
     // Anonymous callers may only use the allowlisted fields (currentUser,
     // registerUser); field directives and resolver checks still apply on top.
     plugins: [RequireAuthenticationPlugin()],
+    validationRules: [createDepthLimitRule()],
   });
 
   const startServer = async () => {
@@ -87,6 +94,14 @@ if (webServerEnabled) {
       expressMiddleware(server, {
         context: async ({ req }) => ({
           user: await getUser(req.headers.authorization),
+          loginTokenHash: req.headers.authorization
+            ? (
+                Accounts as unknown as {
+                  _hashLoginToken(loginToken: string): string;
+                }
+              )._hashLoginToken(req.headers.authorization)
+            : null,
+          clientAddress: getClientAddress(req),
           loaders: getDataLoaders(),
         }),
       })

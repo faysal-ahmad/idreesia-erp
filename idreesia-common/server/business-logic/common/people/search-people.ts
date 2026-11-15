@@ -439,6 +439,10 @@ export async function buildPeopleSearchPipeline(
   return pipeline;
 }
 
+// Largest page a people search returns (the tables offer at most 100 rows a
+// page), so a caller can't fetch a whole collection in one request.
+export const MAX_PEOPLE_PAGE_SIZE = 100;
+
 /**
  * flags contains the following
  * - includeKarkuns - defaults to false
@@ -461,8 +465,11 @@ export async function searchPeople(
       $count: 'total',
     });
 
-    const nPageIndex = parseInt(pageIndex, 10);
-    const nPageSize = parseInt(pageSize, 10);
+    const nPageIndex = Math.max(parseInt(pageIndex, 10) || 0, 0);
+    const nPageSize = Math.min(
+      Math.max(parseInt(pageSize, 10) || 20, 1),
+      MAX_PEOPLE_PAGE_SIZE
+    );
     const resultsPipeline = pipeline.concat([
       // _id breaks ties so pages don't overlap: skip/limit over a
       // non-unique sort key has no guaranteed order.

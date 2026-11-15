@@ -7,6 +7,7 @@ import type { NextFunction, Request, Response } from 'express';
 
 import {
   ATTACHMENT_MAX_FILE_SIZE,
+  isAllowedAttachmentMimeType,
   Permissions,
   TwoFactorErrorCode,
 } from 'meteor/idreesia-common/constants';
@@ -22,8 +23,12 @@ import {
   isAttachmentCategory,
 } from 'meteor/idreesia-common/server/business-logic/common/stored-attachments';
 import {
-  isTwoFactorCodeValid,
+  AttemptKind,
+  clearAttempts,
+  consumeTwoFactorCode,
   isTwoFactorEnabled,
+  reserveAttempt,
+  TOO_MANY_ATTEMPTS_ERROR,
 } from 'meteor/idreesia-common/server/business-logic/admin';
 import { exportKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/karkuns-exporter';
 import { exportVisitors } from 'meteor/idreesia-common/server/business-logic/security/visitors-exporter';
@@ -282,6 +287,13 @@ export function setupRestEndpoints() {
           res.end('A file and a valid attachment category are required.');
           return;
         }
+        // The stored type is what object storage serves the file as, so
+        // only accept types a browser won't run as a page (no HTML or SVG).
+        if (!isAllowedAttachmentMimeType(file.mimetype)) {
+          res.writeHead(400);
+          res.end('This type of file is not allowed.');
+          return;
+        }
         const attachmentId = await createStoredAttachment({
           category,
           name: file.originalname,
@@ -321,6 +333,15 @@ export function setupRestEndpoints() {
           return;
         }
 
+        // Counted before the password is checked, and refused before it is,
+        // so a blocked attempt doesn't reveal whether the password was right.
+        // Same throttle as the Meteor password login (login-throttle.ts).
+        if (!(await reserveAttempt(user._id, AttemptKind.LOGIN))) {
+          res.writeHead(429, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: TOO_MANY_ATTEMPTS_ERROR }));
+          return;
+        }
+
         const { error, userId } = await AccountsPrivate._checkPasswordAsync(
           user,
           password
@@ -339,13 +360,16 @@ export function setupRestEndpoints() {
           return;
         }
 
-        // Same rule the password login enforces through accounts-2fa.
+        // Same rule the password login enforces through accounts-2fa, and
+        // each code works only once (login-throttle.ts).
         const twoFactorSecret = user.services.twoFactorAuthentication?.secret;
         if (isTwoFactorEnabled(user) && twoFactorSecret) {
           let twoFactorError: string | null = null;
           if (typeof code !== 'string' || !code) {
             twoFactorError = TwoFactorErrorCode.CODE_REQUIRED;
-          } else if (!isTwoFactorCodeValid(twoFactorSecret, code)) {
+          } else if (
+            !(await consumeTwoFactorCode(userId, twoFactorSecret, code))
+          ) {
             twoFactorError = TwoFactorErrorCode.INVALID_CODE;
           }
           if (twoFactorError) {
@@ -354,6 +378,8 @@ export function setupRestEndpoints() {
             return;
           }
         }
+
+        await clearAttempts(userId, AttemptKind.LOGIN);
 
         const stampedLoginToken = AccountsPrivate._generateStampedLoginToken();
         await AccountsPrivate._insertLoginToken(userId, stampedLoginToken);
@@ -379,7 +405,8 @@ export function setupRestEndpoints() {
       requireLogin,
       bodyParser.json({ limit: '5mb' }),
       Meteor.bindEnvironment(async (req: Request, res: Response) => {
-        const { name, mimeType, data, category } = req.body;
+        const { name, data, category } = req.body;
+        const mimeType = req.body.mimeType || 'image/jpeg';
         if (typeof data !== 'string' || !isAttachmentCategory(category)) {
           res.status(400).send(
             JSON.stringify({
@@ -388,10 +415,17 @@ export function setupRestEndpoints() {
           );
           return;
         }
+        // Same rule as /upload-file.
+        if (!isAllowedAttachmentMimeType(mimeType)) {
+          res.status(400).send(
+            JSON.stringify({ error: 'This type of file is not allowed.' })
+          );
+          return;
+        }
         const attachmentId = await createStoredAttachment({
           category,
           name,
-          mimeType: mimeType || 'image/jpeg',
+          mimeType,
           body: Buffer.from(data, 'base64'),
         });
         res.send(JSON.stringify({ attachmentId }));

@@ -3,7 +3,6 @@ import { useQuery } from '@apollo/client/react';
 import { Badge, List, PullToRefresh } from 'antd-mobile';
 import {
   CalendarOutline,
-  CheckCircleOutline,
   DownOutline,
   ExclamationShieldOutline,
   FileOutline,
@@ -78,20 +77,13 @@ const getWorkspaceItems = (
         },
       ]
     : []),
-  // One feature, two entries: its projects, and its tasks.
   ...(features?.includes(CommitteeFeatureKeys.PROJECTS)
     ? [
         {
           key: 'projects',
-          title: 'Projects',
+          title: 'Projects & Tasks',
           icon: <UnorderedListOutline />,
           path: WorkspacesPaths.committeeProjects(committeeId),
-        },
-        {
-          key: 'tasks',
-          title: 'Tasks',
-          icon: <CheckCircleOutline />,
-          path: WorkspacesPaths.committeeTasks(committeeId),
         },
       ]
     : []),

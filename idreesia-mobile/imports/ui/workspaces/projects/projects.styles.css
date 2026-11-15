@@ -1,12 +1,8 @@
 /* Workspace → Projects and Tasks (workspaces/projects). Loaded from client/main.tsx. */
 
-/* The two entries of the feature in a workspace's list */
+/* The feature's entry in a workspace's list */
 .workspace-feature-icon-projects {
   background: var(--app-color-feature-teal);
-}
-
-.workspace-feature-icon-tasks {
-  background: var(--app-color-feature-purple);
 }
 
 /* Lists */

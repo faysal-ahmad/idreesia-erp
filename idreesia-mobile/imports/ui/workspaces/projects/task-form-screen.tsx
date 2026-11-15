@@ -23,8 +23,8 @@ interface FormValues {
 const formatPicked = (value?: Date | null) => (value ? formatDay(value) : 'No due date');
 
 /**
- * New task (under /tasks/new, optionally `?projectId=` for a task of that
- * project) or editing one (under /tasks/:taskId/edit). Assigning a project
+ * New task (under /projects/tasks/new, optionally `?projectId=` for a task of that
+ * project) or editing one (under /projects/tasks/:taskId/edit). Assigning a project
  * task to someone who isn't a participant makes them one.
  */
 export const TaskFormScreen = () => {

@@ -1,51 +1,65 @@
 import { GraphQLError } from 'graphql';
 
 import {
+  CommitteeMemberRoles,
+  type CommitteeMemberRole,
+} from 'meteor/idreesia-common/constants/organization';
+import {
   getCommitteeChatGroupId,
   type CommitteeDoc,
 } from 'meteor/idreesia-common/server/business-logic/hr/committee';
 
 import {
-  getCoordinatedCommittee,
+  getCommitteeAccess,
+  getCommitteeRole,
   getMemberCommittee,
-  isCommitteeCoordinator,
+  type CommitteeAccessContext,
   type WorkspaceUser,
 } from '../committee/access';
 
 /**
- * Permission check for a committee's discussions: the user must be a member
- * of the committee (a super-admin counts as one), and the committee must have
- * Discussions enabled. Returns the chat group to hand to the discussions
- * business logic. Shared by the GraphQL resolvers and the file routes.
+ * The chat group of the committee's discussion, for a resolver: who may call
+ * the field is decided by `@checkCommitteeAccess` in the schema. Here the
+ * committee must also have Discussions enabled.
  */
-export const getMemberCommitteeChatGroupId = async (
+export const getDiscussionChatGroupId = (
+  context: CommitteeAccessContext,
+  committeeId: string
+): Promise<string> =>
+  getCommitteeChatGroupId(
+    getCommitteeAccess(context, committeeId).committee as unknown as CommitteeDoc
+  );
+
+// The roles that may read a committee's discussion. Keep in step with
+// @checkCommitteeAccess on the read fields in discussions.ts.
+const DISCUSSION_READ_ROLES: CommitteeMemberRole[] = [
+  CommitteeMemberRoles.COORDINATOR,
+  CommitteeMemberRoles.MEMBER,
+  CommitteeMemberRoles.OBSERVER,
+];
+
+/**
+ * The chat group, for the discussion's file route, which is plain REST and so
+ * cannot use the schema directive: the user must hold a role that may read
+ * the discussion, and the committee must have Discussions enabled.
+ */
+export const getReaderCommitteeChatGroupId = async (
   user: WorkspaceUser | null | undefined,
   committeeId: string
 ): Promise<string> => {
   const committee = await getMemberCommittee(user, committeeId);
-  if (!committee) {
+  const role = committee ? getCommitteeRole(user, committee) : null;
+  if (!committee || !role) {
     throw new GraphQLError('You are not a member of this committee.', {
       extensions: { code: 'FORBIDDEN' },
     });
   }
-  return getCommitteeChatGroupId(committee as unknown as CommitteeDoc);
-};
-
-/** Whether the user may pin messages: coordinators of the committee. */
-export const canPinCommitteeDiscussion = async (
-  user: WorkspaceUser | null | undefined,
-  committeeId: string
-): Promise<boolean> => {
-  const committee = await getMemberCommittee(user, committeeId);
-  return !!committee && isCommitteeCoordinator(user, committee);
-};
-
-/** Like getMemberCommitteeChatGroupId, for coordinators only. */
-export const getCoordinatedCommitteeChatGroupId = async (
-  user: WorkspaceUser | null | undefined,
-  committeeId: string
-): Promise<string> => {
-  const committee = await getCoordinatedCommittee(user, committeeId);
+  if (!DISCUSSION_READ_ROLES.includes(role)) {
+    throw new GraphQLError(
+      'Your role in this committee does not allow this operation.',
+      { extensions: { code: 'FORBIDDEN' } }
+    );
+  }
   return getCommitteeChatGroupId(committee as unknown as CommitteeDoc);
 };
 

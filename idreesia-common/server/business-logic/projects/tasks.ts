@@ -418,6 +418,11 @@ interface TaskFilterOptions {
 export interface ListTasksOptions extends TaskFilterOptions, ProjectsPageOptions {
   /** Only this project's tasks. */
   projectId?: string;
+  /**
+   * Only tasks of these projects, so standalone tasks are left out. Combined
+   * with `projectId`, the task must match both.
+   */
+  projectIds?: string[];
   /** true: only standalone tasks (ignored with `projectId`). */
   standalone?: boolean;
   /** Only tasks assigned to this person. */
@@ -544,6 +549,7 @@ export async function listTasks(
   userId: string,
   {
     projectId,
+    projectIds,
     standalone,
     assigneeId,
     unassigned,
@@ -575,8 +581,16 @@ export async function listTasks(
       metadata,
     }),
   };
-  if (projectId) selector.projectId = projectId;
-  else if (standalone) selector.projectId = { $exists: false };
+  if (projectIds) {
+    selector.projectId =
+      projectId && !projectIds.includes(projectId)
+        ? { $in: [] }
+        : projectId ?? { $in: projectIds };
+  } else if (projectId) {
+    selector.projectId = projectId;
+  } else if (standalone) {
+    selector.projectId = { $exists: false };
+  }
   if (assigneeId) {
     selector.assigneeId = normalizeOpaqueId(assigneeId, 'Assignee id');
   } else if (unassigned) {

@@ -116,8 +116,6 @@ The module is server-only. Import from the barrel above, not from individual fil
 
 **Workspaces are independent.** A projects workspace has no link to ERP Workspaces (committees) or any other entity. The consuming feature stores the workspace id on its own records (for example `committee.projectsWorkspaceId`) and uses `metadata` for anything else it needs, for example a future link from a meeting action item.
 
-**The module knows nothing about chat.** A project stores an opaque `chatGroupId` that the consumer sets with `setProjectChatGroupId`. Creating the group and keeping its members in step with `participantIds` is the consumer's job.
-
 ## Errors
 
 Every failure is a `GraphQLError` with `extensions.code`, so a GraphQL resolver can let it propagate unchanged. A REST route should map the codes to HTTP statuses:
@@ -162,7 +160,6 @@ Workspace functions carry a `Projects` prefix, so a feature can import them next
 | `setProjectStatus(projectId, status, userId, { force? })` | project | |
 | `addProjectParticipants(projectId, ids, userId)` | project | |
 | `removeProjectParticipant(projectId, id, userId, { unassignTasks? })` | project | |
-| `setProjectChatGroupId(projectId, chatGroupId \| null, userId)` | project | Opaque; for the consumer's chat group |
 | `deleteProject(projectId, userId, { tasks? })` | – | `'detach'` (default) or `'delete'` |
 | `listProjects(workspaceId, userId, options)` | `ProjectsPage<project>` | See below |
 | `listParticipantProjects(participantId, userId, { workspaceIds?, ...options })` | `ProjectsPage<project>` | Across workspaces. Pass the `workspaceIds` your feature authorised. Deleted workspaces are always left out. |
@@ -231,7 +228,7 @@ The projects module publishes thirteen notifications through the shared notifier
 - **One id per entity and user, so repeats collapse.** Repeated changes give one notification whose text follows the latest change. Every event carries its time in `data.at`, so each new occurrence counts as changed content and shows as unread again, even when the text is identical (a second comment, or a task assigned to the same person again).
 - **Unchanged edits send nothing.** Setting the same assignee, status, due date or project status again publishes nothing.
 - **Removing a participant with `unassignTasks`** unassigns their open tasks silently. The person is told once, by #10.
-- **Not notifications:** a task becoming due soon or overdue (there is no scheduled job; the home page already shows what is due), task progress changes that do not change the status, task tags, metadata and description edits, comment deletion, chat group changes, and workspace changes. The [activity log](#activity-log) records them.
+- **Not notifications:** a task becoming due soon or overdue (there is no scheduled job; the home page already shows what is due), task progress changes that do not change the status, task tags, metadata and description edits, comment deletion, and workspace changes. The [activity log](#activity-log) records them.
 
 **No scheduled job.** All thirteen are published when the action happens. Nothing runs on a schedule.
 
@@ -242,7 +239,7 @@ The projects module publishes thirteen notifications through the shared notifier
 | Collection | Holds |
 |---|---|
 | `projects-workspaces` | name, description, metadata, timestamps, `deletedAt`/`deletedBy` |
-| `projects` | `workspaceId`, title, objective, description, status, `participantIds[]`, dates, tags, metadata, `chatGroupId?`, `taskCount`/`doneCount`/`progress`, `completedAt`/`completedBy`, `revision`, timestamps |
+| `projects` | `workspaceId`, title, objective, description, status, `participantIds[]`, dates, tags, metadata, `taskCount`/`doneCount`/`progress`, `completedAt`/`completedBy`, `revision`, timestamps |
 | `project-tasks` | `workspaceId`, `projectId?`, title, description, `assigneeId?`, `dueDate?`, status, priority, progress, tags, metadata, `completedAt`/`completedBy`, `commentCount`, `revision`, timestamps |
 | `project-comments` | `workspaceId`, `taskId`, `authorId`, text, timestamps |
 | `projects-activities` | see [Activity log](#activity-log) |
@@ -256,35 +253,35 @@ The Workspaces module uses projects through the **Projects & Tasks** committee f
 | Piece | Location |
 |---|---|
 | Feature handler, workspace lookup, leaving-member cleanup | `idreesia-common/server/business-logic/hr/committee/projects.ts` |
-| Project chat groups | `.../hr/committee/projects-chat.ts` |
 | View mapping (names, timestamps as strings) | `.../hr/committee/projects-view.ts` |
 | Multi-step changes and input mapping | `.../hr/committee/projects-actions.ts` |
 | GraphQL schema, access checks, resolvers | `idreesia-common/server/graphql-api/workspaces/projects/` |
-| Project chat file routes | `idreesia-web/imports/startup/server/setup-workspace-discussion-endpoints.ts` (the `/projects/:projectId/discussions/files` routes) |
 | Web UI | `idreesia-web/imports/ui/modules/common/projects/` (reusable) and `.../modules/workspaces/projects/` (committee pages) |
 | Mobile UI | `idreesia-mobile/imports/ui/workspaces/projects/` |
 
 **Feature lifecycle:**
 - Enabling the feature creates a `"<committee> Projects"` workspace with `metadata.committeeId`, and stores its id in `committee.projectsWorkspaceId`.
-- Disabling it archives every project's chat group, then soft-deletes the workspace.
-- Enabling it again restores the same workspace, with its projects and tasks, and unarchives the chat groups of open projects.
-- When a person leaves the committee they leave every project: they stop being a participant, lose chat access, and their open tasks are unassigned.
+- Disabling it soft-deletes the workspace.
+- Enabling it again restores the same workspace, with its projects and tasks.
+- When a person leaves the committee they leave every project: they stop being a participant and their open tasks are unassigned.
 
 **Who can do what:**
-- **Coordinators** (and super-admins) create, edit and delete projects and tasks, change project status, manage participants and see the activity log.
-- A task's **assignee** changes the status and progress of their own task.
-- **Every member** sees all projects and tasks and can comment on any task. Comments can be deleted by their author or a coordinator.
-- Participants and assignees must be committee members. Assigning a project task to a member who isn't a participant makes them one.
+
+Access depends on the person's role on the committee (coordinator, member, observer, guest). Each GraphQL field declares its roles with `@checkCommitteeAccess(roles: [...])` in `graphql-api/workspaces/projects/projects.ts`; a super-admin counts as a coordinator. `projects-roles.test.ts` checks the schema against this table.
+
+| Operation | Coordinator | Member | Observer | Guest |
+|---|---|---|---|---|
+| See projects, tasks and comments | All | All | All | Only projects they take part in, and those projects' tasks |
+| See the committee's member list | Yes | Yes | Yes | Only people in their own projects |
+| Add a comment to a task | Yes | Yes | No | On tasks of their projects |
+| Delete a comment | Any | Their own | No | Their own |
+| Change a task's status and progress | Yes | If assignee | No | If assignee, in their projects |
+| Create, edit, delete projects and tasks, change project status, manage participants | Yes | No | No | No |
+| See the activity log | Yes | No | No | No |
+
+- A **guest** only ever sees the projects they take part in, in lists and by id (any other project is "not found"), and the tasks of those projects. Standalone tasks are not visible to guests. In their projects they can do what a member can. This is checked in the resolvers (`workspaces/projects/access.ts`), because it depends on the project's participant list, not just on the role.
+- Checks that depend on the data, not the role, also stay in the code: the committee must have Projects & Tasks enabled, an id must belong to the committee's workspace, and participants and assignees must be committee members. Assigning a project task to a member who isn't a participant makes them one.
 - **Notifications** (mobile): the Projects & Tasks screen has a bell with an unread count (the same count shows on the committee's Projects & Tasks item on the Workspaces page). It opens a screen listing the committee's project and task notifications, newest first. Opening it marks them read, and tapping one opens its task or project. A user sees them when they belong to the committee and its Projects & Tasks feature is on. The web app has no notifications page yet.
-
-### Project chat
-
-Each project gets a private chat (a Rocket.Chat private group, named `project-<committee>-<title>-<id>`) for its participants:
-- The group is created with the project. If chat is unreachable at that moment, it is created the first time a participant opens the project's chat.
-- Group members are the participants who have a chat account (same rule as committee Discussions). Adding or removing a participant adds or removes their chat access.
-- **Access is for participants only.** Coordinators and super-admins get no automatic access; they can add themselves as participants. Pinning messages is for coordinators.
-- Completing or cancelling the project archives the group (history is kept). Setting the status back to an open one unarchives it. Deleting a project archives its group.
-- Messages, reactions, pins, search and files reuse the committee Discussions business logic (`server/business-logic/discussions/`), and messages are posted as each user.
 
 ## Integrating another feature
 
@@ -292,7 +289,7 @@ Each project gets a private chat (a Rocket.Chat private group, named `project-<c
 1. Create a projects workspace for each owning entity and store its id on that entity.
 2. Before every call, check that the user may act on that workspace. When the caller passes a project or task id, also check that it belongs to the workspace you authorised.
 3. Decide who may create, edit and delete projects and tasks, who may change a task's status and progress, and who may purge workspaces. The module doesn't restrict them.
-4. If projects need a chat or a participant-based permission model, keep `participantIds` and your chat group in step yourself.
+4. If projects need a participant-based permission model, check `participantIds` yourself.
 
 ## Limits and constants
 
@@ -311,4 +308,3 @@ All of these are in `idreesia-common/constants/projects.ts`:
 - **No attachments, checklists, sub-tasks or dependencies.** Tasks are flat. Progress is a single number.
 - **Project progress is an unweighted average** of its counted tasks.
 - **Multi-step operations are not transactional.** For example, deleting a project detaches its tasks before removing it, and project statistics are recomputed after the task write, so a crash in between can leave them stale until the project's next task change.
-- **Chat access follows participants only through the committee layer.** Someone changing `participantIds` through the module directly won't update the chat group.

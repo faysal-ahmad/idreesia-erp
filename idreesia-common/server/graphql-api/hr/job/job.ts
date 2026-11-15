@@ -16,7 +16,9 @@ type JobType {
 
 extend type Query {
   allJobs: [JobType]
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA, HR_DELETE_DATA])
   jobById(id: String!): JobType
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA, HR_DELETE_DATA])
 }
 
 extend type Mutation {

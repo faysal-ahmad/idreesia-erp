@@ -287,11 +287,21 @@ The Workspaces module uses polls through the **Polls** committee feature (`Commi
 - Enabling it again restores the same workspace, with its polls.
 
 **Who can do what:**
-- **Coordinators** (and super-admins) create, edit, open, close, reopen, cancel and delete polls. They see drafts, the results of an open poll and the Activity tab.
+
+Access depends on the person's role on the committee (coordinator, member, observer, guest). Each GraphQL field declares its roles with `@checkCommitteeAccess(roles: [...])` in `graphql-api/workspaces/polls/polls.ts`; a super-admin counts as a coordinator. `polls-roles.test.ts` checks the schema against this table.
+
+| Operation | Coordinator | Member | Observer | Guest |
+|---|---|---|---|---|
+| See the polls list and a poll (not drafts) | Yes | Yes | Yes | No |
+| See results (of a closed poll) | Yes | Yes | Yes | No |
+| Vote, change or withdraw their vote | Yes | Yes | No | No |
+| See drafts, results of an open poll, the Activity tab | Yes | No | No | No |
+| Create, edit, open, close, reopen, cancel, delete polls | Yes | No | No | No |
+
+- A voter's id is their karkun id. Every coordinator and member can vote in every poll that isn't a draft; there is no separate voters list.
+- A super-admin who isn't on the committee can view polls but can't vote, since there is no karkun id to vote as.
+- Checks that depend on the data, not the role, stay in the code: the committee must have Polls enabled, a poll must belong to the committee's workspace, and drafts are visible to coordinators only.
 - **Notifications** (mobile): the polls list has a bell with an unread count. It opens a screen listing the committee's poll notifications, newest first. Opening it marks them read, and tapping one opens its poll. The web app has no notifications page yet.
-- **Members** see polls that aren't drafts, vote as themselves (voter id = their karkun id), and see results once the poll has closed.
-- Every committee member can vote in every poll that isn't a draft. There is no separate voters list.
-- A user who isn't a committee member (for example a super-admin without membership) can view polls but can't vote.
 
 ## Integrating another feature
 

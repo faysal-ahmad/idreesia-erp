@@ -221,6 +221,8 @@ export interface CommitteeMeetingsOptions {
   /** Meetings that start before this time (ms as a string). */
   to?: string | null;
   text?: string | null;
+  /** Only meetings this person is invited to (a guest sees no others). */
+  participantId?: string | null;
   pageIndex?: number | null;
   pageSize?: number | null;
 }
@@ -242,7 +244,15 @@ const toDateOrUndefined = (value?: string | null) =>
 export async function listCommitteeMeetings(
   workspaceId: string,
   context: ViewContext,
-  { view, from, to, text, pageIndex, pageSize }: CommitteeMeetingsOptions
+  {
+    view,
+    from,
+    to,
+    text,
+    participantId,
+    pageIndex,
+    pageSize,
+  }: CommitteeMeetingsOptions
 ) {
   const now = new Date();
   let status: MeetingStatusValue[] | undefined;
@@ -276,6 +286,7 @@ export async function listCommitteeMeetings(
     to: toDate,
     endedBy,
     text: text?.trim() || undefined,
+    participantId: participantId || undefined,
     sortOrder,
     ...toPage(pageIndex, pageSize),
   });
@@ -431,6 +442,8 @@ export interface CommitteeActionItemsOptions {
   /** 'me' for the acting user's own items. */
   assigneeId?: string | null;
   status?: MeetingActionItemStatusValue[] | null;
+  /** Only items of meetings this person is invited to (a guest sees no others). */
+  participantId?: string | null;
   pageIndex?: number | null;
   pageSize?: number | null;
 }
@@ -442,12 +455,22 @@ export async function listCommitteeActionItems(
     meetingId,
     assigneeId,
     status,
+    participantId,
     pageIndex,
     pageSize,
   }: CommitteeActionItemsOptions
 ) {
+  const meetingIds = participantId
+    ? (
+        await Meetings.find(
+          { workspaceId, 'participants.participantId': participantId },
+          { fields: { _id: 1 } }
+        ).fetchAsync()
+      ).map(({ _id }) => _id)
+    : undefined;
   const page = await listActionItems(workspaceId, context.userId, {
     meetingId: meetingId || undefined,
+    meetingIds,
     assigneeId:
       assigneeId === 'me' ? context.personId ?? '-' : assigneeId || undefined,
     status: status?.length ? status : undefined,

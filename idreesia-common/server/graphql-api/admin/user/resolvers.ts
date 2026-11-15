@@ -233,12 +233,7 @@ export default {
       _obj: unknown,
       params: { userId: string; isSuperAdmin: boolean },
       { user }: ResolverContext
-    ) => {
-      if (!isSuperAdmin(user)) {
-        throw new Error('Only a super admin can grant or revoke super admin rights.');
-      }
-      return setSuperAdmin(params, user!, DataSource.ADMIN);
-    },
+    ) => setSuperAdmin(params, requireUser(user), DataSource.ADMIN),
 
     updateLoginTime: async (_obj: unknown, _args: unknown, { user }: ResolverContext) => {
       if (user) await recordUserLogin(user._id, DataSource.ADMIN);

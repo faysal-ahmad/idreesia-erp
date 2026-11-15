@@ -20,6 +20,17 @@ function getFormattedName(stockItem: any) {
   return formattedName;
 }
 
+/** The physical stores of the given adjustments (comma-separated ids); unknown ids are skipped. */
+export async function getStockAdjustmentStoreIds(
+  stockAdjustmentFormIdsString: string
+) {
+  const forms = await StockAdjustments.find(
+    { _id: { $in: stockAdjustmentFormIdsString.split(',') } },
+    { fields: { physicalStoreId: 1 } }
+  ).fetchAsync();
+  return forms.map(form => (form as any).physicalStoreId as string);
+}
+
 export async function exportStockAdjustmentForms(stockAdjustmentFormIdsString: string) {
   const stockAdjustmentFormIds = stockAdjustmentFormIdsString.split(',');
   const stockAdjustmentForms = await StockAdjustments.find({

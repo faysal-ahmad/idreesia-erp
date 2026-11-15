@@ -6,6 +6,8 @@ import { merge } from 'meteor/idreesia-common/utilities/lodash';
 import Permission from './_directives/permission';
 import CheckPermissionsDirective from './_directives/check-permissions';
 import CheckInstanceAccessDirective from './_directives/check-instance-access';
+import CheckCommitteeAccessDirective from './_directives/check-committee-access';
+import SuperAdminOnlyDirective from './_directives/super-admin-only';
 
 import RootTypes from './_root-types/root-types';
 import ExternalTypes from './_external-types/external-types';
@@ -184,6 +186,15 @@ import VendorResolvers from './inventory/vendor/resolvers';
 import PhysicalStoreSchema from './inventory/physical-store/physical-store';
 import PhysicalStoreResolvers from './inventory/physical-store/resolvers';
 
+/**
+ * Reference data: cross-module reads of data owned by another module
+ */
+import ReferenceDutySchema from './reference-data/duty/duty';
+import ReferenceDutyResolvers from './reference-data/duty/resolvers';
+
+import ReferencePhysicalStoreSchema from './reference-data/physical-store/physical-store';
+import ReferencePhysicalStoreResolvers from './reference-data/physical-store/resolvers';
+
 import StockItemSchema from './inventory/stock-item/stock-item';
 import StockItemResolvers from './inventory/stock-item/resolvers';
 
@@ -200,6 +211,8 @@ const typeDefs = [
   Permission,
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
+  CheckCommitteeAccessDirective,
+  SuperAdminOnlyDirective,
   RootTypes,
   ExternalTypes,
 
@@ -263,6 +276,8 @@ const typeDefs = [
   LocationSchema,
   VendorSchema,
   PhysicalStoreSchema,
+  ReferenceDutySchema,
+  ReferencePhysicalStoreSchema,
   StockItemSchema,
   IssuanceFormSchema,
   PurchaseFormSchema,
@@ -331,6 +346,8 @@ const resolvers = merge(
   LocationResolvers,
   VendorResolvers,
   PhysicalStoreResolvers,
+  ReferenceDutyResolvers,
+  ReferencePhysicalStoreResolvers,
   StockItemResolvers,
   IssuanceFormResolvers,
   PurchaseFormResolvers,

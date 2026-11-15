@@ -6,12 +6,12 @@ import dayjs, { type Dayjs } from 'dayjs';
 
 import { useDistinctStayAllowedBy } from 'meteor/idreesia-common/hooks/security';
 import {
-  useAllMSDuties,
-  useAllDutyShifts,
-} from '/imports/ui/modules/hr/common/hooks';
+  useReferenceMsDuties,
+  useReferenceDutyShifts,
+} from 'meteor/idreesia-common/hooks/reference-data';
 import type {
-  AllDutyShiftsQuery,
-  ComposerAllMsDutiesQuery,
+  ReferenceDutyShiftsQuery,
+  ReferenceMsDutiesQuery,
   EditVisitorStayByIdQuery,
 } from 'meteor/idreesia-common/types/client-operations';
 import {
@@ -27,8 +27,8 @@ import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilitie
 
 import { EDIT_VISITOR_STAY_BY_ID, UPDATE_VISITOR_STAY } from './gql';
 
-type MSDuty = NonNullable<NonNullable<ComposerAllMsDutiesQuery['allMSDuties']>[number]>;
-type DutyShift = NonNullable<NonNullable<AllDutyShiftsQuery['allDutyShifts']>[number]>;
+type MSDuty = NonNullable<NonNullable<ReferenceMsDutiesQuery['referenceMsDuties']>[number]>;
+type DutyShift = NonNullable<NonNullable<ReferenceDutyShiftsQuery['referenceDutyShifts']>[number]>;
 type VisitorStay = NonNullable<EditVisitorStayByIdQuery['visitorStayById']>;
 
 interface EditFormValues {
@@ -167,8 +167,10 @@ interface EditFormWithDataProps {
 }
 
 const EditFormWithData = ({ visitorStayId, handleSaveItem }: EditFormWithDataProps) => {
-  const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
-  const { allDutyShifts, allDutyShiftsLoading } = useAllDutyShifts();
+  const { referenceMsDuties: allMSDuties, referenceMsDutiesLoading: allMSDutiesLoading } =
+    useReferenceMsDuties();
+  const { referenceDutyShifts: allDutyShifts, referenceDutyShiftsLoading: allDutyShiftsLoading } =
+    useReferenceDutyShifts();
   const { distinctStayAllowedBy, distinctStayAllowedByLoading } =
     useDistinctStayAllowedBy();
   const { data, loading } = useQuery(EDIT_VISITOR_STAY_BY_ID, {

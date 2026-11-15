@@ -44,7 +44,6 @@ export {
   setProjectStatus,
   addProjectParticipants,
   removeProjectParticipant,
-  setProjectChatGroupId,
   deleteProject,
   listProjects,
   listParticipantProjects,

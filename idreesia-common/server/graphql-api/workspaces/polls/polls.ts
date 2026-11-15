@@ -149,6 +149,7 @@ export default gql`
 
   extend type Query {
     workspacePollsInfo(committeeId: String!): WorkspacePollsInfoType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # view: open (default), closed, drafts (coordinators) or all.
     workspacePolls(
       committeeId: String!
@@ -157,12 +158,15 @@ export default gql`
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     workspacePollById(committeeId: String!, pollId: String!): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # Once the poll has closed (or while open, if the poll allows it).
     workspacePollResults(
       committeeId: String!
       pollId: String!
     ): WorkspacePollResultsType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # Coordinators only. Newest first; pass the last entry's 'at' as
     # 'before' for the next page.
     workspacePollActivity(
@@ -171,6 +175,7 @@ export default gql`
       before: String
       limit: Int
     ): [WorkspacePollActivityType]
+      @checkCommitteeAccess(roles: [COORDINATOR])
   }
 
   extend type Mutation {
@@ -179,28 +184,35 @@ export default gql`
       committeeId: String!
       input: WorkspacePollInput!
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceUpdatePoll(
       committeeId: String!
       pollId: String!
       input: WorkspacePollInput!
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceOpenPoll(
       committeeId: String!
       pollId: String!
       closesAt: String
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceClosePoll(committeeId: String!, pollId: String!): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceReopenPoll(
       committeeId: String!
       pollId: String!
       closesAt: String!
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceCancelPoll(
       committeeId: String!
       pollId: String!
       reason: String
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceDeletePoll(committeeId: String!, pollId: String!): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     # Members vote for themselves.
     workspaceCastPollVote(
@@ -208,9 +220,11 @@ export default gql`
       pollId: String!
       answers: [WorkspacePollAnswerInput]!
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceWithdrawPollVote(
       committeeId: String!
       pollId: String!
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   }
 `;

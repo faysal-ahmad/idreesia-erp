@@ -30,6 +30,8 @@ import { runWithRequestHost } from 'meteor/idreesia-common/server/file-storage';
 import {
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
+  CheckCommitteeAccessDirective,
+  SuperAdminOnlyDirective,
 } from 'meteor/idreesia-common/server/graphql-api/_directives';
 import { Accounts } from 'meteor/accounts-base';
 import {
@@ -61,6 +63,8 @@ if (webServerEnabled) {
 
   schema = CheckPermissionsDirective(schema) as any;
   schema = CheckInstanceAccessDirective(schema) as any;
+  schema = CheckCommitteeAccessDirective(schema) as any;
+  schema = SuperAdminOnlyDirective(schema) as any;
 
   const server = new ApolloServer({
     schema: schema as any,

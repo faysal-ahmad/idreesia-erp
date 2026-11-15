@@ -33,5 +33,6 @@ extend type Query {
     pageIndex: String
     pageSize: String
   ): PagedWorkspaceMonitoringAlertType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 }
 `;

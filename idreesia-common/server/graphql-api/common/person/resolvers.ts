@@ -81,6 +81,12 @@ export default {
       return [];
     },
   },
+  PersonBasicSharedDataType: {
+    imageUrl: (personSharedDataType: PersonSharedDataType) =>
+      getPersonImageUrls(personSharedDataType).imageUrl,
+    imageThumbnailUrl: (personSharedDataType: PersonSharedDataType) =>
+      getPersonImageUrls(personSharedDataType).imageThumbnailUrl,
+  },
   PersonKarkunDataType: {
     city: async (
       personKarkunDataType: PersonKarkunDataType,

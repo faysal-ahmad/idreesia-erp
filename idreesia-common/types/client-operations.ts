@@ -233,11 +233,6 @@ export type WorkspaceTaskInput = {
   title: string;
 };
 
-export type AdminAllPhysicalStoresQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AdminAllPhysicalStoresQuery = { allPhysicalStores: Array<{ _id: string | null, name: string | null, address: string | null } | null> | null };
-
 export type CommonAllCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -252,6 +247,21 @@ export type CommonCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CommonCurrentUserQuery = { currentUser: { _id: string | null, username: string | null, displayName: string | null, isSuperAdmin: boolean | null, permissions: Array<string | null> | null, instances: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null } | null } | null } | null };
+
+export type ReferenceDutyShiftsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ReferenceDutyShiftsQuery = { referenceDutyShifts: Array<{ _id: string | null, dutyId: string | null, name: string | null } | null> | null };
+
+export type ReferenceMsDutiesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ReferenceMsDutiesQuery = { referenceMsDuties: Array<{ _id: string | null, name: string | null } | null> | null };
+
+export type ReferencePhysicalStoresQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ReferencePhysicalStoresQuery = { referencePhysicalStores: Array<{ _id: string | null, name: string | null, address: string | null } | null> | null };
 
 export type SecurityDistinctCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -466,135 +476,6 @@ export type MobileWorkspaceSendDiscussionMessageMutationVariables = Exact<{
 
 
 export type MobileWorkspaceSendDiscussionMessageMutation = { workspaceSendDiscussionMessage: boolean };
-
-export type MobileWorkspaceProjectDiscussionInfoQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-}>;
-
-
-export type MobileWorkspaceProjectDiscussionInfoQuery = { workspaceDiscussionInfo: { canPost: boolean | null, canPin: boolean | null } | null };
-
-export type MobileWorkspaceProjectDiscussionSyncQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  since?: string | null | undefined;
-}>;
-
-
-export type MobileWorkspaceProjectDiscussionSyncQuery = { workspaceDiscussionSync: { deletedIds: Array<string | null> | null, syncedAt: string | null, hasOlder: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
-
-export type MobileWorkspaceProjectDiscussionOlderMessagesQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  before: string;
-}>;
-
-
-export type MobileWorkspaceProjectDiscussionOlderMessagesQuery = { workspaceDiscussionOlderMessages: { hasMore: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
-
-export type MobileWorkspaceProjectDiscussionThreadMessagesQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  threadId: string;
-}>;
-
-
-export type MobileWorkspaceProjectDiscussionThreadMessagesQuery = { workspaceDiscussionThreadMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null };
-
-export type MobileWorkspaceProjectDiscussionMembersQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-}>;
-
-
-export type MobileWorkspaceProjectDiscussionMembersQuery = { workspaceDiscussionMembers: Array<{ username: string | null, name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null };
-
-export type MobileWorkspaceProjectDiscussionPinnedMessagesQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-}>;
-
-
-export type MobileWorkspaceProjectDiscussionPinnedMessagesQuery = { workspaceDiscussionPinnedMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null };
-
-export type MobileWorkspaceProjectDiscussionStarredMessagesQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-}>;
-
-
-export type MobileWorkspaceProjectDiscussionStarredMessagesQuery = { workspaceDiscussionStarredMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null };
-
-export type MobileWorkspaceProjectDiscussionSearchMessagesQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  searchText: string;
-  offset?: number | null | undefined;
-}>;
-
-
-export type MobileWorkspaceProjectDiscussionSearchMessagesQuery = { workspaceDiscussionSearchMessages: { hasMore: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
-
-export type MobileWorkspaceSendProjectDiscussionMessageMutationVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  text: string;
-  threadId?: string | null | undefined;
-}>;
-
-
-export type MobileWorkspaceSendProjectDiscussionMessageMutation = { workspaceSendDiscussionMessage: boolean };
-
-export type MobileWorkspaceReactToProjectDiscussionMessageMutationVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  messageId: string;
-  emoji: string;
-  shouldReact: boolean;
-}>;
-
-
-export type MobileWorkspaceReactToProjectDiscussionMessageMutation = { workspaceReactToDiscussionMessage: boolean };
-
-export type MobileWorkspaceSetProjectDiscussionMessageStarredMutationVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  messageId: string;
-  starred: boolean;
-}>;
-
-
-export type MobileWorkspaceSetProjectDiscussionMessageStarredMutation = { workspaceSetDiscussionMessageStarred: boolean };
-
-export type MobileWorkspaceSetProjectDiscussionMessagePinnedMutationVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  messageId: string;
-  pinned: boolean;
-}>;
-
-
-export type MobileWorkspaceSetProjectDiscussionMessagePinnedMutation = { workspaceSetDiscussionMessagePinned: boolean };
-
-export type MobileWorkspaceEditProjectDiscussionMessageMutationVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  messageId: string;
-  text: string;
-}>;
-
-
-export type MobileWorkspaceEditProjectDiscussionMessageMutation = { workspaceEditDiscussionMessage: boolean };
-
-export type MobileWorkspaceDeleteProjectDiscussionMessageMutationVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  messageId: string;
-}>;
-
-
-export type MobileWorkspaceDeleteProjectDiscussionMessageMutation = { workspaceDeleteDiscussionMessage: boolean };
 
 export type MobileWorkspaceDocumentFolderFieldsFragment = { _id: string | null, name: string | null, parentId: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null };
 
@@ -2015,7 +1896,7 @@ export type AdminPhysicalStoreByIdQueryVariables = Exact<{
 }>;
 
 
-export type AdminPhysicalStoreByIdQuery = { physicalStoreById: { _id: string | null, name: string | null, address: string | null } | null };
+export type AdminPhysicalStoreByIdQuery = { referencePhysicalStoreById: { _id: string | null, name: string | null, address: string | null } | null };
 
 export type CreatePhysicalStoreMutationVariables = Exact<{
   name: string;
@@ -4716,135 +4597,6 @@ export type WorkspaceWithdrawPollVoteMutationVariables = Exact<{
 
 
 export type WorkspaceWithdrawPollVoteMutation = { workspaceWithdrawPollVote: { _id: string | null, title: string | null, description: string | null, status: string | null, anonymous: boolean | null, closesAt: string | null, openedAt: string | null, closedAt: string | null, closedByName: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, voteCount: number | null, isEligible: boolean | null, hasVoted: boolean | null, canSeeResults: boolean | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, questions: Array<{ _id: string | null, text: string | null, description: string | null, type: string | null, required: boolean | null, minChoices: number | null, maxChoices: number | null, options: Array<{ _id: string | null, text: string | null } | null> | null } | null> | null, myAnswers: Array<{ questionId: string | null, optionIds: Array<string | null> | null } | null> | null } | null };
-
-export type WorkspaceProjectDiscussionInfoQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-}>;
-
-
-export type WorkspaceProjectDiscussionInfoQuery = { workspaceProjectDiscussionInfo: { canPost: boolean | null, canPin: boolean | null } | null };
-
-export type WorkspaceProjectDiscussionMembersQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-}>;
-
-
-export type WorkspaceProjectDiscussionMembersQuery = { workspaceProjectDiscussionMembers: Array<{ username: string | null, name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null };
-
-export type WorkspaceProjectDiscussionSyncQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  since?: string | null | undefined;
-}>;
-
-
-export type WorkspaceProjectDiscussionSyncQuery = { workspaceProjectDiscussionSync: { deletedIds: Array<string | null> | null, syncedAt: string | null, hasOlder: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
-
-export type WorkspaceProjectDiscussionThreadMessagesQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  threadId: string;
-}>;
-
-
-export type WorkspaceProjectDiscussionThreadMessagesQuery = { workspaceProjectDiscussionThreadMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null } | null> | null };
-
-export type WorkspaceProjectDiscussionPinnedMessagesQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-}>;
-
-
-export type WorkspaceProjectDiscussionPinnedMessagesQuery = { workspaceProjectDiscussionPinnedMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null } | null> | null };
-
-export type WorkspaceProjectDiscussionStarredMessagesQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-}>;
-
-
-export type WorkspaceProjectDiscussionStarredMessagesQuery = { workspaceProjectDiscussionStarredMessages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null } | null> | null };
-
-export type WorkspaceProjectDiscussionOlderMessagesQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  before: string;
-}>;
-
-
-export type WorkspaceProjectDiscussionOlderMessagesQuery = { workspaceProjectDiscussionOlderMessages: { hasMore: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
-
-export type WorkspaceProjectDiscussionSearchMessagesQueryVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  searchText: string;
-  offset?: number | null | undefined;
-}>;
-
-
-export type WorkspaceProjectDiscussionSearchMessagesQuery = { workspaceProjectDiscussionSearchMessages: { hasMore: boolean | null, messages: Array<{ _id: string | null, text: string | null, sentAt: string | null, senderName: string | null, senderId: string | null, senderImageUrl: string | null, senderImageThumbnailUrl: string | null, isOwn: boolean | null, isSystem: boolean | null, editedAt: string | null, isPinned: boolean | null, isStarred: boolean | null, threadId: string | null, showInMainList: boolean | null, threadReplyCount: number | null, threadLastReplyAt: string | null, attachments: Array<{ kind: string | null, title: string | null, mimeType: string | null, size: number | null, url: string | null } | null> | null, reactions: Array<{ emoji: string | null, count: number | null, usernames: Array<string | null> | null, reactedByMe: boolean | null } | null> | null } | null> | null } | null };
-
-export type WorkspaceSendProjectDiscussionMessageMutationVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  text: string;
-  threadId?: string | null | undefined;
-}>;
-
-
-export type WorkspaceSendProjectDiscussionMessageMutation = { workspaceSendProjectDiscussionMessage: boolean };
-
-export type WorkspaceReactToProjectDiscussionMessageMutationVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  messageId: string;
-  emoji: string;
-  shouldReact: boolean;
-}>;
-
-
-export type WorkspaceReactToProjectDiscussionMessageMutation = { workspaceReactToProjectDiscussionMessage: boolean };
-
-export type WorkspaceSetProjectDiscussionMessageStarredMutationVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  messageId: string;
-  starred: boolean;
-}>;
-
-
-export type WorkspaceSetProjectDiscussionMessageStarredMutation = { workspaceSetProjectDiscussionMessageStarred: boolean };
-
-export type WorkspaceSetProjectDiscussionMessagePinnedMutationVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  messageId: string;
-  pinned: boolean;
-}>;
-
-
-export type WorkspaceSetProjectDiscussionMessagePinnedMutation = { workspaceSetProjectDiscussionMessagePinned: boolean };
-
-export type WorkspaceEditProjectDiscussionMessageMutationVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  messageId: string;
-  text: string;
-}>;
-
-
-export type WorkspaceEditProjectDiscussionMessageMutation = { workspaceEditProjectDiscussionMessage: boolean };
-
-export type WorkspaceDeleteProjectDiscussionMessageMutationVariables = Exact<{
-  committeeId: string;
-  projectId: string;
-  messageId: string;
-}>;
-
-
-export type WorkspaceDeleteProjectDiscussionMessageMutation = { workspaceDeleteProjectDiscussionMessage: boolean };
 
 export type WorkspaceProjectFieldsFragment = { _id: string | null, title: string | null, objective: string | null, description: string | null, status: string | null, participantCount: number | null, isParticipant: boolean | null, canManage: boolean | null, startDate: string | null, targetDate: string | null, isOverdue: boolean | null, taskCount: number | null, doneCount: number | null, openTaskCount: number | null, progress: number | null, tags: Array<string | null> | null, completedAt: string | null, completedByName: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ personId: string | null, name: string | null } | null> | null };
 

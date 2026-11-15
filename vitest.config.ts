@@ -29,6 +29,9 @@ export default defineConfig({
     include: ['idreesia-common/**/*.test.ts'],
     globalSetup: [`${testUtils}/global-setup.ts`],
     setupFiles: [`${testUtils}/setup.ts`],
+    // graphql-tools must load the same copy of `graphql` as the tests do, or
+    // building a directive-wrapped schema fails with "another module or realm".
+    server: { deps: { inline: [/@graphql-tools\//] } },
     testTimeout: 30_000,
     hookTimeout: 120_000,
   },

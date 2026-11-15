@@ -11,9 +11,7 @@ import {
   restoreProjectsWorkspace,
   updateTask,
 } from 'meteor/idreesia-common/server/business-logic/projects';
-import type { ProjectDocument } from 'meteor/idreesia-common/server/collections/projects';
 
-import { archiveProjectChat, removeProjectChatMember, syncProjectChatArchive } from './projects-chat';
 import type { CommitteeDoc, CommitteeFeatureHandler } from './types';
 
 // The committee's projects workspace (deleted ones included), or null when
@@ -33,29 +31,15 @@ const findProjectsWorkspace = async (workspaceId: string, userId: string) => {
 // Recorded as the actor of changes no user made (a member leaving).
 const SYSTEM_USER = 'system';
 
-// Every project of a (live) workspace.
-const allProjects = async (workspaceId: string, userId: string) => {
-  const projects: ProjectDocument[] = [];
-  for (let skip = 0; ; skip += 200) {
-    const page = await listProjects(workspaceId, userId, { skip, limit: 200 });
-    projects.push(...page.data);
-    if (!page.data.length || skip + page.data.length >= page.totalResults) {
-      break;
-    }
-  }
-  return projects;
-};
-
 /**
  * Projects & Tasks: a projects workspace holds the committee's projects and
  * tasks.
  * - Enable restores the committee's previous workspace when it still exists
- *   (with all its projects and tasks, and their chat groups), otherwise
- *   creates a new one.
- * - Disable archives every project's chat group, then soft-deletes the
- *   workspace, keeping everything for a later re-enable.
+ *   (with all its projects and tasks), otherwise creates a new one.
+ * - Disable soft-deletes the workspace, keeping everything for a later
+ *   re-enable.
  * - A member leaving the committee leaves every project: their open tasks are
- *   unassigned, they stop being a participant, and lose chat access.
+ *   unassigned and they stop being a participant.
  */
 export const projectsHandler: CommitteeFeatureHandler = {
   async enable(committee, userId) {
@@ -67,10 +51,6 @@ export const projectsHandler: CommitteeFeatureHandler = {
       if (existing) {
         if (existing.deletedAt) {
           await restoreProjectsWorkspace(existing._id, userId);
-        }
-        // Open projects get their chat back; closed ones stay archived.
-        for (const project of await allProjects(existing._id, userId)) {
-          await syncProjectChatArchive(project);
         }
         return { projectsWorkspaceId: existing._id };
       }
@@ -93,9 +73,6 @@ export const projectsHandler: CommitteeFeatureHandler = {
       userId
     );
     if (existing && !existing.deletedAt) {
-      for (const project of await allProjects(existing._id, userId)) {
-        await archiveProjectChat(project);
-      }
       await deleteProjectsWorkspace(existing._id, userId);
     }
   },
@@ -114,7 +91,6 @@ export const projectsHandler: CommitteeFeatureHandler = {
       });
       if (!projects.data.length) break;
       for (const project of projects.data) {
-        await removeProjectChatMember(project, karkunId);
         await removeProjectParticipant(project._id, karkunId, SYSTEM_USER, {
           unassignTasks: true,
         });

@@ -112,6 +112,7 @@ export default gql`
 
   extend type Query {
     workspaceDocumentsInfo(committeeId: String!): WorkspaceDocumentsInfoType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # A folder (null = root): its path, subfolders and a page of documents.
     workspaceDocumentFolderContents(
       committeeId: String!
@@ -119,10 +120,12 @@ export default gql`
       pageIndex: Int
       pageSize: Int
     ): WorkspaceDocumentFolderContentsType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # Every folder, e.g. for picking where to move something.
     workspaceDocumentFolders(
       committeeId: String!
     ): [WorkspaceDocumentFolderType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # Documents whose name, description or tags match the words.
     workspaceDocumentSearch(
       committeeId: String!
@@ -130,14 +133,17 @@ export default gql`
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspaceDocumentType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     workspaceDocumentById(
       committeeId: String!
       documentId: String!
     ): WorkspaceDocumentType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     workspaceDocumentVersions(
       committeeId: String!
       documentId: String!
     ): [WorkspaceDocumentVersionType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # Newest first; pass the last entry's 'at' as 'before' for the next page.
     workspaceDocumentActivity(
       committeeId: String!
@@ -145,7 +151,9 @@ export default gql`
       before: String
       limit: Int
     ): [WorkspaceDocumentActivityType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     workspaceDocumentTrash(committeeId: String!): WorkspaceDocumentTrashType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   }
 
   extend type Mutation {
@@ -154,20 +162,24 @@ export default gql`
       parentId: String
       name: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceRenameDocumentFolder(
       committeeId: String!
       folderId: String!
       name: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceMoveDocumentFolder(
       committeeId: String!
       folderId: String!
       parentId: String
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceTrashDocumentFolder(
       committeeId: String!
       folderId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
 
     # Starts a direct upload: a new document in folderId, or a new version of
     # documentId. Then PUT the file to the URL and call
@@ -181,14 +193,17 @@ export default gql`
       size: Float!
       comment: String
     ): WorkspaceDocumentUploadType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceCompleteDocumentUpload(
       committeeId: String!
       uploadId: String!
     ): WorkspaceDocumentType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceAbortDocumentUpload(
       committeeId: String!
       uploadId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
 
     workspaceUpdateDocument(
       committeeId: String!
@@ -197,12 +212,15 @@ export default gql`
       description: String
       tags: [String]
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceMoveDocument(
       committeeId: String!
       documentId: String!
       folderId: String
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceTrashDocument(committeeId: String!, documentId: String!): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     # A short-lived link to a version (default: current). A mutation because
     # each download is recorded in the activity log.
     workspaceDocumentDownloadUrl(
@@ -211,18 +229,21 @@ export default gql`
       versionId: String
       inline: Boolean
     ): WorkspaceDocumentDownloadType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 
     workspaceRestoreDocumentVersion(
       committeeId: String!
       documentId: String!
       versionId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     # Coordinators only.
     workspaceDeleteDocumentVersion(
       committeeId: String!
       documentId: String!
       versionId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     # The lock lasts durationMinutes, at most 7 days (10080).
     workspaceCheckOutDocument(
@@ -231,12 +252,15 @@ export default gql`
       durationMinutes: Int!
       note: String
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceCheckInDocument(committeeId: String!, documentId: String!): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     # Coordinators only.
     workspaceForceUnlockDocument(
       committeeId: String!
       documentId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     # Restores a trashed folder or document, under newName if given; with
     # toRoot, at the top level instead of its original folder.
@@ -246,12 +270,15 @@ export default gql`
       newName: String
       toRoot: Boolean
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     # Coordinators only.
     workspacePurgeDocumentTrashItem(
       committeeId: String!
       itemId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
     # Coordinators only. Returns how many items were purged.
     workspaceEmptyDocumentTrash(committeeId: String!): Int
+      @checkCommitteeAccess(roles: [COORDINATOR])
   }
 `;

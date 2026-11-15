@@ -81,6 +81,23 @@ type PersonType {
   deletedBy: String
 }
 
+# The minimal view of a person that other modules' reference data may expose
+# (team members, etc.). Never add contact, address, notes or other sensitive
+# fields here.
+type PersonBasicSharedDataType {
+  name: String
+  cnicNumber: String
+  contactNumber1: String
+  contactNumber2: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PersonBasicType {
+  _id: String
+  sharedData: PersonBasicSharedDataType
+}
+
 input PersonFilter {
   name: String
   cnicNumber: String

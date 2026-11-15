@@ -355,8 +355,19 @@ The Workspaces module uses the DMS through the **Documents** committee feature (
 - Enabling it again restores the same workspace, with its documents.
 
 **Who can do what:**
-- **Coordinators** (and super-admins) also purge items from the trash, empty the trash, delete document versions and force-unlock documents.
-- **Every member** browses, searches, uploads, downloads, checks documents out and in, moves, renames and trashes and restores items, and sees the activity log.
+
+Access depends on the person's role on the committee (coordinator, member, observer, guest). Each GraphQL field declares its roles with `@checkCommitteeAccess(roles: [...])` in `graphql-api/workspaces/documents/documents.ts`; a super-admin counts as a coordinator. `documents-roles.test.ts` checks the schema against this table.
+
+| Operation | Coordinator | Member | Observer | Guest |
+|---|---|---|---|---|
+| Browse, search, view versions, see trash and the activity log, download | Yes | Yes | Yes | No |
+| Create, rename, move and trash folders | Yes | Yes | No | No |
+| Upload, edit, move, trash documents, restore versions and trash items | Yes | Yes | No | No |
+| Check documents out and in | Yes | Yes | No | No |
+| Purge trash items, empty the trash | Yes | No | No | No |
+| Delete document versions, force-unlock documents | Yes | No | No | No |
+
+- Checks that depend on the data, not the role, stay in the code: the committee must have Documents enabled, an id must belong to the committee's workspace, and the DMS enforces check-out locks and unique names.
 - **Notifications** (mobile): the documents folder list has a bell with an unread count. It opens a screen listing the committee's document notifications, newest first. Opening it marks them read, and tapping one opens its document. The web app has no notifications page yet.
 
 ## Integrating another feature

@@ -17,19 +17,10 @@ import type {
 import type { ProjectStatusValue } from 'meteor/idreesia-common/constants/projects';
 
 import { parseTimestamp } from './meetings-actions';
-import {
-  addProjectChatMembers,
-  archiveProjectChat,
-  removeProjectChatMember,
-  syncProjectChatArchive,
-  tryEnsureProjectChatGroup,
-} from './projects-chat';
-import type { CommitteeDoc } from './types';
 
 /*
  * Committee-side project and task changes that take more than one projects
- * module call (keeping the project's chat group and participants in step), or
- * translate the Workspaces API's inputs (timestamps as strings of
+ * module call (making an assignee a participant), or translate the Workspaces API's inputs (timestamps as strings of
  * milliseconds). Callers check access first.
  */
 
@@ -55,28 +46,23 @@ export interface CommitteeTaskInput {
 }
 
 export async function createCommitteeProject(
-  committee: CommitteeDoc,
   workspaceId: string,
   input: CommitteeProjectInput,
   userId: string
 ) {
-  return runInTransaction(async () => {
-    const project = await createProject(
-      {
-        workspaceId,
-        title: input.title,
-        objective: input.objective ?? undefined,
-        description: input.description ?? undefined,
-        participantIds: input.participantIds ?? [],
-        startDate: parseTimestamp(input.startDate),
-        targetDate: parseTimestamp(input.targetDate),
-        tags: input.tags ?? [],
-      },
-      userId
-    );
-    await tryEnsureProjectChatGroup(committee, project, userId);
-    return project;
-  });
+  return createProject(
+    {
+      workspaceId,
+      title: input.title,
+      objective: input.objective ?? undefined,
+      description: input.description ?? undefined,
+      participantIds: input.participantIds ?? [],
+      startDate: parseTimestamp(input.startDate),
+      targetDate: parseTimestamp(input.targetDate),
+      tags: input.tags ?? [],
+    },
+    userId
+  );
 }
 
 /** Saves the edit form. Participants are handled separately. */
@@ -99,62 +85,45 @@ export async function updateCommitteeProject(
   );
 }
 
-/** Changes the status, archiving or reopening the chat group to match. */
+/** Changes the project's status. */
 export async function setCommitteeProjectStatus(
   projectId: string,
   status: ProjectStatusValue,
   force: boolean,
   userId: string
 ) {
-  return runInTransaction(async () => {
-    const project = await setProjectStatus(projectId, status, userId, { force });
-    await syncProjectChatArchive(project);
-    return project;
-  });
+  return setProjectStatus(projectId, status, userId, { force });
 }
 
-/** Archives the chat group (its history is kept), then deletes the project. */
+/** Deletes the project. */
 export async function deleteCommitteeProject(
   project: ProjectDocument,
   options: DeleteProjectOptions,
   userId: string
 ) {
-  return runInTransaction(async () => {
-    await archiveProjectChat(project);
-    await deleteProject(project._id, userId, options);
-  });
+  return deleteProject(project._id, userId, options);
 }
 
-/** Adds participants and gives them access to the project's chat. */
+/** Adds participants. */
 export async function addCommitteeProjectParticipants(
   project: ProjectDocument,
   personIds: string[],
   userId: string
 ) {
-  return runInTransaction(async () => {
-    const added = personIds.filter(id => !project.participantIds.includes(id));
-    if (!added.length) return project;
-    // Chat first, so a chat failure leaves the project unchanged.
-    await addProjectChatMembers(project, added);
-    return addProjectParticipants(project._id, added, userId);
-  });
+  const added = personIds.filter(id => !project.participantIds.includes(id));
+  if (!added.length) return project;
+  return addProjectParticipants(project._id, added, userId);
 }
 
-/** Removes a participant and their access to the project's chat. */
+/** Removes a participant. */
 export async function removeCommitteeProjectParticipant(
   project: ProjectDocument,
   personId: string,
   unassignTasks: boolean,
   userId: string
 ) {
-  return runInTransaction(async () => {
-    // The module refuses to remove a person with open tasks; make sure it
-    // will accept before touching chat.
-    const updated = await removeProjectParticipant(project._id, personId, userId, {
-      unassignTasks,
-    });
-    await removeProjectChatMember(project, personId);
-    return updated;
+  return removeProjectParticipant(project._id, personId, userId, {
+    unassignTasks,
   });
 }
 

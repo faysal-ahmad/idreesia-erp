@@ -306,9 +306,21 @@ The Workspaces module uses meetings through the **Meetings** committee feature (
 - Enabling it again restores the same workspace, with its meetings.
 
 **Who can do what:**
-- **Coordinators** (and super-admins) schedule, edit, cancel, complete, reopen and delete meetings, set participants and their roles, mark attendance, and manage the agenda, minutes, attachments and action items.
-- **Members** see the committee's meetings, agenda, minutes, attachments (and can download them), action items and activity. A participant answers the invitation for themselves; a coordinator can answer for anyone.
-- An action item's **assignee** (or a coordinator) changes its status.
+
+Access depends on the person's role on the committee (coordinator, member, observer, guest). Each GraphQL field declares its roles with `@checkCommitteeAccess(roles: [...])` in `graphql-api/workspaces/meetings/meetings.ts`; a super-admin counts as a coordinator. `meetings-roles.test.ts` checks the schema against this table.
+
+| Operation | Coordinator | Member | Observer | Guest |
+|---|---|---|---|---|
+| See meetings, agenda, minutes, attachments (and download them), action items | Yes | Yes | Yes | Only meetings they are invited to |
+| See the committee's member list and the activity log | Yes | Yes | Yes | No |
+| Answer an invitation | For anyone | For themselves | No | For themselves, in meetings they are invited to |
+| Change an action item's status | Yes | If assignee | No | If assignee, in meetings they are invited to |
+| Schedule, edit, cancel, complete, reopen, delete meetings | Yes | No | No | No |
+| Set participants and their roles, mark attendance | Yes | No | No | No |
+| Manage agenda, minutes, attachments, create/edit/delete action items | Yes | No | No | No |
+
+- A **guest** only ever sees the meetings they are invited to, in lists and by id (any other meeting is "not found"), and the same goes for those meetings' attachments and action items. In those meetings they can do what a member can. This is checked in the resolvers (`workspaces/meetings/access.ts`), because it depends on the meeting's participant list, not just on the role.
+- Checks that depend on the data, not the role, also stay in the code: the committee must have Meetings enabled, an id must belong to the committee's workspace, and participants, presenters and assignees must be committee members.
 - **Notifications** (mobile): the meetings list has a bell with an unread count. It opens a screen listing the committee's meeting notifications, newest first. Opening it marks them read, and tapping one opens its meeting. The web app has no notifications page yet.
 
 ## Integrating another feature

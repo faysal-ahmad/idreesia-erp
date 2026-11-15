@@ -40,7 +40,7 @@ const authenticate = Meteor.bindEnvironment(
     }
 
     // Same rule as GraphQL's @checkPermissions: hasOnePermission lets
-    // erp-admin through and refuses other locked users.
+    // super-admins through and refuses locked users.
     if (
       !hasOnePermission(user, [
         Permissions.CORRESPONDENCE_INBOX_VIEW_MESSAGES,

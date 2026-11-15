@@ -15,7 +15,9 @@ type MehfilLangarLocationType {
 
 extend type Query {	
   allSecurityMehfilLangarLocations: [MehfilLangarLocationType]	
+    @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
   securityMehfilLangarLocationById(id: String!): MehfilLangarLocationType	
+    @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
 }	
 
 extend type Mutation {	

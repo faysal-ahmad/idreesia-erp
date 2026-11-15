@@ -1,6 +1,6 @@
 import { getWorkspaceMonitoringAlerts } from 'meteor/idreesia-common/server/business-logic/hr/committee';
 
-import { assertCanViewMonitoringAlerts } from './access';
+import { assertMonitoringAlertsEnabled } from './access';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -12,9 +12,9 @@ const resolvers: ResolverMap = {
     workspaceMonitoringAlerts: async (
       obj,
       { committeeId, ...filter },
-      { user }
+      context
     ) => {
-      await assertCanViewMonitoringAlerts(user, committeeId);
+      assertMonitoringAlertsEnabled(context, committeeId);
       return getWorkspaceMonitoringAlerts(filter);
     },
   },

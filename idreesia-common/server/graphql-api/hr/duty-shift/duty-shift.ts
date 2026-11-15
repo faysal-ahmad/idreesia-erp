@@ -19,6 +19,7 @@ type DutyShiftType {
 
 extend type Query {
   allDutyShifts: [DutyShiftType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 extend type Mutation {

@@ -9,8 +9,7 @@ import {
   uploadConversationFile,
   MAX_CONVERSATION_FILE_SIZE,
 } from 'meteor/idreesia-common/server/business-logic/rocket-chat';
-import { getMemberCommitteeChatGroupId } from 'meteor/idreesia-common/server/graphql-api/workspaces/discussions/access';
-import { getProjectChatAccess } from 'meteor/idreesia-common/server/graphql-api/workspaces/projects/access';
+import { getReaderCommitteeChatGroupId } from 'meteor/idreesia-common/server/graphql-api/workspaces/discussions/access';
 
 import { getUser } from './get-user';
 import { noticeError } from './newrelic';
@@ -20,8 +19,8 @@ import { noticeError } from './newrelic';
  * in Rocket.Chat, which the browser can't reach, so they go through here
  * with the Meteor login token in the Authorization header.
  *
- * Like the GraphQL resolvers, these routes only check access (committee
- * membership + Discussions enabled); the discussions business logic does
+ * Like the GraphQL resolvers, these routes only check access (the
+ * committee role + Discussions enabled); the discussions business logic does
  * the rest.
  */
 
@@ -70,9 +69,8 @@ const authenticate = Meteor.bindEnvironment(
   }
 );
 
-// Resolves the chat group after checking the user may take part: the
-// committee's discussion, or - on the project routes - a project's private
-// chat (participants only).
+// Resolves the committee's chat group after checking the user's role may
+// read the discussion.
 const authorize = async (req: RequestWithUser) => {
   const committeeId = String(req.params.committeeId ?? '');
   if (!ID_PATTERN.test(committeeId)) {
@@ -80,17 +78,7 @@ const authorize = async (req: RequestWithUser) => {
       extensions: { code: 'BAD_USER_INPUT' },
     });
   }
-  if (req.params.projectId !== undefined) {
-    const projectId = String(req.params.projectId);
-    if (!ID_PATTERN.test(projectId)) {
-      throw new GraphQLError('Invalid project.', {
-        extensions: { code: 'BAD_USER_INPUT' },
-      });
-    }
-    return (await getProjectChatAccess(req.erpUser, committeeId, projectId))
-      .chatGroupId;
-  }
-  return getMemberCommitteeChatGroupId(req.erpUser, committeeId);
+  return getReaderCommitteeChatGroupId(req.erpUser, committeeId);
 };
 
 const PASSTHROUGH_HEADERS = ['content-type', 'content-length', 'last-modified'];
@@ -210,15 +198,5 @@ export const createWorkspaceDiscussionRouter = () => {
     streamFile
   );
   router.post('/committees/:committeeId/discussions/files', receiveFile, uploadFile);
-  // A project's private chat.
-  router.get(
-    '/committees/:committeeId/projects/:projectId/discussions/files/:fileId/:fileName',
-    streamFile
-  );
-  router.post(
-    '/committees/:committeeId/projects/:projectId/discussions/files',
-    receiveFile,
-    uploadFile
-  );
   return router;
 };

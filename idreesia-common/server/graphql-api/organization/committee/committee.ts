@@ -6,7 +6,7 @@ type CommitteeMemberType {
   # member, coordinator, guest or observer.
   role: String
   isCoordinator: Boolean
-  karkun: PersonType
+  karkun: PersonBasicType
   # The person has an ERP user.
   hasLoginAccount: Boolean
   # That user has a chat account.
@@ -26,6 +26,15 @@ type CommitteeFeatureType {
 type CommitteeMembersPageType {
   totalResults: Int
   data: [CommitteeMemberType]
+}
+
+# The minimal view of a committee that other modules' data may expose (e.g. a
+# duty's committee). No members or other nested objects.
+type CommitteeBasicType {
+  _id: String
+  name: String
+  color: String
+  description: String
 }
 
 type CommitteeType {

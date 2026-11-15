@@ -16,7 +16,10 @@ import {
   hasInstanceAccess,
   hasOnePermission,
 } from 'meteor/idreesia-common/server/graphql-api/security';
-import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
+import {
+  assertCanViewAttachment,
+  canUploadAttachment,
+} from 'meteor/idreesia-common/server/graphql-api/common/attachment/access';
 import {
   createStoredAttachment,
   getAttachmentDownloadUrl,
@@ -36,6 +39,9 @@ import {
   exportPurchaseForms,
   exportStockAdjustmentForms,
   exportStockItems,
+  getIssuanceFormStoreIds,
+  getPurchaseFormStoreIds,
+  getStockAdjustmentStoreIds,
 } from 'meteor/idreesia-common/server/business-logic/inventory';
 
 import { createSecurityServerRouter } from './setup-security-server-endpoints';
@@ -52,6 +58,7 @@ interface RestUser {
   _id: string;
   username?: string;
   locked?: boolean;
+  isSuperAdmin?: boolean;
   permissions?: string[];
   instances?: string[];
 }
@@ -66,11 +73,15 @@ interface ReportGenerator {
   // Reports whose argument is a physical store id also need access to that
   // store, like @checkInstanceAccess on the store's GraphQL queries.
   argIsPhysicalStoreId?: boolean;
+  // Reports whose argument is a list of form ids also need access to the
+  // store of every one of those forms.
+  storeIdsOf?(reportArgs: string): Promise<string[]>;
 }
 
 const ReportGenerators: Record<string, ReportGenerator> = {
   IssuanceForms: {
     generate: exportIsssuanceForms,
+    storeIdsOf: getIssuanceFormStoreIds,
     permissions: [
       Permissions.IN_VIEW_ISSUANCE_FORMS,
       Permissions.IN_MANAGE_ISSUANCE_FORMS,
@@ -79,6 +90,7 @@ const ReportGenerators: Record<string, ReportGenerator> = {
   },
   PurchaseForms: {
     generate: exportPurchaseForms,
+    storeIdsOf: getPurchaseFormStoreIds,
     permissions: [
       Permissions.IN_VIEW_PURCHASE_FORMS,
       Permissions.IN_MANAGE_PURCHASE_FORMS,
@@ -87,6 +99,7 @@ const ReportGenerators: Record<string, ReportGenerator> = {
   },
   StockAdjustments: {
     generate: exportStockAdjustmentForms,
+    storeIdsOf: getStockAdjustmentStoreIds,
     permissions: [
       Permissions.IN_VIEW_STOCK_ADJUSTMENTS,
       Permissions.IN_MANAGE_STOCK_ADJUSTMENTS,
@@ -238,10 +251,14 @@ export function setupRestEndpoints() {
           ? String(reportArgs[0] ?? '')
           : String(reportArgs ?? '');
         if (reportGenerator) {
+          const storeIds = reportGenerator.storeIdsOf
+            ? await reportGenerator.storeIdsOf(normalizedReportArgs)
+            : [];
           if (
             !hasOnePermission(user, reportGenerator.permissions) ||
             (reportGenerator.argIsPhysicalStoreId &&
-              !hasInstanceAccess(user, normalizedReportArgs))
+              !hasInstanceAccess(user, normalizedReportArgs)) ||
+            storeIds.some(storeId => !hasInstanceAccess(user, storeId))
           ) {
             res.status(403).json({ error: 'Not authorized.' });
             return;
@@ -271,10 +288,18 @@ export function setupRestEndpoints() {
       requireLogin,
       bodyParser.urlencoded({ extended: false }),
       Meteor.bindEnvironment(async (req: Request, res: Response) => {
+        const { user } = req as RequestWithUser;
         const { attachmentId } = req.query;
-        if (typeof attachmentId === 'string') {
-          const attachment = await Attachments.findOneAsync(attachmentId);
-          if (attachment?.fileKey) {
+        if (typeof attachmentId !== 'string') {
+          res.writeHead(404);
+          res.end();
+          return;
+        }
+        try {
+          // The user needs the permission of the feature the attachment
+          // belongs to, and access to the store of the form that holds it.
+          const attachment = await assertCanViewAttachment(user, attachmentId);
+          if (attachment.fileKey) {
             // Stored privately in object storage: hand out a short-lived
             // presigned URL rather than streaming it through this server.
             res.redirect(302, await getAttachmentDownloadUrl(attachment.fileKey));
@@ -282,9 +307,16 @@ export function setupRestEndpoints() {
             res.writeHead(404);
             res.end();
           }
-        } else {
-          res.writeHead(404);
-          res.end();
+        } catch (error) {
+          const code = (error as { extensions?: { code?: string } }).extensions?.code;
+          if (code === 'FORBIDDEN') {
+            res.status(403).json({ error: 'Not authorized.' });
+          } else if (code === 'NOT_FOUND') {
+            res.writeHead(404);
+            res.end();
+          } else {
+            throw error;
+          }
         }
       })
     );
@@ -307,6 +339,11 @@ export function setupRestEndpoints() {
           res.end('A file and a valid attachment category are required.');
           return;
         }
+        if (!canUploadAttachment((req as RequestWithUser).user, category)) {
+          res.writeHead(403);
+          res.end('Not authorized.');
+          return;
+        }
         // The stored type is what object storage serves the file as, so
         // only accept types a browser won't run as a page (no HTML or SVG).
         if (!isAllowedAttachmentMimeType(file.mimetype)) {
@@ -319,6 +356,7 @@ export function setupRestEndpoints() {
           name: file.originalname,
           mimeType: file.mimetype,
           body: file.buffer,
+          createdBy: (req as RequestWithUser).user._id,
         });
         res.writeHead(200);
         res.end(attachmentId);
@@ -436,7 +474,11 @@ export function setupRestEndpoints() {
           );
           return;
         }
-        // Same rule as /upload-file.
+        // Same rules as /upload-file.
+        if (!canUploadAttachment((req as RequestWithUser).user, category)) {
+          res.status(403).send(JSON.stringify({ error: 'Not authorized.' }));
+          return;
+        }
         if (!isAllowedAttachmentMimeType(mimeType)) {
           res.status(400).send(
             JSON.stringify({ error: 'This type of file is not allowed.' })
@@ -448,6 +490,7 @@ export function setupRestEndpoints() {
           name,
           mimeType,
           body: Buffer.from(data, 'base64'),
+          createdBy: (req as RequestWithUser).user._id,
         });
         res.send(JSON.stringify({ attachmentId }));
       })

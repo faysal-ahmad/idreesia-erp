@@ -12,9 +12,9 @@ type PhysicalStore {
 }
 
 extend type Query {
-  allPhysicalStores: [PhysicalStore]
   allAccessiblePhysicalStores: [PhysicalStore]
   physicalStoreById(id: String!): PhysicalStore
+    @checkInstanceAccess(instanceIdArgName: "id", returnType: "object")
 }
 
 extend type Mutation {

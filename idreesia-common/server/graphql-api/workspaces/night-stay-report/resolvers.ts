@@ -4,7 +4,7 @@ import {
   getNightStays,
 } from 'meteor/idreesia-common/server/business-logic/hr/committee';
 
-import { assertCanViewNightStayReport } from './access';
+import { assertNightStayReportEnabled } from './access';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -22,14 +22,14 @@ const resolvers: ResolverMap = {
     workspaceNightStays: async (
       obj,
       { committeeId, ...filter },
-      { user }
+      context
     ) => {
-      await assertCanViewNightStayReport(user, committeeId);
+      assertNightStayReportEnabled(context, committeeId);
       return getNightStays(filter);
     },
 
-    workspaceNightStayById: async (obj, { committeeId, stayId }, { user }) => {
-      await assertCanViewNightStayReport(user, committeeId);
+    workspaceNightStayById: async (obj, { committeeId, stayId }, context) => {
+      assertNightStayReportEnabled(context, committeeId);
       return getNightStayById(stayId);
     },
   },

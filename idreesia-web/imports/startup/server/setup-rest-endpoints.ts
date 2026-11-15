@@ -23,11 +23,10 @@ import {
   isAttachmentCategory,
 } from 'meteor/idreesia-common/server/business-logic/common/stored-attachments';
 import {
-  AttemptKind,
-  clearAttempts,
+  clearLoginAttempts,
   consumeTwoFactorCode,
   isTwoFactorEnabled,
-  reserveAttempt,
+  reserveLoginAttempt,
   TOO_MANY_ATTEMPTS_ERROR,
 } from 'meteor/idreesia-common/server/business-logic/admin';
 import { exportKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/karkuns-exporter';
@@ -42,8 +41,10 @@ import {
 import { createSecurityServerRouter } from './setup-security-server-endpoints';
 import { createCorrespondenceRouter } from './setup-correspondence-endpoints';
 import { createWorkspaceDiscussionRouter } from './setup-workspace-discussion-endpoints';
+import { createDiagnosticsRouter } from './setup-diagnostics-endpoints';
 import { getBrowserMonitoringConfig } from './newrelic';
 import { ACCOUNT_LOCKED_MESSAGE, isAccountLocked } from './account-lock';
+import { getClientAddress, getThrottleAddress } from './client-address';
 import { getUser } from './get-user';
 import { limitRequests, limitUploads } from './rate-limits';
 
@@ -177,7 +178,8 @@ export function setupRestEndpoints() {
     const uploadSingleFile = upload.single('file');
 
     // Request rate limits (rate-limits.ts) for every endpoint below except
-    // the security server's push endpoints. Registered by method so that
+    // the security server's push endpoints (unlimited) and diagnostics
+    // (limited by its own router). Registered by method so that
     // page loads of the same paths (served by Meteor) aren't counted.
     app.get(['/generate-report', '/download-file'], limitRequests);
     app.get('/api/monitoring-config', limitRequests);
@@ -354,7 +356,8 @@ export function setupRestEndpoints() {
         // Counted before the password is checked, and refused before it is,
         // so a blocked attempt doesn't reveal whether the password was right.
         // Same throttle as the Meteor password login (login-throttle.ts).
-        if (!(await reserveAttempt(user._id, AttemptKind.LOGIN))) {
+        const clientAddress = getThrottleAddress(getClientAddress(req));
+        if (!(await reserveLoginAttempt(user._id, clientAddress))) {
           res.writeHead(429, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: TOO_MANY_ATTEMPTS_ERROR }));
           return;
@@ -397,7 +400,7 @@ export function setupRestEndpoints() {
           }
         }
 
-        await clearAttempts(userId, AttemptKind.LOGIN);
+        await clearLoginAttempts(userId, clientAddress);
 
         const stampedLoginToken = AccountsPrivate._generateStampedLoginToken();
         await AccountsPrivate._insertLoginToken(userId, stampedLoginToken);
@@ -479,6 +482,13 @@ export function setupRestEndpoints() {
      * Files of committee discussions in Workspaces (stored in Rocket.Chat)
      */
     app.use('/api/workspaces', createWorkspaceDiscussionRouter());
+
+    /**
+     * Echo of the request as received, for checking the proxy chain and
+     * HTTP_FORWARDED_COUNT (docs/request-diagnostics.md). Rate limited by
+     * its own router.
+     */
+    app.use('/api/diagnostics', createDiagnosticsRouter());
 
     WebApp.connectHandlers.use(app as any);
   });

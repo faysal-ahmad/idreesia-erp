@@ -35,9 +35,14 @@ export {
 export {
   AttemptKind,
   clearAttempts,
+  clearLoginAttempts,
+  clearLoginBlocks,
+  getLoginBlockStatus,
   reserveAttempt,
+  reserveLoginAttempt,
   TOO_MANY_ATTEMPTS_ERROR,
   TOO_MANY_ATTEMPTS_MESSAGE,
   type AttemptKindValue,
+  type LoginBlockStatus,
 } from './login-attempts';
 export { registerUser } from './register-user';

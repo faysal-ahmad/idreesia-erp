@@ -18,6 +18,11 @@ type UserType {
   hasChatAccount: Boolean
   twoFactorEnabled: Boolean
   isSuperAdmin: Boolean
+  # Addresses currently blocked from logging in after failed attempts.
+  loginBlockedAddresses: Int
+  # Too many failed attempts across addresses: only addresses the user has
+  # logged in from before may try.
+  untrustedLoginAddressesBlocked: Boolean
 
   person: PersonType
   karkun: PersonType
@@ -95,6 +100,11 @@ extend type Mutation {
   disableTwoFactor(code: String!): UserType
 
   resetTwoFactor(
+    userId: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  # Lifts the blocks failed login attempts put on the user's account.
+  clearLoginBlocks(
     userId: String!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 

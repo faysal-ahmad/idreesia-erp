@@ -29,6 +29,7 @@ import {
   CREATE_CHAT_ACCOUNT,
   RESET_TWO_FACTOR,
   SET_SUPER_ADMIN,
+  CLEAR_LOGIN_BLOCKS,
 } from '../gql';
 
 interface Props {
@@ -69,6 +70,9 @@ const GeneralInfo = ({ userId, history }: Props) => {
     {
       refetchQueries: [{ query: PAGED_USERS, variables: { filter: {} } }],
     }
+  );
+  const [clearLoginBlocks, { loading: clearingLoginBlocks }] = useMutation(
+    CLEAR_LOGIN_BLOCKS
   );
   const [setSuperAdmin, { loading: settingSuperAdmin }] = useMutation(
     SET_SUPER_ADMIN,
@@ -139,6 +143,18 @@ const GeneralInfo = ({ userId, history }: Props) => {
       });
   };
 
+  // For a user kept locked out by failed login attempts, e.g. someone else
+  // trying wrong passwords on their account.
+  const handleClearLoginBlocks = () => {
+    clearLoginBlocks({ variables: { userId: userById?._id ?? userId } })
+      .then(() => {
+        message.success('Login blocks cleared', 2);
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
+  };
+
   const handleSetSuperAdmin = (isSuperAdmin: boolean) => {
     setSuperAdmin({
       variables: { userId: userById?._id ?? userId, isSuperAdmin },
@@ -199,6 +215,33 @@ const GeneralInfo = ({ userId, history }: Props) => {
     </Popconfirm>
   ) : null;
 
+  const blockedAddresses = userById.loginBlockedAddresses ?? 0;
+  const isLoginBlocked =
+    blockedAddresses > 0 || !!userById.untrustedLoginAddressesBlocked;
+  const loginBlockStatus = [
+    blockedAddresses > 0
+      ? `Blocked from ${blockedAddresses} ${blockedAddresses === 1 ? 'address' : 'addresses'}`
+      : null,
+    userById.untrustedLoginAddressesBlocked
+      ? 'Only addresses used before can log in (too many failed attempts)'
+      : null,
+  ]
+    .filter(Boolean)
+    .join('. ');
+
+  const clearLoginBlocksButton = isLoginBlocked ? (
+    <Popconfirm
+      title="Clear this user's login blocks?"
+      description="Failed login attempts will no longer block any address."
+      okText="Clear"
+      onConfirm={handleClearLoginBlocks}
+    >
+      <Button size="large" loading={clearingLoginBlocks}>
+        Clear Login Blocks
+      </Button>
+    </Popconfirm>
+  ) : null;
+
   // Only a super admin can grant or revoke super admin rights, and only to a
   // user who has two-factor authentication enabled and is not locked.
   let superAdminButton: React.ReactNode = null;
@@ -246,10 +289,14 @@ const GeneralInfo = ({ userId, history }: Props) => {
   }
 
   const extraButtons =
-    createChatAccountButton || resetTwoFactorButton || superAdminButton ? (
+    createChatAccountButton ||
+    resetTwoFactorButton ||
+    clearLoginBlocksButton ||
+    superAdminButton ? (
       <Space>
         {createChatAccountButton}
         {resetTwoFactorButton}
+        {clearLoginBlocksButton}
         {superAdminButton}
       </Space>
     ) : null;
@@ -295,6 +342,14 @@ const GeneralInfo = ({ userId, history }: Props) => {
           wrapperCol={{ span: 14 }}
         >
           {userById.twoFactorEnabled ? 'Enabled' : 'Not enabled'}
+        </Form.Item>
+
+        <Form.Item
+          label="Login"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
+        >
+          {isLoginBlocked ? loginBlockStatus : 'Not blocked'}
         </Form.Item>
 
         <Form.Item

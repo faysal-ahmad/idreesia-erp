@@ -2,19 +2,20 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { TwoFactorErrorCode } from 'meteor/idreesia-common/constants';
 import {
-  AttemptKind,
-  clearAttempts,
+  clearLoginAttempts,
   consumeTwoFactorCode,
   isTwoFactorEnabled,
-  reserveAttempt,
+  reserveLoginAttempt,
   TOO_MANY_ATTEMPTS_ERROR,
   TOO_MANY_ATTEMPTS_MESSAGE,
 } from 'meteor/idreesia-common/server/business-logic/admin';
 import type { AppUser } from 'meteor/idreesia-common/server/collections/admin';
 
-// Throttles the Meteor password login (web and mobile) per account, and makes
-// its two-factor codes single-use, the same as the REST /login endpoint does
-// (setup-rest-endpoints.ts). Meteor's own rate limit on the login method is
+import { getThrottleAddress } from './client-address';
+
+// Throttles the Meteor password login (web and mobile) per account and client
+// address (login-attempts.ts), and makes its two-factor codes single-use, the
+// same as the REST /login endpoint does (setup-rest-endpoints.ts). Meteor's own rate limit on the login method is
 // per connection, so a client that reconnects gets around it.
 //
 // Login hooks (validateLoginAttempt, onLoginFailure) are synchronous and
@@ -34,6 +35,12 @@ interface PasswordLoginOptions extends Record<string, unknown> {
   user?: unknown;
   password?: unknown;
   code?: unknown;
+}
+
+// The method invocation login handlers run as. clientAddress comes from
+// X-Forwarded-For and HTTP_FORWARDED_COUNT (see client-address.ts).
+interface LoginInvocation {
+  connection?: { clientAddress?: string | null } | null;
 }
 
 interface LoginResult {
@@ -84,7 +91,10 @@ passwordHandler.handler = wrapFn(async function throttledPasswordLogin(
   });
   if (!user) return checkPassword.call(this, options);
 
-  if (!(await reserveAttempt(user._id, AttemptKind.LOGIN))) {
+  const clientAddress = getThrottleAddress(
+    (this as LoginInvocation | undefined)?.connection?.clientAddress
+  );
+  if (!(await reserveLoginAttempt(user._id, clientAddress))) {
     throw new Meteor.Error(TOO_MANY_ATTEMPTS_ERROR, TOO_MANY_ATTEMPTS_MESSAGE);
   }
 
@@ -107,6 +117,6 @@ passwordHandler.handler = wrapFn(async function throttledPasswordLogin(
     );
   }
 
-  await clearAttempts(user._id, AttemptKind.LOGIN);
+  await clearLoginAttempts(user._id, clientAddress);
   return result;
 }) as LoginHandler['handler'];

@@ -7,3 +7,4 @@ export { default as SET_INSTANCE_ACCESS } from './set-instant-access';
 export { default as CREATE_CHAT_ACCOUNT } from './create-chat-account';
 export { default as RESET_TWO_FACTOR } from './reset-two-factor';
 export { default as SET_SUPER_ADMIN } from './set-super-admin';
+export { default as CLEAR_LOGIN_BLOCKS } from './clear-login-blocks';

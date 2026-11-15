@@ -5,11 +5,13 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 import { DataSource } from 'meteor/idreesia-common/constants';
 import { ChatError } from 'meteor/idreesia-common/server/chat';
 import {
+  clearLoginBlocks,
   createChatAccount,
   createUser,
   disableTwoFactor,
   enableTwoFactor,
   findOneUser,
+  getLoginBlockStatus,
   recordUserLogin,
   registerUser,
   resetTwoFactor,
@@ -68,6 +70,10 @@ function requireUser(user: ResolverContext['user']) {
 export default {
   UserType: {
     hasChatAccount: (userType: UserType) => !!userType.chatUserId,
+    loginBlockedAddresses: async (userType: UserType) =>
+      (await getLoginBlockStatus(userType._id)).blockedAddresses,
+    untrustedLoginAddressesBlocked: async (userType: UserType) =>
+      (await getLoginBlockStatus(userType._id)).untrustedAddressesBlocked,
 
     person: async (userType: UserType) => {
       if (!userType.personId) return null;
@@ -216,6 +222,12 @@ export default {
       params: { userId: string },
       { user }: ResolverContext
     ) => resetTwoFactor(params, requireUser(user), DataSource.ADMIN),
+
+    clearLoginBlocks: async (
+      _obj: unknown,
+      params: { userId: string },
+      { user }: ResolverContext
+    ) => clearLoginBlocks(params, requireUser(user), DataSource.ADMIN),
 
     setSuperAdmin: async (
       _obj: unknown,

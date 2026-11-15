@@ -652,6 +652,7 @@ export type Mutation = {
   approveStockAdjustments?: Maybe<Array<Maybe<StockAdjustment>>>;
   cancelVisitorStay?: Maybe<VisitorStayType>;
   clearJobDefinitionSchedule?: Maybe<JobDefinitionType>;
+  clearLoginBlocks?: Maybe<UserType>;
   createChatAccount?: Maybe<UserType>;
   createCity?: Maybe<CityType>;
   createCityMehfil?: Maybe<CityMehfilType>;
@@ -967,6 +968,11 @@ export type MutationCancelVisitorStayArgs = {
 
 export type MutationClearJobDefinitionScheduleArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type MutationClearLoginBlocksArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -4321,10 +4327,12 @@ export type UserType = {
   lastActiveAt?: Maybe<Scalars['String']['output']>;
   lastLoggedInAt?: Maybe<Scalars['String']['output']>;
   locked?: Maybe<Scalars['Boolean']['output']>;
+  loginBlockedAddresses?: Maybe<Scalars['Int']['output']>;
   permissions?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   person?: Maybe<PersonType>;
   personId?: Maybe<Scalars['String']['output']>;
   twoFactorEnabled?: Maybe<Scalars['Boolean']['output']>;
+  untrustedLoginAddressesBlocked?: Maybe<Scalars['Boolean']['output']>;
   username?: Maybe<Scalars['String']['output']>;
 };
 

@@ -12,6 +12,7 @@ const SecurityOperationType = {
   TWO_FACTOR_RESET: 'two-factor-reset',
   SUPER_ADMIN_GRANTED: 'super-admin-granted',
   SUPER_ADMIN_REVOKED: 'super-admin-revoked',
+  LOGIN_BLOCKS_CLEARED: 'login-blocks-cleared',
 
   LOGIN: 'login',
   INVALID_LOGIN_ATTEMPT: 'invalid-login-attempt',

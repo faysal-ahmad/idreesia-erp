@@ -1046,6 +1046,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   approveStockAdjustments?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StockAdjustment']>>>, ParentType, ContextType, RequireFields<Types.MutationApproveStockAdjustmentsArgs, '_ids' | 'physicalStoreId'>>;
   cancelVisitorStay?: Resolver<Types.Maybe<ResolversTypes['VisitorStayType']>, ParentType, ContextType, RequireFields<Types.MutationCancelVisitorStayArgs, '_id'>>;
   clearJobDefinitionSchedule?: Resolver<Types.Maybe<ResolversTypes['JobDefinitionType']>, ParentType, ContextType, RequireFields<Types.MutationClearJobDefinitionScheduleArgs, '_id'>>;
+  clearLoginBlocks?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationClearLoginBlocksArgs, 'userId'>>;
   createChatAccount?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationCreateChatAccountArgs, 'userId'>>;
   createCity?: Resolver<Types.Maybe<ResolversTypes['CityType']>, ParentType, ContextType, RequireFields<Types.MutationCreateCityArgs, 'country' | 'name'>>;
   createCityMehfil?: Resolver<Types.Maybe<ResolversTypes['CityMehfilType']>, ParentType, ContextType, RequireFields<Types.MutationCreateCityMehfilArgs, 'cityId' | 'name'>>;
@@ -2052,10 +2053,12 @@ export type UserTypeResolvers<ContextType = any, ParentType extends ResolversPar
   lastActiveAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastLoggedInAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   locked?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  loginBlockedAddresses?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   permissions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   person?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType>;
   personId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   twoFactorEnabled?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  untrustedLoginAddressesBlocked?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   username?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 

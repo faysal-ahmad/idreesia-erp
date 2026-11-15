@@ -3,8 +3,6 @@ import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { PeopleTags } from 'meteor/idreesia-common/server/collections/admin';
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 
 type Loader = DataLoader<string, unknown>;
@@ -162,14 +160,6 @@ export default {
       { existingSpelling, newSpelling }: FixCitySpellingArgs,
       { user }: ResolverContext
     ) => {
-      if (
-        !hasOnePermission(user, [PermissionConstants.SECURITY_MANAGE_VISITORS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
       // If a city matching the existing spellings is present in the outstation
       // cities list, then do not allow updating the spellings.
       const outstationCity = await Cities.findOneAsync({

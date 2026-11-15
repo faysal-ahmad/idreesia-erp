@@ -108,5 +108,6 @@ extend type Query {
 
 extend type Mutation {
   fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
+    @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 }
 `;

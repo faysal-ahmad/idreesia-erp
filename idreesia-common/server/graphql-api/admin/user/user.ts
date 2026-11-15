@@ -16,9 +16,16 @@ type UserType {
   instances: [String]
   groups: [String]
   hasChatAccount: Boolean
+  twoFactorEnabled: Boolean
 
   person: PersonType
   karkun: PersonType
+}
+
+type TwoFactorSetupType {
+  qrCodeSvg: String
+  secret: String
+  uri: String
 }
 
 type PagedUserType {
@@ -78,6 +85,15 @@ extend type Mutation {
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   createChatAccount(
+    userId: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+
+  # Two-factor authentication for the logged-in user's own account.
+  startTwoFactorSetup: TwoFactorSetupType
+  enableTwoFactor(code: String!): UserType
+  disableTwoFactor(code: String!): UserType
+
+  resetTwoFactor(
     userId: String!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 

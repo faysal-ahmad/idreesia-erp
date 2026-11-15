@@ -9,6 +9,9 @@ const SecurityOperationTypeDisplayName = {
   [SecurityOperationType.INSTANCE_ACCESS_CHANGED]: 'Instance Access Changed',
   [SecurityOperationType.GROUPS_CHANGED]: 'Groups Changed',
   [SecurityOperationType.CHAT_ACCOUNT_CREATED]: 'Chat Account Created',
+  [SecurityOperationType.TWO_FACTOR_ENABLED]: 'Two-Factor Enabled',
+  [SecurityOperationType.TWO_FACTOR_DISABLED]: 'Two-Factor Disabled',
+  [SecurityOperationType.TWO_FACTOR_RESET]: 'Two-Factor Reset',
   [SecurityOperationType.INVALID_LOGIN_ATTEMPT]: 'Invalid Login Attempt',
   [SecurityOperationType.LOGIN]: 'Login to System',
 };

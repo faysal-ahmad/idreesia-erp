@@ -694,7 +694,9 @@ export type Mutation = {
   deleteSecurityVisitor?: Maybe<Scalars['Int']['output']>;
   deleteUserGroup?: Maybe<Scalars['Int']['output']>;
   disableCommitteeFeature: Scalars['Boolean']['output'];
+  disableTwoFactor?: Maybe<UserType>;
   enableCommitteeFeature: Scalars['Boolean']['output'];
+  enableTwoFactor?: Maybe<UserType>;
   fixCitySpelling?: Maybe<Scalars['Int']['output']>;
   fixNameSpelling?: Maybe<Scalars['Int']['output']>;
   hardDeletePeople?: Maybe<Scalars['Int']['output']>;
@@ -733,6 +735,7 @@ export type Mutation = {
   removeVendor?: Maybe<Scalars['Int']['output']>;
   removeWorkspaceMonitoringProfilePhoto?: Maybe<WorkspaceMonitoringProfileType>;
   resetJobDefinitionSchedule?: Maybe<JobDefinitionType>;
+  resetTwoFactor?: Maybe<UserType>;
   restorePerson?: Maybe<Scalars['Int']['output']>;
   retryFailedJob?: Maybe<Scalars['Boolean']['output']>;
   runScheduledJobNow?: Maybe<Scalars['Boolean']['output']>;
@@ -756,6 +759,7 @@ export type Mutation = {
   setStockItemImage?: Maybe<StockItem>;
   setUserGroupInstanceAccess?: Maybe<UserGroupType>;
   setUserGroupPermissions?: Maybe<UserGroupType>;
+  startTwoFactorSetup?: Maybe<TwoFactorSetupType>;
   updateAttachment?: Maybe<Attachment>;
   updateCity?: Maybe<CityType>;
   updateCityMehfil?: Maybe<CityMehfilType>;
@@ -1282,9 +1286,19 @@ export type MutationDisableCommitteeFeatureArgs = {
 };
 
 
+export type MutationDisableTwoFactorArgs = {
+  code: Scalars['String']['input'];
+};
+
+
 export type MutationEnableCommitteeFeatureArgs = {
   committeeId: Scalars['String']['input'];
   featureKey: Scalars['String']['input'];
+};
+
+
+export type MutationEnableTwoFactorArgs = {
+  code: Scalars['String']['input'];
 };
 
 
@@ -1499,6 +1513,11 @@ export type MutationRemoveWorkspaceMonitoringProfilePhotoArgs = {
 
 export type MutationResetJobDefinitionScheduleArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type MutationResetTwoFactorArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -4254,6 +4273,13 @@ export type TeamType = {
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
+export type TwoFactorSetupType = {
+  __typename?: 'TwoFactorSetupType';
+  qrCodeSvg?: Maybe<Scalars['String']['output']>;
+  secret?: Maybe<Scalars['String']['output']>;
+  uri?: Maybe<Scalars['String']['output']>;
+};
+
 export type UserFilter = {
   moduleAccess?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;
@@ -4290,6 +4316,7 @@ export type UserType = {
   permissions?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   person?: Maybe<PersonType>;
   personId?: Maybe<Scalars['String']['output']>;
+  twoFactorEnabled?: Maybe<Scalars['Boolean']['output']>;
   username?: Maybe<Scalars['String']['output']>;
 };
 

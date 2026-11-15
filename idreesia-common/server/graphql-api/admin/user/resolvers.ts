@@ -10,10 +10,14 @@ import { ChatError } from 'meteor/idreesia-common/server/chat';
 import {
   createChatAccount,
   createUser,
+  disableTwoFactor,
+  enableTwoFactor,
   findOneUser,
+  resetTwoFactor,
   searchUsers,
   setUserInstanceAccess,
   setUserPermissions,
+  startTwoFactorSetup,
   updateUser,
 } from 'meteor/idreesia-common/server/business-logic/admin';
 
@@ -198,6 +202,30 @@ export default {
         throw error;
       }
     },
+
+    startTwoFactorSetup: async (
+      _obj: unknown,
+      _args: unknown,
+      { user }: ResolverContext
+    ) => startTwoFactorSetup(requireUser(user)),
+
+    enableTwoFactor: async (
+      _obj: unknown,
+      params: { code: string },
+      { user }: ResolverContext
+    ) => enableTwoFactor(params, requireUser(user), DataSource.ADMIN),
+
+    disableTwoFactor: async (
+      _obj: unknown,
+      params: { code: string },
+      { user }: ResolverContext
+    ) => disableTwoFactor(params, requireUser(user), DataSource.ADMIN),
+
+    resetTwoFactor: async (
+      _obj: unknown,
+      params: { userId: string },
+      { user }: ResolverContext
+    ) => resetTwoFactor(params, requireUser(user), DataSource.ADMIN),
 
     updateLoginTime: async (_obj: unknown, _args: unknown, { user }: ResolverContext) => {
       if (user) {

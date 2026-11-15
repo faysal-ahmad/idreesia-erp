@@ -4,6 +4,8 @@ import {
 } from 'meteor/idreesia-common/server/collections/admin';
 import { get } from 'meteor/idreesia-common/utilities/lodash';
 
+import { isTwoFactorEnabled } from './two-factor-status';
+
 export interface MappedUser extends Record<string, any> {
   _id: string;
   permissions: string[];
@@ -26,6 +28,7 @@ export const mapUser = (user: AppUser): MappedUser => ({
   instances: user.instances || [],
   groups: user.groups || [],
   chatUserId: user.chatUserId,
+  twoFactorEnabled: isTwoFactorEnabled(user),
 });
 
 export async function findOneUser(userId: string | null): Promise<MappedUser> {

@@ -7,6 +7,7 @@ import Permission from './_directives/permission';
 import CheckPermissionsDirective from './_directives/check-permissions';
 import CheckInstanceAccessDirective from './_directives/check-instance-access';
 
+import RootTypes from './_root-types/root-types';
 import ExternalTypes from './_external-types/external-types';
 import ExternalTypeResolvers from './_external-types/resolvers';
 
@@ -199,6 +200,7 @@ const typeDefs = [
   Permission,
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
+  RootTypes,
   ExternalTypes,
 
   AttachmentSchema,

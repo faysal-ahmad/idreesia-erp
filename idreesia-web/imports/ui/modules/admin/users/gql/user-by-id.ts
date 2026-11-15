@@ -17,6 +17,7 @@ const USER_BY_ID: TypedDocumentNode<
       displayName
       locked
       hasChatAccount
+      twoFactorEnabled
       instances
       permissions
       personId

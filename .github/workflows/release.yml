@@ -150,7 +150,7 @@ jobs:
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v3
         with:
-          meteor-release: 3.5.4
+          meteor-release: 3.6.1
 
       - run: meteor npm install -g yarn
 
@@ -294,7 +294,7 @@ jobs:
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v3
         with:
-          meteor-release: 3.5.4
+          meteor-release: 3.6.1
 
       - run: meteor npm install -g yarn
 
@@ -405,7 +405,7 @@ jobs:
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v3
         with:
-          meteor-release: 3.5.4
+          meteor-release: 3.6.1
 
       - run: meteor npm install -g yarn
 

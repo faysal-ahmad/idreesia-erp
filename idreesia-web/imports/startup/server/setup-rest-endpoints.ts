@@ -8,6 +8,7 @@ import type { NextFunction, Request, Response } from 'express';
 import {
   ATTACHMENT_MAX_FILE_SIZE,
   Permissions,
+  TwoFactorErrorCode,
 } from 'meteor/idreesia-common/constants';
 import { kebabCase } from 'meteor/idreesia-common/utilities/lodash';
 import {
@@ -20,6 +21,10 @@ import {
   getAttachmentDownloadUrl,
   isAttachmentCategory,
 } from 'meteor/idreesia-common/server/business-logic/common/stored-attachments';
+import {
+  isTwoFactorCodeValid,
+  isTwoFactorEnabled,
+} from 'meteor/idreesia-common/server/business-logic/admin';
 import { exportKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/karkuns-exporter';
 import { exportVisitors } from 'meteor/idreesia-common/server/business-logic/security/visitors-exporter';
 import {
@@ -132,7 +137,15 @@ interface AccountsPrivateApi {
     query: { username: string } | { email: string },
     options: { fields: Record<string, 0 | 1> }
   ): Promise<
-    { _id: string; locked?: boolean; services?: { password?: unknown } } | undefined
+    | {
+        _id: string;
+        locked?: boolean;
+        services?: {
+          password?: unknown;
+          twoFactorAuthentication?: { secret?: string; type?: string };
+        };
+      }
+    | undefined
   >;
   _checkPasswordAsync(
     user: { _id: string; services?: unknown },
@@ -283,13 +296,14 @@ export function setupRestEndpoints() {
     /**
      * Endpoint for external (non-Meteor) clients to exchange a username/email
      * and password for a Meteor login token, for use as the GraphQL API's
-     * `Authorization` header.
+     * `Authorization` header. A user with two-factor authentication on must
+     * also send `code`, the current code from their authenticator app.
      */
     app.post(
       '/login',
       bodyParser.json(),
       Meteor.bindEnvironment(async (req: Request, res: Response) => {
-        const { username, email, password } = req.body ?? {};
+        const { username, email, password, code } = req.body ?? {};
         if ((!username && !email) || typeof password !== 'string') {
           res.writeHead(400);
           res.end();
@@ -323,6 +337,22 @@ export function setupRestEndpoints() {
           res.writeHead(403, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: ACCOUNT_LOCKED_MESSAGE }));
           return;
+        }
+
+        // Same rule the password login enforces through accounts-2fa.
+        const twoFactorSecret = user.services.twoFactorAuthentication?.secret;
+        if (isTwoFactorEnabled(user) && twoFactorSecret) {
+          let twoFactorError: string | null = null;
+          if (typeof code !== 'string' || !code) {
+            twoFactorError = TwoFactorErrorCode.CODE_REQUIRED;
+          } else if (!isTwoFactorCodeValid(twoFactorSecret, code)) {
+            twoFactorError = TwoFactorErrorCode.INVALID_CODE;
+          }
+          if (twoFactorError) {
+            res.writeHead(401, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: twoFactorError }));
+            return;
+          }
         }
 
         const stampedLoginToken = AccountsPrivate._generateStampedLoginToken();

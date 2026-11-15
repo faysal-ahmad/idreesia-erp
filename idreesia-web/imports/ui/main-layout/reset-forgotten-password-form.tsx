@@ -1,8 +1,10 @@
 import { Accounts } from 'meteor/accounts-base';
 import React, { type CSSProperties } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import { Button, Card, Divider, Flex, Form, Input } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
+
+import { TwoFactorErrorCode } from 'meteor/idreesia-common/constants';
 
 const FormButtonStyle: CSSProperties = {
   marginBottom: '10px',
@@ -26,14 +28,21 @@ interface FormValues {
 export const ResetForgottenPasswordForm = () => {
   const [form] = Form.useForm<FormValues>();
   const { token } = useParams<{ token: string }>();
+  const history = useHistory();
 
   const handleFinish = (values: FormValues) => {
     const { newPassword, confirmedNewPassword } = values;
     if (newPassword === confirmedNewPassword) {
       (Accounts as any).resetPassword(token, newPassword, (error?: Error) => {
-        if (error) {
-          message.error((error as Meteor.Error).reason ?? error.message, 5);
+        if (!error) return;
+        // With two-factor authentication on, the password is changed but the
+        // user isn't logged in automatically; they log in with a code.
+        if ((error as Meteor.Error).error === TwoFactorErrorCode.LOGIN_SKIPPED) {
+          message.success('Your password has been changed. Please log in.', 5);
+          history.push('/');
+          return;
         }
+        message.error((error as Meteor.Error).reason ?? error.message, 5);
       });
     }
   };

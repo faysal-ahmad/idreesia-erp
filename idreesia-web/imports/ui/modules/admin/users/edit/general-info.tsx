@@ -6,6 +6,7 @@ import {
   Button,
   Collapse,
   Form,
+  Popconfirm,
   Space,
   Spin,
   Tooltip,
@@ -25,6 +26,7 @@ import {
   PAGED_USERS,
   UPDATE_USER,
   CREATE_CHAT_ACCOUNT,
+  RESET_TWO_FACTOR,
 } from '../gql';
 
 interface Props {
@@ -58,6 +60,12 @@ const GeneralInfo = ({ userId, history }: Props) => {
         { query: PAGED_USERS, variables: { filter: {} } },
         'adminUserById',
       ],
+    }
+  );
+  const [resetTwoFactor, { loading: resettingTwoFactor }] = useMutation(
+    RESET_TWO_FACTOR,
+    {
+      refetchQueries: [{ query: PAGED_USERS, variables: { filter: {} } }],
     }
   );
   const userById = data?.userById;
@@ -107,6 +115,18 @@ const GeneralInfo = ({ userId, history }: Props) => {
       });
   };
 
+  // For a user who lost the phone with their authenticator app; they can
+  // then log in with only their password and set it up again.
+  const handleResetTwoFactor = () => {
+    resetTwoFactor({ variables: { userId: userById?._id ?? userId } })
+      .then(() => {
+        message.success('Two-factor authentication turned off', 2);
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
+  };
+
   if (loading || !userById) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
@@ -138,6 +158,27 @@ const GeneralInfo = ({ userId, history }: Props) => {
       </Button>
     </Tooltip>
   );
+
+  const resetTwoFactorButton = userById.twoFactorEnabled ? (
+    <Popconfirm
+      title="Turn off two-factor authentication for this user?"
+      description="They will be able to log in with only their password."
+      okText="Turn Off"
+      onConfirm={handleResetTwoFactor}
+    >
+      <Button size="large" loading={resettingTwoFactor}>
+        Reset Two-Factor
+      </Button>
+    </Popconfirm>
+  ) : null;
+
+  const extraButtons =
+    createChatAccountButton || resetTwoFactorButton ? (
+      <Space>
+        {createChatAccountButton}
+        {resetTwoFactorButton}
+      </Space>
+    ) : null;
 
   const karkunField = userById.personId ? (
     <InputTextField
@@ -172,6 +213,15 @@ const GeneralInfo = ({ userId, history }: Props) => {
           fieldLabel="Locked"
           initialValue={userById.locked ?? undefined}
         />
+
+        {/* Read-only status (not a form field), so it updates after a reset. */}
+        <Form.Item
+          label="Two-Factor"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
+        >
+          {userById.twoFactorEnabled ? 'Enabled' : 'Not enabled'}
+        </Form.Item>
 
         <InputTextField
           fieldName="password"
@@ -214,7 +264,7 @@ const GeneralInfo = ({ userId, history }: Props) => {
             handleCancel={handleCancel}
             isFieldsTouched={isFieldsTouched}
             fullWidth
-            extra={createChatAccountButton}
+            extra={extraButtons}
           />
         </Space>
       </Form>

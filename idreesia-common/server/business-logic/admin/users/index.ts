@@ -16,3 +16,12 @@ export {
   setUserPermissions,
   updateUser,
 } from './user-mutations';
+export {
+  disableTwoFactor,
+  enableTwoFactor,
+  isTwoFactorCodeValid,
+  resetTwoFactor,
+  startTwoFactorSetup,
+  type TwoFactorSetup,
+} from './two-factor';
+export { isTwoFactorEnabled } from './two-factor-status';

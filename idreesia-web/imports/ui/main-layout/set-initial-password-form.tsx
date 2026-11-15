@@ -4,6 +4,8 @@ import { Link, useParams } from 'react-router-dom';
 import { Button, Card, Divider, Flex, Form, Input } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
+import { TwoFactorErrorCode } from 'meteor/idreesia-common/constants';
+
 const FormButtonStyle: CSSProperties = {
   marginBottom: '10px',
 };
@@ -44,6 +46,11 @@ export const SetInitialPasswordForm = () => {
             'Your password has been updated, but your account is currently locked and needs an administrator\'s approval.',
             10
           );
+          return;
+        }
+        if ((error as Meteor.Error).error === TwoFactorErrorCode.LOGIN_SKIPPED) {
+          form.resetFields();
+          message.success('Your password has been set. Please log in.', 5);
           return;
         }
         message.error((error as Meteor.Error).reason ?? error.message, 5);

@@ -2918,6 +2918,15 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   "Query.itemCategoriesByPhysicalStoreId": [
     {
       "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+          "IN_MANAGE_STOCK_ITEMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
         "instanceIdArgName": "physicalStoreId",
         "returnType": "list",
       },
@@ -2925,6 +2934,14 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Query.itemCategoryById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
     {
       "args": {
         "instanceIdArgName": "physicalStoreId",
@@ -2961,6 +2978,14 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   "Query.locationById": [
     {
       "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
         "instanceIdArgName": "physicalStoreId",
         "returnType": "object",
       },
@@ -2968,6 +2993,20 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Query.locationsByPhysicalStoreId": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
     {
       "args": {
         "instanceIdArgName": "physicalStoreId",
@@ -3244,6 +3283,23 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   "Query.pagedStockItems": [
     {
       "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+          "IN_APPROVE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
         "instanceIdArgName": "physicalStoreId",
         "returnType": "paged-list",
       },
@@ -3295,6 +3351,24 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Query.physicalStoreById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+          "IN_MANAGE_STOCK_ITEMS",
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+          "IN_APPROVE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
     {
       "args": {
         "instanceIdArgName": "id",
@@ -3607,6 +3681,23 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   "Query.stockItemById": [
     {
       "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+          "IN_APPROVE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
         "instanceIdArgName": "physicalStoreId",
         "returnType": "object",
       },
@@ -3614,6 +3705,23 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Query.stockItemsById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+          "IN_APPROVE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
     {
       "args": {
         "instanceIdArgName": "physicalStoreId",
@@ -3647,6 +3755,14 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   "Query.vendorById": [
     {
       "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
         "instanceIdArgName": "physicalStoreId",
         "returnType": "object",
       },
@@ -3654,6 +3770,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Query.vendorsByPhysicalStoreId": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
     {
       "args": {
         "instanceIdArgName": "physicalStoreId",
@@ -4199,17 +4326,4 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
 }
 `;
 
-exports[`authorization matrix > pins the fields that check instance access without a permission 1`] = `
-[
-  "Query.itemCategoriesByPhysicalStoreId",
-  "Query.itemCategoryById",
-  "Query.locationById",
-  "Query.locationsByPhysicalStoreId",
-  "Query.pagedStockItems",
-  "Query.physicalStoreById",
-  "Query.stockItemById",
-  "Query.stockItemsById",
-  "Query.vendorById",
-  "Query.vendorsByPhysicalStoreId",
-]
-`;
+exports[`authorization matrix > pins the fields that check instance access without a permission 1`] = `[]`;

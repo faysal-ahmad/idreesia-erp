@@ -1,9 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { getDirective } from '@graphql-tools/utils';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
+// access.ts only needs the roles here, not the chat service.
+vi.mock('meteor/idreesia-common/server/business-logic/hr/committee', () => ({
+  getCommitteeChatGroupId: vi.fn(),
+}));
+
 import CheckCommitteeAccessSchema from '../../_directives/check-committee-access';
 import DiscussionsSchema from './discussions';
+import { DISCUSSION_READ_ROLES, DISCUSSION_WRITE_ROLES } from './access';
 
 const schema = makeExecutableSchema({
   typeDefs: [
@@ -54,6 +60,11 @@ const expected: Array<[Root, string, string[]]> = [
 ];
 
 describe('discussions role rules', () => {
+  it('keeps the file routes\' roles in step with the schema', () => {
+    expect([...DISCUSSION_READ_ROLES].map(r => r.toUpperCase()).sort()).toEqual([...READ].sort());
+    expect([...DISCUSSION_WRITE_ROLES].map(r => r.toUpperCase()).sort()).toEqual([...WRITE].sort());
+  });
+
   it.each(expected)('%s %s', (root, name, roles) => {
     expect(rolesOf(root, name)).toEqual([...roles].sort());
   });

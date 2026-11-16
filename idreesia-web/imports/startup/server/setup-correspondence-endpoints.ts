@@ -1,14 +1,13 @@
 import express from 'express';
-import type { NextFunction, Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
-import { decideApiAccess } from 'meteor/idreesia-common/server/rest-api/api-access';
 import {
   fetchUploadedFile,
   ChatError,
 } from 'meteor/idreesia-common/server/chat';
 
-import { getUser } from './get-user';
+import { requirePermission } from './rest-guards';
 import { noticeError } from './newrelic';
 
 /**
@@ -26,31 +25,6 @@ import { noticeError } from './newrelic';
 
 // Rocket.Chat room and file ids are alphanumeric.
 const FILE_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
-
-const authenticate = Meteor.bindEnvironment(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const user = (await getUser(req.headers.authorization)) as
-      | { _id: string; username?: string; locked?: boolean; permissions?: string[] }
-      | undefined;
-    const decision = decideApiAccess(user, [
-      Permissions.CORRESPONDENCE_INBOX_VIEW_MESSAGES,
-    ]);
-    if (!decision.ok) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `Correspondence file proxy: ${decision.status} for ${req.path} (${
-          decision.status === 401
-            ? 'no valid login token'
-            : `user ${user?._id} lacks the inbox permission`
-        })`
-      );
-      res.status(decision.status).json({ error: decision.error });
-      return;
-    }
-
-    next();
-  }
-);
 
 const PASSTHROUGH_HEADERS = ['content-type', 'content-length', 'last-modified'];
 
@@ -117,7 +91,7 @@ const streamFile = Meteor.bindEnvironment(
 
 export const createCorrespondenceRouter = () => {
   const router = express.Router();
-  router.use(authenticate);
+  router.use(requirePermission(Permissions.CORRESPONDENCE_INBOX_VIEW_MESSAGES));
   // fileName may itself contain encoded characters; express decodes it.
   router.get('/files/:roomId/:fileId/:fileName', streamFile);
   return router;

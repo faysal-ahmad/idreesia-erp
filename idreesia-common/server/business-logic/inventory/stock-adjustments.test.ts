@@ -77,7 +77,7 @@ describe('stock adjustments', () => {
       );
       expect(await level('i1')).toBe(14);
 
-      await updateStockAdjustment(id, { quantity: 2, isInflow: false }, 'u2');
+      await updateStockAdjustment(id, 's1', { quantity: 2, isInflow: false }, 'u2');
 
       expect(await level('i1')).toBe(8);
       expect(await adjustment(id)).toMatchObject({
@@ -88,9 +88,25 @@ describe('stock adjustments', () => {
       });
     });
 
+    it('rejects an adjustment of another store', async () => {
+      await item('i1', 10);
+      const id = await createStockAdjustment(
+        's1',
+        'i1',
+        { quantity: 4, isInflow: true },
+        'u1'
+      );
+
+      await expect(
+        updateStockAdjustment(id, 'other-store', { quantity: 1 }, 'u2')
+      ).rejects.toThrow('Stock adjustment not found.');
+
+      expect(await level('i1')).toBe(14);
+    });
+
     it('rejects an adjustment that does not exist', async () => {
       await expect(
-        updateStockAdjustment('missing', { quantity: 1 }, 'u1')
+        updateStockAdjustment('missing', 's1', { quantity: 1 }, 'u1')
       ).rejects.toThrow('Stock adjustment not found.');
     });
 
@@ -108,7 +124,7 @@ describe('stock adjustments', () => {
       );
 
       await expect(
-        updateStockAdjustment(id, { quantity: 9, isInflow: true }, 'u2')
+        updateStockAdjustment(id, 's1', { quantity: 9, isInflow: true }, 'u2')
       ).rejects.toThrow('already approved');
 
       expect(await level('i1')).toBe(14);
@@ -128,7 +144,7 @@ describe('stock adjustments', () => {
       );
 
       await expect(
-        updateStockAdjustment(id, { quantity: 1, isInflow: true }, 'u2')
+        updateStockAdjustment(id, 's1', { quantity: 1, isInflow: true }, 'u2')
       ).rejects.toThrow('write failed');
 
       expect(await level('i1')).toBe(14);

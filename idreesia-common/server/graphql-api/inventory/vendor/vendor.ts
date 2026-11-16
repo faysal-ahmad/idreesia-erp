@@ -20,9 +20,11 @@ type Vendor {
 
 extend type Query {
   vendorById(_id: String!, physicalStoreId: String!): Vendor
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   vendorsByPhysicalStoreId(physicalStoreId: String!): [Vendor]
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 

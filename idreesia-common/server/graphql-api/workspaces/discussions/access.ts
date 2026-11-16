@@ -30,22 +30,24 @@ export const getDiscussionChatGroupId = (
     getCommitteeAccess(context, committeeId).committee as unknown as CommitteeDoc
   );
 
-// The roles that may read a committee's discussion. Keep in step with
-// @checkCommitteeAccess on the read fields in discussions.ts.
-const DISCUSSION_READ_ROLES: CommitteeMemberRole[] = [
+// The roles that may read / write a committee's discussion. Keep in step with
+// @checkCommitteeAccess on the read and write fields in discussions.ts
+// (discussions-roles.test.ts checks the schema side).
+export const DISCUSSION_READ_ROLES: CommitteeMemberRole[] = [
   CommitteeMemberRoles.COORDINATOR,
   CommitteeMemberRoles.MEMBER,
   CommitteeMemberRoles.OBSERVER,
 ];
 
-/**
- * The chat group, for the discussion's file route, which is plain REST and so
- * cannot use the schema directive: the user must hold a role that may read
- * the discussion, and the committee must have Discussions enabled.
- */
-export const getReaderCommitteeChatGroupId = async (
+export const DISCUSSION_WRITE_ROLES: CommitteeMemberRole[] = [
+  CommitteeMemberRoles.COORDINATOR,
+  CommitteeMemberRoles.MEMBER,
+];
+
+const getRoleCommitteeChatGroupId = async (
   user: WorkspaceUser | null | undefined,
-  committeeId: string
+  committeeId: string,
+  allowedRoles: CommitteeMemberRole[]
 ): Promise<string> => {
   const committee = await getMemberCommittee(user, committeeId);
   const role = committee ? getCommitteeRole(user, committee) : null;
@@ -54,7 +56,7 @@ export const getReaderCommitteeChatGroupId = async (
       extensions: { code: 'FORBIDDEN' },
     });
   }
-  if (!DISCUSSION_READ_ROLES.includes(role)) {
+  if (!allowedRoles.includes(role)) {
     throw new GraphQLError(
       'Your role in this committee does not allow this operation.',
       { extensions: { code: 'FORBIDDEN' } }
@@ -62,6 +64,24 @@ export const getReaderCommitteeChatGroupId = async (
   }
   return getCommitteeChatGroupId(committee as unknown as CommitteeDoc);
 };
+
+/**
+ * The chat group, for the discussion's file download route, which is plain
+ * REST and so cannot use the schema directive: the user must hold a role that
+ * may read the discussion, and the committee must have Discussions enabled.
+ */
+export const getReaderCommitteeChatGroupId = (
+  user: WorkspaceUser | null | undefined,
+  committeeId: string
+): Promise<string> =>
+  getRoleCommitteeChatGroupId(user, committeeId, DISCUSSION_READ_ROLES);
+
+/** As above, for the file upload route: only roles that may post messages. */
+export const getWriterCommitteeChatGroupId = (
+  user: WorkspaceUser | null | undefined,
+  committeeId: string
+): Promise<string> =>
+  getRoleCommitteeChatGroupId(user, committeeId, DISCUSSION_WRITE_ROLES);
 
 /** The ERP file route for a committee discussion's uploads. */
 export const committeeDiscussionFileUrl =

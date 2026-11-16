@@ -50,13 +50,15 @@ export async function createPurchaseForm(
 /** Replaces an unapproved form, moving the stock levels to match. */
 export async function updatePurchaseForm(
   purchaseFormId: string,
+  physicalStoreId: string,
   input: PurchaseFormInput,
   userId: string
 ): Promise<void> {
   return runInTransaction(async () => {
-    const existingForm = (await PurchaseForms.findOneAsync(
-      purchaseFormId
-    )) as unknown as PurchaseFormDocument | undefined;
+    const existingForm = (await PurchaseForms.findOneAsync({
+      _id: purchaseFormId,
+      physicalStoreId,
+    })) as unknown as PurchaseFormDocument | undefined;
     if (!existingForm) {
       throw new Error('Purchase form not found.');
     }
@@ -67,10 +69,12 @@ export async function updatePurchaseForm(
     const updated = await PurchaseForms.updateAsync(
       {
         _id: { $eq: purchaseFormId },
+        physicalStoreId,
         approvedOn: { $exists: false },
         approvedBy: { $exists: false },
       },
-      { $set: { ...input, updatedAt: new Date(), updatedBy: userId } }
+      // The form never moves to another store.
+      { $set: { ...input, physicalStoreId, updatedAt: new Date(), updatedBy: userId } }
     );
     if (!updated) {
       throw new Error('You cannot update an already approved Purchase Form.');
@@ -86,14 +90,17 @@ export async function removePurchaseFormAttachment(
   userId: string
 ): Promise<void> {
   return runInTransaction(async () => {
-    await PurchaseForms.updateAsync(
-      { _id: purchaseFormId, physicalStoreId },
+    // Only delete the attachment when it belongs to this store's form.
+    const updated = await PurchaseForms.updateAsync(
+      { _id: purchaseFormId, physicalStoreId, attachmentIds: attachmentId },
       {
         $pull: { attachmentIds: attachmentId },
         $set: { updatedAt: new Date(), updatedBy: userId },
       }
     );
-    await removeAttachment(attachmentId);
+    if (updated) {
+      await removeAttachment(attachmentId);
+    }
   });
 }
 

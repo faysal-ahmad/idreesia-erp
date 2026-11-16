@@ -30,6 +30,8 @@ const schema = CheckPermissionsDirective(
         many: [String!] @checkPermissions(permissions: [${P1}])
         pagedThings: Page @checkPermissions(permissions: [${P1}])
         pagedCustom: Page @checkPermissions(permissions: [${P1}], dataFieldName: "items")
+        manyNonNull: [String!]! @checkPermissions(permissions: [${P1}])
+        strictOne: String! @checkPermissions(permissions: [${P1}])
         nobody: String @checkPermissions(permissions: [])
         open: String
       }
@@ -44,6 +46,8 @@ const schema = CheckPermissionsDirective(
         many: () => ['a'],
         pagedThings: () => ({ data: ['a'], items: [], totalResults: 1 }),
         pagedCustom: () => ({ data: [], items: ['a'], totalResults: 1 }),
+        manyNonNull: () => ['a'],
+        strictOne: () => 's',
         nobody: () => 'n',
         open: () => 'o',
       },
@@ -68,11 +72,21 @@ describe('@checkPermissions', () => {
     expect(r.data).toEqual({ single: 's', nobody: 'n' });
   });
 
-  it('denies a user with an unrelated permission, null for a plain query', async () => {
+  it('denies a user with an unrelated permission, null for a nullable object and [] for a list', async () => {
     const user = makeUser({ permissions: ['SOMETHING_ELSE'] });
     const r = await run('{ single many }', user);
     expect(r.errors).toBeUndefined();
-    expect(r.data).toEqual({ single: null, many: null });
+    expect(r.data).toEqual({ single: null, many: [] });
+  });
+
+  it('returns [] for a non-null list and throws for a non-null object', async () => {
+    const user = makeUser({ permissions: ['SOMETHING_ELSE'] });
+    const list = await run('{ manyNonNull }', user);
+    expect(list.errors).toBeUndefined();
+    expect(list.data).toEqual({ manyNonNull: [] });
+
+    const one = await run('{ strictOne }', user);
+    expect(one.errors?.[0].message).toMatch(/required permissions/);
   });
 
   it('denies anonymous and locked users (even locked super-admin / with permission)', async () => {

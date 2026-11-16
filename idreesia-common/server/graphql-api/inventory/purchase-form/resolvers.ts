@@ -99,8 +99,8 @@ const resolvers: ResolverMap = {
     },
   },
   Query: {
-    purchaseFormById: async (obj, { _id }, { user }) => {
-      return PurchaseForms.findOneAsync(_id);
+    purchaseFormById: async (obj, { _id, physicalStoreId }) => {
+      return PurchaseForms.findOneAsync({ _id, physicalStoreId });
     },
 
     purchaseFormsByStockItem: async (
@@ -172,6 +172,7 @@ const resolvers: ResolverMap = {
     ) => {
       await updatePurchaseForm(
         _id,
+        physicalStoreId,
         {
           purchaseDate,
           receivedBy,

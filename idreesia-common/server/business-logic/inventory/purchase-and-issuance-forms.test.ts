@@ -53,9 +53,10 @@ const kinds = [
         },
         userId
       ),
-    update: (id: string, items: Items, userId = 'u2') =>
+    update: (id: string, items: Items, userId = 'u2', storeId = 's1') =>
       updatePurchaseForm(
         id,
+        storeId,
         {
           purchaseDate: new Date(),
           receivedBy: 'p1',
@@ -84,9 +85,10 @@ const kinds = [
         },
         userId
       ),
-    update: (id: string, items: Items, userId = 'u2') =>
+    update: (id: string, items: Items, userId = 'u2', storeId = 's1') =>
       updateIssuanceForm(
         id,
+        storeId,
         {
           issueDate: new Date(),
           issuedBy: 'p1',
@@ -287,6 +289,32 @@ describe.each(kinds)('$label', kind => {
       await kind.removeAttachment(id, 'other-store', 'a1', 'editor');
 
       expect((await find(id)).attachmentIds).toEqual(['a1']);
+      expect(await Attachments.findOneAsync('a1')).toBeDefined();
+    });
+
+    it('does not delete an attachment the form does not hold', async () => {
+      const id = await kind.create([]);
+      await Attachments.insertAsync({ _id: 'other', fileKey: 'k/other.png' });
+
+      await kind.removeAttachment(id, 's1', 'other', 'editor');
+
+      expect(await Attachments.findOneAsync('other')).toBeDefined();
+    });
+  });
+
+  describe('store scope', () => {
+    it('does not update a form of another store', async () => {
+      await item('i1', 10);
+      const id = await kind.create([
+        { stockItemId: 'i1', quantity: 4, isInflow: true },
+      ]);
+
+      await expect(
+        kind.update(id, [], 'u2', 'other-store')
+      ).rejects.toThrow(kind.notFound);
+
+      expect(await level('i1')).toBe(14);
+      expect((await find(id)).physicalStoreId).toBe('s1');
     });
   });
 });

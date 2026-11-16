@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import type { NextFunction, Request, Response } from 'express';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
-import { decideApiAccess } from 'meteor/idreesia-common/server/rest-api/api-access';
 import {
   getSecurityServerChanges,
   getSecurityServerProfileImage,
@@ -25,8 +24,8 @@ import {
   type UsageStatsPush,
 } from 'meteor/idreesia-common/server/business-logic/security/security-server';
 
-import { getUser } from './get-user';
 import { noticeError } from './newrelic';
+import { requirePermission } from './rest-guards';
 
 /**
  * REST endpoints the security (face-recognition monitoring) server syncs
@@ -46,7 +45,7 @@ const BODY_SIZE_LIMIT = '10mb';
 // A profile push carries the photos the ERP doesn't have yet.
 const PROFILE_BODY_SIZE_LIMIT = '50mb';
 
-type AuthenticatedRequest = Request & { syncUser: SyncUser };
+type AuthenticatedRequest = Request & { user: SyncUser };
 type Handler = (req: AuthenticatedRequest, res: Response) => Promise<void>;
 
 class ValidationError extends Error {}
@@ -362,23 +361,6 @@ const getExternalId = (req: Request): string => {
 // Middleware
 // ----------------------------------------------------------------------------
 
-const authenticate = Meteor.bindEnvironment(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const user = (await getUser(req.headers.authorization)) as
-      (SyncUser & { locked?: boolean; permissions?: string[] }) | undefined;
-    const decision = decideApiAccess(user, [
-      Permissions.SECURITY_SYNC_SECURITY_SERVER_DATA,
-    ]);
-    if (!decision.ok) {
-      res.status(decision.status).json({ error: decision.error });
-      return;
-    }
-
-    (req as AuthenticatedRequest).syncUser = { _id: user!._id };
-    next();
-  }
-);
-
 // Body-parser failures (malformed JSON, body too large) would otherwise get
 // express's default HTML error page.
 const handleBodyParserError = (
@@ -418,7 +400,7 @@ const handle = (handler: Handler) =>
 
 export function createSecurityServerRouter() {
   const router = express.Router();
-  router.use(authenticate);
+  router.use(requirePermission(Permissions.SECURITY_SYNC_SECURITY_SERVER_DATA));
 
   /**
    * A profile pushed by the server, by the server's own id, with its full
@@ -434,7 +416,7 @@ export function createSecurityServerRouter() {
         .status(200)
         .json(
           await upsertSecurityServerProfileFromSync(
-            req.syncUser,
+            req.user,
             getRouteParam(req, 'localId'),
             parseProfilePush(getBody(req))
           )
@@ -471,7 +453,7 @@ export function createSecurityServerRouter() {
     '/channels/by-external-id/:localId',
     handle(async (req, res) => {
       const _id = await upsertSecurityServerChannelFromSync(
-        req.syncUser,
+        req.user,
         getRouteParam(req, 'localId'),
         parseChannelPush(getBody(req))
       );
@@ -497,7 +479,7 @@ export function createSecurityServerRouter() {
     handle(async (req, res) => {
       const body = getBody(req);
       const _id = await upsertSecurityServerAlert(
-        req.syncUser,
+        req.user,
         getExternalId(req),
         {
           profileId: requireString(body, 'profileId'),

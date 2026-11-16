@@ -22,6 +22,7 @@ The Workspaces modules (committees, meetings, documents, polls, projects, discus
 | Schema and resolver registration | `idreesia-common/server/graphql-api/index.ts` |
 | Data loaders | `idreesia-common/server/data-loaders/` |
 | REST router (current pattern) | `idreesia-web/imports/startup/server/setup-security-server-endpoints.ts` |
+| REST guards (middleware) | `idreesia-web/imports/startup/server/rest-guards.ts` |
 | Object storage folders | `idreesia-common/server/file-storage/folders.ts` |
 | Business-logic unit tests | `idreesia-common/server/business-logic/common/people/people.test.ts` |
 | Headless module design docs | `docs/headless-modules/` |
@@ -176,7 +177,7 @@ createJob: async (obj, values, { user }) => {
 ## 6. Authorization
 
 - Anonymous callers are refused for every operation by `RequireAuthenticationPlugin`. Everything below is about which logged-in users may do what.
-- **Every mutation must be protected.** Logged-in access is the default, so a field without protection is open to every user. `graphql-api/unprotected-fields.test.ts` fails on any Query or Mutation field with no directive unless it is on that test's `ALLOWED` list, which is the only place to exempt one (with the reason). It checks that protection is declared, not that it is right, and does not cover REST routes.
+- **Every mutation must be protected.** Logged-in access is the default, so a field without protection is open to every user. `graphql-api/unprotected-fields.test.ts` fails on any Query or Mutation field with no directive unless it is on that test's `ALLOWED` list, which is the only place to exempt one (with the reason). It checks that protection is declared, not that it is right, and does not cover REST routes (`rest-guards-coverage.test.ts` does, see §7).
 - **Core modules** use schema directives:
   - `@checkPermissions(permissions: [...])`. When the user lacks permission, a `paged*` query returns `{ data: [], totalResults: 0 }`, any other query returns `null`, and a mutation throws.
   - `@checkInstanceAccess(instanceIdArgName: "...", returnType: "object" | "list" | "paged-list")` restricts access to the instances the user may see, such as physical stores.
@@ -185,7 +186,7 @@ createJob: async (obj, values, { user }) => {
 - **Workspaces modules** declare who may call each field with `@checkCommitteeAccess`. Each feature's `access.ts` then checks only what a role cannot tell, and throws `FORBIDDEN` or `NOT_FOUND`: the feature is enabled on the committee, an id belongs to the committee's workspace, and per-item rules such as a guest only seeing the meetings or projects they are in. The roles each feature allows are listed in its document under `docs/headless-modules/`, and a `*-roles.test.ts` next to the feature's schema checks the schema against them.
 - **Directives cover permissions only.** A rule that depends on loaded data or the value of an argument (a past-month salary, a document lock, an assignee changing their own task) is business logic and stays in the resolver or business-logic function.
 - **Attachments and report routes** check object-level access through `graphql-api/common/attachment/access.ts`, not a directive. An attachment carries no owner, so its category (read from its storage folder) decides the permission, and an attachment of a purchase or issuance form also needs access to the form's store; one not yet on a form is open to its uploader. `/generate-report` checks the store of every form named in the request. New upload categories need an entry in that file's permission table.
-- **REST routes** cannot use directives. They check permissions inline with the same helpers, as `setup-security-server-endpoints.ts` does.
+- **REST routes** cannot use directives. They use the Express guards in `idreesia-web/imports/startup/server/rest-guards.ts`, which run before the handler like a directive does: `requireLogin`, `requirePermission(...permissions)` (same rule as `@checkPermissions`) and `requireCommitteeDiscussion('read' | 'write')` (the committee-role rule, like `@checkCommitteeAccess`). A guard only calls the shared access helpers; the rules stay there. A rule that depends on request data (the report name and the stores of its forms, an attachment id or category) stays in the handler, through the same helpers as before (`canDownloadReport`, `assertCanViewAttachment`, `decideAttachmentUpload`), behind `requireLogin`.
 - **Open by design.** Anyone logged in may read cities, city mehfils and people tags, and the audit/lookup metadata used on every form (`userNames`, `distinctCountries`, `distinctCities`). `distinctCities` feeds filters in Security, Admin, Common and the Workspaces night-stay report, where callers are committee members with no permission, and returns only city names recorded on visitors. Only the mutations of cities, city mehfils and people tags need a permission. Don't add view permissions for them.
 - **Everything else a module owns is gated by that module's permissions**, including its setup and lookup lists (`allJobs`, `allDutyLocations`, the mehfil duty, langar dish and langar location reads, `distinctStayAllowedBy`). A query only its own module's screens call stays in the owner's folder with the owner's permissions; it moves to `reference-data/` only when another module needs to read it (below).
 
@@ -202,12 +203,14 @@ Data that one module owns but other modules also read (e.g. HR duties and shifts
 
 ## 7. REST endpoints
 
-Use REST only where GraphQL doesn't fit: binary downloads and uploads, media proxies, and callers outside the ERP such as the security server. New routers follow `setup-security-server-endpoints.ts`:
+Use REST only where GraphQL doesn't fit: binary downloads and uploads, media proxies, and callers outside the ERP such as the security server. New routers follow `setup-workspace-discussion-endpoints.ts` (committee-role routes) or `setup-security-server-endpoints.ts` (permission-gated routes):
 
-- authenticate with the login token
-- check permissions with the same permission constants as GraphQL
-- return JSON errors with a proper status code
+- protect every route with a guard from `rest-guards.ts` (`router.use(requireLogin)` or `router.use(requirePermission(Permissions.X))` for the whole router, and a per-route guard such as `requireCommitteeDiscussion('write')` where the rule needs the route's params). Don't write a per-router `authenticate`. A guard puts the user on `req.user`
+- use the same permission constants as GraphQL
+- return JSON errors with a proper status code (`sendError` in `rest-errors.ts` maps the access helpers' `GraphQLError` codes to HTTP statuses)
 - delegate to business logic like a resolver does
+
+`rest-guards-coverage.test.ts` builds the app (`createRestApp` in `setup-rest-endpoints.ts`) and fails for any route with no guard, the REST counterpart of `unprotected-fields.test.ts`. A route that must be open (`/login`, the monitoring config) goes on that test's `ALLOWED` list with the reason. The test checks that a guard is declared, not that it is the right one. A router mounted in `createRestApp` is covered without further changes.
 
 Don't add endpoints in the older ad-hoc style of `setup-rest-endpoints.ts`.
 
@@ -227,6 +230,7 @@ Don't add endpoints in the older ad-hoc style of `setup-rest-endpoints.ts`.
 - They use vitest against an in-memory MongoDB; see `vitest.config.ts` and `server/test-utils/`.
 - Mock object storage with `vi.mock('meteor/idreesia-common/server/file-storage', ...)` pointing at `test-utils/file-storage-mock.ts`.
 - For an operation in a transaction, test that a failure part-way leaves nothing behind: make its last write fail (e.g. `vi.spyOn(ProjectsActivities, 'insertAsync').mockRejectedValueOnce(...)`) and check the earlier writes were rolled back. See the `transactions.test.ts` files.
+- REST guards are tested in `rest-guards.test.ts` (401 / 403 / pass-through with the user lookup mocked); `rest-guards-coverage.test.ts` checks every route has one. When a new route's business logic needs a Meteor-only package, stub it in the coverage test's `vi.mock` list.
 - Test validation rules, change detection and search filters through the business-logic functions. Resolvers are thin enough not to need their own tests.
 
 ---

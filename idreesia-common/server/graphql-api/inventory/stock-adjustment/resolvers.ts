@@ -76,9 +76,12 @@ export default {
   Query: {
     stockAdjustmentById: async (
       _obj: unknown,
-      { _id }: Pick<StockAdjustmentArgs, '_id'>
+      { _id, physicalStoreId }: Pick<
+        StockAdjustmentArgs,
+        '_id' | 'physicalStoreId'
+      >
     ) => {
-      return StockAdjustments.findOneAsync(_id);
+      return StockAdjustments.findOneAsync({ _id, physicalStoreId });
     },
 
     stockAdjustmentsByStockItem: async (
@@ -127,12 +130,20 @@ export default {
 
     updateStockAdjustment: async (
       _obj: unknown,
-      { _id, adjustmentDate, adjustedBy, quantity, isInflow, adjustmentReason }:
-        StockAdjustmentArgs,
+      {
+        _id,
+        physicalStoreId,
+        adjustmentDate,
+        adjustedBy,
+        quantity,
+        isInflow,
+        adjustmentReason,
+      }: StockAdjustmentArgs,
       { user }: ResolverContext
     ) => {
       await updateStockAdjustment(
         _id,
+        physicalStoreId,
         { adjustmentDate, adjustedBy, quantity, isInflow, adjustmentReason },
         user._id
       );

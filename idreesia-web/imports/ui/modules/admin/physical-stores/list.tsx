@@ -5,12 +5,12 @@ import { Button, Table } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
-import { useAllPhysicalStores } from 'meteor/idreesia-common/hooks/admin';
-import type { AdminAllPhysicalStoresQuery } from 'meteor/idreesia-common/types/client-operations';
+import { useReferencePhysicalStores } from 'meteor/idreesia-common/hooks/reference-data';
+import type { ReferencePhysicalStoresQuery } from 'meteor/idreesia-common/types/client-operations';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
 type PhysicalStoreRow = NonNullable<
-  NonNullable<AdminAllPhysicalStoresQuery['allPhysicalStores']>[number]
+  NonNullable<ReferencePhysicalStoresQuery['referencePhysicalStores']>[number]
 > & { _id: string };
 
 interface Props {
@@ -19,9 +19,9 @@ interface Props {
 
 const List = ({ history }: Props) => {
   useBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'List']);
-  const { allPhysicalStores } = useAllPhysicalStores();
+  const { referencePhysicalStores } = useReferencePhysicalStores();
 
-  const physicalStores: PhysicalStoreRow[] = (allPhysicalStores ?? []).filter(
+  const physicalStores: PhysicalStoreRow[] = (referencePhysicalStores ?? []).filter(
     (store): store is PhysicalStoreRow => store != null && store._id != null
   );
 

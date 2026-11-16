@@ -15,9 +15,11 @@ type ItemCategory {
 
 extend type Query {
   itemCategoryById(_id: String!, physicalStoreId: String!): ItemCategory
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   itemCategoriesByPhysicalStoreId(physicalStoreId: String!): [ItemCategory]
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_MANAGE_STOCK_ITEMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 

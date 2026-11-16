@@ -51,11 +51,13 @@ extend type Query {
     pageIndex: String
     pageSize: String
   ): PagedWorkspaceNightStayType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 
   # One stay from the report; null if it doesn't exist or was cancelled.
   workspaceNightStayById(
     committeeId: String!
     stayId: String!
   ): WorkspaceNightStayType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 }
 `;

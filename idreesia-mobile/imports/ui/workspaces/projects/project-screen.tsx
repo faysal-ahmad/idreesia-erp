@@ -4,7 +4,6 @@ import type { Action } from 'antd-mobile/es/components/action-sheet';
 import {
   CheckCircleOutline,
   HistogramOutline,
-  MessageOutline,
   MoreOutline,
   TeamOutline,
   UnorderedListOutline,
@@ -25,8 +24,7 @@ interface Props {
 
 /**
  * Workspace → Projects → one project: its objective, progress and details,
- * and rows for its tasks, participants, private chat and (for managers)
- * activity. Coordinators manage it from the "more" menu.
+ * and rows for its tasks, participants and (for managers) activity. Coordinators manage it from the "more" menu.
  */
 export const ProjectScreen = ({ projectId }: Props) => {
   const { committeeId } = useParams<{ committeeId: string }>();
@@ -96,8 +94,8 @@ export const ProjectScreen = ({ projectId }: Props) => {
     const confirmed = await Dialog.confirm({
       title: 'Delete this project?',
       content: deleteTasks
-        ? 'The project and all its tasks are removed permanently. Its chat is archived.'
-        : 'The project is removed permanently. Its tasks stay as tasks without a project, and its chat is archived.',
+        ? 'The project and all its tasks are removed permanently.'
+        : 'The project is removed permanently. Its tasks stay as tasks without a project.',
       confirmText: <span className="project-danger-text">Delete</span>,
       cancelText: 'Cancel',
     });
@@ -204,24 +202,12 @@ export const ProjectScreen = ({ projectId }: Props) => {
         >
           Participants
         </List.Item>
-        {project.isParticipant && (
-          <List.Item
-            description="Private to the project's participants"
-            prefix={<span className="list-icon"><MessageOutline /></span>}
-            onClick={() => history.push(WorkspacesPaths.committeeProjectChat(committeeId, projectId))}
-          >
-            Chat
-          </List.Item>
-        )}
         {canManage && (
           <List.Item prefix={<span className="list-icon"><HistogramOutline /></span>} onClick={() => openPart('activity')}>
             Activity
           </List.Item>
         )}
       </List>
-      {!project.isParticipant && (
-        <p className="project-hint">The project chat is only for its participants. A coordinator can add you.</p>
-      )}
 
       <ActionSheet actions={actions} cancelText="Close" closeOnAction visible={menuOpen} onClose={() => setMenuOpen(false)} />
       <ActionSheet

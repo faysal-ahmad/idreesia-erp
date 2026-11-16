@@ -303,6 +303,8 @@ export async function deleteActionItem(
 
 export interface ListActionItemsOptions extends MeetingsPageOptions {
   meetingId?: string;
+  /** Only items of these meetings. Combined with `meetingId`, both must match. */
+  meetingIds?: string[];
   assigneeId?: string;
   status?: MeetingActionItemStatusValue | MeetingActionItemStatusValue[];
   /** Only items due before this time. */
@@ -313,14 +315,28 @@ export interface ListActionItemsOptions extends MeetingsPageOptions {
 export async function listActionItems(
   workspaceId: string,
   userId: string,
-  { meetingId, assigneeId, status, dueBefore, ...page }: ListActionItemsOptions = {}
+  {
+    meetingId,
+    meetingIds,
+    assigneeId,
+    status,
+    dueBefore,
+    ...page
+  }: ListActionItemsOptions = {}
 ): Promise<MeetingsPage<MeetingActionItemDocument>> {
   requireUserId(userId);
   await requireWorkspace(workspaceId);
   const { skip, limit } = normalizePage(page);
 
   const selector: Record<string, unknown> = { workspaceId };
-  if (meetingId) selector.meetingId = meetingId;
+  if (meetingIds) {
+    selector.meetingId =
+      meetingId && !meetingIds.includes(meetingId)
+        ? { $in: [] }
+        : meetingId ?? { $in: meetingIds };
+  } else if (meetingId) {
+    selector.meetingId = meetingId;
+  }
   if (assigneeId) selector.assigneeId = assigneeId;
   if (status !== undefined) {
     const statuses = (Array.isArray(status) ? status : [status]).map(value =>

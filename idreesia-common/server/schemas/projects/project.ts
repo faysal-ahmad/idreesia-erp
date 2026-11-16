@@ -49,11 +49,6 @@ export default new SimpleSchema({
     optional: true,
     blackbox: true,
   },
-  // Opaque id of the project's chat group; set by the consuming feature.
-  chatGroupId: {
-    type: String,
-    optional: true,
-  },
   // Derived from the project's tasks (cancelled tasks excluded).
   taskCount: {
     type: SimpleSchema.Integer,

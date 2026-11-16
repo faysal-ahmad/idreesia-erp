@@ -5,8 +5,8 @@ import type {
   MobileMyCommitteesQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
-// Committees (workspaces) the signed-in user is a member of; erp-admin gets
-// all of them. Same server query as the web's Workspaces sidebar.
+// Committees (workspaces) the signed-in user is a member of; a super-admin
+// gets all of them. Same server query as the web's Workspaces sidebar.
 export const MOBILE_MY_COMMITTEES: TypedDocumentNode<
   MobileMyCommitteesQuery,
   MobileMyCommitteesQueryVariables

@@ -5,7 +5,7 @@ import { Button, Space, Spin } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
-import { useAllPhysicalStores } from 'meteor/idreesia-common/hooks/admin';
+import { useReferencePhysicalStores } from 'meteor/idreesia-common/hooks/reference-data';
 
 import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
 import type { InstanceSelectionHandle } from '/imports/ui/modules/helpers/controls/access-management/instance-selection';
@@ -25,7 +25,8 @@ interface Props {
 
 const InstanceAccess = ({ userId, history }: Props) => {
   const instanceSelection = useRef<InstanceSelectionHandle>(null);
-  const { allPhysicalStoresLoading, allPhysicalStores } = useAllPhysicalStores();
+  const { referencePhysicalStoresLoading, referencePhysicalStores } =
+    useReferencePhysicalStores();
   const { data, loading: userLoading } = useQuery(USER_BY_ID, {
     variables: { _id: userId },
   });
@@ -34,7 +35,7 @@ const InstanceAccess = ({ userId, history }: Props) => {
   });
   const userById = data?.userById;
 
-  const physicalStores: PhysicalStoreOption[] = (allPhysicalStores ?? [])
+  const physicalStores: PhysicalStoreOption[] = (referencePhysicalStores ?? [])
     .filter(
       (
         store
@@ -65,7 +66,7 @@ const InstanceAccess = ({ userId, history }: Props) => {
     history.push(paths.usersPath);
   };
 
-  if (userLoading || allPhysicalStoresLoading) {
+  if (userLoading || referencePhysicalStoresLoading) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
         <Spin size="large" />

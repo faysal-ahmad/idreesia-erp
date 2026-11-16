@@ -1,9 +1,9 @@
 import { Accounts } from 'meteor/accounts-base';
 
+import { ACCOUNT_LOCKED_MESSAGE } from 'meteor/idreesia-common/server/rest-api/password-login';
+
 // A locked account cannot sign in. Self-registered accounts start out locked
 // (registerUser) until an administrator unlocks them in Admin → Users.
-export const ACCOUNT_LOCKED_MESSAGE =
-  'Your account is currently locked. Contact an administrator for support.';
 
 // Meteor.Error code clients can test for (the set-password page shows its own
 // wording for it). Mirrored in the web set-initial-password form.

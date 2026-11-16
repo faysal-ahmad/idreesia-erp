@@ -2,8 +2,6 @@ import React from 'react';
 
 import { KeepAlive } from '../../layout';
 import { matchPath, Redirect, Route, Switch, useLocation, useParams } from '../../router';
-import { DiscussionRoutes } from '../discussions/discussion-feature';
-import { useProjectDiscussionScope } from '../discussions/discussion-scope';
 import { type ProjectPart, WorkspacesPaths } from '../paths';
 import { ProjectActivityScreen } from './project-activity-screen';
 import { ProjectFormScreen } from './project-form-screen';
@@ -14,7 +12,6 @@ import { ProjectTasksScreen } from './project-tasks-screen';
 import { ProjectsScreen } from './projects-screen';
 import { TaskFormScreen } from './task-form-screen';
 import { TaskScreen } from './task-screen';
-import { useProject } from './use-projects';
 
 const PART_SCREENS: Array<[ProjectPart, React.ComponentType]> = [
   ['edit', ProjectFormScreen],
@@ -22,14 +19,6 @@ const PART_SCREENS: Array<[ProjectPart, React.ComponentType]> = [
   ['tasks', ProjectTasksScreen],
   ['activity', ProjectActivityScreen],
 ];
-
-/** A project's private chat: the discussion screens, titled with the project. */
-const ProjectChat = () => {
-  const { committeeId, projectId } = useParams<{ committeeId: string; projectId: string }>();
-  const scope = useProjectDiscussionScope(committeeId, projectId);
-  const { project } = useProject(committeeId, projectId);
-  return <DiscussionRoutes scope={scope} title={project?.title ? `${project.title} chat` : null} />;
-};
 
 /**
  * Workspace → Projects & Tasks. Owns every route under the projects path,
@@ -91,7 +80,6 @@ export const ProjectsFeature = () => {
             path={WorkspacesPaths.committeeProjectPartPattern(part)}
           />
         ))}
-        <Route component={ProjectChat} path={WorkspacesPaths.committeeProjectChatPattern} />
         <Redirect to={WorkspacesPaths.committeeProjects(committeeId)} />
       </Switch>
     </>

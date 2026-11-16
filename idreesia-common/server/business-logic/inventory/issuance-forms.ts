@@ -52,13 +52,15 @@ export async function createIssuanceForm(
 /** Replaces an unapproved form, moving the stock levels to match. */
 export async function updateIssuanceForm(
   issuanceFormId: string,
+  physicalStoreId: string,
   input: IssuanceFormInput,
   userId: string
 ): Promise<void> {
   return runInTransaction(async () => {
-    const existingForm = (await IssuanceForms.findOneAsync(
-      issuanceFormId
-    )) as unknown as IssuanceFormDocument | undefined;
+    const existingForm = (await IssuanceForms.findOneAsync({
+      _id: issuanceFormId,
+      physicalStoreId,
+    })) as unknown as IssuanceFormDocument | undefined;
     if (!existingForm) {
       throw new Error('Issuance form not found.');
     }
@@ -72,10 +74,12 @@ export async function updateIssuanceForm(
     const updated = await IssuanceForms.updateAsync(
       {
         _id: { $eq: issuanceFormId },
+        physicalStoreId,
         approvedOn: { $eq: null },
         approvedBy: { $eq: null },
       },
-      { $set: { ...input, updatedAt: new Date(), updatedBy: userId } }
+      // The form never moves to another store.
+      { $set: { ...input, physicalStoreId, updatedAt: new Date(), updatedBy: userId } }
     );
     if (!updated) {
       throw new Error('You cannot update an already approved Issuance Form.');
@@ -91,14 +95,17 @@ export async function removeIssuanceFormAttachment(
   userId: string
 ): Promise<void> {
   return runInTransaction(async () => {
-    await IssuanceForms.updateAsync(
-      { _id: issuanceFormId, physicalStoreId },
+    // Only delete the attachment when it belongs to this store's form.
+    const updated = await IssuanceForms.updateAsync(
+      { _id: issuanceFormId, physicalStoreId, attachmentIds: attachmentId },
       {
         $pull: { attachmentIds: attachmentId },
         $set: { updatedAt: new Date(), updatedBy: userId },
       }
     );
-    await removeAttachment(attachmentId);
+    if (updated) {
+      await removeAttachment(attachmentId);
+    }
   });
 }
 

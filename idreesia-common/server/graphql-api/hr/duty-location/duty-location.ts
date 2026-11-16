@@ -17,6 +17,7 @@ type DutyLocationType {
 
 extend type Query {
   allDutyLocations: [DutyLocationType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 extend type Mutation {

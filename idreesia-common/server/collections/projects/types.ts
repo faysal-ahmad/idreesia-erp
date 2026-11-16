@@ -38,8 +38,6 @@ export interface ProjectDocument extends Timestamps {
   targetDate?: Date;
   tags: string[];
   metadata?: ProjectsMetadata;
-  /** Opaque id of the project's chat group, set by the consuming feature. */
-  chatGroupId?: string;
   /** Tasks other than cancelled ones. */
   taskCount: number;
   doneCount: number;

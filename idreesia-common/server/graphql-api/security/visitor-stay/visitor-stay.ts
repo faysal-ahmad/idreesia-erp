@@ -42,6 +42,7 @@ extend type Query {
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
   distinctStayAllowedBy: [String]
+    @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 }
 
 extend type Mutation {

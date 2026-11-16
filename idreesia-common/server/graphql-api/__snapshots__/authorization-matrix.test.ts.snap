@@ -1,0 +1,4329 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`authorization matrix > pins every field → access declaration 1`] = `
+{
+  "Mutation.addCommitteeMember": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addHrKarkunAttachment": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addIssuanceFormAttachment": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_ISSUANCE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.addMehfilKarkun": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addPurchaseFormAttachment": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.addSecurityServerProfileImage": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addTeamCoordinator": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addTeamMember": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addWorkspaceMonitoringProfilePhoto": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.approveIssuanceForms": [
+    {
+      "args": {
+        "permissions": [
+          "IN_APPROVE_ISSUANCE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.approvePurchaseForms": [
+    {
+      "args": {
+        "permissions": [
+          "IN_APPROVE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.approveStockAdjustments": [
+    {
+      "args": {
+        "permissions": [
+          "IN_APPROVE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.cancelVisitorStay": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.clearJobDefinitionSchedule": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.clearLoginBlocks": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createChatAccount": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createCity": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_CITIES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createCityMehfil": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_CITIES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createCommittee": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createDuty": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createDutyLocation": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createDutyShift": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createHrKarkun": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS",
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createIssuanceForm": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_ISSUANCE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.createItemCategory": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.createJob": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createLocation": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.createMehfil": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createMissingSecurityServerAlertThumbnails": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createMissingSecurityServerProfileThumbnails": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPeopleTag": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_PEOPLE_TAGS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPhysicalStore": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_PHYSICAL_STORES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchaseForm": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.createSalaries": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createSecurityMehfilDuty": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createSecurityMehfilLangarDish": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createSecurityMehfilLangarLocation": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createSecurityServerChannel": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createSecurityServerProfile": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createSecurityVisitor": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createStockAdjustment": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.createStockItem": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.createTeam": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createUser": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createVendor": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.createVisitorStay": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deleteAllSalaries": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deleteDuplicatePeople": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_DUPLICATE_PEOPLE",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deleteHrKarkun": [
+    {
+      "args": {
+        "permissions": [
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deletePeopleTag": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_PEOPLE_TAGS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deleteSalaries": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deleteSecurityServerChannel": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deleteSecurityServerProfile": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deleteSecurityVisitor": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deleteUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.disableCommitteeFeature": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.enableCommitteeFeature": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.fixCitySpelling": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.fixNameSpelling": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.hardDeletePeople": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_DELETED_PEOPLE",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.importSecurityVisitorsCsvData": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.mergeStockItems": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.promoteHrKarkun": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.recalculateStockLevels": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.removeCity": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_CITIES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeCityMehfil": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_CITIES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeCommittee": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeCommitteeMember": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeDuty": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeDutyLocation": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeDutyShift": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeHrKarkunAttachment": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeIssuanceFormAttachment": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_ISSUANCE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.removeIssuanceForms": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_ISSUANCE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.removeItemCategory": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.removeJob": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeLocation": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.removeMehfil": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeMehfilKarkun": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removePurchaseFormAttachment": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.removePurchaseForms": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.removeSecurityMehfilDuty": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityMehfilLangarDish": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityMehfilLangarLocation": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityServerProfileImage": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeStockAdjustments": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.removeStockItem": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.removeTeam": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeTeamCoordinator": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeTeamMember": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeVendor": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.removeWorkspaceMonitoringProfilePhoto": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.resetJobDefinitionSchedule": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.resetTwoFactor": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.restorePerson": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_DELETED_PEOPLE",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.retryFailedJob": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.runScheduledJobNow": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.sendInboxMessage": [
+    {
+      "args": {
+        "permissions": [
+          "CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setCommitteeMemberDiscussionAccess": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setCommitteeMemberRole": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setDutyAttendance": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setDutyDayOverride": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setDutyDetail": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setDutyShiftTeam": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setHrKarkunEmploymentInfo": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setHrKarkunProfileImage": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setInstanceAccess": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setJobDefinitionEnabled": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setPermissions": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setScheduledJobEnabled": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setSecurityServerAlertReview": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setSecurityServerProfileDefaultImage": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setSecurityUserPermissions": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_USERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setSecurityVisitorImage": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setStockItemImage": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.setSuperAdmin": [
+    {
+      "args": {},
+      "directive": "superAdminOnly",
+    },
+  ],
+  "Mutation.setUserGroupInstanceAccess": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setUserGroupPermissions": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateCity": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_CITIES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateCityMehfil": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_CITIES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateCommittee": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateDuty": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateDutyLocation": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateDutyShift": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateHrKarkun": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS",
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateIssuanceForm": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_ISSUANCE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.updateItemCategory": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.updateJob": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateJobDefinitionSchedule": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateLocation": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.updateMehfil": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updatePeopleTag": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_PEOPLE_TAGS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updatePhysicalStore": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_PHYSICAL_STORES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updatePurchaseForm": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.updateSalary": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateSecurityMehfilDuty": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateSecurityMehfilLangarDish": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateSecurityMehfilLangarLocation": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateSecurityServerChannel": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateSecurityServerProfile": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateSecurityVisitor": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateSecurityVisitorNotes": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateStockAdjustment": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.updateStockItem": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.updateTeam": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateTeamMemberDays": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateUser": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateVendor": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.updateVisitorStay": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateWorkspaceMonitoringProfile": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.verifyStockItemLevel": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.workspaceAbortDocumentUpload": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceAbortMeetingAttachmentUpload": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceAddCommitteeMember": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceAddMeetingAgendaItem": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceAddProjectParticipants": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceAddTaskComment": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCancelMeeting": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCancelPoll": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCastPollVote": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCheckInDocument": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCheckOutDocument": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceClosePoll": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCompleteDocumentUpload": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCompleteMeeting": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCompleteMeetingAttachmentUpload": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCreateDocumentFolder": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCreateDocumentUpload": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCreateMeeting": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCreateMeetingActionItem": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCreateMeetingAttachmentUpload": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCreatePoll": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCreateProject": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceCreateTask": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceDeleteDiscussionMessage": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceDeleteDocumentVersion": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceDeleteMeeting": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceDeleteMeetingActionItem": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceDeleteMeetingAttachment": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceDeletePoll": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceDeleteProject": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceDeleteTask": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceDeleteTaskComment": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceDocumentDownloadUrl": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceEditDiscussionMessage": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceEmptyDocumentTrash": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceForceUnlockDocument": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceMarkMeetingAttendance": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceMeetingAttachmentDownloadUrl": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceMoveDocument": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceMoveDocumentFolder": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceOpenPoll": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspacePurgeDocumentTrashItem": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceReactToDiscussionMessage": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceRemoveCommitteeMember": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceRemoveMeetingAgendaItem": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceRemoveProjectParticipant": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceRenameDocumentFolder": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceReopenMeeting": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceReopenPoll": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceReorderMeetingAgenda": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceRespondToMeeting": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceRestoreDocumentTrashItem": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceRestoreDocumentVersion": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceSendDiscussionMessage": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceSetCommitteeMemberCoordinator": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceSetCommitteeMemberDiscussionAccess": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceSetDiscussionMessagePinned": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceSetDiscussionMessageStarred": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceSetMeetingActionItemStatus": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceSetMeetingMinutes": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceSetMeetingParticipantRole": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceSetMeetingParticipants": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceSetProjectStatus": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceSetTaskProgress": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceSetTaskStatus": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceTrashDocument": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceTrashDocumentFolder": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceUpdateDocument": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceUpdateMeeting": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceUpdateMeetingActionItem": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceUpdateMeetingAgendaItem": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceUpdatePoll": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceUpdateProject": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceUpdateTask": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceWithdrawPollVote": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.allCommitteeFeatures": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_COMMITTEES",
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allCommittees": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_COMMITTEES",
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allDutyLocations": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allDutyShifts": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allJobDefinitions": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allJobs": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allMSDuties": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allMehfils": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_MEHFILS",
+          "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allSecurityMehfilDuties": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_MEHFILS",
+          "SECURITY_MANAGE_MEHFILS",
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allSecurityMehfilLangarDishes": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allSecurityMehfilLangarLocations": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allSecurityServerChannels": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allTeams": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.committeeById": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_COMMITTEES",
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.committeeMembers": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_COMMITTEES",
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.deletedPersonById": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_DELETED_PEOPLE",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.deletedPersonRelationCounts": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_DELETED_PEOPLE",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.distinctStayAllowedBy": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_VISITORS",
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.duplicateCnics": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_DUPLICATE_PEOPLE",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.duplicatePersonById": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_DUPLICATE_PEOPLE",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.duplicatePersonRelationCounts": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_DUPLICATE_PEOPLE",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.duplicatePhoneNumbers": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_DUPLICATE_PEOPLE",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.dutyAttendanceCards": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.dutyAttendanceSheet": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.dutyPlanDays": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.dutyPlanWeek": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrCommitteeOptions": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrKarkunById": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrKarkunsById": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.inboxConversation": [
+    {
+      "args": {
+        "permissions": [
+          "CORRESPONDENCE_INBOX_VIEW_MESSAGES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.isJobProcessorActive": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.issuanceFormById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "object",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.issuanceFormsByMonth": [
+    {
+      "args": {
+        "permissions": [
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.issuanceFormsByStockItem": [
+    {
+      "args": {
+        "permissions": [
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.itemCategoriesByPhysicalStoreId": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+          "IN_MANAGE_STOCK_ITEMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.itemCategoryById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "object",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.jobById": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.karkunDutyAttendanceSheet": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.locationById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "object",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.locationsByPhysicalStoreId": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.mehfilById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_MEHFILS",
+          "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.mehfilKarkunByBarcodeId": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_MEHFILS",
+          "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.mehfilKarkunsByIds": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_MEHFILS",
+          "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.mehfilKarkunsByMehfilId": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_MEHFILS",
+          "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedDeletedPeople": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_DELETED_PEOPLE",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedHrAuditLogs": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_AUDIT_LOGS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedHrKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedInboxConversations": [
+    {
+      "args": {
+        "permissions": [
+          "CORRESPONDENCE_INBOX_VIEW_MESSAGES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedIssuanceForms": [
+    {
+      "args": {
+        "permissions": [
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "paged-list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.pagedJobLogs": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchaseForms": [
+    {
+      "args": {
+        "permissions": [
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "paged-list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.pagedSalariesByKarkun": [
+    {
+      "args": {
+        "dataFieldName": "salaries",
+        "permissions": [
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedScheduledJobs": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedSecurityAuditLogs": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_AUDIT_LOGS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedSecurityLogs": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_SECURITY_LOGS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedSecurityPeople": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedSecurityServerAlertGroups": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedSecurityServerAlerts": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedSecurityServerProfiles": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedSecurityUsers": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_USERS",
+          "SECURITY_MANAGE_USERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedSecurityVisitors": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_VISITORS",
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedStockAdjustments": [
+    {
+      "args": {
+        "permissions": [
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+          "IN_APPROVE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "paged-list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.pagedStockItems": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+          "IN_APPROVE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "paged-list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.pagedUserGroups": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedUsers": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedVisitorStays": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_VISITORS",
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedVisitorStaysByVisitorId": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_VISITORS",
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.physicalStoreById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+          "IN_MANAGE_STOCK_ITEMS",
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+          "IN_APPROVE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "id",
+        "returnType": "object",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.purchaseFormById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "object",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.purchaseFormsByMonth": [
+    {
+      "args": {
+        "permissions": [
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.purchaseFormsByStockItem": [
+    {
+      "args": {
+        "permissions": [
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.referenceDutyShifts": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_VISITORS",
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.referenceMsDuties": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_VISITORS",
+          "SECURITY_MANAGE_VISITORS",
+          "ADMIN_VIEW_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.referencePhysicalStoreById": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_PHYSICAL_STORES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.referencePhysicalStores": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_PHYSICAL_STORES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.salariesByIds": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_KARKUNS",
+          "HR_MANAGE_KARKUNS",
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.salariesByMonth": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
+          "HR_DELETE_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityFaceVectorFromImage": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_VISITORS",
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityLogUsers": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_SECURITY_LOGS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityMehfilDutyById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_MEHFILS",
+          "SECURITY_MANAGE_MEHFILS",
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityMehfilLangarDishById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityMehfilLangarLocationById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityServerAlertById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityServerAlertSyncStatus": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityServerChannelById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityServerProfileById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityServerUsageStats": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityVisitorByCnic": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_VISITORS",
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityVisitorById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_VISITORS",
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityVisitorsByFaceVector": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_VISITORS",
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.stockAdjustmentById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+          "IN_APPROVE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "object",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.stockAdjustmentsByStockItem": [
+    {
+      "args": {
+        "permissions": [
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+          "IN_APPROVE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.stockItemById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+          "IN_APPROVE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "object",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.stockItemsById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_STOCK_ITEMS",
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_APPROVE_ISSUANCE_FORMS",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+          "IN_APPROVE_STOCK_ADJUSTMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.userById": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.userGroupById": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.vendorById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "object",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.vendorsByPhysicalStoreId": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_SETUP_DATA",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_APPROVE_PURCHASE_FORMS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+    {
+      "args": {
+        "instanceIdArgName": "physicalStoreId",
+        "returnType": "list",
+      },
+      "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.visitorStayById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_VISITORS",
+          "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.workspaceCommitteeById": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceCommitteeKarkunSearch": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDiscussionInfo": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDiscussionMembers": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDiscussionOlderMessages": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDiscussionPinnedMessages": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDiscussionSearchMessages": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDiscussionStarredMessages": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDiscussionSync": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDiscussionThreadMessages": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDocumentActivity": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDocumentById": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDocumentFolderContents": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDocumentFolders": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDocumentSearch": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDocumentTrash": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDocumentVersions": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDocumentsInfo": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceMeetingActionItems": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceMeetingActivity": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceMeetingAttachments": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceMeetingById": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceMeetingMembers": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceMeetings": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceMeetingsInfo": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceMonitoringAlerts": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceMonitoringProfileById": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceMonitoringProfiles": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceNightStayById": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceNightStays": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspacePollActivity": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspacePollById": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspacePollResults": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspacePolls": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspacePollsInfo": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceProjectById": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceProjectMembers": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceProjects": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceProjectsActivity": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceProjectsInfo": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceTaskById": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceTaskComments": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceTasks": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+          "OBSERVER",
+          "GUEST",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+}
+`;
+
+exports[`authorization matrix > pins the fields that check instance access without a permission 1`] = `[]`;

@@ -88,7 +88,7 @@ describe('myNotifications', () => {
     expect(result.map((n: any) => n._id)).toEqual(['dms:b']);
   });
 
-  it('is empty for a user with no person, such as erp-admin, or no user at all', async () => {
+  it('is empty for a user with no person, or no user at all', async () => {
     await publish('a');
 
     expect(await Query.myNotifications(null, {}, context({ _id: 'admin' }))).toEqual([]);

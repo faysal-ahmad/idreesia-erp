@@ -53,7 +53,7 @@ export interface Project {
   status: ProjectStatus;
   participants: ProjectParticipant[];
   participantCount: number;
-  /** The current user takes part (and so can use the project chat). */
+  /** The current user takes part in the project. */
   isParticipant: boolean;
   /** The current user can edit it, manage participants and its tasks. */
   canManage: boolean;

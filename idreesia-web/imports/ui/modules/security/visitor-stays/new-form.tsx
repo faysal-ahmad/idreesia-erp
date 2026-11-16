@@ -4,12 +4,12 @@ import { Form } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import { useDistinctStayAllowedBy } from 'meteor/idreesia-common/hooks/security';
 import {
-  useAllMSDuties,
-  useAllDutyShifts,
-} from '/imports/ui/modules/hr/common/hooks';
+  useReferenceMsDuties,
+  useReferenceDutyShifts,
+} from 'meteor/idreesia-common/hooks/reference-data';
 import type {
-  AllDutyShiftsQuery,
-  ComposerAllMsDutiesQuery,
+  ReferenceDutyShiftsQuery,
+  ReferenceMsDutiesQuery,
   CreateVisitorStayMutation,
 } from 'meteor/idreesia-common/types/client-operations';
 import {
@@ -25,8 +25,8 @@ import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilitie
 
 import { CREATE_VISITOR_STAY } from './gql';
 
-type MSDuty = NonNullable<NonNullable<ComposerAllMsDutiesQuery['allMSDuties']>[number]>;
-type DutyShift = NonNullable<NonNullable<AllDutyShiftsQuery['allDutyShifts']>[number]>;
+type MSDuty = NonNullable<NonNullable<ReferenceMsDutiesQuery['referenceMsDuties']>[number]>;
+type DutyShift = NonNullable<NonNullable<ReferenceDutyShiftsQuery['referenceDutyShifts']>[number]>;
 type VisitorStay = NonNullable<CreateVisitorStayMutation['createVisitorStay']>;
 
 interface NewFormValues {
@@ -42,8 +42,10 @@ interface NewFormProps {
 }
 
 const NewForm = ({ visitorId, handleAddItem }: NewFormProps) => {
-  const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
-  const { allDutyShifts, allDutyShiftsLoading } = useAllDutyShifts();
+  const { referenceMsDuties: allMSDuties, referenceMsDutiesLoading: allMSDutiesLoading } =
+    useReferenceMsDuties();
+  const { referenceDutyShifts: allDutyShifts, referenceDutyShiftsLoading: allDutyShiftsLoading } =
+    useReferenceDutyShifts();
   const { distinctStayAllowedBy, distinctStayAllowedByLoading } =
     useDistinctStayAllowedBy();
   const [createVisitorStay, { loading: creating }] = useMutation(

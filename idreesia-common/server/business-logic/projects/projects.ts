@@ -377,26 +377,6 @@ export async function removeProjectParticipant(
   });
 }
 
-/**
- * Stores the opaque id of the project's chat group. The module never uses
- * it; the consuming feature owns the group. null clears it.
- */
-export async function setProjectChatGroupId(
-  projectId: string,
-  chatGroupId: string | null,
-  userId: string
-): Promise<ProjectDocument> {
-  requireUserId(userId);
-  const project = await requireProject(projectId);
-  const id = chatGroupId ? normalizeOpaqueId(chatGroupId, 'Chat group id') : null;
-  return writeProject(
-    project,
-    userId,
-    id ? { $set: { chatGroupId: id } } : { $unset: { chatGroupId: 1 } },
-    { checkRevision: false }
-  );
-}
-
 export interface DeleteProjectOptions {
   /**
    * What happens to the project's tasks: `detach` (default) keeps them as

@@ -183,10 +183,12 @@ export default gql`
 
   extend type Query {
     workspaceMeetingsInfo(committeeId: String!): WorkspaceMeetingsInfoType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # The committee's members, who can be invited.
     workspaceMeetingMembers(
       committeeId: String!
     ): [WorkspaceMeetingMemberType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # view: upcoming (default), past, cancelled or all. from/to narrow to
     # meetings overlapping that range (e.g. a calendar month).
     workspaceMeetings(
@@ -198,14 +200,17 @@ export default gql`
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     workspaceMeetingById(
       committeeId: String!
       meetingId: String!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     workspaceMeetingAttachments(
       committeeId: String!
       meetingId: String!
     ): [WorkspaceMeetingAttachmentType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # assigneeId 'me' for the logged-in user's own items.
     workspaceMeetingActionItems(
       committeeId: String!
@@ -215,6 +220,7 @@ export default gql`
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspaceMeetingActionItemType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # Newest first; pass the last entry's 'at' as 'before' for the next page.
     workspaceMeetingActivity(
       committeeId: String!
@@ -222,6 +228,7 @@ export default gql`
       before: String
       limit: Int
     ): [WorkspaceMeetingActivityType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   }
 
   extend type Mutation {
@@ -231,25 +238,31 @@ export default gql`
       input: WorkspaceMeetingInput!
       participantIds: [String]
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceUpdateMeeting(
       committeeId: String!
       meetingId: String!
       input: WorkspaceMeetingInput!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceCancelMeeting(
       committeeId: String!
       meetingId: String!
       reason: String
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceCompleteMeeting(
       committeeId: String!
       meetingId: String!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceReopenMeeting(
       committeeId: String!
       meetingId: String!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceDeleteMeeting(committeeId: String!, meetingId: String!): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     # Makes the participant list exactly these members (new ones invited,
     # missing ones removed).
@@ -258,13 +271,15 @@ export default gql`
       meetingId: String!
       participantIds: [String]!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceSetMeetingParticipantRole(
       committeeId: String!
       meetingId: String!
       participantId: String!
       role: String!
     ): WorkspaceMeetingType
-    # Members answer for themselves (participantId omitted); coordinators
+      @checkCommitteeAccess(roles: [COORDINATOR])
+    # Participants answer for themselves (participantId omitted); coordinators
     # can answer for any participant.
     workspaceRespondToMeeting(
       committeeId: String!
@@ -273,41 +288,48 @@ export default gql`
       status: String!
       comment: String
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     workspaceMarkMeetingAttendance(
       committeeId: String!
       meetingId: String!
       entries: [WorkspaceMeetingAttendanceInput]!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     workspaceAddMeetingAgendaItem(
       committeeId: String!
       meetingId: String!
       input: WorkspaceMeetingAgendaItemInput!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceUpdateMeetingAgendaItem(
       committeeId: String!
       meetingId: String!
       agendaItemId: String!
       input: WorkspaceMeetingAgendaItemInput!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceRemoveMeetingAgendaItem(
       committeeId: String!
       meetingId: String!
       agendaItemId: String!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceReorderMeetingAgenda(
       committeeId: String!
       meetingId: String!
       agendaItemIds: [String]!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     workspaceSetMeetingMinutes(
       committeeId: String!
       meetingId: String!
       text: String
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
-    # Any member. Starts a direct upload: PUT the file to the URL, then call
+    # Coordinators. Starts a direct upload: PUT the file to the URL, then call
     # workspaceCompleteMeetingAttachmentUpload.
     workspaceCreateMeetingAttachmentUpload(
       committeeId: String!
@@ -316,45 +338,54 @@ export default gql`
       mimeType: String
       size: Float!
     ): WorkspaceMeetingUploadType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceCompleteMeetingAttachmentUpload(
       committeeId: String!
       uploadId: String!
     ): WorkspaceMeetingAttachmentType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceAbortMeetingAttachmentUpload(
       committeeId: String!
       uploadId: String!
     ): Boolean
-    # Any member. A mutation because each download is logged.
+      @checkCommitteeAccess(roles: [COORDINATOR])
+    # Any role that can see the meeting. A mutation because each download is logged.
     workspaceMeetingAttachmentDownloadUrl(
       committeeId: String!
       attachmentId: String!
       inline: Boolean
     ): WorkspaceMeetingDownloadType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # Coordinators only.
     workspaceDeleteMeetingAttachment(
       committeeId: String!
       attachmentId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     workspaceCreateMeetingActionItem(
       committeeId: String!
       meetingId: String!
       input: WorkspaceMeetingActionItemInput!
     ): WorkspaceMeetingActionItemType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceUpdateMeetingActionItem(
       committeeId: String!
       actionItemId: String!
       input: WorkspaceMeetingActionItemInput!
     ): WorkspaceMeetingActionItemType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     # Coordinators and the assignee.
     workspaceSetMeetingActionItemStatus(
       committeeId: String!
       actionItemId: String!
       status: String!
     ): WorkspaceMeetingActionItemType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     workspaceDeleteMeetingActionItem(
       committeeId: String!
       actionItemId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
   }
 `;

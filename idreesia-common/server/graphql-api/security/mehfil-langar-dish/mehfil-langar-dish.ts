@@ -15,7 +15,9 @@ type MehfilLangarDishType {
 
 extend type Query {	
   allSecurityMehfilLangarDishes: [MehfilLangarDishType]	
+    @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
   securityMehfilLangarDishById(id: String!): MehfilLangarDishType	
+    @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
 }	
 
 extend type Mutation {	

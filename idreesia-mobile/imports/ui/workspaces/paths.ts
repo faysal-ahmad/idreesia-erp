@@ -16,7 +16,7 @@ export type MeetingPart =
   | 'action-items'
   | 'activity';
 
-/** The screens under one project (its chat has screens of its own). */
+/** The screens under one project. */
 export type ProjectPart = 'edit' | 'participants' | 'tasks' | 'activity';
 
 /** The screens under one document. */
@@ -96,22 +96,6 @@ export const WorkspacesPaths = {
     `${committee(':committeeId')}/projects/:projectId/${part}`,
   committeeProjectPart: (committeeId: string, projectId: string, part: ProjectPart) =>
     `${committee(committeeId)}/projects/${projectId}/${part}`,
-  /** A project's private chat; its screens are under it. */
-  committeeProjectChatPattern: `${committee(':committeeId')}/projects/:projectId/chat`,
-  committeeProjectChat: (committeeId: string, projectId: string) =>
-    `${committee(committeeId)}/projects/${projectId}/chat`,
-  committeeProjectChatThreadPattern: `${committee(':committeeId')}/projects/:projectId/chat/threads/:threadId`,
-  committeeProjectChatThread: (committeeId: string, projectId: string, threadId: string) =>
-    `${committee(committeeId)}/projects/${projectId}/chat/threads/${threadId}`,
-  committeeProjectChatSearchPattern: `${committee(':committeeId')}/projects/:projectId/chat/search`,
-  committeeProjectChatSearch: (committeeId: string, projectId: string) =>
-    `${committee(committeeId)}/projects/${projectId}/chat/search`,
-  committeeProjectChatPinnedPattern: `${committee(':committeeId')}/projects/:projectId/chat/pinned`,
-  committeeProjectChatPinned: (committeeId: string, projectId: string) =>
-    `${committee(committeeId)}/projects/${projectId}/chat/pinned`,
-  committeeProjectChatStarredPattern: `${committee(':committeeId')}/projects/:projectId/chat/starred`,
-  committeeProjectChatStarred: (committeeId: string, projectId: string) =>
-    `${committee(committeeId)}/projects/${projectId}/chat/starred`,
   /**
    * A committee's tasks: the Tasks tab of the projects screen (as on the
    * web). Each task's screens are under the projects path too.

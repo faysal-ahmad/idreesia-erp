@@ -108,10 +108,10 @@ extend type Mutation {
     userId: String!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
-  # Grants or revokes super-admin rights. No permission directive: every
-  # permission check lets a super-admin through, so the resolver itself
-  # requires the caller to be a super-admin.
+  # Grants or revokes super-admin rights. Not a permission: every permission
+  # check lets a super-admin through, so only a super-admin may call it.
   setSuperAdmin(userId: String!, isSuperAdmin: Boolean!): UserType
+    @superAdminOnly
 
   updateLoginTime: Int
   updateLastActiveTime: Int

@@ -7,4 +7,6 @@ export const Meteor = {
   isServer: true,
   isClient: false,
   users: new Mongo.Collection('users'),
+  // No fibers/async context in plain Node: nothing to bind.
+  bindEnvironment: <T>(fn: T): T => fn,
 };

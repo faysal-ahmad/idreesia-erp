@@ -105,8 +105,8 @@ const resolvers: ResolverMap = {
       return getIssuanceForms(queryString, physicalStoreId);
     },
 
-    issuanceFormById: async (obj, { _id }, { user }) => {
-      return IssuanceForms.findOneAsync(_id);
+    issuanceFormById: async (obj, { _id, physicalStoreId }) => {
+      return IssuanceForms.findOneAsync({ _id, physicalStoreId });
     },
   },
 
@@ -158,6 +158,7 @@ const resolvers: ResolverMap = {
     ) => {
       await updateIssuanceForm(
         _id,
+        physicalStoreId,
         {
           issueDate,
           issuedBy,

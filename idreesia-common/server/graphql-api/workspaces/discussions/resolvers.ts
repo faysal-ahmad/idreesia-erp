@@ -15,34 +15,30 @@ import {
   syncConversationMessages,
 } from 'meteor/idreesia-common/server/business-logic/rocket-chat';
 
-import {
-  canPinCommitteeDiscussion,
-  committeeDiscussionFileUrl,
-  getCoordinatedCommitteeChatGroupId,
-  getMemberCommitteeChatGroupId,
-} from './access';
+import { getCommitteeAccess } from '../committee/access';
+import { committeeDiscussionFileUrl, getDiscussionChatGroupId } from './access';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
   [key: string]: ResolverField;
 }
 
-// Each resolver only checks access (committee membership + Discussions
-// enabled; coordinators for pinning); the work is done by the discussions
-// business logic.
+// Who may call each field (committee role) is declared in the schema with
+// @checkCommitteeAccess. The resolvers only check that Discussions is enabled
+// on the committee; the work is done by the discussions business logic.
 const resolvers: ResolverMap = {
   Query: {
-    workspaceDiscussionInfo: async (obj, { committeeId }, { user }) => {
-      await getMemberCommitteeChatGroupId(user, committeeId);
+    workspaceDiscussionInfo: async (obj, { committeeId }, context) => {
+      await getDiscussionChatGroupId(context, committeeId);
       return {
-        ...getConversationInfo(user),
-        canPin: await canPinCommitteeDiscussion(user, committeeId),
+        ...getConversationInfo(context.user),
+        canPin: getCommitteeAccess(context, committeeId).isCoordinator,
       };
     },
 
-    workspaceDiscussionSync: async (obj, { committeeId, since }, { user }) => {
-      const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return syncConversationMessages(chatGroupId, user, {
+    workspaceDiscussionSync: async (obj, { committeeId, since }, context) => {
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
+      return syncConversationMessages(chatGroupId, context.user, {
         since,
         fileUrl: committeeDiscussionFileUrl(committeeId),
       });
@@ -51,26 +47,26 @@ const resolvers: ResolverMap = {
     workspaceDiscussionThreadMessages: async (
       obj,
       { committeeId, threadId },
-      { user }
+      context
     ) => {
-      const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return getConversationThreadMessages(chatGroupId, user, threadId, {
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
+      return getConversationThreadMessages(chatGroupId, context.user, threadId, {
         fileUrl: committeeDiscussionFileUrl(committeeId),
       });
     },
 
-    workspaceDiscussionMembers: async (obj, { committeeId }, { user }) => {
-      const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
+    workspaceDiscussionMembers: async (obj, { committeeId }, context) => {
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
       return getConversationMembers(chatGroupId);
     },
 
     workspaceDiscussionPinnedMessages: async (
       obj,
       { committeeId },
-      { user }
+      context
     ) => {
-      const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return getConversationPinnedMessages(chatGroupId, user, {
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
+      return getConversationPinnedMessages(chatGroupId, context.user, {
         fileUrl: committeeDiscussionFileUrl(committeeId),
       });
     },
@@ -78,10 +74,10 @@ const resolvers: ResolverMap = {
     workspaceDiscussionStarredMessages: async (
       obj,
       { committeeId },
-      { user }
+      context
     ) => {
-      const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return getConversationStarredMessages(chatGroupId, user, {
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
+      return getConversationStarredMessages(chatGroupId, context.user, {
         fileUrl: committeeDiscussionFileUrl(committeeId),
       });
     },
@@ -89,10 +85,10 @@ const resolvers: ResolverMap = {
     workspaceDiscussionOlderMessages: async (
       obj,
       { committeeId, before },
-      { user }
+      context
     ) => {
-      const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return getOlderConversationMessages(chatGroupId, user, {
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
+      return getOlderConversationMessages(chatGroupId, context.user, {
         before,
         fileUrl: committeeDiscussionFileUrl(committeeId),
       });
@@ -101,10 +97,10 @@ const resolvers: ResolverMap = {
     workspaceDiscussionSearchMessages: async (
       obj,
       { committeeId, searchText, offset },
-      { user }
+      context
     ) => {
-      const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return searchConversationMessages(chatGroupId, user, {
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
+      return searchConversationMessages(chatGroupId, context.user, {
         searchText,
         offset,
         fileUrl: committeeDiscussionFileUrl(committeeId),
@@ -116,21 +112,21 @@ const resolvers: ResolverMap = {
     workspaceSendDiscussionMessage: async (
       obj,
       { committeeId, text, threadId },
-      { user }
+      context
     ) => {
-      const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return sendConversationMessage(chatGroupId, user, text, threadId);
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
+      return sendConversationMessage(chatGroupId, context.user, text, threadId);
     },
 
     workspaceReactToDiscussionMessage: async (
       obj,
       { committeeId, messageId, emoji, shouldReact },
-      { user }
+      context
     ) => {
-      const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
       return reactToConversationMessage(
         chatGroupId,
-        user,
+        context.user,
         messageId,
         emoji,
         shouldReact
@@ -140,40 +136,37 @@ const resolvers: ResolverMap = {
     workspaceSetDiscussionMessageStarred: async (
       obj,
       { committeeId, messageId, starred },
-      { user }
+      context
     ) => {
-      const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return setConversationMessageStarred(chatGroupId, user, messageId, starred);
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
+      return setConversationMessageStarred(chatGroupId, context.user, messageId, starred);
     },
 
     workspaceSetDiscussionMessagePinned: async (
       obj,
       { committeeId, messageId, pinned },
-      { user }
+      context
     ) => {
-      const chatGroupId = await getCoordinatedCommitteeChatGroupId(
-        user,
-        committeeId
-      );
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
       return setConversationMessagePinned(chatGroupId, messageId, pinned);
     },
 
     workspaceEditDiscussionMessage: async (
       obj,
       { committeeId, messageId, text },
-      { user }
+      context
     ) => {
-      const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return editConversationMessage(chatGroupId, user, messageId, text);
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
+      return editConversationMessage(chatGroupId, context.user, messageId, text);
     },
 
     workspaceDeleteDiscussionMessage: async (
       obj,
       { committeeId, messageId },
-      { user }
+      context
     ) => {
-      const chatGroupId = await getMemberCommitteeChatGroupId(user, committeeId);
-      return deleteConversationMessage(chatGroupId, user, messageId);
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
+      return deleteConversationMessage(chatGroupId, context.user, messageId);
     },
   },
 };

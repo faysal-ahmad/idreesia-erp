@@ -31,7 +31,7 @@ export interface MyNotification {
 }
 
 // What the user can see notifications for: the modules enabled on the
-// committees they belong to. A user with no person (for example erp-admin)
+// committees they belong to. A user with no person (for example a service account)
 // has none.
 const getVisibleScope = async (user: NotificationUser | null | undefined) => {
   if (!user?._id || !user.personId) return null;

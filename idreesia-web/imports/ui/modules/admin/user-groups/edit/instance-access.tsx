@@ -5,7 +5,7 @@ import { Button, Row } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
-import { useAllPhysicalStores } from 'meteor/idreesia-common/hooks/admin';
+import { useReferencePhysicalStores } from 'meteor/idreesia-common/hooks/reference-data';
 
 import { InstanceSelection } from '/imports/ui/modules/helpers/controls';
 import type { InstanceSelectionHandle } from '/imports/ui/modules/helpers/controls/access-management/instance-selection';
@@ -27,7 +27,8 @@ interface Props {
 
 const InstanceAccess = ({ groupId, history }: Props) => {
   const instanceSelection = useRef<InstanceSelectionHandle>(null);
-  const { allPhysicalStoresLoading, allPhysicalStores } = useAllPhysicalStores();
+  const { referencePhysicalStoresLoading, referencePhysicalStores } =
+    useReferencePhysicalStores();
   const { data: groupData, loading: groupLoading } = useQuery(
     USER_GROUP_INSTANCE_ACCESS_BY_ID,
     {
@@ -39,7 +40,7 @@ const InstanceAccess = ({ groupId, history }: Props) => {
   );
   const userGroupById = groupData?.userGroupById;
 
-  const physicalStores: PhysicalStoreOption[] = (allPhysicalStores ?? [])
+  const physicalStores: PhysicalStoreOption[] = (referencePhysicalStores ?? [])
     .filter(
       (
         store
@@ -69,7 +70,7 @@ const InstanceAccess = ({ groupId, history }: Props) => {
     history.goBack();
   };
 
-  if (groupLoading || allPhysicalStoresLoading) return null;
+  if (groupLoading || referencePhysicalStoresLoading) return null;
 
   return (
     <Fragment>

@@ -10,7 +10,7 @@ const ADMIN_PHYSICAL_STORE_BY_ID: TypedDocumentNode<
   AdminPhysicalStoreByIdQueryVariables
 > = gql`
   query adminPhysicalStoreById($id: String!) {
-    physicalStoreById(id: $id) {
+    referencePhysicalStoreById(id: $id) {
       _id
       name
       address

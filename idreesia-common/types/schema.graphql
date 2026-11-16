@@ -6,6 +6,18 @@ type Query
 
 type Mutation
 
+enum CommitteeRole {
+  MEMBER
+  COORDINATOR
+  GUEST
+  OBSERVER
+}
+
+directive @checkCommitteeAccess(
+  roles: [CommitteeRole!]!,
+  committeeIdArgName: String,
+) on FIELD_DEFINITION
+
 directive @checkInstanceAccess(
   instanceIdArgName: String!,
   returnType: String,
@@ -68,6 +80,8 @@ enum Permission {
   CORRESPONDENCE_INBOX_VIEW_MESSAGES
   CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES
 }
+
+directive @superAdminOnly on FIELD_DEFINITION
 
 scalar Date
 scalar Time
@@ -465,10 +479,10 @@ extend type Mutation {
     userId: String!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
-  # Grants or revokes super-admin rights. No permission directive: every
-  # permission check lets a super-admin through, so the resolver itself
-  # requires the caller to be a super-admin.
+  # Grants or revokes super-admin rights. Not a permission: every permission
+  # check lets a super-admin through, so only a super-admin may call it.
   setSuperAdmin(userId: String!, isSuperAdmin: Boolean!): UserType
+    @superAdminOnly
 
   updateLoginTime: Int
   updateLastActiveTime: Int
@@ -627,6 +641,23 @@ type PersonType {
   deletedBy: String
 }
 
+# The minimal view of a person that other modules' reference data may expose
+# (team members, etc.). Never add contact, address, notes or other sensitive
+# fields here.
+type PersonBasicSharedDataType {
+  name: String
+  cnicNumber: String
+  contactNumber1: String
+  contactNumber2: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PersonBasicType {
+  _id: String
+  sharedData: PersonBasicSharedDataType
+}
+
 input PersonFilter {
   name: String
   cnicNumber: String
@@ -654,6 +685,7 @@ extend type Query {
 
 extend type Mutation {
   fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
+    @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 }
 
 type SecurityLogType {
@@ -778,6 +810,7 @@ type DutyLocationType {
 
 extend type Query {
   allDutyLocations: [DutyLocationType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 extend type Mutation {
@@ -948,6 +981,7 @@ type DutyShiftType {
 
 extend type Query {
   allDutyShifts: [DutyShiftType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 extend type Mutation {
@@ -977,7 +1011,7 @@ type DutyType {
   description: String
   committeeId: String
 
-  committee: CommitteeType
+  committee: CommitteeBasicType
   usedCount: Int
   shifts: [DutyShiftType]
   locations: [DutyLocationType]
@@ -991,6 +1025,7 @@ type DutyType {
 
 extend type Query {
   allMSDuties: [DutyType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 extend type Mutation {
@@ -1017,7 +1052,9 @@ type JobType {
 
 extend type Query {
   allJobs: [JobType]
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA, HR_DELETE_DATA])
   jobById(id: String!): JobType
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA, HR_DELETE_DATA])
 }
 
 extend type Mutation {
@@ -1031,6 +1068,7 @@ extend type Mutation {
 
 extend type Query {
   hrCommitteeOptions: [CommitteeType]
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 
   hrKarkunById(_id: String!): PersonType
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
@@ -1189,7 +1227,7 @@ type TeamMemberType {
   karkunId: String
   isCoordinator: Boolean
   daysOfWeek: [String]
-  karkun: PersonType
+  karkun: PersonBasicType
 }
 
 type TeamType {
@@ -1209,6 +1247,7 @@ type TeamType {
 
 extend type Query {
   allTeams: [TeamType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 extend type Mutation {
@@ -1469,9 +1508,9 @@ type PhysicalStore {
 }
 
 extend type Query {
-  allPhysicalStores: [PhysicalStore]
   allAccessiblePhysicalStores: [PhysicalStore]
   physicalStoreById(id: String!): PhysicalStore
+    @checkInstanceAccess(instanceIdArgName: "id", returnType: "object")
 }
 
 extend type Mutation {
@@ -1830,7 +1869,7 @@ type CommitteeMemberType {
   # member, coordinator, guest or observer.
   role: String
   isCoordinator: Boolean
-  karkun: PersonType
+  karkun: PersonBasicType
   # The person has an ERP user.
   hasLoginAccount: Boolean
   # That user has a chat account.
@@ -1850,6 +1889,15 @@ type CommitteeFeatureType {
 type CommitteeMembersPageType {
   totalResults: Int
   data: [CommitteeMemberType]
+}
+
+# The minimal view of a committee that other modules' data may expose (e.g. a
+# duty's committee). No members or other nested objects.
+type CommitteeBasicType {
+  _id: String
+  name: String
+  color: String
+  description: String
 }
 
 type CommitteeType {
@@ -2019,6 +2067,54 @@ extend type Mutation {
   @checkPermissions(permissions: [ADMIN_MANAGE_CITIES])
 }
 
+type ReferenceDutyType {
+  _id: String
+  name: String
+}
+
+type ReferenceDutyShiftType {
+  _id: String
+  dutyId: String
+  name: String
+}
+
+extend type Query {
+  # Consumers: Security visitor stays, Admin user karkun picker.
+  referenceMsDuties: [ReferenceDutyType]
+    @checkPermissions(
+      permissions: [
+        SECURITY_VIEW_VISITORS
+        SECURITY_MANAGE_VISITORS
+        ADMIN_VIEW_USERS_AND_GROUPS
+        ADMIN_MANAGE_USERS_AND_GROUPS
+      ]
+    )
+  # Consumers: Security visitor stays.
+  referenceDutyShifts: [ReferenceDutyShiftType]
+    @checkPermissions(
+      permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS]
+    )
+}
+
+type ReferencePhysicalStoreType {
+  _id: String
+  name: String
+  address: String
+}
+
+extend type Query {
+  referencePhysicalStores: [ReferencePhysicalStoreType]
+    @checkPermissions(
+      permissions: [
+        ADMIN_VIEW_USERS_AND_GROUPS
+        ADMIN_MANAGE_USERS_AND_GROUPS
+        ADMIN_MANAGE_PHYSICAL_STORES
+      ]
+    )
+  referencePhysicalStoreById(id: String!): ReferencePhysicalStoreType
+    @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+}
+
 extend type Query {
   pagedSecurityAuditLogs(filter: AuditLogFilter): PagedAuditLogType
   @checkPermissions(permissions: [SECURITY_VIEW_AUDIT_LOGS])
@@ -2039,7 +2135,9 @@ type MehfilDutyType {
 
 extend type Query {	
   allSecurityMehfilDuties(mehfilId: String): [MehfilDutyType]	
+    @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS, SECURITY_MANAGE_SETUP_DATA])	
   securityMehfilDutyById(id: String!): MehfilDutyType	
+    @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS, SECURITY_MANAGE_SETUP_DATA])	
 }	
 
 extend type Mutation {	
@@ -2112,7 +2210,9 @@ type MehfilLangarDishType {
 
 extend type Query {	
   allSecurityMehfilLangarDishes: [MehfilLangarDishType]	
+    @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
   securityMehfilLangarDishById(id: String!): MehfilLangarDishType	
+    @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
 }	
 
 extend type Mutation {	
@@ -2140,7 +2240,9 @@ type MehfilLangarLocationType {
 
 extend type Query {	
   allSecurityMehfilLangarLocations: [MehfilLangarLocationType]	
+    @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
   securityMehfilLangarLocationById(id: String!): MehfilLangarLocationType	
+    @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
 }	
 
 extend type Mutation {	
@@ -2556,6 +2658,7 @@ extend type Query {
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
   distinctStayAllowedBy: [String]
+    @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 }
 
 extend type Mutation {
@@ -2755,8 +2858,9 @@ extend type Query {
   # Committees the logged-in user is currently a member of.
   myCommittees: [WorkspaceCommitteeType]
 
-  # A committee the logged-in user is a member of; null otherwise.
+  # A committee the logged-in user is on, in any role. Refused otherwise.
   workspaceCommitteeById(committeeId: String!): WorkspaceCommitteeType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
 
   # Karkuns that a coordinator can add to their committee.
   workspaceCommitteeKarkunSearch(
@@ -2767,6 +2871,7 @@ extend type Query {
     pageIndex: String
     pageSize: String
   ): PagedWorkspaceKarkunType
+    @checkCommitteeAccess(roles: [COORDINATOR])
 }
 
 extend type Mutation {
@@ -2776,10 +2881,12 @@ extend type Mutation {
     karkunId: String!
     role: String
   ): WorkspaceCommitteeType
+    @checkCommitteeAccess(roles: [COORDINATOR])
   workspaceRemoveCommitteeMember(
     committeeId: String!
     karkunId: String!
   ): WorkspaceCommitteeType
+    @checkCommitteeAccess(roles: [COORDINATOR])
   # Adds a member's chat account to the committee's discussion group, or
   # removes it. The member must have a chat account.
   workspaceSetCommitteeMemberDiscussionAccess(
@@ -2787,6 +2894,7 @@ extend type Mutation {
     karkunId: String!
     hasAccess: Boolean!
   ): Boolean
+    @checkCommitteeAccess(roles: [COORDINATOR])
   # Makes a member a coordinator, or a regular member again. The last
   # coordinator cannot be demoted.
   workspaceSetCommitteeMemberCoordinator(
@@ -2794,6 +2902,7 @@ extend type Mutation {
     karkunId: String!
     isCoordinator: Boolean!
   ): Boolean
+    @checkCommitteeAccess(roles: [COORDINATOR])
 }
 
 type DiscussionAttachmentType {
@@ -2866,22 +2975,29 @@ type DiscussionInfoType {
 
 extend type Query {
   workspaceDiscussionInfo(committeeId: String!): DiscussionInfoType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # Without 'since': the latest messages. With it: what changed since then.
   workspaceDiscussionSync(committeeId: String!, since: String): DiscussionSyncType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # A thread: the parent message first, then its replies.
   workspaceDiscussionThreadMessages(
     committeeId: String!
     threadId: String!
   ): [DiscussionMessageType]
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   workspaceDiscussionMembers(committeeId: String!): [DiscussionMemberType]
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   workspaceDiscussionPinnedMessages(committeeId: String!): [DiscussionMessageType]
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # Messages starred by the logged-in user.
   workspaceDiscussionStarredMessages(committeeId: String!): [DiscussionMessageType]
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # Messages sent before 'before' (an ISO time), one page.
   workspaceDiscussionOlderMessages(
     committeeId: String!
     before: String!
   ): DiscussionMessagePageType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # Messages matching the search (words or a /regex/), newest page first;
   # 'offset' is the number of matches already shown.
   workspaceDiscussionSearchMessages(
@@ -2889,6 +3005,7 @@ extend type Query {
     searchText: String!
     offset: Int
   ): DiscussionMessagePageType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 }
 
 extend type Mutation {
@@ -2897,31 +3014,37 @@ extend type Mutation {
     text: String!
     threadId: String
   ): Boolean!
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceReactToDiscussionMessage(
     committeeId: String!
     messageId: String!
     emoji: String!
     shouldReact: Boolean!
   ): Boolean!
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceSetDiscussionMessageStarred(
     committeeId: String!
     messageId: String!
     starred: Boolean!
   ): Boolean!
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceSetDiscussionMessagePinned(
     committeeId: String!
     messageId: String!
     pinned: Boolean!
   ): Boolean!
+    @checkCommitteeAccess(roles: [COORDINATOR])
   workspaceEditDiscussionMessage(
     committeeId: String!
     messageId: String!
     text: String!
   ): Boolean!
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceDeleteDiscussionMessage(
     committeeId: String!
     messageId: String!
   ): Boolean!
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
 }
 
 type WorkspaceDocumentsInfoType {
@@ -3033,6 +3156,7 @@ type WorkspaceDocumentsInfoType {
 
   extend type Query {
     workspaceDocumentsInfo(committeeId: String!): WorkspaceDocumentsInfoType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # A folder (null = root): its path, subfolders and a page of documents.
     workspaceDocumentFolderContents(
       committeeId: String!
@@ -3040,10 +3164,12 @@ type WorkspaceDocumentsInfoType {
       pageIndex: Int
       pageSize: Int
     ): WorkspaceDocumentFolderContentsType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # Every folder, e.g. for picking where to move something.
     workspaceDocumentFolders(
       committeeId: String!
     ): [WorkspaceDocumentFolderType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # Documents whose name, description or tags match the words.
     workspaceDocumentSearch(
       committeeId: String!
@@ -3051,14 +3177,17 @@ type WorkspaceDocumentsInfoType {
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspaceDocumentType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     workspaceDocumentById(
       committeeId: String!
       documentId: String!
     ): WorkspaceDocumentType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     workspaceDocumentVersions(
       committeeId: String!
       documentId: String!
     ): [WorkspaceDocumentVersionType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # Newest first; pass the last entry's 'at' as 'before' for the next page.
     workspaceDocumentActivity(
       committeeId: String!
@@ -3066,7 +3195,9 @@ type WorkspaceDocumentsInfoType {
       before: String
       limit: Int
     ): [WorkspaceDocumentActivityType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     workspaceDocumentTrash(committeeId: String!): WorkspaceDocumentTrashType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   }
 
   extend type Mutation {
@@ -3075,20 +3206,24 @@ type WorkspaceDocumentsInfoType {
       parentId: String
       name: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceRenameDocumentFolder(
       committeeId: String!
       folderId: String!
       name: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceMoveDocumentFolder(
       committeeId: String!
       folderId: String!
       parentId: String
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceTrashDocumentFolder(
       committeeId: String!
       folderId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
 
     # Starts a direct upload: a new document in folderId, or a new version of
     # documentId. Then PUT the file to the URL and call
@@ -3102,14 +3237,17 @@ type WorkspaceDocumentsInfoType {
       size: Float!
       comment: String
     ): WorkspaceDocumentUploadType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceCompleteDocumentUpload(
       committeeId: String!
       uploadId: String!
     ): WorkspaceDocumentType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceAbortDocumentUpload(
       committeeId: String!
       uploadId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
 
     workspaceUpdateDocument(
       committeeId: String!
@@ -3118,12 +3256,15 @@ type WorkspaceDocumentsInfoType {
       description: String
       tags: [String]
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceMoveDocument(
       committeeId: String!
       documentId: String!
       folderId: String
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceTrashDocument(committeeId: String!, documentId: String!): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     # A short-lived link to a version (default: current). A mutation because
     # each download is recorded in the activity log.
     workspaceDocumentDownloadUrl(
@@ -3132,18 +3273,21 @@ type WorkspaceDocumentsInfoType {
       versionId: String
       inline: Boolean
     ): WorkspaceDocumentDownloadType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 
     workspaceRestoreDocumentVersion(
       committeeId: String!
       documentId: String!
       versionId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     # Coordinators only.
     workspaceDeleteDocumentVersion(
       committeeId: String!
       documentId: String!
       versionId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     # The lock lasts durationMinutes, at most 7 days (10080).
     workspaceCheckOutDocument(
@@ -3152,12 +3296,15 @@ type WorkspaceDocumentsInfoType {
       durationMinutes: Int!
       note: String
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceCheckInDocument(committeeId: String!, documentId: String!): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     # Coordinators only.
     workspaceForceUnlockDocument(
       committeeId: String!
       documentId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     # Restores a trashed folder or document, under newName if given; with
     # toRoot, at the top level instead of its original folder.
@@ -3167,13 +3314,16 @@ type WorkspaceDocumentsInfoType {
       newName: String
       toRoot: Boolean
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     # Coordinators only.
     workspacePurgeDocumentTrashItem(
       committeeId: String!
       itemId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
     # Coordinators only. Returns how many items were purged.
     workspaceEmptyDocumentTrash(committeeId: String!): Int
+      @checkCommitteeAccess(roles: [COORDINATOR])
   }
 
 type WorkspaceMeetingsInfoType {
@@ -3355,10 +3505,12 @@ type WorkspaceMeetingsInfoType {
 
   extend type Query {
     workspaceMeetingsInfo(committeeId: String!): WorkspaceMeetingsInfoType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # The committee's members, who can be invited.
     workspaceMeetingMembers(
       committeeId: String!
     ): [WorkspaceMeetingMemberType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # view: upcoming (default), past, cancelled or all. from/to narrow to
     # meetings overlapping that range (e.g. a calendar month).
     workspaceMeetings(
@@ -3370,14 +3522,17 @@ type WorkspaceMeetingsInfoType {
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     workspaceMeetingById(
       committeeId: String!
       meetingId: String!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     workspaceMeetingAttachments(
       committeeId: String!
       meetingId: String!
     ): [WorkspaceMeetingAttachmentType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # assigneeId 'me' for the logged-in user's own items.
     workspaceMeetingActionItems(
       committeeId: String!
@@ -3387,6 +3542,7 @@ type WorkspaceMeetingsInfoType {
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspaceMeetingActionItemType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # Newest first; pass the last entry's 'at' as 'before' for the next page.
     workspaceMeetingActivity(
       committeeId: String!
@@ -3394,6 +3550,7 @@ type WorkspaceMeetingsInfoType {
       before: String
       limit: Int
     ): [WorkspaceMeetingActivityType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   }
 
   extend type Mutation {
@@ -3403,25 +3560,31 @@ type WorkspaceMeetingsInfoType {
       input: WorkspaceMeetingInput!
       participantIds: [String]
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceUpdateMeeting(
       committeeId: String!
       meetingId: String!
       input: WorkspaceMeetingInput!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceCancelMeeting(
       committeeId: String!
       meetingId: String!
       reason: String
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceCompleteMeeting(
       committeeId: String!
       meetingId: String!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceReopenMeeting(
       committeeId: String!
       meetingId: String!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceDeleteMeeting(committeeId: String!, meetingId: String!): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     # Makes the participant list exactly these members (new ones invited,
     # missing ones removed).
@@ -3430,13 +3593,15 @@ type WorkspaceMeetingsInfoType {
       meetingId: String!
       participantIds: [String]!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceSetMeetingParticipantRole(
       committeeId: String!
       meetingId: String!
       participantId: String!
       role: String!
     ): WorkspaceMeetingType
-    # Members answer for themselves (participantId omitted); coordinators
+      @checkCommitteeAccess(roles: [COORDINATOR])
+    # Participants answer for themselves (participantId omitted); coordinators
     # can answer for any participant.
     workspaceRespondToMeeting(
       committeeId: String!
@@ -3445,41 +3610,48 @@ type WorkspaceMeetingsInfoType {
       status: String!
       comment: String
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     workspaceMarkMeetingAttendance(
       committeeId: String!
       meetingId: String!
       entries: [WorkspaceMeetingAttendanceInput]!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     workspaceAddMeetingAgendaItem(
       committeeId: String!
       meetingId: String!
       input: WorkspaceMeetingAgendaItemInput!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceUpdateMeetingAgendaItem(
       committeeId: String!
       meetingId: String!
       agendaItemId: String!
       input: WorkspaceMeetingAgendaItemInput!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceRemoveMeetingAgendaItem(
       committeeId: String!
       meetingId: String!
       agendaItemId: String!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceReorderMeetingAgenda(
       committeeId: String!
       meetingId: String!
       agendaItemIds: [String]!
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     workspaceSetMeetingMinutes(
       committeeId: String!
       meetingId: String!
       text: String
     ): WorkspaceMeetingType
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
-    # Any member. Starts a direct upload: PUT the file to the URL, then call
+    # Coordinators. Starts a direct upload: PUT the file to the URL, then call
     # workspaceCompleteMeetingAttachmentUpload.
     workspaceCreateMeetingAttachmentUpload(
       committeeId: String!
@@ -3488,46 +3660,55 @@ type WorkspaceMeetingsInfoType {
       mimeType: String
       size: Float!
     ): WorkspaceMeetingUploadType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceCompleteMeetingAttachmentUpload(
       committeeId: String!
       uploadId: String!
     ): WorkspaceMeetingAttachmentType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceAbortMeetingAttachmentUpload(
       committeeId: String!
       uploadId: String!
     ): Boolean
-    # Any member. A mutation because each download is logged.
+      @checkCommitteeAccess(roles: [COORDINATOR])
+    # Any role that can see the meeting. A mutation because each download is logged.
     workspaceMeetingAttachmentDownloadUrl(
       committeeId: String!
       attachmentId: String!
       inline: Boolean
     ): WorkspaceMeetingDownloadType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # Coordinators only.
     workspaceDeleteMeetingAttachment(
       committeeId: String!
       attachmentId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     workspaceCreateMeetingActionItem(
       committeeId: String!
       meetingId: String!
       input: WorkspaceMeetingActionItemInput!
     ): WorkspaceMeetingActionItemType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceUpdateMeetingActionItem(
       committeeId: String!
       actionItemId: String!
       input: WorkspaceMeetingActionItemInput!
     ): WorkspaceMeetingActionItemType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     # Coordinators and the assignee.
     workspaceSetMeetingActionItemStatus(
       committeeId: String!
       actionItemId: String!
       status: String!
     ): WorkspaceMeetingActionItemType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     workspaceDeleteMeetingActionItem(
       committeeId: String!
       actionItemId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
   }
 
 type WorkspaceMonitoringAlertType {
@@ -3558,6 +3739,7 @@ extend type Query {
     pageIndex: String
     pageSize: String
   ): PagedWorkspaceMonitoringAlertType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 }
 
 type WorkspaceMonitoringProfilePhotoType {
@@ -3591,12 +3773,14 @@ extend type Query {
     pageIndex: String
     pageSize: String
   ): PagedWorkspaceMonitoringProfileType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 
   # Null when the profile doesn't exist or was deleted.
   workspaceMonitoringProfileById(
     committeeId: String!
     profileId: String!
   ): WorkspaceMonitoringProfileType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 }
 
 extend type Mutation {
@@ -3606,6 +3790,7 @@ extend type Mutation {
     name: String!
     isTest: Boolean!
   ): WorkspaceMonitoringProfileType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
 
   # imageData is base64, optionally as a data: URL. The photo is rejected
   # unless it has exactly one face the security server can use.
@@ -3614,12 +3799,14 @@ extend type Mutation {
     profileId: String!
     imageData: String!
   ): WorkspaceMonitoringProfileType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
 
   removeWorkspaceMonitoringProfilePhoto(
     committeeId: String!
     profileId: String!
     photoId: String!
   ): WorkspaceMonitoringProfileType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
 }
 
 # A previous stay of the same visitor, on a stay's detail screen.
@@ -3668,12 +3855,14 @@ extend type Query {
     pageIndex: String
     pageSize: String
   ): PagedWorkspaceNightStayType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 
   # One stay from the report; null if it doesn't exist or was cancelled.
   workspaceNightStayById(
     committeeId: String!
     stayId: String!
   ): WorkspaceNightStayType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 }
 
 type NotificationType {
@@ -3865,6 +4054,7 @@ type WorkspacePollsInfoType {
 
   extend type Query {
     workspacePollsInfo(committeeId: String!): WorkspacePollsInfoType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # view: open (default), closed, drafts (coordinators) or all.
     workspacePolls(
       committeeId: String!
@@ -3873,12 +4063,15 @@ type WorkspacePollsInfoType {
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     workspacePollById(committeeId: String!, pollId: String!): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # Once the poll has closed (or while open, if the poll allows it).
     workspacePollResults(
       committeeId: String!
       pollId: String!
     ): WorkspacePollResultsType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
     # Coordinators only. Newest first; pass the last entry's 'at' as
     # 'before' for the next page.
     workspacePollActivity(
@@ -3887,6 +4080,7 @@ type WorkspacePollsInfoType {
       before: String
       limit: Int
     ): [WorkspacePollActivityType]
+      @checkCommitteeAccess(roles: [COORDINATOR])
   }
 
   extend type Mutation {
@@ -3895,28 +4089,35 @@ type WorkspacePollsInfoType {
       committeeId: String!
       input: WorkspacePollInput!
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceUpdatePoll(
       committeeId: String!
       pollId: String!
       input: WorkspacePollInput!
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceOpenPoll(
       committeeId: String!
       pollId: String!
       closesAt: String
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceClosePoll(committeeId: String!, pollId: String!): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceReopenPoll(
       committeeId: String!
       pollId: String!
       closesAt: String!
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceCancelPoll(
       committeeId: String!
       pollId: String!
       reason: String
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceDeletePoll(committeeId: String!, pollId: String!): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     # Members vote for themselves.
     workspaceCastPollVote(
@@ -3924,10 +4125,12 @@ type WorkspacePollsInfoType {
       pollId: String!
       answers: [WorkspacePollAnswerInput]!
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
     workspaceWithdrawPollVote(
       committeeId: String!
       pollId: String!
     ): WorkspacePollType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   }
 
 type WorkspaceProjectsInfoType {
@@ -4070,16 +4273,12 @@ type WorkspaceProjectsInfoType {
     projectId: String
   }
 
-  type WorkspaceProjectDiscussionInfoType {
-    canPost: Boolean
-    # Coordinators can pin messages.
-    canPin: Boolean
-  }
-
   extend type Query {
     workspaceProjectsInfo(committeeId: String!): WorkspaceProjectsInfoType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # The committee's members, who can own or take part in projects.
     workspaceProjectMembers(committeeId: String!): [WorkspaceProjectMemberType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # view: active (default), completed, mine or all.
     workspaceProjects(
       committeeId: String!
@@ -4088,10 +4287,12 @@ type WorkspaceProjectsInfoType {
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     workspaceProjectById(
       committeeId: String!
       projectId: String!
     ): WorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # view: open (default), mine, overdue, done or all.
     workspaceTasks(
       committeeId: String!
@@ -4104,13 +4305,16 @@ type WorkspaceProjectsInfoType {
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspaceTaskType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     workspaceTaskById(committeeId: String!, taskId: String!): WorkspaceTaskType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     workspaceTaskComments(
       committeeId: String!
       taskId: String!
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspaceTaskCommentType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # Coordinators only. Newest first; pass
     # the last entry's 'at' as 'before' for the next page.
     workspaceProjectsActivity(
@@ -4120,45 +4324,7 @@ type WorkspaceProjectsInfoType {
       before: String
       limit: Int
     ): [WorkspaceProjectsActivityType]
-
-    # The project's private chat; participants only.
-    workspaceProjectDiscussionInfo(
-      committeeId: String!
-      projectId: String!
-    ): WorkspaceProjectDiscussionInfoType
-    workspaceProjectDiscussionSync(
-      committeeId: String!
-      projectId: String!
-      since: String
-    ): DiscussionSyncType
-    workspaceProjectDiscussionThreadMessages(
-      committeeId: String!
-      projectId: String!
-      threadId: String!
-    ): [DiscussionMessageType]
-    workspaceProjectDiscussionMembers(
-      committeeId: String!
-      projectId: String!
-    ): [DiscussionMemberType]
-    workspaceProjectDiscussionPinnedMessages(
-      committeeId: String!
-      projectId: String!
-    ): [DiscussionMessageType]
-    workspaceProjectDiscussionStarredMessages(
-      committeeId: String!
-      projectId: String!
-    ): [DiscussionMessageType]
-    workspaceProjectDiscussionOlderMessages(
-      committeeId: String!
-      projectId: String!
-      before: String!
-    ): DiscussionMessagePageType
-    workspaceProjectDiscussionSearchMessages(
-      committeeId: String!
-      projectId: String!
-      searchText: String!
-      offset: Int
-    ): DiscussionMessagePageType
+      @checkCommitteeAccess(roles: [COORDINATOR])
   }
 
   extend type Mutation {
@@ -4167,11 +4333,13 @@ type WorkspaceProjectsInfoType {
       committeeId: String!
       input: WorkspaceProjectInput!
     ): WorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceUpdateProject(
       committeeId: String!
       projectId: String!
       input: WorkspaceProjectInput!
     ): WorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     # force: complete the project even though tasks are still open.
     workspaceSetProjectStatus(
       committeeId: String!
@@ -4179,11 +4347,13 @@ type WorkspaceProjectsInfoType {
       status: String!
       force: Boolean
     ): WorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceAddProjectParticipants(
       committeeId: String!
       projectId: String!
       personIds: [String]!
     ): WorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     # unassignTasks: unassign their open tasks in the project.
     workspaceRemoveProjectParticipant(
       committeeId: String!
@@ -4191,6 +4361,7 @@ type WorkspaceProjectsInfoType {
       personId: String!
       unassignTasks: Boolean
     ): WorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     # deleteTasks: delete its tasks too (default: they
     # become standalone tasks).
     workspaceDeleteProject(
@@ -4198,74 +4369,46 @@ type WorkspaceProjectsInfoType {
       projectId: String!
       deleteTasks: Boolean
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     workspaceCreateTask(
       committeeId: String!
       input: WorkspaceTaskInput!
     ): WorkspaceTaskType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceUpdateTask(
       committeeId: String!
       taskId: String!
       input: WorkspaceTaskInput!
     ): WorkspaceTaskType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceDeleteTask(committeeId: String!, taskId: String!): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
     # Also by the task's assignee, for their own task.
     workspaceSetTaskStatus(
       committeeId: String!
       taskId: String!
       status: String!
     ): WorkspaceTaskType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     workspaceSetTaskProgress(
       committeeId: String!
       taskId: String!
       progress: Int!
     ): WorkspaceTaskType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     # Any committee member.
     workspaceAddTaskComment(
       committeeId: String!
       taskId: String!
       text: String!
     ): WorkspaceTaskCommentType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     # The author or a coordinator.
     workspaceDeleteTaskComment(
       committeeId: String!
       commentId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
 
-    workspaceSendProjectDiscussionMessage(
-      committeeId: String!
-      projectId: String!
-      text: String!
-      threadId: String
-    ): Boolean!
-    workspaceReactToProjectDiscussionMessage(
-      committeeId: String!
-      projectId: String!
-      messageId: String!
-      emoji: String!
-      shouldReact: Boolean!
-    ): Boolean!
-    workspaceSetProjectDiscussionMessageStarred(
-      committeeId: String!
-      projectId: String!
-      messageId: String!
-      starred: Boolean!
-    ): Boolean!
-    workspaceSetProjectDiscussionMessagePinned(
-      committeeId: String!
-      projectId: String!
-      messageId: String!
-      pinned: Boolean!
-    ): Boolean!
-    workspaceEditProjectDiscussionMessage(
-      committeeId: String!
-      projectId: String!
-      messageId: String!
-      text: String!
-    ): Boolean!
-    workspaceDeleteProjectDiscussionMessage(
-      committeeId: String!
-      projectId: String!
-      messageId: String!
-    ): Boolean!
   }

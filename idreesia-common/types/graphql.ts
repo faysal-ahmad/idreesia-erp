@@ -97,6 +97,14 @@ export type CityType = {
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
+export type CommitteeBasicType = {
+  __typename?: 'CommitteeBasicType';
+  _id?: Maybe<Scalars['String']['output']>;
+  color?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
 export type CommitteeFeatureType = {
   __typename?: 'CommitteeFeatureType';
   category?: Maybe<Scalars['String']['output']>;
@@ -111,7 +119,7 @@ export type CommitteeMemberType = {
   hasDiscussionAccess?: Maybe<Scalars['Boolean']['output']>;
   hasLoginAccount?: Maybe<Scalars['Boolean']['output']>;
   isCoordinator?: Maybe<Scalars['Boolean']['output']>;
-  karkun?: Maybe<PersonType>;
+  karkun?: Maybe<PersonBasicType>;
   karkunId?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Scalars['String']['output']>;
 };
@@ -121,6 +129,13 @@ export type CommitteeMembersPageType = {
   data?: Maybe<Array<Maybe<CommitteeMemberType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
+
+export enum CommitteeRole {
+  Coordinator = 'COORDINATOR',
+  Guest = 'GUEST',
+  Member = 'MEMBER',
+  Observer = 'OBSERVER'
+}
 
 export type CommitteeType = {
   __typename?: 'CommitteeType';
@@ -348,7 +363,7 @@ export type DutyType = {
   __typename?: 'DutyType';
   _id?: Maybe<Scalars['String']['output']>;
   canDelete?: Maybe<Scalars['Boolean']['output']>;
-  committee?: Maybe<CommitteeType>;
+  committee?: Maybe<CommitteeBasicType>;
   committeeId?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
@@ -829,12 +844,10 @@ export type Mutation = {
   workspaceDeleteMeetingAttachment?: Maybe<Scalars['Boolean']['output']>;
   workspaceDeletePoll?: Maybe<Scalars['Boolean']['output']>;
   workspaceDeleteProject?: Maybe<Scalars['Boolean']['output']>;
-  workspaceDeleteProjectDiscussionMessage: Scalars['Boolean']['output'];
   workspaceDeleteTask?: Maybe<Scalars['Boolean']['output']>;
   workspaceDeleteTaskComment?: Maybe<Scalars['Boolean']['output']>;
   workspaceDocumentDownloadUrl?: Maybe<WorkspaceDocumentDownloadType>;
   workspaceEditDiscussionMessage: Scalars['Boolean']['output'];
-  workspaceEditProjectDiscussionMessage: Scalars['Boolean']['output'];
   workspaceEmptyDocumentTrash?: Maybe<Scalars['Int']['output']>;
   workspaceForceUnlockDocument?: Maybe<Scalars['Boolean']['output']>;
   workspaceMarkMeetingAttendance?: Maybe<WorkspaceMeetingType>;
@@ -844,7 +857,6 @@ export type Mutation = {
   workspaceOpenPoll?: Maybe<WorkspacePollType>;
   workspacePurgeDocumentTrashItem?: Maybe<Scalars['Boolean']['output']>;
   workspaceReactToDiscussionMessage: Scalars['Boolean']['output'];
-  workspaceReactToProjectDiscussionMessage: Scalars['Boolean']['output'];
   workspaceRemoveCommitteeMember?: Maybe<WorkspaceCommitteeType>;
   workspaceRemoveMeetingAgendaItem?: Maybe<WorkspaceMeetingType>;
   workspaceRemoveProjectParticipant?: Maybe<WorkspaceProjectType>;
@@ -856,7 +868,6 @@ export type Mutation = {
   workspaceRestoreDocumentTrashItem?: Maybe<Scalars['Boolean']['output']>;
   workspaceRestoreDocumentVersion?: Maybe<Scalars['Boolean']['output']>;
   workspaceSendDiscussionMessage: Scalars['Boolean']['output'];
-  workspaceSendProjectDiscussionMessage: Scalars['Boolean']['output'];
   workspaceSetCommitteeMemberCoordinator?: Maybe<Scalars['Boolean']['output']>;
   workspaceSetCommitteeMemberDiscussionAccess?: Maybe<Scalars['Boolean']['output']>;
   workspaceSetDiscussionMessagePinned: Scalars['Boolean']['output'];
@@ -865,8 +876,6 @@ export type Mutation = {
   workspaceSetMeetingMinutes?: Maybe<WorkspaceMeetingType>;
   workspaceSetMeetingParticipantRole?: Maybe<WorkspaceMeetingType>;
   workspaceSetMeetingParticipants?: Maybe<WorkspaceMeetingType>;
-  workspaceSetProjectDiscussionMessagePinned: Scalars['Boolean']['output'];
-  workspaceSetProjectDiscussionMessageStarred: Scalars['Boolean']['output'];
   workspaceSetProjectStatus?: Maybe<WorkspaceProjectType>;
   workspaceSetTaskProgress?: Maybe<WorkspaceTaskType>;
   workspaceSetTaskStatus?: Maybe<WorkspaceTaskType>;
@@ -2220,13 +2229,6 @@ export type MutationWorkspaceDeleteProjectArgs = {
 };
 
 
-export type MutationWorkspaceDeleteProjectDiscussionMessageArgs = {
-  committeeId: Scalars['String']['input'];
-  messageId: Scalars['String']['input'];
-  projectId: Scalars['String']['input'];
-};
-
-
 export type MutationWorkspaceDeleteTaskArgs = {
   committeeId: Scalars['String']['input'];
   taskId: Scalars['String']['input'];
@@ -2250,14 +2252,6 @@ export type MutationWorkspaceDocumentDownloadUrlArgs = {
 export type MutationWorkspaceEditDiscussionMessageArgs = {
   committeeId: Scalars['String']['input'];
   messageId: Scalars['String']['input'];
-  text: Scalars['String']['input'];
-};
-
-
-export type MutationWorkspaceEditProjectDiscussionMessageArgs = {
-  committeeId: Scalars['String']['input'];
-  messageId: Scalars['String']['input'];
-  projectId: Scalars['String']['input'];
   text: Scalars['String']['input'];
 };
 
@@ -2318,15 +2312,6 @@ export type MutationWorkspaceReactToDiscussionMessageArgs = {
   committeeId: Scalars['String']['input'];
   emoji: Scalars['String']['input'];
   messageId: Scalars['String']['input'];
-  shouldReact: Scalars['Boolean']['input'];
-};
-
-
-export type MutationWorkspaceReactToProjectDiscussionMessageArgs = {
-  committeeId: Scalars['String']['input'];
-  emoji: Scalars['String']['input'];
-  messageId: Scalars['String']['input'];
-  projectId: Scalars['String']['input'];
   shouldReact: Scalars['Boolean']['input'];
 };
 
@@ -2410,14 +2395,6 @@ export type MutationWorkspaceSendDiscussionMessageArgs = {
 };
 
 
-export type MutationWorkspaceSendProjectDiscussionMessageArgs = {
-  committeeId: Scalars['String']['input'];
-  projectId: Scalars['String']['input'];
-  text: Scalars['String']['input'];
-  threadId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
 export type MutationWorkspaceSetCommitteeMemberCoordinatorArgs = {
   committeeId: Scalars['String']['input'];
   isCoordinator: Scalars['Boolean']['input'];
@@ -2472,22 +2449,6 @@ export type MutationWorkspaceSetMeetingParticipantsArgs = {
   committeeId: Scalars['String']['input'];
   meetingId: Scalars['String']['input'];
   participantIds: Array<InputMaybe<Scalars['String']['input']>>;
-};
-
-
-export type MutationWorkspaceSetProjectDiscussionMessagePinnedArgs = {
-  committeeId: Scalars['String']['input'];
-  messageId: Scalars['String']['input'];
-  pinned: Scalars['Boolean']['input'];
-  projectId: Scalars['String']['input'];
-};
-
-
-export type MutationWorkspaceSetProjectDiscussionMessageStarredArgs = {
-  committeeId: Scalars['String']['input'];
-  messageId: Scalars['String']['input'];
-  projectId: Scalars['String']['input'];
-  starred: Scalars['Boolean']['input'];
 };
 
 
@@ -2849,6 +2810,22 @@ export enum Permission {
   SecurityViewVisitors = 'SECURITY_VIEW_VISITORS'
 }
 
+export type PersonBasicSharedDataType = {
+  __typename?: 'PersonBasicSharedDataType';
+  cnicNumber?: Maybe<Scalars['String']['output']>;
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  contactNumber2?: Maybe<Scalars['String']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type PersonBasicType = {
+  __typename?: 'PersonBasicType';
+  _id?: Maybe<Scalars['String']['output']>;
+  sharedData?: Maybe<PersonBasicSharedDataType>;
+};
+
 export type PersonEmployeeDataType = {
   __typename?: 'PersonEmployeeDataType';
   bankAccountDetails?: Maybe<Scalars['String']['output']>;
@@ -3011,7 +2988,6 @@ export type Query = {
   allMSDuties?: Maybe<Array<Maybe<DutyType>>>;
   allMehfils?: Maybe<Array<Maybe<MehfilType>>>;
   allPeopleTags?: Maybe<Array<Maybe<PeopleTagType>>>;
-  allPhysicalStores?: Maybe<Array<Maybe<PhysicalStore>>>;
   allSecurityMehfilDuties?: Maybe<Array<Maybe<MehfilDutyType>>>;
   allSecurityMehfilLangarDishes?: Maybe<Array<Maybe<MehfilLangarDishType>>>;
   allSecurityMehfilLangarLocations?: Maybe<Array<Maybe<MehfilLangarLocationType>>>;
@@ -3085,6 +3061,10 @@ export type Query = {
   purchaseFormById?: Maybe<PurchaseForm>;
   purchaseFormsByMonth?: Maybe<Array<Maybe<PurchaseForm>>>;
   purchaseFormsByStockItem?: Maybe<Array<Maybe<PurchaseForm>>>;
+  referenceDutyShifts?: Maybe<Array<Maybe<ReferenceDutyShiftType>>>;
+  referenceMsDuties?: Maybe<Array<Maybe<ReferenceDutyType>>>;
+  referencePhysicalStoreById?: Maybe<ReferencePhysicalStoreType>;
+  referencePhysicalStores?: Maybe<Array<Maybe<ReferencePhysicalStoreType>>>;
   salariesByIds?: Maybe<Array<Maybe<SalaryType>>>;
   salariesByMonth?: Maybe<Array<Maybe<SalaryType>>>;
   securityFaceVectorFromImage?: Maybe<FaceVectorResultType>;
@@ -3146,14 +3126,6 @@ export type Query = {
   workspacePolls?: Maybe<PagedWorkspacePollType>;
   workspacePollsInfo?: Maybe<WorkspacePollsInfoType>;
   workspaceProjectById?: Maybe<WorkspaceProjectType>;
-  workspaceProjectDiscussionInfo?: Maybe<WorkspaceProjectDiscussionInfoType>;
-  workspaceProjectDiscussionMembers?: Maybe<Array<Maybe<DiscussionMemberType>>>;
-  workspaceProjectDiscussionOlderMessages?: Maybe<DiscussionMessagePageType>;
-  workspaceProjectDiscussionPinnedMessages?: Maybe<Array<Maybe<DiscussionMessageType>>>;
-  workspaceProjectDiscussionSearchMessages?: Maybe<DiscussionMessagePageType>;
-  workspaceProjectDiscussionStarredMessages?: Maybe<Array<Maybe<DiscussionMessageType>>>;
-  workspaceProjectDiscussionSync?: Maybe<DiscussionSyncType>;
-  workspaceProjectDiscussionThreadMessages?: Maybe<Array<Maybe<DiscussionMessageType>>>;
   workspaceProjectMembers?: Maybe<Array<Maybe<WorkspaceProjectMemberType>>>;
   workspaceProjects?: Maybe<PagedWorkspaceProjectType>;
   workspaceProjectsActivity?: Maybe<Array<Maybe<WorkspaceProjectsActivityType>>>;
@@ -3485,6 +3457,11 @@ export type QueryPurchaseFormsByMonthArgs = {
 export type QueryPurchaseFormsByStockItemArgs = {
   physicalStoreId: Scalars['String']['input'];
   stockItemId: Scalars['String']['input'];
+};
+
+
+export type QueryReferencePhysicalStoreByIdArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -3861,59 +3838,6 @@ export type QueryWorkspaceProjectByIdArgs = {
 };
 
 
-export type QueryWorkspaceProjectDiscussionInfoArgs = {
-  committeeId: Scalars['String']['input'];
-  projectId: Scalars['String']['input'];
-};
-
-
-export type QueryWorkspaceProjectDiscussionMembersArgs = {
-  committeeId: Scalars['String']['input'];
-  projectId: Scalars['String']['input'];
-};
-
-
-export type QueryWorkspaceProjectDiscussionOlderMessagesArgs = {
-  before: Scalars['String']['input'];
-  committeeId: Scalars['String']['input'];
-  projectId: Scalars['String']['input'];
-};
-
-
-export type QueryWorkspaceProjectDiscussionPinnedMessagesArgs = {
-  committeeId: Scalars['String']['input'];
-  projectId: Scalars['String']['input'];
-};
-
-
-export type QueryWorkspaceProjectDiscussionSearchMessagesArgs = {
-  committeeId: Scalars['String']['input'];
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  projectId: Scalars['String']['input'];
-  searchText: Scalars['String']['input'];
-};
-
-
-export type QueryWorkspaceProjectDiscussionStarredMessagesArgs = {
-  committeeId: Scalars['String']['input'];
-  projectId: Scalars['String']['input'];
-};
-
-
-export type QueryWorkspaceProjectDiscussionSyncArgs = {
-  committeeId: Scalars['String']['input'];
-  projectId: Scalars['String']['input'];
-  since?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QueryWorkspaceProjectDiscussionThreadMessagesArgs = {
-  committeeId: Scalars['String']['input'];
-  projectId: Scalars['String']['input'];
-  threadId: Scalars['String']['input'];
-};
-
-
 export type QueryWorkspaceProjectMembersArgs = {
   committeeId: Scalars['String']['input'];
 };
@@ -3966,6 +3890,26 @@ export type QueryWorkspaceTasksArgs = {
   standalone?: InputMaybe<Scalars['Boolean']['input']>;
   text?: InputMaybe<Scalars['String']['input']>;
   view?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ReferenceDutyShiftType = {
+  __typename?: 'ReferenceDutyShiftType';
+  _id?: Maybe<Scalars['String']['output']>;
+  dutyId?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type ReferenceDutyType = {
+  __typename?: 'ReferenceDutyType';
+  _id?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type ReferencePhysicalStoreType = {
+  __typename?: 'ReferencePhysicalStoreType';
+  _id?: Maybe<Scalars['String']['output']>;
+  address?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type SalaryType = {
@@ -4267,7 +4211,7 @@ export type TeamMemberType = {
   __typename?: 'TeamMemberType';
   daysOfWeek?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   isCoordinator?: Maybe<Scalars['Boolean']['output']>;
-  karkun?: Maybe<PersonType>;
+  karkun?: Maybe<PersonBasicType>;
   karkunId?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4874,12 +4818,6 @@ export type WorkspacePollsInfoType = {
   __typename?: 'WorkspacePollsInfoType';
   canManage?: Maybe<Scalars['Boolean']['output']>;
   myVoterId?: Maybe<Scalars['String']['output']>;
-};
-
-export type WorkspaceProjectDiscussionInfoType = {
-  __typename?: 'WorkspaceProjectDiscussionInfoType';
-  canPin?: Maybe<Scalars['Boolean']['output']>;
-  canPost?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type WorkspaceProjectInput = {

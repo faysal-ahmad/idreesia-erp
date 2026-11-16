@@ -1,15 +1,13 @@
-import { addMonths, format, isBefore, startOfMonth } from 'date-fns';
+import { addMonths, format, startOfMonth } from 'date-fns';
 
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Salaries, Jobs } from 'meteor/idreesia-common/server/collections/hr';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import {
-  Formats,
-  Permissions as PermissionConstants,
-} from 'meteor/idreesia-common/constants';
+import { Formats } from 'meteor/idreesia-common/constants';
 import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries';
 import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { getPagedSalariesByKarkun } from 'meteor/idreesia-common/server/business-logic/hr/salary-search';
+
+import { assertCanRemoveSalariesOfMonth } from './access';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -119,20 +117,7 @@ const resolvers: ResolverMap = {
     },
 
     deleteSalaries: async (obj, { month, ids }, { user }) => {
-      const currentMonth = startOfMonth(new Date());
-      const passedMonth = parseDate(month, Formats.DATE_FORMAT);
-
-      // @checkPermissions on the schema already requires HR_MANAGE_EMPLOYEES
-      // or HR_DELETE_DATA; past months additionally require HR_DELETE_DATA
-      // specifically, which the directive can't express.
-      if (
-        isBefore(passedMonth, currentMonth) &&
-        !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
-      ) {
-        throw new Error(
-          'You do not have permission to remove salaries for past months in the System.'
-        );
-      }
+      assertCanRemoveSalariesOfMonth(user, month);
 
       return Salaries.removeAsync({
         _id: { $in: ids },
@@ -140,20 +125,7 @@ const resolvers: ResolverMap = {
     },
 
     deleteAllSalaries: async (obj, { month }, { user }) => {
-      const currentMonth = startOfMonth(new Date());
-      const passedMonth = parseDate(month, Formats.DATE_FORMAT);
-
-      // @checkPermissions on the schema already requires HR_MANAGE_EMPLOYEES
-      // or HR_DELETE_DATA; past months additionally require HR_DELETE_DATA
-      // specifically, which the directive can't express.
-      if (
-        isBefore(passedMonth, currentMonth) &&
-        !hasOnePermission(user, [PermissionConstants.HR_DELETE_DATA])
-      ) {
-        throw new Error(
-          'You do not have permission to remove salaries for past months in the System.'
-        );
-      }
+      assertCanRemoveSalariesOfMonth(user, month);
 
       const formattedMonth = format(
         startOfMonth(parseDate(month, Formats.DATE_FORMAT)),

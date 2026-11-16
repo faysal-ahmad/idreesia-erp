@@ -29,6 +29,22 @@ export const isAttachmentCategory = (
 ): value is AttachmentCategoryValue =>
   typeof value === 'string' && value in ATTACHMENT_CATEGORY_FOLDERS;
 
+/**
+ * The category an attachment was uploaded under, read from the folder of its
+ * file key (`<folder>/<attachmentId>.<ext>`). Attachments carry no category
+ * of their own. undefined for a key in none of the category folders.
+ */
+export const attachmentCategoryOf = (
+  fileKey: string | null | undefined
+): AttachmentCategoryValue | undefined => {
+  const folder = fileKey?.split('/')[0];
+  return (
+    Object.entries(ATTACHMENT_CATEGORY_FOLDERS) as Array<
+      [AttachmentCategoryValue, string]
+    >
+  ).find(([, categoryFolder]) => categoryFolder === folder)?.[0];
+};
+
 /** Key of an attachment's file: `<folder>/<attachmentId>.<ext>`. */
 export const getAttachmentFileKey = (
   folder: string,
@@ -39,19 +55,22 @@ export const getAttachmentFileKey = (
 
 /**
  * Stores an uploaded file privately in its category's folder and records
- * it in Attachments (name, type and file key only - not its content).
- * Returns the new attachment id.
+ * it in Attachments (name, type, file key and who uploaded it - not its
+ * content). Returns the new attachment id.
  */
 export async function createStoredAttachment({
   category,
   name,
   mimeType,
   body,
+  createdBy,
 }: {
   category: AttachmentCategoryValue;
   name?: string;
   mimeType: string;
   body: Buffer;
+  /** The uploading user. Lets them use the file before it is attached. */
+  createdBy?: string;
 }): Promise<string> {
   const attachmentId = Random.id();
   const fileKey = getAttachmentFileKey(
@@ -69,8 +88,27 @@ export async function createStoredAttachment({
     mimeType,
     fileKey,
     createdAt: date,
+    createdBy,
     updatedAt: date,
+    updatedBy: createdBy,
   });
+}
+
+/** Renames or re-describes an attachment. */
+export async function updateAttachmentDetails(
+  attachmentId: string,
+  { name, description }: { name?: string | null; description?: string | null },
+  userId: string
+) {
+  await Attachments.updateAsync(attachmentId, {
+    $set: {
+      name: name ?? undefined,
+      description: description ?? undefined,
+      updatedAt: new Date(),
+      updatedBy: userId,
+    },
+  });
+  return Attachments.findOneAsync(attachmentId);
 }
 
 /** Short-lived presigned URL for downloading a stored attachment. */

@@ -109,6 +109,7 @@ export {
 export {
   getCommitteeProject,
   getCommitteeProjectMembers,
+  getPeopleInProjectsOf,
   getCommitteeProjectsActivity,
   getCommitteeProjectsInfo,
   getCommitteeTask,
@@ -136,10 +137,6 @@ export {
   type CommitteeProjectInput,
   type CommitteeTaskInput,
 } from './projects-actions';
-export {
-  getProjectChatGroupId,
-  tryEnsureProjectChatGroup,
-} from './projects-chat';
 export { getPersonNotificationScope } from './workspaces';
 export {
   getMyNotifications,

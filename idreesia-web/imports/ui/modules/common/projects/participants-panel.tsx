@@ -23,8 +23,8 @@ interface Props {
 }
 
 /**
- * The project's participants. They can use the project's private chat; a task
- * can only be assigned to a participant. Managers can add and remove them.
+ * The project's participants. A task can only be assigned to a participant.
+ * Managers can add and remove them.
  */
 const ParticipantsPanel = ({
   provider,
@@ -151,7 +151,6 @@ const ParticipantsPanel = ({
                 canChange ? (
                   <Popconfirm
                     title="Remove this participant?"
-                    description="They lose access to the project chat."
                     okText="Remove"
                     okButtonProps={{ danger: true }}
                     onConfirm={() => remove(participant)}

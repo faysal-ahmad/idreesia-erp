@@ -5,7 +5,7 @@ type TeamMemberType {
   karkunId: String
   isCoordinator: Boolean
   daysOfWeek: [String]
-  karkun: PersonType
+  karkun: PersonBasicType
 }
 
 type TeamType {
@@ -25,6 +25,7 @@ type TeamType {
 
 extend type Query {
   allTeams: [TeamType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 extend type Mutation {

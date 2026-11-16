@@ -35,8 +35,6 @@ interface Props {
   pageIndex?: number;
   pageSize?: number;
   pagedData?: PagedData;
-  allPhysicalStoresLoading?: boolean;
-  allPhysicalStores?: unknown[];
 }
 
 export default class AuditLogsList extends Component<Props> {

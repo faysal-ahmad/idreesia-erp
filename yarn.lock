@@ -639,6 +639,11 @@
     "@babel/helper-string-parser" "^7.29.7"
     "@babel/helper-validator-identifier" "^7.29.7"
 
+"@bcoe/v8-coverage@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-1.0.2.tgz#bbe12dca5b4ef983a0d0af4b07b9bc90ea0ababa"
+  integrity sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==
+
 "@emotion/hash@^0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.8.0.tgz#bbbff68978fefdbe68ccb533bc8cbe1d1afb5413"
@@ -1432,7 +1437,7 @@
   resolved "https://registry.yarnpkg.com/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.6.0.tgz#f4c663e862f06dc98ca4d453862c46902789a18d"
   integrity sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw==
 
-"@jridgewell/trace-mapping@0.3.31", "@jridgewell/trace-mapping@^0.3.28":
+"@jridgewell/trace-mapping@0.3.31", "@jridgewell/trace-mapping@^0.3.28", "@jridgewell/trace-mapping@^0.3.31":
   version "0.3.31"
   resolved "https://registry.yarnpkg.com/@jridgewell/trace-mapping/-/trace-mapping-0.3.31.tgz#db15d6781c931f3a251a3dac39501c98a6082fd0"
   integrity sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==
@@ -2391,6 +2396,32 @@
     "@typescript-eslint/types" "8.65.0"
     eslint-visitor-keys "^5.0.0"
 
+"@vitest/coverage-v8@5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz#c277a3c40824d07c3a981b9e5db8d6313f88a541"
+  integrity sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==
+  dependencies:
+    "@bcoe/v8-coverage" "^1.0.2"
+    "@vitest/istanbul-lib-coverage" "^2.1.0"
+    "@vitest/istanbul-lib-report" "^2.1.0"
+    ast-v8-to-istanbul "^1.0.7"
+    magicast "^0.5.5"
+    obug "^3.0.0"
+    std-env "^4.3.0"
+    tinyrainbow "^3.2.0"
+
+"@vitest/istanbul-lib-coverage@2.1.0", "@vitest/istanbul-lib-coverage@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz#deff37d4d657ce5f8162f2280ba0913dee9a0c93"
+  integrity sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==
+
+"@vitest/istanbul-lib-report@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz#e9d835f5c202837210616930470674731d2becf5"
+  integrity sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==
+  dependencies:
+    "@vitest/istanbul-lib-coverage" "2.1.0"
+
 "@vitest/mocker@5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@vitest/mocker/-/mocker-5.1.0.tgz#fba68dd77810c2f053b2ad7ea7ffc56e8d94eb8e"
@@ -2719,6 +2750,15 @@ ast-types-flow@^0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/ast-types-flow/-/ast-types-flow-0.0.8.tgz#0a85e1c92695769ac13a428bb653e7538bea27d6"
   integrity sha512-OH/2E5Fg20h2aPrbe+QL8JZQFko0YZaF+j4mnQ7BGhfavO7OpSLa8a0y9sBwomHdSbkhTS8TQNayBfnW5DwbvQ==
+
+ast-v8-to-istanbul@^1.0.7:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/ast-v8-to-istanbul/-/ast-v8-to-istanbul-1.0.8.tgz#0d258b7578afd3cbf56c80ec4597af5447f221df"
+  integrity sha512-lPdpagk13ANXV+HClJEpCZM7kUsl5XcvgqKzZhaj6Ve1ZFICcY2sGhAN1n1vT0tML6EclT7bfVgTxqL57Gkpow==
+  dependencies:
+    "@jridgewell/trace-mapping" "^0.3.31"
+    estree-walker "^3.0.3"
+    js-tokens "^10.0.0"
 
 async-function@^1.0.0:
   version "1.0.0"
@@ -4637,6 +4677,11 @@ jiti@^2.0.0, jiti@^2.3.0:
   resolved "https://registry.yarnpkg.com/jiti/-/jiti-2.7.0.tgz#974228f2f4ca2bc21885a1797b45fea68e950c64"
   integrity sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==
 
+js-tokens@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-10.0.0.tgz#dffe7599b4a8bb7fe30aff8d0235234dffb79831"
+  integrity sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q==
+
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -4932,6 +4977,15 @@ magic-string@^1.4.3:
   integrity sha512-oLLC2+YvQUfAa+vxoufE/yc1icb87M9iXIRqAoR/2EhE/8cb3SF/+Gi0c2By1B+5Vz2e2vQtUvHiu1+63Znh+w==
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.6.0"
+
+magicast@^0.5.5:
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/magicast/-/magicast-0.5.5.tgz#66dfd87ba2a40b568d97ff0d2b888ad3580519cb"
+  integrity sha512-UicdXN8zQ3JHlxVq+28afMXPr1z7WNY6+7EJnzTdQWkTAlMLF5fNCCKxJHBQwGaNGR11581EiQmQzx73+MvszA==
+  dependencies:
+    "@babel/parser" "^7.29.7"
+    "@babel/types" "^7.29.7"
+    source-map-js "^1.2.1"
 
 make-dir@^3.0.2:
   version "3.1.0"
@@ -5933,7 +5987,7 @@ slice-ansi@^8.0.0:
     ansi-styles "^6.2.3"
     is-fullwidth-code-point "^5.1.0"
 
-source-map-js@^1.2.2:
+source-map-js@^1.2.1, source-map-js@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.2.2.tgz#79fb88d97535a21cb27162cb05d211b67acea4ab"
   integrity sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==
@@ -6208,6 +6262,11 @@ tinyglobby@^0.2.15, tinyglobby@^0.2.17:
   dependencies:
     fdir "^6.5.0"
     picomatch "^4.0.4"
+
+tinyrainbow@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/tinyrainbow/-/tinyrainbow-3.2.0.tgz#f62df4fda24415b353c08b9c38934b4b13877655"
+  integrity sha512-LgO3D9yZJjApUiuUfl9iFAwrtaX4+lok3wJIqttGoKCHlWUqHqbQpnxCf82L8FjgKsh4iGo78hqJwgL8F6To2A==
 
 title-case@^3.0.3:
   version "3.0.3"

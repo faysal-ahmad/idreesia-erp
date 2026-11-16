@@ -10,9 +10,8 @@ import {
 } from 'meteor/idreesia-common/server/business-logic/hr/committee';
 
 import {
-  getMemberCommittee,
-  isCommitteeCoordinator,
-  type WorkspaceUser,
+  getCommitteeAccess,
+  type CommitteeAccessContext,
 } from '../committee/access';
 
 export interface DocumentsAccess {
@@ -30,28 +29,30 @@ const notFound = (message: string) =>
   new GraphQLError(message, { extensions: { code: 'NOT_FOUND' } });
 
 /**
- * Permission check for a committee's documents: the user must be a member
- * of the committee (a super-admin counts as one), and the committee must have
- * Documents enabled. With `coordinator`, only its coordinators pass - for
- * purging, emptying the trash, deleting versions and force-unlocking.
+ * What a documents resolver works with, built from what
+ * `@checkCommitteeAccess` found: who may call the field is decided by the
+ * directive in the schema. Here the committee must also have Documents
+ * enabled.
  */
-export const getDocumentsAccess = async (
-  user: WorkspaceUser | null | undefined,
-  committeeId: string,
-  { coordinator = false }: { coordinator?: boolean } = {}
-): Promise<DocumentsAccess> => {
-  const committee = await getMemberCommittee(user, committeeId);
-  if (!committee || !user?._id) {
+export const getDocumentsAccess = (
+  context: CommitteeAccessContext,
+  committeeId: string
+): DocumentsAccess => {
+  const { committee, isCoordinator } = getCommitteeAccess(
+    context,
+    committeeId
+  );
+  const { user } = context;
+  if (!user?._id) {
     throw forbidden('You are not a member of this committee.');
   }
-  const workspaceId = getCommitteeDmsWorkspaceId(
-    committee as unknown as CommitteeDoc
-  );
-  const isCoordinator = isCommitteeCoordinator(user, committee);
-  if (coordinator && !isCoordinator) {
-    throw forbidden('Only coordinators of this committee can do this.');
-  }
-  return { workspaceId, userId: user._id, isCoordinator };
+  return {
+    workspaceId: getCommitteeDmsWorkspaceId(
+      committee as unknown as CommitteeDoc
+    ),
+    userId: user._id,
+    isCoordinator,
+  };
 };
 
 /*

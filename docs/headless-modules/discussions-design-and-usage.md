@@ -25,7 +25,7 @@ Callers never see a Rocket.Chat group id. They hold the module's own `workspaceI
 - **Messages live in Rocket.Chat.** Sending, editing, reactions, pins, stars, threads, search and file uploads all go to Rocket.Chat. The ERP is the only thing that talks to it: clients go through GraphQL and the ERP file routes, so the Rocket.Chat URL and the service account's token never reach a client.
 - **Two layers.**
   - The **Discussions module** owns workspaces and chat-group membership.
-  - The **shared Rocket.Chat conversation functions** read and write messages in a chat group. They are plumbing that any module backed by a chat group can use (Projects uses them for each project's chat). Modules never call each other; both call the shared layer.
+  - The **shared Rocket.Chat conversation functions** read and write messages in a chat group. They are plumbing that any module backed by a chat group can use. Modules never call each other; both call the shared layer.
 - **Acting as the person.** Messages are posted with the acting user's own chat account (their stored token), not the service account. That is what makes mentions and unread counts work per person. A user without a chat account can read but not post.
 
 ## Where things live
@@ -59,7 +59,7 @@ The module is server-only.
 
 ## Responsibilities: caller vs. module
 
-**The caller decides access.** Nothing in the module or the conversation functions checks who may take part. The caller establishes that first (for committees: the person is a member and Discussions is enabled; only coordinators may pin), then passes the workspace and the acting user.
+**The caller decides access.** Nothing in the module or the conversation functions checks who may take part. The caller establishes that first (for committees: the person's role allows it and Discussions is enabled; see [Committee Discussions feature](#committee-discussions-feature)), then passes the workspace and the acting user.
 
 **The module enforces:**
 - **Isolation.** A workspace id resolves to exactly one chat group. A message id is only usable in its own group (the conversation functions check the message belongs to the group).
@@ -126,7 +126,7 @@ Files live in Rocket.Chat, which the browser cannot reach, so they go through ER
 
 - **Uploads** are checked for size (25 MB maximum) and posted with the user's own chat account, optionally as a thread reply.
 - **Downloads** use a URL carrying an HMAC signature over the chat group and file id. The service account can read every group's files, so the signature stops a URL listed for one group from working for another.
-- The route authenticates the user and checks committee membership before either operation.
+- The route authenticates the user and checks that their committee role may read the discussion before either operation.
 
 ## Committee Discussions feature
 
@@ -142,7 +142,20 @@ The committee feature handler (`business-logic/hr/committee/discussions.ts`) con
 
 A committee member can only join if their person has an ERP user with a chat account. Members without one are skipped, and the member list shows who has login, chat and discussion access.
 
-The GraphQL operations (`workspaceDiscussion*`, `workspaceSendDiscussionMessage`, and so on) take a `committeeId`. Each resolver only checks access, then calls the module and conversation functions.
+The GraphQL operations (`workspaceDiscussion*`, `workspaceSendDiscussionMessage`, and so on) take a `committeeId`. Each field declares which committee roles may call it, then the resolver only checks that Discussions is enabled and calls the module and conversation functions.
+
+**Who can do what:**
+
+Access depends on the person's role on the committee (coordinator, member, observer, guest). Each GraphQL field declares its roles with `@checkCommitteeAccess(roles: [...])` in `graphql-api/workspaces/discussions/discussions.ts`; a super-admin counts as a coordinator. `discussions-roles.test.ts` checks the schema against this table. The file route (`/api/workspaces/committees/:committeeId/discussions/files/...`) is plain REST, so it applies the same read roles in `getReaderCommitteeChatGroupId`.
+
+| Operation | Coordinator | Member | Observer | Guest |
+|---|---|---|---|---|
+| Read: messages, threads, members, pinned and starred messages, search, files | Yes | Yes | Yes | No |
+| Send, react to, star messages; edit or delete their own | Yes | Yes | No | No |
+| Pin and unpin messages | Yes | No | No | No |
+
+- Observers read the discussion but cannot post. Guests are not part of the committee's discussion.
+- Editing or deleting is limited to the user's own messages by the module itself, whatever the role.
 
 ## Data model
 

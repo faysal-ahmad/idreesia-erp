@@ -5,29 +5,28 @@ import multer from 'multer';
 import bodyParser from 'body-parser';
 import type { NextFunction, Request, Response } from 'express';
 
-import {
-  ATTACHMENT_MAX_FILE_SIZE,
-  isAllowedAttachmentMimeType,
-  Permissions,
-  TwoFactorErrorCode,
-} from 'meteor/idreesia-common/constants';
+import { ATTACHMENT_MAX_FILE_SIZE } from 'meteor/idreesia-common/constants';
 import { kebabCase } from 'meteor/idreesia-common/utilities/lodash';
+import { assertCanViewAttachment } from 'meteor/idreesia-common/server/graphql-api/common/attachment/access';
 import {
-  hasInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
-import Attachments from 'meteor/idreesia-common/server/collections/common/attachments';
+  asReportName,
+  canDownloadReport,
+  type ReportName,
+} from 'meteor/idreesia-common/server/rest-api/report-access';
+import {
+  decideAttachmentUpload,
+  downloadErrorStatus,
+} from 'meteor/idreesia-common/server/rest-api/attachment-upload-access';
+import { passwordLogin } from 'meteor/idreesia-common/server/rest-api/password-login';
 import {
   createStoredAttachment,
   getAttachmentDownloadUrl,
-  isAttachmentCategory,
 } from 'meteor/idreesia-common/server/business-logic/common/stored-attachments';
 import {
   clearLoginAttempts,
   consumeTwoFactorCode,
   isTwoFactorEnabled,
   reserveLoginAttempt,
-  TOO_MANY_ATTEMPTS_ERROR,
 } from 'meteor/idreesia-common/server/business-logic/admin';
 import { exportKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/karkuns-exporter';
 import { exportVisitors } from 'meteor/idreesia-common/server/business-logic/security/visitors-exporter';
@@ -36,6 +35,9 @@ import {
   exportPurchaseForms,
   exportStockAdjustmentForms,
   exportStockItems,
+  getIssuanceFormStoreIds,
+  getPurchaseFormStoreIds,
+  getStockAdjustmentStoreIds,
 } from 'meteor/idreesia-common/server/business-logic/inventory';
 
 import { createSecurityServerRouter } from './setup-security-server-endpoints';
@@ -43,96 +45,35 @@ import { createCorrespondenceRouter } from './setup-correspondence-endpoints';
 import { createWorkspaceDiscussionRouter } from './setup-workspace-discussion-endpoints';
 import { createDiagnosticsRouter } from './setup-diagnostics-endpoints';
 import { getBrowserMonitoringConfig } from './newrelic';
-import { ACCOUNT_LOCKED_MESSAGE, isAccountLocked } from './account-lock';
 import { getClientAddress, getThrottleAddress } from './client-address';
-import { getUser } from './get-user';
+import { requireLogin, type RequestWithUser } from './rest-guards';
 import { limitRequests, limitUploads } from './rate-limits';
-
-interface RestUser {
-  _id: string;
-  username?: string;
-  locked?: boolean;
-  permissions?: string[];
-  instances?: string[];
-}
-
-type RequestWithUser = Request & { user: RestUser };
 
 interface ReportGenerator {
   generate(reportArgs: string): Promise<unknown>;
-  // Same permissions as the GraphQL list query behind the page the report is
-  // downloaded from.
-  permissions: string[];
-  // Reports whose argument is a physical store id also need access to that
-  // store, like @checkInstanceAccess on the store's GraphQL queries.
-  argIsPhysicalStoreId?: boolean;
+  // Reports whose argument is a list of form ids also need access to the
+  // store of every one of those forms.
+  storeIdsOf?(reportArgs: string): Promise<string[]>;
 }
 
-const ReportGenerators: Record<string, ReportGenerator> = {
+// Who may download each report is in rest-api/report-access.ts.
+const ReportGenerators: Record<ReportName, ReportGenerator> = {
   IssuanceForms: {
     generate: exportIsssuanceForms,
-    permissions: [
-      Permissions.IN_VIEW_ISSUANCE_FORMS,
-      Permissions.IN_MANAGE_ISSUANCE_FORMS,
-      Permissions.IN_APPROVE_ISSUANCE_FORMS,
-    ],
+    storeIdsOf: getIssuanceFormStoreIds,
   },
   PurchaseForms: {
     generate: exportPurchaseForms,
-    permissions: [
-      Permissions.IN_VIEW_PURCHASE_FORMS,
-      Permissions.IN_MANAGE_PURCHASE_FORMS,
-      Permissions.IN_APPROVE_PURCHASE_FORMS,
-    ],
+    storeIdsOf: getPurchaseFormStoreIds,
   },
   StockAdjustments: {
     generate: exportStockAdjustmentForms,
-    permissions: [
-      Permissions.IN_VIEW_STOCK_ADJUSTMENTS,
-      Permissions.IN_MANAGE_STOCK_ADJUSTMENTS,
-      Permissions.IN_APPROVE_STOCK_ADJUSTMENTS,
-    ],
+    storeIdsOf: getStockAdjustmentStoreIds,
   },
-  StockItems: {
-    generate: exportStockItems,
-    permissions: [Permissions.IN_MANAGE_STOCK_ITEMS],
-    argIsPhysicalStoreId: true,
-  },
-  Karkuns: {
-    generate: exportKarkuns,
-    permissions: [
-      Permissions.HR_VIEW_KARKUNS,
-      Permissions.HR_MANAGE_KARKUNS,
-      Permissions.HR_VIEW_EMPLOYEES,
-      Permissions.HR_MANAGE_EMPLOYEES,
-    ],
-  },
-  Visitors: {
-    generate: exportVisitors,
-    permissions: [
-      Permissions.SECURITY_VIEW_VISITORS,
-      Permissions.SECURITY_MANAGE_VISITORS,
-    ],
-  },
+  StockItems: { generate: exportStockItems },
+  Karkuns: { generate: exportKarkuns },
+  Visitors: { generate: exportVisitors },
 };
-
-/**
- * Requires a valid, unlocked Meteor login token in the Authorization header -
- * the same check the GraphQL endpoint makes - and puts the user on the request.
- */
-const requireLogin = Meteor.bindEnvironment(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const user = (await getUser(req.headers.authorization)) as
-      | RestUser
-      | undefined;
-    if (!user) {
-      res.status(401).json({ error: 'Not authenticated.' });
-      return;
-    }
-    (req as RequestWithUser).user = user;
-    next();
-  }
-);
 
 // Accounts._findUserByQuery/_checkPasswordAsync/_generateStampedLoginToken/
 // _insertLoginToken/_tokenExpiration are the same building blocks the
@@ -167,329 +108,311 @@ interface AccountsPrivateApi {
 }
 const AccountsPrivate = Accounts as unknown as AccountsPrivateApi;
 
-export function setupRestEndpoints() {
-  Meteor.startup(() => {
-    const app = express();
-    const storage = multer.memoryStorage();
-    const upload = multer({
-      storage,
-      limits: { fileSize: ATTACHMENT_MAX_FILE_SIZE, files: 1 },
+// The Express app with every REST route, built apart from Meteor's web server
+// so that rest-guards-coverage.test.ts can check each route is guarded.
+export function createRestApp() {
+  const app = express();
+  const storage = multer.memoryStorage();
+  const upload = multer({
+    storage,
+    limits: { fileSize: ATTACHMENT_MAX_FILE_SIZE, files: 1 },
+  });
+  const uploadSingleFile = upload.single('file');
+
+  // Request rate limits (rate-limits.ts) for every endpoint below except
+  // the security server's push endpoints (unlimited) and diagnostics
+  // (limited by its own router). Registered by method so that
+  // page loads of the same paths (served by Meteor) aren't counted.
+  app.get(['/generate-report', '/download-file'], limitRequests);
+  app.get('/api/monitoring-config', limitRequests);
+  app.post(['/login', '/upload-file', '/upload-base64-file'], limitRequests);
+  app.use(['/api/correspondence', '/api/workspaces'], limitRequests);
+  app.post(
+    [
+      '/upload-file',
+      '/upload-base64-file',
+      '/api/workspaces/committees/:committeeId/discussions/files',
+    ],
+    limitUploads
+  );
+
+  // Answers multer's errors (e.g. LIMIT_FILE_SIZE) with a 4xx instead of
+  // passing them on to Express's default HTML error page.
+  const parseUploadedFile = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    uploadSingleFile(req as any, res as any, (error: unknown) => {
+      if (error instanceof multer.MulterError) {
+        const tooLarge = error.code === 'LIMIT_FILE_SIZE';
+        res
+          .status(tooLarge ? 413 : 400)
+          .end(
+            tooLarge
+              ? `The file is larger than ${
+                  ATTACHMENT_MAX_FILE_SIZE / (1024 * 1024)
+                } MB.`
+              : error.message
+          );
+        return;
+      }
+      next(error);
     });
-    const uploadSingleFile = upload.single('file');
+  };
 
-    // Request rate limits (rate-limits.ts) for every endpoint below except
-    // the security server's push endpoints (unlimited) and diagnostics
-    // (limited by its own router). Registered by method so that
-    // page loads of the same paths (served by Meteor) aren't counted.
-    app.get(['/generate-report', '/download-file'], limitRequests);
-    app.get('/api/monitoring-config', limitRequests);
-    app.post(['/login', '/upload-file', '/upload-base64-file'], limitRequests);
-    app.use(['/api/correspondence', '/api/workspaces'], limitRequests);
-    app.post(
-      [
-        '/upload-file',
-        '/upload-base64-file',
-        '/api/workspaces/committees/:committeeId/discussions/files',
-      ],
-      limitUploads
-    );
-
-    // Answers multer's errors (e.g. LIMIT_FILE_SIZE) with a 4xx instead of
-    // passing them on to Express's default HTML error page.
-    const parseUploadedFile = (
-      req: Request,
-      res: Response,
-      next: NextFunction
-    ) => {
-      uploadSingleFile(req as any, res as any, (error: unknown) => {
-        if (error instanceof multer.MulterError) {
-          const tooLarge = error.code === 'LIMIT_FILE_SIZE';
-          res
-            .status(tooLarge ? 413 : 400)
-            .end(
-              tooLarge
-                ? `The file is larger than ${
-                    ATTACHMENT_MAX_FILE_SIZE / (1024 * 1024)
-                  } MB.`
-                : error.message
-            );
+  /**
+   * Endpoint for reports generation
+   */
+  app.get(
+    '/generate-report',
+    requireLogin,
+    bodyParser.urlencoded({ extended: false }),
+    Meteor.bindEnvironment(async (req: Request, res: Response) => {
+      const { user } = req as RequestWithUser;
+      const { reportName, reportArgs } = req.query;
+      const knownReport = asReportName(reportName);
+      const reportGenerator = knownReport
+        ? ReportGenerators[knownReport]
+        : undefined;
+      const normalizedReportArgs = Array.isArray(reportArgs)
+        ? String(reportArgs[0] ?? '')
+        : String(reportArgs ?? '');
+      if (knownReport && reportGenerator) {
+        const storeIds = reportGenerator.storeIdsOf
+          ? await reportGenerator.storeIdsOf(normalizedReportArgs)
+          : [];
+        if (
+          !canDownloadReport(user, knownReport, normalizedReportArgs, storeIds)
+        ) {
+          res.status(403).json({ error: 'Not authorized.' });
           return;
         }
-        next(error);
-      });
-    };
+        const report = await reportGenerator.generate(normalizedReportArgs);
+        res.writeHead(200, {
+          'Content-Type': 'application/vnd.ms-excel',
+          'Content-Disposition': `attachment; filename=${kebabCase(
+            String(reportName)
+          )}.xlsx`,
+        });
+        res.end(report);
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(`Report generator not found for ${reportName}`);
+        res.writeHead(404);
+        res.end();
+      }
+    })
+  );
 
-    /**
-     * Endpoint for reports generation
-     */
-    app.get(
-      '/generate-report',
-      requireLogin,
-      bodyParser.urlencoded({ extended: false }),
-      Meteor.bindEnvironment(async (req: Request, res: Response) => {
-        const { user } = req as RequestWithUser;
-        const { reportName, reportArgs } = req.query;
-        const reportGenerator =
-          typeof reportName === 'string' &&
-          Object.prototype.hasOwnProperty.call(ReportGenerators, reportName)
-            ? ReportGenerators[reportName]
-            : undefined;
-        const normalizedReportArgs = Array.isArray(reportArgs)
-          ? String(reportArgs[0] ?? '')
-          : String(reportArgs ?? '');
-        if (reportGenerator) {
-          if (
-            !hasOnePermission(user, reportGenerator.permissions) ||
-            (reportGenerator.argIsPhysicalStoreId &&
-              !hasInstanceAccess(user, normalizedReportArgs))
-          ) {
-            res.status(403).json({ error: 'Not authorized.' });
-            return;
-          }
-          const report = await reportGenerator.generate(normalizedReportArgs);
-          res.writeHead(200, {
-            'Content-Type': 'application/vnd.ms-excel',
-            'Content-Disposition': `attachment; filename=${kebabCase(
-              String(reportName)
-            )}.xlsx`,
-          });
-          res.end(report);
-        } else {
-          // eslint-disable-next-line no-console
-          console.warn(`Report generator not found for ${reportName}`);
-          res.writeHead(404);
-          res.end();
-        }
-      })
-    );
-
-    /**
-     * Endpoint for file downloads
-     */
-    app.get(
-      '/download-file',
-      requireLogin,
-      bodyParser.urlencoded({ extended: false }),
-      Meteor.bindEnvironment(async (req: Request, res: Response) => {
-        const { attachmentId } = req.query;
-        if (typeof attachmentId === 'string') {
-          const attachment = await Attachments.findOneAsync(attachmentId);
-          if (attachment?.fileKey) {
-            // Stored privately in object storage: hand out a short-lived
-            // presigned URL rather than streaming it through this server.
-            res.redirect(302, await getAttachmentDownloadUrl(attachment.fileKey));
-          } else {
-            res.writeHead(404);
-            res.end();
-          }
+  /**
+   * Endpoint for file downloads
+   */
+  app.get(
+    '/download-file',
+    requireLogin,
+    bodyParser.urlencoded({ extended: false }),
+    Meteor.bindEnvironment(async (req: Request, res: Response) => {
+      const { user } = req as RequestWithUser;
+      const { attachmentId } = req.query;
+      if (typeof attachmentId !== 'string') {
+        res.writeHead(404);
+        res.end();
+        return;
+      }
+      try {
+        // The user needs the permission of the feature the attachment
+        // belongs to, and access to the store of the form that holds it.
+        const attachment = await assertCanViewAttachment(user, attachmentId);
+        if (attachment.fileKey) {
+          // Stored privately in object storage: hand out a short-lived
+          // presigned URL rather than streaming it through this server.
+          res.redirect(302, await getAttachmentDownloadUrl(attachment.fileKey));
         } else {
           res.writeHead(404);
           res.end();
         }
-      })
-    );
+      } catch (error) {
+        const status = downloadErrorStatus(error);
+        if (status === 403) {
+          res.status(403).json({ error: 'Not authorized.' });
+        } else if (status === 404) {
+          res.writeHead(404);
+          res.end();
+        } else {
+          throw error;
+        }
+      }
+    })
+  );
 
-    /**
-     * Endpoint for file uploads
-     */
-    app.post(
-      '/upload-file',
-      requireLogin,
-      parseUploadedFile,
-      Meteor.bindEnvironment(async (req: Request, res: Response) => {
-        const { file } = req as Request & {
-          file: Express.Multer.File;
-        };
-        // Sent as a multipart field (or query param) by UploadAttachment.
-        const category = req.body?.category ?? req.query.category;
-        if (!file || !isAttachmentCategory(category)) {
+  /**
+   * Endpoint for file uploads
+   */
+  app.post(
+    '/upload-file',
+    requireLogin,
+    parseUploadedFile,
+    Meteor.bindEnvironment(async (req: Request, res: Response) => {
+      const { file } = req as Request & {
+        file: Express.Multer.File;
+      };
+      // Sent as a multipart field (or query param) by UploadAttachment.
+      const decision = decideAttachmentUpload(
+        (req as RequestWithUser).user,
+        {
+          category: req.body?.category ?? req.query.category,
+          hasContent: !!file,
+          mimeType: file?.mimetype,
+        }
+      );
+      if (!decision.ok) {
+        if (decision.reason === 'invalid') {
           res.writeHead(400);
           res.end('A file and a valid attachment category are required.');
-          return;
-        }
-        // The stored type is what object storage serves the file as, so
-        // only accept types a browser won't run as a page (no HTML or SVG).
-        if (!isAllowedAttachmentMimeType(file.mimetype)) {
+        } else if (decision.reason === 'forbidden') {
+          res.writeHead(403);
+          res.end('Not authorized.');
+        } else {
           res.writeHead(400);
           res.end('This type of file is not allowed.');
-          return;
         }
-        const attachmentId = await createStoredAttachment({
-          category,
-          name: file.originalname,
-          mimeType: file.mimetype,
-          body: file.buffer,
-        });
-        res.writeHead(200);
-        res.end(attachmentId);
-      })
-    );
+        return;
+      }
+      const { category } = decision;
+      const attachmentId = await createStoredAttachment({
+        category,
+        name: file.originalname,
+        mimeType: file.mimetype,
+        body: file.buffer,
+        createdBy: (req as RequestWithUser).user._id,
+      });
+      res.writeHead(200);
+      res.end(attachmentId);
+    })
+  );
 
-    /**
-     * Endpoint for external (non-Meteor) clients to exchange a username/email
-     * and password for a Meteor login token, for use as the GraphQL API's
-     * `Authorization` header. A user with two-factor authentication on must
-     * also send `code`, the current code from their authenticator app.
-     */
-    app.post(
-      '/login',
-      bodyParser.json(),
-      Meteor.bindEnvironment(async (req: Request, res: Response) => {
-        const { username, email, password, code } = req.body ?? {};
-        if ((!username && !email) || typeof password !== 'string') {
-          res.writeHead(400);
-          res.end();
-          return;
-        }
-
-        const user = await AccountsPrivate._findUserByQuery(
-          username ? { username } : { email },
-          { fields: { services: 1, locked: 1 } }
-        );
-
-        if (!user || !user.services?.password) {
-          res.writeHead(401);
-          res.end();
-          return;
-        }
-
-        // Counted before the password is checked, and refused before it is,
-        // so a blocked attempt doesn't reveal whether the password was right.
-        // Same throttle as the Meteor password login (login-throttle.ts).
-        const clientAddress = getThrottleAddress(getClientAddress(req));
-        if (!(await reserveLoginAttempt(user._id, clientAddress))) {
-          res.writeHead(429, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: TOO_MANY_ATTEMPTS_ERROR }));
-          return;
-        }
-
-        const { error, userId } = await AccountsPrivate._checkPasswordAsync(
-          user,
-          password
-        );
-        if (error) {
-          res.writeHead(401);
-          res.end();
-          return;
-        }
-
-        // Checked after the password so the response doesn't reveal whether
-        // an account is locked to someone who doesn't know its password.
-        if (isAccountLocked(user)) {
-          res.writeHead(403, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: ACCOUNT_LOCKED_MESSAGE }));
-          return;
-        }
-
-        // Same rule the password login enforces through accounts-2fa, and
-        // each code works only once (login-throttle.ts).
-        const twoFactorSecret = user.services.twoFactorAuthentication?.secret;
-        if (isTwoFactorEnabled(user) && twoFactorSecret) {
-          let twoFactorError: string | null = null;
-          if (typeof code !== 'string' || !code) {
-            twoFactorError = TwoFactorErrorCode.CODE_REQUIRED;
-          } else if (
-            !(await consumeTwoFactorCode(userId, twoFactorSecret, code))
-          ) {
-            twoFactorError = TwoFactorErrorCode.INVALID_CODE;
-          }
-          if (twoFactorError) {
-            res.writeHead(401, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: twoFactorError }));
-            return;
-          }
-        }
-
-        await clearLoginAttempts(userId, clientAddress);
-
-        const stampedLoginToken = AccountsPrivate._generateStampedLoginToken();
-        await AccountsPrivate._insertLoginToken(userId, stampedLoginToken);
-
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(
-          JSON.stringify({
-            userId,
+  /**
+   * Endpoint for external (non-Meteor) clients to exchange a username/email
+   * and password for a Meteor login token, for use as the GraphQL API's
+   * `Authorization` header. A user with two-factor authentication on must
+   * also send `code`, the current code from their authenticator app.
+   */
+  app.post(
+    '/login',
+    bodyParser.json(),
+    Meteor.bindEnvironment(async (req: Request, res: Response) => {
+      const clientAddress = getThrottleAddress(getClientAddress(req));
+      const result = await passwordLogin(req.body ?? {}, {
+        findUser: query =>
+          AccountsPrivate._findUserByQuery(query, {
+            fields: { services: 1, locked: 1 },
+          }),
+        reserveAttempt: userId => reserveLoginAttempt(userId, clientAddress),
+        checkPassword: (user, password) =>
+          AccountsPrivate._checkPasswordAsync(user, password),
+        isTwoFactorEnabled,
+        consumeTwoFactorCode,
+        clearAttempts: userId => clearLoginAttempts(userId, clientAddress),
+        issueToken: async userId => {
+          const stampedLoginToken = AccountsPrivate._generateStampedLoginToken();
+          await AccountsPrivate._insertLoginToken(userId, stampedLoginToken);
+          return {
             token: stampedLoginToken.token,
             tokenExpires: AccountsPrivate._tokenExpiration(
               stampedLoginToken.when
             ),
-          })
-        );
-      })
-    );
+          };
+        },
+      });
+      res.writeHead(result.status, { 'Content-Type': 'application/json' });
+      res.end(result.body ? JSON.stringify(result.body) : undefined);
+    })
+  );
 
-    /**
-     * Endpoint for base64 image uploads
-     */
-    app.post(
-      '/upload-base64-file',
-      requireLogin,
-      bodyParser.json({ limit: '5mb' }),
-      Meteor.bindEnvironment(async (req: Request, res: Response) => {
-        const { name, data, category } = req.body;
-        const mimeType = req.body.mimeType || 'image/jpeg';
-        if (typeof data !== 'string' || !isAttachmentCategory(category)) {
+  /**
+   * Endpoint for base64 image uploads
+   */
+  app.post(
+    '/upload-base64-file',
+    requireLogin,
+    bodyParser.json({ limit: '5mb' }),
+    Meteor.bindEnvironment(async (req: Request, res: Response) => {
+      const { name, data, category } = req.body;
+      const mimeType = req.body.mimeType || 'image/jpeg';
+      const decision = decideAttachmentUpload(
+        (req as RequestWithUser).user,
+        { category, hasContent: typeof data === 'string', mimeType }
+      );
+      if (!decision.ok) {
+        if (decision.reason === 'invalid') {
           res.status(400).send(
             JSON.stringify({
               error: 'Data and a valid attachment category are required.',
             })
           );
-          return;
-        }
-        // Same rule as /upload-file.
-        if (!isAllowedAttachmentMimeType(mimeType)) {
+        } else if (decision.reason === 'forbidden') {
+          res.status(403).send(JSON.stringify({ error: 'Not authorized.' }));
+        } else {
           res.status(400).send(
             JSON.stringify({ error: 'This type of file is not allowed.' })
           );
-          return;
         }
-        const attachmentId = await createStoredAttachment({
-          category,
-          name,
-          mimeType,
-          body: Buffer.from(data, 'base64'),
-        });
-        res.send(JSON.stringify({ attachmentId }));
-      })
-    );
-
-    /**
-     * Public config for the browser monitoring agent. The client can't read
-     * process.env, so it fetches this at startup. Returns 204 when monitoring
-     * is disabled. These are New Relic's public browser-agent identifiers
-     * (they ship in every page that uses the agent), not secrets.
-     */
-    app.get('/api/monitoring-config', (req: Request, res: Response) => {
-      const config = getBrowserMonitoringConfig();
-      if (!config) {
-        res.status(204).end();
         return;
       }
-      res.json(config);
-    });
+      const attachmentId = await createStoredAttachment({
+        category: decision.category,
+        name,
+        mimeType,
+        body: Buffer.from(data, 'base64'),
+        createdBy: (req as RequestWithUser).user._id,
+      });
+      res.send(JSON.stringify({ attachmentId }));
+    })
+  );
 
-    /**
-     * Endpoints the security server pushes its channels, profiles and alerts to
-     */
-    app.use('/api/security-server', createSecurityServerRouter());
+  /**
+   * Public config for the browser monitoring agent. The client can't read
+   * process.env, so it fetches this at startup. Returns 204 when monitoring
+   * is disabled. These are New Relic's public browser-agent identifiers
+   * (they ship in every page that uses the agent), not secrets.
+   */
+  app.get('/api/monitoring-config', (req: Request, res: Response) => {
+    const config = getBrowserMonitoringConfig();
+    if (!config) {
+      res.status(204).end();
+      return;
+    }
+    res.json(config);
+  });
 
-    /**
-     * Media proxy for the Correspondence inbox (files stored in Rocket.Chat)
-     */
-    app.use('/api/correspondence', createCorrespondenceRouter());
+  /**
+   * Endpoints the security server pushes its channels, profiles and alerts to
+   */
+  app.use('/api/security-server', createSecurityServerRouter());
 
-    /**
-     * Files of committee discussions in Workspaces (stored in Rocket.Chat)
-     */
-    app.use('/api/workspaces', createWorkspaceDiscussionRouter());
+  /**
+   * Media proxy for the Correspondence inbox (files stored in Rocket.Chat)
+   */
+  app.use('/api/correspondence', createCorrespondenceRouter());
 
-    /**
-     * Echo of the request as received, for checking the proxy chain and
-     * HTTP_FORWARDED_COUNT (docs/request-diagnostics.md). Rate limited by
-     * its own router.
-     */
-    app.use('/api/diagnostics', createDiagnosticsRouter());
+  /**
+   * Files of committee discussions in Workspaces (stored in Rocket.Chat)
+   */
+  app.use('/api/workspaces', createWorkspaceDiscussionRouter());
 
-    WebApp.connectHandlers.use(app as any);
+  /**
+   * Echo of the request as received, for checking the proxy chain and
+   * HTTP_FORWARDED_COUNT (docs/request-diagnostics.md). Rate limited by
+   * its own router.
+   */
+  app.use('/api/diagnostics', createDiagnosticsRouter());
+
+  return app;
+}
+
+export function setupRestEndpoints() {
+  Meteor.startup(() => {
+    WebApp.connectHandlers.use(createRestApp() as any);
   });
 }

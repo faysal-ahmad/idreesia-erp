@@ -48,6 +48,7 @@ import {
   assertMembers,
   assertUploadInWorkspace,
   getMeetingsAccess,
+  guestParticipantId,
   type MeetingsAccess,
 } from './access';
 
@@ -65,15 +66,13 @@ const view = (
   meeting: Parameters<typeof toCommitteeMeeting>[0]
 ) => toCommitteeMeeting(meeting, access);
 
-/** Checks a coordinator's access and that the meeting is the committee's. */
+/** A meeting of the committee, for a coordinator. */
 const managedMeeting = async (
-  user: unknown,
+  context: unknown,
   committeeId: string,
   meetingId: string
 ) => {
-  const access = await getMeetingsAccess(user as any, committeeId, {
-    coordinator: true,
-  });
+  const access = getMeetingsAccess(context as any, committeeId);
   const meeting = await assertMeetingInWorkspace(access, meetingId);
   return { access, meeting };
 };
@@ -92,41 +91,44 @@ const actionItemInput = (input: {
   agendaItemId: input.agendaItemId || null,
 });
 
-// Each resolver only checks access - committee membership + Meetings
-// enabled, coordinators for managing meetings, members acting only for
-// themselves, ids belonging to the committee's workspace, participants
-// being committee members. The meetings module and the committee meetings
-// logic do the work, and the module enforces the meeting status rules.
+// Who may call each field (committee role) is declared in the schema with
+// @checkCommitteeAccess. The resolvers only check what the role cannot tell:
+// Meetings enabled on the committee, members acting only for themselves, ids
+// belonging to the committee's workspace, a guest being invited to the
+// meeting, participants being committee members. The meetings module and the
+// committee meetings logic do the work, and the module enforces the meeting
+// status rules.
 const resolvers: ResolverMap = {
   Query: {
-    workspaceMeetingsInfo: async (obj, { committeeId }, { user }) => {
-      const access = await getMeetingsAccess(user, committeeId);
+    workspaceMeetingsInfo: async (obj, { committeeId }, context) => {
+      const access = getMeetingsAccess(context, committeeId);
       return getCommitteeMeetingsInfo(access.workspaceId, access);
     },
 
-    workspaceMeetingMembers: async (obj, { committeeId }, { user }) => {
-      const access = await getMeetingsAccess(user, committeeId);
+    workspaceMeetingMembers: async (obj, { committeeId }, context) => {
+      const access = getMeetingsAccess(context, committeeId);
       return getCommitteeMeetingMembers(access.committee);
     },
 
     workspaceMeetings: async (
       obj,
       { committeeId, view: meetingsView, from, to, text, pageIndex, pageSize },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId);
+      const access = getMeetingsAccess(context, committeeId);
       return listCommitteeMeetings(access.workspaceId, access, {
         view: meetingsView as MeetingsView | null,
         from,
         to,
         text,
+        participantId: guestParticipantId(access),
         pageIndex,
         pageSize,
       });
     },
 
-    workspaceMeetingById: async (obj, { committeeId, meetingId }, { user }) => {
-      const access = await getMeetingsAccess(user, committeeId);
+    workspaceMeetingById: async (obj, { committeeId, meetingId }, context) => {
+      const access = getMeetingsAccess(context, committeeId);
       await assertMeetingInWorkspace(access, meetingId);
       return getCommitteeMeeting(meetingId, access);
     },
@@ -134,9 +136,9 @@ const resolvers: ResolverMap = {
     workspaceMeetingAttachments: async (
       obj,
       { committeeId, meetingId },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId);
+      const access = getMeetingsAccess(context, committeeId);
       await assertMeetingInWorkspace(access, meetingId);
       return listCommitteeMeetingAttachments(meetingId, access);
     },
@@ -144,14 +146,15 @@ const resolvers: ResolverMap = {
     workspaceMeetingActionItems: async (
       obj,
       { committeeId, meetingId, assigneeId, status, pageIndex, pageSize },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId);
+      const access = getMeetingsAccess(context, committeeId);
       if (meetingId) await assertMeetingInWorkspace(access, meetingId);
       return listCommitteeActionItems(access.workspaceId, access, {
         meetingId,
         assigneeId,
         status,
+        participantId: guestParticipantId(access),
         pageIndex,
         pageSize,
       });
@@ -160,9 +163,9 @@ const resolvers: ResolverMap = {
     workspaceMeetingActivity: async (
       obj,
       { committeeId, meetingId, before, limit },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId);
+      const access = getMeetingsAccess(context, committeeId);
       if (meetingId) await assertMeetingInWorkspace(access, meetingId);
       return getCommitteeMeetingActivity(access.workspaceId, access, {
         meetingId,
@@ -176,11 +179,9 @@ const resolvers: ResolverMap = {
     workspaceCreateMeeting: async (
       obj,
       { committeeId, input, participantIds },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getMeetingsAccess(context, committeeId);
       const ids: string[] = (participantIds ?? []).filter(Boolean);
       assertMembers(access, ids);
       const meeting = await createCommitteeMeeting(
@@ -196,10 +197,10 @@ const resolvers: ResolverMap = {
     workspaceUpdateMeeting: async (
       obj,
       { committeeId, meetingId, input },
-      { user }
+      context
     ) => {
       const { access, meeting } = await managedMeeting(
-        user,
+        context,
         committeeId,
         meetingId
       );
@@ -212,9 +213,9 @@ const resolvers: ResolverMap = {
     workspaceCancelMeeting: async (
       obj,
       { committeeId, meetingId, reason },
-      { user }
+      context
     ) => {
-      const { access } = await managedMeeting(user, committeeId, meetingId);
+      const { access } = await managedMeeting(context, committeeId, meetingId);
       return view(
         access,
         await cancelMeeting(meetingId, access.userId, {
@@ -226,27 +227,27 @@ const resolvers: ResolverMap = {
     workspaceCompleteMeeting: async (
       obj,
       { committeeId, meetingId },
-      { user }
+      context
     ) => {
-      const { access } = await managedMeeting(user, committeeId, meetingId);
+      const { access } = await managedMeeting(context, committeeId, meetingId);
       return view(access, await completeMeeting(meetingId, access.userId));
     },
 
     workspaceReopenMeeting: async (
       obj,
       { committeeId, meetingId },
-      { user }
+      context
     ) => {
-      const { access } = await managedMeeting(user, committeeId, meetingId);
+      const { access } = await managedMeeting(context, committeeId, meetingId);
       return view(access, await reopenMeeting(meetingId, access.userId));
     },
 
     workspaceDeleteMeeting: async (
       obj,
       { committeeId, meetingId },
-      { user }
+      context
     ) => {
-      const { access } = await managedMeeting(user, committeeId, meetingId);
+      const { access } = await managedMeeting(context, committeeId, meetingId);
       await deleteMeeting(meetingId, access.userId);
       return true;
     },
@@ -254,10 +255,10 @@ const resolvers: ResolverMap = {
     workspaceSetMeetingParticipants: async (
       obj,
       { committeeId, meetingId, participantIds },
-      { user }
+      context
     ) => {
       const { access, meeting } = await managedMeeting(
-        user,
+        context,
         committeeId,
         meetingId
       );
@@ -272,9 +273,9 @@ const resolvers: ResolverMap = {
     workspaceSetMeetingParticipantRole: async (
       obj,
       { committeeId, meetingId, participantId, role },
-      { user }
+      context
     ) => {
-      const { access } = await managedMeeting(user, committeeId, meetingId);
+      const { access } = await managedMeeting(context, committeeId, meetingId);
       return view(
         access,
         await setParticipantRole(meetingId, participantId, role, access.userId)
@@ -284,9 +285,9 @@ const resolvers: ResolverMap = {
     workspaceRespondToMeeting: async (
       obj,
       { committeeId, meetingId, participantId, status, comment },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId);
+      const access = getMeetingsAccess(context, committeeId);
       await assertMeetingInWorkspace(access, meetingId);
       const respondingFor = participantId || access.personId;
       if (!respondingFor) {
@@ -309,9 +310,9 @@ const resolvers: ResolverMap = {
     workspaceMarkMeetingAttendance: async (
       obj,
       { committeeId, meetingId, entries },
-      { user }
+      context
     ) => {
-      const { access } = await managedMeeting(user, committeeId, meetingId);
+      const { access } = await managedMeeting(context, committeeId, meetingId);
       return view(
         access,
         await markAttendance(meetingId, entries ?? [], access.userId)
@@ -321,9 +322,9 @@ const resolvers: ResolverMap = {
     workspaceAddMeetingAgendaItem: async (
       obj,
       { committeeId, meetingId, input },
-      { user }
+      context
     ) => {
-      const { access } = await managedMeeting(user, committeeId, meetingId);
+      const { access } = await managedMeeting(context, committeeId, meetingId);
       assertMembers(access, [input.presenterId]);
       const { meeting } = await addAgendaItem(
         meetingId,
@@ -341,9 +342,9 @@ const resolvers: ResolverMap = {
     workspaceUpdateMeetingAgendaItem: async (
       obj,
       { committeeId, meetingId, agendaItemId, input },
-      { user }
+      context
     ) => {
-      const { access } = await managedMeeting(user, committeeId, meetingId);
+      const { access } = await managedMeeting(context, committeeId, meetingId);
       assertMembers(access, [input.presenterId]);
       return view(
         access,
@@ -364,9 +365,9 @@ const resolvers: ResolverMap = {
     workspaceRemoveMeetingAgendaItem: async (
       obj,
       { committeeId, meetingId, agendaItemId },
-      { user }
+      context
     ) => {
-      const { access } = await managedMeeting(user, committeeId, meetingId);
+      const { access } = await managedMeeting(context, committeeId, meetingId);
       return view(
         access,
         await removeAgendaItem(meetingId, agendaItemId, access.userId)
@@ -376,9 +377,9 @@ const resolvers: ResolverMap = {
     workspaceReorderMeetingAgenda: async (
       obj,
       { committeeId, meetingId, agendaItemIds },
-      { user }
+      context
     ) => {
-      const { access } = await managedMeeting(user, committeeId, meetingId);
+      const { access } = await managedMeeting(context, committeeId, meetingId);
       return view(
         access,
         await reorderAgenda(meetingId, agendaItemIds ?? [], access.userId)
@@ -388,9 +389,9 @@ const resolvers: ResolverMap = {
     workspaceSetMeetingMinutes: async (
       obj,
       { committeeId, meetingId, text },
-      { user }
+      context
     ) => {
-      const { access } = await managedMeeting(user, committeeId, meetingId);
+      const { access } = await managedMeeting(context, committeeId, meetingId);
       return view(
         access,
         await setMinutes(meetingId, text ?? null, access.userId)
@@ -400,11 +401,9 @@ const resolvers: ResolverMap = {
     workspaceCreateMeetingAttachmentUpload: async (
       obj,
       { committeeId, meetingId, fileName, mimeType, size },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getMeetingsAccess(context, committeeId);
       await assertMeetingInWorkspace(access, meetingId);
       return createCommitteeMeetingUpload(
         meetingId,
@@ -416,11 +415,9 @@ const resolvers: ResolverMap = {
     workspaceCompleteMeetingAttachmentUpload: async (
       obj,
       { committeeId, uploadId },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getMeetingsAccess(context, committeeId);
       await assertUploadInWorkspace(access, uploadId);
       return completeCommitteeMeetingUpload(uploadId, access);
     },
@@ -428,11 +425,9 @@ const resolvers: ResolverMap = {
     workspaceAbortMeetingAttachmentUpload: async (
       obj,
       { committeeId, uploadId },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getMeetingsAccess(context, committeeId);
       await assertUploadInWorkspace(access, uploadId);
       await abortAttachmentUpload(uploadId, access.userId);
       return true;
@@ -441,9 +436,9 @@ const resolvers: ResolverMap = {
     workspaceMeetingAttachmentDownloadUrl: async (
       obj,
       { committeeId, attachmentId, inline },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId);
+      const access = getMeetingsAccess(context, committeeId);
       await assertAttachmentInWorkspace(access, attachmentId);
       return getCommitteeMeetingDownloadUrl(attachmentId, access, { inline });
     },
@@ -451,11 +446,9 @@ const resolvers: ResolverMap = {
     workspaceDeleteMeetingAttachment: async (
       obj,
       { committeeId, attachmentId },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getMeetingsAccess(context, committeeId);
       await assertAttachmentInWorkspace(access, attachmentId);
       await deleteAttachment(attachmentId, access.userId);
       return true;
@@ -464,9 +457,9 @@ const resolvers: ResolverMap = {
     workspaceCreateMeetingActionItem: async (
       obj,
       { committeeId, meetingId, input },
-      { user }
+      context
     ) => {
-      const { access } = await managedMeeting(user, committeeId, meetingId);
+      const { access } = await managedMeeting(context, committeeId, meetingId);
       assertMembers(access, [input.assigneeId]);
       const fields = actionItemInput(input);
       const item = await createActionItem(
@@ -486,11 +479,9 @@ const resolvers: ResolverMap = {
     workspaceUpdateMeetingActionItem: async (
       obj,
       { committeeId, actionItemId, input },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getMeetingsAccess(context, committeeId);
       await assertActionItemInWorkspace(access, actionItemId);
       assertMembers(access, [input.assigneeId]);
       const item = await updateActionItem(
@@ -504,9 +495,9 @@ const resolvers: ResolverMap = {
     workspaceSetMeetingActionItemStatus: async (
       obj,
       { committeeId, actionItemId, status },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId);
+      const access = getMeetingsAccess(context, committeeId);
       const existing = await assertActionItemInWorkspace(access, actionItemId);
       const isAssignee =
         !!existing.assigneeId && existing.assigneeId === access.personId;
@@ -526,11 +517,9 @@ const resolvers: ResolverMap = {
     workspaceDeleteMeetingActionItem: async (
       obj,
       { committeeId, actionItemId },
-      { user }
+      context
     ) => {
-      const access = await getMeetingsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getMeetingsAccess(context, committeeId);
       await assertActionItemInWorkspace(access, actionItemId);
       await deleteActionItem(actionItemId, access.userId);
       return true;

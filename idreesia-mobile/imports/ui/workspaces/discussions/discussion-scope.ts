@@ -17,28 +17,11 @@ import {
   MOBILE_WORKSPACE_SET_DISCUSSION_MESSAGE_PINNED,
   MOBILE_WORKSPACE_SET_DISCUSSION_MESSAGE_STARRED,
 } from './gql';
-import {
-  MOBILE_PROJECT_DELETE_DISCUSSION_MESSAGE,
-  MOBILE_PROJECT_DISCUSSION_INFO,
-  MOBILE_PROJECT_DISCUSSION_MEMBERS,
-  MOBILE_PROJECT_DISCUSSION_OLDER_MESSAGES,
-  MOBILE_PROJECT_DISCUSSION_PINNED_MESSAGES,
-  MOBILE_PROJECT_DISCUSSION_SEARCH_MESSAGES,
-  MOBILE_PROJECT_DISCUSSION_STARRED_MESSAGES,
-  MOBILE_PROJECT_DISCUSSION_SYNC,
-  MOBILE_PROJECT_DISCUSSION_THREAD_MESSAGES,
-  MOBILE_PROJECT_EDIT_DISCUSSION_MESSAGE,
-  MOBILE_PROJECT_REACT_TO_DISCUSSION_MESSAGE,
-  MOBILE_PROJECT_SEND_DISCUSSION_MESSAGE,
-  MOBILE_PROJECT_SET_DISCUSSION_MESSAGE_PINNED,
-  MOBILE_PROJECT_SET_DISCUSSION_MESSAGE_STARRED,
-} from './gql/project-discussion';
 
 /**
- * Which discussion the screens show: a committee's, or a project's private
- * chat. The two have the same operations (a project's are aliased to the
- * committee ones' field names), so the screens only need the scope's
- * documents, variables, paths and file route.
+ * Which discussion the screens show. Today that is always a committee's; the
+ * scope gathers the documents, variables, paths and file route the screens
+ * need.
  */
 export interface DiscussionScope {
   /** Changes when the discussion does, so the store loads again. */
@@ -122,48 +105,5 @@ const committeeScope = (committeeId: string): DiscussionScope => ({
   titleFromInfo: true,
 });
 
-const projectScope = (committeeId: string, projectId: string): DiscussionScope => ({
-  key: `${committeeId}:${projectId}`,
-  committeeId,
-  variables: { committeeId, projectId },
-  defaultTitle: 'Project chat',
-  backTo: WorkspacesPaths.committeeProject(committeeId, projectId),
-  paths: {
-    main: WorkspacesPaths.committeeProjectChat(committeeId, projectId),
-    mainPattern: WorkspacesPaths.committeeProjectChatPattern,
-    thread: threadId => WorkspacesPaths.committeeProjectChatThread(committeeId, projectId, threadId),
-    threadPattern: WorkspacesPaths.committeeProjectChatThreadPattern,
-    search: WorkspacesPaths.committeeProjectChatSearch(committeeId, projectId),
-    searchPattern: WorkspacesPaths.committeeProjectChatSearchPattern,
-    pinned: WorkspacesPaths.committeeProjectChatPinned(committeeId, projectId),
-    pinnedPattern: WorkspacesPaths.committeeProjectChatPinnedPattern,
-    starred: WorkspacesPaths.committeeProjectChatStarred(committeeId, projectId),
-    starredPattern: WorkspacesPaths.committeeProjectChatStarredPattern,
-  },
-  uploadPath: `/api/workspaces/committees/${encodeURIComponent(committeeId)}/projects/${encodeURIComponent(
-    projectId,
-  )}/discussions/files`,
-  docs: {
-    info: MOBILE_PROJECT_DISCUSSION_INFO,
-    members: MOBILE_PROJECT_DISCUSSION_MEMBERS,
-    sync: MOBILE_PROJECT_DISCUSSION_SYNC,
-    older: MOBILE_PROJECT_DISCUSSION_OLDER_MESSAGES,
-    thread: MOBILE_PROJECT_DISCUSSION_THREAD_MESSAGES,
-    pinned: MOBILE_PROJECT_DISCUSSION_PINNED_MESSAGES,
-    starred: MOBILE_PROJECT_DISCUSSION_STARRED_MESSAGES,
-    search: MOBILE_PROJECT_DISCUSSION_SEARCH_MESSAGES,
-    send: MOBILE_PROJECT_SEND_DISCUSSION_MESSAGE,
-    react: MOBILE_PROJECT_REACT_TO_DISCUSSION_MESSAGE,
-    star: MOBILE_PROJECT_SET_DISCUSSION_MESSAGE_STARRED,
-    pin: MOBILE_PROJECT_SET_DISCUSSION_MESSAGE_PINNED,
-    edit: MOBILE_PROJECT_EDIT_DISCUSSION_MESSAGE,
-    remove: MOBILE_PROJECT_DELETE_DISCUSSION_MESSAGE,
-  },
-  titleFromInfo: false,
-});
-
 export const useCommitteeDiscussionScope = (committeeId: string) =>
   useMemo(() => committeeScope(committeeId), [committeeId]);
-
-export const useProjectDiscussionScope = (committeeId: string, projectId: string) =>
-  useMemo(() => projectScope(committeeId, projectId), [committeeId, projectId]);

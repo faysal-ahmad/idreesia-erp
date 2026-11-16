@@ -37,12 +37,15 @@ type PagedStockItem {
 
 extend type Query {
   pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
 
   stockItemById(_id: String!, physicalStoreId: String!): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   stockItemsById(_ids: [String]!, physicalStoreId: String!): [StockItem]
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 

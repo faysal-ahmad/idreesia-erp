@@ -57,8 +57,9 @@ extend type Query {
   # Committees the logged-in user is currently a member of.
   myCommittees: [WorkspaceCommitteeType]
 
-  # A committee the logged-in user is a member of; null otherwise.
+  # A committee the logged-in user is on, in any role. Refused otherwise.
   workspaceCommitteeById(committeeId: String!): WorkspaceCommitteeType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
 
   # Karkuns that a coordinator can add to their committee.
   workspaceCommitteeKarkunSearch(
@@ -69,6 +70,7 @@ extend type Query {
     pageIndex: String
     pageSize: String
   ): PagedWorkspaceKarkunType
+    @checkCommitteeAccess(roles: [COORDINATOR])
 }
 
 extend type Mutation {
@@ -78,10 +80,12 @@ extend type Mutation {
     karkunId: String!
     role: String
   ): WorkspaceCommitteeType
+    @checkCommitteeAccess(roles: [COORDINATOR])
   workspaceRemoveCommitteeMember(
     committeeId: String!
     karkunId: String!
   ): WorkspaceCommitteeType
+    @checkCommitteeAccess(roles: [COORDINATOR])
   # Adds a member's chat account to the committee's discussion group, or
   # removes it. The member must have a chat account.
   workspaceSetCommitteeMemberDiscussionAccess(
@@ -89,6 +93,7 @@ extend type Mutation {
     karkunId: String!
     hasAccess: Boolean!
   ): Boolean
+    @checkCommitteeAccess(roles: [COORDINATOR])
   # Makes a member a coordinator, or a regular member again. The last
   # coordinator cannot be demoted.
   workspaceSetCommitteeMemberCoordinator(
@@ -96,4 +101,5 @@ extend type Mutation {
     karkunId: String!
     isCoordinator: Boolean!
   ): Boolean
+    @checkCommitteeAccess(roles: [COORDINATOR])
 }`;

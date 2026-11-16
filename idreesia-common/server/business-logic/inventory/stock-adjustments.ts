@@ -50,13 +50,15 @@ export async function createStockAdjustment(
 /** Replaces an unapproved adjustment, moving the stock level to match. */
 export async function updateStockAdjustment(
   stockAdjustmentId: string,
+  physicalStoreId: string,
   input: StockAdjustmentInput,
   userId: string
 ): Promise<void> {
   return runInTransaction(async () => {
-    const existing = (await StockAdjustments.findOneAsync(
-      stockAdjustmentId
-    )) as unknown as StockAdjustmentDocument | undefined;
+    const existing = (await StockAdjustments.findOneAsync({
+      _id: stockAdjustmentId,
+      physicalStoreId,
+    })) as unknown as StockAdjustmentDocument | undefined;
     if (!existing) {
       throw new Error('Stock adjustment not found.');
     }
@@ -73,6 +75,7 @@ export async function updateStockAdjustment(
     const updated = await StockAdjustments.updateAsync(
       {
         _id: { $eq: stockAdjustmentId },
+        physicalStoreId,
         approvedOn: { $eq: null },
         approvedBy: { $eq: null },
       },

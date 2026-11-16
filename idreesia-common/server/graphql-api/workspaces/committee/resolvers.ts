@@ -18,8 +18,7 @@ import {
   type CommitteeDocument,
   type WorkspaceUser,
   assertMembersEnabled,
-  getCoordinatedCommittee,
-  getMemberCommittee,
+  getCommitteeAccess,
   getUserCommittees,
   isCommitteeCoordinator,
 } from './access';
@@ -112,17 +111,17 @@ const resolvers: ResolverMap = {
   Query: {
     myCommittees: async (obj, args, { user }) => getUserCommittees(user),
 
-    workspaceCommitteeById: async (obj, { committeeId }, { user }) =>
-      getMemberCommittee(user, committeeId),
+    workspaceCommitteeById: async (obj, { committeeId }, context) =>
+      getCommitteeAccess(context, committeeId).committee,
 
     // Mirrors the HR karkun search (karkuns of Multan), limited to
     // coordinators of the committee and to the fields needed to pick a person.
     workspaceCommitteeKarkunSearch: async (
       obj,
       { committeeId, name, cnicNumber, phoneNumber, pageIndex, pageSize },
-      { user }
+      context
     ) => {
-      const committee = await getCoordinatedCommittee(user, committeeId);
+      const { committee } = getCommitteeAccess(context, committeeId);
       assertMembersEnabled(committee);
 
       const multanCity = await Cities.findOneAsync({
@@ -154,14 +153,14 @@ const resolvers: ResolverMap = {
     workspaceAddCommitteeMember: async (
       obj,
       { committeeId, karkunId, role },
-      { user }
+      context
     ) => {
-      const committee = await getCoordinatedCommittee(user, committeeId);
+      const { committee } = getCommitteeAccess(context, committeeId);
       assertMembersEnabled(committee);
       if (role && role !== 'member' && role !== 'guest') {
         throw new Error('Only members and guests can be added from here.');
       }
-      await addCommitteeMember(committeeId, karkunId, user._id, role);
+      await addCommitteeMember(committeeId, karkunId, context.user._id, role);
       return Committees.findOneAsync(committeeId);
     },
 
@@ -170,9 +169,9 @@ const resolvers: ResolverMap = {
     workspaceRemoveCommitteeMember: async (
       obj,
       { committeeId, karkunId },
-      { user }
+      context
     ) => {
-      const committee = await getCoordinatedCommittee(user, committeeId);
+      const { committee } = getCommitteeAccess(context, committeeId);
       assertMembersEnabled(committee);
       const member = (committee.members ?? []).find(
         m => m.karkunId === karkunId
@@ -187,16 +186,16 @@ const resolvers: ResolverMap = {
         throw new Error('Observers cannot be removed from here.');
       }
 
-      await removeCommitteeMember(committeeId, karkunId, user._id);
+      await removeCommitteeMember(committeeId, karkunId, context.user._id);
       return Committees.findOneAsync(committeeId);
     },
 
     workspaceSetCommitteeMemberDiscussionAccess: async (
       obj,
       { committeeId, karkunId, hasAccess },
-      { user }
+      context
     ) => {
-      const committee = await getCoordinatedCommittee(user, committeeId);
+      const { committee } = getCommitteeAccess(context, committeeId);
       return setCommitteeMemberDiscussionAccess(
         committee as unknown as CommitteeDoc,
         karkunId,
@@ -208,9 +207,9 @@ const resolvers: ResolverMap = {
     workspaceSetCommitteeMemberCoordinator: async (
       obj,
       { committeeId, karkunId, isCoordinator },
-      { user }
+      context
     ) => {
-      const committee = await getCoordinatedCommittee(user, committeeId);
+      const { committee } = getCommitteeAccess(context, committeeId);
       assertMembersEnabled(committee);
       const members = committee.members ?? [];
       if (!members.some(m => m.karkunId === karkunId)) {
@@ -230,7 +229,7 @@ const resolvers: ResolverMap = {
         committeeId,
         karkunId,
         !!isCoordinator,
-        user._id
+        context.user._id
       );
       return true;
     },

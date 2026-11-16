@@ -29,9 +29,12 @@ export default {
   Query: {
     itemCategoryById: async (
       _obj: unknown,
-      { _id }: Pick<ItemCategoryArgs, '_id'>
+      { _id, physicalStoreId }: Pick<ItemCategoryArgs, '_id' | 'physicalStoreId'>
     ) => {
-      return ItemCategories.findOneAsync(_id);
+      return ItemCategories.findOneAsync({
+        _id: { $eq: _id },
+        physicalStoreId: { $eq: physicalStoreId },
+      });
     },
 
     itemCategoriesByPhysicalStoreId: async (

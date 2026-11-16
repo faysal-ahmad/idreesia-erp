@@ -86,9 +86,38 @@ export function getCommitteeProjectsInfo(context: ViewContext) {
   };
 }
 
-/** The committee's members, who can own or take part in projects, by name. */
-export async function getCommitteeProjectMembers(committee: CommitteeDoc) {
-  const members = committee.members ?? [];
+/**
+ * People who take part in the projects this person takes part in, and the
+ * person themself. What a guest may see of the committee's members.
+ */
+export async function getPeopleInProjectsOf(
+  workspaceId: string,
+  personId: string | null
+) {
+  const ids = new Set<string>(personId ? [personId] : []);
+  if (personId) {
+    const projects = await Projects.find(
+      { workspaceId, participantIds: personId },
+      { fields: { participantIds: 1 } }
+    ).fetchAsync();
+    projects.forEach(({ participantIds }) =>
+      participantIds.forEach(id => ids.add(id))
+    );
+  }
+  return ids;
+}
+
+/**
+ * The committee's members, who can own or take part in projects, by name.
+ * With `onlyPersonIds`, only those people.
+ */
+export async function getCommitteeProjectMembers(
+  committee: CommitteeDoc,
+  onlyPersonIds?: Set<string>
+) {
+  const members = (committee.members ?? []).filter(
+    ({ karkunId }) => !onlyPersonIds || onlyPersonIds.has(karkunId)
+  );
   const names = await getPersonNames(members.map(({ karkunId }) => karkunId));
   return members
     .map(member => ({
@@ -178,6 +207,8 @@ export type ProjectsView = 'active' | 'completed' | 'mine' | 'all';
 
 export interface CommitteeProjectsOptions {
   view?: ProjectsView | null;
+  /** Only projects this person takes part in (a guest sees no others). */
+  participantId?: string | null;
   text?: string | null;
   pageIndex?: number | null;
   pageSize?: number | null;
@@ -192,10 +223,16 @@ export interface CommitteeProjectsOptions {
 export async function listCommitteeProjects(
   workspaceId: string,
   context: ViewContext,
-  { view, text, pageIndex, pageSize }: CommitteeProjectsOptions
+  {
+    view,
+    participantId: onlyParticipantId,
+    text,
+    pageIndex,
+    pageSize,
+  }: CommitteeProjectsOptions
 ) {
   let status: ProjectStatusValue[] | undefined;
-  let participantId: string | undefined;
+  let participantId: string | undefined = onlyParticipantId || undefined;
   switch (view ?? 'active') {
     case 'active':
       status = OpenProjectStatuses;
@@ -310,6 +347,8 @@ export interface CommitteeTasksOptions {
   view?: TasksView | null;
   /** Only this project's tasks. */
   projectId?: string | null;
+  /** Only tasks of projects this person takes part in (a guest sees no others). */
+  participantId?: string | null;
   /** Only tasks that are not part of a project. */
   standalone?: boolean | null;
   assigneeId?: string | null;
@@ -332,6 +371,7 @@ export async function listCommitteeTasks(
   {
     view,
     projectId,
+    participantId,
     standalone,
     assigneeId,
     priority,
@@ -340,6 +380,14 @@ export async function listCommitteeTasks(
     pageSize,
   }: CommitteeTasksOptions
 ) {
+  const projectIds = participantId
+    ? (
+        await Projects.find(
+          { workspaceId, participantIds: participantId },
+          { fields: { _id: 1 } }
+        ).fetchAsync()
+      ).map(({ _id }) => _id)
+    : undefined;
   let status: TaskStatusValue[] | undefined;
   let overdue = false;
   let sortBy: 'dueDate' | 'createdAt' = 'dueDate';
@@ -371,6 +419,7 @@ export async function listCommitteeTasks(
     overdue,
     sortBy,
     projectId: projectId || undefined,
+    projectIds,
     standalone: standalone || undefined,
     assigneeId: mine ?? (assigneeId || undefined),
     priority: (priority as never) || undefined,

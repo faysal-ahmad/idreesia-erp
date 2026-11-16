@@ -78,6 +78,7 @@ describe('inventory transactions', () => {
     await expect(
       updateIssuanceForm(
         formId,
+        's1',
         formInput([{ stockItemId: 'i1', quantity: 7 }]),
         'u1'
       )

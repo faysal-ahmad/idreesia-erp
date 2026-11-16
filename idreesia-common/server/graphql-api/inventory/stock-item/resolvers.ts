@@ -123,8 +123,14 @@ export default {
       return getPagedStockItems(queryString, physicalStoreId);
     },
 
-    stockItemById: async (_obj: unknown, { _id }: Pick<StockItemArgs, '_id'>) => {
-      return StockItems.findOneAsync(_id);
+    stockItemById: async (
+      _obj: unknown,
+      { _id, physicalStoreId }: Pick<StockItemArgs, '_id' | 'physicalStoreId'>
+    ) => {
+      return StockItems.findOneAsync({
+        _id: { $eq: _id },
+        physicalStoreId: { $eq: physicalStoreId },
+      });
     },
 
     stockItemsById: async (

@@ -2,7 +2,7 @@ import express from 'express';
 import type { NextFunction, Request, Response } from 'express';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
+import { decideApiAccess } from 'meteor/idreesia-common/server/rest-api/api-access';
 import {
   fetchUploadedFile,
   ChatError,
@@ -32,23 +32,19 @@ const authenticate = Meteor.bindEnvironment(
     const user = (await getUser(req.headers.authorization)) as
       | { _id: string; username?: string; locked?: boolean; permissions?: string[] }
       | undefined;
-    if (!user) {
+    const decision = decideApiAccess(user, [
+      Permissions.CORRESPONDENCE_INBOX_VIEW_MESSAGES,
+    ]);
+    if (!decision.ok) {
       // eslint-disable-next-line no-console
-      console.warn(`Correspondence file proxy: 401 for ${req.path} (no valid login token)`);
-      res.status(401).json({ error: 'Not authenticated.' });
-      return;
-    }
-
-    // Same rule as GraphQL's @checkPermissions: hasOnePermission lets
-    // super-admins through and refuses locked users.
-    if (
-      !hasOnePermission(user, [
-        Permissions.CORRESPONDENCE_INBOX_VIEW_MESSAGES,
-      ])
-    ) {
-      // eslint-disable-next-line no-console
-      console.warn(`Correspondence file proxy: 403 for ${req.path} (user ${user._id} lacks the inbox permission or is locked)`);
-      res.status(403).json({ error: 'Not authorized.' });
+      console.warn(
+        `Correspondence file proxy: ${decision.status} for ${req.path} (${
+          decision.status === 401
+            ? 'no valid login token'
+            : `user ${user?._id} lacks the inbox permission`
+        })`
+      );
+      res.status(decision.status).json({ error: decision.error });
       return;
     }
 

@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import type { NextFunction, Request, Response } from 'express';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
+import { decideApiAccess } from 'meteor/idreesia-common/server/rest-api/api-access';
 import {
   getSecurityServerChanges,
   getSecurityServerProfileImage,
@@ -366,19 +366,15 @@ const authenticate = Meteor.bindEnvironment(
   async (req: Request, res: Response, next: NextFunction) => {
     const user = (await getUser(req.headers.authorization)) as
       (SyncUser & { locked?: boolean; permissions?: string[] }) | undefined;
-    if (!user || user.locked === true) {
-      res.status(401).json({ error: 'Not authenticated.' });
+    const decision = decideApiAccess(user, [
+      Permissions.SECURITY_SYNC_SECURITY_SERVER_DATA,
+    ]);
+    if (!decision.ok) {
+      res.status(decision.status).json({ error: decision.error });
       return;
     }
 
-    if (
-      !hasOnePermission(user, [Permissions.SECURITY_SYNC_SECURITY_SERVER_DATA])
-    ) {
-      res.status(403).json({ error: 'Not authorized.' });
-      return;
-    }
-
-    (req as AuthenticatedRequest).syncUser = { _id: user._id };
+    (req as AuthenticatedRequest).syncUser = { _id: user!._id };
     next();
   }
 );

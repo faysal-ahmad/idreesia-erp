@@ -20,3 +20,4 @@ e2e/blob-report
 
 # idreesia-mobile device settings (written by scripts/run-mobile-device.mjs)
 idreesia-mobile/settings.device.json
+coverage/

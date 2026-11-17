@@ -7,6 +7,8 @@ export default gql`
   type WorkspaceMeetingsInfoType {
     # The logged-in user is a coordinator: can schedule and manage meetings.
     canManage: Boolean
+    # The logged-in user can join meetings' video calls (not observers).
+    canJoinVideoCall: Boolean
     # The logged-in user's participant id (karkun id), if any.
     myParticipantId: String
     # Largest attachment, in bytes, that can be uploaded.
@@ -53,7 +55,8 @@ export default gql`
     title: String
     description: String
     location: String
-    onlineUrl: String
+    # Held as a video call, joined from the meeting.
+    videoCall: Boolean
     startsAt: String
     endsAt: String
     timeZone: String
@@ -150,12 +153,22 @@ export default gql`
     fileName: String
   }
 
+  type WorkspaceMeetingVideoCallType {
+    # Link that joins the meeting's video call.
+    url: String!
+  }
+
+  type WorkspaceMeetingVideoCallInfoType {
+    # People in the call right now; null when that can't be told.
+    participantCount: Int
+  }
+
   input WorkspaceMeetingInput {
     title: String!
     startsAt: String!
     endsAt: String!
     location: String
-    onlineUrl: String
+    videoCall: Boolean
     description: String
   }
 
@@ -206,6 +219,11 @@ export default gql`
       meetingId: String!
     ): WorkspaceMeetingType
       @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
+    workspaceMeetingVideoCallInfo(
+      committeeId: String!
+      meetingId: String!
+    ): WorkspaceMeetingVideoCallInfoType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     workspaceMeetingAttachments(
       committeeId: String!
       meetingId: String!
@@ -245,6 +263,13 @@ export default gql`
       input: WorkspaceMeetingInput!
     ): WorkspaceMeetingType
       @checkCommitteeAccess(roles: [COORDINATOR])
+    # The link that joins the meeting's video call (the meeting must be
+    # held as a video call and not cancelled).
+    workspaceJoinMeetingVideoCall(
+      committeeId: String!
+      meetingId: String!
+    ): WorkspaceMeetingVideoCallType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     workspaceCancelMeeting(
       committeeId: String!
       meetingId: String!

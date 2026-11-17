@@ -259,6 +259,8 @@ export type ResolversTypes = ResolversObject<{
   WorkspaceMeetingParticipantType: ResolverTypeWrapper<Types.WorkspaceMeetingParticipantType>;
   WorkspaceMeetingType: ResolverTypeWrapper<Types.WorkspaceMeetingType>;
   WorkspaceMeetingUploadType: ResolverTypeWrapper<Types.WorkspaceMeetingUploadType>;
+  WorkspaceMeetingVideoCallInfoType: ResolverTypeWrapper<Types.WorkspaceMeetingVideoCallInfoType>;
+  WorkspaceMeetingVideoCallType: ResolverTypeWrapper<Types.WorkspaceMeetingVideoCallType>;
   WorkspaceMeetingsInfoType: ResolverTypeWrapper<Types.WorkspaceMeetingsInfoType>;
   WorkspaceMonitoringAlertType: ResolverTypeWrapper<Types.WorkspaceMonitoringAlertType>;
   WorkspaceMonitoringProfilePhotoType: ResolverTypeWrapper<Types.WorkspaceMonitoringProfilePhotoType>;
@@ -473,6 +475,8 @@ export type ResolversParentTypes = ResolversObject<{
   WorkspaceMeetingParticipantType: Types.WorkspaceMeetingParticipantType;
   WorkspaceMeetingType: Types.WorkspaceMeetingType;
   WorkspaceMeetingUploadType: Types.WorkspaceMeetingUploadType;
+  WorkspaceMeetingVideoCallInfoType: Types.WorkspaceMeetingVideoCallInfoType;
+  WorkspaceMeetingVideoCallType: Types.WorkspaceMeetingVideoCallType;
   WorkspaceMeetingsInfoType: Types.WorkspaceMeetingsInfoType;
   WorkspaceMonitoringAlertType: Types.WorkspaceMonitoringAlertType;
   WorkspaceMonitoringProfilePhotoType: Types.WorkspaceMonitoringProfilePhotoType;
@@ -1271,6 +1275,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   workspaceEmptyDocumentTrash?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceEmptyDocumentTrashArgs, 'committeeId'>>;
   workspaceForceUnlockDocument?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceForceUnlockDocumentArgs, 'committeeId' | 'documentId'>>;
   workspaceJoinDiscussionVideoCall?: Resolver<Types.Maybe<ResolversTypes['DiscussionVideoCallType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceJoinDiscussionVideoCallArgs, 'committeeId'>>;
+  workspaceJoinMeetingVideoCall?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingVideoCallType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceJoinMeetingVideoCallArgs, 'committeeId' | 'meetingId'>>;
   workspaceMarkMeetingAttendance?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceMarkMeetingAttendanceArgs, 'committeeId' | 'entries' | 'meetingId'>>;
   workspaceMeetingAttachmentDownloadUrl?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingDownloadType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceMeetingAttachmentDownloadUrlArgs, 'attachmentId' | 'committeeId'>>;
   workspaceMoveDocument?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceMoveDocumentArgs, 'committeeId' | 'documentId'>>;
@@ -1781,6 +1786,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   workspaceMeetingAttachments?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceMeetingAttachmentType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingAttachmentsArgs, 'committeeId' | 'meetingId'>>;
   workspaceMeetingById?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingByIdArgs, 'committeeId' | 'meetingId'>>;
   workspaceMeetingMembers?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceMeetingMemberType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingMembersArgs, 'committeeId'>>;
+  workspaceMeetingVideoCallInfo?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingVideoCallInfoType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingVideoCallInfoArgs, 'committeeId' | 'meetingId'>>;
   workspaceMeetings?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingsArgs, 'committeeId'>>;
   workspaceMeetingsInfo?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingsInfoType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMeetingsInfoArgs, 'committeeId'>>;
   workspaceMonitoringAlerts?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceMonitoringAlertType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceMonitoringAlertsArgs, 'committeeId' | 'date'>>;
@@ -2395,7 +2401,6 @@ export type WorkspaceMeetingTypeResolvers<ContextType = any, ParentType extends 
   minutesUpdatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   minutesUpdatedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   myRsvpStatus?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  onlineUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   openActionItemCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   participants?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceMeetingParticipantType']>>>, ParentType, ContextType>;
   startsAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2404,6 +2409,7 @@ export type WorkspaceMeetingTypeResolvers<ContextType = any, ParentType extends 
   title?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedByName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  videoCall?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
 }>;
 
 export type WorkspaceMeetingUploadTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingUploadType'] = ResolversParentTypes['WorkspaceMeetingUploadType']> = ResolversObject<{
@@ -2413,7 +2419,16 @@ export type WorkspaceMeetingUploadTypeResolvers<ContextType = any, ParentType ex
   url?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
+export type WorkspaceMeetingVideoCallInfoTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingVideoCallInfoType'] = ResolversParentTypes['WorkspaceMeetingVideoCallInfoType']> = ResolversObject<{
+  participantCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type WorkspaceMeetingVideoCallTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingVideoCallType'] = ResolversParentTypes['WorkspaceMeetingVideoCallType']> = ResolversObject<{
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+}>;
+
 export type WorkspaceMeetingsInfoTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['WorkspaceMeetingsInfoType'] = ResolversParentTypes['WorkspaceMeetingsInfoType']> = ResolversObject<{
+  canJoinVideoCall?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   canManage?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   maxFileSize?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   myParticipantId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2811,6 +2826,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   WorkspaceMeetingParticipantType?: WorkspaceMeetingParticipantTypeResolvers<ContextType>;
   WorkspaceMeetingType?: WorkspaceMeetingTypeResolvers<ContextType>;
   WorkspaceMeetingUploadType?: WorkspaceMeetingUploadTypeResolvers<ContextType>;
+  WorkspaceMeetingVideoCallInfoType?: WorkspaceMeetingVideoCallInfoTypeResolvers<ContextType>;
+  WorkspaceMeetingVideoCallType?: WorkspaceMeetingVideoCallTypeResolvers<ContextType>;
   WorkspaceMeetingsInfoType?: WorkspaceMeetingsInfoTypeResolvers<ContextType>;
   WorkspaceMonitoringAlertType?: WorkspaceMonitoringAlertTypeResolvers<ContextType>;
   WorkspaceMonitoringProfilePhotoType?: WorkspaceMonitoringProfilePhotoTypeResolvers<ContextType>;

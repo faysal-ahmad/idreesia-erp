@@ -142,7 +142,7 @@ function toMeeting(
     title: meeting.title,
     description: meeting.description ?? null,
     location: meeting.location ?? null,
-    onlineUrl: meeting.onlineUrl ?? null,
+    videoCall: !!meeting.videoCall,
     startsAt: timestamp(meeting.startsAt),
     endsAt: timestamp(meeting.endsAt),
     timeZone: meeting.timeZone,

@@ -43,6 +43,8 @@ const expected: Array<[Root, string, string[]]> = [
   ['Query', 'workspaceMeetingMembers', NO_GUEST],
   ['Query', 'workspaceMeetingActivity', NO_GUEST],
   ['Mutation', 'workspaceMeetingAttachmentDownloadUrl', ALL],
+  ['Query', 'workspaceMeetingVideoCallInfo', ACT],
+  ['Mutation', 'workspaceJoinMeetingVideoCall', ACT],
   ['Mutation', 'workspaceRespondToMeeting', ACT],
   ['Mutation', 'workspaceSetMeetingActionItemStatus', ACT],
   ...[

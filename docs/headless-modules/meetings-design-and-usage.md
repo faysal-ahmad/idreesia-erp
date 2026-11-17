@@ -46,7 +46,9 @@ A workspace is the top-level container. It has a name, an optional description, 
 Deleting a workspace is a soft delete. While it is deleted, every operation on its meetings, attachments and action items fails with `NOT_FOUND`. It can be restored, or purged, which removes everything permanently.
 
 ### Meetings
-A meeting is a one-off event: title, `startsAt`/`endsAt` (stored in UTC), a `timeZone` to show it in (default `Asia/Karachi`), and optional description, location, online link (`http(s)` only), tags and metadata. Recurring meetings are not supported yet.
+A meeting is a one-off event: title, `startsAt`/`endsAt` (stored in UTC), a `timeZone` to show it in (default `Asia/Karachi`), and optional description, location, tags and metadata. Recurring meetings are not supported yet.
+
+**Video call meetings.** A meeting can be held as a video call (`videoCall: true`, chosen as the "Video call" location in the forms; a video-call meeting has no address). The committee's meetings API has `workspaceMeetingVideoCallInfo` (people in the call now) and `workspaceJoinMeetingVideoCall` (the link), open to coordinators, members and invited guests, not observers, and refused for cancelled meetings. The Jitsi room is `buildRoomName(secret, 'meeting:<meetingId>')` (`server/video/room.ts`, shared with discussions), so every meeting has its own stable, unguessable room that everyone invited joins. Needs the same `JITSI_*` env vars as discussion video calls (see `docs/rocket-chat-integration.md`). Unlike discussions, joining does not announce anything.
 
 ### Meeting status
 
@@ -171,9 +173,9 @@ Workspace functions carry a `Meetings` prefix, so a feature can import them next
 
 | Function | Returns | Notes |
 |---|---|---|
-| `createMeeting({ workspaceId, title, startsAt, endsAt, timeZone?, description?, location?, onlineUrl?, tags?, metadata?, participants?, agenda? }, userId)` | meeting | `participants`: `[{ participantId, role? }]`. `agenda`: `[{ title, description?, durationMinutes?, presenterId? }]`. |
+| `createMeeting({ workspaceId, title, startsAt, endsAt, timeZone?, description?, location?, videoCall?, tags?, metadata?, participants?, agenda? }, userId)` | meeting | `participants`: `[{ participantId, role? }]`. `agenda`: `[{ title, description?, durationMinutes?, presenterId? }]`. |
 | `getMeeting(meetingId, userId)` | meeting | |
-| `updateMeeting(meetingId, { title?, startsAt?, endsAt?, timeZone?, description?, location?, onlineUrl?, tags?, metadata? }, userId)` | meeting | Changing a time reschedules, which only works on a scheduled meeting. Other fields can also change on a completed one. |
+| `updateMeeting(meetingId, { title?, startsAt?, endsAt?, timeZone?, description?, location?, videoCall?, tags?, metadata? }, userId)` | meeting | Changing a time reschedules, which only works on a scheduled meeting. Other fields can also change on a completed one. |
 | `listMeetings(workspaceId, userId, options)` | `MeetingsPage<meeting>` | See below |
 | `listParticipantMeetings(participantId, userId, { workspaceIds?, rsvpStatus?, ...filters })` | `MeetingsPage<meeting>` | A participant's meetings across workspaces. Pass the `workspaceIds` your feature authorised. Deleted workspaces are always left out. |
 | `cancelMeeting(meetingId, userId, { reason? })` | meeting | |
@@ -279,7 +281,7 @@ The meetings module publishes three notifications through the shared notifier (s
 | Collection | Holds |
 |---|---|
 | `meetings-workspaces` | name, description, metadata, settings, timestamps, `deletedAt`/`deletedBy` |
-| `meetings` | `workspaceId`, title, description, location, `onlineUrl`, `startsAt`, `endsAt`, `timeZone`, `status` with cancellation/completion fields, `tags`, `metadata`, embedded `participants[]`, `agenda[]` and `minutes`, `attachmentCount`, `openActionItemCount`, `revision`, timestamps |
+| `meetings` | `workspaceId`, title, description, location, `videoCall`, `startsAt`, `endsAt`, `timeZone`, `status` with cancellation/completion fields, `tags`, `metadata`, embedded `participants[]`, `agenda[]` and `minutes`, `attachmentCount`, `openActionItemCount`, `revision`, timestamps |
 | `meetings-attachments` | `workspaceId`, `meetingId`, `name`, `description?`, `fileName`, `mimeType`, `size`, `fileKey`, `sha256?`, `etag?`, `status` (`pending`/`ready`), `uploadExpiresAt?`, timestamps |
 | `meetings-action-items` | `workspaceId`, `meetingId`, `agendaItemId?`, title, description, `assigneeId?`, `dueDate?`, `status`, `completedAt/By?`, timestamps |
 | `meetings-activities` | see [Activity log](#activity-log) |

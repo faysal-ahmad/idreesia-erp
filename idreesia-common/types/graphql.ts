@@ -861,6 +861,7 @@ export type Mutation = {
   workspaceEmptyDocumentTrash?: Maybe<Scalars['Int']['output']>;
   workspaceForceUnlockDocument?: Maybe<Scalars['Boolean']['output']>;
   workspaceJoinDiscussionVideoCall?: Maybe<DiscussionVideoCallType>;
+  workspaceJoinMeetingVideoCall?: Maybe<WorkspaceMeetingVideoCallType>;
   workspaceMarkMeetingAttendance?: Maybe<WorkspaceMeetingType>;
   workspaceMeetingAttachmentDownloadUrl?: Maybe<WorkspaceMeetingDownloadType>;
   workspaceMoveDocument?: Maybe<Scalars['Boolean']['output']>;
@@ -2283,6 +2284,12 @@ export type MutationWorkspaceJoinDiscussionVideoCallArgs = {
 };
 
 
+export type MutationWorkspaceJoinMeetingVideoCallArgs = {
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
+};
+
+
 export type MutationWorkspaceMarkMeetingAttendanceArgs = {
   committeeId: Scalars['String']['input'];
   entries: Array<InputMaybe<WorkspaceMeetingAttendanceInput>>;
@@ -3130,6 +3137,7 @@ export type Query = {
   workspaceMeetingAttachments?: Maybe<Array<Maybe<WorkspaceMeetingAttachmentType>>>;
   workspaceMeetingById?: Maybe<WorkspaceMeetingType>;
   workspaceMeetingMembers?: Maybe<Array<Maybe<WorkspaceMeetingMemberType>>>;
+  workspaceMeetingVideoCallInfo?: Maybe<WorkspaceMeetingVideoCallInfoType>;
   workspaceMeetings?: Maybe<PagedWorkspaceMeetingType>;
   workspaceMeetingsInfo?: Maybe<WorkspaceMeetingsInfoType>;
   workspaceMonitoringAlerts?: Maybe<PagedWorkspaceMonitoringAlertType>;
@@ -3758,6 +3766,12 @@ export type QueryWorkspaceMeetingByIdArgs = {
 
 export type QueryWorkspaceMeetingMembersArgs = {
   committeeId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceMeetingVideoCallInfoArgs = {
+  committeeId: Scalars['String']['input'];
+  meetingId: Scalars['String']['input'];
 };
 
 
@@ -4591,9 +4605,9 @@ export type WorkspaceMeetingInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   endsAt: Scalars['String']['input'];
   location?: InputMaybe<Scalars['String']['input']>;
-  onlineUrl?: InputMaybe<Scalars['String']['input']>;
   startsAt: Scalars['String']['input'];
   title: Scalars['String']['input'];
+  videoCall?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type WorkspaceMeetingMemberType = {
@@ -4637,7 +4651,6 @@ export type WorkspaceMeetingType = {
   minutesUpdatedAt?: Maybe<Scalars['String']['output']>;
   minutesUpdatedByName?: Maybe<Scalars['String']['output']>;
   myRsvpStatus?: Maybe<Scalars['String']['output']>;
-  onlineUrl?: Maybe<Scalars['String']['output']>;
   openActionItemCount?: Maybe<Scalars['Int']['output']>;
   participants?: Maybe<Array<Maybe<WorkspaceMeetingParticipantType>>>;
   startsAt?: Maybe<Scalars['String']['output']>;
@@ -4646,6 +4659,7 @@ export type WorkspaceMeetingType = {
   title?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedByName?: Maybe<Scalars['String']['output']>;
+  videoCall?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type WorkspaceMeetingUploadType = {
@@ -4656,8 +4670,19 @@ export type WorkspaceMeetingUploadType = {
   url?: Maybe<Scalars['String']['output']>;
 };
 
+export type WorkspaceMeetingVideoCallInfoType = {
+  __typename?: 'WorkspaceMeetingVideoCallInfoType';
+  participantCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type WorkspaceMeetingVideoCallType = {
+  __typename?: 'WorkspaceMeetingVideoCallType';
+  url: Scalars['String']['output'];
+};
+
 export type WorkspaceMeetingsInfoType = {
   __typename?: 'WorkspaceMeetingsInfoType';
+  canJoinVideoCall?: Maybe<Scalars['Boolean']['output']>;
   canManage?: Maybe<Scalars['Boolean']['output']>;
   maxFileSize?: Maybe<Scalars['Float']['output']>;
   myParticipantId?: Maybe<Scalars['String']['output']>;

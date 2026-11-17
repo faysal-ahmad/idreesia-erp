@@ -44,6 +44,7 @@ const access = (overrides: Partial<MeetingsAccess> = {}): MeetingsAccess => ({
   personId: 'guest1',
   isCoordinator: false,
   isGuest: true,
+  canJoinVideoCall: true,
   ...overrides,
 });
 

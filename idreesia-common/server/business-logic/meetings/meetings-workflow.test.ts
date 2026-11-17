@@ -86,7 +86,6 @@ describe('meeting state transitions', () => {
       'BAD_USER_INPUT'
     );
     await rejectsWith(schedule({ timeZone: 'Mars/Base' }), 'BAD_USER_INPUT');
-    await rejectsWith(schedule({ onlineUrl: 'ftp://example.com/x' }), 'BAD_USER_INPUT');
     await rejectsWith(
       schedule({ participants: [{ participantId: 'p1' }, { participantId: 'p1' }] }),
       'CONFLICT'

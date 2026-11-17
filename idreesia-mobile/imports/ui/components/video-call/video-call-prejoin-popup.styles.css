@@ -1,0 +1,24 @@
+/* The screen before a video call (components/video-call). */
+
+.video-call-popup {
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  border-radius: var(--app-radius-large) var(--app-radius-large) 0 0;
+}
+
+.video-call-popup-title {
+  margin-bottom: 12px;
+  font-size: 1rem; /* 17px */
+  font-weight: 600;
+}
+
+.video-call-popup-count {
+  min-height: 24px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.video-call-popup-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}

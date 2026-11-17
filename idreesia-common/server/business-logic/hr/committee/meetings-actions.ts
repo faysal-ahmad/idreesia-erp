@@ -25,7 +25,7 @@ export interface CommitteeMeetingInput {
   startsAt: string;
   endsAt: string;
   location?: string | null;
-  onlineUrl?: string | null;
+  videoCall?: boolean | null;
   description?: string | null;
 }
 
@@ -45,7 +45,7 @@ export async function createCommitteeMeeting(
         endsAt: parseTimestamp(input.endsAt)!,
         timeZone,
         location: input.location ?? undefined,
-        onlineUrl: input.onlineUrl ?? undefined,
+        videoCall: !!input.videoCall,
         description: input.description ?? undefined,
         participants: [...new Set(participantIds)].map(participantId => ({
           participantId,
@@ -77,7 +77,7 @@ export async function updateCommitteeMeeting(
         title: input.title,
         ...(timeChanged ? { startsAt, endsAt } : {}),
         location: input.location ?? null,
-        onlineUrl: input.onlineUrl ?? null,
+        videoCall: !!input.videoCall,
         description: input.description ?? null,
       },
       userId

@@ -22,9 +22,11 @@ import {
   EditOutlined,
   RollbackOutlined,
   StopOutlined,
+  VideoCameraOutlined,
 } from '@ant-design/icons';
 
 import { message } from '/imports/ui/antd-feedback';
+import { useVideoCall } from '/imports/ui/modules/common/video-call';
 
 import ActionItemsPanel from './action-items-panel';
 import ActivityPanel from './activity-panel';
@@ -82,6 +84,7 @@ interface Props {
 const MeetingDetail = ({ provider, meetingId, onBack }: Props) => {
   const history = useHistory();
   const location = useLocation();
+  const { requestCall } = useVideoCall();
   const tabParam = new URLSearchParams(location.search).get(TAB_PARAM);
   const activeTab: TabKey = TAB_KEYS.includes(tabParam as TabKey)
     ? (tabParam as TabKey)
@@ -228,6 +231,24 @@ const MeetingDetail = ({ provider, meetingId, onBack }: Props) => {
     </Space>
   ) : null;
 
+  // Shows the screen before the call (who is in it, microphone and camera);
+  // the link is fetched when the user joins. Observers can't join.
+  const { getVideoCallUrl, getVideoCallParticipantCount } = provider;
+  const canJoinCall =
+    meeting.videoCall &&
+    meeting.status !== 'cancelled' &&
+    info.canJoinVideoCall &&
+    !!getVideoCallUrl;
+  const joinCall = () =>
+    requestCall({
+      key: `meeting:${meeting._id}`,
+      title: meeting.title,
+      loadParticipantCount: getVideoCallParticipantCount
+        ? () => getVideoCallParticipantCount.call(provider, meeting._id)
+        : undefined,
+      join: () => getVideoCallUrl!.call(provider, meeting._id),
+    });
+
   const rsvp =
     me && isScheduled ? (
       <Space size={8}>
@@ -311,22 +332,18 @@ const MeetingDetail = ({ provider, meetingId, onBack }: Props) => {
           {
             key: 'location',
             label: 'Location',
-            children: meeting.location ?? '—',
-          },
-          {
-            key: 'online',
-            label: 'Online',
-            children: meeting.onlineUrl ? (
-              <Typography.Link
-                href={meeting.onlineUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                ellipsis
+            children: meeting.videoCall ? (
+              <Button
+                type="primary"
+                size="small"
+                icon={<VideoCameraOutlined />}
+                disabled={!canJoinCall}
+                onClick={joinCall}
               >
-                {meeting.onlineUrl}
-              </Typography.Link>
+                Join video call
+              </Button>
             ) : (
-              '—'
+              meeting.location ?? '—'
             ),
           },
           {

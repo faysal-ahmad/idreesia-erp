@@ -37,6 +37,11 @@ export type {
 } from './workspaces';
 
 export {
+  getMeetingVideoCallParticipantCount,
+  getMeetingVideoCallUrl,
+} from './video-call';
+
+export {
   createMeeting,
   getMeeting,
   updateMeeting,

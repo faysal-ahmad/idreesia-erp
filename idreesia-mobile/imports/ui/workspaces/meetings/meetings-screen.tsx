@@ -91,7 +91,7 @@ export const MeetingsScreen = () => {
               description={
                 <>
                   <div>{formatMeetingTime(meeting.startsAt, meeting.endsAt)}</div>
-                  {meeting.location && <div>{meeting.location}</div>}
+                  {meeting.videoCall ? <div>Video call</div> : meeting.location && <div>{meeting.location}</div>}
                 </>
               }
               extra={

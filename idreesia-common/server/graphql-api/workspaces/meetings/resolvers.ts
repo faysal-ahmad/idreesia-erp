@@ -9,6 +9,8 @@ import {
   deleteActionItem,
   deleteAttachment,
   deleteMeeting,
+  getMeetingVideoCallParticipantCount,
+  getMeetingVideoCallUrl,
   markAttendance,
   removeAgendaItem,
   reorderAgenda,
@@ -102,7 +104,10 @@ const resolvers: ResolverMap = {
   Query: {
     workspaceMeetingsInfo: async (obj, { committeeId }, context) => {
       const access = getMeetingsAccess(context, committeeId);
-      return getCommitteeMeetingsInfo(access.workspaceId, access);
+      return {
+        ...(await getCommitteeMeetingsInfo(access.workspaceId, access)),
+        canJoinVideoCall: access.canJoinVideoCall,
+      };
     },
 
     workspaceMeetingMembers: async (obj, { committeeId }, context) => {
@@ -131,6 +136,21 @@ const resolvers: ResolverMap = {
       const access = getMeetingsAccess(context, committeeId);
       await assertMeetingInWorkspace(access, meetingId);
       return getCommitteeMeeting(meetingId, access);
+    },
+
+    workspaceMeetingVideoCallInfo: async (
+      obj,
+      { committeeId, meetingId },
+      context
+    ) => {
+      const access = getMeetingsAccess(context, committeeId);
+      await assertMeetingInWorkspace(access, meetingId);
+      return {
+        participantCount: await getMeetingVideoCallParticipantCount(
+          meetingId,
+          access.userId
+        ),
+      };
     },
 
     workspaceMeetingAttachments: async (
@@ -208,6 +228,16 @@ const resolvers: ResolverMap = {
         access,
         await updateCommitteeMeeting(meeting, input, access.userId)
       );
+    },
+
+    workspaceJoinMeetingVideoCall: async (
+      obj,
+      { committeeId, meetingId },
+      context
+    ) => {
+      const access = getMeetingsAccess(context, committeeId);
+      await assertMeetingInWorkspace(access, meetingId);
+      return getMeetingVideoCallUrl(meetingId, access.userId);
     },
 
     workspaceCancelMeeting: async (

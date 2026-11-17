@@ -134,22 +134,6 @@ export function validateTimeZone(value: unknown): string {
   return timeZone;
 }
 
-/** An http(s) URL, e.g. an online meeting link. */
-export function normalizeUrl(value: unknown, what = 'URL'): string | undefined {
-  const text = normalizeText(value, what, 2048);
-  if (!text) return undefined;
-  let url: URL;
-  try {
-    url = new URL(text);
-  } catch {
-    throw meetingsError('BAD_USER_INPUT', `${what} must be a valid URL`);
-  }
-  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-    throw meetingsError('BAD_USER_INPUT', `${what} must be an http(s) URL`);
-  }
-  return text;
-}
-
 export function requireOneOf<T extends string>(
   value: unknown,
   allowed: Record<string, T>,

@@ -5,6 +5,8 @@ import type {
   MobileWorkspaceDeleteDiscussionMessageMutationVariables,
   MobileWorkspaceEditDiscussionMessageMutation,
   MobileWorkspaceEditDiscussionMessageMutationVariables,
+  MobileWorkspaceJoinDiscussionVideoCallMutation,
+  MobileWorkspaceJoinDiscussionVideoCallMutationVariables,
   MobileWorkspaceReactToDiscussionMessageMutation,
   MobileWorkspaceReactToDiscussionMessageMutationVariables,
   MobileWorkspaceSetDiscussionMessagePinnedMutation,
@@ -65,5 +67,16 @@ export const MOBILE_WORKSPACE_DELETE_DISCUSSION_MESSAGE: TypedDocumentNode<
 > = gql`
   mutation mobileWorkspaceDeleteDiscussionMessage($committeeId: String!, $messageId: String!) {
     workspaceDeleteDiscussionMessage(committeeId: $committeeId, messageId: $messageId)
+  }
+`;
+
+export const MOBILE_WORKSPACE_JOIN_DISCUSSION_VIDEO_CALL: TypedDocumentNode<
+  MobileWorkspaceJoinDiscussionVideoCallMutation,
+  MobileWorkspaceJoinDiscussionVideoCallMutationVariables
+> = gql`
+  mutation mobileWorkspaceJoinDiscussionVideoCall($committeeId: String!) {
+    workspaceJoinDiscussionVideoCall(committeeId: $committeeId) {
+      url
+    }
   }
 `;

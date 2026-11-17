@@ -5,9 +5,11 @@ import {
   SearchOutlined,
   StarOutlined,
   SyncOutlined,
+  VideoCameraOutlined,
 } from '@ant-design/icons';
 
 import { message as toast, modal } from '/imports/ui/antd-feedback';
+import { useVideoCall } from '/imports/ui/modules/common/video-call';
 
 import Composer from './composer';
 import {
@@ -63,6 +65,7 @@ const Discussion = ({ provider, title, subtitle }: Props) => {
   const [mainFocus, setMainFocus] = useState<MessageListFocus | null>(null);
   const [threadFocus, setThreadFocus] = useState<MessageListFocus | null>(null);
   const [sidePanel, setSidePanel] = useState<SidePanelState>(null);
+  const { requestCall } = useVideoCall();
   const threadId = sidePanel?.kind === 'thread' ? sidePanel.threadId : null;
   // Kept while the discussion is open, so reopening a panel keeps its size.
   const [sidePanelWidth, setSidePanelWidth] = useState(
@@ -121,6 +124,20 @@ const Discussion = ({ provider, title, subtitle }: Props) => {
     setScrollToBottomKey(key => key + 1);
   };
 
+  // Shows the screen before the call (who is in it, microphone and camera);
+  // the link is fetched, and a starting call announced, when the user joins.
+  const handleJoinVideoCall = useCallback(() => {
+    const { getVideoCallInfo, getVideoCallUrl } = provider;
+    requestCall({
+      key: provider,
+      title,
+      loadParticipantCount: getVideoCallInfo
+        ? async () => (await getVideoCallInfo.call(provider)).participantCount
+        : undefined,
+      join: () => getVideoCallUrl!.call(provider),
+    });
+  }, [provider, requestCall, title]);
+
   const handleUpload = async (file: File) => {
     await operations.uploadFile(file);
     setScrollToBottomKey(key => key + 1);
@@ -130,6 +147,10 @@ const Discussion = ({ provider, title, subtitle }: Props) => {
     () => ({
       canPost,
       canPin,
+      joinVideoCall:
+        provider.getVideoCallUrl && canPost
+          ? handleJoinVideoCall
+          : undefined,
       react: (messageId, emoji, shouldReact) => {
         operations.reactToMessage(messageId, emoji, shouldReact).catch(showError);
       },
@@ -183,7 +204,7 @@ const Discussion = ({ provider, title, subtitle }: Props) => {
           .catch(showError);
       },
     }),
-    [canPost, canPin, operations]
+    [canPost, canPin, operations, provider, handleJoinVideoCall]
   );
 
   let body: React.ReactNode;
@@ -272,6 +293,15 @@ const Discussion = ({ provider, title, subtitle }: Props) => {
               ) : null}
             </div>
             <Space size={8}>
+              {provider.getVideoCallUrl && canPost ? (
+                <Tooltip title="Video call">
+                  <Button
+                    icon={<VideoCameraOutlined />}
+                    disabled={loading || !!error}
+                    onClick={handleJoinVideoCall}
+                  />
+                </Tooltip>
+              ) : null}
               <Tooltip title="Search messages">
                 <Button
                   icon={<SearchOutlined />}

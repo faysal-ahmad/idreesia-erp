@@ -8,6 +8,7 @@ import { useHistory } from '../../router';
 import { useDiscussionContext } from './discussion-context';
 import { DiscussionMessageList, messageElementId } from './discussion-message-list';
 import type { DiscussionMessage } from './discussion-types';
+import { useJoinVideoCall } from './use-join-video-call';
 import { useMessageActions } from './use-message-actions';
 
 // How long a message jumped to stays highlighted.
@@ -33,6 +34,7 @@ export const DiscussionsScreen = ({ active }: Props) => {
   const openThread = (message: DiscussionMessage) =>
     history.push(scope.paths.thread(message.threadId ?? message._id));
   const messageActions = useMessageActions({ onOpenThread: openThread });
+  const { join: joinVideoCall } = useJoinVideoCall();
 
   const mainList = useMemo(
     () => discussion.messages.filter(message => !message.threadId || message.showInMainList),
@@ -113,6 +115,15 @@ export const DiscussionsScreen = ({ active }: Props) => {
       {messageActions.elements}
       <ActionSheet
         actions={[
+          ...(joinVideoCall
+            ? [
+                {
+                  key: 'video',
+                  text: 'Video call',
+                  onClick: joinVideoCall,
+                },
+              ]
+            : []),
           {
             key: 'search',
             text: 'Search messages',

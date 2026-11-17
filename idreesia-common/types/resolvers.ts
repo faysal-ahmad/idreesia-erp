@@ -99,6 +99,8 @@ export type ResolversTypes = ResolversObject<{
   DiscussionMessageType: ResolverTypeWrapper<Types.DiscussionMessageType>;
   DiscussionReactionType: ResolverTypeWrapper<Types.DiscussionReactionType>;
   DiscussionSyncType: ResolverTypeWrapper<Types.DiscussionSyncType>;
+  DiscussionVideoCallInfoType: ResolverTypeWrapper<Types.DiscussionVideoCallInfoType>;
+  DiscussionVideoCallType: ResolverTypeWrapper<Types.DiscussionVideoCallType>;
   DuplicatePersonGroupType: ResolverTypeWrapper<Types.DuplicatePersonGroupType>;
   DuplicatePersonSummaryType: ResolverTypeWrapper<Types.DuplicatePersonSummaryType>;
   DutyAttendanceCardType: ResolverTypeWrapper<Types.DutyAttendanceCardType>;
@@ -312,6 +314,8 @@ export type ResolversParentTypes = ResolversObject<{
   DiscussionMessageType: Types.DiscussionMessageType;
   DiscussionReactionType: Types.DiscussionReactionType;
   DiscussionSyncType: Types.DiscussionSyncType;
+  DiscussionVideoCallInfoType: Types.DiscussionVideoCallInfoType;
+  DiscussionVideoCallType: Types.DiscussionVideoCallType;
   DuplicatePersonGroupType: Types.DuplicatePersonGroupType;
   DuplicatePersonSummaryType: Types.DuplicatePersonSummaryType;
   DutyAttendanceCardType: Types.DutyAttendanceCardType;
@@ -699,6 +703,14 @@ export type DiscussionSyncTypeResolvers<ContextType = any, ParentType extends Re
   hasOlder?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   messages?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DiscussionMessageType']>>>, ParentType, ContextType>;
   syncedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type DiscussionVideoCallInfoTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DiscussionVideoCallInfoType'] = ResolversParentTypes['DiscussionVideoCallInfoType']> = ResolversObject<{
+  participantCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type DiscussionVideoCallTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DiscussionVideoCallType'] = ResolversParentTypes['DiscussionVideoCallType']> = ResolversObject<{
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type DuplicatePersonGroupTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DuplicatePersonGroupType'] = ResolversParentTypes['DuplicatePersonGroupType']> = ResolversObject<{
@@ -1258,6 +1270,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   workspaceEditDiscussionMessage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationWorkspaceEditDiscussionMessageArgs, 'committeeId' | 'messageId' | 'text'>>;
   workspaceEmptyDocumentTrash?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceEmptyDocumentTrashArgs, 'committeeId'>>;
   workspaceForceUnlockDocument?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceForceUnlockDocumentArgs, 'committeeId' | 'documentId'>>;
+  workspaceJoinDiscussionVideoCall?: Resolver<Types.Maybe<ResolversTypes['DiscussionVideoCallType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceJoinDiscussionVideoCallArgs, 'committeeId'>>;
   workspaceMarkMeetingAttendance?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceMarkMeetingAttendanceArgs, 'committeeId' | 'entries' | 'meetingId'>>;
   workspaceMeetingAttachmentDownloadUrl?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMeetingDownloadType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceMeetingAttachmentDownloadUrlArgs, 'attachmentId' | 'committeeId'>>;
   workspaceMoveDocument?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceMoveDocumentArgs, 'committeeId' | 'documentId'>>;
@@ -1754,6 +1767,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   workspaceDiscussionStarredMessages?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DiscussionMessageType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDiscussionStarredMessagesArgs, 'committeeId'>>;
   workspaceDiscussionSync?: Resolver<Types.Maybe<ResolversTypes['DiscussionSyncType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDiscussionSyncArgs, 'committeeId'>>;
   workspaceDiscussionThreadMessages?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DiscussionMessageType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDiscussionThreadMessagesArgs, 'committeeId' | 'threadId'>>;
+  workspaceDiscussionVideoCallInfo?: Resolver<Types.Maybe<ResolversTypes['DiscussionVideoCallInfoType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDiscussionVideoCallInfoArgs, 'committeeId'>>;
   workspaceDocumentActivity?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceDocumentActivityType']>>>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDocumentActivityArgs, 'committeeId'>>;
   workspaceDocumentById?: Resolver<Types.Maybe<ResolversTypes['WorkspaceDocumentType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDocumentByIdArgs, 'committeeId' | 'documentId'>>;
   workspaceDocumentFolderContents?: Resolver<Types.Maybe<ResolversTypes['WorkspaceDocumentFolderContentsType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceDocumentFolderContentsArgs, 'committeeId'>>;
@@ -2658,6 +2672,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   DiscussionMessageType?: DiscussionMessageTypeResolvers<ContextType>;
   DiscussionReactionType?: DiscussionReactionTypeResolvers<ContextType>;
   DiscussionSyncType?: DiscussionSyncTypeResolvers<ContextType>;
+  DiscussionVideoCallInfoType?: DiscussionVideoCallInfoTypeResolvers<ContextType>;
+  DiscussionVideoCallType?: DiscussionVideoCallTypeResolvers<ContextType>;
   DuplicatePersonGroupType?: DuplicatePersonGroupTypeResolvers<ContextType>;
   DuplicatePersonSummaryType?: DuplicatePersonSummaryTypeResolvers<ContextType>;
   DutyAttendanceCardType?: DutyAttendanceCardTypeResolvers<ContextType>;

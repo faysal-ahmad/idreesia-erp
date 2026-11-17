@@ -56,6 +56,8 @@ const expected: Array<[Root, string, string[]]> = [
     'workspaceEditDiscussionMessage',
     'workspaceDeleteDiscussionMessage',
   ].map((name): [Root, string, string[]] => ['Mutation', name, WRITE]),
+  ['Query', 'workspaceDiscussionVideoCallInfo', WRITE],
+  ['Mutation', 'workspaceJoinDiscussionVideoCall', WRITE],
   ['Mutation', 'workspaceSetDiscussionMessagePinned', C],
 ];
 

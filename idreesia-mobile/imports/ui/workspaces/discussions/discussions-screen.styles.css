@@ -358,9 +358,10 @@
   color: var(--app-color-primary);
 }
 
-/* Edit popup */
+/* Edit and video call popups */
 
-.discussion-edit-popup {
+.discussion-edit-popup,
+.discussion-video-popup {
   padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
   border-radius: var(--app-radius-large) var(--app-radius-large) 0 0;
 }
@@ -368,6 +369,12 @@
 .discussion-edit-title {
   margin-bottom: 12px;
   font-size: 1rem; /* 17px */
+  font-weight: 600;
+}
+
+.discussion-video-count {
+  min-height: 24px;
+  margin-bottom: 8px;
   font-weight: 600;
 }
 

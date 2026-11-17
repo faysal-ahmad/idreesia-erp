@@ -2104,6 +2104,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkCommitteeAccess",
     },
   ],
+  "Mutation.workspaceJoinDiscussionVideoCall": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
   "Mutation.workspaceMarkMeetingAttendance": [
     {
       "args": {
@@ -3914,6 +3925,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "COORDINATOR",
           "MEMBER",
           "OBSERVER",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceDiscussionVideoCallInfo": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+          "MEMBER",
         ],
       },
       "directive": "checkCommitteeAccess",

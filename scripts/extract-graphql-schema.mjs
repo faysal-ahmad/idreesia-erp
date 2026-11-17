@@ -11,7 +11,7 @@ const graphqlFilePattern = join(sourceRoot, '**/*.{js,jsx,ts,tsx}');
 const gqlTemplatePattern = /gql`([\s\S]*?)`/g;
 
 const files = await glob(graphqlFilePattern, {
-  ignore: ['**/node_modules/**', '**/generated/**'],
+  ignore: ['**/node_modules/**', '**/generated/**', '**/*.test.{js,jsx,ts,tsx}'],
 });
 
 const schemaParts = [

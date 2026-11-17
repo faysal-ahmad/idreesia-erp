@@ -1,4 +1,8 @@
 import {
+  getDiscussionVideoCallParticipantCount,
+  joinDiscussionVideoCall,
+} from 'meteor/idreesia-common/server/business-logic/discussions';
+import {
   deleteConversationMessage,
   editConversationMessage,
   getConversationInfo,
@@ -33,6 +37,13 @@ const resolvers: ResolverMap = {
       return {
         ...getConversationInfo(context.user),
         canPin: getCommitteeAccess(context, committeeId).isCoordinator,
+      };
+    },
+
+    workspaceDiscussionVideoCallInfo: async (obj, { committeeId }, context) => {
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
+      return {
+        participantCount: await getDiscussionVideoCallParticipantCount(chatGroupId),
       };
     },
 
@@ -109,6 +120,11 @@ const resolvers: ResolverMap = {
   },
 
   Mutation: {
+    workspaceJoinDiscussionVideoCall: async (obj, { committeeId }, context) => {
+      const chatGroupId = await getDiscussionChatGroupId(context, committeeId);
+      return joinDiscussionVideoCall(chatGroupId, context.user);
+    },
+
     workspaceSendDiscussionMessage: async (
       obj,
       { committeeId, text, threadId },

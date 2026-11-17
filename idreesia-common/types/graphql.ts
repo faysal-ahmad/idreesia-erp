@@ -221,6 +221,16 @@ export type DiscussionSyncType = {
   syncedAt?: Maybe<Scalars['String']['output']>;
 };
 
+export type DiscussionVideoCallInfoType = {
+  __typename?: 'DiscussionVideoCallInfoType';
+  participantCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type DiscussionVideoCallType = {
+  __typename?: 'DiscussionVideoCallType';
+  url: Scalars['String']['output'];
+};
+
 export type DuplicatePersonGroupType = {
   __typename?: 'DuplicatePersonGroupType';
   count?: Maybe<Scalars['Int']['output']>;
@@ -850,6 +860,7 @@ export type Mutation = {
   workspaceEditDiscussionMessage: Scalars['Boolean']['output'];
   workspaceEmptyDocumentTrash?: Maybe<Scalars['Int']['output']>;
   workspaceForceUnlockDocument?: Maybe<Scalars['Boolean']['output']>;
+  workspaceJoinDiscussionVideoCall?: Maybe<DiscussionVideoCallType>;
   workspaceMarkMeetingAttendance?: Maybe<WorkspaceMeetingType>;
   workspaceMeetingAttachmentDownloadUrl?: Maybe<WorkspaceMeetingDownloadType>;
   workspaceMoveDocument?: Maybe<Scalars['Boolean']['output']>;
@@ -2267,6 +2278,11 @@ export type MutationWorkspaceForceUnlockDocumentArgs = {
 };
 
 
+export type MutationWorkspaceJoinDiscussionVideoCallArgs = {
+  committeeId: Scalars['String']['input'];
+};
+
+
 export type MutationWorkspaceMarkMeetingAttendanceArgs = {
   committeeId: Scalars['String']['input'];
   entries: Array<InputMaybe<WorkspaceMeetingAttendanceInput>>;
@@ -3100,6 +3116,7 @@ export type Query = {
   workspaceDiscussionStarredMessages?: Maybe<Array<Maybe<DiscussionMessageType>>>;
   workspaceDiscussionSync?: Maybe<DiscussionSyncType>;
   workspaceDiscussionThreadMessages?: Maybe<Array<Maybe<DiscussionMessageType>>>;
+  workspaceDiscussionVideoCallInfo?: Maybe<DiscussionVideoCallInfoType>;
   workspaceDocumentActivity?: Maybe<Array<Maybe<WorkspaceDocumentActivityType>>>;
   workspaceDocumentById?: Maybe<WorkspaceDocumentType>;
   workspaceDocumentFolderContents?: Maybe<WorkspaceDocumentFolderContentsType>;
@@ -3650,6 +3667,11 @@ export type QueryWorkspaceDiscussionSyncArgs = {
 export type QueryWorkspaceDiscussionThreadMessagesArgs = {
   committeeId: Scalars['String']['input'];
   threadId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceDiscussionVideoCallInfoArgs = {
+  committeeId: Scalars['String']['input'];
 };
 
 

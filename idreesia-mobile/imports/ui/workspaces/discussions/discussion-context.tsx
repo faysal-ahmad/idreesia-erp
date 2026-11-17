@@ -38,7 +38,15 @@ export interface DiscussionContextValue {
     setPinned: (messageId: string, pinned: boolean) => Promise<void>;
     edit: (messageId: string, text: string) => Promise<void>;
     remove: (messageId: string) => Promise<void>;
+    /**
+     * The link that joins the video call. When nobody is in the call yet the
+     * server also posts "started a video call", so the list is refreshed.
+     */
+    joinVideoCall: () => Promise<string>;
   };
+  /** The screen before a video call (who is in it, microphone and camera) is open. */
+  videoCallOpen: boolean;
+  setVideoCallOpen: (open: boolean) => void;
   /** A message to scroll to and highlight in the main list (see requestFocus). */
   focusId: string | null;
   requestFocus: (messageId: string | null) => void;
@@ -71,6 +79,7 @@ export const DiscussionProvider = ({ scope, title, children }: Props) => {
   });
   const discussion = useDiscussion(scope);
   const [focusId, setFocusId] = useState<string | null>(null);
+  const [videoCallOpen, setVideoCallOpen] = useState(false);
 
   const [send] = useMutation(docs.send);
   const [react] = useMutation(docs.react);
@@ -78,6 +87,7 @@ export const DiscussionProvider = ({ scope, title, children }: Props) => {
   const [pin] = useMutation(docs.pin);
   const [edit] = useMutation(docs.edit);
   const [remove] = useMutation(docs.remove);
+  const [joinVideoCall] = useMutation(docs.joinVideoCall);
 
   const { refresh } = discussion;
 
@@ -97,8 +107,16 @@ export const DiscussionProvider = ({ scope, title, children }: Props) => {
       setPinned: (messageId, pinned) => thenSync(pin({ variables: { ...variables, messageId, pinned } })),
       edit: (messageId, text) => thenSync(edit({ variables: { ...variables, messageId, text } })),
       remove: messageId => thenSync(remove({ variables: { ...variables, messageId } })),
+      joinVideoCall: async () => {
+        const { data } = await joinVideoCall({ variables });
+        const url = data?.workspaceJoinDiscussionVideoCall?.url;
+        if (!url) throw new Error('Video call is not available.');
+        // Show the "started a video call" message, but never hold up joining.
+        refresh().catch(() => undefined);
+        return url;
+      },
     };
-  }, [scope, variables, refresh, send, react, star, pin, edit, remove]);
+  }, [scope, variables, refresh, send, react, star, pin, edit, remove, joinVideoCall]);
 
   const members = useMemo<DiscussionMember[]>(
     () =>
@@ -127,10 +145,12 @@ export const DiscussionProvider = ({ scope, title, children }: Props) => {
       discussion,
       members,
       actions,
+      videoCallOpen,
+      setVideoCallOpen,
       focusId,
       requestFocus: setFocusId,
     }),
-    [scope, committeeId, title, info, discussion, members, actions, focusId],
+    [scope, committeeId, title, info, discussion, members, actions, videoCallOpen, focusId],
   );
 
   return <DiscussionContext.Provider value={value}>{children}</DiscussionContext.Provider>;

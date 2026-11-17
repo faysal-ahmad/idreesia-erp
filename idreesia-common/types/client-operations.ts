@@ -405,6 +405,13 @@ export type MobileWorkspaceDeleteDiscussionMessageMutationVariables = Exact<{
 
 export type MobileWorkspaceDeleteDiscussionMessageMutation = { workspaceDeleteDiscussionMessage: boolean };
 
+export type MobileWorkspaceJoinDiscussionVideoCallMutationVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceJoinDiscussionVideoCallMutation = { workspaceJoinDiscussionVideoCall: { url: string } | null };
+
 export type MobileWorkspaceDiscussionThreadMessagesQueryVariables = Exact<{
   committeeId: string;
   threadId: string;
@@ -476,6 +483,13 @@ export type MobileWorkspaceSendDiscussionMessageMutationVariables = Exact<{
 
 
 export type MobileWorkspaceSendDiscussionMessageMutation = { workspaceSendDiscussionMessage: boolean };
+
+export type MobileWorkspaceDiscussionVideoCallInfoQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type MobileWorkspaceDiscussionVideoCallInfoQuery = { workspaceDiscussionVideoCallInfo: { participantCount: number | null } | null };
 
 export type MobileWorkspaceDocumentFolderFieldsFragment = { _id: string | null, name: string | null, parentId: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null };
 
@@ -3746,6 +3760,13 @@ export type WorkspaceDiscussionInfoQueryVariables = Exact<{
 
 export type WorkspaceDiscussionInfoQuery = { workspaceDiscussionInfo: { canPost: boolean | null, canPin: boolean | null } | null };
 
+export type WorkspaceDiscussionVideoCallInfoQueryVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspaceDiscussionVideoCallInfoQuery = { workspaceDiscussionVideoCallInfo: { participantCount: number | null } | null };
+
 export type WorkspaceDiscussionMembersQueryVariables = Exact<{
   committeeId: string;
 }>;
@@ -3853,6 +3874,13 @@ export type WorkspaceDeleteDiscussionMessageMutationVariables = Exact<{
 
 
 export type WorkspaceDeleteDiscussionMessageMutation = { workspaceDeleteDiscussionMessage: boolean };
+
+export type WorkspaceJoinDiscussionVideoCallMutationVariables = Exact<{
+  committeeId: string;
+}>;
+
+
+export type WorkspaceJoinDiscussionVideoCallMutation = { workspaceJoinDiscussionVideoCall: { url: string } | null };
 
 export type WorkspaceDocumentFolderFieldsFragment = { _id: string | null, name: string | null, parentId: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, deletedAt: string | null, deletedByName: string | null };
 

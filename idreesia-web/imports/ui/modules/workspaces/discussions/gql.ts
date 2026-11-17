@@ -20,8 +20,12 @@ import type {
   WorkspaceDiscussionSyncQueryVariables,
   WorkspaceDiscussionThreadMessagesQuery,
   WorkspaceDiscussionThreadMessagesQueryVariables,
+  WorkspaceDiscussionVideoCallInfoQuery,
+  WorkspaceDiscussionVideoCallInfoQueryVariables,
   WorkspaceEditDiscussionMessageMutation,
   WorkspaceEditDiscussionMessageMutationVariables,
+  WorkspaceJoinDiscussionVideoCallMutation,
+  WorkspaceJoinDiscussionVideoCallMutationVariables,
   WorkspaceReactToDiscussionMessageMutation,
   WorkspaceReactToDiscussionMessageMutationVariables,
   WorkspaceSendDiscussionMessageMutation,
@@ -74,6 +78,17 @@ export const WORKSPACE_DISCUSSION_INFO: TypedDocumentNode<
     workspaceDiscussionInfo(committeeId: $committeeId) {
       canPost
       canPin
+    }
+  }
+`;
+
+export const WORKSPACE_DISCUSSION_VIDEO_CALL_INFO: TypedDocumentNode<
+  WorkspaceDiscussionVideoCallInfoQuery,
+  WorkspaceDiscussionVideoCallInfoQueryVariables
+> = gql`
+  query workspaceDiscussionVideoCallInfo($committeeId: String!) {
+    workspaceDiscussionVideoCallInfo(committeeId: $committeeId) {
+      participantCount
     }
   }
 `;
@@ -288,5 +303,16 @@ export const WORKSPACE_DELETE_DISCUSSION_MESSAGE: TypedDocumentNode<
       committeeId: $committeeId
       messageId: $messageId
     )
+  }
+`;
+
+export const WORKSPACE_JOIN_DISCUSSION_VIDEO_CALL: TypedDocumentNode<
+  WorkspaceJoinDiscussionVideoCallMutation,
+  WorkspaceJoinDiscussionVideoCallMutationVariables
+> = gql`
+  mutation workspaceJoinDiscussionVideoCall($committeeId: String!) {
+    workspaceJoinDiscussionVideoCall(committeeId: $committeeId) {
+      url
+    }
   }
 `;

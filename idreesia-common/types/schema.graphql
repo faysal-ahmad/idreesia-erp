@@ -1428,9 +1428,11 @@ type ItemCategory {
 
 extend type Query {
   itemCategoryById(_id: String!, physicalStoreId: String!): ItemCategory
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   itemCategoriesByPhysicalStoreId(physicalStoreId: String!): [ItemCategory]
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_MANAGE_STOCK_ITEMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 
@@ -1466,9 +1468,11 @@ type Location {
 
 extend type Query {
   locationById(_id: String!, physicalStoreId: String!): Location
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   locationsByPhysicalStoreId(physicalStoreId: String!): [Location]
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 
@@ -1510,6 +1514,7 @@ type PhysicalStore {
 extend type Query {
   allAccessiblePhysicalStores: [PhysicalStore]
   physicalStoreById(id: String!): PhysicalStore
+    @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
     @checkInstanceAccess(instanceIdArgName: "id", returnType: "object")
 }
 
@@ -1753,12 +1758,15 @@ type PagedStockItem {
 
 extend type Query {
   pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
 
   stockItemById(_id: String!, physicalStoreId: String!): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   stockItemsById(_ids: [String]!, physicalStoreId: String!): [StockItem]
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 
@@ -1829,9 +1837,11 @@ type Vendor {
 
 extend type Query {
   vendorById(_id: String!, physicalStoreId: String!): Vendor
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   vendorsByPhysicalStoreId(physicalStoreId: String!): [Vendor]
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 
@@ -2973,7 +2983,19 @@ type DiscussionInfoType {
   canPin: Boolean
 }
 
+type DiscussionVideoCallType {
+  # Link that joins the discussion's video call.
+  url: String!
+}
+
+type DiscussionVideoCallInfoType {
+  # People in the call right now; null when that can't be told.
+  participantCount: Int
+}
+
 extend type Query {
+  workspaceDiscussionVideoCallInfo(committeeId: String!): DiscussionVideoCallInfoType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceDiscussionInfo(committeeId: String!): DiscussionInfoType
     @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # Without 'since': the latest messages. With it: what changed since then.
@@ -3009,6 +3031,10 @@ extend type Query {
 }
 
 extend type Mutation {
+  # The link that joins the discussion's video call. When nobody is in the
+  # call yet, it also posts "started a video call" in the discussion.
+  workspaceJoinDiscussionVideoCall(committeeId: String!): DiscussionVideoCallType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceSendDiscussionMessage(
     committeeId: String!
     text: String!

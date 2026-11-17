@@ -71,7 +71,19 @@ type DiscussionInfoType {
   canPin: Boolean
 }
 
+type DiscussionVideoCallType {
+  # Link that joins the discussion's video call.
+  url: String!
+}
+
+type DiscussionVideoCallInfoType {
+  # People in the call right now; null when that can't be told.
+  participantCount: Int
+}
+
 extend type Query {
+  workspaceDiscussionVideoCallInfo(committeeId: String!): DiscussionVideoCallInfoType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceDiscussionInfo(committeeId: String!): DiscussionInfoType
     @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # Without 'since': the latest messages. With it: what changed since then.
@@ -107,6 +119,10 @@ extend type Query {
 }
 
 extend type Mutation {
+  # The link that joins the discussion's video call. When nobody is in the
+  # call yet, it also posts "started a video call" in the discussion.
+  workspaceJoinDiscussionVideoCall(committeeId: String!): DiscussionVideoCallType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceSendDiscussionMessage(
     committeeId: String!
     text: String!

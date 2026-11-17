@@ -5,6 +5,7 @@ import type { WorkspaceDiscussionMessageFieldsFragment } from 'meteor/idreesia-c
 import type {
   DiscussionDataProvider,
   DiscussionInfo,
+  DiscussionVideoCallInfo,
   DiscussionMember,
   DiscussionMessage,
   DiscussionMessagePage,
@@ -115,15 +116,28 @@ export default class CommitteeDiscussionProvider implements DiscussionDataProvid
   }
 
   private async mutate(op: DiscussionOp, variables: Record<string, unknown>) {
-    await this.client.mutate({
+    const { data } = await this.client.mutate({
       mutation: op.document,
       variables: { ...this.scope.variables, ...variables },
     });
+     
+    return (data as any)?.[op.field];
   }
 
   async getInfo(): Promise<DiscussionInfo> {
     const info = await this.query(this.scope.queries.info);
     return { canPost: !!info?.canPost, canPin: !!info?.canPin };
+  }
+
+  async getVideoCallInfo(): Promise<DiscussionVideoCallInfo> {
+    const info = await this.query(this.scope.queries.videoCallInfo);
+    return { participantCount: info?.participantCount ?? null };
+  }
+
+  async getVideoCallUrl(): Promise<string> {
+    const videoCall = await this.mutate(this.scope.mutations.joinVideoCall, {});
+    if (!videoCall?.url) throw new Error('Video call is not available.');
+    return videoCall.url as string;
   }
 
   async loadMembers(): Promise<DiscussionMember[]> {

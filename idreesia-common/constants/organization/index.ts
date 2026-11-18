@@ -20,3 +20,13 @@ export {
   OrgLocationTypeValues,
 } from './org-location-types';
 export type { OrgLocationType } from './org-location-types';
+export {
+  OrgLocationFeatureKeys,
+  OrgLocationFeatureAllowedTypes,
+  OrgLocationFeatures,
+  isOrgLocationFeatureKey,
+} from './org-location-features';
+export type {
+  OrgLocationFeature,
+  OrgLocationFeatureKey,
+} from './org-location-features';

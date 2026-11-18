@@ -29,6 +29,7 @@ import './stay-cards.css';
  * makes Meteor resolve extensionless imports to the CSS object. */
 import '../imports/ui/modules/hr/ms-duties/duty-expanded.styles.css';
 import '../imports/ui/modules/hr/duty-planning/duty-planning.styles.css';
+import '../imports/ui/modules/workspaces/duties-attendance/duties-attendance.styles.css';
 import '../imports/ui/modules/admin/org-locations/list.styles.css';
 import '../imports/ui/modules/common/visitors/list.styles.css';
 import '../imports/ui/modules/common/visitors/general-info.styles.css';

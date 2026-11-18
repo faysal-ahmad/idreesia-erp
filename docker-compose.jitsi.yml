@@ -1,0 +1,130 @@
+# Production Jitsi Meet for the ERP's video calls, to run on a DigitalOcean
+# Droplet (not part of the local dev stack: that is `docker-compose.yml`).
+# Setup and the reasoning are in docs/jitsi-integration.md.
+#
+#   git clone --depth 1 <repo-url> /opt/idreesia-erp && cd /opt/idreesia-erp
+#   # create .env (see below), then:
+#   docker compose up -d
+#
+# Required in the .env at the repo root (compose refuses to start without them;
+# generate every secret with `openssl rand -hex 24`, never commit the file):
+#   COMPOSE_FILE=docker-compose.jitsi.yml   so plain `docker compose` uses this
+#                                           file, never the dev docker-compose.yml
+#   JITSI_DOMAIN=meet.example.org     DNS name pointing at the Droplet
+#   DROPLET_PUBLIC_IP=203.0.113.10    the Droplet's (Reserved) public IP
+#   CENSUS_PATH_SECRET=...            secret URL path for the room census
+#   JICOFO_AUTH_PASSWORD=...
+#   JICOFO_COMPONENT_SECRET=...
+#   JVB_AUTH_PASSWORD=...
+#   JIBRI_RECORDER_PASSWORD=...
+#   JIBRI_XMPP_PASSWORD=...
+#
+# Firewall: TCP 80 + 443 and UDP 10000 open; prosody's 5280 stays closed.
+# Keep the jitsi/* image tags in step with docker-compose.yml.
+
+x-jitsi-env: &jitsi-env
+  PUBLIC_URL: https://${JITSI_DOMAIN:?}
+  XMPP_DOMAIN: meet.jitsi
+  XMPP_SERVER: xmpp.meet.jitsi
+  XMPP_BOSH_URL_BASE: http://xmpp.meet.jitsi:5280
+  XMPP_AUTH_DOMAIN: auth.meet.jitsi
+  XMPP_MUC_DOMAIN: muc.meet.jitsi
+  XMPP_INTERNAL_MUC_DOMAIN: internal-muc.meet.jitsi
+  XMPP_GUEST_DOMAIN: guest.meet.jitsi
+  # Exposes /room-census on prosody's HTTP port, which the ERP reads.
+  XMPP_MODULES: muc_census
+  # No logins: anyone with a room link joins (the ERP controls who gets links).
+  ENABLE_AUTH: "0"
+  ENABLE_GUESTS: "1"
+  AUTH_TYPE: internal
+  JICOFO_AUTH_USER: focus
+  JICOFO_AUTH_PASSWORD: ${JICOFO_AUTH_PASSWORD:?}
+  JICOFO_COMPONENT_SECRET: ${JICOFO_COMPONENT_SECRET:?}
+  JVB_AUTH_USER: jvb
+  JVB_AUTH_PASSWORD: ${JVB_AUTH_PASSWORD:?}
+  JIBRI_RECORDER_PASSWORD: ${JIBRI_RECORDER_PASSWORD:?}
+  JIBRI_XMPP_PASSWORD: ${JIBRI_XMPP_PASSWORD:?}
+  TZ: UTC
+
+services:
+  prosody:
+    image: jitsi/prosody:stable-11031
+    restart: unless-stopped
+    environment: *jitsi-env
+    networks:
+      default:
+        aliases:
+          - xmpp.meet.jitsi
+
+  jicofo:
+    image: jitsi/jicofo:stable-11031
+    restart: unless-stopped
+    depends_on:
+      - prosody
+    environment: *jitsi-env
+
+  jvb:
+    image: jitsi/jvb:stable-11031
+    restart: unless-stopped
+    depends_on:
+      - prosody
+    environment:
+      <<: *jitsi-env
+      JVB_PORT: "10000"
+      # The address browsers send call media to: the Droplet's public IP.
+      JVB_ADVERTISE_IPS: ${DROPLET_PUBLIC_IP:?}
+      JVB_ENABLE_APIS: colibri,rest
+    ports:
+      - "10000:10000/udp"
+
+  web:
+    image: jitsi/web:stable-11031
+    restart: unless-stopped
+    depends_on:
+      - prosody
+    environment:
+      <<: *jitsi-env
+      # TLS is terminated by Caddy; this nginx only speaks HTTP in the network.
+      DISABLE_HTTPS: "1"
+      ENABLE_HTTP_REDIRECT: "0"
+      ENABLE_LETSENCRYPT: "0"
+
+  # HTTPS for the subdomain (certificate issued and renewed automatically) and
+  # the room census, which jitsi/web does not expose, behind a secret path.
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - web
+    environment:
+      JITSI_DOMAIN: ${JITSI_DOMAIN:?}
+      CENSUS_PATH_SECRET: ${CENSUS_PATH_SECRET:?}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy-data:/data
+    configs:
+      - source: caddyfile
+        target: /etc/caddy/Caddyfile
+
+configs:
+  caddyfile:
+    content: |
+      {$$JITSI_DOMAIN} {
+        # Room census, for the ERP only.
+        handle /{$$CENSUS_PATH_SECRET}/room-census {
+          rewrite * /room-census
+          reverse_proxy prosody:5280 {
+            header_up Host xmpp.meet.jitsi
+          }
+        }
+
+        # Everything else is the Jitsi web app (UI, signaling, WebSocket).
+        handle {
+          reverse_proxy web:80
+        }
+      }
+
+volumes:
+  caddy-data:

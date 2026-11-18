@@ -23,11 +23,41 @@ type OrgLocationType {
   # Karkuns observing this location.
   observerKarkunIds: [String]
   observers: [PersonType]
+  # Features enabled on this location (mehfils only).
+  features: [String]
 
   createdAt: String
   createdBy: String
   updatedAt: String
   updatedBy: String
+}
+
+type OrgLocationFeatureType {
+  key: String!
+  name: String!
+  description: String!
+}
+
+type DutiesAttendancePermissionInfoType {
+  key: String!
+  name: String!
+  description: String!
+}
+
+# A user of the location's Duties and Attendance workspace.
+type OrgLocationDutiesAttendanceUserType {
+  _id: String!
+  userId: String!
+  username: String
+  displayName: String
+  permissions: [String]!
+}
+
+# A user that can be added to a workspace.
+type DutiesAttendanceUserCandidateType {
+  _id: String!
+  username: String
+  displayName: String
 }
 
 input OrgLocationMehfilDetailsInput {
@@ -44,6 +74,23 @@ extend type Query {
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
 
   orgLocationById(_id: String!): OrgLocationType
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+
+  allOrgLocationFeatures: [OrgLocationFeatureType]
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+
+  allDutiesAttendancePermissions: [DutiesAttendancePermissionInfoType]
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+
+  # Unlocked users matching the text, to add to a workspace.
+  dutiesAttendanceUserCandidates(
+    search: String
+  ): [DutiesAttendanceUserCandidateType]
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  orgLocationDutiesAttendanceUsers(
+    locationId: String!
+  ): [OrgLocationDutiesAttendanceUserType]
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
 }
 
@@ -69,5 +116,30 @@ extend type Mutation {
 
   removeOrgLocationObserver(locationId: String!, karkunId: String!): OrgLocationType
     @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  enableOrgLocationFeature(locationId: String!, featureKey: String!): Boolean
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  disableOrgLocationFeature(locationId: String!, featureKey: String!): Boolean
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  addOrgLocationDutiesAttendanceUser(
+    locationId: String!
+    userId: String!
+    permissions: [String]!
+  ): OrgLocationDutiesAttendanceUserType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  updateOrgLocationDutiesAttendanceUserPermissions(
+    locationId: String!
+    userId: String!
+    permissions: [String]!
+  ): OrgLocationDutiesAttendanceUserType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  removeOrgLocationDutiesAttendanceUser(
+    locationId: String!
+    userId: String!
+  ): Boolean @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 }
 `;

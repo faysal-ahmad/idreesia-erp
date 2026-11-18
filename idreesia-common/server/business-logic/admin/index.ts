@@ -32,3 +32,11 @@ export {
   updateOrgLocation,
   type OrgLocationValues,
 } from './org-locations';
+export {
+  addOrgLocationDutiesAttendanceUser,
+  disableOrgLocationFeature,
+  enableOrgLocationFeature,
+  getLocationDutiesAttendanceWorkspaceId,
+  removeOrgLocationDutiesAttendanceUser,
+  updateOrgLocationDutiesAttendanceUserPermissions,
+} from './org-location-features';

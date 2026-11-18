@@ -5,17 +5,23 @@ import {
   AlertOutlined,
   BarChartOutlined,
   CalendarOutlined,
+  CheckSquareOutlined,
   ClusterOutlined,
+  ContainerOutlined,
   FolderOpenOutlined,
   IdcardOutlined,
   MessageOutlined,
   MoonOutlined,
   ProjectOutlined,
+  ScheduleOutlined,
+  SolutionOutlined,
+  TableOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
 
 import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
+import { useMyDutiesAttendanceLocations } from './duties-attendance';
 import { useMyCommitteeLocations } from './hooks/use-my-committee-locations';
 import { useMyCommittees } from './hooks/use-my-committees';
 import SubModuleNames from './submodule-names';
@@ -58,8 +64,41 @@ const KeyPrefixHandlers: KeyPrefixHandler[] = [
   ],
 ];
 
+// [menu key prefix, path segment, sub-module name, path builder] for each
+// page of a mehfil's Duties and Attendance workspace. Menu keys are
+// `${prefix}-${locationId}`.
+type DutiesAttendanceHandler = [string, string, string, PathBuilder];
+const DutiesAttendanceHandlers: DutiesAttendanceHandler[] = [
+  ['da-duties', 'duties', SubModuleNames.duties, paths.locationDutiesPath],
+  [
+    'da-planning',
+    'planning',
+    SubModuleNames.dutyPlanning,
+    paths.locationDutyPlanningPath,
+  ],
+  [
+    'da-attendance',
+    'attendance',
+    SubModuleNames.dutyAttendance,
+    paths.locationDutyAttendancePath,
+  ],
+  [
+    'da-sheet',
+    'attendance-sheet',
+    SubModuleNames.attendanceSheet,
+    paths.locationAttendanceSheetPath,
+  ],
+];
+
+// A workspace's submenu key, e.g. the committee's id or `da-${locationId}`.
+const dutiesAttendanceSubMenuKey = (locationId: string) => `da-${locationId}`;
+
 interface ActiveMenu {
-  committeeId: string;
+  // The submenu to keep open.
+  subMenuKey: string;
+  // Set for a committee page / a location workspace page.
+  committeeId?: string;
+  locationId?: string;
   key: string;
   subModuleName: string;
 }
@@ -115,13 +154,31 @@ const COMMITTEE_PATH_REGEX = new RegExp(
   `^${paths.committeePath('([^/]+)')}/([^/]+)`
 );
 
+const LOCATION_PATH_REGEX = new RegExp(
+  `^${paths.locationDutiesAttendancePath('([^/]+)')}/([^/]+)`
+);
+
 const resolveMenuFromPath = (pathname: string): ActiveMenu | null => {
+  const locationMatch = LOCATION_PATH_REGEX.exec(pathname);
+  if (locationMatch) {
+    const [, locationId, segment] = locationMatch;
+    const handler = DutiesAttendanceHandlers.find(([, s]) => s === segment);
+    if (!handler) return null;
+    return {
+      subMenuKey: dutiesAttendanceSubMenuKey(locationId),
+      locationId,
+      key: `${handler[0]}-${locationId}`,
+      subModuleName: handler[2],
+    };
+  }
+
   const match = COMMITTEE_PATH_REGEX.exec(pathname);
   if (!match) return null;
   const [, committeeId, prefix] = match;
   const handler = KeyPrefixHandlers.find(([p]) => p === prefix);
   if (!handler) return null;
   return {
+    subMenuKey: committeeId,
     committeeId,
     key: `${prefix}-${committeeId}`,
     subModuleName: handler[1],
@@ -139,8 +196,11 @@ const sameKeySet = (a: string[], b: string[]) => {
 const Sidebar = ({ history }: SidebarProps) => {
   const { activeSubModuleName, setActiveSubModuleName } = useActiveModule();
   const { committees, loading: committeesLoading } = useMyCommittees();
-  const { locations, loading: locationsLoading } = useMyCommitteeLocations();
-  const loading = committeesLoading || locationsLoading;
+  const { locations: committeeLocations, loading: locationsLoading } =
+    useMyCommitteeLocations();
+  const { locations: dutiesAttendanceLocations, loading: daLoading } =
+    useMyDutiesAttendanceLocations();
+  const loading = committeesLoading || locationsLoading || daLoading;
   const [pathname, setPathname] = useState(history.location.pathname);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
 
@@ -165,9 +225,40 @@ const Sidebar = ({ history }: SidebarProps) => {
     return map;
   }, [committees]);
 
+  // Mehfils whose Duties and Attendance workspace the user can open.
+  const workspaceLocationsById = useMemo(
+    () =>
+      new Map(
+        dutiesAttendanceLocations
+          .filter((location) => location.hasWorkspace)
+          .map((location) => [location.locationId, location])
+      ),
+    [dutiesAttendanceLocations]
+  );
+
+  // The locations of the user's committees and workspaces, plus all their
+  // ancestors.
+  const locations = useMemo(() => {
+    const byId = new Map<
+      string,
+      { _id?: string | null; name?: string | null; parentId?: string | null }
+    >();
+    committeeLocations.forEach((location) => byId.set(location._id!, location));
+    dutiesAttendanceLocations.forEach((location) => {
+      if (!byId.has(location.locationId)) {
+        byId.set(location.locationId, {
+          _id: location.locationId,
+          name: location.name,
+          parentId: location.parentId,
+        });
+      }
+    });
+    return Array.from(byId.values());
+  }, [committeeLocations, dutiesAttendanceLocations]);
+
   // Location tree for the dropdown. The query returns the user's locations
-  // plus their ancestors; ancestors without committees stay in the tree for
-  // context but can't be selected.
+  // plus their ancestors; ancestors without committees or workspaces stay in
+  // the tree for context but can't be selected.
   const locationTree = useMemo(() => {
     type TreeNode = {
       value: string;
@@ -182,7 +273,9 @@ const Sidebar = ({ history }: SidebarProps) => {
         {
           value: location._id!,
           title: location.name ?? '',
-          selectable: committeesByLocation.has(location._id!),
+          selectable:
+            committeesByLocation.has(location._id!) ||
+            workspaceLocationsById.has(location._id!),
           children: [],
         },
       ])
@@ -210,7 +303,7 @@ const Sidebar = ({ history }: SidebarProps) => {
       });
     }
     return roots;
-  }, [locations, committeesByLocation]);
+  }, [locations, committeesByLocation, workspaceLocationsById]);
 
   // Selectable locations in tree order, used for the default selection.
   const selectableLocationIds = useMemo(() => {
@@ -246,19 +339,23 @@ const Sidebar = ({ history }: SidebarProps) => {
       setActiveSubModuleName(activeMenu.subModuleName);
     }
 
-    // Follow the route: switch to the active committee's location.
+    // Follow the route: switch to the active committee's or workspace's
+    // location.
     const activeCommittee = committees.find(
       (committee) => committee._id === activeMenu.committeeId
     );
-    if (activeCommittee) {
-      const committeeLocationId = activeCommittee.locationId ?? NO_LOCATION;
+    let routeLocationId = activeMenu.locationId;
+    if (routeLocationId === undefined && activeCommittee) {
+      routeLocationId = activeCommittee.locationId ?? NO_LOCATION;
+    }
+    if (routeLocationId !== undefined) {
       setSelectedLocationId((prev) =>
-        prev === committeeLocationId ? prev : committeeLocationId
+        prev === routeLocationId ? prev : routeLocationId
       );
     }
 
     setOpenKeys((prev) => {
-      const merged = Array.from(new Set([...prev, activeMenu.committeeId]));
+      const merged = Array.from(new Set([...prev, activeMenu.subMenuKey]));
       return sameKeySet(prev, merged) ? prev : merged;
     });
   }, [activeMenu, activeSubModuleName, setActiveSubModuleName, committees]);
@@ -268,6 +365,16 @@ const Sidebar = ({ history }: SidebarProps) => {
   };
 
   const handleMenuItemSelected = ({ key }: { key: string }) => {
+    const workspaceHandler = DutiesAttendanceHandlers.find(([prefix]) =>
+      key.startsWith(`${prefix}-`)
+    );
+    if (workspaceHandler) {
+      const [prefix, , subModuleName, getPath] = workspaceHandler;
+      setActiveSubModuleName(subModuleName);
+      history.push(getPath(key.slice(prefix.length + 1)));
+      return;
+    }
+
     const handler = KeyPrefixHandlers.find(([prefix]) =>
       key.startsWith(`${prefix}-`)
     );
@@ -375,9 +482,45 @@ const Sidebar = ({ history }: SidebarProps) => {
     ],
   });
 
-  const menuItems = (committeesByLocation.get(effectiveLocationId) ?? []).map(
-    buildCommitteeItem
-  );
+  // A mehfil's Duties and Attendance feature, with its pages. The location
+  // itself is already shown in the selector above.
+  const buildDutiesAttendanceItem = (locationId: string) => ({
+    key: dutiesAttendanceSubMenuKey(locationId),
+    icon: <ContainerOutlined style={IconStyle} />,
+    label: <NameLabel name='Duties & Attendance' />,
+    children: [
+      {
+        key: `da-duties-${locationId}`,
+        icon: <SolutionOutlined style={IconStyle} />,
+        label: <NameLabel name='Duties' />,
+      },
+      {
+        key: `da-planning-${locationId}`,
+        icon: <ScheduleOutlined style={IconStyle} />,
+        label: <NameLabel name='Duty Planning' />,
+      },
+      {
+        key: `da-attendance-${locationId}`,
+        icon: <CheckSquareOutlined style={IconStyle} />,
+        label: <NameLabel name='Duty Attendance' />,
+      },
+      {
+        key: `da-sheet-${locationId}`,
+        icon: <TableOutlined style={IconStyle} />,
+        label: <NameLabel name='Attendance Sheet' />,
+      },
+    ],
+  });
+
+  const workspaceLocation = workspaceLocationsById.get(effectiveLocationId);
+  const menuItems = [
+    ...(committeesByLocation.get(effectiveLocationId) ?? []).map(
+      buildCommitteeItem
+    ),
+    ...(workspaceLocation
+      ? [buildDutiesAttendanceItem(workspaceLocation.locationId)]
+      : []),
+  ];
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -394,6 +537,9 @@ const Sidebar = ({ history }: SidebarProps) => {
           treeData={locationTree}
           onChange={handleLocationChange}
           treeDefaultExpandAll
+          // The dropdown is wider than the sidebar, so deep locations fit.
+          popupMatchSelectWidth={false}
+          styles={{ popup: { root: { minWidth: 360, maxWidth: '90vw' } } }}
           showSearch
           treeNodeFilterProp="title"
         />

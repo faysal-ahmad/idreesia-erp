@@ -35,10 +35,14 @@ interface Declaration {
 }
 type FieldInfo = { field: string; declarations: Declaration[] };
 
+// Workspace directives, checked by their own tests rather than probed here.
+const WORKSPACE_DIRECTIVES = ['checkCommitteeAccess', 'checkDutiesAttendanceAccess'];
+
 const PROTECTION = [
   'checkPermissions',
   'checkInstanceAccess',
   'checkCommitteeAccess',
+  'checkDutiesAttendanceAccess',
   'superAdminOnly',
 ];
 
@@ -86,7 +90,7 @@ const perm = (name: string) => (Permissions as Record<string, string>)[name];
 const probe = (info: FieldInfo) => {
   const isMutation = info.field.startsWith('Mutation.');
   const directives = info.declarations
-    .filter(d => d.directive !== 'checkCommitteeAccess')
+    .filter(d => !WORKSPACE_DIRECTIVES.includes(d.directive))
     .map(d => {
       if (d.directive === 'superAdminOnly') return '@superAdminOnly';
       const args = Object.entries(d.args)
@@ -198,7 +202,7 @@ describe('authorization matrix', () => {
   });
 
   describe.each(protectedFields.filter(f =>
-    f.declarations.some(d => d.directive !== 'checkCommitteeAccess')
+    f.declarations.some(d => !WORKSPACE_DIRECTIVES.includes(d.directive))
   ).map(f => [f.field, f] as const))('%s', (_name, info) => {
     const run = probe(info);
     const perms = (

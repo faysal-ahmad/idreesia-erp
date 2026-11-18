@@ -7,6 +7,7 @@ import Permission from './_directives/permission';
 import CheckPermissionsDirective from './_directives/check-permissions';
 import CheckInstanceAccessDirective from './_directives/check-instance-access';
 import CheckCommitteeAccessDirective from './_directives/check-committee-access';
+import CheckDutiesAttendanceAccessDirective from './_directives/check-duties-attendance-access';
 import SuperAdminOnlyDirective from './_directives/super-admin-only';
 
 import RootTypes from './_root-types/root-types';
@@ -152,6 +153,8 @@ import WorkspaceMeetingsSchema from './workspaces/meetings/meetings';
 import WorkspaceMeetingsResolvers from './workspaces/meetings/resolvers';
 import WorkspacePollsSchema from './workspaces/polls/polls';
 import WorkspacePollsResolvers from './workspaces/polls/resolvers';
+import WorkspaceDutiesAttendanceSchema from './workspaces/duties-attendance/duties-attendance';
+import WorkspaceDutiesAttendanceResolvers from './workspaces/duties-attendance/resolvers';
 import WorkspaceProjectsSchema from './workspaces/projects/projects';
 import WorkspaceProjectsResolvers from './workspaces/projects/resolvers';
 import WorkspaceNightStayReportSchema from './workspaces/night-stay-report/night-stay-report';
@@ -214,6 +217,7 @@ const typeDefs = [
   CheckPermissionsDirective,
   CheckInstanceAccessDirective,
   CheckCommitteeAccessDirective,
+  CheckDutiesAttendanceAccessDirective,
   SuperAdminOnlyDirective,
   RootTypes,
   ExternalTypes,
@@ -266,6 +270,7 @@ const typeDefs = [
   WorkspaceDocumentsSchema,
   WorkspaceMeetingsSchema,
   WorkspacePollsSchema,
+  WorkspaceDutiesAttendanceSchema,
   WorkspaceProjectsSchema,
   WorkspaceNightStayReportSchema,
   WorkspaceMonitoringAlertsSchema,
@@ -337,6 +342,7 @@ const resolvers = merge(
   WorkspaceDocumentsResolvers,
   WorkspaceMeetingsResolvers,
   WorkspacePollsResolvers,
+  WorkspaceDutiesAttendanceResolvers,
   WorkspaceProjectsResolvers,
   WorkspaceNightStayReportResolvers,
   WorkspaceMonitoringAlertsResolvers,

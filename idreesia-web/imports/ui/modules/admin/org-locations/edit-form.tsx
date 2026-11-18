@@ -5,6 +5,7 @@ import { Empty, Form, Spin, Tabs } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import {
+  OrgLocationFeatureKeys,
   OrgLocationTypes,
   type OrgLocationType,
 } from 'meteor/idreesia-common/constants/organization';
@@ -22,6 +23,8 @@ import {
   UPDATE_ORG_LOCATION,
 } from './gql';
 import LocationCommittees from './location-committees';
+import LocationDutiesAttendanceUsers from './location-duties-attendance-users';
+import LocationFeatures from './location-features';
 import LocationObservers from './location-observers';
 import LocationForm, {
   MehfilDetailsFields,
@@ -154,6 +157,33 @@ const EditForm = ({ match, history, location }: Props) => {
                 key: 'mehfil-details',
                 label: 'Mehfil Details',
                 children: mehfilDetails,
+              },
+            ]
+          : []),
+        // Features, and the users of what they switch on, are for mehfils only.
+        ...(type === OrgLocationTypes.MEHFIL
+          ? [
+              {
+                key: 'features',
+                label: 'Features',
+                children: (
+                  <LocationFeatures
+                    locationId={_id}
+                    enabledFeatures={(orgLocation.features ?? []).filter(
+                      (feature): feature is string => feature != null
+                    )}
+                  />
+                ),
+              },
+            ]
+          : []),
+        ...(type === OrgLocationTypes.MEHFIL &&
+        orgLocation.features?.includes(OrgLocationFeatureKeys.DUTIES_ATTENDANCE)
+          ? [
+              {
+                key: 'duties-attendance-users',
+                label: 'Duties & Attendance Users',
+                children: <LocationDutiesAttendanceUsers locationId={_id} />,
               },
             ]
           : []),

@@ -16,6 +16,7 @@ const PROTECTION_DIRECTIVES = [
   'checkPermissions',
   'checkInstanceAccess',
   'checkCommitteeAccess',
+  'checkDutiesAttendanceAccess',
   'superAdminOnly',
 ];
 
@@ -43,6 +44,8 @@ const ALLOWED: Record<string, string> = {
   'Mutation.updateLastActiveTime': "caller's own account",
   'Query.myCommittees': "caller's own committees",
   'Query.myCommitteeLocations': "locations of the caller's own committees",
+  'Query.myDutiesAttendanceLocations':
+    "locations of the caller's own Duties and Attendance workspaces",
   'Query.myNotifications': "caller's own notifications",
   'Query.myNotificationCounts': "caller's own notifications",
   'Mutation.markNotificationsRead': "caller's own notifications",

@@ -19,6 +19,8 @@ export interface OrgLocationDocument {
   allParentIds?: string[];
   mehfilDetails?: OrgLocationMehfilDetails;
   observerKarkunIds?: string[];
+  features?: string[];
+  dutiesAttendanceWorkspaceId?: string;
   createdAt?: Date;
   createdBy?: string;
   updatedAt?: Date;

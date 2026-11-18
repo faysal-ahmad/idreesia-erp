@@ -71,6 +71,7 @@ import './67-set-erp-admin-super-admin';
 import './68-create-login-attempt-indexes';
 import './69-create-org-locations';
 import './70-assign-committees-to-root-location';
+import './71-create-duties-attendance-indexes';
 
 Migrations.config({
   log: true,

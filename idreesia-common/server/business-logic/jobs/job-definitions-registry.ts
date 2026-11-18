@@ -5,6 +5,7 @@ import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-lo
 import { backfillImageVectorData } from 'meteor/idreesia-common/server/business-logic/common/backfill-image-vector-data';
 import { publishExpiringLockNotifications } from 'meteor/idreesia-common/server/business-logic/dms';
 import { purgeNotifications } from 'meteor/idreesia-common/server/headless';
+import { createTodayDayRecords } from 'meteor/idreesia-common/server/business-logic/duties-attendance';
 import { createTodayDutyDayAttendances } from 'meteor/idreesia-common/server/business-logic/hr/duty-planning';
 import { getSystemUser } from './system-user';
 import { createProgressReporter } from './report-progress';
@@ -50,6 +51,14 @@ const JOB_DEFINITIONS_REGISTRY: JobDefinitionSeed[] = [
     defaultSchedule: '5 0 * * *',
     handler: async agendaJob => {
       await createTodayDutyDayAttendances(createProgressReporter(agendaJob));
+    },
+  },
+  {
+    name: 'create-duties-attendance-day-records',
+    displayName: 'Create Duties and Attendance Day Records',
+    defaultSchedule: '10 0 * * *',
+    handler: async agendaJob => {
+      await createTodayDayRecords(createProgressReporter(agendaJob));
     },
   },
   {

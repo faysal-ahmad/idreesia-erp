@@ -17,6 +17,7 @@ const ORG_LOCATION_BY_ID: TypedDocumentNode<
       parentId
       allParentIds
       observerKarkunIds
+      features
       mehfilDetails {
         address
         mehfilStartYear

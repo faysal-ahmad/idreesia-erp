@@ -7,7 +7,7 @@ import {
 import {
   getCommitteeChatGroupId,
   type CommitteeDoc,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import {
   getCommitteeAccess,

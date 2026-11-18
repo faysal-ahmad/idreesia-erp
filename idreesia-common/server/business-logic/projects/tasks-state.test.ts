@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
-import Committees from 'meteor/idreesia-common/server/collections/hr/committees';
+import Committees from 'meteor/idreesia-common/server/collections/admin/committees';
 import {
   ProjectComments,
   Projects,

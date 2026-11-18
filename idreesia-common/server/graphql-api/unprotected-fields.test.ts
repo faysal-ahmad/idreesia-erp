@@ -42,6 +42,7 @@ const ALLOWED: Record<string, string> = {
   'Mutation.updateLoginTime': "caller's own account",
   'Mutation.updateLastActiveTime': "caller's own account",
   'Query.myCommittees': "caller's own committees",
+  'Query.myCommitteeLocations': "locations of the caller's own committees",
   'Query.myNotifications': "caller's own notifications",
   'Query.myNotificationCounts': "caller's own notifications",
   'Mutation.markNotificationsRead': "caller's own notifications",

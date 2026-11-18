@@ -38,7 +38,7 @@ Callers never see a Rocket.Chat group id. They hold the module's own `workspaceI
 | Rocket.Chat REST client (private) | `idreesia-common/server/chat/` |
 | Workspaces collection | `idreesia-common/server/collections/discussions/` |
 | Schema | `idreesia-common/server/schemas/discussions/` |
-| Committee feature handler | `idreesia-common/server/business-logic/hr/committee/discussions.ts` |
+| Committee feature handler | `idreesia-common/server/business-logic/admin/committee/discussions.ts` |
 | GraphQL and access checks | `idreesia-common/server/graphql-api/workspaces/discussions/` |
 | File routes | `idreesia-web/imports/startup/server/setup-workspace-discussion-endpoints.ts` |
 
@@ -130,7 +130,7 @@ Files live in Rocket.Chat, which the browser cannot reach, so they go through ER
 
 ## Committee Discussions feature
 
-The committee feature handler (`business-logic/hr/committee/discussions.ts`) connects committees to the module. A committee stores only `discussionsWorkspaceId`.
+The committee feature handler (`business-logic/admin/committee/discussions.ts`) connects committees to the module. A committee stores only `discussionsWorkspaceId`.
 
 | Event | What happens |
 |---|---|

@@ -7,7 +7,7 @@ import type {
   GraphQLResolveInfo,
 } from 'graphql';
 
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
 import {
   CommitteeMemberRoles,
   CommitteeMemberRoleValues,

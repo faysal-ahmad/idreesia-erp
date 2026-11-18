@@ -1,5 +1,5 @@
 import DmsDocuments from 'meteor/idreesia-common/server/collections/dms/documents';
-import Committees from 'meteor/idreesia-common/server/collections/hr/committees';
+import Committees from 'meteor/idreesia-common/server/collections/admin/committees';
 import Notifications from 'meteor/idreesia-common/server/collections/common/notifications';
 import type {
   DmsDocumentDocument,

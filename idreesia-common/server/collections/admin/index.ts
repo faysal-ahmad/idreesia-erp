@@ -12,3 +12,9 @@ export {
   default as PeopleTags,
   type PeopleTagDocument,
 } from './people-tags';
+export {
+  default as OrgLocations,
+  type OrgLocationDocument,
+  type OrgLocationMehfilDetails,
+} from './org-locations';
+export { default as Committees } from './committees';

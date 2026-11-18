@@ -83,7 +83,7 @@ export const AdminPermissionsData: PermissionNode = {
       ],
     },
     {
-      title: 'Central Committees',
+      title: 'Committees',
       key: 'module-admin-committees',
       children: [
         {
@@ -93,6 +93,20 @@ export const AdminPermissionsData: PermissionNode = {
         {
           title: 'Manage Committees Data',
           key: PermissionConstants.ADMIN_MANAGE_COMMITTEES,
+        },
+      ],
+    },
+    {
+      title: 'Locations',
+      key: 'module-admin-org-locations',
+      children: [
+        {
+          title: 'View Locations',
+          key: PermissionConstants.ADMIN_VIEW_ORG_LOCATIONS,
+        },
+        {
+          title: 'Manage Locations',
+          key: PermissionConstants.ADMIN_MANAGE_ORG_LOCATIONS,
         },
       ],
     },

@@ -40,7 +40,7 @@ import {
   toCommitteeMeeting,
   updateCommitteeMeeting,
   type MeetingsView,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 import { MEETINGS_DEFAULT_TIME_ZONE } from 'meteor/idreesia-common/constants/meetings';
 
 import {

@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql';
 
 import { type CommitteeFeatureKey } from 'meteor/idreesia-common/constants/organization';
 import { CommitteeFeatureKeys, isCommitteeFeatureKey } from 'meteor/idreesia-common/constants/organization';
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
 
 import { discussionsHandler } from './discussions';
 import { documentsHandler } from './documents';

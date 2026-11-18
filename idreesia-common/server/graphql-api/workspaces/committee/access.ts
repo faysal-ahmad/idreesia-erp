@@ -5,7 +5,7 @@ import {
   CommitteeMemberRoles,
   type CommitteeMemberRole,
 } from 'meteor/idreesia-common/constants/organization';
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
 import { isSuperAdmin } from 'meteor/idreesia-common/server/business-logic/admin/users/super-admin';
 
 export interface WorkspaceUser {

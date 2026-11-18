@@ -252,9 +252,9 @@ The Workspaces module uses projects through the **Projects & Tasks** committee f
 
 | Piece | Location |
 |---|---|
-| Feature handler, workspace lookup, leaving-member cleanup | `idreesia-common/server/business-logic/hr/committee/projects.ts` |
-| View mapping (names, timestamps as strings) | `.../hr/committee/projects-view.ts` |
-| Multi-step changes and input mapping | `.../hr/committee/projects-actions.ts` |
+| Feature handler, workspace lookup, leaving-member cleanup | `idreesia-common/server/business-logic/admin/committee/projects.ts` |
+| View mapping (names, timestamps as strings) | `.../admin/committee/projects-view.ts` |
+| Multi-step changes and input mapping | `.../admin/committee/projects-actions.ts` |
 | GraphQL schema, access checks, resolvers | `idreesia-common/server/graphql-api/workspaces/projects/` |
 | Web UI | `idreesia-web/imports/ui/modules/common/projects/` (reusable) and `.../modules/workspaces/projects/` (committee pages) |
 | Mobile UI | `idreesia-mobile/imports/ui/workspaces/projects/` |

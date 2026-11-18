@@ -17,6 +17,9 @@ const Permissions = {
   ADMIN_VIEW_COMMITTEES: 'admin-view-committees',
   ADMIN_MANAGE_COMMITTEES: 'admin-manage-committees',
 
+  ADMIN_VIEW_ORG_LOCATIONS: 'admin-view-org-locations',
+  ADMIN_MANAGE_ORG_LOCATIONS: 'admin-manage-org-locations',
+
   // ****************************************************************************************
   // HR Module
   // ****************************************************************************************

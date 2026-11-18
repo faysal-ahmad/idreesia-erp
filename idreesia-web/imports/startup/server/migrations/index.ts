@@ -69,6 +69,8 @@ import './65-committee-member-roles';
 import './66-unset-legacy-image-ids';
 import './67-set-erp-admin-super-admin';
 import './68-create-login-attempt-indexes';
+import './69-create-org-locations';
+import './70-assign-committees-to-root-location';
 
 Migrations.config({
   log: true,

@@ -2,6 +2,7 @@ export {
   disableCommitteeFeature,
   enableCommitteeFeature,
 } from './committee-features';
+export { moveCommittee } from './committee-location';
 export {
   getCommitteeChatGroupId,
   getCommitteeDiscussionsWorkspaceId,

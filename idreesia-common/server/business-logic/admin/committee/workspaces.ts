@@ -4,7 +4,7 @@ import { POLLS_MODULE } from 'meteor/idreesia-common/constants/polls';
 import { PROJECTS_MODULE } from 'meteor/idreesia-common/constants/projects';
 import { DISCUSSIONS_MODULE } from 'meteor/idreesia-common/server/business-logic/discussions';
 import { DMS_MODULE } from 'meteor/idreesia-common/server/business-logic/dms';
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
 import type { NotificationScope } from 'meteor/idreesia-common/server/headless';
 
 import { MEMBERS_MODULE } from './members-notifications';

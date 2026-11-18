@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
-import { Collapse, Form, type CollapseProps } from 'antd';
+import { Button, Collapse, Form, type CollapseProps } from 'antd';
+import { SwapOutlined } from '@ant-design/icons';
 import { message } from '/imports/ui/antd-feedback';
 import { type History } from 'history';
 
@@ -21,6 +22,7 @@ import {
 import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
 import { type CommitteeFormValues } from './committee-form';
+import MoveCommitteeModal from './move-committee-modal';
 
 const UPDATE_COMMITTEE: TypedDocumentNode<
   UpdateCommitteeMutation,
@@ -52,12 +54,17 @@ interface Props {
 
 const GeneralInfo = ({ history, committeeId, committee }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const [showMove, setShowMove] = useState(false);
   const [updateCommittee] = useMutation(UPDATE_COMMITTEE, {
-    refetchQueries: ['listAllCommittees', 'committeeById'],
+    refetchQueries: ['locationCommittees', 'committeeById'],
   });
 
   const handleCancel = () => {
-    history.push(paths.committeesPath);
+    history.push(
+      committee.locationId
+        ? paths.orgLocationCommitteesTabPath(committee.locationId)
+        : paths.orgLocationsPath
+    );
   };
 
   const handleFieldsChange = () => {
@@ -113,6 +120,24 @@ const GeneralInfo = ({ history, committeeId, committee }: Props) => {
 
   return (
     <div className="visitor-form">
+      <MoveCommitteeModal
+        committee={
+          showMove && committee.locationId
+            ? {
+                _id: committeeId,
+                name: committee.name ?? '',
+                locationId: committee.locationId,
+              }
+            : null
+        }
+        onClose={() => setShowMove(false)}
+        onMoved={newLocationId => {
+          setShowMove(false);
+          history.replace(
+            paths.orgLocationCommitteeEditFormPath(newLocationId, committeeId)
+          );
+        }}
+      />
       <Form
         layout="horizontal"
         onFinish={handleFinish}
@@ -120,6 +145,7 @@ const GeneralInfo = ({ history, committeeId, committee }: Props) => {
       >
         <Collapse
           className="visitor-form-sections"
+          style={{ marginBottom: 16 }}
           defaultActiveKey={['details']}
           items={sectionItems}
         />
@@ -127,6 +153,15 @@ const GeneralInfo = ({ history, committeeId, committee }: Props) => {
           handleCancel={handleCancel}
           isFieldsTouched={isFieldsTouched}
           fullWidth
+          extra={
+            <Button
+              size="large"
+              icon={<SwapOutlined />}
+              onClick={() => setShowMove(true)}
+            >
+              Move to another location
+            </Button>
+          }
         />
       </Form>
       <AuditInfo record={committee} />

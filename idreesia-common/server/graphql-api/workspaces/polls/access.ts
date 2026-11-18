@@ -7,7 +7,7 @@ import {
   getCommitteePollsWorkspaceId,
   type CommitteeDoc,
   type ViewContext,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import {
   getCommitteeAccess,

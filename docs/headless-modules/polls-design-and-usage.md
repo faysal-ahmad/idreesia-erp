@@ -273,9 +273,9 @@ The Workspaces module uses polls through the **Polls** committee feature (`Commi
 
 | Piece | Location |
 |---|---|
-| Feature handler, workspace lookup | `idreesia-common/server/business-logic/hr/committee/polls.ts` |
-| View mapping (names, timestamps as strings) | `.../hr/committee/polls-view.ts` |
-| Form input mapping | `.../hr/committee/polls-actions.ts` |
+| Feature handler, workspace lookup | `idreesia-common/server/business-logic/admin/committee/polls.ts` |
+| View mapping (names, timestamps as strings) | `.../admin/committee/polls-view.ts` |
+| Form input mapping | `.../admin/committee/polls-actions.ts` |
 | GraphQL schema, access checks, resolvers | `idreesia-common/server/graphql-api/workspaces/polls/` |
 | Reusable UI (no committee knowledge; driven by a `PollsDataProvider`) | `idreesia-web/imports/ui/modules/common/polls/` |
 | Committee pages and data provider | `idreesia-web/imports/ui/modules/workspaces/polls/` |

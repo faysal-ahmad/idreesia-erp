@@ -10,12 +10,8 @@ import {
   Attachments,
   People,
 } from 'meteor/idreesia-common/server/collections/common';
-import {
-  Committees,
-  DutyDayAttendances,
-  Salaries,
-  Teams,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
+import { DutyDayAttendances, Salaries, Teams } from 'meteor/idreesia-common/server/collections/hr';
 import {
   MehfilKarkuns,
   VisitorStays,

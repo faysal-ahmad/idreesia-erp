@@ -35,6 +35,7 @@ const COMMITTEE_BY_ID: TypedDocumentNode<
       name
       color
       description
+      locationId
       features
       memberCount
       guestCount
@@ -51,7 +52,7 @@ const COMMITTEE_BY_ID: TypedDocumentNode<
   }
 `;
 
-type Props = RouteComponentProps<{ committeeId: string }>;
+type Props = RouteComponentProps<{ locationId: string; committeeId: string }>;
 
 const TAB_GENERAL = 'general';
 const TAB_MEMBERS = 'members';
@@ -67,7 +68,7 @@ const VALID_TAB_KEYS = new Set([
 ]);
 
 const EditForm = ({ history, location, match }: Props) => {
-  const committeeId = match.params.committeeId;
+  const { locationId, committeeId } = match.params;
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -89,7 +90,12 @@ const EditForm = ({ history, location, match }: Props) => {
   const committeeById = data?.committeeById;
   const committeeName = committeeById?.name?.trim();
 
-  useDynamicBreadcrumbs(['Admin', 'Central Committees', committeeName || 'Edit']);
+  useDynamicBreadcrumbs([
+    'Admin',
+    'Locations',
+    'Committees',
+    committeeName || 'Edit',
+  ]);
 
   if (loading) {
     return (
@@ -99,7 +105,8 @@ const EditForm = ({ history, location, match }: Props) => {
     );
   }
 
-  if (!committeeById?._id) {
+  // The committee must belong to the location in the URL.
+  if (!committeeById?._id || committeeById.locationId !== locationId) {
     return (
       <Empty description="Committee not found" style={{ padding: '80px 0' }} />
     );

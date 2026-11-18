@@ -5,6 +5,11 @@
   background: #f3f4f6;
 }
 
+.projects-board .list-table-header,
+.tasks-board .list-table-header {
+  margin-bottom: 16px;
+}
+
 .tasks-board .ant-table-tbody > tr.project-task-overdue > td {
   background: #fff6f5;
 }

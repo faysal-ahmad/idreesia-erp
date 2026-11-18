@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Alert, Popconfirm, Spin, Switch, Table } from 'antd';
+import { Alert, Button, Modal, Space, Spin, Switch, Table } from 'antd';
+import { CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
 import { message } from '/imports/ui/antd-feedback';
 
 import { CommitteeFeatureCategories } from 'meteor/idreesia-common/constants/organization';
@@ -110,8 +111,9 @@ interface Props {
 }
 
 const Features = ({ committeeId, enabledFeatures }: Props) => {
-  const [pendingKey, setPendingKey] = useState<string | null>(null);
-  const [toggleError, setToggleError] = useState<{
+  const [draft, setDraft] = useState<string[]>(enabledFeatures);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<{
     title: string;
     description: string;
   } | null>(null);
@@ -129,6 +131,12 @@ const Features = ({ committeeId, enabledFeatures }: Props) => {
     mutationOptions
   );
 
+  // Start over from what is saved whenever the committee's features change.
+  const savedKey = [...enabledFeatures].sort().join(',');
+  useEffect(() => {
+    setDraft(enabledFeatures);
+  }, [savedKey]);
+
   const { sorted: features, rowSpans } = groupByCategory(
     (data?.allCommitteeFeatures ?? []).filter(
       (feature): feature is FeatureRow =>
@@ -136,24 +144,75 @@ const Features = ({ committeeId, enabledFeatures }: Props) => {
     )
   );
 
+  const toEnable = features.filter(
+    f => draft.includes(f.key) && !enabledFeatures.includes(f.key)
+  );
+  const toDisable = features.filter(
+    f => !draft.includes(f.key) && enabledFeatures.includes(f.key)
+  );
+  const hasChanges = toEnable.length + toDisable.length > 0;
+
   const handleToggle = (feature: FeatureRow, enabled: boolean) => {
-    const action = enabled ? 'enable' : 'disable';
-    const mutate = enabled ? enableCommitteeFeature : disableCommitteeFeature;
-    setPendingKey(feature.key);
-    setToggleError(null);
-    mutate({ variables: { committeeId, featureKey: feature.key } })
-      .then(() => {
-        message.success(`${feature.name} ${action}d`, 2);
-      })
-      .catch((error: Error) => {
-        setToggleError({
-          title: `Could not ${action} ${feature.name}`,
-          description: error.message,
-        });
-      })
-      .finally(() => {
-        setPendingKey(null);
+    setDraft(prev =>
+      enabled
+        ? [...prev, feature.key]
+        : prev.filter(key => key !== feature.key)
+    );
+  };
+
+  const applyChanges = async () => {
+    setSaving(true);
+    setSaveError(null);
+    const failures: string[] = [];
+    const steps = [
+      ...toDisable.map(f => ({ feature: f, enable: false })),
+      ...toEnable.map(f => ({ feature: f, enable: true })),
+    ];
+    for (const { feature, enable } of steps) {
+      const mutate = enable ? enableCommitteeFeature : disableCommitteeFeature;
+      try {
+        await mutate({ variables: { committeeId, featureKey: feature.key } });
+      } catch (error) {
+        failures.push(
+          `Could not ${enable ? 'enable' : 'disable'} ${feature.name}: ${
+            (error as Error).message
+          }`
+        );
+      }
+    }
+    setSaving(false);
+    // Show what actually got saved.
+    setDraft(enabledFeatures);
+    if (failures.length > 0) {
+      setSaveError({
+        title:
+          failures.length === steps.length
+            ? 'The changes could not be saved'
+            : 'Some changes could not be saved',
+        description: failures.join('\n'),
       });
+    } else {
+      message.success('Features updated', 2);
+    }
+  };
+
+  const handleSave = () => {
+    Modal.confirm({
+      title: 'Apply these feature changes to this committee?',
+      content: (
+        <div>
+          {toEnable.length > 0 ? (
+            <div>Enable: {toEnable.map(f => f.name).join(', ')}</div>
+          ) : null}
+          {toDisable.length > 0 ? (
+            <div>Disable: {toDisable.map(f => f.name).join(', ')}</div>
+          ) : null}
+        </div>
+      ),
+      okText: 'Yes',
+      cancelText: 'No',
+      onOk: applyChanges,
+    });
   };
 
   if (loading) {
@@ -189,33 +248,28 @@ const Features = ({ committeeId, enabledFeatures }: Props) => {
       title: 'Enabled',
       key: 'enabled',
       width: 100,
-      render: (_text: unknown, feature: FeatureRow) => {
-        const isEnabled = enabledFeatures.includes(feature.key);
-        return (
-          <Popconfirm
-            title={`${isEnabled ? 'Disable' : 'Enable'} ${feature.name} for this committee?`}
-            onConfirm={() => handleToggle(feature, !isEnabled)}
-            okText="Yes"
-            cancelText="No"
-            disabled={pendingKey != null}
-          >
-            <Switch checked={isEnabled} loading={pendingKey === feature.key} />
-          </Popconfirm>
-        );
-      },
+      render: (_text: unknown, feature: FeatureRow) => (
+        <Switch
+          checked={draft.includes(feature.key)}
+          disabled={saving}
+          onChange={checked => handleToggle(feature, checked)}
+        />
+      ),
     },
   ];
 
   return (
     <div className="list-container">
-      {toggleError ? (
+      {saveError ? (
         <Alert
           type="error"
           showIcon
           closable
-          message={toggleError.title}
-          description={toggleError.description}
-          onClose={() => setToggleError(null)}
+          message={saveError.title}
+          description={
+            <div style={{ whiteSpace: 'pre-line' }}>{saveError.description}</div>
+          }
+          onClose={() => setSaveError(null)}
           style={{ marginBottom: 12 }}
         />
       ) : null}
@@ -230,6 +284,29 @@ const Features = ({ committeeId, enabledFeatures }: Props) => {
         pagination={false}
         locale={{ emptyText: 'No features available' }}
       />
+      <Space
+        size={8}
+        style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}
+      >
+        <Button
+          size="large"
+          icon={<CloseCircleOutlined />}
+          disabled={!hasChanges || saving}
+          onClick={() => setDraft(enabledFeatures)}
+        >
+          Cancel
+        </Button>
+        <Button
+          size="large"
+          type="primary"
+          icon={<SaveOutlined />}
+          disabled={!hasChanges}
+          loading={saving}
+          onClick={handleSave}
+        >
+          Save
+        </Button>
+      </Space>
     </div>
   );
 };

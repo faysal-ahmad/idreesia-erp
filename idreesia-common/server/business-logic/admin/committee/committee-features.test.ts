@@ -5,7 +5,7 @@ import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import Notifications from 'meteor/idreesia-common/server/collections/common/notifications';
 import { DiscussionsWorkspaces } from 'meteor/idreesia-common/server/collections/discussions';
 import { DmsWorkspaces } from 'meteor/idreesia-common/server/collections/dms';
-import Committees from 'meteor/idreesia-common/server/collections/hr/committees';
+import Committees from 'meteor/idreesia-common/server/collections/admin/committees';
 import { MeetingsWorkspaces } from 'meteor/idreesia-common/server/collections/meetings';
 import { PollsWorkspaces } from 'meteor/idreesia-common/server/collections/polls';
 import { ProjectsWorkspaces } from 'meteor/idreesia-common/server/collections/projects';

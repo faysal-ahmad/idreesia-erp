@@ -116,15 +116,15 @@ const CommitteeMembersPanel = ({
   emptyText = 'No members added yet',
 }: Props) => {
   const [removeCommitteeMember] = useMutation(REMOVE_COMMITTEE_MEMBER, {
-    refetchQueries: ['committeeById', 'committeeMembers', 'listAllCommittees'],
+    refetchQueries: ['committeeById', 'committeeMembers', 'locationCommittees'],
   });
   const [setMemberRole] = useMutation(SET_COMMITTEE_MEMBER_ROLE, {
-    refetchQueries: ['committeeById', 'committeeMembers', 'listAllCommittees'],
+    refetchQueries: ['committeeById', 'committeeMembers', 'locationCommittees'],
   });
   const [roleMemberId, setRoleMemberId] = useState<string | null>(null);
   const [setDiscussionAccess] = useMutation(
     SET_COMMITTEE_MEMBER_DISCUSSION_ACCESS,
-    { refetchQueries: ['committeeById', 'committeeMembers', 'listAllCommittees'], awaitRefetchQueries: true }
+    { refetchQueries: ['committeeById', 'committeeMembers', 'locationCommittees'], awaitRefetchQueries: true }
   );
   const [savingAccessId, setSavingAccessId] = useState<string | null>(null);
 

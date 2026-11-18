@@ -14,3 +14,9 @@ export {
   CommitteeMemberRoleValues,
 } from './committee-member-roles';
 export type { CommitteeMemberRole } from './committee-member-roles';
+export {
+  OrgLocationAllowedChildTypes,
+  OrgLocationTypes,
+  OrgLocationTypeValues,
+} from './org-location-types';
+export type { OrgLocationType } from './org-location-types';

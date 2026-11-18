@@ -24,7 +24,7 @@ const menuItems = [
   {
     key: 'organization',
     label: 'Organization Management',
-    children: [{ key: 'committees', label: 'Central Committees' }],
+    children: [{ key: 'org-locations', label: 'Organization Locations' }],
   },
   {
     key: 'locations',
@@ -97,10 +97,10 @@ const menuRouteMatches: MenuRouteMatch[] = [
     matches: (pathname) => isPath(pathname, paths.physicalStoresPath),
   },
   {
-    key: 'committees',
+    key: 'org-locations',
     openKeys: ['organization'],
-    subModuleName: SubModuleNames.committees,
-    matches: (pathname) => isPath(pathname, paths.committeesPath),
+    subModuleName: SubModuleNames.orgLocations,
+    matches: (pathname) => isPath(pathname, paths.orgLocationsPath),
   },
   {
     key: 'cities',
@@ -207,8 +207,8 @@ const Sidebar = ({ history }: SidebarProps) => {
         history.push(paths.physicalStoresPath);
         break;
 
-      case 'committees':
-        history.push(paths.committeesPath);
+      case 'org-locations':
+        history.push(paths.orgLocationsPath);
         break;
 
       case 'cities':

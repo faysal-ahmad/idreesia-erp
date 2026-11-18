@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as chat from 'meteor/idreesia-common/server/chat';
 import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { DiscussionsWorkspaces } from 'meteor/idreesia-common/server/collections/discussions';
-import Committees from 'meteor/idreesia-common/server/collections/hr/committees';
+import Committees from 'meteor/idreesia-common/server/collections/admin/committees';
 
 import { discussionsHandler } from './discussions';
 import type { CommitteeDoc } from './types';

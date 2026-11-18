@@ -1,5 +1,5 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { DataSource } from 'meteor/idreesia-common/constants';
 import {

@@ -1,6 +1,7 @@
 import { Migrations } from 'meteor/quave:migrations';
 
-import { Committees, Duties } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
+import { Duties } from 'meteor/idreesia-common/server/collections/hr';
 
 interface LegacyCommittee {
   _id: string;

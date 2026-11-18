@@ -153,7 +153,7 @@ A committee can have **Discussions** turned on from **HR → Committees → (com
 | Rocket.Chat group calls | `idreesia-common/server/chat/groups.ts` |
 | Per-user tokens | `idreesia-common/server/business-logic/common/chat-user-credentials.ts` |
 | Discussions logic (generic) | `idreesia-common/server/business-logic/discussions/` |
-| Committee feature on/off | `idreesia-common/server/business-logic/hr/committee/` |
+| Committee feature on/off | `idreesia-common/server/business-logic/admin/committee/` |
 | Workspaces GraphQL (access checks) | `idreesia-common/server/graphql-api/workspaces/discussions/` |
 | File routes | `idreesia-web/imports/startup/server/setup-workspace-discussion-endpoints.ts` |
 | Reusable UI + `DiscussionDataProvider` | `idreesia-web/imports/ui/modules/common/discussions/` |

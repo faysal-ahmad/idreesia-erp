@@ -70,6 +70,15 @@ export type KarkunFilter = {
   userAccount?: string | null | undefined;
 };
 
+export type OrgLocationMehfilDetailsInput = {
+  address?: string | null | undefined;
+  lcdAvailability?: boolean | null | undefined;
+  mehfilStartYear?: string | null | undefined;
+  otherMehfilDetails?: string | null | undefined;
+  tabAvailability?: boolean | null | undefined;
+  timingDetails?: string | null | undefined;
+};
+
 export type PersonFilter = {
   additionalInfo?: string | null | undefined;
   city?: string | null | undefined;
@@ -1656,7 +1665,7 @@ export type CommitteeByIdQueryVariables = Exact<{
 }>;
 
 
-export type CommitteeByIdQuery = { committeeById: { _id: string | null, name: string | null, color: string | null, description: string | null, features: Array<string | null> | null, memberCount: number | null, guestCount: number | null, observerCount: number | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, members: Array<{ karkunId: string | null } | null> | null } | null };
+export type CommitteeByIdQuery = { committeeById: { _id: string | null, name: string | null, color: string | null, description: string | null, locationId: string | null, features: Array<string | null> | null, memberCount: number | null, guestCount: number | null, observerCount: number | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, members: Array<{ karkunId: string | null } | null> | null } | null };
 
 export type AllCommitteeFeaturesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1688,27 +1697,6 @@ export type UpdateCommitteeMutationVariables = Exact<{
 
 
 export type UpdateCommitteeMutation = { updateCommittee: { _id: string | null, name: string | null } | null };
-
-export type ListAllCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ListAllCommitteesQuery = { allCommittees: Array<{ _id: string | null, name: string | null, color: string | null, memberCount: number | null, guestCount: number | null, observerCount: number | null, members: Array<{ karkunId: string | null, role: string | null, karkun: { _id: string | null, sharedData: { name: string | null } | null } | null } | null> | null } | null> | null };
-
-export type CreateCommitteeMutationVariables = Exact<{
-  name: string;
-  color?: string | null | undefined;
-  description?: string | null | undefined;
-}>;
-
-
-export type CreateCommitteeMutation = { createCommittee: { _id: string | null, name: string | null } | null };
-
-export type RemoveCommitteeMutationVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type RemoveCommitteeMutation = { removeCommittee: number | null };
 
 export type RemoveCommitteeMemberMutationVariables = Exact<{
   committeeId: string;
@@ -1745,6 +1733,14 @@ export type CommitteeMembersQueryVariables = Exact<{
 
 
 export type CommitteeMembersQuery = { committeeMembers: { totalResults: number | null, data: Array<{ karkunId: string | null, role: string | null, hasLoginAccount: boolean | null, hasChatAccount: boolean | null, hasDiscussionAccess: boolean | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null } | null };
+
+export type MoveCommitteeMutationVariables = Exact<{
+  committeeId: string;
+  locationId: string;
+}>;
+
+
+export type MoveCommitteeMutation = { moveCommittee: { _id: string | null, locationId: string | null } | null };
 
 export type DeletedPersonByIdQueryVariables = Exact<{
   _id: string;
@@ -1887,6 +1883,92 @@ export type UpdateJobDefinitionScheduleMutationVariables = Exact<{
 
 
 export type UpdateJobDefinitionScheduleMutation = { updateJobDefinitionSchedule: { _id: string | null, schedule: string | null, updatedAt: unknown } | null };
+
+export type AllOrgLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllOrgLocationsQuery = { allOrgLocations: Array<{ _id: string | null, name: string | null, type: string | null, parentId: string | null, allParentIds: Array<string | null> | null, observerKarkunIds: Array<string | null> | null, committees: Array<{ _id: string | null, name: string | null } | null> | null } | null> | null };
+
+export type CreateOrgLocationMutationVariables = Exact<{
+  name: string;
+  type: string;
+  parentId?: string | null | undefined;
+  mehfilDetails?: Types.OrgLocationMehfilDetailsInput | null | undefined;
+}>;
+
+
+export type CreateOrgLocationMutation = { createOrgLocation: { _id: string | null, name: string | null } | null };
+
+export type OrgLocationByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type OrgLocationByIdQuery = { orgLocationById: { _id: string | null, name: string | null, type: string | null, parentId: string | null, allParentIds: Array<string | null> | null, observerKarkunIds: Array<string | null> | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, mehfilDetails: { address: string | null, mehfilStartYear: string | null, timingDetails: string | null, lcdAvailability: boolean | null, tabAvailability: boolean | null, otherMehfilDetails: string | null } | null } | null };
+
+export type UpdateOrgLocationMutationVariables = Exact<{
+  _id: string;
+  name: string;
+  parentId?: string | null | undefined;
+  mehfilDetails?: Types.OrgLocationMehfilDetailsInput | null | undefined;
+}>;
+
+
+export type UpdateOrgLocationMutation = { updateOrgLocation: { _id: string | null, name: string | null } | null };
+
+export type LocationCommitteesQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type LocationCommitteesQuery = { committeesByLocationId: Array<{ _id: string | null, name: string | null, color: string | null, memberCount: number | null, guestCount: number | null, observerCount: number | null } | null> | null };
+
+export type CreateLocationCommitteeMutationVariables = Exact<{
+  name: string;
+  color?: string | null | undefined;
+  description?: string | null | undefined;
+  locationId: string;
+}>;
+
+
+export type CreateLocationCommitteeMutation = { createCommittee: { _id: string | null, name: string | null } | null };
+
+export type RemoveLocationCommitteeMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type RemoveLocationCommitteeMutation = { removeCommittee: number | null };
+
+export type LocationObserversQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type LocationObserversQuery = { orgLocationById: { _id: string | null, observers: Array<{ _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null> | null } | null };
+
+export type AddOrgLocationObserverMutationVariables = Exact<{
+  locationId: string;
+  karkunId: string;
+}>;
+
+
+export type AddOrgLocationObserverMutation = { addOrgLocationObserver: { _id: string | null } | null };
+
+export type RemoveOrgLocationObserverMutationVariables = Exact<{
+  locationId: string;
+  karkunId: string;
+}>;
+
+
+export type RemoveOrgLocationObserverMutation = { removeOrgLocationObserver: { _id: string | null } | null };
+
+export type HrLocationObserverKarkunSearchQueryVariables = Exact<{
+  filter?: Types.KarkunFilter | null | undefined;
+}>;
+
+
+export type HrLocationObserverKarkunSearchQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null> | null } | null };
 
 export type AllPeopleTagsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -4140,10 +4222,15 @@ export type WorkspaceEmptyDocumentTrashMutationVariables = Exact<{
 
 export type WorkspaceEmptyDocumentTrashMutation = { workspaceEmptyDocumentTrash: number | null };
 
+export type MyCommitteeLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyCommitteeLocationsQuery = { myCommitteeLocations: Array<{ _id: string | null, name: string | null, type: string | null, parentId: string | null } | null> | null };
+
 export type MyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, color: string | null, features: Array<string | null> | null } | null> | null };
+export type MyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, color: string | null, locationId: string | null, features: Array<string | null> | null } | null> | null };
 
 export type WorkspaceMeetingFieldsFragment = { _id: string | null, title: string | null, description: string | null, location: string | null, videoCall: boolean | null, startsAt: string | null, endsAt: string | null, status: string | null, cancelledAt: string | null, cancelledByName: string | null, cancellationReason: string | null, completedAt: string | null, completedByName: string | null, minutes: string | null, minutesUpdatedAt: string | null, minutesUpdatedByName: string | null, attachmentCount: number | null, openActionItemCount: number | null, myRsvpStatus: string | null, createdAt: string | null, createdByName: string | null, updatedAt: string | null, updatedByName: string | null, participants: Array<{ participantId: string | null, name: string | null, role: string | null, rsvpStatus: string | null, rsvpRespondedAt: string | null, rsvpComment: string | null, attendanceStatus: string | null, attendanceNote: string | null, attendanceMarkedAt: string | null, attendanceMarkedByName: string | null, isMe: boolean | null } | null> | null, agenda: Array<{ _id: string | null, title: string | null, description: string | null, durationMinutes: number | null, presenterId: string | null, presenterName: string | null } | null> | null };
 

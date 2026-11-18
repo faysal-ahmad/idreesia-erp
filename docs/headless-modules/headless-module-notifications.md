@@ -52,7 +52,7 @@ Three decisions shape everything below:
 | Notifications collection | `idreesia-common/server/collections/common/notifications.ts` |
 | Schema | `idreesia-common/server/schemas/common/notification.ts` |
 | Modules are registered here | `idreesia-common/server/headless/modules.ts` |
-| Which notifications a user sees (committees) | `idreesia-common/server/business-logic/hr/committee/notifications.ts` |
+| Which notifications a user sees (committees) | `idreesia-common/server/business-logic/admin/committee/notifications.ts` |
 | GraphQL API | `idreesia-common/server/graphql-api/workspaces/notifications/` |
 | Collection indexes | `idreesia-web/imports/startup/server/migrations/64-create-notifications-indexes.ts` |
 
@@ -173,9 +173,9 @@ All notifications go into one collection, `common-notifications`. A stored notif
 
 `markNotificationsRead(userId, scope, ids)` adds the user to `readBy` (`$addToSet`) on those notifications. It applies the same visibility rules, so a user cannot mark what they cannot see. `countUnreadNotifications(userId, scope)` counts the visible ones the user has not read.
 
-**Which committees and modules a user has.** Committee membership is by person, so the ERP goes from the user's `personId` to their committees: `getPersonNotificationScope(personId)` (`business-logic/hr/committee/workspaces.ts`) lists the `{ committeeId, module }` pairs of every committee the person belongs to, for the Discussions, DMS (Documents), Meetings, Polls, Projects and Members features that are enabled. A user with no person (for example `erp-admin`) has none and so sees no notifications.
+**Which committees and modules a user has.** Committee membership is by person, so the ERP goes from the user's `personId` to their committees: `getPersonNotificationScope(personId)` (`business-logic/admin/committee/workspaces.ts`) lists the `{ committeeId, module }` pairs of every committee the person belongs to, for the Discussions, DMS (Documents), Meetings, Polls, Projects and Members features that are enabled. A user with no person (for example `erp-admin`) has none and so sees no notifications.
 
-`business-logic/hr/committee/notifications.ts` ties these together for the logged-in user (`getMyNotifications`, `getMyNotificationCounts`, `markMyNotificationsRead`).
+`business-logic/admin/committee/notifications.ts` ties these together for the logged-in user (`getMyNotifications`, `getMyNotificationCounts`, `markMyNotificationsRead`).
 
 ## The GraphQL API
 
@@ -250,4 +250,4 @@ To be filled in as each module is reviewed. For each module this section should 
 
 A committee feature that is not a headless module has no workspace to address. It publishes with `createCommitteeNotifier(name)`, whose `publish` takes a `committeeId` instead of a `workspaceId`; the stored notification is the same, and everything else (ids, `recipientUserId`, `actorUserId`, `expiresAt`, read state) works as for a module. A user sees them when they belong to the committee and the feature is enabled.
 
-The first is **Members** (module `members`, `business-logic/hr/committee/members-notifications.ts`): a person was added to or removed from a committee, or became or stopped being a coordinator. One notification is stored per current member (the affected person reads "You were added...", the others read the person's name); the person who made the change is not notified, and a removed person is not told.
+The first is **Members** (module `members`, `business-logic/admin/committee/members-notifications.ts`): a person was added to or removed from a committee, or became or stopped being a coordinator. One notification is stored per current member (the affected person reads "You were added...", the others read the person's name); the person who made the change is not notified, and a removed person is not told.

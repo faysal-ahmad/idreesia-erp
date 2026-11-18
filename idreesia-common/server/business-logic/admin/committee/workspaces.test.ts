@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import Committees from 'meteor/idreesia-common/server/collections/hr/committees';
+import Committees from 'meteor/idreesia-common/server/collections/admin/committees';
 
 import { getPersonNotificationScope } from './workspaces';
 

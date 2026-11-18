@@ -24,3 +24,11 @@ export {
   searchSecurityLogs,
   type SearchSecurityLogsParams,
 } from './security-logs';
+export {
+  addOrgLocationObserver,
+  assertLocationExists,
+  createOrgLocation,
+  removeOrgLocationObserver,
+  updateOrgLocation,
+  type OrgLocationValues,
+} from './org-locations';

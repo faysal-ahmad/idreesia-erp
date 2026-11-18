@@ -46,6 +46,8 @@ import JobDefinitionResolvers from './admin/job-definition/resolvers';
 
 import PeopleTagSchema from './admin/people-tag/people-tag';
 import PeopleTagResolvers from './admin/people-tag/resolvers';
+import OrgLocationSchema from './admin/org-location/org-location';
+import OrgLocationResolvers from './admin/org-location/resolvers';
 
 import DeletedPeopleSchema from './admin/deleted-people/deleted-people';
 import DeletedPeopleResolvers from './admin/deleted-people/resolvers';
@@ -226,6 +228,7 @@ const typeDefs = [
   ScheduledJobSchema,
   JobDefinitionSchema,
   PeopleTagSchema,
+  OrgLocationSchema,
   DeletedPeopleSchema,
   DuplicatePeopleSchema,
   AdminSecurityLogSchema,
@@ -296,6 +299,7 @@ const resolvers = merge(
   ScheduledJobResolvers,
   JobDefinitionResolvers,
   PeopleTagResolvers,
+  OrgLocationResolvers,
   DeletedPeopleResolvers,
   DuplicatePeopleResolvers,
   AdminSecurityLogResolvers,

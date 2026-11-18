@@ -48,6 +48,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.addOrgLocationObserver": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.addPurchaseFormAttachment": [
     {
       "args": {
@@ -347,6 +357,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createOrgLocation": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -715,6 +735,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkInstanceAccess",
     },
   ],
+  "Mutation.moveCommittee": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.promoteHrKarkun": [
     {
       "args": {
@@ -910,6 +940,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeOrgLocationObserver": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1482,6 +1522,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateOrgLocation": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -2551,17 +2601,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.allCommittees": [
-    {
-      "args": {
-        "permissions": [
-          "ADMIN_VIEW_COMMITTEES",
-          "ADMIN_MANAGE_COMMITTEES",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Query.allDutyLocations": [
     {
       "args": {
@@ -2627,6 +2666,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "SECURITY_VIEW_MEHFILS",
           "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allOrgLocations": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -2698,6 +2747,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Query.committeeMembers": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_COMMITTEES",
+          "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.committeesByLocationId": [
     {
       "args": {
         "permissions": [
@@ -3077,6 +3137,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "SECURITY_VIEW_MEHFILS",
           "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.orgLocationById": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",

@@ -41,6 +41,8 @@ enum Permission {
   ADMIN_VIEW_SECURITY_LOGS
   ADMIN_VIEW_COMMITTEES
   ADMIN_MANAGE_COMMITTEES
+  ADMIN_VIEW_ORG_LOCATIONS
+  ADMIN_MANAGE_ORG_LOCATIONS
 
   HR_MANAGE_KARKUNS_SETUP_DATA
   HR_DELETE_DATA
@@ -196,6 +198,76 @@ extend type Mutation {
 
   setJobDefinitionEnabled(_id: String!, enabled: Boolean!): JobDefinitionType
     @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
+}
+
+type OrgLocationMehfilDetailsType {
+  address: String
+  mehfilStartYear: String
+  timingDetails: String
+  lcdAvailability: Boolean
+  tabAvailability: Boolean
+  otherMehfilDetails: String
+}
+
+type OrgLocationType {
+  _id: String
+  name: String
+  type: String
+  parentId: String
+  allParentIds: [String]
+  mehfilDetails: OrgLocationMehfilDetailsType
+  parent: OrgLocationType
+  # The committees made under this location.
+  committees: [CommitteeBasicType]
+  # Karkuns observing this location.
+  observerKarkunIds: [String]
+  observers: [PersonType]
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+input OrgLocationMehfilDetailsInput {
+  address: String
+  mehfilStartYear: String
+  timingDetails: String
+  lcdAvailability: Boolean
+  tabAvailability: Boolean
+  otherMehfilDetails: String
+}
+
+extend type Query {
+  allOrgLocations: [OrgLocationType]
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+
+  orgLocationById(_id: String!): OrgLocationType
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+}
+
+extend type Mutation {
+  createOrgLocation(
+    name: String!
+    type: String!
+    parentId: String
+    mehfilDetails: OrgLocationMehfilDetailsInput
+  ): OrgLocationType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  updateOrgLocation(
+    _id: String!
+    name: String!
+    parentId: String
+    mehfilDetails: OrgLocationMehfilDetailsInput
+  ): OrgLocationType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  addOrgLocationObserver(locationId: String!, karkunId: String!): OrgLocationType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  removeOrgLocationObserver(locationId: String!, karkunId: String!): OrgLocationType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 }
 
 type PeopleTagType {
@@ -1921,6 +1993,8 @@ type CommitteeType {
   guestCount: Int
   observerCount: Int
   features: [String]
+  # The location this committee belongs to.
+  locationId: String
 
   createdAt: String
   createdBy: String
@@ -1929,9 +2003,10 @@ type CommitteeType {
 }
 
 extend type Query {
-  allCommittees: [CommitteeType]
-    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
   committeeById(id: String!): CommitteeType
+    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
+  # The committees made under a location.
+  committeesByLocationId(locationId: String!): [CommitteeType]
     @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
   # One page of the members with any of the given roles, coordinators first
   # and then by name.
@@ -1947,9 +2022,13 @@ extend type Query {
 }
 
 extend type Mutation {
-  createCommittee(name: String!, color: String, description: String): CommitteeType
+  # locationId is the location the committee belongs to.
+  createCommittee(name: String!, color: String, description: String, locationId: String!): CommitteeType
     @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   updateCommittee(id: String!, name: String!, color: String, description: String): CommitteeType
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
+  # Changes only the committee's location; nothing else about it changes.
+  moveCommittee(committeeId: String!, locationId: String!): CommitteeType
     @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   removeCommittee(_id: String!): Int
     @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
@@ -2838,6 +2917,8 @@ type WorkspaceCommitteeType {
   name: String
   color: String
   description: String
+  # The location the committee belongs to.
+  locationId: String
   # True when the logged-in user can manage this committee's members.
   canManageMembers: Boolean
   # Keys of the features enabled for this committee (e.g. 'discussions').
@@ -2847,6 +2928,14 @@ type WorkspaceCommitteeType {
   memberCount: Int
   guestCount: Int
   observerCount: Int
+}
+
+type WorkspaceLocationType {
+  _id: String
+  name: String
+  # root, country, group, city or mehfil.
+  type: String
+  parentId: String
 }
 
 type WorkspaceKarkunType {
@@ -2867,6 +2956,10 @@ type PagedWorkspaceKarkunType {
 extend type Query {
   # Committees the logged-in user is currently a member of.
   myCommittees: [WorkspaceCommitteeType]
+
+  # The locations of the user's committees, plus all of their ancestors, so
+  # the committees can be shown in the location hierarchy.
+  myCommitteeLocations: [WorkspaceLocationType]
 
   # A committee the logged-in user is on, in any role. Refused otherwise.
   workspaceCommitteeById(committeeId: String!): WorkspaceCommitteeType

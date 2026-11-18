@@ -1,3 +1,4 @@
+import { locationCommitteesDataLoader } from './admin';
 import {
   attachmentsDataLoader,
   peopleDataLoader,
@@ -15,6 +16,9 @@ import { citiesDataLoader, cityMehfilsDataLoader } from './outstation';
 
 export function getDataLoaders() {
   return {
+    admin: {
+      locationCommittees: locationCommitteesDataLoader(),
+    },
     common: {
       attachments: attachmentsDataLoader(),
       people: peopleDataLoader(),

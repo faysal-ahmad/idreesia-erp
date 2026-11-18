@@ -5,7 +5,7 @@ import {
   type CommitteeMemberRole,
 } from 'meteor/idreesia-common/constants/organization';
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
 import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
 
 import { runMemberHooks } from './committee-features';

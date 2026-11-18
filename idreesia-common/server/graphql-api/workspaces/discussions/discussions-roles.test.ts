@@ -3,7 +3,7 @@ import { getDirective } from '@graphql-tools/utils';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
 // access.ts only needs the roles here, not the chat service.
-vi.mock('meteor/idreesia-common/server/business-logic/hr/committee', () => ({
+vi.mock('meteor/idreesia-common/server/business-logic/admin/committee', () => ({
   getCommitteeChatGroupId: vi.fn(),
 }));
 

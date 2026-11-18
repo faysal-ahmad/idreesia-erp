@@ -19,7 +19,11 @@ import { JobsList, JobLogsList, JobDefinitionsList } from './jobs';
 import { PeopleTagsList } from './people-tags';
 import { DeletedPeopleList, DeletedPersonEditForm } from './deleted-people';
 import { DuplicatePeopleList, DuplicatePersonEditForm } from './duplicate-people';
-import { CommitteesEditForm, CommitteesList } from './committees';
+import { CommitteesEditForm } from './committees';
+import {
+  OrgLocationsEditForm,
+  OrgLocationsList,
+} from './org-locations';
 
 const Router = () => (
   <Switch>
@@ -54,10 +58,14 @@ const Router = () => (
     <Route path={paths.peopleTagsPath} component={PeopleTagsList} />
 
     <Route
-      path={paths.committeesEditFormPath()}
+      path={paths.orgLocationCommitteeEditFormPath()}
       component={CommitteesEditForm}
     />
-    <Route path={paths.committeesPath} component={CommitteesList} />
+    <Route
+      path={paths.orgLocationsEditFormPath()}
+      component={OrgLocationsEditForm}
+    />
+    <Route path={paths.orgLocationsPath} component={OrgLocationsList} />
 
     <Route
       path={paths.deletedPersonEditFormPath()}

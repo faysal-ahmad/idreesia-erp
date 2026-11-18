@@ -146,6 +146,7 @@ export type CommitteeType = {
   description?: Maybe<Scalars['String']['output']>;
   features?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   guestCount?: Maybe<Scalars['Int']['output']>;
+  locationId?: Maybe<Scalars['String']['output']>;
   memberCount?: Maybe<Scalars['Int']['output']>;
   members?: Maybe<Array<Maybe<CommitteeMemberType>>>;
   name?: Maybe<Scalars['String']['output']>;
@@ -667,6 +668,7 @@ export type Mutation = {
   addHrKarkunAttachment?: Maybe<PersonType>;
   addIssuanceFormAttachment?: Maybe<IssuanceForm>;
   addMehfilKarkun?: Maybe<MehfilKarkunType>;
+  addOrgLocationObserver?: Maybe<OrgLocationType>;
   addPurchaseFormAttachment?: Maybe<PurchaseForm>;
   addSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
   addTeamCoordinator?: Maybe<TeamType>;
@@ -693,6 +695,7 @@ export type Mutation = {
   createMehfil?: Maybe<MehfilType>;
   createMissingSecurityServerAlertThumbnails?: Maybe<Scalars['Int']['output']>;
   createMissingSecurityServerProfileThumbnails?: Maybe<Scalars['Int']['output']>;
+  createOrgLocation?: Maybe<OrgLocationType>;
   createPeopleTag?: Maybe<PeopleTagType>;
   createPhysicalStore?: Maybe<PhysicalStore>;
   createPurchaseForm?: Maybe<PurchaseForm>;
@@ -729,6 +732,7 @@ export type Mutation = {
   importSecurityVisitorsCsvData?: Maybe<Scalars['String']['output']>;
   markNotificationsRead: Scalars['Boolean']['output'];
   mergeStockItems?: Maybe<StockItem>;
+  moveCommittee?: Maybe<CommitteeType>;
   promoteHrKarkun?: Maybe<PersonType>;
   recalculateStockLevels?: Maybe<Array<Maybe<StockItem>>>;
   registerUser?: Maybe<Scalars['Int']['output']>;
@@ -747,6 +751,7 @@ export type Mutation = {
   removeLocation?: Maybe<Scalars['Int']['output']>;
   removeMehfil?: Maybe<Scalars['Int']['output']>;
   removeMehfilKarkun?: Maybe<Scalars['Int']['output']>;
+  removeOrgLocationObserver?: Maybe<OrgLocationType>;
   removePurchaseFormAttachment?: Maybe<PurchaseForm>;
   removePurchaseForms?: Maybe<Scalars['Int']['output']>;
   removeSecurityMehfilDuty?: Maybe<Scalars['Int']['output']>;
@@ -803,6 +808,7 @@ export type Mutation = {
   updateLocation?: Maybe<Location>;
   updateLoginTime?: Maybe<Scalars['Int']['output']>;
   updateMehfil?: Maybe<MehfilType>;
+  updateOrgLocation?: Maybe<OrgLocationType>;
   updatePeopleTag?: Maybe<PeopleTagType>;
   updatePhysicalStore?: Maybe<PhysicalStore>;
   updatePurchaseForm?: Maybe<PurchaseForm>;
@@ -931,6 +937,12 @@ export type MutationAddMehfilKarkunArgs = {
 };
 
 
+export type MutationAddOrgLocationObserverArgs = {
+  karkunId: Scalars['String']['input'];
+  locationId: Scalars['String']['input'];
+};
+
+
 export type MutationAddPurchaseFormAttachmentArgs = {
   _id: Scalars['String']['input'];
   attachmentId: Scalars['String']['input'];
@@ -1025,6 +1037,7 @@ export type MutationCreateCityMehfilArgs = {
 export type MutationCreateCommitteeArgs = {
   color?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  locationId: Scalars['String']['input'];
   name: Scalars['String']['input'];
 };
 
@@ -1106,6 +1119,14 @@ export type MutationCreateLocationArgs = {
 export type MutationCreateMehfilArgs = {
   mehfilDate: Scalars['String']['input'];
   name: Scalars['String']['input'];
+};
+
+
+export type MutationCreateOrgLocationArgs = {
+  mehfilDetails?: InputMaybe<OrgLocationMehfilDetailsInput>;
+  name: Scalars['String']['input'];
+  parentId?: InputMaybe<Scalars['String']['input']>;
+  type: Scalars['String']['input'];
 };
 
 
@@ -1364,6 +1385,12 @@ export type MutationMergeStockItemsArgs = {
 };
 
 
+export type MutationMoveCommitteeArgs = {
+  committeeId: Scalars['String']['input'];
+  locationId: Scalars['String']['input'];
+};
+
+
 export type MutationPromoteHrKarkunArgs = {
   _id: Scalars['String']['input'];
 };
@@ -1460,6 +1487,12 @@ export type MutationRemoveMehfilArgs = {
 
 export type MutationRemoveMehfilKarkunArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveOrgLocationObserverArgs = {
+  karkunId: Scalars['String']['input'];
+  locationId: Scalars['String']['input'];
 };
 
 
@@ -1836,6 +1869,14 @@ export type MutationUpdateMehfilArgs = {
   _id: Scalars['String']['input'];
   mehfilDate?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateOrgLocationArgs = {
+  _id: Scalars['String']['input'];
+  mehfilDetails?: InputMaybe<OrgLocationMehfilDetailsInput>;
+  name: Scalars['String']['input'];
+  parentId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2590,6 +2631,43 @@ export type NotificationType = {
   updatedAt?: Maybe<Scalars['String']['output']>;
 };
 
+export type OrgLocationMehfilDetailsInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  lcdAvailability?: InputMaybe<Scalars['Boolean']['input']>;
+  mehfilStartYear?: InputMaybe<Scalars['String']['input']>;
+  otherMehfilDetails?: InputMaybe<Scalars['String']['input']>;
+  tabAvailability?: InputMaybe<Scalars['Boolean']['input']>;
+  timingDetails?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type OrgLocationMehfilDetailsType = {
+  __typename?: 'OrgLocationMehfilDetailsType';
+  address?: Maybe<Scalars['String']['output']>;
+  lcdAvailability?: Maybe<Scalars['Boolean']['output']>;
+  mehfilStartYear?: Maybe<Scalars['String']['output']>;
+  otherMehfilDetails?: Maybe<Scalars['String']['output']>;
+  tabAvailability?: Maybe<Scalars['Boolean']['output']>;
+  timingDetails?: Maybe<Scalars['String']['output']>;
+};
+
+export type OrgLocationType = {
+  __typename?: 'OrgLocationType';
+  _id?: Maybe<Scalars['String']['output']>;
+  allParentIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  committees?: Maybe<Array<Maybe<CommitteeBasicType>>>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  mehfilDetails?: Maybe<OrgLocationMehfilDetailsType>;
+  name?: Maybe<Scalars['String']['output']>;
+  observerKarkunIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  observers?: Maybe<Array<Maybe<PersonType>>>;
+  parent?: Maybe<OrgLocationType>;
+  parentId?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
 export type PagedAuditLogType = {
   __typename?: 'PagedAuditLogType';
   data?: Maybe<Array<Maybe<AuditLogType>>>;
@@ -2790,11 +2868,13 @@ export enum Permission {
   AdminManageCommittees = 'ADMIN_MANAGE_COMMITTEES',
   AdminManageDeletedPeople = 'ADMIN_MANAGE_DELETED_PEOPLE',
   AdminManageDuplicatePeople = 'ADMIN_MANAGE_DUPLICATE_PEOPLE',
+  AdminManageOrgLocations = 'ADMIN_MANAGE_ORG_LOCATIONS',
   AdminManagePeopleTags = 'ADMIN_MANAGE_PEOPLE_TAGS',
   AdminManagePhysicalStores = 'ADMIN_MANAGE_PHYSICAL_STORES',
   AdminManageScheduledJobs = 'ADMIN_MANAGE_SCHEDULED_JOBS',
   AdminManageUsersAndGroups = 'ADMIN_MANAGE_USERS_AND_GROUPS',
   AdminViewCommittees = 'ADMIN_VIEW_COMMITTEES',
+  AdminViewOrgLocations = 'ADMIN_VIEW_ORG_LOCATIONS',
   AdminViewSecurityLogs = 'ADMIN_VIEW_SECURITY_LOGS',
   AdminViewUsersAndGroups = 'ADMIN_VIEW_USERS_AND_GROUPS',
   CorrespondenceInboxReplyToMessages = 'CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES',
@@ -3003,13 +3083,13 @@ export type Query = {
   allCities?: Maybe<Array<Maybe<CityType>>>;
   allCityMehfils?: Maybe<Array<Maybe<CityMehfilType>>>;
   allCommitteeFeatures?: Maybe<Array<Maybe<CommitteeFeatureType>>>;
-  allCommittees?: Maybe<Array<Maybe<CommitteeType>>>;
   allDutyLocations?: Maybe<Array<Maybe<DutyLocationType>>>;
   allDutyShifts?: Maybe<Array<Maybe<DutyShiftType>>>;
   allJobDefinitions?: Maybe<Array<Maybe<JobDefinitionType>>>;
   allJobs?: Maybe<Array<Maybe<JobType>>>;
   allMSDuties?: Maybe<Array<Maybe<DutyType>>>;
   allMehfils?: Maybe<Array<Maybe<MehfilType>>>;
+  allOrgLocations?: Maybe<Array<Maybe<OrgLocationType>>>;
   allPeopleTags?: Maybe<Array<Maybe<PeopleTagType>>>;
   allSecurityMehfilDuties?: Maybe<Array<Maybe<MehfilDutyType>>>;
   allSecurityMehfilLangarDishes?: Maybe<Array<Maybe<MehfilLangarDishType>>>;
@@ -3020,6 +3100,7 @@ export type Query = {
   cityMehfilsByCityId?: Maybe<Array<Maybe<CityMehfilType>>>;
   committeeById?: Maybe<CommitteeType>;
   committeeMembers?: Maybe<CommitteeMembersPageType>;
+  committeesByLocationId?: Maybe<Array<Maybe<CommitteeType>>>;
   currentUser?: Maybe<UserType>;
   deletedPersonById?: Maybe<PersonType>;
   deletedPersonRelationCounts?: Maybe<Array<PersonRelationCounts>>;
@@ -3053,9 +3134,11 @@ export type Query = {
   mehfilKarkunByBarcodeId?: Maybe<MehfilKarkunType>;
   mehfilKarkunsByIds?: Maybe<Array<Maybe<MehfilKarkunType>>>;
   mehfilKarkunsByMehfilId?: Maybe<Array<Maybe<MehfilKarkunType>>>;
+  myCommitteeLocations?: Maybe<Array<Maybe<WorkspaceLocationType>>>;
   myCommittees?: Maybe<Array<Maybe<WorkspaceCommitteeType>>>;
   myNotificationCounts?: Maybe<Array<Maybe<NotificationCountType>>>;
   myNotifications?: Maybe<Array<Maybe<NotificationType>>>;
+  orgLocationById?: Maybe<OrgLocationType>;
   pagedCities?: Maybe<PagedCityType>;
   pagedDeletedPeople?: Maybe<PagedPeopleType>;
   pagedHrAuditLogs?: Maybe<PagedAuditLogType>;
@@ -3191,6 +3274,11 @@ export type QueryCommitteeMembersArgs = {
   pageIndex: Scalars['Int']['input'];
   pageSize: Scalars['Int']['input'];
   roles: Array<Scalars['String']['input']>;
+};
+
+
+export type QueryCommitteesByLocationIdArgs = {
+  locationId: Scalars['String']['input'];
 };
 
 
@@ -3335,6 +3423,11 @@ export type QueryMyNotificationsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   module?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryOrgLocationByIdArgs = {
+  _id: Scalars['String']['input'];
 };
 
 
@@ -4400,6 +4493,7 @@ export type WorkspaceCommitteeType = {
   description?: Maybe<Scalars['String']['output']>;
   features?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   guestCount?: Maybe<Scalars['Int']['output']>;
+  locationId?: Maybe<Scalars['String']['output']>;
   memberCount?: Maybe<Scalars['Int']['output']>;
   members?: Maybe<Array<Maybe<WorkspaceCommitteeMemberType>>>;
   name?: Maybe<Scalars['String']['output']>;
@@ -4517,6 +4611,14 @@ export type WorkspaceKarkunType = {
   imageUrl?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   parentName?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkspaceLocationType = {
+  __typename?: 'WorkspaceLocationType';
+  _id?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  parentId?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
 };
 
 export type WorkspaceMeetingActionItemInput = {

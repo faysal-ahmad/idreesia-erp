@@ -1,4 +1,7 @@
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import {
+  Committees,
+  OrgLocations,
+} from 'meteor/idreesia-common/server/collections/admin';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import {
@@ -9,7 +12,7 @@ import {
   setCommitteeMemberCoordinator,
   setCommitteeMemberDiscussionAccess,
   type CommitteeDoc,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 import {
   searchPeople,
 } from 'meteor/idreesia-common/server/business-logic/common';
@@ -110,6 +113,31 @@ const resolvers: ResolverMap = {
 
   Query: {
     myCommittees: async (obj, args, { user }) => getUserCommittees(user),
+
+    myCommitteeLocations: async (obj, args, { user }) => {
+      const committees = await getUserCommittees(user);
+      const locationIds = Array.from(
+        new Set(
+          committees
+            .map(committee => (committee as { locationId?: string }).locationId)
+            .filter((id): id is string => !!id)
+        )
+      );
+      if (locationIds.length === 0) return [];
+
+      const locations = await OrgLocations.find({
+        _id: { $in: locationIds },
+      }).fetchAsync();
+      const allIds = new Set<string>(locationIds);
+      locations.forEach(location =>
+        (location.allParentIds ?? []).forEach(id => allIds.add(id))
+      );
+
+      return OrgLocations.find(
+        { _id: { $in: Array.from(allIds) } },
+        { sort: { name: 1 } }
+      ).fetchAsync();
+    },
 
     workspaceCommitteeById: async (obj, { committeeId }, context) =>
       getCommitteeAccess(context, committeeId).committee,

@@ -27,6 +27,8 @@ type WorkspaceCommitteeType {
   name: String
   color: String
   description: String
+  # The location the committee belongs to.
+  locationId: String
   # True when the logged-in user can manage this committee's members.
   canManageMembers: Boolean
   # Keys of the features enabled for this committee (e.g. 'discussions').
@@ -36,6 +38,14 @@ type WorkspaceCommitteeType {
   memberCount: Int
   guestCount: Int
   observerCount: Int
+}
+
+type WorkspaceLocationType {
+  _id: String
+  name: String
+  # root, country, group, city or mehfil.
+  type: String
+  parentId: String
 }
 
 type WorkspaceKarkunType {
@@ -56,6 +66,10 @@ type PagedWorkspaceKarkunType {
 extend type Query {
   # Committees the logged-in user is currently a member of.
   myCommittees: [WorkspaceCommitteeType]
+
+  # The locations of the user's committees, plus all of their ancestors, so
+  # the committees can be shown in the location hierarchy.
+  myCommitteeLocations: [WorkspaceLocationType]
 
   # A committee the logged-in user is on, in any role. Refused otherwise.
   workspaceCommitteeById(committeeId: String!): WorkspaceCommitteeType

@@ -294,9 +294,9 @@ The Workspaces module uses meetings through the **Meetings** committee feature (
 
 | Piece | Location |
 |---|---|
-| Feature handler, workspace lookup | `idreesia-common/server/business-logic/hr/committee/meetings.ts` |
-| View mapping (names, timestamps as strings) | `.../hr/committee/meetings-view.ts` |
-| Form input mapping | `.../hr/committee/meetings-actions.ts` |
+| Feature handler, workspace lookup | `idreesia-common/server/business-logic/admin/committee/meetings.ts` |
+| View mapping (names, timestamps as strings) | `.../admin/committee/meetings-view.ts` |
+| Form input mapping | `.../admin/committee/meetings-actions.ts` |
 | GraphQL schema, access checks, resolvers | `idreesia-common/server/graphql-api/workspaces/meetings/` |
 | Reusable UI (no committee knowledge; driven by a `MeetingsDataProvider`) | `idreesia-web/imports/ui/modules/common/meetings/` |
 | Committee pages and data provider | `idreesia-web/imports/ui/modules/workspaces/meetings/` |

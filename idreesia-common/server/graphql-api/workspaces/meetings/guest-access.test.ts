@@ -2,12 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // The committee index reaches native image code that unit tests cannot load.
 // These tests need only the meetings files of it.
-vi.mock('meteor/idreesia-common/server/business-logic/hr/committee', async () => ({
+vi.mock('meteor/idreesia-common/server/business-logic/admin/committee', async () => ({
   ...(await import(
-    'meteor/idreesia-common/server/business-logic/hr/committee/meetings'
+    'meteor/idreesia-common/server/business-logic/admin/committee/meetings'
   )),
   ...(await import(
-    'meteor/idreesia-common/server/business-logic/hr/committee/meetings-view'
+    'meteor/idreesia-common/server/business-logic/admin/committee/meetings-view'
   )),
 }));
 
@@ -20,7 +20,7 @@ import {
   listCommitteeActionItems,
   listCommitteeMeetings,
   type CommitteeDoc,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import {
   assertActionItemInWorkspace,

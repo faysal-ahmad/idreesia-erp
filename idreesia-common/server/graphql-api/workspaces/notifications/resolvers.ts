@@ -2,7 +2,7 @@ import {
   getMyNotificationCounts,
   getMyNotifications,
   markMyNotificationsRead,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee/notifications';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee/notifications';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {

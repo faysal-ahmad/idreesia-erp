@@ -342,8 +342,8 @@ The Workspaces module uses the DMS through the **Documents** committee feature (
 
 | Piece | Location |
 |---|---|
-| Feature handler, workspace lookup | `idreesia-common/server/business-logic/hr/committee/documents.ts` |
-| Library view (names, timestamps as strings) | `.../hr/committee/documents-library.ts` |
+| Feature handler, workspace lookup | `idreesia-common/server/business-logic/admin/committee/documents.ts` |
+| Library view (names, timestamps as strings) | `.../admin/committee/documents-library.ts` |
 | GraphQL schema, access checks, resolvers | `idreesia-common/server/graphql-api/workspaces/documents/` |
 | Reusable UI (no committee knowledge; driven by a `DocumentsDataProvider`) | `idreesia-web/imports/ui/modules/common/documents/` |
 | Committee pages and data provider | `idreesia-web/imports/ui/modules/workspaces/documents/` |

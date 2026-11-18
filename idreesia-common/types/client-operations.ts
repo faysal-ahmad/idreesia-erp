@@ -1808,6 +1808,43 @@ export type DuplicatePhoneNumbersQueryVariables = Exact<{ [key: string]: never; 
 
 export type DuplicatePhoneNumbersQuery = { duplicatePhoneNumbers: Array<{ value: string | null, count: number | null, people: Array<{ _id: string | null, name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, updatedAt: string | null } | null> | null } | null> | null };
 
+export type PagedFreeFormCitiesQueryVariables = Exact<{
+  pageIndex: number;
+  pageSize: number;
+}>;
+
+
+export type PagedFreeFormCitiesQuery = { pagedFreeFormCities: { totalResults: number | null, data: Array<{ name: string | null, count: number | null, locationId: string | null, locationName: string | null } | null> | null } | null };
+
+export type PagedFreeFormCountriesQueryVariables = Exact<{
+  pageIndex: number;
+  pageSize: number;
+}>;
+
+
+export type PagedFreeFormCountriesQuery = { pagedFreeFormCountries: { totalResults: number | null, data: Array<{ name: string | null, count: number | null } | null> | null } | null };
+
+export type RenameFreeFormCityMutationVariables = Exact<{
+  existingSpelling: string;
+  newSpelling: string;
+}>;
+
+
+export type RenameFreeFormCityMutation = { renameFreeFormCity: number | null };
+
+export type RenameFreeFormCountryMutationVariables = Exact<{
+  existingSpelling: string;
+  newSpelling: string;
+}>;
+
+
+export type RenameFreeFormCountryMutation = { renameFreeFormCountry: number | null };
+
+export type UpdateCityLocationMappingsMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UpdateCityLocationMappingsMutation = { updateCityLocationMappings: number | null };
+
 export type AllJobDefinitionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3329,14 +3366,6 @@ export type UpdateSecurityVisitorMutationVariables = Exact<{
 
 
 export type UpdateSecurityVisitorMutation = { updateSecurityVisitor: { _id: string | null } | null };
-
-export type FixCitySpellingMutationVariables = Exact<{
-  existingSpelling: string;
-  newSpelling: string;
-}>;
-
-
-export type FixCitySpellingMutation = { fixCitySpelling: number | null };
 
 export type FixNameSpellingMutationVariables = Exact<{
   existingSpelling: string;

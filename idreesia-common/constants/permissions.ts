@@ -8,6 +8,7 @@ const Permissions = {
   ADMIN_MANAGE_PHYSICAL_STORES: 'admin-manage-physical-stores',
   ADMIN_MANAGE_CITIES: 'admin-manage-cities',
   ADMIN_MANAGE_PEOPLE_TAGS: 'admin-manage-people-tags',
+  ADMIN_MANAGE_FREE_FORM_DATA: 'admin-manage-free-form-data',
 
   ADMIN_MANAGE_SCHEDULED_JOBS: 'admin-manage-scheduled-jobs',
   ADMIN_MANAGE_DELETED_PEOPLE: 'admin-manage-deleted-people',

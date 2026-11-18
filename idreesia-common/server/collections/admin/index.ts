@@ -18,3 +18,7 @@ export {
   type OrgLocationMehfilDetails,
 } from './org-locations';
 export { default as Committees } from './committees';
+export {
+  default as CityLocationMappings,
+  type CityLocationMappingDocument,
+} from './city-location-mappings';

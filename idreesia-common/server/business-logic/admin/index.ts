@@ -40,3 +40,9 @@ export {
   removeOrgLocationDutiesAttendanceUser,
   updateOrgLocationDutiesAttendanceUserPermissions,
 } from './org-location-features';
+export {
+  pagedFreeFormCities,
+  updateCityLocationMappings,
+  type FreeFormCitiesPage,
+  type FreeFormCityValue,
+} from './city-location-mappings';

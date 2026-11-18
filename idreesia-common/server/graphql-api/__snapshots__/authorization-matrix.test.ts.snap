@@ -709,16 +709,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.fixCitySpelling": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_VISITORS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Mutation.fixNameSpelling": [
     {
       "args": {
@@ -1156,6 +1146,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkCommitteeAccess",
     },
   ],
+  "Mutation.renameFreeFormCity": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_FREE_FORM_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.renameFreeFormCountry": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_FREE_FORM_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.resetJobDefinitionSchedule": [
     {
       "args": {
@@ -1423,6 +1433,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_MANAGE_CITIES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateCityLocationMappings": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_FREE_FORM_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3311,6 +3331,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_MANAGE_DELETED_PEOPLE",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedFreeFormCities": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_FREE_FORM_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedFreeFormCountries": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_FREE_FORM_DATA",
         ],
       },
       "directive": "checkPermissions",

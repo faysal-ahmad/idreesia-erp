@@ -128,6 +128,8 @@ export type ResolversTypes = ResolversObject<{
   EmailAddress: ResolverTypeWrapper<Types.Scalars['EmailAddress']['output']>;
   FaceVectorResultType: ResolverTypeWrapper<Types.FaceVectorResultType>;
   Float: ResolverTypeWrapper<Types.Scalars['Float']['output']>;
+  FreeFormCityType: ResolverTypeWrapper<Types.FreeFormCityType>;
+  FreeFormValueType: ResolverTypeWrapper<Types.FreeFormValueType>;
   InboxAttachmentType: ResolverTypeWrapper<Types.InboxAttachmentType>;
   InboxConversationDetailType: ResolverTypeWrapper<Types.InboxConversationDetailType>;
   InboxConversationFilter: Types.InboxConversationFilter;
@@ -163,6 +165,8 @@ export type ResolversTypes = ResolversObject<{
   OrgLocationType: ResolverTypeWrapper<Types.OrgLocationType>;
   PagedAuditLogType: ResolverTypeWrapper<Types.PagedAuditLogType>;
   PagedCityType: ResolverTypeWrapper<Types.PagedCityType>;
+  PagedFreeFormCity: ResolverTypeWrapper<Types.PagedFreeFormCity>;
+  PagedFreeFormValue: ResolverTypeWrapper<Types.PagedFreeFormValue>;
   PagedInboxConversationType: ResolverTypeWrapper<Types.PagedInboxConversationType>;
   PagedIssuanceForm: ResolverTypeWrapper<Types.PagedIssuanceForm>;
   PagedJobLogsType: ResolverTypeWrapper<Types.PagedJobLogsType>;
@@ -361,6 +365,8 @@ export type ResolversParentTypes = ResolversObject<{
   EmailAddress: Types.Scalars['EmailAddress']['output'];
   FaceVectorResultType: Types.FaceVectorResultType;
   Float: Types.Scalars['Float']['output'];
+  FreeFormCityType: Types.FreeFormCityType;
+  FreeFormValueType: Types.FreeFormValueType;
   InboxAttachmentType: Types.InboxAttachmentType;
   InboxConversationDetailType: Types.InboxConversationDetailType;
   InboxConversationFilter: Types.InboxConversationFilter;
@@ -396,6 +402,8 @@ export type ResolversParentTypes = ResolversObject<{
   OrgLocationType: Types.OrgLocationType;
   PagedAuditLogType: Types.PagedAuditLogType;
   PagedCityType: Types.PagedCityType;
+  PagedFreeFormCity: Types.PagedFreeFormCity;
+  PagedFreeFormValue: Types.PagedFreeFormValue;
   PagedInboxConversationType: Types.PagedInboxConversationType;
   PagedIssuanceForm: Types.PagedIssuanceForm;
   PagedJobLogsType: Types.PagedJobLogsType;
@@ -995,6 +1003,18 @@ export type FaceVectorResultTypeResolvers<ContextType = any, ParentType extends 
   vector?: Resolver<Types.Maybe<Array<ResolversTypes['Float']>>, ParentType, ContextType>;
 }>;
 
+export type FreeFormCityTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['FreeFormCityType'] = ResolversParentTypes['FreeFormCityType']> = ResolversObject<{
+  count?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  locationId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  locationName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type FreeFormValueTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['FreeFormValueType'] = ResolversParentTypes['FreeFormValueType']> = ResolversObject<{
+  count?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
 export type InboxAttachmentTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['InboxAttachmentType'] = ResolversParentTypes['InboxAttachmentType']> = ResolversObject<{
   kind?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   mimeType?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1268,7 +1288,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   enableCommitteeFeature?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationEnableCommitteeFeatureArgs, 'committeeId' | 'featureKey'>>;
   enableOrgLocationFeature?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationEnableOrgLocationFeatureArgs, 'featureKey' | 'locationId'>>;
   enableTwoFactor?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationEnableTwoFactorArgs, 'code'>>;
-  fixCitySpelling?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationFixCitySpellingArgs, 'existingSpelling' | 'newSpelling'>>;
   fixNameSpelling?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationFixNameSpellingArgs, 'existingSpelling' | 'newSpelling'>>;
   hardDeletePeople?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationHardDeletePeopleArgs, '_ids'>>;
   importSecurityVisitorsCsvData?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<Types.MutationImportSecurityVisitorsCsvDataArgs, 'csvData'>>;
@@ -1308,6 +1327,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeTeamMember?: Resolver<Types.Maybe<ResolversTypes['TeamType']>, ParentType, ContextType, RequireFields<Types.MutationRemoveTeamMemberArgs, 'karkunId' | 'teamId'>>;
   removeVendor?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveVendorArgs, '_id' | 'physicalStoreId'>>;
   removeWorkspaceMonitoringProfilePhoto?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMonitoringProfileType']>, ParentType, ContextType, RequireFields<Types.MutationRemoveWorkspaceMonitoringProfilePhotoArgs, 'committeeId' | 'photoId' | 'profileId'>>;
+  renameFreeFormCity?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRenameFreeFormCityArgs, 'existingSpelling' | 'newSpelling'>>;
+  renameFreeFormCountry?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRenameFreeFormCountryArgs, 'existingSpelling' | 'newSpelling'>>;
   resetJobDefinitionSchedule?: Resolver<Types.Maybe<ResolversTypes['JobDefinitionType']>, ParentType, ContextType, RequireFields<Types.MutationResetJobDefinitionScheduleArgs, '_id'>>;
   resetTwoFactor?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationResetTwoFactorArgs, 'userId'>>;
   restorePerson?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRestorePersonArgs, '_id'>>;
@@ -1337,6 +1358,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   startTwoFactorSetup?: Resolver<Types.Maybe<ResolversTypes['TwoFactorSetupType']>, ParentType, ContextType>;
   updateAttachment?: Resolver<Types.Maybe<ResolversTypes['Attachment']>, ParentType, ContextType, RequireFields<Types.MutationUpdateAttachmentArgs, '_id'>>;
   updateCity?: Resolver<Types.Maybe<ResolversTypes['CityType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateCityArgs, '_id' | 'country' | 'name'>>;
+  updateCityLocationMappings?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   updateCityMehfil?: Resolver<Types.Maybe<ResolversTypes['CityMehfilType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateCityMehfilArgs, '_id' | 'cityId' | 'name'>>;
   updateCommittee?: Resolver<Types.Maybe<ResolversTypes['CommitteeType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateCommitteeArgs, 'id' | 'name'>>;
   updateDuty?: Resolver<Types.Maybe<ResolversTypes['DutyType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateDutyArgs, 'id' | 'name'>>;
@@ -1531,6 +1553,16 @@ export type PagedAuditLogTypeResolvers<ContextType = any, ParentType extends Res
 
 export type PagedCityTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedCityType'] = ResolversParentTypes['PagedCityType']> = ResolversObject<{
   data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CityType']>>>, ParentType, ContextType>;
+  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type PagedFreeFormCityResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedFreeFormCity'] = ResolversParentTypes['PagedFreeFormCity']> = ResolversObject<{
+  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['FreeFormCityType']>>>, ParentType, ContextType>;
+  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type PagedFreeFormValueResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedFreeFormValue'] = ResolversParentTypes['PagedFreeFormValue']> = ResolversObject<{
+  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['FreeFormValueType']>>>, ParentType, ContextType>;
   totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
@@ -1900,6 +1932,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   orgLocationDutiesAttendanceUsers?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['OrgLocationDutiesAttendanceUserType']>>>, ParentType, ContextType, RequireFields<Types.QueryOrgLocationDutiesAttendanceUsersArgs, 'locationId'>>;
   pagedCities?: Resolver<Types.Maybe<ResolversTypes['PagedCityType']>, ParentType, ContextType, Partial<Types.QueryPagedCitiesArgs>>;
   pagedDeletedPeople?: Resolver<Types.Maybe<ResolversTypes['PagedPeopleType']>, ParentType, ContextType, Partial<Types.QueryPagedDeletedPeopleArgs>>;
+  pagedFreeFormCities?: Resolver<Types.Maybe<ResolversTypes['PagedFreeFormCity']>, ParentType, ContextType, RequireFields<Types.QueryPagedFreeFormCitiesArgs, 'pageIndex' | 'pageSize'>>;
+  pagedFreeFormCountries?: Resolver<Types.Maybe<ResolversTypes['PagedFreeFormValue']>, ParentType, ContextType, RequireFields<Types.QueryPagedFreeFormCountriesArgs, 'pageIndex' | 'pageSize'>>;
   pagedHrAuditLogs?: Resolver<Types.Maybe<ResolversTypes['PagedAuditLogType']>, ParentType, ContextType, Partial<Types.QueryPagedHrAuditLogsArgs>>;
   pagedHrKarkuns?: Resolver<Types.Maybe<ResolversTypes['PagedKarkunType']>, ParentType, ContextType, Partial<Types.QueryPagedHrKarkunsArgs>>;
   pagedInboxConversations?: Resolver<Types.Maybe<ResolversTypes['PagedInboxConversationType']>, ParentType, ContextType, Partial<Types.QueryPagedInboxConversationsArgs>>;
@@ -2921,6 +2955,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   DutyType?: DutyTypeResolvers<ContextType>;
   EmailAddress?: GraphQLScalarType;
   FaceVectorResultType?: FaceVectorResultTypeResolvers<ContextType>;
+  FreeFormCityType?: FreeFormCityTypeResolvers<ContextType>;
+  FreeFormValueType?: FreeFormValueTypeResolvers<ContextType>;
   InboxAttachmentType?: InboxAttachmentTypeResolvers<ContextType>;
   InboxConversationDetailType?: InboxConversationDetailTypeResolvers<ContextType>;
   InboxConversationType?: InboxConversationTypeResolvers<ContextType>;
@@ -2949,6 +2985,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   OrgLocationType?: OrgLocationTypeResolvers<ContextType>;
   PagedAuditLogType?: PagedAuditLogTypeResolvers<ContextType>;
   PagedCityType?: PagedCityTypeResolvers<ContextType>;
+  PagedFreeFormCity?: PagedFreeFormCityResolvers<ContextType>;
+  PagedFreeFormValue?: PagedFreeFormValueResolvers<ContextType>;
   PagedInboxConversationType?: PagedInboxConversationTypeResolvers<ContextType>;
   PagedIssuanceForm?: PagedIssuanceFormResolvers<ContextType>;
   PagedJobLogsType?: PagedJobLogsTypeResolvers<ContextType>;

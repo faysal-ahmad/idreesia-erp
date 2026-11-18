@@ -122,9 +122,4 @@ extend type Query {
   distinctCities: [String]
   distinctCountries: [String]
 }
-
-extend type Mutation {
-  fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
-    @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
-}
 `;

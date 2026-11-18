@@ -1,6 +1,5 @@
 import type DataLoader from 'dataloader';
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { PeopleTags } from 'meteor/idreesia-common/server/collections/admin';
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
@@ -41,11 +40,6 @@ interface PersonKarkunDataType {
 
 interface PersonEmployeeDataType {
   jobId?: string;
-}
-
-interface FixCitySpellingArgs {
-  existingSpelling: string;
-  newSpelling: string;
 }
 
 interface ResolverContext {
@@ -157,43 +151,6 @@ export default {
         'visitorData.country'
       );
       return compact(countries);
-    },
-  },
-
-  Mutation: {
-    fixCitySpelling: async (
-      _obj: unknown,
-      { existingSpelling, newSpelling }: FixCitySpellingArgs,
-      { user }: ResolverContext
-    ) => {
-      // If a city matching the existing spellings is present in the outstation
-      // cities list, then do not allow updating the spellings.
-      const outstationCity = await Cities.findOneAsync({
-        name: existingSpelling,
-      });
-
-      if (outstationCity) {
-        throw new Error(
-          'Spellings for this city cannot be changed as it exists in the Outstation city list.'
-        );
-      }
-
-      const date = new Date();
-      const count = await People.updateAsync(
-        {
-          'visitorData.city': { $eq: existingSpelling },
-        },
-        {
-          $set: {
-            'visitorData.city': newSpelling,
-            updatedAt: date,
-            updatedBy: user._id,
-          },
-        },
-        { multi: true }
-      );
-
-      return count;
     },
   },
 };

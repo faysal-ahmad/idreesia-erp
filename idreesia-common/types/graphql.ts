@@ -495,6 +495,20 @@ export type FaceVectorResultType = {
   vector?: Maybe<Array<Scalars['Float']['output']>>;
 };
 
+export type FreeFormCityType = {
+  __typename?: 'FreeFormCityType';
+  count?: Maybe<Scalars['Int']['output']>;
+  locationId?: Maybe<Scalars['String']['output']>;
+  locationName?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type FreeFormValueType = {
+  __typename?: 'FreeFormValueType';
+  count?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
 export type InboxAttachmentType = {
   __typename?: 'InboxAttachmentType';
   kind?: Maybe<Scalars['String']['output']>;
@@ -830,7 +844,6 @@ export type Mutation = {
   enableCommitteeFeature: Scalars['Boolean']['output'];
   enableOrgLocationFeature?: Maybe<Scalars['Boolean']['output']>;
   enableTwoFactor?: Maybe<UserType>;
-  fixCitySpelling?: Maybe<Scalars['Int']['output']>;
   fixNameSpelling?: Maybe<Scalars['Int']['output']>;
   hardDeletePeople?: Maybe<Scalars['Int']['output']>;
   importSecurityVisitorsCsvData?: Maybe<Scalars['String']['output']>;
@@ -870,6 +883,8 @@ export type Mutation = {
   removeTeamMember?: Maybe<TeamType>;
   removeVendor?: Maybe<Scalars['Int']['output']>;
   removeWorkspaceMonitoringProfilePhoto?: Maybe<WorkspaceMonitoringProfileType>;
+  renameFreeFormCity?: Maybe<Scalars['Int']['output']>;
+  renameFreeFormCountry?: Maybe<Scalars['Int']['output']>;
   resetJobDefinitionSchedule?: Maybe<JobDefinitionType>;
   resetTwoFactor?: Maybe<UserType>;
   restorePerson?: Maybe<Scalars['Int']['output']>;
@@ -899,6 +914,7 @@ export type Mutation = {
   startTwoFactorSetup?: Maybe<TwoFactorSetupType>;
   updateAttachment?: Maybe<Attachment>;
   updateCity?: Maybe<CityType>;
+  updateCityLocationMappings?: Maybe<Scalars['Int']['output']>;
   updateCityMehfil?: Maybe<CityMehfilType>;
   updateCommittee?: Maybe<CommitteeType>;
   updateDuty?: Maybe<DutyType>;
@@ -1484,12 +1500,6 @@ export type MutationEnableTwoFactorArgs = {
 };
 
 
-export type MutationFixCitySpellingArgs = {
-  existingSpelling: Scalars['String']['input'];
-  newSpelling: Scalars['String']['input'];
-};
-
-
 export type MutationFixNameSpellingArgs = {
   existingSpelling: Scalars['String']['input'];
   newSpelling: Scalars['String']['input'];
@@ -1708,6 +1718,18 @@ export type MutationRemoveWorkspaceMonitoringProfilePhotoArgs = {
   committeeId: Scalars['String']['input'];
   photoId: Scalars['String']['input'];
   profileId: Scalars['String']['input'];
+};
+
+
+export type MutationRenameFreeFormCityArgs = {
+  existingSpelling: Scalars['String']['input'];
+  newSpelling: Scalars['String']['input'];
+};
+
+
+export type MutationRenameFreeFormCountryArgs = {
+  existingSpelling: Scalars['String']['input'];
+  newSpelling: Scalars['String']['input'];
 };
 
 
@@ -2908,6 +2930,18 @@ export type PagedCityType = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PagedFreeFormCity = {
+  __typename?: 'PagedFreeFormCity';
+  data?: Maybe<Array<Maybe<FreeFormCityType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedFreeFormValue = {
+  __typename?: 'PagedFreeFormValue';
+  data?: Maybe<Array<Maybe<FreeFormValueType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
 export type PagedInboxConversationType = {
   __typename?: 'PagedInboxConversationType';
   data?: Maybe<Array<Maybe<InboxConversationType>>>;
@@ -3096,6 +3130,7 @@ export enum Permission {
   AdminManageCommittees = 'ADMIN_MANAGE_COMMITTEES',
   AdminManageDeletedPeople = 'ADMIN_MANAGE_DELETED_PEOPLE',
   AdminManageDuplicatePeople = 'ADMIN_MANAGE_DUPLICATE_PEOPLE',
+  AdminManageFreeFormData = 'ADMIN_MANAGE_FREE_FORM_DATA',
   AdminManageOrgLocations = 'ADMIN_MANAGE_ORG_LOCATIONS',
   AdminManagePeopleTags = 'ADMIN_MANAGE_PEOPLE_TAGS',
   AdminManagePhysicalStores = 'ADMIN_MANAGE_PHYSICAL_STORES',
@@ -3374,6 +3409,8 @@ export type Query = {
   orgLocationDutiesAttendanceUsers?: Maybe<Array<Maybe<OrgLocationDutiesAttendanceUserType>>>;
   pagedCities?: Maybe<PagedCityType>;
   pagedDeletedPeople?: Maybe<PagedPeopleType>;
+  pagedFreeFormCities?: Maybe<PagedFreeFormCity>;
+  pagedFreeFormCountries?: Maybe<PagedFreeFormValue>;
   pagedHrAuditLogs?: Maybe<PagedAuditLogType>;
   pagedHrKarkuns?: Maybe<PagedKarkunType>;
   pagedInboxConversations?: Maybe<PagedInboxConversationType>;
@@ -3687,6 +3724,18 @@ export type QueryPagedCitiesArgs = {
 
 export type QueryPagedDeletedPeopleArgs = {
   filter?: InputMaybe<PersonFilter>;
+};
+
+
+export type QueryPagedFreeFormCitiesArgs = {
+  pageIndex: Scalars['Int']['input'];
+  pageSize: Scalars['Int']['input'];
+};
+
+
+export type QueryPagedFreeFormCountriesArgs = {
+  pageIndex: Scalars['Int']['input'];
+  pageSize: Scalars['Int']['input'];
 };
 
 

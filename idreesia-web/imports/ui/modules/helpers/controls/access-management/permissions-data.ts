@@ -56,6 +56,10 @@ export const AdminPermissionsData: PermissionNode = {
           title: 'Manage People Tags',
           key: PermissionConstants.ADMIN_MANAGE_PEOPLE_TAGS,
         },
+        {
+          title: 'Manage Free Form Data',
+          key: PermissionConstants.ADMIN_MANAGE_FREE_FORM_DATA,
+        },
       ],
     },
     {

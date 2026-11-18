@@ -8,6 +8,7 @@ const SubModuleNames = {
   jobLogs: 'Job Logs',
   jobDefinitions: 'Job Definitions',
   peopleTags: 'People Tags',
+  freeFormData: 'Free Form Data',
   deletedPeople: 'Deleted People',
   duplicatePeople: 'Duplicate People',
   orgLocations: 'Locations',

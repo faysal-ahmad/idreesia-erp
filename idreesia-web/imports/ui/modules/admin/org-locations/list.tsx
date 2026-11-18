@@ -42,17 +42,13 @@ const buildTree = (locations: LocationRecord[]): TreeRow[] => {
 };
 
 /**
- * Keeps the rows that match the term (by their own name or a committee's
- * name) together with their ancestors, so a match always shows where it sits.
+ * Keeps the rows whose name matches the term together with their ancestors,
+ * so a match always shows where it sits.
  */
 const filterTree = (rows: TreeRow[], term: string): TreeRow[] =>
   rows.flatMap(row => {
     const children = row.children ? filterTree(row.children, term) : [];
-    const matches =
-      row.name.toLowerCase().includes(term) ||
-      row.committees.some(committee =>
-        committee.name.toLowerCase().includes(term)
-      );
+    const matches = row.name.toLowerCase().includes(term);
     if (!matches && children.length === 0) return [];
     return [{ ...row, children: children.length > 0 ? children : undefined }];
   });
@@ -302,7 +298,7 @@ const List = () => {
         <Space size={8}>
           <Input.Search
             allowClear
-            placeholder="Search locations or committees"
+            placeholder="Search locations"
             style={{ width: 280 }}
             value={searchText}
             onChange={event => setSearchText(event.target.value)}

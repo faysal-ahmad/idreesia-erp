@@ -9,7 +9,8 @@ import {
   DutyTeamAssignments,
   Teams,
 } from 'meteor/idreesia-common/server/collections/hr';
-import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
+import { OrgLocationTypes } from 'meteor/idreesia-common/constants/organization';
+import { OrgLocations } from 'meteor/idreesia-common/server/collections/admin';
 import { get, isNil } from 'meteor/idreesia-common/utilities/lodash';
 import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 
@@ -69,9 +70,9 @@ export async function buildPeopleSearchPipeline(
     dutyIds,
     dutyShiftId,
     ehadKarkun,
-    cityId,
-    cityIds,
-    cityMehfilId,
+    cityLocationId,
+    cityLocationIds,
+    mehfilLocationId,
     region,
     // employee related fields
     jobId,
@@ -289,36 +290,42 @@ export async function buildPeopleSearchPipeline(
       }
     }
 
-    if (cityId) {
+    if (cityLocationId) {
       pipeline.push({
         $match: {
-          'karkunData.cityId': { $eq: cityId },
+          'karkunData.cityLocationId': { $eq: cityLocationId },
         },
       });
-    } else if (cityIds) {
+    } else if (cityLocationIds) {
       pipeline.push({
         $match: {
-          'karkunData.cityId': { $in: cityIds },
+          'karkunData.cityLocationId': { $in: cityLocationIds },
         },
       });
     } else if (region) {
-      const regionCities = await Cities.find({ region }).fetchAsync();
-      const regionCityIds = regionCities
-        .map((city: { _id?: string }) => city._id)
-        .filter((cityId: string | undefined): cityId is string =>
-          Boolean(cityId)
-        );
+      // A region is the zone group location ("Zone <region>"); its cities are
+      // the city locations anywhere below it.
+      const zones = await OrgLocations.find({
+        type: OrgLocationTypes.GROUP,
+        name: `Zone ${region}`,
+      }).fetchAsync();
+      const regionCities = await OrgLocations.find({
+        type: OrgLocationTypes.CITY,
+        allParentIds: { $in: zones.map(zone => zone._id as string) },
+      }).fetchAsync();
       pipeline.push({
         $match: {
-          'karkunData.cityId': { $in: regionCityIds },
+          'karkunData.cityLocationId': {
+            $in: regionCities.map(city => city._id as string),
+          },
         },
       });
     }
 
-    if (cityMehfilId) {
+    if (mehfilLocationId) {
       pipeline.push({
         $match: {
-          'karkunData.cityMehfilId': { $eq: cityMehfilId },
+          'karkunData.mehfilLocationId': { $eq: mehfilLocationId },
         },
       });
     }

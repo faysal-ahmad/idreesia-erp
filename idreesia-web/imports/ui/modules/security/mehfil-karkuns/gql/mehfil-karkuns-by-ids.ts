@@ -38,10 +38,9 @@ export const MEHFIL_KARKUNS_BY_IDS: TypedDocumentNode<
           country
         }
         karkunData {
-          city {
+          cityLocation {
             _id
             name
-            country
           }
         }
       }

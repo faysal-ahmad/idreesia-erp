@@ -48,8 +48,7 @@ export type JobLogsFilterType = {
 export type KarkunFilter = {
   attendance?: string | null | undefined;
   bloodGroup?: string | null | undefined;
-  cityId?: string | null | undefined;
-  cityMehfilId?: string | null | undefined;
+  cityLocationId?: string | null | undefined;
   cnicNumber?: string | null | undefined;
   dutyId?: string | null | undefined;
   dutyShiftId?: string | null | undefined;
@@ -59,6 +58,7 @@ export type KarkunFilter = {
   isVisitor?: boolean | null | undefined;
   jobId?: string | null | undefined;
   lastTarteeb?: string | null | undefined;
+  mehfilLocationId?: string | null | undefined;
   name?: string | null | undefined;
   pageIndex?: string | null | undefined;
   pageSize?: string | null | undefined;
@@ -246,6 +246,11 @@ export type CommonAllCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CommonAllCitiesQuery = { allCities: Array<{ _id: string | null, name: string | null, peripheryOf: string | null, country: string | null } | null> | null };
+
+export type CommonAllCityMehfilLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CommonAllCityMehfilLocationsQuery = { referenceCityMehfilLocations: Array<{ _id: string | null, name: string | null, type: string | null, parentId: string | null } | null> | null };
 
 export type CommonAllCityMehfilsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2463,7 +2468,7 @@ export type HrKarkunByIdForPeopleQueryVariables = Exact<{
 }>;
 
 
-export type HrKarkunByIdForPeopleQuery = { hrKarkunById: { _id: string | null, isEmployee: boolean | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageUrl: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, deathDate: string | null, referenceName: string | null } | null, karkunData: { cityId: string | null, cityMehfilId: string | null, ehadKarkun: boolean | null, ehadPermissionDate: string | null, lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null, attachments: Array<{ _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null> | null, teams: Array<{ _id: string | null, name: string | null, duty: { _id: string | null, name: string | null } | null } | null> | null } | null, employeeData: { jobId: string | null, employmentStartDate: string | null, employmentEndDate: string | null, bankAccountDetails: string | null, job: { _id: string | null, name: string | null } | null } | null } | null };
+export type HrKarkunByIdForPeopleQuery = { hrKarkunById: { _id: string | null, isEmployee: boolean | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageUrl: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, deathDate: string | null, referenceName: string | null } | null, karkunData: { cityLocationId: string | null, mehfilLocationId: string | null, ehadKarkun: boolean | null, ehadPermissionDate: string | null, lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null, attachments: Array<{ _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null> | null, teams: Array<{ _id: string | null, name: string | null, duty: { _id: string | null, name: string | null } | null } | null> | null } | null, employeeData: { jobId: string | null, employmentStartDate: string | null, employmentEndDate: string | null, bankAccountDetails: string | null, job: { _id: string | null, name: string | null } | null } | null } | null };
 
 export type HrKarkunsByIdQueryVariables = Exact<{
   _ids: string;
@@ -2525,8 +2530,8 @@ export type UpdateHrKarkunMutationVariables = Exact<{
   currentAddress?: string | null | undefined;
   permanentAddress?: string | null | undefined;
   bloodGroup?: string | null | undefined;
-  cityId?: string | null | undefined;
-  cityMehfilId?: string | null | undefined;
+  cityLocationId?: string | null | undefined;
+  mehfilLocationId?: string | null | undefined;
   educationalQualification?: string | null | undefined;
   meansOfEarning?: string | null | undefined;
   ehadDate?: string | null | undefined;
@@ -2536,7 +2541,7 @@ export type UpdateHrKarkunMutationVariables = Exact<{
 }>;
 
 
-export type UpdateHrKarkunMutation = { updateHrKarkun: { _id: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, deathDate: string | null, referenceName: string | null } | null, karkunData: { cityId: string | null, cityMehfilId: string | null, lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null } | null } | null };
+export type UpdateHrKarkunMutation = { updateHrKarkun: { _id: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, deathDate: string | null, referenceName: string | null } | null, karkunData: { cityLocationId: string | null, mehfilLocationId: string | null, lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null } | null } | null };
 
 export type JobByIdQueryVariables = Exact<{
   id: string;
@@ -2601,7 +2606,7 @@ export type HrKarkunByIdForKarkunsQueryVariables = Exact<{
 }>;
 
 
-export type HrKarkunByIdForKarkunsQuery = { hrKarkunById: { _id: string | null, isEmployee: boolean | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageUrl: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, deathDate: string | null, referenceName: string | null } | null, karkunData: { cityId: string | null, cityMehfilId: string | null, ehadKarkun: boolean | null, ehadPermissionDate: string | null, lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null, attachments: Array<{ _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null> | null, teams: Array<{ _id: string | null, name: string | null, duty: { _id: string | null, name: string | null } | null } | null> | null } | null, employeeData: { jobId: string | null, employmentStartDate: string | null, employmentEndDate: string | null, bankAccountDetails: string | null, job: { _id: string | null, name: string | null } | null } | null } | null };
+export type HrKarkunByIdForKarkunsQuery = { hrKarkunById: { _id: string | null, isEmployee: boolean | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, imageUrl: string | null, contactNumber1: string | null, contactNumber2: string | null, emailAddress: string | null, currentAddress: string | null, permanentAddress: string | null, bloodGroup: string | null, educationalQualification: string | null, meansOfEarning: string | null, ehadDate: string | null, birthDate: string | null, deathDate: string | null, referenceName: string | null } | null, karkunData: { cityLocationId: string | null, mehfilLocationId: string | null, ehadKarkun: boolean | null, ehadPermissionDate: string | null, lastTarteebDate: string | null, mehfilRaabta: string | null, msRaabta: string | null, attachments: Array<{ _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null> | null, teams: Array<{ _id: string | null, name: string | null, duty: { _id: string | null, name: string | null } | null } | null> | null } | null, employeeData: { jobId: string | null, employmentStartDate: string | null, employmentEndDate: string | null, bankAccountDetails: string | null, job: { _id: string | null, name: string | null } | null } | null } | null };
 
 export type KarkunDutyAttendanceSheetQueryVariables = Exact<{
   karkunId: string;
@@ -2868,7 +2873,7 @@ export type PagedSecurityPeopleQueryVariables = Exact<{
 }>;
 
 
-export type PagedSecurityPeopleQuery = { pagedSecurityPeople: { totalResults: number | null, data: Array<{ _id: string | null, isVisitor: boolean | null, isKarkun: boolean | null, isEmployee: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { city: { _id: string | null, name: string | null, country: string | null } | null } | null } | null> | null } | null };
+export type PagedSecurityPeopleQuery = { pagedSecurityPeople: { totalResults: number | null, data: Array<{ _id: string | null, isVisitor: boolean | null, isKarkun: boolean | null, isEmployee: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { cityLocation: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
 
 export type ComposerAllSecurityMehfilDutiesQueryVariables = Exact<{
   mehfilId?: string | null | undefined;
@@ -2912,7 +2917,7 @@ export type MehfilKarkunsByIdsQueryVariables = Exact<{
 }>;
 
 
-export type MehfilKarkunsByIdsQuery = { mehfilKarkunsByIds: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, duty: { _id: string | null, name: string | null, urduName: string | null } | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { city: { _id: string | null, name: string | null, country: string | null } | null } | null } | null } | null> | null };
+export type MehfilKarkunsByIdsQuery = { mehfilKarkunsByIds: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, duty: { _id: string | null, name: string | null, urduName: string | null } | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { cityLocation: { _id: string | null, name: string | null } | null } | null } | null } | null> | null };
 
 export type MehfilKarkunsByMehfilIdQueryVariables = Exact<{
   mehfilId: string;
@@ -2920,7 +2925,7 @@ export type MehfilKarkunsByMehfilIdQueryVariables = Exact<{
 }>;
 
 
-export type MehfilKarkunsByMehfilIdQuery = { mehfilKarkunsByMehfilId: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { city: { _id: string | null, name: string | null, country: string | null } | null } | null } | null } | null> | null };
+export type MehfilKarkunsByMehfilIdQuery = { mehfilKarkunsByMehfilId: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { cityLocation: { _id: string | null, name: string | null } | null } | null } | null } | null> | null };
 
 export type RemoveMehfilKarkunMutationVariables = Exact<{
   _id: string;

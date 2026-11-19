@@ -1,6 +1,7 @@
 import { Migrations } from 'meteor/quave:migrations';
 
 import { OrgLocationTypes } from 'meteor/idreesia-common/constants/organization';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   OrgLocations,
   type OrgLocationDocument,
@@ -20,6 +21,16 @@ Migrations.add({
     const collection = OrgLocations.rawCollection();
     await collection.createIndex({ parentId: 1 }, { background: true });
     await collection.createIndex({ allParentIds: 1 }, { background: true });
+
+    const peopleCollection = People.rawCollection();
+    await peopleCollection.createIndex(
+      { 'karkunData.cityLocationId': 1 },
+      { background: true }
+    );
+    await peopleCollection.createIndex(
+      { 'karkunData.mehfilLocationId': 1 },
+      { background: true }
+    );
 
     const existingRoot = await OrgLocations.findOneAsync({
       type: OrgLocationTypes.ROOT,
@@ -81,6 +92,11 @@ Migrations.add({
         { name: city.name as string, type: OrgLocationTypes.CITY },
         parent
       );
+      // Point karkuns of this city at the new city location.
+      await peopleCollection.updateMany(
+        { 'karkunData.cityId': city._id },
+        { $set: { 'karkunData.cityLocationId': cityLocation._id } }
+      );
 
       const mehfils = await CityMehfils.find(
         { cityId: city._id },
@@ -105,13 +121,18 @@ Migrations.add({
             otherMehfilDetails,
           }).filter(([, value]) => value !== undefined && value !== null)
         );
-        await insert(
+        const mehfilLocation = await insert(
           {
             name: mehfil.name as string,
             type: OrgLocationTypes.MEHFIL,
             mehfilDetails,
           },
           cityLocation
+        );
+        // Point karkuns of this mehfil at the new mehfil location.
+        await peopleCollection.updateMany(
+          { 'karkunData.cityMehfilId': mehfil._id },
+          { $set: { 'karkunData.mehfilLocationId': mehfilLocation._id } }
         );
       }
     }

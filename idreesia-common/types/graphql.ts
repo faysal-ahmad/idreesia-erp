@@ -673,8 +673,7 @@ export type JobType = {
 export type KarkunFilter = {
   attendance?: InputMaybe<Scalars['String']['input']>;
   bloodGroup?: InputMaybe<Scalars['String']['input']>;
-  cityId?: InputMaybe<Scalars['String']['input']>;
-  cityMehfilId?: InputMaybe<Scalars['String']['input']>;
+  cityLocationId?: InputMaybe<Scalars['String']['input']>;
   cnicNumber?: InputMaybe<Scalars['String']['input']>;
   dutyId?: InputMaybe<Scalars['String']['input']>;
   dutyShiftId?: InputMaybe<Scalars['String']['input']>;
@@ -684,6 +683,7 @@ export type KarkunFilter = {
   isVisitor?: InputMaybe<Scalars['Boolean']['input']>;
   jobId?: InputMaybe<Scalars['String']['input']>;
   lastTarteeb?: InputMaybe<Scalars['String']['input']>;
+  mehfilLocationId?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;
   pageSize?: InputMaybe<Scalars['String']['input']>;
@@ -1204,8 +1204,7 @@ export type MutationCreateDutyShiftArgs = {
 export type MutationCreateHrKarkunArgs = {
   birthDate?: InputMaybe<Scalars['String']['input']>;
   bloodGroup?: InputMaybe<Scalars['String']['input']>;
-  cityId?: InputMaybe<Scalars['String']['input']>;
-  cityMehfilId?: InputMaybe<Scalars['String']['input']>;
+  cityLocationId?: InputMaybe<Scalars['String']['input']>;
   cnicNumber?: InputMaybe<Scalars['String']['input']>;
   contactNumber1?: InputMaybe<Scalars['String']['input']>;
   contactNumber2?: InputMaybe<Scalars['String']['input']>;
@@ -1214,6 +1213,7 @@ export type MutationCreateHrKarkunArgs = {
   ehadDate?: InputMaybe<Scalars['String']['input']>;
   emailAddress?: InputMaybe<Scalars['String']['input']>;
   meansOfEarning?: InputMaybe<Scalars['String']['input']>;
+  mehfilLocationId?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   parentName?: InputMaybe<Scalars['String']['input']>;
   permanentAddress?: InputMaybe<Scalars['String']['input']>;
@@ -1966,8 +1966,7 @@ export type MutationUpdateHrKarkunArgs = {
   _id: Scalars['String']['input'];
   birthDate?: InputMaybe<Scalars['String']['input']>;
   bloodGroup?: InputMaybe<Scalars['String']['input']>;
-  cityId?: InputMaybe<Scalars['String']['input']>;
-  cityMehfilId?: InputMaybe<Scalars['String']['input']>;
+  cityLocationId?: InputMaybe<Scalars['String']['input']>;
   cnicNumber?: InputMaybe<Scalars['String']['input']>;
   contactNumber1?: InputMaybe<Scalars['String']['input']>;
   contactNumber2?: InputMaybe<Scalars['String']['input']>;
@@ -1977,6 +1976,7 @@ export type MutationUpdateHrKarkunArgs = {
   ehadDate?: InputMaybe<Scalars['String']['input']>;
   emailAddress?: InputMaybe<Scalars['String']['input']>;
   meansOfEarning?: InputMaybe<Scalars['String']['input']>;
+  mehfilLocationId?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   parentName?: InputMaybe<Scalars['String']['input']>;
   permanentAddress?: InputMaybe<Scalars['String']['input']>;
@@ -3225,13 +3225,13 @@ export type PersonKarkunDataType = {
   __typename?: 'PersonKarkunDataType';
   attachmentIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   attachments?: Maybe<Array<Maybe<Attachment>>>;
-  city?: Maybe<CityType>;
-  cityId?: Maybe<Scalars['String']['output']>;
-  cityMehfil?: Maybe<CityMehfilType>;
-  cityMehfilId?: Maybe<Scalars['String']['output']>;
+  cityLocation?: Maybe<ReferenceOrgLocationType>;
+  cityLocationId?: Maybe<Scalars['String']['output']>;
   ehadKarkun?: Maybe<Scalars['Boolean']['output']>;
   ehadPermissionDate?: Maybe<Scalars['String']['output']>;
   lastTarteebDate?: Maybe<Scalars['String']['output']>;
+  mehfilLocation?: Maybe<ReferenceOrgLocationType>;
+  mehfilLocationId?: Maybe<Scalars['String']['output']>;
   mehfilRaabta?: Maybe<Scalars['String']['output']>;
   msLastVisitDate?: Maybe<Scalars['String']['output']>;
   msRaabta?: Maybe<Scalars['String']['output']>;
@@ -3437,6 +3437,7 @@ export type Query = {
   purchaseFormById?: Maybe<PurchaseForm>;
   purchaseFormsByMonth?: Maybe<Array<Maybe<PurchaseForm>>>;
   purchaseFormsByStockItem?: Maybe<Array<Maybe<PurchaseForm>>>;
+  referenceCityMehfilLocations?: Maybe<Array<Maybe<ReferenceOrgLocationType>>>;
   referenceDutyShifts?: Maybe<Array<Maybe<ReferenceDutyShiftType>>>;
   referenceMsDuties?: Maybe<Array<Maybe<ReferenceDutyType>>>;
   referencePhysicalStoreById?: Maybe<ReferencePhysicalStoreType>;
@@ -4370,6 +4371,14 @@ export type ReferenceDutyType = {
   __typename?: 'ReferenceDutyType';
   _id?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+};
+
+export type ReferenceOrgLocationType = {
+  __typename?: 'ReferenceOrgLocationType';
+  _id?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  parentId?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
 };
 
 export type ReferencePhysicalStoreType = {

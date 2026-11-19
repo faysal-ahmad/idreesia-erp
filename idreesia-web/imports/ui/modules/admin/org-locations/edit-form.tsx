@@ -37,7 +37,7 @@ type Props = RouteComponentProps<{ orgLocationId: string }>;
 const EditForm = ({ match, history, location }: Props) => {
   const { queryParams } = useQueryParams({ history, location });
   const _id = match.params.orgLocationId;
-  useBreadcrumbs(['Admin', 'Locations', 'Edit']);
+  useBreadcrumbs(['Admin', 'Organization Locations', 'Edit']);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [isMehfilTouched, setIsMehfilTouched] = useState(false);
 

@@ -6,7 +6,7 @@ import {
   DutyTeamAssignments,
   Teams,
 } from 'meteor/idreesia-common/server/collections/hr';
-import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
+import { OrgLocations } from 'meteor/idreesia-common/server/collections/admin';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 
 import {
@@ -183,27 +183,56 @@ describe('karkun filters', () => {
   });
 
   it('filters by city, list of cities, region and mehfil', async () => {
-    await insert(Cities, { _id: 'c1', name: 'One', region: 'north' });
-    await insert(Cities, { _id: 'c2', name: 'Two', region: 'north' });
-    await insert(Cities, { _id: 'c3', name: 'Three', region: 'south' });
-    await addKarkun('k1', { cityId: 'c1', cityMehfilId: 'm1' });
-    await addKarkun('k2', { cityId: 'c2' });
-    await addKarkun('k3', { cityId: 'c3' });
+    await insert(OrgLocations, { _id: 'zn', name: 'Zone north', type: 'group' });
+    await insert(OrgLocations, { _id: 'zs', name: 'Zone south', type: 'group' });
+    await insert(OrgLocations, {
+      _id: 'c1',
+      name: 'One',
+      type: 'city',
+      allParentIds: ['zn'],
+    });
+    await insert(OrgLocations, {
+      _id: 'c2',
+      name: 'Two',
+      type: 'city',
+      allParentIds: ['zn'],
+    });
+    await insert(OrgLocations, {
+      _id: 'c3',
+      name: 'Three',
+      type: 'city',
+      allParentIds: ['zs'],
+    });
+    await addKarkun('k1', { cityLocationId: 'c1', mehfilLocationId: 'm1' });
+    await addKarkun('k2', { cityLocationId: 'c2' });
+    await addKarkun('k3', { cityLocationId: 'c3' });
 
-    expect(await find({ cityId: 'c1' }, flags)).toEqual(['k1']);
-    expect(await find({ cityIds: ['c1', 'c3'] }, flags)).toEqual(['k1', 'k3']);
+    expect(await find({ cityLocationId: 'c1' }, flags)).toEqual(['k1']);
+    expect(await find({ cityLocationIds: ['c1', 'c3'] }, flags)).toEqual([
+      'k1',
+      'k3',
+    ]);
     expect(await find({ region: 'north' }, flags)).toEqual(['k1', 'k2']);
     expect(await find({ region: 'nowhere' }, flags)).toEqual([]);
-    expect(await find({ cityMehfilId: 'm1' }, flags)).toEqual(['k1']);
+    expect(await find({ mehfilLocationId: 'm1' }, flags)).toEqual(['k1']);
   });
 
   it('prefers a city over a list of cities over a region', async () => {
-    await insert(Cities, { _id: 'c1', name: 'One', region: 'north' });
-    await addKarkun('k1', { cityId: 'c1' });
-    await addKarkun('k2', { cityId: 'c2' });
-    expect(await find({ cityId: 'c2', cityIds: ['c1'], region: 'north' }, flags)).toEqual(
-      ['k2']
-    );
+    await insert(OrgLocations, { _id: 'zn', name: 'Zone north', type: 'group' });
+    await insert(OrgLocations, {
+      _id: 'c1',
+      name: 'One',
+      type: 'city',
+      allParentIds: ['zn'],
+    });
+    await addKarkun('k1', { cityLocationId: 'c1' });
+    await addKarkun('k2', { cityLocationId: 'c2' });
+    expect(
+      await find(
+        { cityLocationId: 'c2', cityLocationIds: ['c1'], region: 'north' },
+        flags
+      )
+    ).toEqual(['k2']);
   });
 
   it('finds the karkuns on a duty through their teams', async () => {
@@ -236,9 +265,9 @@ describe('karkun filters', () => {
   });
 
   it('only applies karkun filters when karkuns are included', async () => {
-    await addKarkun('a', { cityId: 'c1' });
-    await addKarkun('b', { cityId: 'c2' });
-    expect(await find({ cityId: 'c1' })).toEqual(['a', 'b']);
+    await addKarkun('a', { cityLocationId: 'c1' });
+    await addKarkun('b', { cityLocationId: 'c2' });
+    expect(await find({ cityLocationId: 'c1' })).toEqual(['a', 'b']);
   });
 });
 

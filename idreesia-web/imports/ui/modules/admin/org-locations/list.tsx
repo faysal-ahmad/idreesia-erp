@@ -59,7 +59,7 @@ const collectParentKeys = (rows: TreeRow[]): string[] =>
   );
 
 const List = () => {
-  useBreadcrumbs(['Admin', 'Locations']);
+  useBreadcrumbs(['Admin', 'Organization Locations']);
   const { data, loading, refetch } = useQuery(ALL_ORG_LOCATIONS);
   const [updateOrgLocation] = useMutation(UPDATE_ORG_LOCATION, {
     refetchQueries: ['allOrgLocations'],

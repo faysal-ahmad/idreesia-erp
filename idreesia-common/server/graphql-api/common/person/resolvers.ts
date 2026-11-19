@@ -14,9 +14,8 @@ interface Loaders {
     jobs: Loader;
     karkunTeams: DataLoader<string, unknown[]>;
   };
-  outstation: {
-    cities: Loader;
-    cityMehfils: Loader;
+  admin: {
+    orgLocations: Loader;
   };
 }
 
@@ -33,8 +32,8 @@ interface PersonSharedDataType {
 
 interface PersonKarkunDataType {
   _id?: string;
-  cityId?: string;
-  cityMehfilId?: string;
+  cityLocationId?: string;
+  mehfilLocationId?: string;
   attachmentIds?: string[];
 }
 
@@ -82,22 +81,22 @@ export default {
       getPersonImageUrls(personSharedDataType).imageThumbnailUrl,
   },
   PersonKarkunDataType: {
-    city: async (
+    cityLocation: async (
       personKarkunDataType: PersonKarkunDataType,
       _args: unknown,
       { loaders }: ResolverContext
     ) => {
-      if (!personKarkunDataType.cityId) return null;
-      return loaders.outstation.cities.load(personKarkunDataType.cityId);
+      if (!personKarkunDataType.cityLocationId) return null;
+      return loaders.admin.orgLocations.load(personKarkunDataType.cityLocationId);
     },
-    cityMehfil: async (
+    mehfilLocation: async (
       personKarkunDataType: PersonKarkunDataType,
       _args: unknown,
       { loaders }: ResolverContext
     ) => {
-      if (!personKarkunDataType.cityMehfilId) return null;
-      return loaders.outstation.cityMehfils.load(
-        personKarkunDataType.cityMehfilId
+      if (!personKarkunDataType.mehfilLocationId) return null;
+      return loaders.admin.orgLocations.load(
+        personKarkunDataType.mehfilLocationId
       );
     },
     teams: async (

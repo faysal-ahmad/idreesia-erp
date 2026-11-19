@@ -20,8 +20,8 @@ const UPDATE_HR_KARKUN: TypedDocumentNode<
     $currentAddress: String
     $permanentAddress: String
     $bloodGroup: String
-    $cityId: String
-    $cityMehfilId: String
+    $cityLocationId: String
+    $mehfilLocationId: String
     $educationalQualification: String
     $meansOfEarning: String
     $ehadDate: String
@@ -39,8 +39,8 @@ const UPDATE_HR_KARKUN: TypedDocumentNode<
       emailAddress: $emailAddress
       currentAddress: $currentAddress
       permanentAddress: $permanentAddress
-      cityId: $cityId
-      cityMehfilId: $cityMehfilId
+      cityLocationId: $cityLocationId
+      mehfilLocationId: $mehfilLocationId
       bloodGroup: $bloodGroup
       educationalQualification: $educationalQualification
       meansOfEarning: $meansOfEarning
@@ -72,8 +72,8 @@ const UPDATE_HR_KARKUN: TypedDocumentNode<
         referenceName
       }
       karkunData {
-        cityId
-        cityMehfilId
+        cityLocationId
+        mehfilLocationId
         lastTarteebDate
         mehfilRaabta
         msRaabta

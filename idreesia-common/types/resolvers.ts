@@ -216,6 +216,7 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
   ReferenceDutyShiftType: ResolverTypeWrapper<Types.ReferenceDutyShiftType>;
   ReferenceDutyType: ResolverTypeWrapper<Types.ReferenceDutyType>;
+  ReferenceOrgLocationType: ResolverTypeWrapper<Types.ReferenceOrgLocationType>;
   ReferencePhysicalStoreType: ResolverTypeWrapper<Types.ReferencePhysicalStoreType>;
   SalaryType: ResolverTypeWrapper<Types.SalaryType>;
   ScheduledJobType: ResolverTypeWrapper<Types.ScheduledJobType>;
@@ -452,6 +453,7 @@ export type ResolversParentTypes = ResolversObject<{
   Query: Record<PropertyKey, never>;
   ReferenceDutyShiftType: Types.ReferenceDutyShiftType;
   ReferenceDutyType: Types.ReferenceDutyType;
+  ReferenceOrgLocationType: Types.ReferenceOrgLocationType;
   ReferencePhysicalStoreType: Types.ReferencePhysicalStoreType;
   SalaryType: Types.SalaryType;
   ScheduledJobType: Types.ScheduledJobType;
@@ -1748,13 +1750,13 @@ export type PersonImageVectorDataTypeResolvers<ContextType = any, ParentType ext
 export type PersonKarkunDataTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PersonKarkunDataType'] = ResolversParentTypes['PersonKarkunDataType']> = ResolversObject<{
   attachmentIds?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   attachments?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['Attachment']>>>, ParentType, ContextType>;
-  city?: Resolver<Types.Maybe<ResolversTypes['CityType']>, ParentType, ContextType>;
-  cityId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  cityMehfil?: Resolver<Types.Maybe<ResolversTypes['CityMehfilType']>, ParentType, ContextType>;
-  cityMehfilId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cityLocation?: Resolver<Types.Maybe<ResolversTypes['ReferenceOrgLocationType']>, ParentType, ContextType>;
+  cityLocationId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   ehadKarkun?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   ehadPermissionDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastTarteebDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  mehfilLocation?: Resolver<Types.Maybe<ResolversTypes['ReferenceOrgLocationType']>, ParentType, ContextType>;
+  mehfilLocationId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   mehfilRaabta?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   msLastVisitDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   msRaabta?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1960,6 +1962,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   purchaseFormById?: Resolver<Types.Maybe<ResolversTypes['PurchaseForm']>, ParentType, ContextType, RequireFields<Types.QueryPurchaseFormByIdArgs, '_id' | 'physicalStoreId'>>;
   purchaseFormsByMonth?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchaseForm']>>>, ParentType, ContextType, RequireFields<Types.QueryPurchaseFormsByMonthArgs, 'month' | 'physicalStoreId'>>;
   purchaseFormsByStockItem?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchaseForm']>>>, ParentType, ContextType, RequireFields<Types.QueryPurchaseFormsByStockItemArgs, 'physicalStoreId' | 'stockItemId'>>;
+  referenceCityMehfilLocations?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['ReferenceOrgLocationType']>>>, ParentType, ContextType>;
   referenceDutyShifts?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['ReferenceDutyShiftType']>>>, ParentType, ContextType>;
   referenceMsDuties?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['ReferenceDutyType']>>>, ParentType, ContextType>;
   referencePhysicalStoreById?: Resolver<Types.Maybe<ResolversTypes['ReferencePhysicalStoreType']>, ParentType, ContextType, RequireFields<Types.QueryReferencePhysicalStoreByIdArgs, 'id'>>;
@@ -2051,6 +2054,13 @@ export type ReferenceDutyShiftTypeResolvers<ContextType = any, ParentType extend
 export type ReferenceDutyTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReferenceDutyType'] = ResolversParentTypes['ReferenceDutyType']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type ReferenceOrgLocationTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReferenceOrgLocationType'] = ResolversParentTypes['ReferenceOrgLocationType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  parentId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type ReferencePhysicalStoreTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReferencePhysicalStoreType'] = ResolversParentTypes['ReferencePhysicalStoreType']> = ResolversObject<{
@@ -3034,6 +3044,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
   ReferenceDutyShiftType?: ReferenceDutyShiftTypeResolvers<ContextType>;
   ReferenceDutyType?: ReferenceDutyTypeResolvers<ContextType>;
+  ReferenceOrgLocationType?: ReferenceOrgLocationTypeResolvers<ContextType>;
   ReferencePhysicalStoreType?: ReferencePhysicalStoreTypeResolvers<ContextType>;
   SalaryType?: SalaryTypeResolvers<ContextType>;
   ScheduledJobType?: ScheduledJobTypeResolvers<ContextType>;

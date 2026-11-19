@@ -20,6 +20,7 @@ import {
   type CommitteeMemberRole,
 } from 'meteor/idreesia-common/constants/organization';
 
+import { ORG_LOCATION_BY_ID } from '../org-locations/gql';
 import AddMemberDrawer from './add-member-drawer';
 import GeneralInfo from './general-info';
 import Features from './features';
@@ -88,11 +89,16 @@ const EditForm = ({ history, location, match }: Props) => {
     variables: { id: committeeId },
   });
   const committeeById = data?.committeeById;
+  const { data: locationData } = useQuery(ORG_LOCATION_BY_ID, {
+    variables: { _id: locationId },
+  });
+  const locationName = locationData?.orgLocationById?.name?.trim();
   const committeeName = committeeById?.name?.trim();
 
   useDynamicBreadcrumbs([
     'Admin',
-    'Locations',
+    'Organization Locations',
+    locationName || '...',
     'Committees',
     committeeName || 'Edit',
   ]);

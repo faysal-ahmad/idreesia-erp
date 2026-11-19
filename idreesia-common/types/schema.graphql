@@ -740,8 +740,8 @@ input KarkunFilter {
   userAccount: String
   ehadKarkun: String
   dutyShiftId: String
-  cityId: String
-  cityMehfilId: String
+  cityLocationId: String
+  mehfilLocationId: String
   region: String
   updatedBetween: String
   predefinedFilterName: String
@@ -791,8 +791,8 @@ type PersonVisitorDataType {
 }
 
 type PersonKarkunDataType {
-  cityId: String
-  cityMehfilId: String
+  cityLocationId: String
+  mehfilLocationId: String
   ehadKarkun: Boolean
   ehadPermissionDate: String
   lastTarteebDate: String
@@ -801,8 +801,8 @@ type PersonKarkunDataType {
   msLastVisitDate: String
   attachmentIds: [String]
 
-  city: CityType
-  cityMehfil: CityMehfilType
+  cityLocation: ReferenceOrgLocationType
+  mehfilLocation: ReferenceOrgLocationType
   teams: [TeamType]
   attachments: [Attachment]
 }
@@ -1283,8 +1283,8 @@ extend type Mutation {
     contactNumber2: String
     emailAddress: String
     currentAddress: String
-    cityId: String
-    cityMehfilId: String
+    cityLocationId: String
+    mehfilLocationId: String
     permanentAddress: String
     bloodGroup: String
     educationalQualification: String
@@ -1308,8 +1308,8 @@ extend type Mutation {
     emailAddress: String
     currentAddress: String
     permanentAddress: String
-    cityId: String
-    cityMehfilId: String
+    cityLocationId: String
+    mehfilLocationId: String
     bloodGroup: String
     educationalQualification: String
     meansOfEarning: String
@@ -2299,6 +2299,20 @@ extend type Query {
   referenceDutyShifts: [ReferenceDutyShiftType]
     @checkPermissions(
       permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS]
+    )
+}
+
+type ReferenceOrgLocationType {
+  _id: String
+  name: String
+  type: String
+  parentId: String
+}
+
+extend type Query {
+  referenceCityMehfilLocations: [ReferenceOrgLocationType]
+    @checkPermissions(
+      permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES]
     )
 }
 

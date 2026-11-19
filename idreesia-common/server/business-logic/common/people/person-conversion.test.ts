@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
+import { OrgLocations } from 'meteor/idreesia-common/server/collections/admin';
 
 import { karkunToPerson, visitorToPerson } from './person-conversion';
 
@@ -45,7 +45,7 @@ describe('karkunToPerson', () => {
       dataSource: 'karkuns',
       name: 'Ali',
       bloodGroup: 'A+',
-      cityId: 'unknown-city',
+      cityLocationId: 'unknown-city',
       ehadKarkun: true,
       jobId: 'j1',
       attachmentIds: ['att1'],
@@ -56,7 +56,7 @@ describe('karkunToPerson', () => {
       dataSource: 'karkuns',
       sharedData: { name: 'Ali', bloodGroup: 'A+' },
       karkunData: {
-        cityId: 'unknown-city',
+        cityLocationId: 'unknown-city',
         ehadKarkun: true,
         attachmentIds: ['att1'],
       },
@@ -65,13 +65,23 @@ describe('karkunToPerson', () => {
   });
 
   it('gives the karkun the visitor data of their city', async () => {
-    await (
-      Cities.rawCollection() as unknown as {
-        insertOne(d: object): Promise<unknown>;
-      }
-    ).insertOne({ _id: 'c1', name: 'Karachi', country: 'Pakistan' });
+    const collection = OrgLocations.rawCollection() as unknown as {
+      insertOne(d: object): Promise<unknown>;
+    };
+    await collection.insertOne({
+      _id: 'pk',
+      name: 'Pakistan',
+      type: 'country',
+      allParentIds: ['root'],
+    });
+    await collection.insertOne({
+      _id: 'c1',
+      name: 'Karachi',
+      type: 'city',
+      allParentIds: ['root', 'pk'],
+    });
 
-    const person = await karkunToPerson({ name: 'Ali', cityId: 'c1' });
+    const person = await karkunToPerson({ name: 'Ali', cityLocationId: 'c1' });
     expect(person.visitorData).toEqual({ city: 'Karachi', country: 'Pakistan' });
   });
 

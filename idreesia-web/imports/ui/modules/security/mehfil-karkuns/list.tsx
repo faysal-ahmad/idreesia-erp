@@ -215,8 +215,8 @@ const List = ({
       key: 'cityCountry',
       width: 140,
       render: (_text: unknown, record: MehfilKarkun) => {
-        if (record.karkun?.isKarkun && record.karkun.karkunData?.city) {
-          return record.karkun.karkunData.city.name;
+        if (record.karkun?.isKarkun && record.karkun.karkunData?.cityLocation) {
+          return record.karkun.karkunData.cityLocation.name;
         }
         if (record.karkun?.visitorData?.city) {
           return record.karkun.visitorData.city;

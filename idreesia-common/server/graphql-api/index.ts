@@ -199,6 +199,9 @@ import PhysicalStoreResolvers from './inventory/physical-store/resolvers';
 import ReferenceDutySchema from './reference-data/duty/duty';
 import ReferenceDutyResolvers from './reference-data/duty/resolvers';
 
+import ReferenceOrgLocationSchema from './reference-data/org-location/org-location';
+import ReferenceOrgLocationResolvers from './reference-data/org-location/resolvers';
+
 import ReferencePhysicalStoreSchema from './reference-data/physical-store/physical-store';
 import ReferencePhysicalStoreResolvers from './reference-data/physical-store/resolvers';
 
@@ -288,6 +291,7 @@ const typeDefs = [
   VendorSchema,
   PhysicalStoreSchema,
   ReferenceDutySchema,
+  ReferenceOrgLocationSchema,
   ReferencePhysicalStoreSchema,
   StockItemSchema,
   IssuanceFormSchema,
@@ -361,6 +365,7 @@ const resolvers = merge(
   VendorResolvers,
   PhysicalStoreResolvers,
   ReferenceDutyResolvers,
+  ReferenceOrgLocationResolvers,
   ReferencePhysicalStoreResolvers,
   StockItemResolvers,
   IssuanceFormResolvers,

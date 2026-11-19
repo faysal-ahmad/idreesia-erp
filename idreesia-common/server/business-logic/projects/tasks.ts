@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   OpenTaskStatuses,
   ProjectsAction,
@@ -131,56 +132,58 @@ export async function createTask(
   input: CreateTaskInput,
   userId: string
 ): Promise<ProjectTaskDocument> {
-  requireUserId(userId);
-  const workspace = await requireWorkspace(input.workspaceId);
-  const project = input.projectId
-    ? await requireOpenTaskProject(workspace._id, input.projectId)
-    : undefined;
-  const title = normalizeTitle(input.title, 'Task title');
-  const description = normalizeText(input.description, 'Description');
-  const metadata = validateMetadata(input.metadata);
-  const assigneeId = input.assigneeId
-    ? normalizeOpaqueId(input.assigneeId, 'Assignee id')
-    : undefined;
-  if (project && assigneeId) assertParticipant(project, assigneeId);
-  const dueDate =
-    input.dueDate === undefined || input.dueDate === null
-      ? undefined
-      : toDate(input.dueDate, 'Due date');
-  const priority =
-    input.priority === undefined
-      ? TaskPriority.NORMAL
-      : requireOneOf(input.priority, TaskPriority, 'Priority');
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const workspace = await requireWorkspace(input.workspaceId);
+    const project = input.projectId
+      ? await requireOpenTaskProject(workspace._id, input.projectId)
+      : undefined;
+    const title = normalizeTitle(input.title, 'Task title');
+    const description = normalizeText(input.description, 'Description');
+    const metadata = validateMetadata(input.metadata);
+    const assigneeId = input.assigneeId
+      ? normalizeOpaqueId(input.assigneeId, 'Assignee id')
+      : undefined;
+    if (project && assigneeId) assertParticipant(project, assigneeId);
+    const dueDate =
+      input.dueDate === undefined || input.dueDate === null
+        ? undefined
+        : toDate(input.dueDate, 'Due date');
+    const priority =
+      input.priority === undefined
+        ? TaskPriority.NORMAL
+        : requireOneOf(input.priority, TaskPriority, 'Priority');
 
-  const date = new Date();
-  const taskId = await ProjectTasks.insertAsync({
-    workspaceId: workspace._id,
-    ...(project ? { projectId: project._id } : {}),
-    title,
-    ...(description ? { description } : {}),
-    ...(assigneeId ? { assigneeId } : {}),
-    ...(dueDate ? { dueDate } : {}),
-    status: TaskStatus.TODO,
-    priority,
-    progress: 0,
-    tags: normalizeTags(input.tags),
-    ...(metadata ? { metadata } : {}),
-    commentCount: 0,
-    revision: 0,
-    createdAt: date,
-    createdBy: userId,
-    updatedAt: date,
-    updatedBy: userId,
-  });
+    const date = new Date();
+    const taskId = await ProjectTasks.insertAsync({
+      workspaceId: workspace._id,
+      ...(project ? { projectId: project._id } : {}),
+      title,
+      ...(description ? { description } : {}),
+      ...(assigneeId ? { assigneeId } : {}),
+      ...(dueDate ? { dueDate } : {}),
+      status: TaskStatus.TODO,
+      priority,
+      progress: 0,
+      tags: normalizeTags(input.tags),
+      ...(metadata ? { metadata } : {}),
+      commentCount: 0,
+      revision: 0,
+      createdAt: date,
+      createdBy: userId,
+      updatedAt: date,
+      updatedBy: userId,
+    });
 
-  if (project) await refreshProjectStats(project._id);
-  const task = await requireTask(taskId);
-  await logTask(task, ProjectsAction.TASK_CREATED, userId, {
-    title,
-    ...(assigneeId ? { assigneeId } : {}),
+    if (project) await refreshProjectStats(project._id);
+    const task = await requireTask(taskId);
+    await logTask(task, ProjectsAction.TASK_CREATED, userId, {
+      title,
+      ...(assigneeId ? { assigneeId } : {}),
+    });
+    await notifyTaskAssigned(task, userId);
+    return task;
   });
-  await notifyTaskAssigned(task, userId);
-  return task;
 }
 
 export async function getTask(
@@ -223,68 +226,70 @@ export async function updateTask(
   changes: UpdateTaskInput,
   userId: string
 ): Promise<ProjectTaskDocument> {
-  requireUserId(userId);
-  const { task, project } = await requireEditableTask(taskId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const { task, project } = await requireEditableTask(taskId);
 
-  const $set: Record<string, unknown> = {};
-  const $unset: Record<string, 1> = {};
-  let assigneeChanged = false;
+    const $set: Record<string, unknown> = {};
+    const $unset: Record<string, 1> = {};
+    let assigneeChanged = false;
 
-  if (changes.title !== undefined) {
-    $set.title = normalizeTitle(changes.title, 'Task title');
-  }
-  if (changes.description !== undefined) {
-    const description = normalizeText(changes.description, 'Description');
-    if (description) $set.description = description;
-    else $unset.description = 1;
-  }
-  if (changes.assigneeId !== undefined) {
-    if (changes.assigneeId === null || changes.assigneeId === '') {
-      assigneeChanged = !!task.assigneeId;
-      $unset.assigneeId = 1;
-    } else {
-      const assigneeId = normalizeOpaqueId(changes.assigneeId, 'Assignee id');
-      if (project) assertParticipant(project, assigneeId);
-      assigneeChanged = assigneeId !== task.assigneeId;
-      $set.assigneeId = assigneeId;
+    if (changes.title !== undefined) {
+      $set.title = normalizeTitle(changes.title, 'Task title');
     }
-  }
-  if (changes.dueDate !== undefined) {
-    if (changes.dueDate === null) $unset.dueDate = 1;
-    else $set.dueDate = toDate(changes.dueDate, 'Due date');
-  }
-  if (changes.priority !== undefined) {
-    $set.priority = requireOneOf(changes.priority, TaskPriority, 'Priority');
-  }
-  if (changes.tags !== undefined) $set.tags = normalizeTags(changes.tags);
-  if (changes.metadata !== undefined) {
-    const metadata = validateMetadata(changes.metadata);
-    if (metadata) $set.metadata = metadata;
-    else $unset.metadata = 1;
-  }
-
-  const updated = await writeTask(task, userId, { $set, $unset });
-  const changed = Object.keys(changes).filter(
-    key => changes[key as keyof UpdateTaskInput] !== undefined
-  );
-  await logTask(task, ProjectsAction.TASK_UPDATED, userId, { changed });
-  if (assigneeChanged) {
-    await logTask(task, ProjectsAction.TASK_ASSIGNED, userId, {
-      from: task.assigneeId ?? null,
-      to: updated.assigneeId ?? null,
-    });
-    if (task.assigneeId) {
-      await notifyTaskUnassigned(updated, task.assigneeId, userId);
+    if (changes.description !== undefined) {
+      const description = normalizeText(changes.description, 'Description');
+      if (description) $set.description = description;
+      else $unset.description = 1;
     }
-    await notifyTaskAssigned(updated, userId);
-  }
-  if (task.dueDate?.getTime() !== updated.dueDate?.getTime()) {
-    await notifyTaskDueDateChanged(updated, updated.dueDate, userId);
-  }
-  if (updated.priority !== task.priority) {
-    await notifyTaskPriorityChanged(updated, updated.priority, userId);
-  }
-  return updated;
+    if (changes.assigneeId !== undefined) {
+      if (changes.assigneeId === null || changes.assigneeId === '') {
+        assigneeChanged = !!task.assigneeId;
+        $unset.assigneeId = 1;
+      } else {
+        const assigneeId = normalizeOpaqueId(changes.assigneeId, 'Assignee id');
+        if (project) assertParticipant(project, assigneeId);
+        assigneeChanged = assigneeId !== task.assigneeId;
+        $set.assigneeId = assigneeId;
+      }
+    }
+    if (changes.dueDate !== undefined) {
+      if (changes.dueDate === null) $unset.dueDate = 1;
+      else $set.dueDate = toDate(changes.dueDate, 'Due date');
+    }
+    if (changes.priority !== undefined) {
+      $set.priority = requireOneOf(changes.priority, TaskPriority, 'Priority');
+    }
+    if (changes.tags !== undefined) $set.tags = normalizeTags(changes.tags);
+    if (changes.metadata !== undefined) {
+      const metadata = validateMetadata(changes.metadata);
+      if (metadata) $set.metadata = metadata;
+      else $unset.metadata = 1;
+    }
+
+    const updated = await writeTask(task, userId, { $set, $unset });
+    const changed = Object.keys(changes).filter(
+      key => changes[key as keyof UpdateTaskInput] !== undefined
+    );
+    await logTask(task, ProjectsAction.TASK_UPDATED, userId, { changed });
+    if (assigneeChanged) {
+      await logTask(task, ProjectsAction.TASK_ASSIGNED, userId, {
+        from: task.assigneeId ?? null,
+        to: updated.assigneeId ?? null,
+      });
+      if (task.assigneeId) {
+        await notifyTaskUnassigned(updated, task.assigneeId, userId);
+      }
+      await notifyTaskAssigned(updated, userId);
+    }
+    if (task.dueDate?.getTime() !== updated.dueDate?.getTime()) {
+      await notifyTaskDueDateChanged(updated, updated.dueDate, userId);
+    }
+    if (updated.priority !== task.priority) {
+      await notifyTaskPriorityChanged(updated, updated.priority, userId);
+    }
+    return updated;
+  });
 }
 
 /**
@@ -297,31 +302,33 @@ export async function setTaskStatus(
   status: TaskStatusValue,
   userId: string
 ): Promise<ProjectTaskDocument> {
-  requireUserId(userId);
-  const next = requireOneOf(status, TaskStatus, 'Status');
-  const { task } = await requireEditableTask(taskId);
-  if (task.status === next) return task;
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const next = requireOneOf(status, TaskStatus, 'Status');
+    const { task } = await requireEditableTask(taskId);
+    if (task.status === next) return task;
 
-  const $set: Record<string, unknown> = { status: next };
-  const $unset: Record<string, 1> = {};
-  if (next === TaskStatus.DONE) {
-    $set.progress = 100;
-    $set.completedAt = new Date();
-    $set.completedBy = userId;
-  } else if (task.status === TaskStatus.DONE) {
-    $unset.completedAt = 1;
-    $unset.completedBy = 1;
-    $set.progress = next === TaskStatus.TODO ? 0 : Math.min(task.progress, 99);
-  }
+    const $set: Record<string, unknown> = { status: next };
+    const $unset: Record<string, 1> = {};
+    if (next === TaskStatus.DONE) {
+      $set.progress = 100;
+      $set.completedAt = new Date();
+      $set.completedBy = userId;
+    } else if (task.status === TaskStatus.DONE) {
+      $unset.completedAt = 1;
+      $unset.completedBy = 1;
+      $set.progress = next === TaskStatus.TODO ? 0 : Math.min(task.progress, 99);
+    }
 
-  const updated = await writeTask(task, userId, { $set, $unset });
-  if (task.projectId) await refreshProjectStats(task.projectId);
-  await logTask(task, ProjectsAction.TASK_STATUS_CHANGED, userId, {
-    from: task.status,
-    to: next,
+    const updated = await writeTask(task, userId, { $set, $unset });
+    if (task.projectId) await refreshProjectStats(task.projectId);
+    await logTask(task, ProjectsAction.TASK_STATUS_CHANGED, userId, {
+      from: task.status,
+      to: next,
+    });
+    await notifyTaskStatusChanged(updated, updated.status, userId);
+    return updated;
   });
-  await notifyTaskStatusChanged(updated, updated.status, userId);
-  return updated;
 }
 
 /**
@@ -333,40 +340,42 @@ export async function setTaskProgress(
   progress: number,
   userId: string
 ): Promise<ProjectTaskDocument> {
-  requireUserId(userId);
-  const value = normalizeProgress(progress);
-  const { task } = await requireEditableTask(taskId);
-  if (!OpenTaskStatuses.includes(task.status)) {
-    throw projectsError(
-      'CONFLICT',
-      `Progress can't be set on a ${task.status} task`,
-      { status: task.status }
-    );
-  }
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const value = normalizeProgress(progress);
+    const { task } = await requireEditableTask(taskId);
+    if (!OpenTaskStatuses.includes(task.status)) {
+      throw projectsError(
+        'CONFLICT',
+        `Progress can't be set on a ${task.status} task`,
+        { status: task.status }
+      );
+    }
 
-  const $set: Record<string, unknown> = { progress: value };
-  if (value === 100) {
-    $set.status = TaskStatus.DONE;
-    $set.completedAt = new Date();
-    $set.completedBy = userId;
-  } else if (value > 0 && task.status === TaskStatus.TODO) {
-    $set.status = TaskStatus.IN_PROGRESS;
-  }
+    const $set: Record<string, unknown> = { progress: value };
+    if (value === 100) {
+      $set.status = TaskStatus.DONE;
+      $set.completedAt = new Date();
+      $set.completedBy = userId;
+    } else if (value > 0 && task.status === TaskStatus.TODO) {
+      $set.status = TaskStatus.IN_PROGRESS;
+    }
 
-  const updated = await writeTask(task, userId, { $set });
-  if (task.projectId) await refreshProjectStats(task.projectId);
-  await logTask(task, ProjectsAction.TASK_PROGRESS_CHANGED, userId, {
-    from: task.progress,
-    to: value,
-  });
-  if (updated.status !== task.status) {
-    await logTask(task, ProjectsAction.TASK_STATUS_CHANGED, userId, {
-      from: task.status,
-      to: updated.status,
+    const updated = await writeTask(task, userId, { $set });
+    if (task.projectId) await refreshProjectStats(task.projectId);
+    await logTask(task, ProjectsAction.TASK_PROGRESS_CHANGED, userId, {
+      from: task.progress,
+      to: value,
     });
-    await notifyTaskStatusChanged(updated, updated.status, userId);
-  }
-  return updated;
+    if (updated.status !== task.status) {
+      await logTask(task, ProjectsAction.TASK_STATUS_CHANGED, userId, {
+        from: task.status,
+        to: updated.status,
+      });
+      await notifyTaskStatusChanged(updated, updated.status, userId);
+    }
+    return updated;
+  });
 }
 
 /** Permanently deletes a task and its comments. Its activity is kept. */
@@ -374,15 +383,17 @@ export async function deleteTask(
   taskId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const task = await requireTask(taskId);
-  await ProjectComments.removeAsync({ taskId });
-  await ProjectTasks.removeAsync(taskId);
-  if (task.projectId) await refreshProjectStats(task.projectId);
-  await logTask(task, ProjectsAction.TASK_DELETED, userId, {
-    title: task.title,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const task = await requireTask(taskId);
+    await ProjectComments.removeAsync({ taskId });
+    await ProjectTasks.removeAsync(taskId);
+    if (task.projectId) await refreshProjectStats(task.projectId);
+    await logTask(task, ProjectsAction.TASK_DELETED, userId, {
+      title: task.title,
+    });
+    await notifyTaskDeleted(task, userId);
   });
-  await notifyTaskDeleted(task, userId);
 }
 
 interface TaskFilterOptions {
@@ -407,6 +418,11 @@ interface TaskFilterOptions {
 export interface ListTasksOptions extends TaskFilterOptions, ProjectsPageOptions {
   /** Only this project's tasks. */
   projectId?: string;
+  /**
+   * Only tasks of these projects, so standalone tasks are left out. Combined
+   * with `projectId`, the task must match both.
+   */
+  projectIds?: string[];
   /** true: only standalone tasks (ignored with `projectId`). */
   standalone?: boolean;
   /** Only tasks assigned to this person. */
@@ -533,6 +549,7 @@ export async function listTasks(
   userId: string,
   {
     projectId,
+    projectIds,
     standalone,
     assigneeId,
     unassigned,
@@ -564,8 +581,16 @@ export async function listTasks(
       metadata,
     }),
   };
-  if (projectId) selector.projectId = projectId;
-  else if (standalone) selector.projectId = { $exists: false };
+  if (projectIds) {
+    selector.projectId =
+      projectId && !projectIds.includes(projectId)
+        ? { $in: [] }
+        : projectId ?? { $in: projectIds };
+  } else if (projectId) {
+    selector.projectId = projectId;
+  } else if (standalone) {
+    selector.projectId = { $exists: false };
+  }
   if (assigneeId) {
     selector.assigneeId = normalizeOpaqueId(assigneeId, 'Assignee id');
   } else if (unassigned) {

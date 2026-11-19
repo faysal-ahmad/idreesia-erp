@@ -29,6 +29,7 @@ export const useMeetingsInfo = (committeeId: string) => {
   });
   return {
     canManage: !!info.data?.workspaceMeetingsInfo?.canManage,
+    canJoinVideoCall: !!info.data?.workspaceMeetingsInfo?.canJoinVideoCall,
     maxFileSize: info.data?.workspaceMeetingsInfo?.maxFileSize ?? 0,
     members: (members.data?.workspaceMeetingMembers ?? []).filter(
       (member): member is Member & { participantId: string } => !!member?.participantId,

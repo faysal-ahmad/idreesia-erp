@@ -1,6 +1,8 @@
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import {
+  Committees,
+  OrgLocations,
+} from 'meteor/idreesia-common/server/collections/admin';
 import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
-import { People } from 'meteor/idreesia-common/server/collections/common';
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import {
   addCommitteeMember,
@@ -10,14 +12,16 @@ import {
   setCommitteeMemberCoordinator,
   setCommitteeMemberDiscussionAccess,
   type CommitteeDoc,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
+import {
+  searchPeople,
+} from 'meteor/idreesia-common/server/business-logic/common';
 
 import {
   type CommitteeDocument,
   type WorkspaceUser,
   assertMembersEnabled,
-  getCoordinatedCommittee,
-  getMemberCommittee,
+  getCommitteeAccess,
   getUserCommittees,
   isCommitteeCoordinator,
 } from './access';
@@ -35,8 +39,6 @@ interface PersonDocument {
     cnicNumber?: string;
     contactNumber1?: string;
     contactNumber2?: string;
-    imageId?: string;
-    imageThumbnailId?: string;
     imageKey?: string;
     imageThumbnailKey?: string;
   };
@@ -112,17 +114,42 @@ const resolvers: ResolverMap = {
   Query: {
     myCommittees: async (obj, args, { user }) => getUserCommittees(user),
 
-    workspaceCommitteeById: async (obj, { committeeId }, { user }) =>
-      getMemberCommittee(user, committeeId),
+    myCommitteeLocations: async (obj, args, { user }) => {
+      const committees = await getUserCommittees(user);
+      const locationIds = Array.from(
+        new Set(
+          committees
+            .map(committee => (committee as { locationId?: string }).locationId)
+            .filter((id): id is string => !!id)
+        )
+      );
+      if (locationIds.length === 0) return [];
+
+      const locations = await OrgLocations.find({
+        _id: { $in: locationIds },
+      }).fetchAsync();
+      const allIds = new Set<string>(locationIds);
+      locations.forEach(location =>
+        (location.allParentIds ?? []).forEach(id => allIds.add(id))
+      );
+
+      return OrgLocations.find(
+        { _id: { $in: Array.from(allIds) } },
+        { sort: { name: 1 } }
+      ).fetchAsync();
+    },
+
+    workspaceCommitteeById: async (obj, { committeeId }, context) =>
+      getCommitteeAccess(context, committeeId).committee,
 
     // Mirrors the HR karkun search (karkuns of Multan), limited to
     // coordinators of the committee and to the fields needed to pick a person.
     workspaceCommitteeKarkunSearch: async (
       obj,
       { committeeId, name, cnicNumber, phoneNumber, pageIndex, pageSize },
-      { user }
+      context
     ) => {
-      const committee = await getCoordinatedCommittee(user, committeeId);
+      const { committee } = getCommitteeAccess(context, committeeId);
       assertMembersEnabled(committee);
 
       const multanCity = await Cities.findOneAsync({
@@ -131,7 +158,7 @@ const resolvers: ResolverMap = {
       });
       if (!multanCity) return { data: [], totalResults: 0 };
 
-      const result = (await People.searchPeople(
+      const result = (await searchPeople(
         {
           name,
           cnicNumber,
@@ -154,14 +181,14 @@ const resolvers: ResolverMap = {
     workspaceAddCommitteeMember: async (
       obj,
       { committeeId, karkunId, role },
-      { user }
+      context
     ) => {
-      const committee = await getCoordinatedCommittee(user, committeeId);
+      const { committee } = getCommitteeAccess(context, committeeId);
       assertMembersEnabled(committee);
       if (role && role !== 'member' && role !== 'guest') {
         throw new Error('Only members and guests can be added from here.');
       }
-      await addCommitteeMember(committeeId, karkunId, user._id, role);
+      await addCommitteeMember(committeeId, karkunId, context.user._id, role);
       return Committees.findOneAsync(committeeId);
     },
 
@@ -170,9 +197,9 @@ const resolvers: ResolverMap = {
     workspaceRemoveCommitteeMember: async (
       obj,
       { committeeId, karkunId },
-      { user }
+      context
     ) => {
-      const committee = await getCoordinatedCommittee(user, committeeId);
+      const { committee } = getCommitteeAccess(context, committeeId);
       assertMembersEnabled(committee);
       const member = (committee.members ?? []).find(
         m => m.karkunId === karkunId
@@ -183,20 +210,20 @@ const resolvers: ResolverMap = {
       if (member.role === 'coordinator') {
         throw new Error('Coordinators cannot be removed from here.');
       }
-      if (member.role === 'observer') {
+      if (member.role === 'observer' || member.role === 'inherited_observer') {
         throw new Error('Observers cannot be removed from here.');
       }
 
-      await removeCommitteeMember(committeeId, karkunId, user._id);
+      await removeCommitteeMember(committeeId, karkunId, context.user._id);
       return Committees.findOneAsync(committeeId);
     },
 
     workspaceSetCommitteeMemberDiscussionAccess: async (
       obj,
       { committeeId, karkunId, hasAccess },
-      { user }
+      context
     ) => {
-      const committee = await getCoordinatedCommittee(user, committeeId);
+      const { committee } = getCommitteeAccess(context, committeeId);
       return setCommitteeMemberDiscussionAccess(
         committee as unknown as CommitteeDoc,
         karkunId,
@@ -208,9 +235,9 @@ const resolvers: ResolverMap = {
     workspaceSetCommitteeMemberCoordinator: async (
       obj,
       { committeeId, karkunId, isCoordinator },
-      { user }
+      context
     ) => {
-      const committee = await getCoordinatedCommittee(user, committeeId);
+      const { committee } = getCommitteeAccess(context, committeeId);
       assertMembersEnabled(committee);
       const members = committee.members ?? [];
       if (!members.some(m => m.karkunId === karkunId)) {
@@ -230,7 +257,7 @@ const resolvers: ResolverMap = {
         committeeId,
         karkunId,
         !!isCoordinator,
-        user._id
+        context.user._id
       );
       return true;
     },

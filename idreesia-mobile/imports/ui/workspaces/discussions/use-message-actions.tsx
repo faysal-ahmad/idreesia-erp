@@ -3,28 +3,13 @@ import { ActionSheet, Dialog } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
 
 import { showError, showSuccess } from '../../layout';
+import { copyText } from '../../utilities';
 import { useDiscussionContext } from './discussion-context';
+import { useJoinVideoCall } from './use-join-video-call';
 import type { DiscussionMessage } from './discussion-types';
 import { EditMessagePopup } from './edit-message-popup';
 import type { MessageHandlers } from './discussion-message-list';
 import { ReactionPicker } from './reaction-picker';
-
-const copyText = async (text: string) => {
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch {
-    // Older WebViews: the execCommand fallback.
-    const area = document.createElement('textarea');
-    area.value = text;
-    area.setAttribute('readonly', '');
-    area.style.position = 'fixed';
-    area.style.opacity = '0';
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand('copy');
-    area.remove();
-  }
-};
 
 const run = async (action: () => Promise<void>, failure: string, success?: string) => {
   try {
@@ -42,6 +27,7 @@ const run = async (action: () => Promise<void>, failure: string, success?: strin
  */
 export const useMessageActions = (options: { onOpenThread?: (message: DiscussionMessage) => void }) => {
   const { canPost, canPin, actions } = useDiscussionContext();
+  const { join: joinVideoCall } = useJoinVideoCall();
   const [selected, setSelected] = useState<DiscussionMessage | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [reacting, setReacting] = useState<DiscussionMessage | null>(null);
@@ -110,6 +96,7 @@ export const useMessageActions = (options: { onOpenThread?: (message: Discussion
       run(() => actions.react(message._id, emoji, !reactedByMe), 'Could not update the reaction.');
     },
     onOpenThread: options.onOpenThread,
+    onJoinVideoCall: joinVideoCall,
   };
 
   const elements = (

@@ -14,15 +14,9 @@ export default new SimpleSchema({
   mimeType: {
     type: String,
   },
-  // Legacy base64 content. Files stored in object storage have fileKey
-  // instead, and data is removed once the copy is confirmed.
-  data: {
-    type: String,
-    optional: true,
-  },
+  // Key of the file in object storage.
   fileKey: {
     type: String,
-    optional: true,
   },
 })
   .extend(identifiable)

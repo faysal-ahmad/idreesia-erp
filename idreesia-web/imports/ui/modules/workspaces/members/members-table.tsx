@@ -40,6 +40,8 @@ interface Props {
   members: Member[];
   canManageMembers: boolean;
   discussionsEnabled: boolean;
+  /** Hides the discussion access column (guests and observers have none). */
+  hideDiscussionAccess?: boolean;
   /** Members tab only: coordinator pill and the member/coordinator toggle. */
   allowRoleChange?: boolean;
   /** Whether people can be removed from this tab (not for observers). */
@@ -55,6 +57,7 @@ const MembersTable = ({
   members,
   canManageMembers,
   discussionsEnabled,
+  hideDiscussionAccess = false,
   allowRoleChange = false,
   allowRemove,
   emptyText,
@@ -146,28 +149,32 @@ const MembersTable = ({
         </Flex>
       ),
     },
-    {
-      title: 'Has Discussion Access',
-      key: 'hasDiscussionAccess',
-      width: 180,
-      align: 'center' as const,
-      // Editable by coordinators, for members with a chat account, while
-      // Discussions is enabled.
-      render: (_text: unknown, record: Member) => (
-        <Checkbox
-          checked={!!record.hasDiscussionAccess}
-          disabled={
-            !canManageMembers ||
-            !discussionsEnabled ||
-            !record.hasChatAccount ||
-            savingAccessId != null
-          }
-          onChange={event =>
-            handleDiscussionAccessChange(record.karkunId!, event.target.checked)
-          }
-        />
-      ),
-    },
+    ...(hideDiscussionAccess
+      ? []
+      : [
+        {
+          title: 'Has Discussion Access',
+          key: 'hasDiscussionAccess',
+          width: 180,
+          align: 'center' as const,
+          // Editable by coordinators, for members with a chat account, while
+          // Discussions is enabled.
+          render: (_text: unknown, record: Member) => (
+            <Checkbox
+              checked={!!record.hasDiscussionAccess}
+              disabled={
+                !canManageMembers ||
+                !discussionsEnabled ||
+                !record.hasChatAccount ||
+                savingAccessId != null
+              }
+              onChange={event =>
+                handleDiscussionAccessChange(record.karkunId!, event.target.checked)
+              }
+            />
+          ),
+        },
+        ]),
     ...(showActions
       ? [
           {

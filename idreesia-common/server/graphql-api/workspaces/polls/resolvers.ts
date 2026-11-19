@@ -18,7 +18,7 @@ import {
   toCommitteePoll,
   updateCommitteePoll,
   type PollsView,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import {
   assertPollInWorkspace,
@@ -38,37 +38,36 @@ const view = (
   poll: Parameters<typeof toCommitteePoll>[0]
 ) => toCommitteePoll(poll, access);
 
-/** Checks a coordinator's access and that the poll is the committee's. */
+/** A poll of the committee, for a coordinator. */
 const managedPoll = async (
-  user: unknown,
+  context: unknown,
   committeeId: string,
   pollId: string
 ) => {
-  const access = await getPollsAccess(user as any, committeeId, {
-    coordinator: true,
-  });
+  const access = getPollsAccess(context as any, committeeId);
   const poll = await assertPollInWorkspace(access, pollId);
   return { access, poll };
 };
 
-// Each resolver only checks access - committee membership + Polls enabled,
-// coordinators for managing polls, members voting only as themselves, ids
-// belonging to the committee's workspace.
+// Who may call each field (committee role) is declared in the schema with
+// @checkCommitteeAccess. The resolvers only check what the role cannot tell:
+// Polls enabled on the committee, members voting only as themselves, ids
+// belonging to the committee's workspace, drafts visible to coordinators.
 // The polls module and the committee polls logic do the work, and the
 // module enforces the poll status rules and anonymity.
 const resolvers: ResolverMap = {
   Query: {
-    workspacePollsInfo: async (obj, { committeeId }, { user }) => {
-      const access = await getPollsAccess(user, committeeId);
+    workspacePollsInfo: async (obj, { committeeId }, context) => {
+      const access = getPollsAccess(context, committeeId);
       return getCommitteePollsInfo(access);
     },
 
     workspacePolls: async (
       obj,
       { committeeId, view: pollsView, text, pageIndex, pageSize },
-      { user }
+      context
     ) => {
-      const access = await getPollsAccess(user, committeeId);
+      const access = getPollsAccess(context, committeeId);
       return listCommitteePolls(access.workspaceId, access, {
         view: pollsView as PollsView | null,
         text,
@@ -77,14 +76,14 @@ const resolvers: ResolverMap = {
       });
     },
 
-    workspacePollById: async (obj, { committeeId, pollId }, { user }) => {
-      const access = await getPollsAccess(user, committeeId);
+    workspacePollById: async (obj, { committeeId, pollId }, context) => {
+      const access = getPollsAccess(context, committeeId);
       await assertPollInWorkspace(access, pollId);
       return getCommitteePoll(pollId, access);
     },
 
-    workspacePollResults: async (obj, { committeeId, pollId }, { user }) => {
-      const access = await getPollsAccess(user, committeeId);
+    workspacePollResults: async (obj, { committeeId, pollId }, context) => {
+      const access = getPollsAccess(context, committeeId);
       await assertPollInWorkspace(access, pollId);
       return getCommitteePollResults(pollId, access);
     },
@@ -92,11 +91,9 @@ const resolvers: ResolverMap = {
     workspacePollActivity: async (
       obj,
       { committeeId, pollId, before, limit },
-      { user }
+      context
     ) => {
-      const access = await getPollsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getPollsAccess(context, committeeId);
       if (pollId) await assertPollInWorkspace(access, pollId);
       return getCommitteePollActivity(access.workspaceId, access, {
         pollId,
@@ -107,10 +104,8 @@ const resolvers: ResolverMap = {
   },
 
   Mutation: {
-    workspaceCreatePoll: async (obj, { committeeId, input }, { user }) => {
-      const access = await getPollsAccess(user, committeeId, {
-        coordinator: true,
-      });
+    workspaceCreatePoll: async (obj, { committeeId, input }, context) => {
+      const access = getPollsAccess(context, committeeId);
       const poll = await createCommitteePoll(
         access.workspaceId,
         input,
@@ -122,9 +117,9 @@ const resolvers: ResolverMap = {
     workspaceUpdatePoll: async (
       obj,
       { committeeId, pollId, input },
-      { user }
+      context
     ) => {
-      const { access, poll } = await managedPoll(user, committeeId, pollId);
+      const { access, poll } = await managedPoll(context, committeeId, pollId);
       return view(
         access,
         await updateCommitteePoll(
@@ -138,9 +133,9 @@ const resolvers: ResolverMap = {
     workspaceOpenPoll: async (
       obj,
       { committeeId, pollId, closesAt },
-      { user }
+      context
     ) => {
-      const { access } = await managedPoll(user, committeeId, pollId);
+      const { access } = await managedPoll(context, committeeId, pollId);
       return view(
         access,
         await openPoll(pollId, access.userId, {
@@ -149,17 +144,17 @@ const resolvers: ResolverMap = {
       );
     },
 
-    workspaceClosePoll: async (obj, { committeeId, pollId }, { user }) => {
-      const { access } = await managedPoll(user, committeeId, pollId);
+    workspaceClosePoll: async (obj, { committeeId, pollId }, context) => {
+      const { access } = await managedPoll(context, committeeId, pollId);
       return view(access, await closePoll(pollId, access.userId));
     },
 
     workspaceReopenPoll: async (
       obj,
       { committeeId, pollId, closesAt },
-      { user }
+      context
     ) => {
-      const { access } = await managedPoll(user, committeeId, pollId);
+      const { access } = await managedPoll(context, committeeId, pollId);
       return view(
         access,
         await reopenPoll(
@@ -173,9 +168,9 @@ const resolvers: ResolverMap = {
     workspaceCancelPoll: async (
       obj,
       { committeeId, pollId, reason },
-      { user }
+      context
     ) => {
-      const { access } = await managedPoll(user, committeeId, pollId);
+      const { access } = await managedPoll(context, committeeId, pollId);
       return view(
         access,
         await cancelPoll(pollId, access.userId, {
@@ -184,8 +179,8 @@ const resolvers: ResolverMap = {
       );
     },
 
-    workspaceDeletePoll: async (obj, { committeeId, pollId }, { user }) => {
-      const { access } = await managedPoll(user, committeeId, pollId);
+    workspaceDeletePoll: async (obj, { committeeId, pollId }, context) => {
+      const { access } = await managedPoll(context, committeeId, pollId);
       await deletePoll(pollId, access.userId);
       return true;
     },
@@ -193,9 +188,9 @@ const resolvers: ResolverMap = {
     workspaceCastPollVote: async (
       obj,
       { committeeId, pollId, answers },
-      { user }
+      context
     ) => {
-      const access = await getPollsAccess(user, committeeId);
+      const access = getPollsAccess(context, committeeId);
       const voterId = requireVoterId(access);
       await assertPollInWorkspace(access, pollId);
       await castVote(pollId, voterId, answers, access.userId);
@@ -205,9 +200,9 @@ const resolvers: ResolverMap = {
     workspaceWithdrawPollVote: async (
       obj,
       { committeeId, pollId },
-      { user }
+      context
     ) => {
-      const access = await getPollsAccess(user, committeeId);
+      const access = getPollsAccess(context, committeeId);
       const voterId = requireVoterId(access);
       await assertPollInWorkspace(access, pollId);
       await withdrawVote(pollId, voterId, access.userId);

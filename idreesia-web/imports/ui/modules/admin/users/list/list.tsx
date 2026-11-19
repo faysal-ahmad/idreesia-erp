@@ -74,6 +74,14 @@ const columns: any[] = [
       record.hasChatAccount ? <CheckOutlined /> : null,
   },
   {
+    title: 'Two-Factor',
+    key: 'twoFactorEnabled',
+    width: 110,
+    align: 'center',
+    render: (_text: unknown, record: UserRow) =>
+      record.twoFactorEnabled ? <CheckOutlined /> : null,
+  },
+  {
     title: 'Karkun Name',
     key: 'karkun.name',
     render: (_text: unknown, record: UserRow) =>

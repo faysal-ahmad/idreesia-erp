@@ -36,7 +36,7 @@ jobs:
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v3
         with: 
-          meteor-release: 3.5.4
+          meteor-release: 3.6.1
       
       - run: meteor npm install -g yarn
 
@@ -69,6 +69,9 @@ jobs:
       - name: Typecheck Mobile App
         run: meteor yarn run typecheck
         working-directory: ./idreesia-mobile
+
+      - name: Run Unit Tests
+        run: meteor yarn run test:unit
 
       - name: Build Application
         run: meteor yarn run build

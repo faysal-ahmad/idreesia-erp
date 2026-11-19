@@ -1,0 +1,17 @@
+/* Drag-and-drop re-parenting on the Locations list */
+.org-locations-list .ant-table-tbody > tr[draggable='true'] {
+  cursor: grab;
+}
+
+.org-locations-list .org-location-row-dragging > td {
+  opacity: 0.45;
+}
+
+.org-locations-list .org-location-row-drop-valid > td {
+  background: var(--ant-color-primary-bg, #e6f4ff) !important;
+  box-shadow: inset 0 -2px 0 var(--ant-color-primary, #1677ff);
+}
+
+.org-locations-list .org-location-row-drop-invalid > td {
+  cursor: not-allowed;
+}

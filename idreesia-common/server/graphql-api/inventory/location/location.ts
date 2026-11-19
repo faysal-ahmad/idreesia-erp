@@ -19,9 +19,11 @@ type Location {
 
 extend type Query {
   locationById(_id: String!, physicalStoreId: String!): Location
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   locationsByPhysicalStoreId(physicalStoreId: String!): [Location]
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 

@@ -6,7 +6,7 @@ type CommitteeMemberType {
   # member, coordinator, guest or observer.
   role: String
   isCoordinator: Boolean
-  karkun: PersonType
+  karkun: PersonBasicType
   # The person has an ERP user.
   hasLoginAccount: Boolean
   # That user has a chat account.
@@ -28,6 +28,15 @@ type CommitteeMembersPageType {
   data: [CommitteeMemberType]
 }
 
+# The minimal view of a committee that other modules' data may expose (e.g. a
+# duty's committee). No members or other nested objects.
+type CommitteeBasicType {
+  _id: String
+  name: String
+  color: String
+  description: String
+}
+
 type CommitteeType {
   _id: String
   name: String
@@ -39,6 +48,8 @@ type CommitteeType {
   guestCount: Int
   observerCount: Int
   features: [String]
+  # The location this committee belongs to.
+  locationId: String
 
   createdAt: String
   createdBy: String
@@ -47,9 +58,10 @@ type CommitteeType {
 }
 
 extend type Query {
-  allCommittees: [CommitteeType]
-    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
   committeeById(id: String!): CommitteeType
+    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
+  # The committees made under a location.
+  committeesByLocationId(locationId: String!): [CommitteeType]
     @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
   # One page of the members with any of the given roles, coordinators first
   # and then by name.
@@ -65,9 +77,13 @@ extend type Query {
 }
 
 extend type Mutation {
-  createCommittee(name: String!, color: String, description: String): CommitteeType
+  # locationId is the location the committee belongs to.
+  createCommittee(name: String!, color: String, description: String, locationId: String!): CommitteeType
     @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   updateCommittee(id: String!, name: String!, color: String, description: String): CommitteeType
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
+  # Changes only the committee's location; nothing else about it changes.
+  moveCommittee(committeeId: String!, locationId: String!): CommitteeType
     @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   removeCommittee(_id: String!): Int
     @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])

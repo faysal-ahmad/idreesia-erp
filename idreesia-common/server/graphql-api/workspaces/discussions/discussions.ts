@@ -71,24 +71,43 @@ type DiscussionInfoType {
   canPin: Boolean
 }
 
+type DiscussionVideoCallType {
+  # Link that joins the discussion's video call.
+  url: String!
+}
+
+type DiscussionVideoCallInfoType {
+  # People in the call right now; null when that can't be told.
+  participantCount: Int
+}
+
 extend type Query {
+  workspaceDiscussionVideoCallInfo(committeeId: String!): DiscussionVideoCallInfoType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceDiscussionInfo(committeeId: String!): DiscussionInfoType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # Without 'since': the latest messages. With it: what changed since then.
   workspaceDiscussionSync(committeeId: String!, since: String): DiscussionSyncType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # A thread: the parent message first, then its replies.
   workspaceDiscussionThreadMessages(
     committeeId: String!
     threadId: String!
   ): [DiscussionMessageType]
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   workspaceDiscussionMembers(committeeId: String!): [DiscussionMemberType]
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   workspaceDiscussionPinnedMessages(committeeId: String!): [DiscussionMessageType]
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # Messages starred by the logged-in user.
   workspaceDiscussionStarredMessages(committeeId: String!): [DiscussionMessageType]
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # Messages sent before 'before' (an ISO time), one page.
   workspaceDiscussionOlderMessages(
     committeeId: String!
     before: String!
   ): DiscussionMessagePageType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # Messages matching the search (words or a /regex/), newest page first;
   # 'offset' is the number of matches already shown.
   workspaceDiscussionSearchMessages(
@@ -96,38 +115,49 @@ extend type Query {
     searchText: String!
     offset: Int
   ): DiscussionMessagePageType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 }
 
 extend type Mutation {
+  # The link that joins the discussion's video call. When nobody is in the
+  # call yet, it also posts "started a video call" in the discussion.
+  workspaceJoinDiscussionVideoCall(committeeId: String!): DiscussionVideoCallType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceSendDiscussionMessage(
     committeeId: String!
     text: String!
     threadId: String
   ): Boolean!
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceReactToDiscussionMessage(
     committeeId: String!
     messageId: String!
     emoji: String!
     shouldReact: Boolean!
   ): Boolean!
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceSetDiscussionMessageStarred(
     committeeId: String!
     messageId: String!
     starred: Boolean!
   ): Boolean!
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceSetDiscussionMessagePinned(
     committeeId: String!
     messageId: String!
     pinned: Boolean!
   ): Boolean!
+    @checkCommitteeAccess(roles: [COORDINATOR])
   workspaceEditDiscussionMessage(
     committeeId: String!
     messageId: String!
     text: String!
   ): Boolean!
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceDeleteDiscussionMessage(
     committeeId: String!
     messageId: String!
   ): Boolean!
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
 }
 `;

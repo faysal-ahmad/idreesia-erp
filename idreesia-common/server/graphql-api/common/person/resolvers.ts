@@ -1,10 +1,7 @@
 import type DataLoader from 'dataloader';
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { PeopleTags } from 'meteor/idreesia-common/server/collections/admin';
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
-import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 
 type Loader = DataLoader<string, unknown>;
@@ -17,9 +14,8 @@ interface Loaders {
     jobs: Loader;
     karkunTeams: DataLoader<string, unknown[]>;
   };
-  outstation: {
-    cities: Loader;
-    cityMehfils: Loader;
+  admin: {
+    orgLocations: Loader;
   };
 }
 
@@ -31,29 +27,18 @@ interface Person {
 interface PersonSharedDataType {
   imageKey?: string;
   imageThumbnailKey?: string;
-  imageId?: string;
-  imageThumbnailId?: string;
   tagIds?: string[];
 }
 
 interface PersonKarkunDataType {
   _id?: string;
-  cityId?: string;
-  cityMehfilId?: string;
+  cityLocationId?: string;
+  mehfilLocationId?: string;
   attachmentIds?: string[];
 }
 
 interface PersonEmployeeDataType {
   jobId?: string;
-}
-
-interface PagedPeopleArgs {
-  filter?: Record<string, unknown>;
-}
-
-interface FixCitySpellingArgs {
-  existingSpelling: string;
-  newSpelling: string;
 }
 
 interface ResolverContext {
@@ -80,30 +65,6 @@ export default {
       getPersonImageUrls(personSharedDataType).imageUrl,
     imageThumbnailUrl: (personSharedDataType: PersonSharedDataType) =>
       getPersonImageUrls(personSharedDataType).imageThumbnailUrl,
-    image: async (
-      personSharedDataType: PersonSharedDataType,
-      _args: unknown,
-      { loaders }: ResolverContext
-    ) => {
-      const { imageId } = personSharedDataType;
-      if (imageId) {
-        return loaders.common.attachments.load(imageId);
-      }
-
-      return null;
-    },
-    imageThumbnail: async (
-      personSharedDataType: PersonSharedDataType,
-      _args: unknown,
-      { loaders }: ResolverContext
-    ) => {
-      const { imageThumbnailId } = personSharedDataType;
-      if (imageThumbnailId) {
-        return loaders.common.attachments.load(imageThumbnailId);
-      }
-
-      return null;
-    },
     tags: async (personSharedDataType: PersonSharedDataType) => {
       const { tagIds } = personSharedDataType;
       if (tagIds && tagIds.length > 0) {
@@ -113,23 +74,29 @@ export default {
       return [];
     },
   },
+  PersonBasicSharedDataType: {
+    imageUrl: (personSharedDataType: PersonSharedDataType) =>
+      getPersonImageUrls(personSharedDataType).imageUrl,
+    imageThumbnailUrl: (personSharedDataType: PersonSharedDataType) =>
+      getPersonImageUrls(personSharedDataType).imageThumbnailUrl,
+  },
   PersonKarkunDataType: {
-    city: async (
+    cityLocation: async (
       personKarkunDataType: PersonKarkunDataType,
       _args: unknown,
       { loaders }: ResolverContext
     ) => {
-      if (!personKarkunDataType.cityId) return null;
-      return loaders.outstation.cities.load(personKarkunDataType.cityId);
+      if (!personKarkunDataType.cityLocationId) return null;
+      return loaders.admin.orgLocations.load(personKarkunDataType.cityLocationId);
     },
-    cityMehfil: async (
+    mehfilLocation: async (
       personKarkunDataType: PersonKarkunDataType,
       _args: unknown,
       { loaders }: ResolverContext
     ) => {
-      if (!personKarkunDataType.cityMehfilId) return null;
-      return loaders.outstation.cityMehfils.load(
-        personKarkunDataType.cityMehfilId
+      if (!personKarkunDataType.mehfilLocationId) return null;
+      return loaders.admin.orgLocations.load(
+        personKarkunDataType.mehfilLocationId
       );
     },
     teams: async (
@@ -169,13 +136,6 @@ export default {
   },
 
   Query: {
-    pagedPeople: async (_obj: unknown, { filter }: PagedPeopleArgs) =>
-      People.searchPeople(filter, {
-        includeVisitors: true,
-        includeKarkuns: true,
-        includeEmployees: true,
-      }),
-
     distinctCities: async () => {
       const cities = await (
         People.rawCollection() as unknown as PeopleRawCollection
@@ -190,51 +150,6 @@ export default {
         'visitorData.country'
       );
       return compact(countries);
-    },
-  },
-
-  Mutation: {
-    fixCitySpelling: async (
-      _obj: unknown,
-      { existingSpelling, newSpelling }: FixCitySpellingArgs,
-      { user }: ResolverContext
-    ) => {
-      if (
-        !hasOnePermission(user, [PermissionConstants.SECURITY_MANAGE_VISITORS])
-      ) {
-        throw new Error(
-          'You do not have permission to manage Visitors in the System.'
-        );
-      }
-
-      // If a city matching the existing spellings is present in the outstation
-      // cities list, then do not allow updating the spellings.
-      const outstationCity = await Cities.findOneAsync({
-        name: existingSpelling,
-      });
-
-      if (outstationCity) {
-        throw new Error(
-          'Spellings for this city cannot be changed as it exists in the Outstation city list.'
-        );
-      }
-
-      const date = new Date();
-      const count = await People.updateAsync(
-        {
-          'visitorData.city': { $eq: existingSpelling },
-        },
-        {
-          $set: {
-            'visitorData.city': newSpelling,
-            updatedAt: date,
-            updatedBy: user._id,
-          },
-        },
-        { multi: true }
-      );
-
-      return count;
     },
   },
 };

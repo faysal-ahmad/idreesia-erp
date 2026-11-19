@@ -1,6 +1,6 @@
 import { Migrations } from 'meteor/quave:migrations';
 
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
 
 interface LegacyMember {
   karkunId: string;

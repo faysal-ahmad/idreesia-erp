@@ -8,6 +8,10 @@ const SubModuleNames = {
   nightStayReport: 'Night Stay Report',
   monitoringAlerts: 'Monitoring Alerts',
   monitoringProfiles: 'Monitoring Profiles',
+  duties: 'Duties',
+  dutyPlanning: 'Duty Planning',
+  dutyAttendance: 'Duty Attendance',
+  attendanceSheet: 'Attendance Sheet',
 };
 
 export default SubModuleNames;

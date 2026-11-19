@@ -31,9 +31,9 @@ const EditForm = ({ match, history }: Props) => {
     variables: { id: physicalStoreId },
   });
   const [updatePhysicalStore] = useMutation(UPDATE_PHYSICAL_STORE, {
-    refetchQueries: ['adminAllPhysicalStores', 'allAccessiblePhysicalStores'],
+    refetchQueries: ['referencePhysicalStores', 'allAccessiblePhysicalStores'],
   });
-  const physicalStoreById = data?.physicalStoreById;
+  const physicalStoreById = data?.referencePhysicalStoreById;
 
   const handleCancel = () => {
     history.push(paths.physicalStoresPath);

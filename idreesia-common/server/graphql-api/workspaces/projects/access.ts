@@ -7,18 +7,24 @@ import {
 import {
   areCommitteeMembers,
   getCommitteeProjectsWorkspaceId,
-  getProjectChatGroupId,
   type CommitteeDoc,
   type ProjectsContext,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
+
+import { CommitteeMemberRoles } from 'meteor/idreesia-common/constants/organization';
 
 import {
-  getMemberCommittee,
-  isCommitteeCoordinator,
-  type WorkspaceUser,
+  getCommitteeAccess,
+  type CommitteeAccessContext,
 } from '../committee/access';
 
-export type ProjectsAccess = ProjectsContext;
+export interface ProjectsAccess extends ProjectsContext {
+  /**
+   * A guest sees and acts only in the projects they take part in, and in
+   * those projects' tasks. In those they have the same rights as a member.
+   */
+  isGuest: boolean;
+}
 
 const forbidden = (message: string) =>
   new GraphQLError(message, { extensions: { code: 'FORBIDDEN' } });
@@ -27,51 +33,70 @@ const notFound = (message: string) =>
   new GraphQLError(message, { extensions: { code: 'NOT_FOUND' } });
 
 /**
- * Permission check for a committee's projects: the user must be a member of
- * the committee (erp-admin counts as one), and the committee must have
- * Projects & Tasks enabled. With `coordinator`, only its coordinators pass.
+ * What a projects resolver works with, built from what
+ * `@checkCommitteeAccess` found: who may call the field is decided by the
+ * directive in the schema. Here the committee must also have Projects & Tasks
+ * enabled.
  */
-export const getProjectsAccess = async (
-  user: WorkspaceUser | null | undefined,
-  committeeId: string,
-  { coordinator = false }: { coordinator?: boolean } = {}
-): Promise<ProjectsAccess> => {
-  const committee = await getMemberCommittee(user, committeeId);
-  if (!committee || !user?._id) {
+export const getProjectsAccess = (
+  context: CommitteeAccessContext,
+  committeeId: string
+): ProjectsAccess => {
+  const { committee, role, isCoordinator } = getCommitteeAccess(
+    context,
+    committeeId
+  );
+  const { user } = context;
+  if (!user?._id) {
     throw forbidden('You are not a member of this committee.');
   }
-  const workspaceId = getCommitteeProjectsWorkspaceId(
-    committee as unknown as CommitteeDoc
-  );
-  const isCoordinator = isCommitteeCoordinator(user, committee);
-  if (coordinator && !isCoordinator) {
-    throw forbidden('Only coordinators of this committee can do this.');
-  }
   return {
-    workspaceId,
+    workspaceId: getCommitteeProjectsWorkspaceId(
+      committee as unknown as CommitteeDoc
+    ),
     committee: committee as unknown as CommitteeDoc,
     userId: user._id,
     personId: user.personId ?? null,
     isCoordinator,
+    isGuest: role === CommitteeMemberRoles.GUEST,
   };
 };
 
 /**
+ * The person id to narrow project and task lists to: a guest's own, since
+ * they only see projects they take part in. Undefined for everyone else.
+ */
+export const guestParticipantId = (access: ProjectsAccess) =>
+  access.isGuest ? access.personId ?? '-' : undefined;
+
+const takesPart = (
+  access: ProjectsAccess,
+  project: { participantIds: string[] }
+) => !!access.personId && project.participantIds.includes(access.personId);
+
+/**
  * The projects module takes ids on their own, so each id from the client is
- * checked to belong to the committee's workspace before it is acted on.
+ * checked to belong to the committee's workspace before it is acted on. A
+ * guest also has to take part in the project.
  */
 export const assertProjectInWorkspace = async (
   access: ProjectsAccess,
   projectId: string
 ) => {
   const project = await getProject(projectId, access.userId);
-  if (project.workspaceId !== access.workspaceId) {
+  if (
+    project.workspaceId !== access.workspaceId ||
+    (access.isGuest && !takesPart(access, project))
+  ) {
     throw notFound('Project not found');
   }
   return project;
 };
 
-/** The task, and its project when it has one. */
+/**
+ * The task, and its project when it has one. A guest only gets the tasks of
+ * projects they take part in.
+ */
 export const assertTaskInWorkspace = async (
   access: ProjectsAccess,
   taskId: string
@@ -81,8 +106,14 @@ export const assertTaskInWorkspace = async (
     throw notFound('Task not found');
   }
   const project = task.projectId
-    ? await assertProjectInWorkspace(access, task.projectId)
+    ? await getProject(task.projectId, access.userId)
     : undefined;
+  if (project && project.workspaceId !== access.workspaceId) {
+    throw notFound('Project not found');
+  }
+  if (access.isGuest && !(project && takesPart(access, project))) {
+    throw notFound('Task not found');
+  }
   return { task, project };
 };
 
@@ -101,30 +132,3 @@ export const assertMembers = (access: ProjectsAccess, personIds: string[]) => {
     });
   }
 };
-
-/**
- * Access to a project's chat: the user must be a participant of the project
- * (coordinators and erp-admin included - the chat is private). Returns the
- * chat group to hand to the discussions business logic. Shared by the GraphQL
- * resolvers and the file routes.
- */
-export const getProjectChatAccess = async (
-  user: WorkspaceUser | null | undefined,
-  committeeId: string,
-  projectId: string
-) => {
-  const access = await getProjectsAccess(user, committeeId);
-  const project = await assertProjectInWorkspace(access, projectId);
-  const chatGroupId = await getProjectChatGroupId(
-    access.committee,
-    projectId,
-    access
-  );
-  return { access, project, chatGroupId };
-};
-
-/** The ERP file route for a project chat's uploads. */
-export const projectDiscussionFileUrl =
-  (committeeId: string, projectId: string) =>
-  (fileId: string, fileName: string) =>
-    `/api/workspaces/committees/${committeeId}/projects/${projectId}/discussions/files/${fileId}/${fileName}`;

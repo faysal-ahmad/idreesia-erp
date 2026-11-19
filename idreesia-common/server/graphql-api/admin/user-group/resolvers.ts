@@ -1,5 +1,13 @@
 import { UserGroups } from 'meteor/idreesia-common/server/collections/admin';
 import { DataSource } from 'meteor/idreesia-common/constants';
+import {
+  createUserGroup,
+  removeUserGroup,
+  searchUserGroups,
+  setUserGroupInstanceAccess,
+  setUserGroupPermissions,
+  updateUserGroup,
+} from 'meteor/idreesia-common/server/business-logic/admin';
 
 interface UserRef {
   _id: string;
@@ -25,7 +33,7 @@ export default {
       _obj: unknown,
       { queryString }: Pick<UserGroupArgs, 'queryString'>
     ) =>
-      UserGroups.searchGroups(queryString),
+      searchUserGroups(queryString),
 
     userGroupById: async (_obj: unknown, { _id }: Pick<UserGroupArgs, '_id'>) =>
       UserGroups.findOneAsync(_id),
@@ -37,32 +45,32 @@ export default {
       params: UserGroupArgs,
       { user }: ResolverContext
     ) =>
-      UserGroups.createGroup(params, user),
+      createUserGroup(params, user),
 
     updateUserGroup: async (
       _obj: unknown,
       params: UserGroupArgs,
       { user }: ResolverContext
     ) =>
-      UserGroups.updateGroup(params, user),
+      updateUserGroup(params, user),
 
     deleteUserGroup: async (
       _obj: unknown,
       { _id }: Pick<UserGroupArgs, '_id'>
-    ) => UserGroups.removeGroup({ _id }),
+    ) => removeUserGroup({ _id }),
 
     setUserGroupPermissions: async (
       _obj: unknown,
       params: UserGroupArgs,
       { user }: ResolverContext
     ) =>
-      UserGroups.setPermissions(params, user, DataSource.ADMIN),
+      setUserGroupPermissions(params, user, DataSource.ADMIN),
 
     setUserGroupInstanceAccess: async (
       _obj: unknown,
       params: UserGroupArgs,
       { user }: ResolverContext
     ) =>
-      UserGroups.setInstanceAccess(params, user, DataSource.ADMIN),
+      setUserGroupInstanceAccess(params, user, DataSource.ADMIN),
   },
 };

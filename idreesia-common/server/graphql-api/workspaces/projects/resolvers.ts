@@ -7,22 +7,6 @@ import {
   setTaskStatus,
 } from 'meteor/idreesia-common/server/business-logic/projects';
 import {
-  deleteConversationMessage,
-  editConversationMessage,
-  getConversationInfo,
-  getConversationMembers,
-  getConversationPinnedMessages,
-  getConversationStarredMessages,
-  getConversationThreadMessages,
-  getOlderConversationMessages,
-  reactToConversationMessage,
-  searchConversationMessages,
-  sendConversationMessage,
-  setConversationMessagePinned,
-  setConversationMessageStarred,
-  syncConversationMessages,
-} from 'meteor/idreesia-common/server/business-logic/rocket-chat';
-import {
   addCommitteeProjectParticipants,
   createCommitteeProject,
   createCommitteeTask,
@@ -32,6 +16,7 @@ import {
   getCommitteeProjectsActivity,
   getCommitteeProjectsInfo,
   getCommitteeTask,
+  getPeopleInProjectsOf,
   listCommitteeProjects,
   listCommitteeTaskComments,
   listCommitteeTasks,
@@ -46,7 +31,7 @@ import {
   type CommitteeTaskInput,
   type ProjectsView,
   type TasksView,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import { GraphQLError } from 'graphql';
 
@@ -55,9 +40,8 @@ import {
   assertMembers,
   assertProjectInWorkspace,
   assertTaskInWorkspace,
-  getProjectChatAccess,
   getProjectsAccess,
-  projectDiscussionFileUrl,
+  guestParticipantId,
   type ProjectsAccess,
 } from './access';
 
@@ -83,78 +67,80 @@ const checkTaskInput = (access: ProjectsAccess, input: CommitteeTaskInput) => {
 
 /** A project of the committee, for a coordinator. */
 const managedProject = async (
-  user: unknown,
+  context: unknown,
   committeeId: string,
   projectId: string
 ) => {
-  const access = await getProjectsAccess(user as any, committeeId, {
-    coordinator: true,
-  });
+  const access = getProjectsAccess(context as any, committeeId);
   const project = await assertProjectInWorkspace(access, projectId);
   return { access, project };
 };
 
 /** A task of the committee, for a coordinator. */
 const managedTask = async (
-  user: unknown,
+  context: unknown,
   committeeId: string,
   taskId: string
 ) => {
-  const access = await getProjectsAccess(user as any, committeeId, {
-    coordinator: true,
-  });
+  const access = getProjectsAccess(context as any, committeeId);
   const { task, project } = await assertTaskInWorkspace(access, taskId);
   return { access, task, project };
 };
 
 /** A task whose status/progress the user may change: coordinators, or the assignee. */
 const updatableTask = async (
-  user: unknown,
+  context: unknown,
   committeeId: string,
   taskId: string
 ) => {
-  const access = await getProjectsAccess(user as any, committeeId);
+  const access = getProjectsAccess(context as any, committeeId);
   const { task, project } = await assertTaskInWorkspace(access, taskId);
   const isAssignee = !!access.personId && task.assigneeId === access.personId;
   if (!isAssignee) assertCoordinator(access);
   return { access, task, project };
 };
 
-// Each resolver only checks access - committee membership + Projects enabled;
-// coordinators for creating and changing projects and tasks; assignees for
-// updating their own task; ids belonging to the committee's workspace;
-// participants and assignees being committee members; and the project chat
-// being for participants only.
+// Who may call each field (committee role) is declared in the schema with
+// @checkCommitteeAccess. The resolvers only check what the role cannot tell:
+// Projects enabled on the committee; assignees updating their own task; ids
+// belonging to the committee's workspace; a guest taking part in the project;
+// participants and assignees being committee members.
 // The projects module and the committee projects logic do the work, and the
 // module enforces the status rules and progress.
 const resolvers: ResolverMap = {
   Query: {
-    workspaceProjectsInfo: async (obj, { committeeId }, { user }) => {
-      const access = await getProjectsAccess(user, committeeId);
+    workspaceProjectsInfo: async (obj, { committeeId }, context) => {
+      const access = getProjectsAccess(context, committeeId);
       return getCommitteeProjectsInfo(access);
     },
 
-    workspaceProjectMembers: async (obj, { committeeId }, { user }) => {
-      const access = await getProjectsAccess(user, committeeId);
-      return getCommitteeProjectMembers(access.committee);
+    workspaceProjectMembers: async (obj, { committeeId }, context) => {
+      const access = getProjectsAccess(context, committeeId);
+      return getCommitteeProjectMembers(
+        access.committee,
+        access.isGuest
+          ? await getPeopleInProjectsOf(access.workspaceId, access.personId)
+          : undefined
+      );
     },
 
     workspaceProjects: async (
       obj,
       { committeeId, view, text, pageIndex, pageSize },
-      { user }
+      context
     ) => {
-      const access = await getProjectsAccess(user, committeeId);
+      const access = getProjectsAccess(context, committeeId);
       return listCommitteeProjects(access.workspaceId, access, {
         view: view as ProjectsView | null,
+        participantId: guestParticipantId(access),
         text,
         pageIndex,
         pageSize,
       });
     },
 
-    workspaceProjectById: async (obj, { committeeId, projectId }, { user }) => {
-      const access = await getProjectsAccess(user, committeeId);
+    workspaceProjectById: async (obj, { committeeId, projectId }, context) => {
+      const access = getProjectsAccess(context, committeeId);
       await assertProjectInWorkspace(access, projectId);
       return getCommitteeProject(projectId, access);
     },
@@ -172,13 +158,14 @@ const resolvers: ResolverMap = {
         pageIndex,
         pageSize,
       },
-      { user }
+      context
     ) => {
-      const access = await getProjectsAccess(user, committeeId);
+      const access = getProjectsAccess(context, committeeId);
       if (projectId) await assertProjectInWorkspace(access, projectId);
       return listCommitteeTasks(access.workspaceId, access, {
         view: view as TasksView | null,
         projectId,
+        participantId: guestParticipantId(access),
         standalone,
         assigneeId,
         priority,
@@ -188,8 +175,8 @@ const resolvers: ResolverMap = {
       });
     },
 
-    workspaceTaskById: async (obj, { committeeId, taskId }, { user }) => {
-      const access = await getProjectsAccess(user, committeeId);
+    workspaceTaskById: async (obj, { committeeId, taskId }, context) => {
+      const access = getProjectsAccess(context, committeeId);
       await assertTaskInWorkspace(access, taskId);
       return getCommitteeTask(taskId, access);
     },
@@ -197,9 +184,9 @@ const resolvers: ResolverMap = {
     workspaceTaskComments: async (
       obj,
       { committeeId, taskId, pageIndex, pageSize },
-      { user }
+      context
     ) => {
-      const access = await getProjectsAccess(user, committeeId);
+      const access = getProjectsAccess(context, committeeId);
       await assertTaskInWorkspace(access, taskId);
       return listCommitteeTaskComments(taskId, access, { pageIndex, pageSize });
     },
@@ -207,11 +194,9 @@ const resolvers: ResolverMap = {
     workspaceProjectsActivity: async (
       obj,
       { committeeId, projectId, taskId, before, limit },
-      { user }
+      context
     ) => {
-      const access = await getProjectsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getProjectsAccess(context, committeeId);
       if (projectId) await assertProjectInWorkspace(access, projectId);
       if (taskId) await assertTaskInWorkspace(access, taskId);
       return getCommitteeProjectsActivity(access.workspaceId, access, {
@@ -222,137 +207,12 @@ const resolvers: ResolverMap = {
       });
     },
 
-    workspaceProjectDiscussionInfo: async (
-      obj,
-      { committeeId, projectId },
-      { user }
-    ) => {
-      const { access } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return {
-        ...getConversationInfo(user),
-        canPin: access.isCoordinator,
-      };
-    },
-
-    workspaceProjectDiscussionSync: async (
-      obj,
-      { committeeId, projectId, since },
-      { user }
-    ) => {
-      const { chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return syncConversationMessages(chatGroupId, user, {
-        since,
-        fileUrl: projectDiscussionFileUrl(committeeId, projectId),
-      });
-    },
-
-    workspaceProjectDiscussionThreadMessages: async (
-      obj,
-      { committeeId, projectId, threadId },
-      { user }
-    ) => {
-      const { chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return getConversationThreadMessages(chatGroupId, user, threadId, {
-        fileUrl: projectDiscussionFileUrl(committeeId, projectId),
-      });
-    },
-
-    workspaceProjectDiscussionMembers: async (
-      obj,
-      { committeeId, projectId },
-      { user }
-    ) => {
-      const { chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return getConversationMembers(chatGroupId);
-    },
-
-    workspaceProjectDiscussionPinnedMessages: async (
-      obj,
-      { committeeId, projectId },
-      { user }
-    ) => {
-      const { chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return getConversationPinnedMessages(chatGroupId, user, {
-        fileUrl: projectDiscussionFileUrl(committeeId, projectId),
-      });
-    },
-
-    workspaceProjectDiscussionStarredMessages: async (
-      obj,
-      { committeeId, projectId },
-      { user }
-    ) => {
-      const { chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return getConversationStarredMessages(chatGroupId, user, {
-        fileUrl: projectDiscussionFileUrl(committeeId, projectId),
-      });
-    },
-
-    workspaceProjectDiscussionOlderMessages: async (
-      obj,
-      { committeeId, projectId, before },
-      { user }
-    ) => {
-      const { chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return getOlderConversationMessages(chatGroupId, user, {
-        before,
-        fileUrl: projectDiscussionFileUrl(committeeId, projectId),
-      });
-    },
-
-    workspaceProjectDiscussionSearchMessages: async (
-      obj,
-      { committeeId, projectId, searchText, offset },
-      { user }
-    ) => {
-      const { chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return searchConversationMessages(chatGroupId, user, {
-        searchText,
-        offset,
-        fileUrl: projectDiscussionFileUrl(committeeId, projectId),
-      });
-    },
   },
 
   Mutation: {
-    workspaceCreateProject: async (obj, { committeeId, input }, { user }) => {
-      const access = await getProjectsAccess(user, committeeId, {
-        coordinator: true,
-      });
+    workspaceCreateProject: async (obj, { committeeId, input }, context) => {
+      const access = getProjectsAccess(context, committeeId);
       const project = await createCommitteeProject(
-        access.committee,
         access.workspaceId,
         checkProjectInput(access, input),
         access.userId
@@ -363,10 +223,9 @@ const resolvers: ResolverMap = {
     workspaceUpdateProject: async (
       obj,
       { committeeId, projectId, input },
-      { user }
+      context
     ) => {
-      const { access, project } = await managedProject(
-        user,
+      const { access, project } = await managedProject(context,
         committeeId,
         projectId
       );
@@ -383,9 +242,9 @@ const resolvers: ResolverMap = {
     workspaceSetProjectStatus: async (
       obj,
       { committeeId, projectId, status, force },
-      { user }
+      context
     ) => {
-      const { access } = await managedProject(user, committeeId, projectId);
+      const { access } = await managedProject(context, committeeId, projectId);
       return toCommitteeProject(
         await setCommitteeProjectStatus(
           projectId,
@@ -400,10 +259,9 @@ const resolvers: ResolverMap = {
     workspaceAddProjectParticipants: async (
       obj,
       { committeeId, projectId, personIds },
-      { user }
+      context
     ) => {
-      const { access, project } = await managedProject(
-        user,
+      const { access, project } = await managedProject(context,
         committeeId,
         projectId
       );
@@ -418,10 +276,9 @@ const resolvers: ResolverMap = {
     workspaceRemoveProjectParticipant: async (
       obj,
       { committeeId, projectId, personId, unassignTasks },
-      { user }
+      context
     ) => {
-      const { access, project } = await managedProject(
-        user,
+      const { access, project } = await managedProject(context,
         committeeId,
         projectId
       );
@@ -439,11 +296,9 @@ const resolvers: ResolverMap = {
     workspaceDeleteProject: async (
       obj,
       { committeeId, projectId, deleteTasks },
-      { user }
+      context
     ) => {
-      const access = await getProjectsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getProjectsAccess(context, committeeId);
       const project = await assertProjectInWorkspace(access, projectId);
       await deleteCommitteeProject(
         project,
@@ -453,10 +308,8 @@ const resolvers: ResolverMap = {
       return true;
     },
 
-    workspaceCreateTask: async (obj, { committeeId, input }, { user }) => {
-      const access = await getProjectsAccess(user, committeeId, {
-        coordinator: true,
-      });
+    workspaceCreateTask: async (obj, { committeeId, input }, context) => {
+      const access = getProjectsAccess(context, committeeId);
       const project = input.projectId
         ? await assertProjectInWorkspace(access, input.projectId)
         : undefined;
@@ -472,10 +325,9 @@ const resolvers: ResolverMap = {
     workspaceUpdateTask: async (
       obj,
       { committeeId, taskId, input },
-      { user }
+      context
     ) => {
-      const { access, task, project } = await managedTask(
-        user,
+      const { access, task, project } = await managedTask(context,
         committeeId,
         taskId
       );
@@ -490,8 +342,8 @@ const resolvers: ResolverMap = {
       );
     },
 
-    workspaceDeleteTask: async (obj, { committeeId, taskId }, { user }) => {
-      const { access } = await managedTask(user, committeeId, taskId);
+    workspaceDeleteTask: async (obj, { committeeId, taskId }, context) => {
+      const { access } = await managedTask(context, committeeId, taskId);
       await deleteTask(taskId, access.userId);
       return true;
     },
@@ -499,9 +351,9 @@ const resolvers: ResolverMap = {
     workspaceSetTaskStatus: async (
       obj,
       { committeeId, taskId, status },
-      { user }
+      context
     ) => {
-      const { access } = await updatableTask(user, committeeId, taskId);
+      const { access } = await updatableTask(context, committeeId, taskId);
       return toCommitteeTask(
         await setTaskStatus(taskId, status, access.userId),
         access
@@ -511,9 +363,9 @@ const resolvers: ResolverMap = {
     workspaceSetTaskProgress: async (
       obj,
       { committeeId, taskId, progress },
-      { user }
+      context
     ) => {
-      const { access } = await updatableTask(user, committeeId, taskId);
+      const { access } = await updatableTask(context, committeeId, taskId);
       return toCommitteeTask(
         await setTaskProgress(taskId, progress, access.userId),
         access
@@ -523,9 +375,9 @@ const resolvers: ResolverMap = {
     workspaceAddTaskComment: async (
       obj,
       { committeeId, taskId, text },
-      { user }
+      context
     ) => {
-      const access = await getProjectsAccess(user, committeeId);
+      const access = getProjectsAccess(context, committeeId);
       await assertTaskInWorkspace(access, taskId);
       const comment = await addTaskComment(taskId, text, access.userId);
       return (await mapComments([comment], access))[0];
@@ -534,9 +386,9 @@ const resolvers: ResolverMap = {
     workspaceDeleteTaskComment: async (
       obj,
       { committeeId, commentId },
-      { user }
+      context
     ) => {
-      const access = await getProjectsAccess(user, committeeId);
+      const access = getProjectsAccess(context, committeeId);
       const comment = await getTaskComment(commentId, access.userId);
       await assertTaskInWorkspace(access, comment.taskId);
       if (!access.isCoordinator && comment.authorId !== access.userId) {
@@ -548,90 +400,6 @@ const resolvers: ResolverMap = {
       return true;
     },
 
-    workspaceSendProjectDiscussionMessage: async (
-      obj,
-      { committeeId, projectId, text, threadId },
-      { user }
-    ) => {
-      const { chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return sendConversationMessage(chatGroupId, user, text, threadId);
-    },
-
-    workspaceReactToProjectDiscussionMessage: async (
-      obj,
-      { committeeId, projectId, messageId, emoji, shouldReact },
-      { user }
-    ) => {
-      const { chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return reactToConversationMessage(
-        chatGroupId,
-        user,
-        messageId,
-        emoji,
-        shouldReact
-      );
-    },
-
-    workspaceSetProjectDiscussionMessageStarred: async (
-      obj,
-      { committeeId, projectId, messageId, starred },
-      { user }
-    ) => {
-      const { chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return setConversationMessageStarred(chatGroupId, user, messageId, starred);
-    },
-
-    workspaceSetProjectDiscussionMessagePinned: async (
-      obj,
-      { committeeId, projectId, messageId, pinned },
-      { user }
-    ) => {
-      const { access, chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      assertCoordinator(access);
-      return setConversationMessagePinned(chatGroupId, messageId, pinned);
-    },
-
-    workspaceEditProjectDiscussionMessage: async (
-      obj,
-      { committeeId, projectId, messageId, text },
-      { user }
-    ) => {
-      const { chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return editConversationMessage(chatGroupId, user, messageId, text);
-    },
-
-    workspaceDeleteProjectDiscussionMessage: async (
-      obj,
-      { committeeId, projectId, messageId },
-      { user }
-    ) => {
-      const { chatGroupId } = await getProjectChatAccess(
-        user,
-        committeeId,
-        projectId
-      );
-      return deleteConversationMessage(chatGroupId, user, messageId);
-    },
   },
 };
 

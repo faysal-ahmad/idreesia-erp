@@ -46,11 +46,6 @@ export default {
         },
         { sort: { name: 1 } }
       ).fetchAsync(),
-
-    cityMehfilById: async (
-      _obj: unknown,
-      { _id }: Pick<CityMehfilArgs, '_id'>
-    ) => CityMehfils.findOneAsync(_id),
   },
 
   Mutation: {

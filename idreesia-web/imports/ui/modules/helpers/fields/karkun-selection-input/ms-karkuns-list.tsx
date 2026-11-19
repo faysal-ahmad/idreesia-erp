@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/client/react';
 
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import type { HelperPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
-import { useAllMSDuties } from '/imports/ui/modules/hr/common/hooks';
+import { useReferenceMsDuties } from 'meteor/idreesia-common/hooks/reference-data';
 import {
   KarkunsFilterChips,
   KarkunsList,
@@ -46,7 +46,8 @@ const List = ({ handleSelectItem }: Props) => {
     if (Object.prototype.hasOwnProperty.call(values, 'pageSize')) setPageSize(values.pageSize ?? '20');
   };
 
-  const { allMSDuties, allMSDutiesLoading } = useAllMSDuties();
+  const { referenceMsDuties: allMSDuties, referenceMsDutiesLoading: allMSDutiesLoading } =
+    useReferenceMsDuties();
   const { data, loading, refetch } = useQuery(PAGED_HR_KARKUNS, {
     variables: {
       filter: {

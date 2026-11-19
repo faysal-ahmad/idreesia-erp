@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { Random } from 'meteor/random';
 
 import {
@@ -200,23 +201,25 @@ export async function setPollQuestions(
   questions: PollQuestionInput[],
   userId: string
 ): Promise<PollDocument> {
-  requireUserId(userId);
-  const poll = await requirePoll(pollId);
-  const built = buildQuestions(questions, poll.questions);
-  const updated = await writePoll(
-    poll,
-    userId,
-    { $set: { questions: built } },
-    { allowed: DRAFT_ONLY }
-  );
-  await logActivity({
-    workspaceId: poll.workspaceId,
-    pollId,
-    entityType: PollsEntityType.POLL,
-    entityId: pollId,
-    action: PollsAction.QUESTIONS_UPDATED,
-    userId,
-    details: { questionCount: built.length },
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const poll = await requirePoll(pollId);
+    const built = buildQuestions(questions, poll.questions);
+    const updated = await writePoll(
+      poll,
+      userId,
+      { $set: { questions: built } },
+      { allowed: DRAFT_ONLY }
+    );
+    await logActivity({
+      workspaceId: poll.workspaceId,
+      pollId,
+      entityType: PollsEntityType.POLL,
+      entityId: pollId,
+      action: PollsAction.QUESTIONS_UPDATED,
+      userId,
+      details: { questionCount: built.length },
+    });
+    return updated;
   });
-  return updated;
 }

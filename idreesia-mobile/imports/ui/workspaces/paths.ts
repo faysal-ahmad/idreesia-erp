@@ -16,7 +16,7 @@ export type MeetingPart =
   | 'action-items'
   | 'activity';
 
-/** The screens under one project (its chat has screens of its own). */
+/** The screens under one project. */
 export type ProjectPart = 'edit' | 'participants' | 'tasks' | 'activity';
 
 /** The screens under one document. */
@@ -96,33 +96,19 @@ export const WorkspacesPaths = {
     `${committee(':committeeId')}/projects/:projectId/${part}`,
   committeeProjectPart: (committeeId: string, projectId: string, part: ProjectPart) =>
     `${committee(committeeId)}/projects/${projectId}/${part}`,
-  /** A project's private chat; its screens are under it. */
-  committeeProjectChatPattern: `${committee(':committeeId')}/projects/:projectId/chat`,
-  committeeProjectChat: (committeeId: string, projectId: string) =>
-    `${committee(committeeId)}/projects/${projectId}/chat`,
-  committeeProjectChatThreadPattern: `${committee(':committeeId')}/projects/:projectId/chat/threads/:threadId`,
-  committeeProjectChatThread: (committeeId: string, projectId: string, threadId: string) =>
-    `${committee(committeeId)}/projects/${projectId}/chat/threads/${threadId}`,
-  committeeProjectChatSearchPattern: `${committee(':committeeId')}/projects/:projectId/chat/search`,
-  committeeProjectChatSearch: (committeeId: string, projectId: string) =>
-    `${committee(committeeId)}/projects/${projectId}/chat/search`,
-  committeeProjectChatPinnedPattern: `${committee(':committeeId')}/projects/:projectId/chat/pinned`,
-  committeeProjectChatPinned: (committeeId: string, projectId: string) =>
-    `${committee(committeeId)}/projects/${projectId}/chat/pinned`,
-  committeeProjectChatStarredPattern: `${committee(':committeeId')}/projects/:projectId/chat/starred`,
-  committeeProjectChatStarred: (committeeId: string, projectId: string) =>
-    `${committee(committeeId)}/projects/${projectId}/chat/starred`,
-  /** Route pattern for a committee's tasks; their screens are under it. */
-  committeeTasksPattern: `${committee(':committeeId')}/tasks`,
-  committeeTasks: (committeeId: string) => `${committee(committeeId)}/tasks`,
-  committeeNewTaskPattern: `${committee(':committeeId')}/tasks/new`,
-  /** `projectId`: the project the new task goes in. */
-  committeeNewTask: (committeeId: string) => `${committee(committeeId)}/tasks/new`,
-  committeeTaskPattern: `${committee(':committeeId')}/tasks/:taskId`,
-  committeeTask: (committeeId: string, taskId: string) => `${committee(committeeId)}/tasks/${taskId}`,
-  committeeTaskEditPattern: `${committee(':committeeId')}/tasks/:taskId/edit`,
+  /**
+   * A committee's tasks: the Tasks tab of the projects screen (as on the
+   * web). Each task's screens are under the projects path too.
+   */
+  committeeTasks: (committeeId: string) => `${committee(committeeId)}/projects?section=tasks`,
+  committeeTasksBasePattern: `${committee(':committeeId')}/projects/tasks`,
+  committeeNewTaskPattern: `${committee(':committeeId')}/projects/tasks/new`,
+  committeeNewTask: (committeeId: string) => `${committee(committeeId)}/projects/tasks/new`,
+  committeeTaskPattern: `${committee(':committeeId')}/projects/tasks/:taskId`,
+  committeeTask: (committeeId: string, taskId: string) => `${committee(committeeId)}/projects/tasks/${taskId}`,
+  committeeTaskEditPattern: `${committee(':committeeId')}/projects/tasks/:taskId/edit`,
   committeeTaskEdit: (committeeId: string, taskId: string) =>
-    `${committee(committeeId)}/tasks/${taskId}/edit`,
+    `${committee(committeeId)}/projects/tasks/${taskId}/edit`,
   /** Route pattern for a committee's documents (the top-level folder); their screens are under it. */
   committeeDocumentsPattern: `${committee(':committeeId')}/documents`,
   committeeDocuments: (committeeId: string) => `${committee(committeeId)}/documents`,

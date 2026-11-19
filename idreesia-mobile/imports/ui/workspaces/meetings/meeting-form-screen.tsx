@@ -1,5 +1,5 @@
 import React, { type ReactNode, useEffect, useMemo, useState } from 'react';
-import { Button, DatePicker, Form, Input, TextArea } from 'antd-mobile';
+import { Button, DatePicker, Form, Input, Selector, TextArea } from 'antd-mobile';
 import { CalendarOutline } from 'antd-mobile-icons';
 import { useApolloClient, useMutation } from '@apollo/client/react';
 
@@ -47,6 +47,8 @@ export const MeetingFormScreen = () => {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [startOpen, setStartOpen] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
+  // Where it takes place: in person (with an address) or as a video call.
+  const [videoCall, setVideoCall] = useState(false);
   const [createMeeting, { loading: creating }] = useMutation(MOBILE_CREATE_MEETING);
   const [updateMeeting, { loading: updating }] = useMutation(MOBILE_UPDATE_MEETING);
 
@@ -79,6 +81,10 @@ export const MeetingFormScreen = () => {
     form.setFieldsValue(initialValues);
   }, [form, initialValues]);
 
+  useEffect(() => {
+    setVideoCall(!!meeting?.videoCall);
+  }, [meeting]);
+
   const page = (children: ReactNode) => (
     <Page backTo={backTo} title={isEdit ? 'Edit meeting' : 'New meeting'}>
       {children}
@@ -96,9 +102,8 @@ export const MeetingFormScreen = () => {
       title: values.title.trim(),
       startsAt: String(values.startsAt.getTime()),
       endsAt: String(values.endsAt.getTime()),
-      location: values.location?.trim() || null,
-      // The form no longer edits the link; keep whatever an existing meeting has.
-      onlineUrl: meeting?.onlineUrl ?? null,
+      location: videoCall ? null : values.location?.trim() || null,
+      videoCall,
       description: values.description?.trim() || null,
     };
     try {
@@ -187,9 +192,22 @@ export const MeetingFormScreen = () => {
             {value => formatPicked(value)}
           </DatePicker>
         </Form.Item>
-        <Form.Item label="Location" name="location">
-          <Input autoCapitalize="sentences" clearable maxLength={1000} placeholder="Where it takes place" />
+        <Form.Item label="Location">
+          <Selector
+            columns={2}
+            options={[
+              { value: 'in-person', label: 'In person' },
+              { value: 'video-call', label: 'Video call' },
+            ]}
+            value={[videoCall ? 'video-call' : 'in-person']}
+            onChange={([choice]) => choice && setVideoCall(choice === 'video-call')}
+          />
         </Form.Item>
+        {!videoCall && (
+          <Form.Item name="location">
+            <Input autoCapitalize="sentences" clearable maxLength={1000} placeholder="Where it takes place" />
+          </Form.Item>
+        )}
         <Form.Item label="Description" name="description">
           <TextArea autoSize={{ minRows: 2, maxRows: 6 }} maxLength={10000} placeholder="What it's about" />
         </Form.Item>

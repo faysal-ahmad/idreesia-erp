@@ -1,5 +1,7 @@
 # Duty Planning & Attendance
 
+> This is the HR module's duty planning. The headless [Duties and Attendance](mehfil-headless-modules/duties-attendance-design-and-usage.md) module, owned by a mehfil, is separate: its duties, rosters and attendance live in their own collections.
+
 Data model and rules for duty planning (HR → Duty Planning) and duty attendance (HR → Duty Attendance). Schemas live in `idreesia-common/server/schemas/hr/`; the business logic is in `idreesia-common/server/business-logic/hr/duty-planning.ts`.
 
 Planning is done per **duty location**: a non-mehfil duty plus one of its locations. Future days are planned with a team per shift and per-day changes. At the start of each day, that day's plan is written to a day attendance record and locked. From then on, only attendance can be recorded for it.
@@ -66,7 +68,7 @@ erDiagram
     PERSON {
         string _id PK
         bool isKarkun
-        object sharedData "name, imageId, imageThumbnailId"
+        object sharedData "name, imageKey, imageThumbnailKey"
     }
     DUTY_TEAM_ASSIGNMENT {
         string _id PK

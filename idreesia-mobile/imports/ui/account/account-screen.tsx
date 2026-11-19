@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dialog, List, SpinLoading } from 'antd-mobile';
-import { DownlandOutline, LockOutline } from 'antd-mobile-icons';
+import { DownlandOutline, KeyOutline, LockOutline } from 'antd-mobile-icons';
 import { logout } from '../auth/accounts';
 import { useCurrentUser } from '../hooks';
 import { Page, showError } from '../layout';
@@ -58,6 +58,13 @@ export const AccountScreen = () => {
             onClick={() => history.push(AccountPaths.changePassword)}
           >
             Change password
+          </List.Item>
+          <List.Item
+            prefix={<KeyOutline />}
+            extra={user?.twoFactorEnabled ? 'On' : 'Off'}
+            onClick={() => history.push(AccountPaths.twoFactor)}
+          >
+            Two-factor authentication
           </List.Item>
           {isOfflineStorageAvailable() && (
             <List.Item

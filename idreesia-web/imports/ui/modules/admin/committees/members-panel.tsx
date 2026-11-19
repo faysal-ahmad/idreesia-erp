@@ -105,6 +105,11 @@ interface Props {
    * coordinator). Off for the guests and observers tabs.
    */
   allowRoleChange?: boolean;
+  /**
+   * Shows the login, chat and discussion access columns. Off for the guests
+   * and observers tabs: they have no part in discussions.
+   */
+  showAccountColumns?: boolean;
   emptyText?: string;
 }
 
@@ -113,18 +118,19 @@ const CommitteeMembersPanel = ({
   members,
   loading = false,
   allowRoleChange = false,
+  showAccountColumns = true,
   emptyText = 'No members added yet',
 }: Props) => {
   const [removeCommitteeMember] = useMutation(REMOVE_COMMITTEE_MEMBER, {
-    refetchQueries: ['committeeById', 'committeeMembers', 'listAllCommittees'],
+    refetchQueries: ['committeeById', 'committeeMembers', 'locationCommittees'],
   });
   const [setMemberRole] = useMutation(SET_COMMITTEE_MEMBER_ROLE, {
-    refetchQueries: ['committeeById', 'committeeMembers', 'listAllCommittees'],
+    refetchQueries: ['committeeById', 'committeeMembers', 'locationCommittees'],
   });
   const [roleMemberId, setRoleMemberId] = useState<string | null>(null);
   const [setDiscussionAccess] = useMutation(
     SET_COMMITTEE_MEMBER_DISCUSSION_ACCESS,
-    { refetchQueries: ['committeeById', 'committeeMembers', 'listAllCommittees'], awaitRefetchQueries: true }
+    { refetchQueries: ['committeeById', 'committeeMembers', 'locationCommittees'], awaitRefetchQueries: true }
   );
   const [savingAccessId, setSavingAccessId] = useState<string | null>(null);
 
@@ -157,7 +163,7 @@ const CommitteeMembersPanel = ({
       .finally(() => setSavingAccessId(null));
   };
 
-  const columns = [
+  const allColumns = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -172,7 +178,8 @@ const CommitteeMembersPanel = ({
           }}
         >
           <PersonName person={record} />
-          {allowRoleChange ? (
+          {allowRoleChange ||
+          record.role === CommitteeMemberRoles.INHERITED_OBSERVER ? (
             <Tag color={MEMBER_ROLE_COLORS[record.role]} style={{ margin: 0 }}>
               {MEMBER_ROLE_LABELS[record.role]}
             </Tag>
@@ -199,6 +206,7 @@ const CommitteeMembersPanel = ({
     {
       title: 'Has Login Account',
       key: 'hasLoginAccount',
+      isAccountColumn: true,
       width: 150,
       align: 'center' as const,
       render: (_text: unknown, record: CommitteeMember) =>
@@ -207,6 +215,7 @@ const CommitteeMembersPanel = ({
     {
       title: 'Has Chat Account',
       key: 'hasChatAccount',
+      isAccountColumn: true,
       width: 150,
       align: 'center' as const,
       render: (_text: unknown, record: CommitteeMember) =>
@@ -215,6 +224,7 @@ const CommitteeMembersPanel = ({
     {
       title: 'Has Discussion Access',
       key: 'hasDiscussionAccess',
+      isAccountColumn: true,
       width: 180,
       align: 'center' as const,
       // Editable for members with a chat account, while Discussions is
@@ -237,6 +247,8 @@ const CommitteeMembersPanel = ({
       key: 'action',
       width: 80,
       render: (_text: unknown, record: CommitteeMember) => {
+        // Inherited observers are managed from the parent location.
+        if (record.role === CommitteeMemberRoles.INHERITED_OBSERVER) return null;
         return (
           <div className="list-actions-column">
             {allowRoleChange ? (
@@ -286,6 +298,11 @@ const CommitteeMembersPanel = ({
     },
   ];
 
+  const columns = allColumns.filter(
+    column =>
+      showAccountColumns || !(column as { isAccountColumn?: boolean }).isAccountColumn
+  );
+
   return (
     <Table
       rowKey="_id"
@@ -296,6 +313,11 @@ const CommitteeMembersPanel = ({
       bordered
       pagination={false}
       locale={{ emptyText }}
+      rowClassName={record =>
+        record.role === CommitteeMemberRoles.INHERITED_OBSERVER
+          ? 'committee-member-inherited'
+          : ''
+      }
     />
   );
 };

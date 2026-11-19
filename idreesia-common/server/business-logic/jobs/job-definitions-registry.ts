@@ -3,11 +3,9 @@ import { addMonths, format, startOfMonth } from 'date-fns';
 
 import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries';
 import { backfillImageVectorData } from 'meteor/idreesia-common/server/business-logic/common/backfill-image-vector-data';
-import { backfillImageThumbnails } from 'meteor/idreesia-common/server/business-logic/common/backfill-image-thumbnails';
-import { moveImagesToStorage } from 'meteor/idreesia-common/server/business-logic/common/move-images-to-storage';
-import { removeMigratedImagesFromDb } from 'meteor/idreesia-common/server/business-logic/common/remove-migrated-images-from-db';
 import { publishExpiringLockNotifications } from 'meteor/idreesia-common/server/business-logic/dms';
 import { purgeNotifications } from 'meteor/idreesia-common/server/headless';
+import { createTodayDayRecords } from 'meteor/idreesia-common/server/business-logic/duties-attendance';
 import { createTodayDutyDayAttendances } from 'meteor/idreesia-common/server/business-logic/hr/duty-planning';
 import { getSystemUser } from './system-user';
 import { createProgressReporter } from './report-progress';
@@ -56,6 +54,14 @@ const JOB_DEFINITIONS_REGISTRY: JobDefinitionSeed[] = [
     },
   },
   {
+    name: 'create-duties-attendance-day-records',
+    displayName: 'Create Duties and Attendance Day Records',
+    defaultSchedule: '10 0 * * *',
+    handler: async agendaJob => {
+      await createTodayDayRecords(createProgressReporter(agendaJob));
+    },
+  },
+  {
     name: 'publish-dms-lock-expiring-notifications',
     displayName: 'Publish DMS Lock Expiring Notifications',
     // Hourly: warns holders whose long document lock expires within a day.
@@ -81,38 +87,6 @@ const JOB_DEFINITIONS_REGISTRY: JobDefinitionSeed[] = [
     // people at ~20ms each, sequential, so this isn't something to run unattended on a cron.
     handler: async agendaJob => {
       await backfillImageVectorData(createProgressReporter(agendaJob));
-    },
-  },
-  {
-    name: 'create-image-thumbnails',
-    displayName: 'Create Image Thumbnails',
-    // No defaultSchedule - manual-only (Run Now). This is a one-time backlog for people who
-    // already have an image but no thumbnail; new images get a thumbnail automatically as soon
-    // as they're set (see People.updatePerson).
-    handler: async agendaJob => {
-      await backfillImageThumbnails(createProgressReporter(agendaJob));
-    },
-  },
-  {
-    name: 'move-images-to-storage',
-    displayName: 'Move Images to Storage',
-    // No defaultSchedule - manual-only (Run Now). A one-time copy of existing
-    // files from Attachments into object storage - people's profile photos,
-    // stock item images, and purchase form / issuance form / karkun
-    // attachments; new uploads go there directly. Copy only - see
-    // remove-migrated-images-from-db.
-    handler: async agendaJob => {
-      await moveImagesToStorage(createProgressReporter(agendaJob));
-    },
-  },
-  {
-    name: 'remove-migrated-images-from-db',
-    displayName: 'Remove Migrated Images from DB',
-    // No defaultSchedule - manual-only (Run Now), once the copied files have
-    // been checked. Removes from Mongo the content of files confirmed to
-    // exist in object storage.
-    handler: async agendaJob => {
-      await removeMigratedImagesFromDb(createProgressReporter(agendaJob));
     },
   },
 ];

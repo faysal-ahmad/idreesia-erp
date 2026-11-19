@@ -22,7 +22,6 @@ import ViewForm from '../visitor-stays/view-form';
 import type { PageParams } from './list-container';
 
 import {
-  FIX_CITY_SPELLING,
   FIX_NAME_SPELLING,
   PAGED_VISITOR_STAYS,
 } from './gql';
@@ -40,7 +39,6 @@ const StayDetailDivStyle: CSSProperties = {
 };
 
 const SPELLING_TYPE = {
-  CITY: 'city',
   NAME: 'name',
 };
 
@@ -81,9 +79,6 @@ interface ListProps {
   queryParams?: Record<string, unknown>;
   setPageParams(params: PageParams): void;
   handleItemSelected(visitor: { _id: string }): void;
-  fixCitySpelling(args: {
-    variables: { existingSpelling: string; newSpelling: string };
-  }): Promise<unknown>;
   fixNameSpelling(args: {
     variables: { existingSpelling: string; newSpelling: string };
   }): Promise<unknown>;
@@ -238,16 +233,7 @@ class List extends Component<ListProps, ListState> {
       render: (_text: unknown, record: VisitorStay) => {
         const { refVisitor } = record;
         if (refVisitor.city) {
-          return (
-            <div
-              style={LinkStyle}
-              onClick={() => {
-                this.handleFixSpellingShow(SPELLING_TYPE.CITY, refVisitor.city ?? '');
-              }}
-            >
-              {`${refVisitor.city}, ${refVisitor.country}`}
-            </div>
-          );
+          return `${refVisitor.city}, ${refVisitor.country}`;
         }
         return refVisitor.country;
       },
@@ -391,17 +377,15 @@ class List extends Component<ListProps, ListState> {
     existingSpelling: string,
     newSpelling: string
   ) => {
-    const { fixCitySpelling, fixNameSpelling } = this.props;
+    const { fixNameSpelling } = this.props;
     this.setState({
       spellingType: null,
       existingSpelling: null,
       showFixSpellingDialog: false,
     });
 
-    const fixSpellingFunction =
-      spellingType === SPELLING_TYPE.CITY ? fixCitySpelling : fixNameSpelling;
     if (existingSpelling !== newSpelling) {
-      fixSpellingFunction({
+      fixNameSpelling({
         variables: {
           existingSpelling,
           newSpelling,
@@ -545,7 +529,6 @@ class List extends Component<ListProps, ListState> {
 
 interface ListWithDataProps extends Omit<
   ListProps,
-  | 'fixCitySpelling'
   | 'fixNameSpelling'
   | 'pagedVisitorStays'
   | 'loading'
@@ -562,9 +545,6 @@ const ListWithData = (props: ListWithDataProps) => {
     variables: {
       queryString: reportQueryString,
     },
-  });
-  const [fixCitySpelling] = useMutation(FIX_CITY_SPELLING, {
-    refetchQueries: ['pagedSecurityVisitors', 'reportPagedVisitorStays'],
   });
   const [fixNameSpelling] = useMutation(FIX_NAME_SPELLING, {
     refetchQueries: ['pagedSecurityVisitors', 'reportPagedVisitorStays'],
@@ -609,7 +589,6 @@ const ListWithData = (props: ListWithDataProps) => {
       {...props}
       loading={loading}
       pagedVisitorStays={pagedVisitorStays}
-      fixCitySpelling={fixCitySpelling}
       fixNameSpelling={fixNameSpelling}
       refreshData={refetch}
     />

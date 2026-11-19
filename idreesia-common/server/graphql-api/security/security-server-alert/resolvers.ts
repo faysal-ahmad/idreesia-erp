@@ -9,7 +9,7 @@ import {
 import {
   getSecurityServerAlertGroups,
   getSecurityServerAlerts,
-} from './queries';
+} from 'meteor/idreesia-common/server/business-logic/security/security-server/alert-search';
 
 const REVIEW_VALUES = ['CORRECT', 'FALSE_POSITIVE'];
 

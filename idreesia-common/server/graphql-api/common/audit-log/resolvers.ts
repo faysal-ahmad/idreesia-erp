@@ -1,9 +1,11 @@
-import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   getPersonImageUrls,
   type PersonImageFields,
 } from 'meteor/idreesia-common/server/business-logic/common/person-images';
+import {
+  findOneUser,
+} from 'meteor/idreesia-common/server/business-logic/admin';
 
 interface AuditLogType {
   operationBy: string;
@@ -16,7 +18,7 @@ interface PersonRecord {
 }
 
 async function getOperationByPerson(auditLogType: AuditLogType) {
-  const user = await Users.findOneUser(auditLogType.operationBy);
+  const user = await findOneUser(auditLogType.operationBy);
   const person = user.personId
     ? ((await People.findOneAsync(user.personId)) as PersonRecord | null)
     : null;

@@ -77,7 +77,8 @@ export interface MeetingDocument extends Timestamps {
   title: string;
   description?: string;
   location?: string;
-  onlineUrl?: string;
+  /** The meeting is held as a video call; people join it from the meeting. */
+  videoCall?: boolean;
   startsAt: Date;
   endsAt: Date;
   timeZone: string;

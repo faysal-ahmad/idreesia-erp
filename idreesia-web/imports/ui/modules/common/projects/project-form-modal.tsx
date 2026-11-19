@@ -114,11 +114,7 @@ const ProjectFormModal = ({
           <Input.TextArea rows={3} maxLength={10000} />
         </Form.Item>
         {project ? null : (
-          <Form.Item
-            name="participantIds"
-            label="Participants"
-            extra="Participants can use the project chat."
-          >
+          <Form.Item name="participantIds" label="Participants">
             <Select
               mode="multiple"
               allowClear

@@ -10,7 +10,9 @@ import {
   WORKSPACE_DISCUSSION_STARRED_MESSAGES,
   WORKSPACE_DISCUSSION_SYNC,
   WORKSPACE_DISCUSSION_THREAD_MESSAGES,
+  WORKSPACE_DISCUSSION_VIDEO_CALL_INFO,
   WORKSPACE_EDIT_DISCUSSION_MESSAGE,
+  WORKSPACE_JOIN_DISCUSSION_VIDEO_CALL,
   WORKSPACE_REACT_TO_DISCUSSION_MESSAGE,
   WORKSPACE_SEND_DISCUSSION_MESSAGE,
   WORKSPACE_SET_DISCUSSION_MESSAGE_PINNED,
@@ -43,6 +45,8 @@ export interface DiscussionScope {
     starred: DiscussionOp;
     older: DiscussionOp;
     search: DiscussionOp;
+    /** Who is in the video call, shown before joining. */
+    videoCallInfo: DiscussionOp;
   };
   mutations: {
     send: DiscussionOp;
@@ -51,6 +55,8 @@ export interface DiscussionScope {
     pin: DiscussionOp;
     edit: DiscussionOp;
     delete: DiscussionOp;
+    /** Returns the link that joins the video call; announces a new call. */
+    joinVideoCall: DiscussionOp;
   };
 }
 
@@ -86,6 +92,10 @@ export const committeeDiscussionScope = (
       document: WORKSPACE_DISCUSSION_SEARCH_MESSAGES,
       field: 'workspaceDiscussionSearchMessages',
     },
+    videoCallInfo: {
+      document: WORKSPACE_DISCUSSION_VIDEO_CALL_INFO,
+      field: 'workspaceDiscussionVideoCallInfo',
+    },
   },
   mutations: {
     send: {
@@ -111,6 +121,10 @@ export const committeeDiscussionScope = (
     delete: {
       document: WORKSPACE_DELETE_DISCUSSION_MESSAGE,
       field: 'workspaceDeleteDiscussionMessage',
+    },
+    joinVideoCall: {
+      document: WORKSPACE_JOIN_DISCUSSION_VIDEO_CALL,
+      field: 'workspaceJoinDiscussionVideoCall',
     },
   },
 });

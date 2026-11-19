@@ -17,8 +17,7 @@ type DutyLocationType {
 
 extend type Query {
   allDutyLocations: [DutyLocationType]
-  dutyLocationsByDutyId(dutyId: String!): [DutyLocationType]
-  dutyLocationById(id: String!): DutyLocationType
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 extend type Mutation {

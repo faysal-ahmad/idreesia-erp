@@ -1,0 +1,8 @@
+/* Observers inherited from a parent location: slightly greyed rows. */
+.ant-table-tbody > tr.committee-member-inherited > td {
+  background: #f5f5f5;
+}
+
+.ant-table-tbody > tr.committee-member-inherited:hover > td {
+  background: #efefef;
+}

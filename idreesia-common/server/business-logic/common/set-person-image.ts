@@ -1,11 +1,77 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
+import { deleteFiles } from 'meteor/idreesia-common/server/file-storage';
+import {
+  EntityType,
+  OperationType,
+} from 'meteor/idreesia-common/constants/audit';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 
-import { computeVectorFromImageBuffer } from './compute-image-vector-data';
-import { storePersonImage } from './person-images';
+import { createAuditLog } from './audit-logs';
+import {
+  computeVectorFromImageBuffer,
+  type ImageVectorData,
+} from './compute-image-vector-data';
+import { PHOTO_AUDIT_FIELD, PHOTO_AUDIT_VALUE } from './people/people-mutations';
+import { removePersonImageFiles, storePersonImage } from './person-images';
 import { decodeAndNormalizeImage, makeImageThumbnail } from './stored-images';
 
 interface UserRef {
   _id: string;
+}
+
+interface PersonImageInput {
+  imageKey: string;
+  imageThumbnailKey: string | null;
+  imageVectorData: ImageVectorData;
+}
+
+/**
+ * Points the person at a profile photo already stored in object storage,
+ * then removes the photo it replaces - from object storage, or from
+ * Attachments for a photo that was never migrated.
+ */
+async function setPersonImageFiles(
+  _id: string,
+  { imageKey, imageThumbnailKey, imageVectorData }: PersonImageInput,
+  user: UserRef
+) {
+  return runInTransaction(async () => {
+    const existingPerson = await People.findOneAsync(_id);
+    if (!existingPerson) {
+      throw new Error(`Person '${_id}' was not found.`);
+    }
+
+    const date = new Date();
+    await People.updateAsync(_id, {
+      $set: {
+        'sharedData.imageKey': imageKey,
+        'sharedData.imageVectorData': imageVectorData,
+        ...(imageThumbnailKey
+          ? { 'sharedData.imageThumbnailKey': imageThumbnailKey }
+          : {}),
+        updatedAt: date,
+        updatedBy: user._id,
+      },
+      ...(imageThumbnailKey
+        ? {}
+        : { $unset: { 'sharedData.imageThumbnailKey': '' } }),
+    });
+
+    await createAuditLog(
+      {
+        entityId: _id,
+        entityType: EntityType.PERSON,
+        operationType: OperationType.UPDATE,
+        operationBy: user._id,
+        operationTime: date,
+        auditValues: { [PHOTO_AUDIT_FIELD]: PHOTO_AUDIT_VALUE },
+      },
+      existingPerson
+    );
+
+    await removePersonImageFiles(existingPerson.sharedData);
+    return People.findOneAsync(_id);
+  });
 }
 
 /**
@@ -37,9 +103,17 @@ export async function setPersonImage(
     thumbnail
   );
 
-  return People.setImage(
-    personId,
-    { imageKey, imageThumbnailKey, imageVectorData },
-    user
-  );
+  try {
+    return await setPersonImageFiles(
+      personId,
+      { imageKey, imageThumbnailKey, imageVectorData },
+      user
+    );
+  } catch (error) {
+    // Nothing refers to the new photo: the person wasn't updated.
+    await deleteFiles(
+      [imageKey, imageThumbnailKey].filter(Boolean) as string[]
+    ).catch(() => undefined);
+    throw error;
+  }
 }

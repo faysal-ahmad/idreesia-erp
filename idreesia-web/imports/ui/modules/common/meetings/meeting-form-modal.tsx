@@ -6,6 +6,7 @@ import {
   Form,
   Input,
   Modal,
+  Radio,
   Select,
   Space,
   TimePicker,
@@ -19,6 +20,7 @@ interface FormValues {
   title: string;
   date: Dayjs;
   time: [Dayjs, Dayjs];
+  locationType: 'in-person' | 'video-call';
   location?: string;
   description?: string;
   participantIds?: string[];
@@ -39,9 +41,9 @@ const toDetails = (values: FormValues, meeting?: Meeting | null): MeetingDetails
   title: values.title,
   startsAt: combine(values.date, values.time[0]),
   endsAt: combine(values.date, values.time[1]),
-  location: values.location?.trim() || null,
-  // The form no longer edits the link; keep whatever an existing meeting has.
-  onlineUrl: meeting?.onlineUrl ?? null,
+  location:
+    values.locationType === 'in-person' ? values.location?.trim() || null : null,
+  videoCall: values.locationType === 'video-call',
   description: values.description?.trim() || null,
 });
 
@@ -85,6 +87,7 @@ const MeetingFormModal = ({
         title: meeting.title,
         date: start,
         time: [start, dayjs(Number(meeting.endsAt))],
+        locationType: meeting.videoCall ? 'video-call' : 'in-person',
         location: meeting.location ?? undefined,
         description: meeting.description ?? undefined,
       });
@@ -95,6 +98,7 @@ const MeetingFormModal = ({
       form.setFieldsValue({
         date: start,
         time: [start, start.add(1, 'hour')],
+        locationType: 'in-person',
         participantIds: members.map(({ participantId }) => participantId),
       });
     }
@@ -159,8 +163,25 @@ const MeetingFormModal = ({
             />
           </Form.Item>
         </Space>
-        <Form.Item name="location" label="Location">
-          <Input maxLength={1000} placeholder="Where it takes place" />
+        <Form.Item name="locationType" label="Location">
+          <Radio.Group
+            options={[
+              { value: 'in-person', label: 'In person' },
+              { value: 'video-call', label: 'Video call' },
+            ]}
+          />
+        </Form.Item>
+        <Form.Item
+          noStyle
+          shouldUpdate={(prev, next) => prev.locationType !== next.locationType}
+        >
+          {({ getFieldValue }) =>
+            getFieldValue('locationType') === 'video-call' ? null : (
+              <Form.Item name="location">
+                <Input maxLength={1000} placeholder="Where it takes place" />
+              </Form.Item>
+            )
+          }
         </Form.Item>
         <Form.Item name="description" label="Description">
           <Input.TextArea rows={3} maxLength={10000} />

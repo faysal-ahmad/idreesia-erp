@@ -25,7 +25,6 @@ const DutyLocationsPanel = ({ locations, onAdd, onEdit }: Props) => {
       'listAllMSDuties',
       'composerAllMSDuties',
       'composerAllDutyLocations',
-      'dutyLocationsByDutyId',
     ],
   });
 

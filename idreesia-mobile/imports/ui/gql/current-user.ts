@@ -15,6 +15,7 @@ export const MOBILE_CURRENT_USER: TypedDocumentNode<
       username
       displayName
       email
+      twoFactorEnabled
       permissions
       instances
       karkun {

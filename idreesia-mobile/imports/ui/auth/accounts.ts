@@ -60,10 +60,25 @@ const ensureServerReachable = async () => {
 export const getErrorMessage = (error: unknown, fallback: string): string =>
   describeError(error) ?? fallback;
 
-/** Logs in with either an email address or a username, like the web app. */
+/**
+ * The Meteor.Error code (`error.error`) of a failed account call, e.g. one of
+ * TwoFactorErrorCode. The reason text for login errors is deliberately vague,
+ * so screens branch on this instead.
+ */
+export const getErrorCode = (error: unknown): string | undefined => {
+  const code = (error as { error?: unknown } | null)?.error;
+  return typeof code === 'string' ? code : undefined;
+};
+
+/**
+ * Logs in with either an email address or a username, like the web app. For
+ * an account with two-factor authentication on, the first attempt fails with
+ * TwoFactorErrorCode.CODE_REQUIRED; call again with the authenticator code.
+ */
 export const loginWithPassword = async (
   userNameOrEmail: string,
-  password: string
+  password: string,
+  code?: string
 ) => {
   const accounts = requireAccounts();
   await ensureServerReachable();
@@ -72,7 +87,13 @@ export const loginWithPassword = async (
 
   await toPromise((callback) =>
     accounts.callLoginMethod({
-      methodArguments: [{ user, password: Accounts._hashPassword(password) }],
+      methodArguments: [
+        {
+          user,
+          password: Accounts._hashPassword(password),
+          ...(code ? { code: code.trim() } : {}),
+        },
+      ],
       userCallback: callback,
     })
   );

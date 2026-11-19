@@ -29,6 +29,10 @@ import './stay-cards.css';
  * makes Meteor resolve extensionless imports to the CSS object. */
 import '../imports/ui/modules/hr/ms-duties/duty-expanded.styles.css';
 import '../imports/ui/modules/hr/duty-planning/duty-planning.styles.css';
+import '../imports/ui/modules/workspaces/duties-attendance/duties-attendance.styles.css';
+import '../imports/ui/modules/admin/org-locations/list.styles.css';
+import '../imports/ui/modules/admin/org-locations/observed-committees-drawer.styles.css';
+import '../imports/ui/modules/admin/committees/members-panel.styles.css';
 import '../imports/ui/modules/common/visitors/list.styles.css';
 import '../imports/ui/modules/common/visitors/general-info.styles.css';
 import '../imports/ui/modules/common/people/picture.styles.css';
@@ -38,6 +42,7 @@ import '../imports/ui/modules/admin/deleted-people/relation-counts-table.styles.
 import '../imports/ui/modules/admin/jobs/list/jobs-list.styles.css';
 import '../imports/ui/modules/correspondence/inbox/inbox.styles.css';
 import '../imports/ui/modules/common/discussions/discussion.styles.css';
+import '../imports/ui/modules/common/video-call/video-call.styles.css';
 import '../imports/ui/modules/common/documents/document-library.styles.css';
 import '../imports/ui/modules/common/meetings/meetings.styles.css';
 import '../imports/ui/modules/common/polls/polls.styles.css';

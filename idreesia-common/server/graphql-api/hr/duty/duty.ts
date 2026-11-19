@@ -8,7 +8,7 @@ type DutyType {
   description: String
   committeeId: String
 
-  committee: CommitteeType
+  committee: CommitteeBasicType
   usedCount: Int
   shifts: [DutyShiftType]
   locations: [DutyLocationType]
@@ -22,7 +22,7 @@ type DutyType {
 
 extend type Query {
   allMSDuties: [DutyType]
-  allMehfilDuties: [DutyType]
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
 extend type Mutation {

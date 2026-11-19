@@ -1,4 +1,4 @@
-import Committees from 'meteor/idreesia-common/server/collections/hr/committees';
+import Committees from 'meteor/idreesia-common/server/collections/admin/committees';
 
 // Which committee field holds each module's workspace id. A committee that
 // turns a feature on stores the module's workspace id under one of these.

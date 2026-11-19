@@ -21,6 +21,16 @@ body {
   min-height: 100vh;
 }
 
+/*
+ * Pages that host a full-height widget (discussions) pin the shell to the
+ * viewport so only the widget's inner message list scrolls, not the page.
+ */
+.app-shell.ant-layout:has(.discussion) {
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .app-shell-body.ant-layout {
   flex: 1 1 auto;
   min-height: 0;

@@ -37,12 +37,14 @@ extend type Query {
     pageIndex: String
     pageSize: String
   ): PagedWorkspaceMonitoringProfileType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 
   # Null when the profile doesn't exist or was deleted.
   workspaceMonitoringProfileById(
     committeeId: String!
     profileId: String!
   ): WorkspaceMonitoringProfileType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
 }
 
 extend type Mutation {
@@ -52,6 +54,7 @@ extend type Mutation {
     name: String!
     isTest: Boolean!
   ): WorkspaceMonitoringProfileType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
 
   # imageData is base64, optionally as a data: URL. The photo is rejected
   # unless it has exactly one face the security server can use.
@@ -60,11 +63,13 @@ extend type Mutation {
     profileId: String!
     imageData: String!
   ): WorkspaceMonitoringProfileType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
 
   removeWorkspaceMonitoringProfilePhoto(
     committeeId: String!
     profileId: String!
     photoId: String!
   ): WorkspaceMonitoringProfileType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
 }
 `;

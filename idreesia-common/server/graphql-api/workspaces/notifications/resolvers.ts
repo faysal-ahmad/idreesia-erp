@@ -1,9 +1,8 @@
 import {
   getMyNotificationCounts,
   getMyNotifications,
-  getMyUnreadNotificationCount,
   markMyNotificationsRead,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee/notifications';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee/notifications';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -29,9 +28,6 @@ const resolvers: ResolverMap = {
     },
 
     myNotificationCounts: async (obj, args, { user }) => getMyNotificationCounts(user),
-
-    myUnreadNotificationCount: async (obj, args, { user }) =>
-      getMyUnreadNotificationCount(user),
   },
 
   Mutation: {

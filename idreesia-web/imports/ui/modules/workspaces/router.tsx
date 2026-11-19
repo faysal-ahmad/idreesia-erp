@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 
 import { ModulePaths } from 'meteor/idreesia-common/constants';
 import { default as paths } from './submodule-paths';
@@ -12,6 +12,12 @@ import { ProjectPage, ProjectsPage } from './projects';
 import { NightStayReport } from './night-stay-report';
 import { MonitoringAlerts } from './monitoring-alerts';
 import { MonitoringProfiles } from './monitoring-profiles';
+import {
+  AttendancePage,
+  AttendanceSheetPage,
+  DutiesPage,
+  PlanningPage,
+} from './duties-attendance';
 import Landing from './landing';
 
 const Router = () => (
@@ -36,6 +42,22 @@ const Router = () => (
     <Route
       path={paths.committeeMonitoringProfilesPath()}
       component={MonitoringProfiles}
+    />
+    <Route path={paths.locationDutiesPath()} component={DutiesPage} />
+    <Route path={paths.locationDutyPlanningPath()} component={PlanningPage} />
+    <Route
+      path={paths.locationDutyAttendancePath()}
+      component={AttendancePage}
+    />
+    <Route
+      path={paths.locationAttendanceSheetPath()}
+      component={AttendanceSheetPage}
+    />
+    <Route
+      path={paths.locationDutiesAttendancePath()}
+      render={({ match }) => (
+        <Redirect to={paths.locationDutiesPath(match.params.locationId)} />
+      )}
     />
     <Route path={ModulePaths.workspaces} component={Landing} />
   </Switch>

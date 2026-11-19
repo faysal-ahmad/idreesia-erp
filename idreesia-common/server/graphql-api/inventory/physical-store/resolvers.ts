@@ -19,10 +19,6 @@ interface ResolverContext {
 
 export default {
   Query: {
-    allPhysicalStores: async () => {
-      return PhysicalStores.find({}).fetchAsync();
-    },
-
     allAccessiblePhysicalStores: async (
       _obj: unknown,
       _params: unknown,

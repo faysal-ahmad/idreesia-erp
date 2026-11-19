@@ -163,7 +163,7 @@ export function getCityMehfilFilterField(
   return (
     <CascaderField
       data={cityMehfilCascaderData ?? undefined}
-      fieldName="cityIdMehfilId"
+      fieldName="cityMehfilLocationIds"
       fieldLabel="City/Mehfil"
       fieldLayout={formItemLayout}
       initialValue={fieldValue}

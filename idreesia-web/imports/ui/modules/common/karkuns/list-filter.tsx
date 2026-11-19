@@ -45,8 +45,8 @@ export interface PageParams {
   dutyShiftId?: string | null;
   userAccount?: string | null;
   ehadKarkun?: string | null;
-  cityId?: string | null;
-  cityMehfilId?: string | null;
+  cityLocationId?: string | null;
+  mehfilLocationId?: string | null;
   region?: string | null;
   updatedBetween?: string | null;
 }
@@ -62,7 +62,7 @@ interface FilterFormValues {
   dutyShiftId?: string;
   userAccount?: string;
   ehadKarkun?: string;
-  cityIdMehfilId?: [string, string] | null;
+  cityMehfilLocationIds?: [string, string] | null;
   region?: string;
   updatedBetween?: [dayjs.Dayjs | null, dayjs.Dayjs | null] | null;
 }
@@ -82,8 +82,8 @@ export interface Props {
   dutyId?: string | null;
   userAccount?: string | null;
   ehadKarkun?: string | null;
-  cityId?: string | null;
-  cityMehfilId?: string | null;
+  cityLocationId?: string | null;
+  mehfilLocationId?: string | null;
   region?: string | null;
   updatedBetween?: string | null;
   showNameFilter?: boolean;
@@ -183,8 +183,8 @@ type ChipInputs = Pick<
   | 'dutyId'
   | 'userAccount'
   | 'ehadKarkun'
-  | 'cityId'
-  | 'cityMehfilId'
+  | 'cityLocationId'
+  | 'mehfilLocationId'
   | 'region'
   | 'updatedBetween'
   | 'mehfilDuties'
@@ -201,8 +201,8 @@ export const getKarkunsFilterChips = ({
   dutyId,
   userAccount,
   ehadKarkun,
-  cityId,
-  cityMehfilId,
+  cityLocationId,
+  mehfilLocationId,
   region,
   updatedBetween,
   mehfilDuties = [],
@@ -250,17 +250,17 @@ export const getKarkunsFilterChips = ({
       value: formatYesNo(ehadKarkun),
     });
   }
-  if (hasFilterValue(cityId) || hasFilterValue(cityMehfilId)) {
-    const cityName = cities.find(city => city._id === cityId)?.name;
+  if (hasFilterValue(cityLocationId) || hasFilterValue(mehfilLocationId)) {
+    const cityName = cities.find(city => city._id === cityLocationId)?.name;
     const mehfilName = cityMehfils.find(
-      mehfil => mehfil._id === cityMehfilId
+      mehfil => mehfil._id === mehfilLocationId
     )?.name;
     chips.push({
       key: 'cityMehfil',
       label: 'City/Mehfil',
       value:
         [cityName, mehfilName].filter(Boolean).join(' / ') ||
-        [cityId, cityMehfilId].filter(Boolean).join(' / '),
+        [cityLocationId, mehfilLocationId].filter(Boolean).join(' / '),
     });
   }
   if (hasFilterValue(region)) {
@@ -285,8 +285,8 @@ export const KarkunsFilterChips = (props: Props) => {
     dutyId,
     userAccount,
     ehadKarkun,
-    cityId,
-    cityMehfilId,
+    cityLocationId,
+    mehfilLocationId,
     region,
     updatedBetween,
     mehfilDuties,
@@ -305,8 +305,8 @@ export const KarkunsFilterChips = (props: Props) => {
         dutyId,
         userAccount,
         ehadKarkun,
-        cityId,
-        cityMehfilId,
+        cityLocationId,
+        mehfilLocationId,
         region,
         updatedBetween,
         mehfilDuties,
@@ -322,8 +322,8 @@ export const KarkunsFilterChips = (props: Props) => {
       dutyId,
       userAccount,
       ehadKarkun,
-      cityId,
-      cityMehfilId,
+      cityLocationId,
+      mehfilLocationId,
       region,
       updatedBetween,
       mehfilDuties,
@@ -340,7 +340,7 @@ export const KarkunsFilterChips = (props: Props) => {
       return;
     }
     if (key === 'cityMehfil') {
-      setPageParams({ pageIndex: '0', cityId: null, cityMehfilId: null });
+      setPageParams({ pageIndex: '0', cityLocationId: null, mehfilLocationId: null });
       return;
     }
     if (key === 'updatedBetween') {
@@ -366,8 +366,8 @@ export const KarkunsFilterChips = (props: Props) => {
       dutyShiftId: null,
       userAccount: null,
       ehadKarkun: null,
-      cityId: null,
-      cityMehfilId: null,
+      cityLocationId: null,
+      mehfilLocationId: null,
       region: null,
       updatedBetween: JSON.stringify(['', '']),
     });
@@ -414,8 +414,8 @@ const ListFilter = ({
   dutyId,
   userAccount,
   ehadKarkun,
-  cityId,
-  cityMehfilId,
+  cityLocationId,
+  mehfilLocationId,
   region,
   updatedBetween,
 
@@ -448,8 +448,8 @@ const ListFilter = ({
     dutyId,
     userAccount,
     ehadKarkun,
-    cityId,
-    cityMehfilId,
+    cityLocationId,
+    mehfilLocationId,
     region,
     updatedBetween,
     mehfilDuties,
@@ -476,9 +476,9 @@ const ListFilter = ({
       dutyId: dutyId ?? undefined,
       userAccount: userAccount ?? undefined,
       ehadKarkun: ehadKarkun ?? undefined,
-      cityIdMehfilId:
-        cityId || cityMehfilId
-          ? ([cityId, cityMehfilId].filter(Boolean) as [string, string])
+      cityMehfilLocationIds:
+        cityLocationId || mehfilLocationId
+          ? ([cityLocationId, mehfilLocationId].filter(Boolean) as [string, string])
           : null,
       region: region ?? undefined,
       updatedBetween: updatedBetweenValue,
@@ -498,8 +498,8 @@ const ListFilter = ({
       dutyShiftId: values.dutyShiftId,
       userAccount: values.userAccount,
       ehadKarkun: values.ehadKarkun,
-      cityId: values.cityIdMehfilId ? values.cityIdMehfilId[0] : null,
-      cityMehfilId: values.cityIdMehfilId ? values.cityIdMehfilId[1] : null,
+      cityLocationId: values.cityMehfilLocationIds ? values.cityMehfilLocationIds[0] : null,
+      mehfilLocationId: values.cityMehfilLocationIds ? values.cityMehfilLocationIds[1] : null,
       region: values.region,
       updatedBetween: JSON.stringify([
         values.updatedBetween?.[0]
@@ -540,7 +540,7 @@ const ListFilter = ({
         {showEhadKarkunFilter ? getEhadKarkunFilterField(ehadKarkun) : null}
         {showCityMehfilFilter
           ? getCityMehfilFilterField(
-              [cityId, cityMehfilId] as FieldValue,
+              [cityLocationId, mehfilLocationId] as FieldValue,
               cities,
               cityMehfils
             )

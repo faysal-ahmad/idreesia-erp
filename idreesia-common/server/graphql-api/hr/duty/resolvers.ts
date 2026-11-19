@@ -1,10 +1,5 @@
-import {
-  Committees,
-  Duties,
-  DutyLocations,
-  DutyShifts,
-  Teams,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
+import { Duties, DutyLocations, DutyShifts, Teams } from 'meteor/idreesia-common/server/collections/hr';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -57,12 +52,6 @@ const resolvers: ResolverMap = {
     allMSDuties: async () =>
       Duties.find(
         { isMehfilDuty: { $eq: false } },
-        { sort: { name: 1 } }
-      ).fetchAsync(),
-
-    allMehfilDuties: async () =>
-      Duties.find(
-        { isMehfilDuty: { $eq: true } },
         { sort: { name: 1 } }
       ).fetchAsync(),
   },

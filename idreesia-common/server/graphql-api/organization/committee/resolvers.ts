@@ -1,5 +1,7 @@
-import { Committees, Duties } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
+import { Duties } from 'meteor/idreesia-common/server/collections/hr';
 import { CommitteeFeatures } from 'meteor/idreesia-common/constants/organization';
+import { assertLocationExists } from 'meteor/idreesia-common/server/business-logic/admin';
 import {
   addCommitteeMember,
   disableCommitteeFeature,
@@ -8,11 +10,12 @@ import {
   removeCommitteeMember,
   getCommitteeMemberCounts,
   getCommitteeMembersPage,
+  moveCommittee,
   setCommitteeMemberRole,
   setCommitteeMemberDiscussionAccess,
   type CommitteeDoc,
   type CommitteeMemberAccess,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -74,9 +77,9 @@ const resolvers: ResolverMap = {
   },
 
   Query: {
-    allCommittees: async () =>
-      Committees.find({}, { sort: { name: 1 } }).fetchAsync(),
     committeeById: async (obj, { id }) => Committees.findOneAsync(id),
+    committeesByLocationId: async (obj, { locationId }) =>
+      Committees.find({ locationId }, { sort: { name: 1 } }).fetchAsync(),
     allCommitteeFeatures: async () => CommitteeFeatures,
     committeeMembers: async (
       obj,
@@ -103,12 +106,19 @@ const resolvers: ResolverMap = {
   },
 
   Mutation: {
-    createCommittee: async (obj, { name, color, description }, { user }) => {
+    createCommittee: async (
+      obj,
+      { name, color, description, locationId },
+      { user }
+    ) => {
+      await assertLocationExists(locationId);
+
       const date = new Date();
       const committeeId = await Committees.insertAsync({
         name,
         color,
         description,
+        locationId,
         members: [],
         createdAt: date,
         createdBy: user._id,
@@ -136,6 +146,9 @@ const resolvers: ResolverMap = {
 
       return Committees.findOneAsync(id);
     },
+
+    moveCommittee: async (obj, { committeeId, locationId }, { user }) =>
+      moveCommittee(committeeId, locationId, user._id),
 
     removeCommittee: async (obj, { _id }) => {
       const dutyCount = await Duties.find({ committeeId: _id }).countAsync();

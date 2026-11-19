@@ -1,0 +1,205 @@
+/* Duties and Attendance workspace (planning board, attendance, sheet). */
+
+.da-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.da-selection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #d0d5dd;
+}
+
+.da-select-label {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.da-duty-select {
+  width: 280px;
+  max-width: 100%;
+}
+
+.da-date-picker {
+  width: 160px;
+}
+
+.da-range {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.da-note {
+  color: #667085;
+  font-size: 13px;
+}
+
+.da-muted {
+  color: #667085;
+  font-size: 13px;
+}
+
+.da-duty-name {
+  font-weight: 600;
+}
+
+.da-board {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(160px, 1fr));
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.da-day {
+  min-width: 160px;
+  padding: 8px;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.da-day.is-today {
+  border-color: #84adff;
+  background: #f5f9ff;
+}
+
+.da-day-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #667085;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.da-day-date {
+  color: #667085;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.da-day-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.da-person {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.da-person-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.da-person.has-photo .da-person-name > div {
+  width: 100%;
+  color: inherit !important;
+  cursor: default;
+}
+
+.da-person.is-off {
+  color: #d92d20;
+}
+
+.da-person.is-off .da-person-name {
+  text-decoration: line-through;
+}
+
+.da-person.is-added .da-person-name::before {
+  content: '+ ';
+  color: #079455;
+  font-weight: 700;
+}
+
+.da-person-action.ant-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 18px;
+  color: #d92d20;
+  visibility: hidden;
+}
+
+.da-person-action.is-restore.ant-btn {
+  color: #079455;
+}
+
+.da-person:hover .da-person-action.ant-btn,
+.da-person:focus-within .da-person-action.ant-btn {
+  visibility: visible;
+}
+
+.da-add-person {
+  margin-top: 4px;
+}
+
+.da-attendance-mark-button {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  line-height: 1;
+}
+
+button.da-attendance-mark-button {
+  cursor: pointer;
+}
+
+button.da-attendance-mark-button:hover .da-attendance-mark {
+  background: #f2f4f7;
+}
+
+.da-attendance-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.da-attendance-mark.is-present {
+  color: #079455;
+}
+
+.da-attendance-mark.is-late {
+  color: #b54708;
+}
+
+.da-attendance-mark.is-absent {
+  color: #d92d20;
+}
+
+.da-attendance-mark.is-unset {
+  color: #98a2b3;
+  font-weight: 600;
+}

@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { Random } from 'meteor/random';
 
 import {
@@ -87,43 +88,45 @@ export async function addAgendaItem(
   input: AgendaItemInput & { position?: number },
   userId: string
 ): Promise<{ meeting: MeetingDocument; agendaItem: MeetingAgendaItem }> {
-  requireUserId(userId);
-  const meeting = await requireMeeting(meetingId);
-  if (meeting.agenda.length >= MEETINGS_MAX_AGENDA_ITEMS) {
-    throw meetingsError(
-      'BAD_USER_INPUT',
-      `An agenda can have at most ${MEETINGS_MAX_AGENDA_ITEMS} items`
-    );
-  }
-  const agendaItem = buildAgendaItem(input);
-  const { position } = input;
-  if (
-    position !== undefined &&
-    (!Number.isSafeInteger(position) ||
-      position < 0 ||
-      position > meeting.agenda.length)
-  ) {
-    throw meetingsError('BAD_USER_INPUT', 'Position is out of range');
-  }
-  const agenda = [...meeting.agenda];
-  agenda.splice(position ?? agenda.length, 0, agendaItem);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const meeting = await requireMeeting(meetingId);
+    if (meeting.agenda.length >= MEETINGS_MAX_AGENDA_ITEMS) {
+      throw meetingsError(
+        'BAD_USER_INPUT',
+        `An agenda can have at most ${MEETINGS_MAX_AGENDA_ITEMS} items`
+      );
+    }
+    const agendaItem = buildAgendaItem(input);
+    const { position } = input;
+    if (
+      position !== undefined &&
+      (!Number.isSafeInteger(position) ||
+        position < 0 ||
+        position > meeting.agenda.length)
+    ) {
+      throw meetingsError('BAD_USER_INPUT', 'Position is out of range');
+    }
+    const agenda = [...meeting.agenda];
+    agenda.splice(position ?? agenda.length, 0, agendaItem);
 
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    { $set: { agenda } },
-    { allowed: EDITABLE_STATUSES }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.AGENDA_ITEM,
-    entityId: agendaItem._id,
-    action: MeetingsAction.AGENDA_ITEM_ADDED,
-    userId,
-    details: { title: agendaItem.title },
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      { $set: { agenda } },
+      { allowed: EDITABLE_STATUSES }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.AGENDA_ITEM,
+      entityId: agendaItem._id,
+      action: MeetingsAction.AGENDA_ITEM_ADDED,
+      userId,
+      details: { title: agendaItem.title },
+    });
+    return { meeting: updated, agendaItem };
   });
-  return { meeting: updated, agendaItem };
 }
 
 export interface UpdateAgendaItemInput {
@@ -142,49 +145,51 @@ export async function updateAgendaItem(
   changes: UpdateAgendaItemInput,
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const meeting = await requireMeeting(meetingId);
-  const index = findAgendaItem(meeting, agendaItemId);
-  const item: MeetingAgendaItem = { ...meeting.agenda[index] };
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const meeting = await requireMeeting(meetingId);
+    const index = findAgendaItem(meeting, agendaItemId);
+    const item: MeetingAgendaItem = { ...meeting.agenda[index] };
 
-  if (changes.title !== undefined) {
-    item.title = normalizeTitle(changes.title, 'Agenda item title');
-  }
-  if (changes.description !== undefined) {
-    const description = normalizeText(changes.description, 'Description');
-    if (description) item.description = description;
-    else delete item.description;
-  }
-  if (changes.durationMinutes !== undefined) {
-    const durationMinutes = normalizeDuration(changes.durationMinutes);
-    if (durationMinutes) item.durationMinutes = durationMinutes;
-    else delete item.durationMinutes;
-  }
-  if (changes.presenterId !== undefined) {
-    const presenterId = optionalId(changes.presenterId, 'Presenter id');
-    if (presenterId) item.presenterId = presenterId;
-    else delete item.presenterId;
-  }
+    if (changes.title !== undefined) {
+      item.title = normalizeTitle(changes.title, 'Agenda item title');
+    }
+    if (changes.description !== undefined) {
+      const description = normalizeText(changes.description, 'Description');
+      if (description) item.description = description;
+      else delete item.description;
+    }
+    if (changes.durationMinutes !== undefined) {
+      const durationMinutes = normalizeDuration(changes.durationMinutes);
+      if (durationMinutes) item.durationMinutes = durationMinutes;
+      else delete item.durationMinutes;
+    }
+    if (changes.presenterId !== undefined) {
+      const presenterId = optionalId(changes.presenterId, 'Presenter id');
+      if (presenterId) item.presenterId = presenterId;
+      else delete item.presenterId;
+    }
 
-  const agenda = meeting.agenda.map((existing, i) =>
-    i === index ? item : existing
-  );
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    { $set: { agenda } },
-    { allowed: EDITABLE_STATUSES }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.AGENDA_ITEM,
-    entityId: agendaItemId,
-    action: MeetingsAction.AGENDA_ITEM_UPDATED,
-    userId,
-    details: { changed: Object.keys(changes) },
+    const agenda = meeting.agenda.map((existing, i) =>
+      i === index ? item : existing
+    );
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      { $set: { agenda } },
+      { allowed: EDITABLE_STATUSES }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.AGENDA_ITEM,
+      entityId: agendaItemId,
+      action: MeetingsAction.AGENDA_ITEM_UPDATED,
+      userId,
+      details: { changed: Object.keys(changes) },
+    });
+    return updated;
   });
-  return updated;
 }
 
 /** Removes an agenda item; action items linked to it lose the link. */
@@ -193,35 +198,37 @@ export async function removeAgendaItem(
   agendaItemId: string,
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const meeting = await requireMeeting(meetingId);
-  const index = findAgendaItem(meeting, agendaItemId);
-  const agenda = meeting.agenda.filter((_, i) => i !== index);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const meeting = await requireMeeting(meetingId);
+    const index = findAgendaItem(meeting, agendaItemId);
+    const agenda = meeting.agenda.filter((_, i) => i !== index);
 
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    { $set: { agenda } },
-    { allowed: EDITABLE_STATUSES }
-  );
-  await MeetingActionItems.updateAsync(
-    { meetingId, agendaItemId },
-    {
-      $unset: { agendaItemId: 1 },
-      $set: { updatedAt: new Date(), updatedBy: userId },
-    },
-    { multi: true }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.AGENDA_ITEM,
-    entityId: agendaItemId,
-    action: MeetingsAction.AGENDA_ITEM_REMOVED,
-    userId,
-    details: { title: meeting.agenda[index].title },
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      { $set: { agenda } },
+      { allowed: EDITABLE_STATUSES }
+    );
+    await MeetingActionItems.updateAsync(
+      { meetingId, agendaItemId },
+      {
+        $unset: { agendaItemId: 1 },
+        $set: { updatedAt: new Date(), updatedBy: userId },
+      },
+      { multi: true }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.AGENDA_ITEM,
+      entityId: agendaItemId,
+      action: MeetingsAction.AGENDA_ITEM_REMOVED,
+      userId,
+      details: { title: meeting.agenda[index].title },
+    });
+    return updated;
   });
-  return updated;
 }
 
 /** Puts the agenda in the given order; it must list every item once. */
@@ -230,34 +237,36 @@ export async function reorderAgenda(
   orderedIds: string[],
   userId: string
 ): Promise<MeetingDocument> {
-  requireUserId(userId);
-  const meeting = await requireMeeting(meetingId);
-  const byId = new Map(meeting.agenda.map(item => [item._id, item]));
-  if (
-    !Array.isArray(orderedIds) ||
-    orderedIds.length !== byId.size ||
-    new Set(orderedIds).size !== byId.size ||
-    orderedIds.some(id => !byId.has(id))
-  ) {
-    throw meetingsError(
-      'BAD_USER_INPUT',
-      'The new order must list every agenda item exactly once'
-    );
-  }
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const meeting = await requireMeeting(meetingId);
+    const byId = new Map(meeting.agenda.map(item => [item._id, item]));
+    if (
+      !Array.isArray(orderedIds) ||
+      orderedIds.length !== byId.size ||
+      new Set(orderedIds).size !== byId.size ||
+      orderedIds.some(id => !byId.has(id))
+    ) {
+      throw meetingsError(
+        'BAD_USER_INPUT',
+        'The new order must list every agenda item exactly once'
+      );
+    }
 
-  const updated = await writeMeeting(
-    meeting,
-    userId,
-    { $set: { agenda: orderedIds.map(id => byId.get(id)!) } },
-    { allowed: EDITABLE_STATUSES }
-  );
-  await logActivity({
-    workspaceId: meeting.workspaceId,
-    meetingId,
-    entityType: MeetingsEntityType.MEETING,
-    entityId: meetingId,
-    action: MeetingsAction.AGENDA_REORDERED,
-    userId,
+    const updated = await writeMeeting(
+      meeting,
+      userId,
+      { $set: { agenda: orderedIds.map(id => byId.get(id)!) } },
+      { allowed: EDITABLE_STATUSES }
+    );
+    await logActivity({
+      workspaceId: meeting.workspaceId,
+      meetingId,
+      entityType: MeetingsEntityType.MEETING,
+      entityId: meetingId,
+      action: MeetingsAction.AGENDA_REORDERED,
+      userId,
+    });
+    return updated;
   });
-  return updated;
 }

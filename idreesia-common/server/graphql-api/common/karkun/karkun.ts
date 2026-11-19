@@ -16,8 +16,8 @@ input KarkunFilter {
   userAccount: String
   ehadKarkun: String
   dutyShiftId: String
-  cityId: String
-  cityMehfilId: String
+  cityLocationId: String
+  mehfilLocationId: String
   region: String
   updatedBetween: String
   predefinedFilterName: String

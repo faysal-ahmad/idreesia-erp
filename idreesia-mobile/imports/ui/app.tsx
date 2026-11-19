@@ -2,7 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { ErrorBlock, NoticeBar, SpinLoading } from 'antd-mobile';
 
 import { backendUrl } from '/imports/startup/backend';
-import { AccountPaths, AccountScreen, ChangePasswordScreen, OfflineFilesScreen } from './account';
+import {
+  AccountPaths,
+  AccountScreen,
+  ChangePasswordScreen,
+  OfflineFilesScreen,
+  TwoFactorScreen,
+} from './account';
 import { ForgotPasswordScreen, LoginScreen, RegisterScreen } from './auth/screens';
 import { ChatPaths, ChatScreen } from './chat';
 import { HomePaths, HomeScreen } from './home';
@@ -40,6 +46,7 @@ const SignedInRoutes = () => {
           <Route exact path={AccountPaths.account} component={AccountScreen} />
           <Route exact path={AccountPaths.changePassword} component={ChangePasswordScreen} />
           <Route exact path={AccountPaths.offlineFiles} component={OfflineFilesScreen} />
+          <Route exact path={AccountPaths.twoFactor} component={TwoFactorScreen} />
           {renderModuleRoutes()}
           <Redirect to={HomePaths.home} />
         </Switch>

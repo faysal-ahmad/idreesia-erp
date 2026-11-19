@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { mapSchema, getDirective, MapperKind } from '@graphql-tools/utils';
-import { defaultFieldResolver } from 'graphql';
+import { defaultFieldResolver, getNullableType, isListType } from 'graphql';
 import type {
   GraphQLFieldConfig,
   GraphQLFieldResolver,
@@ -69,10 +69,18 @@ export default function CheckPermissionsDirective(schema: DirectiveSchema) {
                 };
               }
 
-              return null;
+              // Denied reads return the field's empty value: [] for a list,
+              // null for a nullable object. A non-null non-list field has no
+              // valid empty value, so it throws instead of a schema error.
+              if (isListType(getNullableType(fieldConfig.type))) {
+                return [];
+              }
+              if (fieldConfig.type === getNullableType(fieldConfig.type)) {
+                return null;
+              }
             }
 
-            // It is a mutation, throw a not-allowed exception
+            // A mutation or a non-null query, throw a not-allowed exception
             throw new Error(
               `You do not have required permissions for this operation.`
             );

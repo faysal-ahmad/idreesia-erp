@@ -4,9 +4,9 @@ import {
   getWorkspaceMonitoringProfiles,
   removeWorkspaceMonitoringProfilePhoto,
   updateWorkspaceMonitoringProfile,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
-import { assertCanUseMonitoringProfiles } from './access';
+import { assertMonitoringProfilesEnabled } from './access';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -18,18 +18,18 @@ const resolvers: ResolverMap = {
     workspaceMonitoringProfiles: async (
       obj,
       { committeeId, ...filter },
-      { user }
+      context
     ) => {
-      await assertCanUseMonitoringProfiles(user, committeeId);
+      assertMonitoringProfilesEnabled(context, committeeId);
       return getWorkspaceMonitoringProfiles(filter);
     },
 
     workspaceMonitoringProfileById: async (
       obj,
       { committeeId, profileId },
-      { user }
+      context
     ) => {
-      await assertCanUseMonitoringProfiles(user, committeeId);
+      assertMonitoringProfilesEnabled(context, committeeId);
       return getWorkspaceMonitoringProfileById(profileId);
     },
   },
@@ -38,10 +38,10 @@ const resolvers: ResolverMap = {
     updateWorkspaceMonitoringProfile: async (
       obj,
       { committeeId, profileId, name, isTest },
-      { user }
+      context
     ) => {
-      await assertCanUseMonitoringProfiles(user, committeeId);
-      return updateWorkspaceMonitoringProfile(user, profileId, {
+      assertMonitoringProfilesEnabled(context, committeeId);
+      return updateWorkspaceMonitoringProfile(context.user, profileId, {
         name,
         isTest,
       });
@@ -50,19 +50,19 @@ const resolvers: ResolverMap = {
     addWorkspaceMonitoringProfilePhoto: async (
       obj,
       { committeeId, profileId, imageData },
-      { user }
+      context
     ) => {
-      await assertCanUseMonitoringProfiles(user, committeeId);
-      return addWorkspaceMonitoringProfilePhoto(user, profileId, imageData);
+      assertMonitoringProfilesEnabled(context, committeeId);
+      return addWorkspaceMonitoringProfilePhoto(context.user, profileId, imageData);
     },
 
     removeWorkspaceMonitoringProfilePhoto: async (
       obj,
       { committeeId, profileId, photoId },
-      { user }
+      context
     ) => {
-      await assertCanUseMonitoringProfiles(user, committeeId);
-      return removeWorkspaceMonitoringProfilePhoto(user, profileId, photoId);
+      assertMonitoringProfilesEnabled(context, committeeId);
+      return removeWorkspaceMonitoringProfilePhoto(context.user, profileId, photoId);
     },
   },
 };

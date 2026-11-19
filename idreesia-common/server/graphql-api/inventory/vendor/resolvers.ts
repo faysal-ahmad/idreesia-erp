@@ -27,8 +27,14 @@ export default {
       }).countAsync(),
   },
   Query: {
-    vendorById: async (_obj: unknown, { _id }: Pick<Vendor, '_id'>) => {
-      return Vendors.findOneAsync(_id);
+    vendorById: async (
+      _obj: unknown,
+      { _id, physicalStoreId }: Pick<Vendor, '_id' | 'physicalStoreId'>
+    ) => {
+      return Vendors.findOneAsync({
+        _id: { $eq: _id },
+        physicalStoreId: { $eq: physicalStoreId },
+      });
     },
 
     vendorsByPhysicalStoreId: async (

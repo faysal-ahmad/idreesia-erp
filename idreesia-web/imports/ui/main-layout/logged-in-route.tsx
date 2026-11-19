@@ -8,6 +8,7 @@ import { useLoggedInUser } from 'meteor/idreesia-common/hooks/common';
 import HeaderContent from './header-content';
 import SidebarContent from './sidebar-content';
 import MainContent from './main-content';
+import { VideoCallProvider } from '/imports/ui/modules/common/video-call';
 
 interface LayoutRootState {
   breadcrumbs?: unknown[];
@@ -47,15 +48,17 @@ export const LoggedInRoute = ({ location, history }: Props) => {
   };
 
   return (
-    <Layout className="app-shell">
-      <HeaderContent location={location} history={history} user={user} />
-      <Layout className="app-shell-body">
-        <SidebarContent history={history} />
-        <Layout className="app-shell-content" style={{ padding: '0 24px 24px' }}>
-          {getBreadcrumbs()}
-          <MainContent />
+    <VideoCallProvider>
+      <Layout className="app-shell">
+        <HeaderContent location={location} history={history} user={user} />
+        <Layout className="app-shell-body">
+          <SidebarContent history={history} />
+          <Layout className="app-shell-content" style={{ padding: '0 24px 24px' }}>
+            {getBreadcrumbs()}
+            <MainContent />
+          </Layout>
         </Layout>
       </Layout>
-    </Layout>
+    </VideoCallProvider>
   );
 };

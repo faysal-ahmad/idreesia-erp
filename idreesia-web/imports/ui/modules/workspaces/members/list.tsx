@@ -131,6 +131,7 @@ const List = () => {
             <MembersTable
               {...common}
               members={withRole(CommitteeMemberRoles.GUEST)}
+              hideDiscussionAccess
               allowRemove
               emptyText="No guests yet"
               note="Guests can be added to Projects and Meetings and will have access to those specific projects/meetings only. They cannot see any other data in the committee."
@@ -144,7 +145,11 @@ const List = () => {
           children: (
             <MembersTable
               {...common}
-              members={withRole(CommitteeMemberRoles.OBSERVER)}
+              members={withRole(
+                CommitteeMemberRoles.OBSERVER,
+                CommitteeMemberRoles.INHERITED_OBSERVER
+              )}
+              hideDiscussionAccess
               allowRemove={false}
               emptyText="No observers yet"
               note="Observer users have read-only access to all data in the committee."

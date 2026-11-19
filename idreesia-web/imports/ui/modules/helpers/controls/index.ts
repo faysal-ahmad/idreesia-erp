@@ -23,9 +23,6 @@ export {
 export { default as InputFile } from './file/input-file';
 
 export {
-  default as PeopleSelectionButton,
-} from './people-selection-button/button';
-export {
   default as KarkunSelectionList,
   type KarkunSelectionItem,
   type KarkunSelectionFilter,

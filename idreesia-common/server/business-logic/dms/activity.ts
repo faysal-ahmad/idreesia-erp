@@ -1,3 +1,4 @@
+import { isInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   DmsActivities,
   type DmsActivityDocument,
@@ -6,12 +7,18 @@ import {
 import { normalizePage, requireUserId, requireWorkspace } from './internal';
 
 /**
- * Records a change in the workspace's activity log. Logging never fails the
- * change it records: errors are only reported.
+ * Records a change in the workspace's activity log. Inside a transaction the
+ * entry is part of the change, so it is written or rolled back with it.
+ * Elsewhere (e.g. logging a download) logging never fails the operation:
+ * errors are only reported.
  */
 export async function logActivity(
   entry: Omit<DmsActivityDocument, '_id' | 'at'>
 ): Promise<void> {
+  if (isInTransaction()) {
+    await DmsActivities.insertAsync({ ...entry, at: new Date() });
+    return;
+  }
   try {
     await DmsActivities.insertAsync({ ...entry, at: new Date() });
   } catch (error) {

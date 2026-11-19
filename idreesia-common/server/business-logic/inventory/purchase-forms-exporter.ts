@@ -8,6 +8,15 @@ import {
 } from 'meteor/idreesia-common/server/collections/inventory';
 import { createWorkbookBuffer } from 'meteor/idreesia-common/server/business-logic/common/excel-exporter';
 
+/** The physical stores of the given forms (comma-separated ids); unknown ids are skipped. */
+export async function getPurchaseFormStoreIds(purchaseFormIdsString: string) {
+  const forms = await PurchaseForms.find(
+    { _id: { $in: purchaseFormIdsString.split(',') } },
+    { fields: { physicalStoreId: 1 } }
+  ).fetchAsync();
+  return forms.map(form => form.physicalStoreId as string);
+}
+
 export async function exportPurchaseForms(purchaseFormIdsString: string) {
   const purchaseFormIds = purchaseFormIdsString.split(',');
   const purchaseForms = await PurchaseForms.find({

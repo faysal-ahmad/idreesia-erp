@@ -1,0 +1,75 @@
+/* The embedded video call (see video-call-window.tsx). One element; only its
+   size and position change between modes, so the iframe keeps running. */
+.video-call {
+  position: fixed;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  overflow: hidden;
+}
+
+.video-call-full {
+  inset: 0;
+}
+
+/* Below the app header, so the user menu stays reachable. */
+.video-call-mini {
+  top: 72px;
+  right: 16px;
+  width: 360px;
+  height: 236px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.18);
+}
+
+.video-call-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px 6px 14px;
+  border-bottom: 1px solid #d0d5dd;
+}
+
+.video-call-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.video-call-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 2px;
+}
+
+.video-call-frame {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+}
+
+/* The screen before joining (video-call-prejoin.tsx). */
+.video-call-prejoin {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.video-call-prejoin-count {
+  min-height: 24px;
+  font-weight: 600;
+}
+
+.video-call-prejoin-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

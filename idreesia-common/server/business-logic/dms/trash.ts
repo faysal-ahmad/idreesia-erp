@@ -1,3 +1,4 @@
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { DmsAction, DmsEntityType } from 'meteor/idreesia-common/constants/dms';
 import {
   DmsDocuments,
@@ -16,7 +17,7 @@ import {
   rewriteDescendantAncestors,
 } from './folders';
 import {
-  deleteFilesQuietly,
+  deleteFilesAfterCommit,
   getSubtreeFolderIds,
   guardedDocumentUpdate,
   isLockedByOther,
@@ -35,24 +36,26 @@ export async function trashDocument(
   documentId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const document = await requireDocument(documentId);
-  const date = new Date();
-  await guardedDocumentUpdate(documentId, userId, {
-    $set: {
-      trashed: true,
-      trashRootId: documentId,
-      deletedAt: date,
-      deletedBy: userId,
-    },
-  });
-  await logActivity({
-    workspaceId: document.workspaceId,
-    entityType: DmsEntityType.DOCUMENT,
-    entityId: documentId,
-    documentId,
-    action: DmsAction.DOCUMENT_TRASHED,
-    userId,
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const document = await requireDocument(documentId);
+    const date = new Date();
+    await guardedDocumentUpdate(documentId, userId, {
+      $set: {
+        trashed: true,
+        trashRootId: documentId,
+        deletedAt: date,
+        deletedBy: userId,
+      },
+    });
+    await logActivity({
+      workspaceId: document.workspaceId,
+      entityType: DmsEntityType.DOCUMENT,
+      entityId: documentId,
+      documentId,
+      action: DmsAction.DOCUMENT_TRASHED,
+      userId,
+    });
   });
 }
 
@@ -64,42 +67,44 @@ export async function trashFolder(
   folderId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const folder = await requireFolder(folderId);
-  const folderIds = await getSubtreeFolderIds(folderId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const folder = await requireFolder(folderId);
+    const folderIds = await getSubtreeFolderIds(folderId);
 
-  const date = new Date();
-  const locked = await DmsDocuments.findOneAsync({
-    folderId: { $in: folderIds },
-    trashed: false,
-    ...lockedByOtherSelector(userId, date),
-  });
-  if (locked) throw lockedError(locked);
+    const date = new Date();
+    const locked = await DmsDocuments.findOneAsync({
+      folderId: { $in: folderIds },
+      trashed: false,
+      ...lockedByOtherSelector(userId, date),
+    });
+    if (locked) throw lockedError(locked);
 
-  const trashFields = {
-    trashed: true,
-    trashRootId: folderId,
-    deletedAt: date,
-    deletedBy: userId,
-  };
-  await DmsFolders.updateAsync(
-    { _id: { $in: folderIds }, trashed: false },
-    { $set: trashFields },
-    { multi: true }
-  );
-  await DmsDocuments.updateAsync(
-    { folderId: { $in: folderIds }, trashed: false },
-    { $set: trashFields },
-    { multi: true }
-  );
+    const trashFields = {
+      trashed: true,
+      trashRootId: folderId,
+      deletedAt: date,
+      deletedBy: userId,
+    };
+    await DmsFolders.updateAsync(
+      { _id: { $in: folderIds }, trashed: false },
+      { $set: trashFields },
+      { multi: true }
+    );
+    await DmsDocuments.updateAsync(
+      { folderId: { $in: folderIds }, trashed: false },
+      { $set: trashFields },
+      { multi: true }
+    );
 
-  await logActivity({
-    workspaceId: folder.workspaceId,
-    entityType: DmsEntityType.FOLDER,
-    entityId: folderId,
-    action: DmsAction.FOLDER_TRASHED,
-    userId,
-    details: { name: folder.name },
+    await logActivity({
+      workspaceId: folder.workspaceId,
+      entityType: DmsEntityType.FOLDER,
+      entityId: folderId,
+      action: DmsAction.FOLDER_TRASHED,
+      userId,
+      details: { name: folder.name },
+    });
   });
 }
 
@@ -209,121 +214,123 @@ export async function restoreFromTrash(
   userId: string,
   { newName, targetFolderId }: RestoreOptions = {}
 ): Promise<void> {
-  requireUserId(userId);
-  const trashItem = await requireTrashItem(itemId);
-  const names =
-    newName !== undefined ? normalizeName(newName, 'Name') : undefined;
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const trashItem = await requireTrashItem(itemId);
+    const names =
+      newName !== undefined ? normalizeName(newName, 'Name') : undefined;
 
-  if (trashItem.kind === 'document') {
-    const document = trashItem.item;
+    if (trashItem.kind === 'document') {
+      const document = trashItem.item;
+      const target = await resolveRestoreTarget(
+        document.workspaceId,
+        document.folderId,
+        targetFolderId
+      );
+      const name = names?.name ?? document.name;
+      let restored: number;
+      try {
+        restored = await DmsDocuments.updateAsync(
+          {
+            _id: document._id,
+            trashed: true,
+            trashRootId: document._id,
+            ...lockFreeSelector(userId),
+          },
+          {
+            $set: {
+              ...restoredFields(userId),
+              ...(names ?? {}),
+              ...(target ? { folderId: target._id } : {}),
+            },
+            $unset: {
+              ...UNSET_TRASH_FIELDS,
+              ...(target ? {} : { folderId: 1 as const }),
+            },
+          }
+        );
+      } catch (error) {
+        if (isDuplicateKeyError(error)) throw documentNameConflict(name);
+        throw error;
+      }
+      if (!restored) {
+        if (isLockedByOther(document, userId)) throw lockedError(document);
+        throw dmsError('CONFLICT', 'The item was changed by another request');
+      }
+
+      await logActivity({
+        workspaceId: document.workspaceId,
+        entityType: DmsEntityType.DOCUMENT,
+        entityId: document._id,
+        documentId: document._id,
+        action: DmsAction.DOCUMENT_RESTORED,
+        userId,
+        details: { folderId: target?._id ?? null, name },
+      });
+      return;
+    }
+
+    const folder = trashItem.item;
     const target = await resolveRestoreTarget(
-      document.workspaceId,
-      document.folderId,
+      folder.workspaceId,
+      folder.parentId,
       targetFolderId
     );
-    const name = names?.name ?? document.name;
-    let restored: number;
+    assertNotIntoOwnSubtree(folder, target);
+    const ancestorIds = ancestorIdsUnder(target);
+    const name = names?.name ?? folder.name;
     try {
-      restored = await DmsDocuments.updateAsync(
-        {
-          _id: document._id,
-          trashed: true,
-          trashRootId: document._id,
-          ...lockFreeSelector(userId),
-        },
+      await DmsFolders.updateAsync(
+        { _id: folder._id, trashed: true, trashRootId: folder._id },
         {
           $set: {
             ...restoredFields(userId),
             ...(names ?? {}),
-            ...(target ? { folderId: target._id } : {}),
+            ancestorIds,
+            ...(target ? { parentId: target._id } : {}),
           },
           $unset: {
             ...UNSET_TRASH_FIELDS,
-            ...(target ? {} : { folderId: 1 as const }),
+            ...(target ? {} : { parentId: 1 as const }),
           },
         }
       );
     } catch (error) {
-      if (isDuplicateKeyError(error)) throw documentNameConflict(name);
+      if (isDuplicateKeyError(error)) {
+        throw dmsError(
+          'CONFLICT',
+          `A folder named "${name}" already exists here`
+        );
+      }
       throw error;
     }
-    if (!restored) {
-      if (isLockedByOther(document, userId)) throw lockedError(document);
-      throw dmsError('CONFLICT', 'The item was changed by another request');
+    if ((target?._id ?? null) !== (folder.parentId ?? null)) {
+      await rewriteDescendantAncestors(folder._id, ancestorIds);
     }
+
+    const restoreDescendants = {
+      $set: restoredFields(userId),
+      $unset: UNSET_TRASH_FIELDS,
+    };
+    await DmsFolders.updateAsync(
+      { trashRootId: folder._id, trashed: true },
+      restoreDescendants,
+      { multi: true }
+    );
+    await DmsDocuments.updateAsync(
+      { trashRootId: folder._id, trashed: true },
+      restoreDescendants,
+      { multi: true }
+    );
 
     await logActivity({
-      workspaceId: document.workspaceId,
-      entityType: DmsEntityType.DOCUMENT,
-      entityId: document._id,
-      documentId: document._id,
-      action: DmsAction.DOCUMENT_RESTORED,
+      workspaceId: folder.workspaceId,
+      entityType: DmsEntityType.FOLDER,
+      entityId: folder._id,
+      action: DmsAction.FOLDER_RESTORED,
       userId,
-      details: { folderId: target?._id ?? null, name },
+      details: { parentId: target?._id ?? null, name },
     });
-    return;
-  }
-
-  const folder = trashItem.item;
-  const target = await resolveRestoreTarget(
-    folder.workspaceId,
-    folder.parentId,
-    targetFolderId
-  );
-  assertNotIntoOwnSubtree(folder, target);
-  const ancestorIds = ancestorIdsUnder(target);
-  const name = names?.name ?? folder.name;
-  try {
-    await DmsFolders.updateAsync(
-      { _id: folder._id, trashed: true, trashRootId: folder._id },
-      {
-        $set: {
-          ...restoredFields(userId),
-          ...(names ?? {}),
-          ancestorIds,
-          ...(target ? { parentId: target._id } : {}),
-        },
-        $unset: {
-          ...UNSET_TRASH_FIELDS,
-          ...(target ? {} : { parentId: 1 as const }),
-        },
-      }
-    );
-  } catch (error) {
-    if (isDuplicateKeyError(error)) {
-      throw dmsError(
-        'CONFLICT',
-        `A folder named "${name}" already exists here`
-      );
-    }
-    throw error;
-  }
-  if ((target?._id ?? null) !== (folder.parentId ?? null)) {
-    await rewriteDescendantAncestors(folder._id, ancestorIds);
-  }
-
-  const restoreDescendants = {
-    $set: restoredFields(userId),
-    $unset: UNSET_TRASH_FIELDS,
-  };
-  await DmsFolders.updateAsync(
-    { trashRootId: folder._id, trashed: true },
-    restoreDescendants,
-    { multi: true }
-  );
-  await DmsDocuments.updateAsync(
-    { trashRootId: folder._id, trashed: true },
-    restoreDescendants,
-    { multi: true }
-  );
-
-  await logActivity({
-    workspaceId: folder.workspaceId,
-    entityType: DmsEntityType.FOLDER,
-    entityId: folder._id,
-    action: DmsAction.FOLDER_RESTORED,
-    userId,
-    details: { parentId: target?._id ?? null, name },
   });
 }
 
@@ -336,7 +343,7 @@ async function purgeDocuments(documentIds: string[]) {
   ).fetchAsync();
   await DmsDocumentVersions.removeAsync({ documentId: { $in: documentIds } });
   await DmsDocuments.removeAsync({ _id: { $in: documentIds } });
-  await deleteFilesQuietly(versions.map(({ fileKey }) => fileKey));
+  await deleteFilesAfterCommit(versions.map(({ fileKey }) => fileKey));
 }
 
 /**
@@ -348,50 +355,52 @@ export async function purgeFromTrash(
   itemId: string,
   userId: string
 ): Promise<void> {
-  requireUserId(userId);
-  const trashItem = await requireTrashItem(itemId);
+  return runInTransaction(async () => {
+    requireUserId(userId);
+    const trashItem = await requireTrashItem(itemId);
 
-  if (trashItem.kind === 'document') {
-    const document = trashItem.item;
-    if (isLockedByOther(document, userId)) throw lockedError(document);
-    await purgeDocuments([document._id]);
+    if (trashItem.kind === 'document') {
+      const document = trashItem.item;
+      if (isLockedByOther(document, userId)) throw lockedError(document);
+      await purgeDocuments([document._id]);
+      await logActivity({
+        workspaceId: document.workspaceId,
+        entityType: DmsEntityType.DOCUMENT,
+        entityId: document._id,
+        documentId: document._id,
+        action: DmsAction.DOCUMENT_PURGED,
+        userId,
+        details: { name: document.name },
+      });
+      return;
+    }
+
+    const folder = trashItem.item;
+    const folderIds = await getSubtreeFolderIds(folder._id);
+    const documents = await DmsDocuments.find(
+      { folderId: { $in: folderIds } },
+      { fields: { _id: 1, name: 1, lock: 1 } }
+    ).fetchAsync();
+    const locked = documents.find(document =>
+      isLockedByOther(document as DmsDocumentDocument, userId)
+    );
+    if (locked) throw lockedError(locked as DmsDocumentDocument);
+
+    await purgeDocuments(documents.map(({ _id }) => _id));
+    await DmsFolders.removeAsync({ _id: { $in: folderIds } });
+
     await logActivity({
-      workspaceId: document.workspaceId,
-      entityType: DmsEntityType.DOCUMENT,
-      entityId: document._id,
-      documentId: document._id,
-      action: DmsAction.DOCUMENT_PURGED,
+      workspaceId: folder.workspaceId,
+      entityType: DmsEntityType.FOLDER,
+      entityId: folder._id,
+      action: DmsAction.FOLDER_PURGED,
       userId,
-      details: { name: document.name },
+      details: {
+        name: folder.name,
+        folders: folderIds.length,
+        documents: documents.length,
+      },
     });
-    return;
-  }
-
-  const folder = trashItem.item;
-  const folderIds = await getSubtreeFolderIds(folder._id);
-  const documents = await DmsDocuments.find(
-    { folderId: { $in: folderIds } },
-    { fields: { _id: 1, name: 1, lock: 1 } }
-  ).fetchAsync();
-  const locked = documents.find(document =>
-    isLockedByOther(document as DmsDocumentDocument, userId)
-  );
-  if (locked) throw lockedError(locked as DmsDocumentDocument);
-
-  await purgeDocuments(documents.map(({ _id }) => _id));
-  await DmsFolders.removeAsync({ _id: { $in: folderIds } });
-
-  await logActivity({
-    workspaceId: folder.workspaceId,
-    entityType: DmsEntityType.FOLDER,
-    entityId: folder._id,
-    action: DmsAction.FOLDER_PURGED,
-    userId,
-    details: {
-      name: folder.name,
-      folders: folderIds.length,
-      documents: documents.length,
-    },
   });
 }
 

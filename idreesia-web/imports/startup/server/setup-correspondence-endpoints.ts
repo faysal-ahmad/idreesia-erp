@@ -1,14 +1,13 @@
 import express from 'express';
-import type { NextFunction, Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
-import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import {
   fetchUploadedFile,
   ChatError,
 } from 'meteor/idreesia-common/server/chat';
 
-import { getUser } from './get-user';
+import { requirePermission } from './rest-guards';
 import { noticeError } from './newrelic';
 
 /**
@@ -26,35 +25,6 @@ import { noticeError } from './newrelic';
 
 // Rocket.Chat room and file ids are alphanumeric.
 const FILE_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
-
-const authenticate = Meteor.bindEnvironment(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const user = (await getUser(req.headers.authorization)) as
-      | { _id: string; username?: string; locked?: boolean; permissions?: string[] }
-      | undefined;
-    if (!user) {
-      // eslint-disable-next-line no-console
-      console.warn(`Correspondence file proxy: 401 for ${req.path} (no valid login token)`);
-      res.status(401).json({ error: 'Not authenticated.' });
-      return;
-    }
-
-    // Same rule as GraphQL's @checkPermissions: hasOnePermission lets
-    // erp-admin through and refuses other locked users.
-    if (
-      !hasOnePermission(user, [
-        Permissions.CORRESPONDENCE_INBOX_VIEW_MESSAGES,
-      ])
-    ) {
-      // eslint-disable-next-line no-console
-      console.warn(`Correspondence file proxy: 403 for ${req.path} (user ${user._id} lacks the inbox permission or is locked)`);
-      res.status(403).json({ error: 'Not authorized.' });
-      return;
-    }
-
-    next();
-  }
-);
 
 const PASSTHROUGH_HEADERS = ['content-type', 'content-length', 'last-modified'];
 
@@ -121,7 +91,7 @@ const streamFile = Meteor.bindEnvironment(
 
 export const createCorrespondenceRouter = () => {
   const router = express.Router();
-  router.use(authenticate);
+  router.use(requirePermission(Permissions.CORRESPONDENCE_INBOX_VIEW_MESSAGES));
   // fileName may itself contain encoded characters; express decodes it.
   router.get('/files/:roomId/:fileId/:fileName', streamFile);
   return router;

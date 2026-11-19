@@ -7,12 +7,11 @@ import {
   getCommitteePollsWorkspaceId,
   type CommitteeDoc,
   type ViewContext,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import {
-  getMemberCommittee,
-  isCommitteeCoordinator,
-  type WorkspaceUser,
+  getCommitteeAccess,
+  type CommitteeAccessContext,
 } from '../committee/access';
 
 export interface PollsAccess extends ViewContext {
@@ -28,29 +27,26 @@ const notFound = (message: string) =>
   new GraphQLError(message, { extensions: { code: 'NOT_FOUND' } });
 
 /**
- * Permission check for a committee's polls: the user must be a member of
- * the committee (erp-admin counts as one), and the committee must have
- * Polls enabled. With `coordinator`, only its coordinators pass - for
- * creating and managing polls.
+ * What a polls resolver works with, built from what `@checkCommitteeAccess`
+ * found: who may call the field is decided by the directive in the schema.
+ * Here the committee must also have Polls enabled.
  */
-export const getPollsAccess = async (
-  user: WorkspaceUser | null | undefined,
-  committeeId: string,
-  { coordinator = false }: { coordinator?: boolean } = {}
-): Promise<PollsAccess> => {
-  const committee = await getMemberCommittee(user, committeeId);
-  if (!committee || !user?._id) {
+export const getPollsAccess = (
+  context: CommitteeAccessContext,
+  committeeId: string
+): PollsAccess => {
+  const { committee, isCoordinator } = getCommitteeAccess(
+    context,
+    committeeId
+  );
+  const { user } = context;
+  if (!user?._id) {
     throw forbidden('You are not a member of this committee.');
   }
-  const workspaceId = getCommitteePollsWorkspaceId(
-    committee as unknown as CommitteeDoc
-  );
-  const isCoordinator = isCommitteeCoordinator(user, committee);
-  if (coordinator && !isCoordinator) {
-    throw forbidden('Only coordinators of this committee can do this.');
-  }
   return {
-    workspaceId,
+    workspaceId: getCommitteePollsWorkspaceId(
+      committee as unknown as CommitteeDoc
+    ),
     committee: committee as unknown as CommitteeDoc,
     userId: user._id,
     personId: user.personId ?? null,

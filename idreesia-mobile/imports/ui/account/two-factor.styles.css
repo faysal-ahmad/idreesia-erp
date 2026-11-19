@@ -1,0 +1,30 @@
+/* Two-factor authentication screen (two-factor-screen.tsx). Loaded from client/main.tsx. */
+
+/* Black on white whatever the theme, so authenticator apps can scan it. */
+.two-factor-qr {
+  width: 200px;
+  height: 200px;
+  margin: 16px auto 4px;
+  padding: 8px;
+  border-radius: var(--app-radius-medium);
+  background: #ffffff;
+}
+
+.two-factor-qr svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.two-factor-secret {
+  font-family: ui-monospace, Menlo, monospace;
+  word-break: break-all;
+}
+
+.two-factor-actions {
+  margin: 16px 12px 0;
+}
+
+.two-factor-danger-text {
+  color: var(--app-color-danger);
+}

@@ -23,7 +23,6 @@ type CityMehfilType {
 extend type Query {
   allCityMehfils: [CityMehfilType]
   cityMehfilsByCityId(cityId: String!): [CityMehfilType]
-  cityMehfilById(_id: String!): CityMehfilType
 }
 
 extend type Mutation {

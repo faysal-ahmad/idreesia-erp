@@ -1,10 +1,6 @@
 import { Mongo } from 'meteor/mongo';
-import {
-  Committees,
-  DutyDayAttendances,
-  Salaries,
-  Teams,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
+import { DutyDayAttendances, Salaries, Teams } from 'meteor/idreesia-common/server/collections/hr';
 import { MehfilKarkuns, VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 import {
   IssuanceForms,

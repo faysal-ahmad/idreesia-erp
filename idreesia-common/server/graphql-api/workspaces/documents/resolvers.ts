@@ -28,7 +28,7 @@ import {
   getLibraryTrash,
   getLibraryVersions,
   searchLibrary,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import {
   assertDocumentInWorkspace,
@@ -42,14 +42,15 @@ interface ResolverMap {
   [key: string]: ResolverField;
 }
 
-// Each resolver only checks access (committee membership + Documents
-// enabled, coordinators for the destructive actions, and that ids belong to
-// the committee's workspace); the DMS and the library logic do the work.
+// Who may call each field (committee role) is declared in the schema with
+// @checkCommitteeAccess. The resolvers only check what the role cannot tell:
+// Documents enabled on the committee, and that ids belong to the committee's
+// workspace. The DMS and the library logic do the work.
 // The DMS itself enforces check-out locks, unique names and the like.
 const resolvers: ResolverMap = {
   Query: {
-    workspaceDocumentsInfo: async (obj, { committeeId }, { user }) => {
-      const access = await getDocumentsAccess(user, committeeId);
+    workspaceDocumentsInfo: async (obj, { committeeId }, context) => {
+      const access = getDocumentsAccess(context, committeeId);
       return {
         ...(await getLibraryInfo(access.workspaceId, access.userId)),
         canManage: access.isCoordinator,
@@ -59,9 +60,9 @@ const resolvers: ResolverMap = {
     workspaceDocumentFolderContents: async (
       obj,
       { committeeId, folderId, pageIndex, pageSize },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertFolderInWorkspace(access, folderId);
       return getLibraryFolderContents(
         access.workspaceId,
@@ -71,17 +72,17 @@ const resolvers: ResolverMap = {
       );
     },
 
-    workspaceDocumentFolders: async (obj, { committeeId }, { user }) => {
-      const access = await getDocumentsAccess(user, committeeId);
+    workspaceDocumentFolders: async (obj, { committeeId }, context) => {
+      const access = getDocumentsAccess(context, committeeId);
       return getLibraryFolders(access.workspaceId, access.userId);
     },
 
     workspaceDocumentSearch: async (
       obj,
       { committeeId, text, pageIndex, pageSize },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       return searchLibrary(access.workspaceId, access.userId, {
         text,
         pageIndex,
@@ -92,9 +93,9 @@ const resolvers: ResolverMap = {
     workspaceDocumentById: async (
       obj,
       { committeeId, documentId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertDocumentInWorkspace(access, documentId);
       return getLibraryDocument(documentId, access.userId);
     },
@@ -102,9 +103,9 @@ const resolvers: ResolverMap = {
     workspaceDocumentVersions: async (
       obj,
       { committeeId, documentId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertDocumentInWorkspace(access, documentId);
       return getLibraryVersions(documentId, access.userId);
     },
@@ -112,9 +113,9 @@ const resolvers: ResolverMap = {
     workspaceDocumentActivity: async (
       obj,
       { committeeId, documentId, before, limit },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       if (documentId) await assertDocumentInWorkspace(access, documentId);
       return getLibraryActivity(access.workspaceId, access.userId, {
         documentId,
@@ -123,8 +124,8 @@ const resolvers: ResolverMap = {
       });
     },
 
-    workspaceDocumentTrash: async (obj, { committeeId }, { user }) => {
-      const access = await getDocumentsAccess(user, committeeId);
+    workspaceDocumentTrash: async (obj, { committeeId }, context) => {
+      const access = getDocumentsAccess(context, committeeId);
       return getLibraryTrash(access.workspaceId, access.userId);
     },
   },
@@ -133,9 +134,9 @@ const resolvers: ResolverMap = {
     workspaceCreateDocumentFolder: async (
       obj,
       { committeeId, parentId, name },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertFolderInWorkspace(access, parentId);
       await createFolder(
         { workspaceId: access.workspaceId, parentId, name },
@@ -147,9 +148,9 @@ const resolvers: ResolverMap = {
     workspaceRenameDocumentFolder: async (
       obj,
       { committeeId, folderId, name },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertFolderInWorkspace(access, folderId);
       await renameFolder(folderId, name, access.userId);
       return true;
@@ -158,9 +159,9 @@ const resolvers: ResolverMap = {
     workspaceMoveDocumentFolder: async (
       obj,
       { committeeId, folderId, parentId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertFolderInWorkspace(access, folderId);
       await assertFolderInWorkspace(access, parentId);
       await moveFolder(folderId, parentId ?? null, access.userId);
@@ -170,9 +171,9 @@ const resolvers: ResolverMap = {
     workspaceTrashDocumentFolder: async (
       obj,
       { committeeId, folderId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertFolderInWorkspace(access, folderId);
       await trashFolder(folderId, access.userId);
       return true;
@@ -181,9 +182,9 @@ const resolvers: ResolverMap = {
     workspaceCreateDocumentUpload: async (
       obj,
       { committeeId, ...input },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertFolderInWorkspace(access, input.folderId);
       if (input.documentId) {
         await assertDocumentInWorkspace(access, input.documentId);
@@ -195,18 +196,18 @@ const resolvers: ResolverMap = {
     workspaceCompleteDocumentUpload: async (
       obj,
       { committeeId, uploadId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       return completeLibraryUpload(uploadId, access.userId);
     },
 
     workspaceAbortDocumentUpload: async (
       obj,
       { committeeId, uploadId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await abortUpload(uploadId, access.userId);
       return true;
     },
@@ -214,9 +215,9 @@ const resolvers: ResolverMap = {
     workspaceUpdateDocument: async (
       obj,
       { committeeId, documentId, name, description, tags },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertDocumentInWorkspace(access, documentId);
       await updateDocument(
         documentId,
@@ -229,9 +230,9 @@ const resolvers: ResolverMap = {
     workspaceMoveDocument: async (
       obj,
       { committeeId, documentId, folderId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertDocumentInWorkspace(access, documentId);
       await assertFolderInWorkspace(access, folderId);
       await moveDocument(documentId, folderId ?? null, access.userId);
@@ -241,9 +242,9 @@ const resolvers: ResolverMap = {
     workspaceTrashDocument: async (
       obj,
       { committeeId, documentId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertDocumentInWorkspace(access, documentId);
       await trashDocument(documentId, access.userId);
       return true;
@@ -252,9 +253,9 @@ const resolvers: ResolverMap = {
     workspaceDocumentDownloadUrl: async (
       obj,
       { committeeId, documentId, versionId, inline },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertDocumentInWorkspace(access, documentId);
       return getLibraryDownloadUrl(documentId, access.userId, {
         versionId,
@@ -265,9 +266,9 @@ const resolvers: ResolverMap = {
     workspaceRestoreDocumentVersion: async (
       obj,
       { committeeId, documentId, versionId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertDocumentInWorkspace(access, documentId);
       await restoreVersion(documentId, versionId, access.userId);
       return true;
@@ -276,11 +277,9 @@ const resolvers: ResolverMap = {
     workspaceDeleteDocumentVersion: async (
       obj,
       { committeeId, documentId, versionId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getDocumentsAccess(context, committeeId);
       await assertDocumentInWorkspace(access, documentId);
       await deleteVersion(documentId, versionId, access.userId);
       return true;
@@ -289,9 +288,9 @@ const resolvers: ResolverMap = {
     workspaceCheckOutDocument: async (
       obj,
       { committeeId, documentId, durationMinutes, note },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertDocumentInWorkspace(access, documentId);
       await checkOutDocument(documentId, access.userId, {
         expiresInMinutes: durationMinutes,
@@ -303,9 +302,9 @@ const resolvers: ResolverMap = {
     workspaceCheckInDocument: async (
       obj,
       { committeeId, documentId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertDocumentInWorkspace(access, documentId);
       await checkInDocument(documentId, access.userId);
       return true;
@@ -314,11 +313,9 @@ const resolvers: ResolverMap = {
     workspaceForceUnlockDocument: async (
       obj,
       { committeeId, documentId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getDocumentsAccess(context, committeeId);
       await assertDocumentInWorkspace(access, documentId);
       await forceUnlockDocument(documentId, access.userId);
       return true;
@@ -327,9 +324,9 @@ const resolvers: ResolverMap = {
     workspaceRestoreDocumentTrashItem: async (
       obj,
       { committeeId, itemId, newName, toRoot },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId);
+      const access = getDocumentsAccess(context, committeeId);
       await assertTrashItemInWorkspace(access, itemId);
       await restoreFromTrash(itemId, access.userId, {
         newName: newName || undefined,
@@ -341,20 +338,16 @@ const resolvers: ResolverMap = {
     workspacePurgeDocumentTrashItem: async (
       obj,
       { committeeId, itemId },
-      { user }
+      context
     ) => {
-      const access = await getDocumentsAccess(user, committeeId, {
-        coordinator: true,
-      });
+      const access = getDocumentsAccess(context, committeeId);
       await assertTrashItemInWorkspace(access, itemId);
       await purgeFromTrash(itemId, access.userId);
       return true;
     },
 
-    workspaceEmptyDocumentTrash: async (obj, { committeeId }, { user }) => {
-      const access = await getDocumentsAccess(user, committeeId, {
-        coordinator: true,
-      });
+    workspaceEmptyDocumentTrash: async (obj, { committeeId }, context) => {
+      const access = getDocumentsAccess(context, committeeId);
       const { purged } = await emptyTrash(access.workspaceId, access.userId);
       return purged;
     },

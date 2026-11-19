@@ -1,0 +1,201 @@
+import { describe, expect, it, vi } from 'vitest';
+
+import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
+import {
+  UserGroups,
+  Users,
+} from 'meteor/idreesia-common/server/collections/admin';
+import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
+
+import {
+  createUserGroup,
+  removeUserGroup,
+  searchUserGroups,
+  setUserGroupInstanceAccess,
+  setUserGroupPermissions,
+  updateUserGroup,
+} from './user-groups';
+
+const user = { _id: 'u1' };
+
+describe('createUserGroup', () => {
+  it('stamps the creator and returns the group', async () => {
+    const group = await createUserGroup(
+      { name: 'Admins', moduleName: 'hr', description: 'desc' },
+      user
+    );
+    expect(group).toMatchObject({
+      name: 'Admins',
+      moduleName: 'hr',
+      description: 'desc',
+      createdBy: 'u1',
+      updatedBy: 'u1',
+    });
+  });
+
+  it('rejects a name that is already in use', async () => {
+    await createUserGroup({ name: 'Admins' }, user);
+    await expect(createUserGroup({ name: 'Admins' }, user)).rejects.toThrow(
+      "User Group name 'Admins' is already in use."
+    );
+    expect(await UserGroups.find().countAsync()).toBe(1);
+  });
+});
+
+describe('updateUserGroup', () => {
+  it('updates the name and description and stamps the updater', async () => {
+    const group = await createUserGroup({ name: 'Old' }, user);
+    const updated = await updateUserGroup(
+      { _id: group!._id!, name: 'New', description: 'd' },
+      { _id: 'u2' }
+    );
+    expect(updated).toMatchObject({
+      name: 'New',
+      description: 'd',
+      updatedBy: 'u2',
+      createdBy: 'u1',
+    });
+  });
+});
+
+describe('removeUserGroup', () => {
+  it('deletes an unused group', async () => {
+    const group = await createUserGroup({ name: 'Unused' }, user);
+    await removeUserGroup({ _id: group!._id! });
+    expect(await UserGroups.findOneAsync(group!._id!)).toBeUndefined();
+  });
+
+  it('refuses to delete a group that users still belong to', async () => {
+    const group = await createUserGroup({ name: 'Used' }, user);
+    await Users.insertAsync({ _id: 'member', groups: [group!._id!] });
+
+    await expect(removeUserGroup({ _id: group!._id! })).rejects.toThrow(
+      'currently in use'
+    );
+    expect(await UserGroups.findOneAsync(group!._id!)).toBeDefined();
+  });
+});
+
+describe('setUserGroupPermissions', () => {
+  it('saves the permissions and logs what was added and removed', async () => {
+    const group = await createUserGroup({ name: 'G' }, user);
+    await setUserGroupPermissions(
+      { _id: group!._id!, permissions: ['a', 'b'] },
+      user,
+      'test',
+      'detail'
+    );
+    const updated = await setUserGroupPermissions(
+      { _id: group!._id!, permissions: ['b', 'c'] },
+      user,
+      'test'
+    );
+    expect(updated?.permissions).toEqual(['b', 'c']);
+
+    const logs = await SecurityLogs.find(
+      { groupId: group!._id! },
+      { sort: { operationTime: 1 } }
+    ).fetchAsync();
+    expect(logs).toHaveLength(2);
+    expect(logs[0]).toMatchObject({
+      operationType: SecurityOperationType.PERMISSIONS_CHANGED,
+      operationBy: 'u1',
+      dataSource: 'test',
+      dataSourceDetail: 'detail',
+      operationDetails: { permissionsAdded: ['a', 'b'], permissionsRemoved: [] },
+    });
+    expect(logs[1].operationDetails).toEqual({
+      permissionsAdded: ['c'],
+      permissionsRemoved: ['a'],
+    });
+  });
+
+  it('rolls the permissions back when the security log cannot be written', async () => {
+    const group = await createUserGroup({ name: 'G' }, user);
+    await setUserGroupPermissions(
+      { _id: group!._id!, permissions: ['a'] },
+      user,
+      'test'
+    );
+    vi.spyOn(SecurityLogs, 'insertAsync').mockRejectedValueOnce(
+      new Error('boom')
+    );
+
+    await expect(
+      setUserGroupPermissions(
+        { _id: group!._id!, permissions: ['a', 'b'] },
+        user,
+        'test'
+      )
+    ).rejects.toThrow('boom');
+    expect((await UserGroups.findOneAsync(group!._id!))?.permissions).toEqual([
+      'a',
+    ]);
+    expect(await SecurityLogs.find().countAsync()).toBe(1);
+  });
+});
+
+describe('setUserGroupInstanceAccess', () => {
+  it('saves the instances and logs what was added and removed', async () => {
+    const group = await createUserGroup({ name: 'G' }, user);
+    await setUserGroupInstanceAccess(
+      { _id: group!._id!, instances: ['i1', 'i2'] },
+      user,
+      'test'
+    );
+    const updated = await setUserGroupInstanceAccess(
+      { _id: group!._id!, instances: ['i2', 'i3'] },
+      user,
+      'test'
+    );
+    expect(updated?.instances).toEqual(['i2', 'i3']);
+
+    const logs = await SecurityLogs.find(
+      { groupId: group!._id! },
+      { sort: { operationTime: 1 } }
+    ).fetchAsync();
+    expect(logs.map(log => log.operationType)).toEqual([
+      SecurityOperationType.INSTANCE_ACCESS_CHANGED,
+      SecurityOperationType.INSTANCE_ACCESS_CHANGED,
+    ]);
+    expect(logs[1].operationDetails).toEqual({
+      instancesAdded: ['i3'],
+      instancesRemoved: ['i1'],
+    });
+  });
+
+  it('rolls the instances back when the security log cannot be written', async () => {
+    const group = await createUserGroup({ name: 'G' }, user);
+    vi.spyOn(SecurityLogs, 'insertAsync').mockRejectedValueOnce(
+      new Error('boom')
+    );
+    await expect(
+      setUserGroupInstanceAccess(
+        { _id: group!._id!, instances: ['i1'] },
+        user,
+        'test'
+      )
+    ).rejects.toThrow('boom');
+    expect(
+      (await UserGroups.findOneAsync(group!._id!))?.instances
+    ).toBeUndefined();
+  });
+});
+
+describe('searchUserGroups', () => {
+  it('pages groups sorted by name with a total count', async () => {
+    for (const name of ['C', 'A', 'B']) {
+      await createUserGroup({ name }, user);
+    }
+    const page = await searchUserGroups('pageIndex=1&pageSize=2');
+    expect(page.totalResults).toBe(3);
+    expect(page.data.map(group => group.name)).toEqual(['C']);
+
+    const first = await searchUserGroups('pageSize=2');
+    expect(first.data.map(group => group.name)).toEqual(['A', 'B']);
+  });
+
+  it('reports zero results for no groups', async () => {
+    expect(await searchUserGroups('')).toEqual({ data: [], totalResults: 0 });
+  });
+});

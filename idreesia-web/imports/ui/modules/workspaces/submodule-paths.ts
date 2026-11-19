@@ -60,4 +60,30 @@ export default class SubModulePaths {
   static committeeMonitoringProfilesPath(committeeId = ':committeeId') {
     return `${SubModulePaths.committeePath(committeeId)}/monitoring-profiles`;
   }
+
+  // Base path for a location's workspaces. Location-owned sub-modules (a
+  // mehfil's Duties and Attendance) are nested under this path.
+  static locationPath(locationId = ':locationId') {
+    return `${ModulePaths.workspaces}/locations/${locationId}`;
+  }
+
+  static locationDutiesAttendancePath(locationId = ':locationId') {
+    return `${SubModulePaths.locationPath(locationId)}/duties-attendance`;
+  }
+
+  static locationDutiesPath(locationId = ':locationId') {
+    return `${SubModulePaths.locationDutiesAttendancePath(locationId)}/duties`;
+  }
+
+  static locationDutyPlanningPath(locationId = ':locationId') {
+    return `${SubModulePaths.locationDutiesAttendancePath(locationId)}/planning`;
+  }
+
+  static locationDutyAttendancePath(locationId = ':locationId') {
+    return `${SubModulePaths.locationDutiesAttendancePath(locationId)}/attendance`;
+  }
+
+  static locationAttendanceSheetPath(locationId = ':locationId') {
+    return `${SubModulePaths.locationDutiesAttendancePath(locationId)}/attendance-sheet`;
+  }
 }

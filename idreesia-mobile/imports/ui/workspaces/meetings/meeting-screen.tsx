@@ -1,5 +1,5 @@
 import React, { type ReactNode, useState } from 'react';
-import { ActionSheet, Dialog, List, Selector, Tag, TextArea } from 'antd-mobile';
+import { ActionSheet, Button, Dialog, List, Selector, Tag, TextArea } from 'antd-mobile';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
 import {
   CalendarOutline,
@@ -7,12 +7,14 @@ import {
   FileOutline,
   HistogramOutline,
   MoreOutline,
+  VideoOutline,
   TeamOutline,
   UnorderedListOutline,
   EditSOutline,
 } from 'antd-mobile-icons';
-import { useApolloClient, useMutation } from '@apollo/client/react';
+import { useApolloClient, useMutation, useQuery } from '@apollo/client/react';
 
+import { VideoCallPrejoinPopup } from '../../components/video-call';
 import { Page, PageEmpty, PageError, PageLoading, showError, showSuccess } from '../../layout';
 import { useHistory, useParams } from '../../router';
 import { type MeetingPart, WorkspacesPaths } from '../paths';
@@ -20,7 +22,9 @@ import { formatDateTime, formatMeetingTimeLines, meetingStatus } from './format'
 import {
   MOBILE_CANCEL_MEETING,
   MOBILE_DELETE_MEETING,
+  MOBILE_JOIN_MEETING_VIDEO_CALL,
   MOBILE_MEETING_RESPOND,
+  MOBILE_MEETING_VIDEO_CALL_INFO,
   MOBILE_REOPEN_MEETING,
 } from './gql';
 import { useMeeting, useMeetingsInfo } from './use-meeting';
@@ -41,10 +45,28 @@ export const MeetingScreen = ({ meetingId }: Props) => {
   const { committeeId } = useParams<{ committeeId: string }>();
   const history = useHistory();
   const client = useApolloClient();
-  const { canManage } = useMeetingsInfo(committeeId);
+  const { canManage, canJoinVideoCall } = useMeetingsInfo(committeeId);
   const { meeting, participants, agenda, loading, error, refetch } = useMeeting(committeeId, meetingId);
   const [menuOpen, setMenuOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [callOpen, setCallOpen] = useState(false);
+
+  // Looked up each time the screen before the call opens: it changes as
+  // people come and go.
+  const callInfo = useQuery(MOBILE_MEETING_VIDEO_CALL_INFO, {
+    variables: { committeeId, meetingId },
+    skip: !callOpen,
+    fetchPolicy: 'network-only',
+  });
+  const [joinCall] = useMutation(MOBILE_JOIN_MEETING_VIDEO_CALL);
+  // undefined while loading, null when it can't be told.
+  let callParticipantCount: number | null | undefined = null;
+  if (!callInfo.error) {
+    callParticipantCount =
+      callInfo.loading && !callInfo.data
+        ? undefined
+        : callInfo.data?.workspaceMeetingVideoCallInfo?.participantCount;
+  }
 
   const [respond] = useMutation(MOBILE_MEETING_RESPOND);
   const [cancel] = useMutation(MOBILE_CANCEL_MEETING);
@@ -74,6 +96,7 @@ export const MeetingScreen = ({ meetingId }: Props) => {
   const status = meetingStatus(meeting.status, meeting.startsAt, meeting.endsAt);
   const isScheduled = meeting.status === 'scheduled';
   const me = participants.find(participant => participant.isMe);
+  const canJoinCall = canJoinVideoCall && meeting.status !== 'cancelled';
   const openPart = (part: MeetingPart) =>
     history.push(WorkspacesPaths.committeeMeetingPart(committeeId, meetingId, part));
   const refreshList = () => client.refetchQueries({ include: ['mobileWorkspaceMeetings'] });
@@ -164,19 +187,24 @@ export const MeetingScreen = ({ meetingId }: Props) => {
         <div key={line}>{line}</div>
       )),
     },
-    ...(meeting.location ? [{ label: 'Location', value: meeting.location }] : []),
-    ...(meeting.onlineUrl
+    ...(meeting.videoCall
       ? [
           {
-            label: 'Online',
+            label: 'Location',
             value: (
-              <a href={meeting.onlineUrl} rel="noopener noreferrer" target="_blank">
-                {meeting.onlineUrl}
-              </a>
+              <Button
+                color="primary"
+                disabled={!canJoinCall}
+                size="small"
+                onClick={() => setCallOpen(true)}
+              >
+                <VideoOutline /> Join video call
+              </Button>
             ),
           },
         ]
       : []),
+    ...(!meeting.videoCall && meeting.location ? [{ label: 'Location', value: meeting.location }] : []),
     ...(organizers.length ? [{ label: 'Organizers', value: organizers.join(', ') }] : []),
     ...(meeting.description ? [{ label: 'Description', value: meeting.description }] : []),
   ];
@@ -272,6 +300,19 @@ export const MeetingScreen = ({ meetingId }: Props) => {
           Activity
         </List.Item>
       </List>
+
+      <VideoCallPrejoinPopup
+        join={async () => {
+          const { data } = await joinCall({ variables: { committeeId, meetingId } });
+          const url = data?.workspaceJoinMeetingVideoCall?.url;
+          if (!url) throw new Error('Video call is not available.');
+          return url;
+        }}
+        loading={callInfo.loading}
+        participantCount={callParticipantCount}
+        visible={callOpen}
+        onClose={() => setCallOpen(false)}
+      />
 
       <ActionSheet
         actions={actions}

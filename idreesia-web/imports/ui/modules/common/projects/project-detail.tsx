@@ -48,7 +48,7 @@ import type {
 const showError = (error: unknown) =>
   message.error(error instanceof Error ? error.message : String(error));
 
-type TabKey = 'tasks' | 'participants' | 'chat' | 'activity';
+type TabKey = 'tasks' | 'participants' | 'activity';
 const TAB_PARAM = 'tab';
 
 interface Props {
@@ -56,18 +56,13 @@ interface Props {
   projectId: string;
   /** Back to the list. */
   onBack: () => void;
-  /**
-   * The project's chat, for the Chat tab (shown to participants only). The
-   * host supplies it - this UI knows nothing about how chat is provided.
-   */
-  renderChat?: (project: Project) => React.ReactNode;
 }
 
 /**
  * One project: its objective and progress, and tabs for its tasks,
- * participants, chat and (for managers) activity.
+ * participants and (for managers) activity.
  */
-const ProjectDetail = ({ provider, projectId, onBack, renderChat }: Props) => {
+const ProjectDetail = ({ provider, projectId, onBack }: Props) => {
   const history = useHistory();
   const location = useLocation();
   const tabParam = new URLSearchParams(location.search).get(TAB_PARAM);
@@ -166,12 +161,10 @@ const ProjectDetail = ({ provider, projectId, onBack, renderChat }: Props) => {
   }
 
   const isClosed = project.status === 'completed' || project.status === 'cancelled';
-  const showChat = !!renderChat && project.isParticipant;
 
   const tabKeys: TabKey[] = [
     'tasks',
     'participants',
-    ...(showChat ? (['chat'] as TabKey[]) : []),
     ...(project.canManage ? (['activity'] as TabKey[]) : []),
   ];
   const activeTab: TabKey = tabKeys.includes(tabParam as TabKey)
@@ -232,7 +225,7 @@ const ProjectDetail = ({ provider, projectId, onBack, renderChat }: Props) => {
             project.completedAt
               ? ` (${formatDateTime(project.completedAt)}${project.completedByName ? ` by ${project.completedByName}` : ''})`
               : ''
-          }. Its tasks can't be changed, and its chat is archived.`}
+          }. Its tasks can't be changed.`}
         />
       ) : null}
 
@@ -329,17 +322,6 @@ const ProjectDetail = ({ provider, projectId, onBack, renderChat }: Props) => {
               />
             ),
           },
-          ...(showChat
-            ? [
-                {
-                  key: 'chat',
-                  label: 'Chat',
-                  children: (
-                    <div className="project-detail-chat">{renderChat!(project)}</div>
-                  ),
-                },
-              ]
-            : []),
           ...(project.canManage
             ? [
                 {
@@ -385,9 +367,7 @@ const ProjectDetail = ({ provider, projectId, onBack, renderChat }: Props) => {
           }
         }}
       >
-        <p>
-          The project is removed permanently and its chat is archived.
-        </p>
+        <p>The project is removed permanently.</p>
         <Checkbox
           checked={deleteTasks}
           onChange={event => setDeleteTasks(event.target.checked)}

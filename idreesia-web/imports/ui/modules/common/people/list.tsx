@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { AuditOutlined, DeleteOutlined, DollarOutlined, StarOutlined } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
-import type { PagedPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
+import type { PersonType } from 'meteor/idreesia-common/types/graphql';
 import {
   Pagination,
   Popconfirm,
@@ -12,9 +12,7 @@ import {
 } from 'antd';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-type PersonRow = NonNullable<
-  NonNullable<NonNullable<PagedPeopleQuery['pagedPeople']>['data']>[number]
->;
+type PersonRow = PersonType;
 
 interface PagedData {
   totalResults?: number | null;
@@ -201,8 +199,8 @@ export default class PeopleList extends Component<Props, State> {
     render: (_text: unknown, record: PersonRow) => {
       const cityCountry: React.ReactNode[] = [];
       if (record.isKarkun) {
-        if (record.karkunData?.city) {
-          cityCountry.push(<Row key="1">{record.karkunData.city.name}</Row>);
+        if (record.karkunData?.cityLocation) {
+          cityCountry.push(<Row key="1">{record.karkunData.cityLocation.name}</Row>);
           cityCountry.push(<Row key="2">{(record.visitorData?.city as { country?: string | null } | null)?.country}</Row>);
         }
       } else {

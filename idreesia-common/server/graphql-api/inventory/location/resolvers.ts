@@ -69,8 +69,14 @@ export default {
       isLocationInUse(location._id, location.physicalStoreId),
   },
   Query: {
-    locationById: async (_obj: unknown, { _id }: Pick<LocationArgs, '_id'>) => {
-      return Locations.findOneAsync(_id);
+    locationById: async (
+      _obj: unknown,
+      { _id, physicalStoreId }: Pick<LocationArgs, '_id' | 'physicalStoreId'>
+    ) => {
+      return Locations.findOneAsync({
+        _id: { $eq: _id },
+        physicalStoreId: { $eq: physicalStoreId },
+      });
     },
 
     locationsByPhysicalStoreId: async (

@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 export default gql`
 extend type Query {
   hrCommitteeOptions: [CommitteeType]
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 
   hrKarkunById(_id: String!): PersonType
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
@@ -28,8 +29,8 @@ extend type Mutation {
     contactNumber2: String
     emailAddress: String
     currentAddress: String
-    cityId: String
-    cityMehfilId: String
+    cityLocationId: String
+    mehfilLocationId: String
     permanentAddress: String
     bloodGroup: String
     educationalQualification: String
@@ -53,8 +54,8 @@ extend type Mutation {
     emailAddress: String
     currentAddress: String
     permanentAddress: String
-    cityId: String
-    cityMehfilId: String
+    cityLocationId: String
+    mehfilLocationId: String
     bloodGroup: String
     educationalQualification: String
     meansOfEarning: String
@@ -67,14 +68,6 @@ extend type Mutation {
 
   deleteHrKarkun(_id: String!): Int
   @checkPermissions(permissions: [HR_DELETE_DATA])
-
-  setHrKarkunWazaifAndRaabta(
-    _id: String!
-    lastTarteebDate: String
-    mehfilRaabta: String
-    msRaabta: String
-  ): PersonType
-  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   setHrKarkunEmploymentInfo(
     _id: String!

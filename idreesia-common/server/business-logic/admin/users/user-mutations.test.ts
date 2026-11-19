@@ -1,0 +1,410 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { SecurityOperationType } from 'meteor/idreesia-common/constants/audit';
+import { createChatUser } from 'meteor/idreesia-common/server/chat';
+import { Users } from 'meteor/idreesia-common/server/collections/admin';
+import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
+
+import {
+  createChatAccount,
+  createUser,
+  recordUserLogin,
+  setUserInstanceAccess,
+  setUserPermissions,
+  updateUser,
+} from './user-mutations';
+
+vi.mock('meteor/idreesia-common/server/chat', () => ({
+  createChatUser: vi.fn(),
+}));
+
+const createChat = createChatUser as unknown as ReturnType<typeof vi.fn>;
+
+const caller = { _id: 'admin' };
+
+let counter = 0;
+
+// A stand-in for Meteor's Accounts (a global in the app) that keeps users in
+// the Users collection.
+const accounts = {
+  createUserAsync: vi.fn(),
+  findUserByUsername: vi.fn(),
+  setPasswordAsync: vi.fn(),
+  setUsername: vi.fn(),
+};
+(globalThis as { Accounts?: unknown }).Accounts = accounts;
+
+beforeEach(() => {
+  counter = 0;
+  createChat.mockReset().mockResolvedValue('chat-1');
+  accounts.createUserAsync.mockReset().mockImplementation(
+    async (options: { username?: string; email?: string }) => {
+      counter += 1;
+      const _id = `new${counter}`;
+      await Users.insertAsync({
+        _id,
+        ...(options.username ? { username: options.username } : {}),
+      });
+      return _id;
+    }
+  );
+  accounts.findUserByUsername.mockReset().mockImplementation(
+    async (username: string) =>
+      Users.findOneAsync({ username: new RegExp(`^${username}$`, 'i') }) ?? null
+  );
+  accounts.setPasswordAsync.mockReset().mockResolvedValue(undefined);
+  accounts.setUsername.mockReset().mockImplementation(
+    async (userId: string, username: string) => {
+      await Users.updateAsync(userId, { $set: { username } });
+    }
+  );
+});
+
+const logsOf = async (userId: string | null) =>
+  SecurityLogs.find({ userId }, { sort: { operationTime: 1 } }).fetchAsync();
+
+const logTypes = async (userId: string) =>
+  (await logsOf(userId)).map(log => log.operationType);
+
+describe('createUser', () => {
+  it('creates an account from a user name and password, with a security log', async () => {
+    const created = await createUser(
+      {
+        userName: '  ali.khan ',
+        password: 'secret',
+        email: 'a@b.c',
+        displayName: 'Ali Khan',
+        personId: 'p1',
+      },
+      caller,
+      'test',
+      'detail'
+    );
+
+    expect(accounts.createUserAsync).toHaveBeenCalledWith({
+      username: 'ali.khan',
+      password: 'secret',
+    });
+    expect(created).toMatchObject({
+      username: 'ali.khan',
+      displayName: 'Ali Khan',
+      personId: 'p1',
+    });
+    const logs = await logsOf(created._id);
+    expect(logs).toHaveLength(1);
+    expect(logs[0]).toMatchObject({
+      operationType: SecurityOperationType.ACCOUNT_CREATED,
+      operationBy: 'admin',
+      dataSource: 'test',
+      dataSourceDetail: 'detail',
+    });
+  });
+
+  it('creates an email-only account when there is no password', async () => {
+    const created = await createUser(
+      { email: 'a@b.c', displayName: 'Ali' },
+      caller,
+      'test'
+    );
+    expect(accounts.createUserAsync).toHaveBeenCalledWith({ email: 'a@b.c' });
+    expect(created.displayName).toBe('Ali');
+  });
+
+  it.each(['bad name', 'ali@khan', 'علی'])(
+    'rejects the user name %j',
+    async userName => {
+      await expect(
+        createUser({ userName, password: 'x' }, caller, 'test')
+      ).rejects.toThrow('may only contain letters, digits');
+      expect(accounts.createUserAsync).not.toHaveBeenCalled();
+    }
+  );
+
+  it('rejects a user name another user has, ignoring case', async () => {
+    await Users.insertAsync({ _id: 'existing', username: 'Ali' });
+    await expect(
+      createUser({ userName: 'ali', password: 'x' }, caller, 'test')
+    ).rejects.toThrow("User name 'ali' is already in use.");
+    expect(accounts.createUserAsync).not.toHaveBeenCalled();
+  });
+
+  it('rejects a person who already has an account', async () => {
+    await Users.insertAsync({ _id: 'existing', personId: 'p1' });
+    await expect(
+      createUser(
+        { userName: 'ali', password: 'x', personId: 'p1' },
+        caller,
+        'test'
+      )
+    ).rejects.toThrow('already has a user account');
+    expect(accounts.createUserAsync).not.toHaveBeenCalled();
+  });
+
+  it('leaves no account behind when the security log cannot be written', async () => {
+    vi.spyOn(SecurityLogs, 'insertAsync').mockRejectedValueOnce(
+      new Error('boom')
+    );
+    await expect(
+      createUser({ userName: 'ali', password: 'x' }, caller, 'test')
+    ).rejects.toThrow('boom');
+    expect(await Users.find().countAsync()).toBe(0);
+  });
+});
+
+describe('updateUser', () => {
+  const insertUser = (fields: Record<string, unknown> = {}) =>
+    Users.insertAsync({ _id: 'target', ...fields });
+
+  it('saves the display name and email', async () => {
+    await insertUser({ emails: [{ address: 'old@b.c' }] });
+    const updated = await updateUser(
+      { userId: 'target', email: 'new@b.c', displayName: 'New Name' },
+      caller,
+      'test'
+    );
+    expect(updated).toMatchObject({ email: 'new@b.c', displayName: 'New Name' });
+  });
+
+  it('removes the email when none is given', async () => {
+    await insertUser({ emails: [{ address: 'old@b.c' }] });
+    const updated = await updateUser(
+      { userId: 'target', displayName: 'X' },
+      caller,
+      'test'
+    );
+    expect(updated.email).toBeNull();
+  });
+
+  it('sets a user name only once', async () => {
+    await insertUser();
+    await updateUser({ userId: 'target', userName: ' first ' }, caller, 'test');
+    expect((await Users.findOneAsync('target'))?.username).toBe('first');
+
+    await updateUser({ userId: 'target', userName: 'second' }, caller, 'test');
+    expect((await Users.findOneAsync('target'))?.username).toBe('first');
+    expect(accounts.setUsername).toHaveBeenCalledTimes(1);
+  });
+
+  it('validates a new user name and refuses one that is taken', async () => {
+    await insertUser();
+    await Users.insertAsync({ _id: 'other', username: 'taken' });
+
+    await expect(
+      updateUser({ userId: 'target', userName: 'bad name' }, caller, 'test')
+    ).rejects.toThrow('may only contain letters');
+    await expect(
+      updateUser({ userId: 'target', userName: 'TAKEN' }, caller, 'test')
+    ).rejects.toThrow('already in use');
+  });
+
+  it('logs a lock and an unlock', async () => {
+    await insertUser();
+    await updateUser({ userId: 'target', locked: true }, caller, 'test');
+    expect((await Users.findOneAsync('target'))?.locked).toBe(true);
+    await updateUser({ userId: 'target', locked: false }, caller, 'test');
+    expect((await Users.findOneAsync('target'))?.locked).toBe(false);
+
+    expect(await logTypes('target')).toEqual([
+      SecurityOperationType.ACCOUNT_LOCKED,
+      SecurityOperationType.ACCOUNT_UNLOCKED,
+    ]);
+  });
+
+  it('writes no lock log when the lock state is unchanged', async () => {
+    await insertUser({ locked: true });
+    await updateUser({ userId: 'target', locked: true }, caller, 'test');
+    expect(await logTypes('target')).toEqual([]);
+  });
+
+  it('resets the password and logs it', async () => {
+    await insertUser();
+    await updateUser({ userId: 'target', password: 'new-pw' }, caller, 'test');
+    expect(accounts.setPasswordAsync).toHaveBeenCalledWith('target', 'new-pw');
+    expect(await logTypes('target')).toEqual([
+      SecurityOperationType.PASSWORD_RESET,
+    ]);
+  });
+
+  it('does not touch the password when none is given', async () => {
+    await insertUser();
+    await updateUser({ userId: 'target' }, caller, 'test');
+    expect(accounts.setPasswordAsync).not.toHaveBeenCalled();
+  });
+
+  it('refuses to lock the last unlocked super admin', async () => {
+    await insertUser({ isSuperAdmin: true });
+    await Users.insertAsync({ _id: 'admin', isSuperAdmin: true });
+
+    // admin may lock target, as another unlocked super admin remains
+    await updateUser({ userId: 'target', locked: true }, caller, 'test');
+    await expect(
+      updateUser({ userId: 'admin', locked: true }, caller, 'test')
+    ).rejects.toThrow('last super admin');
+  });
+
+  it('rolls everything back when a later write fails', async () => {
+    await insertUser();
+    accounts.setPasswordAsync.mockRejectedValueOnce(new Error('boom'));
+    await expect(
+      updateUser({ userId: 'target', locked: true, password: 'x' }, caller, 'test')
+    ).rejects.toThrow('boom');
+    expect(await logTypes('target')).toEqual([]);
+  });
+});
+
+describe('setUserPermissions', () => {
+  it('saves the permissions and logs what was added and removed', async () => {
+    await Users.insertAsync({ _id: 'target', permissions: ['a', 'b'] });
+    const updated = await setUserPermissions(
+      { userId: 'target', permissions: ['b', 'c'] },
+      caller,
+      'test'
+    );
+    expect(updated.permissions).toEqual(['b', 'c']);
+
+    const logs = await logsOf('target');
+    expect(logs).toHaveLength(1);
+    expect(logs[0]).toMatchObject({
+      operationType: SecurityOperationType.PERMISSIONS_CHANGED,
+      operationBy: 'admin',
+      operationDetails: { permissionsAdded: ['c'], permissionsRemoved: ['a'] },
+    });
+  });
+
+  it('treats a user without permissions as having none', async () => {
+    await Users.insertAsync({ _id: 'target' });
+    await setUserPermissions(
+      { userId: 'target', permissions: ['a'] },
+      caller,
+      'test'
+    );
+    expect((await logsOf('target'))[0].operationDetails).toEqual({
+      permissionsAdded: ['a'],
+      permissionsRemoved: [],
+    });
+  });
+
+  it('rolls the permissions back when the security log cannot be written', async () => {
+    await Users.insertAsync({ _id: 'target', permissions: ['a'] });
+    vi.spyOn(SecurityLogs, 'insertAsync').mockRejectedValueOnce(
+      new Error('boom')
+    );
+    await expect(
+      setUserPermissions({ userId: 'target', permissions: ['b'] }, caller, 'test')
+    ).rejects.toThrow('boom');
+    expect((await Users.findOneAsync('target'))?.permissions).toEqual(['a']);
+  });
+});
+
+describe('setUserInstanceAccess', () => {
+  it('saves the instances and logs what was added and removed', async () => {
+    await Users.insertAsync({ _id: 'target', instances: ['i1', 'i2'] });
+    const updated = await setUserInstanceAccess(
+      { userId: 'target', instances: ['i2', 'i3'] },
+      caller,
+      'test'
+    );
+    expect(updated.instances).toEqual(['i2', 'i3']);
+    expect((await logsOf('target'))[0]).toMatchObject({
+      operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
+      operationDetails: { instancesAdded: ['i3'], instancesRemoved: ['i1'] },
+    });
+  });
+
+  it('rolls the instances back when the security log cannot be written', async () => {
+    await Users.insertAsync({ _id: 'target', instances: ['i1'] });
+    vi.spyOn(SecurityLogs, 'insertAsync').mockRejectedValueOnce(
+      new Error('boom')
+    );
+    await expect(
+      setUserInstanceAccess({ userId: 'target', instances: [] }, caller, 'test')
+    ).rejects.toThrow('boom');
+    expect((await Users.findOneAsync('target'))?.instances).toEqual(['i1']);
+  });
+});
+
+describe('createChatAccount', () => {
+  it('creates the chat account from the user name, display name and email', async () => {
+    await Users.insertAsync({
+      _id: 'target',
+      username: ' ali ',
+      profile: { name: ' Ali Khan ' },
+      emails: [{ address: 'a@b.c' }],
+    });
+    const updated = await createChatAccount({ userId: 'target' }, caller, 'test');
+
+    expect(createChat).toHaveBeenCalledWith({
+      username: 'ali',
+      name: 'Ali Khan',
+      email: 'a@b.c',
+    });
+    expect(updated.chatUserId).toBe('chat-1');
+    expect(await logTypes('target')).toEqual([
+      SecurityOperationType.CHAT_ACCOUNT_CREATED,
+    ]);
+  });
+
+  it('refuses an unknown user, an existing chat account, or missing names', async () => {
+    await expect(
+      createChatAccount({ userId: 'nobody' }, caller, 'test')
+    ).rejects.toThrow('User not found.');
+
+    await Users.insertAsync({
+      _id: 'has-chat',
+      username: 'a',
+      profile: { name: 'A' },
+      chatUserId: 'c',
+    });
+    await expect(
+      createChatAccount({ userId: 'has-chat' }, caller, 'test')
+    ).rejects.toThrow('already has a chat account');
+
+    await Users.insertAsync({ _id: 'no-name', username: 'b' });
+    await expect(
+      createChatAccount({ userId: 'no-name' }, caller, 'test')
+    ).rejects.toThrow('user name and display name are required');
+    expect(createChat).not.toHaveBeenCalled();
+  });
+
+  it('does not link the chat account when the security log cannot be written', async () => {
+    await Users.insertAsync({
+      _id: 'target',
+      username: 'a',
+      profile: { name: 'A' },
+    });
+    vi.spyOn(SecurityLogs, 'insertAsync').mockRejectedValueOnce(
+      new Error('boom')
+    );
+    await expect(
+      createChatAccount({ userId: 'target' }, caller, 'test')
+    ).rejects.toThrow('boom');
+    expect((await Users.findOneAsync('target'))?.chatUserId).toBeUndefined();
+  });
+});
+
+describe('recordUserLogin', () => {
+  it('stamps the last login time and logs the login with the same time', async () => {
+    await Users.insertAsync({ _id: 'target' });
+    await recordUserLogin('target', 'web', 'detail');
+
+    const user = await Users.findOneAsync('target');
+    const logs = await logsOf('target');
+    expect(logs).toHaveLength(1);
+    expect(logs[0]).toMatchObject({
+      operationType: SecurityOperationType.LOGIN,
+      dataSource: 'web',
+      dataSourceDetail: 'detail',
+    });
+    expect(logs[0].operationBy).toBeUndefined();
+    expect(user?.lastLoggedInAt).toEqual(logs[0].operationTime);
+  });
+
+  it('does not stamp the login time when the log cannot be written', async () => {
+    await Users.insertAsync({ _id: 'target' });
+    vi.spyOn(SecurityLogs, 'insertAsync').mockRejectedValueOnce(
+      new Error('boom')
+    );
+    await expect(recordUserLogin('target', 'web')).rejects.toThrow('boom');
+    expect((await Users.findOneAsync('target'))?.lastLoggedInAt).toBeUndefined();
+  });
+});

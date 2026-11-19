@@ -38,8 +38,8 @@ export class List extends Component<ListProps> {
     title: 'City',
     key: 'cityCountry',
     render: (_text: unknown, record: MehfilKarkun) => {
-      if (record.karkun?.isKarkun && record.karkun.karkunData?.city) {
-        return record.karkun.karkunData.city.name;
+      if (record.karkun?.isKarkun && record.karkun.karkunData?.cityLocation) {
+        return record.karkun.karkunData.cityLocation.name;
       } else if (record.karkun?.visitorData?.city) {
         return record.karkun.visitorData.city;
       }

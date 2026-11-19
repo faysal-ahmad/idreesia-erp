@@ -13,6 +13,8 @@ const fieldDisplayNamesMap: Record<string, string> = {
   city: 'City',
   cityId: 'City ID',
   cityMehfilId: 'Mehfil ID',
+  cityLocationId: 'City Location ID',
+  mehfilLocationId: 'Mehfil Location ID',
   country: 'Country',
   bloodGroup: 'Blood Group',
   educationalQualification: 'Educational Qualification',

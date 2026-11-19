@@ -1,53 +1,87 @@
 import { GraphQLError } from 'graphql';
 
 import {
+  CommitteeMemberRoles,
+  type CommitteeMemberRole,
+} from 'meteor/idreesia-common/constants/organization';
+import {
   getCommitteeChatGroupId,
   type CommitteeDoc,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import {
-  getCoordinatedCommittee,
+  getCommitteeAccess,
+  getCommitteeRole,
   getMemberCommittee,
-  isCommitteeCoordinator,
+  type CommitteeAccessContext,
   type WorkspaceUser,
 } from '../committee/access';
 
 /**
- * Permission check for a committee's discussions: the user must be a member
- * of the committee (erp-admin counts as one), and the committee must have
- * Discussions enabled. Returns the chat group to hand to the discussions
- * business logic. Shared by the GraphQL resolvers and the file routes.
+ * The chat group of the committee's discussion, for a resolver: who may call
+ * the field is decided by `@checkCommitteeAccess` in the schema. Here the
+ * committee must also have Discussions enabled.
  */
-export const getMemberCommitteeChatGroupId = async (
-  user: WorkspaceUser | null | undefined,
+export const getDiscussionChatGroupId = (
+  context: CommitteeAccessContext,
   committeeId: string
+): Promise<string> =>
+  getCommitteeChatGroupId(
+    getCommitteeAccess(context, committeeId).committee as unknown as CommitteeDoc
+  );
+
+// The roles that may read / write a committee's discussion. Keep in step with
+// @checkCommitteeAccess on the read and write fields in discussions.ts
+// (discussions-roles.test.ts checks the schema side).
+export const DISCUSSION_READ_ROLES: CommitteeMemberRole[] = [
+  CommitteeMemberRoles.COORDINATOR,
+  CommitteeMemberRoles.MEMBER,
+  CommitteeMemberRoles.OBSERVER,
+];
+
+export const DISCUSSION_WRITE_ROLES: CommitteeMemberRole[] = [
+  CommitteeMemberRoles.COORDINATOR,
+  CommitteeMemberRoles.MEMBER,
+];
+
+const getRoleCommitteeChatGroupId = async (
+  user: WorkspaceUser | null | undefined,
+  committeeId: string,
+  allowedRoles: CommitteeMemberRole[]
 ): Promise<string> => {
   const committee = await getMemberCommittee(user, committeeId);
-  if (!committee) {
+  const role = committee ? getCommitteeRole(user, committee) : null;
+  if (!committee || !role) {
     throw new GraphQLError('You are not a member of this committee.', {
       extensions: { code: 'FORBIDDEN' },
     });
   }
+  if (!allowedRoles.includes(role)) {
+    throw new GraphQLError(
+      'Your role in this committee does not allow this operation.',
+      { extensions: { code: 'FORBIDDEN' } }
+    );
+  }
   return getCommitteeChatGroupId(committee as unknown as CommitteeDoc);
 };
 
-/** Whether the user may pin messages: coordinators of the committee. */
-export const canPinCommitteeDiscussion = async (
+/**
+ * The chat group, for the discussion's file download route, which is plain
+ * REST and so cannot use the schema directive: the user must hold a role that
+ * may read the discussion, and the committee must have Discussions enabled.
+ */
+export const getReaderCommitteeChatGroupId = (
   user: WorkspaceUser | null | undefined,
   committeeId: string
-): Promise<boolean> => {
-  const committee = await getMemberCommittee(user, committeeId);
-  return !!committee && isCommitteeCoordinator(user, committee);
-};
+): Promise<string> =>
+  getRoleCommitteeChatGroupId(user, committeeId, DISCUSSION_READ_ROLES);
 
-/** Like getMemberCommitteeChatGroupId, for coordinators only. */
-export const getCoordinatedCommitteeChatGroupId = async (
+/** As above, for the file upload route: only roles that may post messages. */
+export const getWriterCommitteeChatGroupId = (
   user: WorkspaceUser | null | undefined,
   committeeId: string
-): Promise<string> => {
-  const committee = await getCoordinatedCommittee(user, committeeId);
-  return getCommitteeChatGroupId(committee as unknown as CommitteeDoc);
-};
+): Promise<string> =>
+  getRoleCommitteeChatGroupId(user, committeeId, DISCUSSION_WRITE_ROLES);
 
 /** The ERP file route for a committee discussion's uploads. */
 export const committeeDiscussionFileUrl =

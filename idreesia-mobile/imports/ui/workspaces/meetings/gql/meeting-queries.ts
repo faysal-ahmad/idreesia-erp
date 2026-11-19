@@ -11,6 +11,8 @@ import type {
   MobileWorkspaceMeetingByIdQueryVariables,
   MobileWorkspaceMeetingMembersQuery,
   MobileWorkspaceMeetingMembersQueryVariables,
+  MobileWorkspaceMeetingVideoCallInfoQuery,
+  MobileWorkspaceMeetingVideoCallInfoQueryVariables,
   MobileWorkspaceMeetingsInfoQuery,
   MobileWorkspaceMeetingsInfoQueryVariables,
   MobileWorkspaceMeetingsQuery,
@@ -30,6 +32,7 @@ export const MOBILE_WORKSPACE_MEETINGS_INFO: TypedDocumentNode<
   query mobileWorkspaceMeetingsInfo($committeeId: String!) {
     workspaceMeetingsInfo(committeeId: $committeeId) {
       canManage
+      canJoinVideoCall
       myParticipantId
       maxFileSize
     }
@@ -160,6 +163,18 @@ export const MOBILE_WORKSPACE_MEETING_ACTIVITY: TypedDocumentNode<
       userName
       at
       details
+    }
+  }
+`;
+
+/** Who is in a meeting's video call, for the screen before joining. */
+export const MOBILE_MEETING_VIDEO_CALL_INFO: TypedDocumentNode<
+  MobileWorkspaceMeetingVideoCallInfoQuery,
+  MobileWorkspaceMeetingVideoCallInfoQueryVariables
+> = gql`
+  query mobileWorkspaceMeetingVideoCallInfo($committeeId: String!, $meetingId: String!) {
+    workspaceMeetingVideoCallInfo(committeeId: $committeeId, meetingId: $meetingId) {
+      participantCount
     }
   }
 `;

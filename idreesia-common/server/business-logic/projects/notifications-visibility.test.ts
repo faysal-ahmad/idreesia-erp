@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
-import Committees from 'meteor/idreesia-common/server/collections/hr/committees';
+import Committees from 'meteor/idreesia-common/server/collections/admin/committees';
 
 import {
   getMyNotificationCounts,
   getMyNotifications,
   markMyNotificationsRead,
-} from '../hr/committee/notifications';
+} from '../admin/committee/notifications';
 import {
   addTaskComment,
   createProject,

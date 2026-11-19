@@ -45,6 +45,11 @@ interface MeteorGlobal {
   isClient: boolean;
   isCordova?: boolean;
   isServer: boolean;
+  Error: new (
+    error: string | number,
+    reason?: string,
+    details?: string
+  ) => globalThis.Error & Meteor.Error;
   users: import('meteor/mongo').Mongo.Collection<{
     _id: string;
     username?: string;
@@ -99,6 +104,15 @@ declare module 'meteor/accounts-base' {
     _suppressLoggingIn?: boolean;
   }
 
+  export interface LoginAttempt {
+    type: string;
+    allowed: boolean;
+    error?: Meteor.Error | Error;
+    user?: { _id: string; locked?: boolean; [key: string]: unknown };
+    methodName: string;
+    methodArguments: unknown[];
+  }
+
   export interface HashedPassword {
     digest: string;
     algorithm: 'sha-256';
@@ -122,6 +136,10 @@ declare module 'meteor/accounts-base' {
 
   export const Accounts: {
     _hashPassword(password: string): HashedPassword;
+    config(options: {
+      forbidClientAccountCreation?: boolean;
+      [key: string]: unknown;
+    }): void;
     emailTemplates: {
       from?: string;
       [key: string]: unknown;
@@ -137,6 +155,11 @@ declare module 'meteor/accounts-base' {
     ): Promise<Record<string, unknown> | null>;
     findUserByEmail(email: string): Promise<Record<string, unknown> | null>;
     sendEnrollmentEmail(userId: string): Promise<void>;
+    // Server only. Return false or throw (the thrown error is sent to the
+    // client) to reject the attempt.
+    validateLoginAttempt(
+      callback: (attempt: LoginAttempt) => boolean
+    ): { stop(): void };
     updateOrCreateUserFromExternalService(
       serviceName: string,
       serviceData: Record<string, unknown>,
@@ -240,6 +263,12 @@ declare module 'meteor/mongo' {
   export const Assets: {
     getText(path: string): string;
     absoluteFilePath(path: string): string;
+  };
+
+  export const MongoInternals: {
+    defaultRemoteCollectionDriver(): {
+      mongo: { client: import('mongodb').MongoClient };
+    };
   };
 }
 

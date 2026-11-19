@@ -21,15 +21,11 @@ type PersonSharedDataType {
   ehadDate: String
   deathDate: String
   referenceName: String
-  imageId: String
-  imageThumbnailId: String
   imageUrl: String
   imageThumbnailUrl: String
   imageVectorData: PersonImageVectorDataType
   tagIds: [String]
 
-  image: Attachment
-  imageThumbnail: Attachment
   tags: [PeopleTagType]
 }
 
@@ -41,8 +37,8 @@ type PersonVisitorDataType {
 }
 
 type PersonKarkunDataType {
-  cityId: String
-  cityMehfilId: String
+  cityLocationId: String
+  mehfilLocationId: String
   ehadKarkun: Boolean
   ehadPermissionDate: String
   lastTarteebDate: String
@@ -51,8 +47,8 @@ type PersonKarkunDataType {
   msLastVisitDate: String
   attachmentIds: [String]
 
-  city: CityType
-  cityMehfil: CityMehfilType
+  cityLocation: ReferenceOrgLocationType
+  mehfilLocation: ReferenceOrgLocationType
   teams: [TeamType]
   attachments: [Attachment]
 }
@@ -85,6 +81,23 @@ type PersonType {
   deletedBy: String
 }
 
+# The minimal view of a person that other modules' reference data may expose
+# (team members, etc.). Never add contact, address, notes or other sensitive
+# fields here.
+type PersonBasicSharedDataType {
+  name: String
+  cnicNumber: String
+  contactNumber1: String
+  contactNumber2: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PersonBasicType {
+  _id: String
+  sharedData: PersonBasicSharedDataType
+}
+
 input PersonFilter {
   name: String
   cnicNumber: String
@@ -106,12 +119,7 @@ type PagedPeopleType {
 }
 
 extend type Query {
-  pagedPeople(filter: PersonFilter): PagedPeopleType
   distinctCities: [String]
   distinctCountries: [String]
-}
-
-extend type Mutation {
-  fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
 }
 `;

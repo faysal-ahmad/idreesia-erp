@@ -126,6 +126,103 @@ services:
     ports:
       - "3100:3000"
 
+  # Jitsi Meet (audio/video conferencing), the official four-container
+  # setup: web (UI), prosody (XMPP signaling), jicofo (conference focus) and
+  # jvb (media bridge). Dev-only: no authentication, so anyone with a room URL
+  # can join. Open http://localhost:8000 - browsers allow camera/mic on
+  # localhost without HTTPS. Production needs HTTPS and a public
+  # JVB_ADVERTISE_IPS, which means a Droplet (App Platform has no UDP).
+  jitsi-prosody:
+    image: jitsi/prosody:stable-11031
+    restart: unless-stopped
+    environment: &jitsi-env
+      PUBLIC_URL: http://localhost:8000
+      XMPP_DOMAIN: meet.jitsi
+      XMPP_SERVER: xmpp.meet.jitsi
+      XMPP_BOSH_URL_BASE: http://xmpp.meet.jitsi:5280
+      XMPP_AUTH_DOMAIN: auth.meet.jitsi
+      XMPP_MUC_DOMAIN: muc.meet.jitsi
+      XMPP_INTERNAL_MUC_DOMAIN: internal-muc.meet.jitsi
+      XMPP_GUEST_DOMAIN: guest.meet.jitsi
+      # Plain-HTTP dev: the WebSocket transports are built as wss:// URLs
+      # (and come out malformed for an http PUBLIC_URL), so signaling uses
+      # BOSH long-polling and the bridge channel uses SCTP over UDP.
+      BOSH_RELATIVE: "true"
+      ENABLE_XMPP_WEBSOCKET: "0"
+      ENABLE_COLIBRI_WEBSOCKET: "0"
+      # Exposes /room-census (rooms and participant counts) on prosody's HTTP
+      # port, which the ERP reads to tell starting a call from joining one.
+      XMPP_MODULES: muc_census
+      ENABLE_AUTH: "0"
+      ENABLE_GUESTS: "1"
+      AUTH_TYPE: internal
+      JICOFO_AUTH_USER: focus
+      JICOFO_AUTH_PASSWORD: dev-jicofo-auth-password
+      JICOFO_COMPONENT_SECRET: dev-jicofo-component-secret
+      JVB_AUTH_USER: jvb
+      JVB_AUTH_PASSWORD: dev-jvb-auth-password
+      JIBRI_RECORDER_PASSWORD: dev-recorder-password
+      JIBRI_XMPP_PASSWORD: dev-jibri-password
+      TZ: UTC
+    networks:
+      default:
+        aliases:
+          - xmpp.meet.jitsi
+
+  jitsi-jicofo:
+    image: jitsi/jicofo:stable-11031
+    restart: unless-stopped
+    depends_on:
+      - jitsi-prosody
+    environment: *jitsi-env
+
+  jitsi-jvb:
+    image: jitsi/jvb:stable-11031
+    restart: unless-stopped
+    depends_on:
+      - jitsi-prosody
+    environment:
+      <<: *jitsi-env
+      JVB_PORT: "10000"
+      # Addresses the browser tries to reach the bridge on (the UDP port is
+      # published on the host). 127.0.0.1 alone is not enough: Firefox ignores
+      # loopback ICE candidates, so call media never connects. Set
+      # JITSI_ADVERTISE_IPS in a repo-root .env to your machine's LAN address
+      # (macOS: `ipconfig getifaddr en0`), e.g. 192.168.1.20,127.0.0.1.
+      JVB_ADVERTISE_IPS: ${JITSI_ADVERTISE_IPS:-127.0.0.1}
+      JVB_ENABLE_APIS: colibri,rest
+    ports:
+      - "10000:10000/udp"
+
+  jitsi-web:
+    image: jitsi/web:stable-11031
+    restart: unless-stopped
+    depends_on:
+      - jitsi-prosody
+    environment:
+      <<: *jitsi-env
+      DISABLE_HTTPS: "1"
+      ENABLE_HTTP_REDIRECT: "0"
+      ENABLE_LETSENCRYPT: "0"
+    ports:
+      - "8000:80"
+
+  # A public HTTPS address for Jitsi, for testing calls on a phone (camera and
+  # microphone need HTTPS). A Cloudflare "quick tunnel": no account, and the
+  # certificate is publicly trusted, so devices need no setup. The address is
+  # random and changes whenever this container restarts:
+  #   docker compose logs cloudflared | grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' | tail -1
+  # Put it in JITSI_URL (idreesia-web/.env) and recreate idreesia-web. Only call
+  # setup goes through the tunnel; media still goes straight to the bridge
+  # (JITSI_ADVERTISE_IPS). Jitsi is reachable from the internet while this
+  # runs, so stop it when you're not testing.
+  cloudflared:
+    image: cloudflare/cloudflared:2026.11.0
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --url http://jitsi-web:80
+    depends_on:
+      - jitsi-web
+
   idreesia-web:
     build:
       context: .

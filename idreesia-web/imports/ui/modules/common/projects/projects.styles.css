@@ -5,6 +5,11 @@
   background: #f3f4f6;
 }
 
+.projects-board .list-table-header,
+.tasks-board .list-table-header {
+  margin-bottom: 16px;
+}
+
 .tasks-board .ant-table-tbody > tr.project-task-overdue > td {
   background: #fff6f5;
 }
@@ -39,11 +44,6 @@
 
 .project-detail .ant-tabs {
   margin-top: 8px;
-}
-
-.project-detail .project-detail-chat {
-  height: calc(100vh - 360px);
-  min-height: 420px;
 }
 
 .project-task-drawer .project-detail-info .ant-descriptions-item-label {

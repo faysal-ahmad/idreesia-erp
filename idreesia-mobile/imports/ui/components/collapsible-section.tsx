@@ -1,16 +1,18 @@
 import React, { type ReactNode, useState } from 'react';
-import { List } from 'antd-mobile';
+import { Badge, List } from 'antd-mobile';
 import { DownOutline, UpOutline } from 'antd-mobile-icons';
 
 interface Props {
   title: string;
-  /** Shown in the heading while the section is collapsed. */
-  count: number;
+  /** Shown in the heading while the section is collapsed; omit for none. */
+  count?: number;
+  /** Show the count as a red notification badge instead of a plain pill. */
+  alert?: boolean;
   children: ReactNode;
 }
 
 /** A card list under a banner heading; tap the heading to collapse it. */
-export const CollapsibleSection = ({ title, count, children }: Props) => {
+export const CollapsibleSection = ({ title, count, alert, children }: Props) => {
   const [open, setOpen] = useState(true);
   return (
     <section className="collapsible-section">
@@ -21,7 +23,13 @@ export const CollapsibleSection = ({ title, count, children }: Props) => {
         onClick={() => setOpen(!open)}
       >
         <span className="collapsible-section-title">{title}</span>
-        {!open && <span className="collapsible-section-count">{count}</span>}
+        {!open &&
+          count !== undefined &&
+          (alert ? (
+            <Badge className="workspaces-badge" content={count} />
+          ) : (
+            <span className="collapsible-section-count">{count}</span>
+          ))}
         {open ? <UpOutline /> : <DownOutline />}
       </button>
       {open && <List mode="card">{children}</List>}

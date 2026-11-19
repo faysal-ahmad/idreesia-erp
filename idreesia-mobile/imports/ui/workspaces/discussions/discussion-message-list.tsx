@@ -60,6 +60,8 @@ export interface MessageHandlers {
   onToggleReaction: (message: DiscussionMessage, emoji: string, reactedByMe: boolean) => void;
   /** Tapping "N replies". Leave out where threads can't be opened (in a thread). */
   onOpenThread?: (message: DiscussionMessage) => void;
+  /** The "Join call" button in a video call message; leave out for people who can't join. */
+  onJoinVideoCall?: () => void;
 }
 
 interface RowProps extends MessageHandlers {
@@ -68,7 +70,15 @@ interface RowProps extends MessageHandlers {
   highlighted: boolean;
 }
 
-const MessageRow = ({ message, first, highlighted, onOpenActions, onToggleReaction, onOpenThread }: RowProps) => {
+const MessageRow = ({
+  message,
+  first,
+  highlighted,
+  onOpenActions,
+  onToggleReaction,
+  onOpenThread,
+  onJoinVideoCall,
+}: RowProps) => {
   const longPress = useLongPress(() => onOpenActions(message));
   const showSender = first && !message.isOwn;
 
@@ -95,7 +105,7 @@ const MessageRow = ({ message, first, highlighted, onOpenActions, onToggleReacti
               <DiscussionAttachment attachment={attachment} />
             </div>
           ))}
-          {message.text && <MessageText text={message.text} />}
+          {message.text && <MessageText onJoinVideoCall={onJoinVideoCall} text={message.text} />}
           <div className="discussion-bubble-meta">
             {message.isPinned && <span className="discussion-badge">Pinned · </span>}
             {message.isStarred && <StarFill className="discussion-star" />}

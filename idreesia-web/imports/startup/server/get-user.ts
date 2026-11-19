@@ -1,5 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 
+import { isAccountLocked } from './account-lock';
+
 // Inlined from the (abandoned - last release was a beta in March 2024) meteor/apollo
 // package, whose entire contents were this one function. Resolves the GraphQL
 // request's Authorization header (a Meteor login token) to the Meteor user it
@@ -12,6 +14,7 @@ const AccountsPrivate = Accounts as unknown as AccountsPrivateApi;
 
 interface MeteorUser {
   _id: string;
+  locked?: boolean;
   services?: {
     resume?: {
       loginTokens?: Array<{ hashedToken: string; when: Date }>;
@@ -36,5 +39,6 @@ export const getUser = async (
   if (!tokenInfo) return undefined;
 
   const isExpired = AccountsPrivate._tokenExpiration(tokenInfo.when) < new Date();
-  return isExpired ? undefined : user;
+  // A token issued before the account was locked stops working too.
+  return isExpired || isAccountLocked(user) ? undefined : user;
 };

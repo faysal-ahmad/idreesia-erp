@@ -16,7 +16,9 @@ type MehfilDutyType {
 
 extend type Query {	
   allSecurityMehfilDuties(mehfilId: String): [MehfilDutyType]	
+    @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS, SECURITY_MANAGE_SETUP_DATA])	
   securityMehfilDutyById(id: String!): MehfilDutyType	
+    @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS, SECURITY_MANAGE_SETUP_DATA])	
 }	
 
 extend type Mutation {	

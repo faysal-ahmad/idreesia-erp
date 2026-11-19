@@ -42,6 +42,7 @@ extend type Query {
   @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 
   distinctStayAllowedBy: [String]
+    @checkPermissions(permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS])
 }
 
 extend type Mutation {
@@ -71,8 +72,5 @@ extend type Mutation {
 
   cancelVisitorStay(_id: String!): VisitorStayType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
-
-  deleteVisitorStay(_id: String!): Int
-  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
 }
 `;

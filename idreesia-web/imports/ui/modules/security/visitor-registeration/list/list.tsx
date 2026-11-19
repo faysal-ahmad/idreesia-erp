@@ -8,6 +8,7 @@ import {
   Space,
 } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
+import { downloadReport } from 'meteor/idreesia-common/utilities';
 import {
   DownloadOutlined,
   UploadOutlined,
@@ -160,15 +161,15 @@ const List = ({ history, location }: Props) => {
     if (selectedRows.length === 0) return;
 
     const reportArgs = (selectedRows as PersonListItem[]).map((row) => row._id);
-    const url = `${
-      window.location.origin
-    }/generate-report?reportName=Visitors&reportArgs=${reportArgs.join(',')}`;
-    window.open(url, '_blank');
+    downloadReport('Visitors', reportArgs.join(',')).catch(() =>
+      message.error('The report could not be downloaded.', 5)
+    );
   };
 
   const handleDownloadAllAsCSV = () => {
-    const url = `${window.location.origin}/generate-report?reportName=Visitors&reportArgs=all`;
-    window.open(url, '_blank');
+    downloadReport('Visitors', 'all').catch(() =>
+      message.error('The report could not be downloaded.', 5)
+    );
   };
 
   const getActionsMenu = () => {

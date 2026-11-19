@@ -1,3 +1,4 @@
+import { afterCommit, onRollback, runInTransaction } from 'meteor/idreesia-common/server/collections';
 import sharp from 'sharp';
 import { Random } from 'meteor/random';
 
@@ -99,25 +100,27 @@ export async function updateSecurityServerProfile(
   profileId: string,
   { name, isTest }: ProfileValues
 ): Promise<void> {
-  const existing = await getActiveProfile(profileId);
-  const trimmedName = name.trim();
+  return runInTransaction(async () => {
+    const existing = await getActiveProfile(profileId);
+    const trimmedName = name.trim();
 
-  await SecurityServerProfiles.updateAsync(profileId, {
-    $set: {
-      name: trimmedName,
-      isTest,
-      updatedAt: new Date(),
-      updatedBy: user._id,
-    },
+    await SecurityServerProfiles.updateAsync(profileId, {
+      $set: {
+        name: trimmedName,
+        isTest,
+        updatedAt: new Date(),
+        updatedBy: user._id,
+      },
+    });
+
+    if (existing.name !== trimmedName || existing.isTest !== isTest) {
+      await SecurityServerAlerts.updateAsync(
+        { profileId },
+        { $set: { profileName: trimmedName, profileIsTest: isTest } },
+        { multi: true }
+      );
+    }
   });
-
-  if (existing.name !== trimmedName || existing.isTest !== isTest) {
-    await SecurityServerAlerts.updateAsync(
-      { profileId },
-      { $set: { profileName: trimmedName, profileIsTest: isTest } },
-      { multi: true }
-    );
-  }
 }
 
 /**
@@ -128,24 +131,26 @@ export async function deleteSecurityServerProfile(
   user: SyncUser,
   profileId: string
 ): Promise<void> {
-  const existing = await getActiveProfile(profileId);
-  const imageKeys = existing.images.flatMap(getImageFileKeys);
+  return runInTransaction(async () => {
+    const existing = await getActiveProfile(profileId);
+    const imageKeys = existing.images.flatMap(getImageFileKeys);
 
-  const date = new Date();
-  await SecurityServerProfiles.updateAsync(profileId, {
-    $set: {
-      images: [],
-      deletedAt: date,
-      deletedBy: user._id,
-      updatedAt: date,
-      updatedBy: user._id,
-    },
-    $unset: { defaultImageId: '' },
+    const date = new Date();
+    await SecurityServerProfiles.updateAsync(profileId, {
+      $set: {
+        images: [],
+        deletedAt: date,
+        deletedBy: user._id,
+        updatedAt: date,
+        updatedBy: user._id,
+      },
+      $unset: { defaultImageId: '' },
+    });
+
+    if (imageKeys.length > 0) {
+      await afterCommit(() => deleteFiles(imageKeys));
+    }
   });
-
-  if (imageKeys.length > 0) {
-    await deleteFiles(imageKeys);
-  }
 }
 
 /**
@@ -199,27 +204,33 @@ export async function storeSecurityServerProfileImage(
   jpeg: Buffer,
   externalId?: string
 ): Promise<string> {
-  const imageId = Random.id();
-  const imageKey = `${StorageFolders.SecurityServerProfileImages}/${profileId}/${imageId}.jpg`;
-  await putFile(imageKey, jpeg, 'image/jpeg');
-  const thumbnailKey = await putProfileThumbnail(imageKey, jpeg);
+  return runInTransaction(async () => {
+    const imageId = Random.id();
+    const imageKey = `${StorageFolders.SecurityServerProfileImages}/${profileId}/${imageId}.jpg`;
+    await putFile(imageKey, jpeg, 'image/jpeg');
+    const thumbnailKey = await putProfileThumbnail(imageKey, jpeg);
+    // Nothing refers to the stored files if the image isn't committed.
+    await onRollback(() =>
+      deleteFiles([imageKey, ...(thumbnailKey ? [thumbnailKey] : [])])
+    );
 
-  const date = new Date();
-  await SecurityServerProfiles.updateAsync(profileId, {
-    $push: {
-      images: {
-        _id: imageId,
-        ...(externalId ? { externalId } : {}),
-        imageKey,
-        ...(thumbnailKey ? { thumbnailKey } : {}),
-        uploadedAt: date,
-        uploadedBy: user._id,
+    const date = new Date();
+    await SecurityServerProfiles.updateAsync(profileId, {
+      $push: {
+        images: {
+          _id: imageId,
+          ...(externalId ? { externalId } : {}),
+          imageKey,
+          ...(thumbnailKey ? { thumbnailKey } : {}),
+          uploadedAt: date,
+          uploadedBy: user._id,
+        },
       },
-    },
-    $set: { updatedAt: date, updatedBy: user._id },
-  });
+      $set: { updatedAt: date, updatedBy: user._id },
+    });
 
-  return imageId;
+    return imageId;
+  });
 }
 
 export async function removeSecurityServerProfileImage(
@@ -227,21 +238,23 @@ export async function removeSecurityServerProfileImage(
   profileId: string,
   imageId: string
 ): Promise<void> {
-  const profile = await getActiveProfile(profileId);
-  const image = profile.images.find(({ _id }) => _id === imageId);
-  if (!image) throw new Error('Image not found.');
+  return runInTransaction(async () => {
+    const profile = await getActiveProfile(profileId);
+    const image = profile.images.find(({ _id }) => _id === imageId);
+    if (!image) throw new Error('Image not found.');
 
-  // Remove the reference before the object, so a failure part-way never
-  // leaves the profile pointing at an image that doesn't exist. A removed
-  // default photo falls back to the oldest remaining one.
-  await SecurityServerProfiles.updateAsync(profileId, {
-    $pull: { images: { _id: imageId } },
-    $set: { updatedAt: new Date(), updatedBy: user._id },
-    ...(profile.defaultImageId === imageId
-      ? { $unset: { defaultImageId: '' } }
-      : {}),
+    // Remove the reference before the object, so a failure part-way never
+    // leaves the profile pointing at an image that doesn't exist. A removed
+    // default photo falls back to the oldest remaining one.
+    await SecurityServerProfiles.updateAsync(profileId, {
+      $pull: { images: { _id: imageId } },
+      $set: { updatedAt: new Date(), updatedBy: user._id },
+      ...(profile.defaultImageId === imageId
+        ? { $unset: { defaultImageId: '' } }
+        : {}),
+    });
+    await afterCommit(() => deleteFiles(getImageFileKeys(image)));
   });
-  await deleteFiles(getImageFileKeys(image));
 }
 
 export async function setSecurityServerProfileDefaultImage(

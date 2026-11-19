@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import { InstagramOutlined } from '@ant-design/icons';
 
 import type { AttachmentCategoryValue } from 'meteor/idreesia-common/constants';
-import { getUploadUrl } from 'meteor/idreesia-common/utilities';
+import { getLoginHeaders, getUploadUrl } from 'meteor/idreesia-common/utilities';
 import { Button, Modal } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import TakePictureForm from './take-picture-form';
@@ -52,6 +52,7 @@ export default class TakePicture extends Component<Props, State> {
     fetch(getUploadUrl(), {
       method: 'POST',
       headers: {
+        ...getLoginHeaders(),
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({

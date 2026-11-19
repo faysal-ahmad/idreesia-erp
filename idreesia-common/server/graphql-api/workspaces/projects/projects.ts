@@ -3,8 +3,6 @@ import gql from 'graphql-tag';
 // A committee's projects and tasks in the Workspaces module (Projects & Tasks
 // feature), backed by the projects module. Participants and assignees
 // are committee members (karkun ids). Timestamps are milliseconds as strings.
-// Each project also has a private chat for its participants (the
-// workspaceProjectDiscussion* operations, using the generic Discussion types).
 export default gql`
   type WorkspaceProjectsInfoType {
     # The logged-in user is a coordinator: can create projects and standalone
@@ -146,16 +144,12 @@ export default gql`
     projectId: String
   }
 
-  type WorkspaceProjectDiscussionInfoType {
-    canPost: Boolean
-    # Coordinators can pin messages.
-    canPin: Boolean
-  }
-
   extend type Query {
     workspaceProjectsInfo(committeeId: String!): WorkspaceProjectsInfoType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # The committee's members, who can own or take part in projects.
     workspaceProjectMembers(committeeId: String!): [WorkspaceProjectMemberType]
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # view: active (default), completed, mine or all.
     workspaceProjects(
       committeeId: String!
@@ -164,10 +158,12 @@ export default gql`
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     workspaceProjectById(
       committeeId: String!
       projectId: String!
     ): WorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # view: open (default), mine, overdue, done or all.
     workspaceTasks(
       committeeId: String!
@@ -180,13 +176,16 @@ export default gql`
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspaceTaskType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     workspaceTaskById(committeeId: String!, taskId: String!): WorkspaceTaskType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     workspaceTaskComments(
       committeeId: String!
       taskId: String!
       pageIndex: Int
       pageSize: Int
     ): PagedWorkspaceTaskCommentType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
     # Coordinators only. Newest first; pass
     # the last entry's 'at' as 'before' for the next page.
     workspaceProjectsActivity(
@@ -196,45 +195,7 @@ export default gql`
       before: String
       limit: Int
     ): [WorkspaceProjectsActivityType]
-
-    # The project's private chat; participants only.
-    workspaceProjectDiscussionInfo(
-      committeeId: String!
-      projectId: String!
-    ): WorkspaceProjectDiscussionInfoType
-    workspaceProjectDiscussionSync(
-      committeeId: String!
-      projectId: String!
-      since: String
-    ): DiscussionSyncType
-    workspaceProjectDiscussionThreadMessages(
-      committeeId: String!
-      projectId: String!
-      threadId: String!
-    ): [DiscussionMessageType]
-    workspaceProjectDiscussionMembers(
-      committeeId: String!
-      projectId: String!
-    ): [DiscussionMemberType]
-    workspaceProjectDiscussionPinnedMessages(
-      committeeId: String!
-      projectId: String!
-    ): [DiscussionMessageType]
-    workspaceProjectDiscussionStarredMessages(
-      committeeId: String!
-      projectId: String!
-    ): [DiscussionMessageType]
-    workspaceProjectDiscussionOlderMessages(
-      committeeId: String!
-      projectId: String!
-      before: String!
-    ): DiscussionMessagePageType
-    workspaceProjectDiscussionSearchMessages(
-      committeeId: String!
-      projectId: String!
-      searchText: String!
-      offset: Int
-    ): DiscussionMessagePageType
+      @checkCommitteeAccess(roles: [COORDINATOR])
   }
 
   extend type Mutation {
@@ -243,11 +204,13 @@ export default gql`
       committeeId: String!
       input: WorkspaceProjectInput!
     ): WorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceUpdateProject(
       committeeId: String!
       projectId: String!
       input: WorkspaceProjectInput!
     ): WorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     # force: complete the project even though tasks are still open.
     workspaceSetProjectStatus(
       committeeId: String!
@@ -255,11 +218,13 @@ export default gql`
       status: String!
       force: Boolean
     ): WorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceAddProjectParticipants(
       committeeId: String!
       projectId: String!
       personIds: [String]!
     ): WorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     # unassignTasks: unassign their open tasks in the project.
     workspaceRemoveProjectParticipant(
       committeeId: String!
@@ -267,6 +232,7 @@ export default gql`
       personId: String!
       unassignTasks: Boolean
     ): WorkspaceProjectType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     # deleteTasks: delete its tasks too (default: they
     # become standalone tasks).
     workspaceDeleteProject(
@@ -274,75 +240,47 @@ export default gql`
       projectId: String!
       deleteTasks: Boolean
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
 
     workspaceCreateTask(
       committeeId: String!
       input: WorkspaceTaskInput!
     ): WorkspaceTaskType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceUpdateTask(
       committeeId: String!
       taskId: String!
       input: WorkspaceTaskInput!
     ): WorkspaceTaskType
+      @checkCommitteeAccess(roles: [COORDINATOR])
     workspaceDeleteTask(committeeId: String!, taskId: String!): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR])
     # Also by the task's assignee, for their own task.
     workspaceSetTaskStatus(
       committeeId: String!
       taskId: String!
       status: String!
     ): WorkspaceTaskType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     workspaceSetTaskProgress(
       committeeId: String!
       taskId: String!
       progress: Int!
     ): WorkspaceTaskType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     # Any committee member.
     workspaceAddTaskComment(
       committeeId: String!
       taskId: String!
       text: String!
     ): WorkspaceTaskCommentType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     # The author or a coordinator.
     workspaceDeleteTaskComment(
       committeeId: String!
       commentId: String!
     ): Boolean
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
 
-    workspaceSendProjectDiscussionMessage(
-      committeeId: String!
-      projectId: String!
-      text: String!
-      threadId: String
-    ): Boolean!
-    workspaceReactToProjectDiscussionMessage(
-      committeeId: String!
-      projectId: String!
-      messageId: String!
-      emoji: String!
-      shouldReact: Boolean!
-    ): Boolean!
-    workspaceSetProjectDiscussionMessageStarred(
-      committeeId: String!
-      projectId: String!
-      messageId: String!
-      starred: Boolean!
-    ): Boolean!
-    workspaceSetProjectDiscussionMessagePinned(
-      committeeId: String!
-      projectId: String!
-      messageId: String!
-      pinned: Boolean!
-    ): Boolean!
-    workspaceEditProjectDiscussionMessage(
-      committeeId: String!
-      projectId: String!
-      messageId: String!
-      text: String!
-    ): Boolean!
-    workspaceDeleteProjectDiscussionMessage(
-      committeeId: String!
-      projectId: String!
-      messageId: String!
-    ): Boolean!
   }
 `;

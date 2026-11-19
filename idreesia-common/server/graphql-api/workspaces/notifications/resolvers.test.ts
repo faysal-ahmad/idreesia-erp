@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import Committees from 'meteor/idreesia-common/server/collections/hr/committees';
+import Committees from 'meteor/idreesia-common/server/collections/admin/committees';
 import { createNotifier } from 'meteor/idreesia-common/server/headless';
 
 import resolvers from './resolvers';
@@ -88,7 +88,7 @@ describe('myNotifications', () => {
     expect(result.map((n: any) => n._id)).toEqual(['dms:b']);
   });
 
-  it('is empty for a user with no person, such as erp-admin, or no user at all', async () => {
+  it('is empty for a user with no person, or no user at all', async () => {
     await publish('a');
 
     expect(await Query.myNotifications(null, {}, context({ _id: 'admin' }))).toEqual([]);
@@ -134,23 +134,6 @@ describe('myNotifications filters', () => {
     expect(
       await Query.myNotifications(null, { module: 'discussions' }, context())
     ).toHaveLength(0);
-  });
-});
-
-describe('myUnreadNotificationCount', () => {
-  it('counts what the user has not read yet', async () => {
-    await publish('a');
-    await publish('b');
-    await Mutation.markNotificationsRead(null, { ids: ['dms:a'] }, context());
-
-    expect(await Query.myUnreadNotificationCount(null, {}, context())).toBe(1);
-  });
-
-  it('is zero without a person or user', async () => {
-    await publish('a');
-
-    expect(await Query.myUnreadNotificationCount(null, {}, context({ _id: 'admin' }))).toBe(0);
-    expect(await Query.myUnreadNotificationCount(null, {}, context(null))).toBe(0);
   });
 });
 

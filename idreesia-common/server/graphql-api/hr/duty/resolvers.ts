@@ -1,10 +1,5 @@
-import {
-  Committees,
-  Duties,
-  DutyLocations,
-  DutyShifts,
-  Teams,
-} from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
+import { Duties, DutyLocations, DutyShifts, Teams } from 'meteor/idreesia-common/server/collections/hr';
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {

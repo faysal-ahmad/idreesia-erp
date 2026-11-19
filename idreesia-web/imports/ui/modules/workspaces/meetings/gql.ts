@@ -7,6 +7,10 @@ import type {
   WorkspaceAddMeetingAgendaItemMutation,
   WorkspaceAddMeetingAgendaItemMutationVariables,
   WorkspaceCancelMeetingMutation,
+  WorkspaceJoinMeetingVideoCallMutation,
+  WorkspaceJoinMeetingVideoCallMutationVariables,
+  WorkspaceMeetingVideoCallInfoQuery,
+  WorkspaceMeetingVideoCallInfoQueryVariables,
   WorkspaceCancelMeetingMutationVariables,
   WorkspaceCompleteMeetingAttachmentUploadMutation,
   WorkspaceCompleteMeetingAttachmentUploadMutationVariables,
@@ -72,7 +76,7 @@ const MEETING_FIELDS = gql`
     title
     description
     location
-    onlineUrl
+    videoCall
     startsAt
     endsAt
     status
@@ -156,6 +160,7 @@ export const WORKSPACE_MEETINGS_INFO: TypedDocumentNode<
   query workspaceMeetingsInfo($committeeId: String!) {
     workspaceMeetingsInfo(committeeId: $committeeId) {
       canManage
+      canJoinVideoCall
       myParticipantId
       maxFileSize
       timeZone
@@ -711,5 +716,39 @@ export const WORKSPACE_DELETE_MEETING_ACTION_ITEM: TypedDocumentNode<
 > = gql`
   mutation workspaceDeleteMeetingActionItem($committeeId: String!, $actionItemId: String!) {
     workspaceDeleteMeetingActionItem(committeeId: $committeeId, actionItemId: $actionItemId)
+  }
+`;
+
+export const WORKSPACE_MEETING_VIDEO_CALL_INFO: TypedDocumentNode<
+  WorkspaceMeetingVideoCallInfoQuery,
+  WorkspaceMeetingVideoCallInfoQueryVariables
+> = gql`
+  query workspaceMeetingVideoCallInfo(
+    $committeeId: String!
+    $meetingId: String!
+  ) {
+    workspaceMeetingVideoCallInfo(
+      committeeId: $committeeId
+      meetingId: $meetingId
+    ) {
+      participantCount
+    }
+  }
+`;
+
+export const WORKSPACE_JOIN_MEETING_VIDEO_CALL: TypedDocumentNode<
+  WorkspaceJoinMeetingVideoCallMutation,
+  WorkspaceJoinMeetingVideoCallMutationVariables
+> = gql`
+  mutation workspaceJoinMeetingVideoCall(
+    $committeeId: String!
+    $meetingId: String!
+  ) {
+    workspaceJoinMeetingVideoCall(
+      committeeId: $committeeId
+      meetingId: $meetingId
+    ) {
+      url
+    }
   }
 `;

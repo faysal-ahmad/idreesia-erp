@@ -12,8 +12,7 @@ import {
 import { message } from '/imports/ui/antd-feedback';
 
 import {
-  useAllCities,
-  useAllCityMehfils,
+  useAllCityMehfilLocations,
 } from 'meteor/idreesia-common/hooks/common';
 import type { HrKarkunByIdForKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
@@ -50,7 +49,7 @@ export interface KarkunGeneralInfoFormValues {
   emailAddress?: string;
   currentAddress?: string;
   permanentAddress?: string;
-  cityIdMehfilId?: Array<string | undefined>;
+  cityMehfilLocationIds?: Array<string | undefined>;
   bloodGroup?: string;
   educationalQualification?: string;
   meansOfEarning?: string;
@@ -82,8 +81,8 @@ const BLOOD_GROUP_OPTIONS: LabelValue[] = [
 const GeneralInfo = ({ history, karkunId, karkun }: Props) => {
   const [form] = Form.useForm();
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { allCities, allCitiesLoading } = useAllCities();
-  const { allCityMehfils, allCityMehfilsLoading } = useAllCityMehfils();
+  const { cityLocations, mehfilLocations, cityMehfilLocationsLoading } =
+    useAllCityMehfilLocations();
   const [updateHrKarkun] = useMutation(UPDATE_HR_KARKUN, {
     refetchQueries: ['hrKarkunsPagedHrKarkuns', 'hrKarkunByIdForKarkuns'],
   });
@@ -124,8 +123,8 @@ const GeneralInfo = ({ history, karkunId, karkun }: Props) => {
           emailAddress: values.emailAddress,
           currentAddress: values.currentAddress,
           permanentAddress: values.permanentAddress,
-          cityId: values.cityIdMehfilId?.[0],
-          cityMehfilId: values.cityIdMehfilId?.[1],
+          cityLocationId: values.cityMehfilLocationIds?.[0],
+          mehfilLocationId: values.cityMehfilLocationIds?.[1],
           bloodGroup: values.bloodGroup || null,
           educationalQualification: values.educationalQualification,
           meansOfEarning: values.meansOfEarning,
@@ -143,16 +142,13 @@ const GeneralInfo = ({ history, karkunId, karkun }: Props) => {
     }
   };
 
-  if (allCitiesLoading || allCityMehfilsLoading) {
+  if (cityMehfilLocationsLoading) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
         <Spin size="large" />
       </div>
     );
   }
-
-  const cities = allCities ?? [];
-  const cityMehfils = allCityMehfils ?? [];
 
   const personalItem: NonNullable<CollapseProps['items']>[number] = {
     key: 'personal',
@@ -226,12 +222,12 @@ const GeneralInfo = ({ history, karkunId, karkun }: Props) => {
             required={false}
           />
           <CascaderField
-            data={getCityMehfilCascaderData(cities, cityMehfils) ?? []}
-            fieldName="cityIdMehfilId"
+            data={getCityMehfilCascaderData(cityLocations, mehfilLocations) ?? []}
+            fieldName="cityMehfilLocationIds"
             fieldLabel="City/Mehfil"
             initialValue={[
-              karkun.karkunData?.cityId,
-              karkun.karkunData?.cityMehfilId,
+              karkun.karkunData?.cityLocationId,
+              karkun.karkunData?.mehfilLocationId,
             ]}
             required
             requiredMessage="Please select a city/mehfil from the list."

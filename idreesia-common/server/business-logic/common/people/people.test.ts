@@ -67,7 +67,7 @@ describe('getChangedPersonValues', () => {
       _id: 'p1',
       isVisitor: true,
       sharedData: { name: 'Ali', contactNumber1: '123' },
-      karkunData: { cityId: 'c1' },
+      karkunData: { cityLocationId: 'c1' },
     };
     expect(
       getChangedPersonValues(
@@ -76,14 +76,14 @@ describe('getChangedPersonValues', () => {
           isVisitor: true,
           isKarkun: true,
           sharedData: { name: 'Ali', contactNumber1: '456' },
-          karkunData: { cityId: 'c1', cityMehfilId: 'm1' },
+          karkunData: { cityLocationId: 'c1', mehfilLocationId: 'm1' },
         },
         existing
       )
     ).toEqual({
       isKarkun: true,
       'sharedData.contactNumber1': '456',
-      'karkunData.cityMehfilId': 'm1',
+      'karkunData.mehfilLocationId': 'm1',
     });
   });
 });

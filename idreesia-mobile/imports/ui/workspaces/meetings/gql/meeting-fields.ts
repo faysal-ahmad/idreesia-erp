@@ -7,7 +7,7 @@ export const MOBILE_WORKSPACE_MEETING_FIELDS = gql`
     title
     description
     location
-    onlineUrl
+    videoCall
     startsAt
     endsAt
     status

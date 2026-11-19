@@ -4,7 +4,7 @@ import {
   getWorkspaceMonitoringProfiles,
   removeWorkspaceMonitoringProfilePhoto,
   updateWorkspaceMonitoringProfile,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import { assertMonitoringProfilesEnabled } from './access';
 

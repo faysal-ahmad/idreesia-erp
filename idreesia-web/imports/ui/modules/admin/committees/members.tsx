@@ -59,6 +59,8 @@ interface Props {
   roles: CommitteeMemberRole[];
   /** Members tab only: show role pills and the member/coordinator switcher. */
   allowRoleChange?: boolean;
+  /** Hides the login, chat and discussion access columns. */
+  hideAccountColumns?: boolean;
   emptyText: string;
   /** An explanation shown above the table. */
   note?: string;
@@ -68,6 +70,7 @@ const Members = ({
   committeeId,
   roles,
   allowRoleChange,
+  hideAccountColumns,
   emptyText,
   note,
 }: Props) => {
@@ -122,6 +125,7 @@ const Members = ({
         members={members}
         loading={loading}
         allowRoleChange={allowRoleChange}
+        showAccountColumns={!hideAccountColumns}
         emptyText={emptyText}
       />
       <Pagination

@@ -37,8 +37,8 @@ type PersonVisitorDataType {
 }
 
 type PersonKarkunDataType {
-  cityId: String
-  cityMehfilId: String
+  cityLocationId: String
+  mehfilLocationId: String
   ehadKarkun: Boolean
   ehadPermissionDate: String
   lastTarteebDate: String
@@ -47,8 +47,8 @@ type PersonKarkunDataType {
   msLastVisitDate: String
   attachmentIds: [String]
 
-  city: CityType
-  cityMehfil: CityMehfilType
+  cityLocation: ReferenceOrgLocationType
+  mehfilLocation: ReferenceOrgLocationType
   teams: [TeamType]
   attachments: [Attachment]
 }
@@ -121,10 +121,5 @@ type PagedPeopleType {
 extend type Query {
   distinctCities: [String]
   distinctCountries: [String]
-}
-
-extend type Mutation {
-  fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
-    @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 }
 `;

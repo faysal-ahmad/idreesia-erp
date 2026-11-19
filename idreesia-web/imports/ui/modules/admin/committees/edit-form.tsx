@@ -20,6 +20,7 @@ import {
   type CommitteeMemberRole,
 } from 'meteor/idreesia-common/constants/organization';
 
+import { ORG_LOCATION_BY_ID } from '../org-locations/gql';
 import AddMemberDrawer from './add-member-drawer';
 import GeneralInfo from './general-info';
 import Features from './features';
@@ -35,6 +36,7 @@ const COMMITTEE_BY_ID: TypedDocumentNode<
       name
       color
       description
+      locationId
       features
       memberCount
       guestCount
@@ -51,7 +53,7 @@ const COMMITTEE_BY_ID: TypedDocumentNode<
   }
 `;
 
-type Props = RouteComponentProps<{ committeeId: string }>;
+type Props = RouteComponentProps<{ locationId: string; committeeId: string }>;
 
 const TAB_GENERAL = 'general';
 const TAB_MEMBERS = 'members';
@@ -67,7 +69,7 @@ const VALID_TAB_KEYS = new Set([
 ]);
 
 const EditForm = ({ history, location, match }: Props) => {
-  const committeeId = match.params.committeeId;
+  const { locationId, committeeId } = match.params;
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
@@ -87,9 +89,19 @@ const EditForm = ({ history, location, match }: Props) => {
     variables: { id: committeeId },
   });
   const committeeById = data?.committeeById;
+  const { data: locationData } = useQuery(ORG_LOCATION_BY_ID, {
+    variables: { _id: locationId },
+  });
+  const locationName = locationData?.orgLocationById?.name?.trim();
   const committeeName = committeeById?.name?.trim();
 
-  useDynamicBreadcrumbs(['Admin', 'Central Committees', committeeName || 'Edit']);
+  useDynamicBreadcrumbs([
+    'Admin',
+    'Organization Locations',
+    locationName || '...',
+    'Committees',
+    committeeName || 'Edit',
+  ]);
 
   if (loading) {
     return (
@@ -99,7 +111,8 @@ const EditForm = ({ history, location, match }: Props) => {
     );
   }
 
-  if (!committeeById?._id) {
+  // The committee must belong to the location in the URL.
+  if (!committeeById?._id || committeeById.locationId !== locationId) {
     return (
       <Empty description="Committee not found" style={{ padding: '80px 0' }} />
     );
@@ -186,6 +199,7 @@ const EditForm = ({ history, location, match }: Props) => {
             <Members
               committeeId={committeeById._id}
               roles={[CommitteeMemberRoles.GUEST]}
+              hideAccountColumns
               emptyText="No guests added yet"
               note="Guests can be added to Projects and Meetings and will have access to those specific projects/meetings only. They cannot see any other data in the committee."
             />
@@ -197,7 +211,11 @@ const EditForm = ({ history, location, match }: Props) => {
           children: (
             <Members
               committeeId={committeeById._id}
-              roles={[CommitteeMemberRoles.OBSERVER]}
+              roles={[
+                CommitteeMemberRoles.OBSERVER,
+                CommitteeMemberRoles.INHERITED_OBSERVER,
+              ]}
+              hideAccountColumns
               emptyText="No observers added yet"
               note="Observer users have read-only access to all data in the committee."
             />

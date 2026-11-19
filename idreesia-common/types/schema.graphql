@@ -18,6 +18,17 @@ directive @checkCommitteeAccess(
   committeeIdArgName: String,
 ) on FIELD_DEFINITION
 
+enum DutiesAttendancePermission {
+  VIEW
+  MANAGE_AND_PLAN_DUTIES
+  MARK_ATTENDANCE
+}
+
+directive @checkDutiesAttendanceAccess(
+  permission: DutiesAttendancePermission!,
+  locationIdArgName: String,
+) on FIELD_DEFINITION
+
 directive @checkInstanceAccess(
   instanceIdArgName: String!,
   returnType: String,
@@ -35,12 +46,15 @@ enum Permission {
   ADMIN_MANAGE_PHYSICAL_STORES
   ADMIN_MANAGE_CITIES
   ADMIN_MANAGE_PEOPLE_TAGS
+  ADMIN_MANAGE_FREE_FORM_DATA
   ADMIN_MANAGE_SCHEDULED_JOBS
   ADMIN_MANAGE_DELETED_PEOPLE
   ADMIN_MANAGE_DUPLICATE_PEOPLE
   ADMIN_VIEW_SECURITY_LOGS
   ADMIN_VIEW_COMMITTEES
   ADMIN_MANAGE_COMMITTEES
+  ADMIN_VIEW_ORG_LOCATIONS
+  ADMIN_MANAGE_ORG_LOCATIONS
 
   HR_MANAGE_KARKUNS_SETUP_DATA
   HR_DELETE_DATA
@@ -165,6 +179,44 @@ extend type Mutation {
     @checkPermissions(permissions: [ADMIN_MANAGE_DUPLICATE_PEOPLE])
 }
 
+type FreeFormValueType {
+  name: String
+  count: Int
+}
+
+type PagedFreeFormValue {
+  totalResults: Int
+  data: [FreeFormValueType]
+}
+
+type FreeFormCityType {
+  name: String
+  count: Int
+  locationId: String
+  locationName: String
+}
+
+type PagedFreeFormCity {
+  totalResults: Int
+  data: [FreeFormCityType]
+}
+
+extend type Query {
+  pagedFreeFormCountries(pageIndex: Int!, pageSize: Int!): PagedFreeFormValue
+    @checkPermissions(permissions: [ADMIN_MANAGE_FREE_FORM_DATA])
+  pagedFreeFormCities(pageIndex: Int!, pageSize: Int!): PagedFreeFormCity
+    @checkPermissions(permissions: [ADMIN_MANAGE_FREE_FORM_DATA])
+}
+
+extend type Mutation {
+  renameFreeFormCity(existingSpelling: String!, newSpelling: String!): Int
+    @checkPermissions(permissions: [ADMIN_MANAGE_FREE_FORM_DATA])
+  renameFreeFormCountry(existingSpelling: String!, newSpelling: String!): Int
+    @checkPermissions(permissions: [ADMIN_MANAGE_FREE_FORM_DATA])
+  updateCityLocationMappings: Int
+    @checkPermissions(permissions: [ADMIN_MANAGE_FREE_FORM_DATA])
+}
+
 type JobDefinitionType {
   _id: String
   name: String
@@ -196,6 +248,168 @@ extend type Mutation {
 
   setJobDefinitionEnabled(_id: String!, enabled: Boolean!): JobDefinitionType
     @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
+}
+
+type OrgLocationMehfilDetailsType {
+  address: String
+  mehfilStartYear: String
+  timingDetails: String
+  lcdAvailability: Boolean
+  tabAvailability: Boolean
+  otherMehfilDetails: String
+}
+
+type OrgLocationType {
+  _id: String
+  name: String
+  type: String
+  parentId: String
+  allParentIds: [String]
+  mehfilDetails: OrgLocationMehfilDetailsType
+  parent: OrgLocationType
+  # The committees made under this location.
+  committees: [CommitteeBasicType]
+  # Karkuns observing this location.
+  observerKarkunIds: [String]
+  observers: [PersonType]
+  # Per observer: how many committees below this location they observe.
+  observerStats: [OrgLocationObserverStatType]
+  # Features enabled on this location (mehfils only).
+  features: [String]
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type OrgLocationObserverStatType {
+  karkunId: String
+  observedCommitteeCount: Int
+  observedCommitteeIds: [String]
+}
+
+type SyncOrgLocationObserversResult {
+  committeesChecked: Int
+  addedCount: Int
+  removedCount: Int
+}
+
+type OrgLocationFeatureType {
+  key: String!
+  name: String!
+  description: String!
+}
+
+type DutiesAttendancePermissionInfoType {
+  key: String!
+  name: String!
+  description: String!
+}
+
+# A user of the location's Duties and Attendance workspace.
+type OrgLocationDutiesAttendanceUserType {
+  _id: String!
+  userId: String!
+  username: String
+  displayName: String
+  permissions: [String]!
+}
+
+# A user that can be added to a workspace.
+type DutiesAttendanceUserCandidateType {
+  _id: String!
+  username: String
+  displayName: String
+}
+
+input OrgLocationMehfilDetailsInput {
+  address: String
+  mehfilStartYear: String
+  timingDetails: String
+  lcdAvailability: Boolean
+  tabAvailability: Boolean
+  otherMehfilDetails: String
+}
+
+extend type Query {
+  allOrgLocations: [OrgLocationType]
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+
+  orgLocationById(_id: String!): OrgLocationType
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+
+  allOrgLocationFeatures: [OrgLocationFeatureType]
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+
+  allDutiesAttendancePermissions: [DutiesAttendancePermissionInfoType]
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+
+  # Unlocked users matching the text, to add to a workspace.
+  dutiesAttendanceUserCandidates(
+    search: String
+  ): [DutiesAttendanceUserCandidateType]
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  orgLocationDutiesAttendanceUsers(
+    locationId: String!
+  ): [OrgLocationDutiesAttendanceUserType]
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+}
+
+extend type Mutation {
+  createOrgLocation(
+    name: String!
+    type: String!
+    parentId: String
+    mehfilDetails: OrgLocationMehfilDetailsInput
+  ): OrgLocationType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  updateOrgLocation(
+    _id: String!
+    name: String!
+    parentId: String
+    mehfilDetails: OrgLocationMehfilDetailsInput
+  ): OrgLocationType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  addOrgLocationObserver(locationId: String!, karkunId: String!): OrgLocationType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  removeOrgLocationObserver(locationId: String!, karkunId: String!): OrgLocationType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  # Makes the location's observers, and those of its ancestors, inherited
+  # observers of every committee in the location and the locations below it.
+  # Inherited observers that no longer apply are removed.
+  syncOrgLocationObservers(locationId: String!): SyncOrgLocationObserversResult
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  enableOrgLocationFeature(locationId: String!, featureKey: String!): Boolean
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  disableOrgLocationFeature(locationId: String!, featureKey: String!): Boolean
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  addOrgLocationDutiesAttendanceUser(
+    locationId: String!
+    userId: String!
+    permissions: [String]!
+  ): OrgLocationDutiesAttendanceUserType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  updateOrgLocationDutiesAttendanceUserPermissions(
+    locationId: String!
+    userId: String!
+    permissions: [String]!
+  ): OrgLocationDutiesAttendanceUserType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  removeOrgLocationDutiesAttendanceUser(
+    locationId: String!
+    userId: String!
+  ): Boolean @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 }
 
 type PeopleTagType {
@@ -546,8 +760,8 @@ input KarkunFilter {
   userAccount: String
   ehadKarkun: String
   dutyShiftId: String
-  cityId: String
-  cityMehfilId: String
+  cityLocationId: String
+  mehfilLocationId: String
   region: String
   updatedBetween: String
   predefinedFilterName: String
@@ -597,8 +811,8 @@ type PersonVisitorDataType {
 }
 
 type PersonKarkunDataType {
-  cityId: String
-  cityMehfilId: String
+  cityLocationId: String
+  mehfilLocationId: String
   ehadKarkun: Boolean
   ehadPermissionDate: String
   lastTarteebDate: String
@@ -607,8 +821,8 @@ type PersonKarkunDataType {
   msLastVisitDate: String
   attachmentIds: [String]
 
-  city: CityType
-  cityMehfil: CityMehfilType
+  cityLocation: ReferenceOrgLocationType
+  mehfilLocation: ReferenceOrgLocationType
   teams: [TeamType]
   attachments: [Attachment]
 }
@@ -681,11 +895,6 @@ type PagedPeopleType {
 extend type Query {
   distinctCities: [String]
   distinctCountries: [String]
-}
-
-extend type Mutation {
-  fixCitySpelling(existingSpelling: String!, newSpelling: String!): Int
-    @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 }
 
 type SecurityLogType {
@@ -1094,8 +1303,8 @@ extend type Mutation {
     contactNumber2: String
     emailAddress: String
     currentAddress: String
-    cityId: String
-    cityMehfilId: String
+    cityLocationId: String
+    mehfilLocationId: String
     permanentAddress: String
     bloodGroup: String
     educationalQualification: String
@@ -1119,8 +1328,8 @@ extend type Mutation {
     emailAddress: String
     currentAddress: String
     permanentAddress: String
-    cityId: String
-    cityMehfilId: String
+    cityLocationId: String
+    mehfilLocationId: String
     bloodGroup: String
     educationalQualification: String
     meansOfEarning: String
@@ -1428,9 +1637,11 @@ type ItemCategory {
 
 extend type Query {
   itemCategoryById(_id: String!, physicalStoreId: String!): ItemCategory
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   itemCategoriesByPhysicalStoreId(physicalStoreId: String!): [ItemCategory]
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_MANAGE_STOCK_ITEMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 
@@ -1466,9 +1677,11 @@ type Location {
 
 extend type Query {
   locationById(_id: String!, physicalStoreId: String!): Location
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   locationsByPhysicalStoreId(physicalStoreId: String!): [Location]
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 
@@ -1510,6 +1723,7 @@ type PhysicalStore {
 extend type Query {
   allAccessiblePhysicalStores: [PhysicalStore]
   physicalStoreById(id: String!): PhysicalStore
+    @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
     @checkInstanceAccess(instanceIdArgName: "id", returnType: "object")
 }
 
@@ -1753,12 +1967,15 @@ type PagedStockItem {
 
 extend type Query {
   pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
 
   stockItemById(_id: String!, physicalStoreId: String!): StockItem
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   stockItemsById(_ids: [String]!, physicalStoreId: String!): [StockItem]
+  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 
@@ -1829,9 +2046,11 @@ type Vendor {
 
 extend type Query {
   vendorById(_id: String!, physicalStoreId: String!): Vendor
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
 
   vendorsByPhysicalStoreId(physicalStoreId: String!): [Vendor]
+  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
   @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
 }
 
@@ -1911,6 +2130,8 @@ type CommitteeType {
   guestCount: Int
   observerCount: Int
   features: [String]
+  # The location this committee belongs to.
+  locationId: String
 
   createdAt: String
   createdBy: String
@@ -1919,9 +2140,10 @@ type CommitteeType {
 }
 
 extend type Query {
-  allCommittees: [CommitteeType]
-    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
   committeeById(id: String!): CommitteeType
+    @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
+  # The committees made under a location.
+  committeesByLocationId(locationId: String!): [CommitteeType]
     @checkPermissions(permissions: [ADMIN_VIEW_COMMITTEES, ADMIN_MANAGE_COMMITTEES])
   # One page of the members with any of the given roles, coordinators first
   # and then by name.
@@ -1937,9 +2159,13 @@ extend type Query {
 }
 
 extend type Mutation {
-  createCommittee(name: String!, color: String, description: String): CommitteeType
+  # locationId is the location the committee belongs to.
+  createCommittee(name: String!, color: String, description: String, locationId: String!): CommitteeType
     @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   updateCommittee(id: String!, name: String!, color: String, description: String): CommitteeType
+    @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
+  # Changes only the committee's location; nothing else about it changes.
+  moveCommittee(committeeId: String!, locationId: String!): CommitteeType
     @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
   removeCommittee(_id: String!): Int
     @checkPermissions(permissions: [ADMIN_MANAGE_COMMITTEES])
@@ -2093,6 +2319,20 @@ extend type Query {
   referenceDutyShifts: [ReferenceDutyShiftType]
     @checkPermissions(
       permissions: [SECURITY_VIEW_VISITORS, SECURITY_MANAGE_VISITORS]
+    )
+}
+
+type ReferenceOrgLocationType {
+  _id: String
+  name: String
+  type: String
+  parentId: String
+}
+
+extend type Query {
+  referenceCityMehfilLocations: [ReferenceOrgLocationType]
+    @checkPermissions(
+      permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES]
     )
 }
 
@@ -2828,6 +3068,8 @@ type WorkspaceCommitteeType {
   name: String
   color: String
   description: String
+  # The location the committee belongs to.
+  locationId: String
   # True when the logged-in user can manage this committee's members.
   canManageMembers: Boolean
   # Keys of the features enabled for this committee (e.g. 'discussions').
@@ -2837,6 +3079,14 @@ type WorkspaceCommitteeType {
   memberCount: Int
   guestCount: Int
   observerCount: Int
+}
+
+type WorkspaceLocationType {
+  _id: String
+  name: String
+  # root, country, group, city or mehfil.
+  type: String
+  parentId: String
 }
 
 type WorkspaceKarkunType {
@@ -2857,6 +3107,10 @@ type PagedWorkspaceKarkunType {
 extend type Query {
   # Committees the logged-in user is currently a member of.
   myCommittees: [WorkspaceCommitteeType]
+
+  # The locations of the user's committees, plus all of their ancestors, so
+  # the committees can be shown in the location hierarchy.
+  myCommitteeLocations: [WorkspaceLocationType]
 
   # A committee the logged-in user is on, in any role. Refused otherwise.
   workspaceCommitteeById(committeeId: String!): WorkspaceCommitteeType
@@ -2973,7 +3227,19 @@ type DiscussionInfoType {
   canPin: Boolean
 }
 
+type DiscussionVideoCallType {
+  # Link that joins the discussion's video call.
+  url: String!
+}
+
+type DiscussionVideoCallInfoType {
+  # People in the call right now; null when that can't be told.
+  participantCount: Int
+}
+
 extend type Query {
+  workspaceDiscussionVideoCallInfo(committeeId: String!): DiscussionVideoCallInfoType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceDiscussionInfo(committeeId: String!): DiscussionInfoType
     @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER])
   # Without 'since': the latest messages. With it: what changed since then.
@@ -3009,6 +3275,10 @@ extend type Query {
 }
 
 extend type Mutation {
+  # The link that joins the discussion's video call. When nobody is in the
+  # call yet, it also posts "started a video call" in the discussion.
+  workspaceJoinDiscussionVideoCall(committeeId: String!): DiscussionVideoCallType
+    @checkCommitteeAccess(roles: [COORDINATOR, MEMBER])
   workspaceSendDiscussionMessage(
     committeeId: String!
     text: String!
@@ -3326,9 +3596,191 @@ type WorkspaceDocumentsInfoType {
       @checkCommitteeAccess(roles: [COORDINATOR])
   }
 
+type DaAccessType {
+  locationId: String!
+  permissions: [String!]!
+}
+
+# A location whose workspace the caller can open, or one of its ancestors
+# (hasWorkspace false), listed so the locations show in their hierarchy.
+type DaMyLocationType {
+  locationId: String!
+  name: String!
+  type: String!
+  parentId: String
+  hasWorkspace: Boolean!
+  permissions: [String!]!
+}
+
+type DaDutyMemberType {
+  karkunId: String!
+  isCoordinator: Boolean
+  # Empty: every day.
+  daysOfWeek: [String]
+  karkun: PersonBasicType
+}
+
+type DaDutyType {
+  _id: String!
+  workspaceId: String!
+  name: String!
+  description: String
+  isActive: Boolean!
+  members: [DaDutyMemberType]!
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type DaPlanKarkunType {
+  karkunId: String!
+  name: String
+  # On the roster, but taken off for this day.
+  off: Boolean!
+  # Added for this day only.
+  addedForDay: Boolean!
+  imageUrl: String
+  imageThumbnailUrl: String
+  # present, late or absent; null when not marked.
+  attendance: String
+}
+
+type DaPlanDayType {
+  date: String!
+  dayOfWeek: String!
+  # Today and earlier: the roster is fixed and attendance can be marked.
+  locked: Boolean!
+  karkuns: [DaPlanKarkunType]!
+  addedKarkunIds: [String]!
+  absentKarkunIds: [String]!
+}
+
+type DaPlanDaysType {
+  startDate: String!
+  days: [DaPlanDayType]!
+}
+
+type DaAttendanceSheetRowType {
+  _id: String!
+  # MM-yyyy
+  month: String!
+  karkunId: String!
+  name: String
+  dutyId: String!
+  dutyName: String
+  daysOnDuty: Int!
+  presentCount: Int!
+  lateCount: Int!
+  absentCount: Int!
+  unmarkedCount: Int!
+  percentage: Int!
+}
+
+extend type Query {
+  myDutiesAttendanceLocations: [DaMyLocationType]!
+
+  workspaceDaAccess(locationId: String!): DaAccessType
+    @checkDutiesAttendanceAccess(permission: VIEW)
+
+  workspaceDaDuties(locationId: String!): [DaDutyType]
+    @checkDutiesAttendanceAccess(permission: VIEW)
+
+  workspaceDaDutyById(locationId: String!, dutyId: String!): DaDutyType
+    @checkDutiesAttendanceAccess(permission: VIEW)
+
+  # Seven days of the duty's plan from startDate (YYYY-MM-DD).
+  workspaceDaPlanDays(
+    locationId: String!
+    dutyId: String!
+    startDate: String!
+  ): DaPlanDaysType @checkDutiesAttendanceAccess(permission: VIEW)
+
+  # Karkuns to choose from when building a duty roster.
+  workspaceDaKarkunSearch(
+    locationId: String!
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedWorkspaceKarkunType
+    @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+
+  # month is MM-yyyy; without dutyId, every duty of the workspace.
+  workspaceDaAttendanceSheet(
+    locationId: String!
+    month: String!
+    dutyId: String
+  ): [DaAttendanceSheetRowType]
+    @checkDutiesAttendanceAccess(permission: VIEW)
+}
+
+extend type Mutation {
+  workspaceDaCreateDuty(
+    locationId: String!
+    name: String!
+    description: String
+  ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+
+  workspaceDaUpdateDuty(
+    locationId: String!
+    dutyId: String!
+    name: String
+    description: String
+    isActive: Boolean
+  ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+
+  workspaceDaRemoveDuty(locationId: String!, dutyId: String!): Boolean
+    @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+
+  workspaceDaAddDutyMember(
+    locationId: String!
+    dutyId: String!
+    karkunId: String!
+    isCoordinator: Boolean
+    daysOfWeek: [String]
+  ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+
+  workspaceDaUpdateDutyMember(
+    locationId: String!
+    dutyId: String!
+    karkunId: String!
+    isCoordinator: Boolean
+    daysOfWeek: [String]
+  ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+
+  workspaceDaRemoveDutyMember(
+    locationId: String!
+    dutyId: String!
+    karkunId: String!
+  ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+
+  # Plans a future day: people added for the day and members taken off it.
+  workspaceDaSetDayOverride(
+    locationId: String!
+    dutyId: String!
+    date: String!
+    addedKarkunIds: [String]
+    absentKarkunIds: [String]
+  ): Boolean @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+
+  # status is present, late or absent; null clears the mark.
+  workspaceDaSetAttendance(
+    locationId: String!
+    dutyId: String!
+    date: String!
+    karkunId: String!
+    status: String
+  ): Boolean @checkDutiesAttendanceAccess(permission: MARK_ATTENDANCE)
+}
+
 type WorkspaceMeetingsInfoType {
     # The logged-in user is a coordinator: can schedule and manage meetings.
     canManage: Boolean
+    # The logged-in user can join meetings' video calls (not observers).
+    canJoinVideoCall: Boolean
     # The logged-in user's participant id (karkun id), if any.
     myParticipantId: String
     # Largest attachment, in bytes, that can be uploaded.
@@ -3375,7 +3827,8 @@ type WorkspaceMeetingsInfoType {
     title: String
     description: String
     location: String
-    onlineUrl: String
+    # Held as a video call, joined from the meeting.
+    videoCall: Boolean
     startsAt: String
     endsAt: String
     timeZone: String
@@ -3472,12 +3925,22 @@ type WorkspaceMeetingsInfoType {
     fileName: String
   }
 
+  type WorkspaceMeetingVideoCallType {
+    # Link that joins the meeting's video call.
+    url: String!
+  }
+
+  type WorkspaceMeetingVideoCallInfoType {
+    # People in the call right now; null when that can't be told.
+    participantCount: Int
+  }
+
   input WorkspaceMeetingInput {
     title: String!
     startsAt: String!
     endsAt: String!
     location: String
-    onlineUrl: String
+    videoCall: Boolean
     description: String
   }
 
@@ -3528,6 +3991,11 @@ type WorkspaceMeetingsInfoType {
       meetingId: String!
     ): WorkspaceMeetingType
       @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
+    workspaceMeetingVideoCallInfo(
+      committeeId: String!
+      meetingId: String!
+    ): WorkspaceMeetingVideoCallInfoType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     workspaceMeetingAttachments(
       committeeId: String!
       meetingId: String!
@@ -3567,6 +4035,13 @@ type WorkspaceMeetingsInfoType {
       input: WorkspaceMeetingInput!
     ): WorkspaceMeetingType
       @checkCommitteeAccess(roles: [COORDINATOR])
+    # The link that joins the meeting's video call (the meeting must be
+    # held as a video call and not cancelled).
+    workspaceJoinMeetingVideoCall(
+      committeeId: String!
+      meetingId: String!
+    ): WorkspaceMeetingVideoCallType
+      @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, GUEST])
     workspaceCancelMeeting(
       committeeId: String!
       meetingId: String!

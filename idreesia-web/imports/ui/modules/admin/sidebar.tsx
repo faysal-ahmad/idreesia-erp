@@ -24,14 +24,14 @@ const menuItems = [
   {
     key: 'organization',
     label: 'Organization Management',
-    children: [{ key: 'committees', label: 'Central Committees' }],
+    children: [{ key: 'org-locations', label: 'Organization Locations' }],
   },
   {
     key: 'locations',
     label: 'Reference Data',
     children: [
-      { key: 'cities', label: 'Cities & Mehfils' },
       { key: 'people-tags', label: 'People Tags' },
+      { key: 'free-form-data', label: 'Free Form Data' },
     ],
   },
   {
@@ -97,10 +97,10 @@ const menuRouteMatches: MenuRouteMatch[] = [
     matches: (pathname) => isPath(pathname, paths.physicalStoresPath),
   },
   {
-    key: 'committees',
+    key: 'org-locations',
     openKeys: ['organization'],
-    subModuleName: SubModuleNames.committees,
-    matches: (pathname) => isPath(pathname, paths.committeesPath),
+    subModuleName: SubModuleNames.orgLocations,
+    matches: (pathname) => isPath(pathname, paths.orgLocationsPath),
   },
   {
     key: 'cities',
@@ -113,6 +113,12 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['locations'],
     subModuleName: SubModuleNames.peopleTags,
     matches: (pathname) => isPath(pathname, paths.peopleTagsPath),
+  },
+  {
+    key: 'free-form-data',
+    openKeys: ['locations'],
+    subModuleName: SubModuleNames.freeFormData,
+    matches: (pathname) => isPath(pathname, paths.freeFormDataPath),
   },
   {
     key: 'deleted-people',
@@ -207,8 +213,8 @@ const Sidebar = ({ history }: SidebarProps) => {
         history.push(paths.physicalStoresPath);
         break;
 
-      case 'committees':
-        history.push(paths.committeesPath);
+      case 'org-locations':
+        history.push(paths.orgLocationsPath);
         break;
 
       case 'cities':
@@ -217,6 +223,10 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'people-tags':
         history.push(paths.peopleTagsPath);
+        break;
+
+      case 'free-form-data':
+        history.push(paths.freeFormDataPath);
         break;
 
       case 'deleted-people':

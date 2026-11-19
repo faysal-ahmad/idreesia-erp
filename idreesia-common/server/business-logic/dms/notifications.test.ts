@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Notifications from 'meteor/idreesia-common/server/collections/common/notifications';
-import Committees from 'meteor/idreesia-common/server/collections/hr/committees';
+import Committees from 'meteor/idreesia-common/server/collections/admin/committees';
 import { markNotificationsRead } from 'meteor/idreesia-common/server/headless';
 
 import {

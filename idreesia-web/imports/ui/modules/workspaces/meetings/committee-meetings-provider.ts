@@ -41,6 +41,8 @@ import {
   WORKSPACE_DELETE_MEETING,
   WORKSPACE_DELETE_MEETING_ACTION_ITEM,
   WORKSPACE_DELETE_MEETING_ATTACHMENT,
+  WORKSPACE_JOIN_MEETING_VIDEO_CALL,
+  WORKSPACE_MEETING_VIDEO_CALL_INFO,
   WORKSPACE_MARK_MEETING_ATTENDANCE,
   WORKSPACE_MEETING_ACTION_ITEMS,
   WORKSPACE_MEETING_ACTIVITY,
@@ -91,7 +93,7 @@ const mapMeeting = (meeting: WorkspaceMeetingFieldsFragment): Meeting => ({
   title: meeting.title ?? '',
   description: meeting.description ?? null,
   location: meeting.location ?? null,
-  onlineUrl: meeting.onlineUrl ?? null,
+  videoCall: !!meeting.videoCall,
   startsAt: meeting.startsAt ?? '0',
   endsAt: meeting.endsAt ?? '0',
   status: (meeting.status ?? 'scheduled') as MeetingStatus,
@@ -286,6 +288,7 @@ export default class CommitteeMeetingsProvider implements MeetingsDataProvider {
     const data = await this.query<{
       workspaceMeetingsInfo?: {
         canManage?: boolean | null;
+        canJoinVideoCall?: boolean | null;
         myParticipantId?: string | null;
         maxFileSize?: number | null;
       } | null;
@@ -293,9 +296,26 @@ export default class CommitteeMeetingsProvider implements MeetingsDataProvider {
     const info = data?.workspaceMeetingsInfo;
     return {
       canManage: !!info?.canManage,
+      canJoinVideoCall: !!info?.canJoinVideoCall,
       myParticipantId: info?.myParticipantId ?? null,
       maxFileSize: info?.maxFileSize ?? 0,
     };
+  }
+
+  async getVideoCallUrl(meetingId: string): Promise<string> {
+    const data = await this.mutate<{
+      workspaceJoinMeetingVideoCall?: { url?: string | null } | null;
+    }>(WORKSPACE_JOIN_MEETING_VIDEO_CALL, { meetingId });
+    const url = data?.workspaceJoinMeetingVideoCall?.url;
+    if (!url) throw new MeetingsError('Video call is not available.');
+    return url;
+  }
+
+  async getVideoCallParticipantCount(meetingId: string): Promise<number | null> {
+    const data = await this.query<{
+      workspaceMeetingVideoCallInfo?: { participantCount?: number | null } | null;
+    }>(WORKSPACE_MEETING_VIDEO_CALL_INFO, { meetingId });
+    return data?.workspaceMeetingVideoCallInfo?.participantCount ?? null;
   }
 
   async loadMembers(): Promise<MeetingMember[]> {

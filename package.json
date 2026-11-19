@@ -79,6 +79,8 @@
     "compose": "docker compose --file 'docker-compose.yml'",
     "docker:up": "yarn compose up -d",
     "docker:down": "yarn compose down",
+    "fix:prod-backup": "node scripts/fix-prodction-db-backup.mjs --env-file idreesia-web/.env",
+    "fix:prod-backup:apply": "node scripts/fix-prodction-db-backup.mjs --env-file idreesia-web/.env --apply",
     "lint": "eslint \"idreesia-common/**/*.{js,jsx,ts,tsx}\" \"idreesia-web/{client,imports,server}/**/*.{js,jsx,ts,tsx}\" \"idreesia-mobile/{client,imports,server}/**/*.{js,jsx,ts,tsx}\" \"types/**/*.d.ts\" \"*.config.{js,ts}\"",
     "lint:fix": "yarn lint --fix",
     "typecheck": "yarn typecheck:common && yarn typecheck:web && yarn typecheck:mobile",

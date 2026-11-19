@@ -29,7 +29,6 @@ import {
   normalizeTags,
   normalizeText,
   normalizeTitle,
-  normalizeUrl,
   requireMeeting,
   requireOneOf,
   requireUserId,
@@ -65,8 +64,8 @@ export interface CreateMeetingInput {
   timeZone?: string;
   description?: string;
   location?: string;
-  /** An http(s) link to join online. */
-  onlineUrl?: string;
+  /** Held as a video call (the app's own call room, one per meeting). */
+  videoCall?: boolean;
   tags?: string[];
   metadata?: MeetingsMetadata;
   participants?: ParticipantInput[];
@@ -90,7 +89,6 @@ export async function createMeeting(
     );
     const description = normalizeText(input.description, 'Description');
     const location = normalizeText(input.location, 'Location', 1000);
-    const onlineUrl = normalizeUrl(input.onlineUrl, 'Online meeting link');
     const metadata = validateMetadata(input.metadata);
 
     const date = new Date();
@@ -99,7 +97,7 @@ export async function createMeeting(
       title,
       ...(description ? { description } : {}),
       ...(location ? { location } : {}),
-      ...(onlineUrl ? { onlineUrl } : {}),
+      ...(input.videoCall ? { videoCall: true } : {}),
       startsAt,
       endsAt,
       timeZone,
@@ -154,8 +152,8 @@ export interface UpdateMeetingInput {
   description?: string | null;
   /** null clears it. */
   location?: string | null;
-  /** null clears it. */
-  onlineUrl?: string | null;
+  /** false clears it. */
+  videoCall?: boolean;
   /** Replaces the current tags. */
   tags?: string[];
   /** Replaces the whole object; null clears it. */
@@ -212,11 +210,8 @@ export async function updateMeeting(
     if (changes.location !== undefined) {
       setOrUnset('location', normalizeText(changes.location, 'Location', 1000));
     }
-    if (changes.onlineUrl !== undefined) {
-      setOrUnset(
-        'onlineUrl',
-        normalizeUrl(changes.onlineUrl, 'Online meeting link')
-      );
+    if (changes.videoCall !== undefined) {
+      setOrUnset('videoCall', changes.videoCall);
     }
     if (changes.tags !== undefined) $set.tags = normalizeTags(changes.tags);
     if (changes.metadata !== undefined) {

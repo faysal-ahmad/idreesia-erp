@@ -28,7 +28,7 @@ import {
   getLibraryTrash,
   getLibraryVersions,
   searchLibrary,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import {
   assertDocumentInWorkspace,

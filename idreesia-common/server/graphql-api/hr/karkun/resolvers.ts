@@ -1,6 +1,9 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
-import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
+import {
+  Committees,
+  OrgLocations,
+} from 'meteor/idreesia-common/server/collections/admin';
+import { OrgLocationTypes } from 'meteor/idreesia-common/constants/organization';
 import { DataSource } from 'meteor/idreesia-common/constants';
 import {
   addPersonAttachment,
@@ -16,8 +19,18 @@ import {
 import { getKarkunsByPredefinedFilter } from 'meteor/idreesia-common/server/business-logic/hr/karkun-search';
 
 // HR karkuns all belong to Multan.
-const getMultanCity = () =>
-  Cities.findOneAsync({ name: 'Multan', country: 'Pakistan' });
+const getMultanCity = async () => {
+  const pakistan = await OrgLocations.findOneAsync({
+    name: 'Pakistan',
+    type: OrgLocationTypes.COUNTRY,
+  });
+  if (!pakistan) return null;
+  return OrgLocations.findOneAsync({
+    name: 'Multan',
+    type: OrgLocationTypes.CITY,
+    allParentIds: pakistan._id,
+  });
+};
 
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
@@ -53,7 +66,7 @@ const resolvers: ResolverMap = {
       return searchPeople(
         {
           ...filter,
-          cityId: multanCity._id,
+          cityLocationId: multanCity._id,
         },
         {
           includeKarkuns: filter.isKarkun,
@@ -81,11 +94,11 @@ const resolvers: ResolverMap = {
         ...values,
         isKarkun: true,
         isVisitor: true,
-        cityId: multanCity._id,
+        cityLocationId: multanCity._id,
         dataSource: DataSource.HR,
         visitorData: {
           city: multanCity.name,
-          country: multanCity.country,
+          country: 'Pakistan',
         },
       });
       return createPerson(personValues, user);
@@ -105,7 +118,8 @@ const resolvers: ResolverMap = {
 
       const personValues = await karkunToPerson({
         _id,
-        cityId: existingPerson.karkunData?.cityId || multanCity._id,
+        cityLocationId:
+          existingPerson.karkunData?.cityLocationId || multanCity._id,
       });
       // Keep the visitor city the person already has. karkunToPerson would
       // replace it with the karkun city name.

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { Users } from 'meteor/idreesia-common/server/collections/admin';
+import { Committees, Users } from 'meteor/idreesia-common/server/collections/admin';
 import { Attachments, People } from 'meteor/idreesia-common/server/collections/common';
 import { Jobs, Teams } from 'meteor/idreesia-common/server/collections/hr';
 import {
@@ -14,6 +14,7 @@ import { Cities, CityMehfils } from 'meteor/idreesia-common/server/collections/o
 
 import { getDataLoaders } from './index';
 import { getKarkunTeams } from './hr/karkun-teams';
+import { getLocationCommittees } from './admin/location-committees';
 
 // Every "by id" loader batches the ids requested in one tick into a single
 // $in query and answers in the order asked, with undefined for missing ids.
@@ -131,6 +132,28 @@ describe('karkun teams loader', () => {
     const [a, b] = await Promise.all([loader.load('k1'), loader.load('k2')]);
     expect(a).toHaveLength(1);
     expect(b).toHaveLength(1);
+    expect(findSpy).toHaveBeenCalledTimes(1);
+    findSpy.mockRestore();
+  });
+});
+
+describe('location committees loader', () => {
+  it('returns each location its committees sorted by name, empty when none', async () => {
+    await (Committees.rawCollection() as any).insertMany([
+      { _id: 'c1', name: 'Zeta', locationId: 'l1' },
+      { _id: 'c2', name: 'Alpha', locationId: 'l1' },
+      { _id: 'c3', name: 'Mid', locationId: 'l2' },
+      { _id: 'c4', name: 'Central' },
+    ] as any);
+
+    const result = await getLocationCommittees(['l1', 'l2', 'l3']);
+    expect(result.map(list => list.map(c => c.name))).toEqual([['Alpha', 'Zeta'], ['Mid'], []]);
+  });
+
+  it('batches through the loader into one query', async () => {
+    const findSpy = vi.spyOn(Committees, 'find');
+    const loader = getDataLoaders().admin.locationCommittees;
+    await Promise.all([loader.load('l1'), loader.load('l2')]);
     expect(findSpy).toHaveBeenCalledTimes(1);
     findSpy.mockRestore();
   });

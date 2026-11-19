@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
 import {
   makeLockedUser,
   makeSuperAdmin,
@@ -9,7 +9,7 @@ import {
 
 // The chat group lookup talks to the chat service; the access decision is what
 // is under test.
-vi.mock('meteor/idreesia-common/server/business-logic/hr/committee', () => ({
+vi.mock('meteor/idreesia-common/server/business-logic/admin/committee', () => ({
   getCommitteeChatGroupId: vi.fn(async (c: { _id: string }) => `chat-${c._id}`),
 }));
 

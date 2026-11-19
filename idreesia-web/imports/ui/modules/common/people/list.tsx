@@ -199,8 +199,8 @@ export default class PeopleList extends Component<Props, State> {
     render: (_text: unknown, record: PersonRow) => {
       const cityCountry: React.ReactNode[] = [];
       if (record.isKarkun) {
-        if (record.karkunData?.city) {
-          cityCountry.push(<Row key="1">{record.karkunData.city.name}</Row>);
+        if (record.karkunData?.cityLocation) {
+          cityCountry.push(<Row key="1">{record.karkunData.cityLocation.name}</Row>);
           cityCountry.push(<Row key="2">{(record.visitorData?.city as { country?: string | null } | null)?.country}</Row>);
         }
       } else {

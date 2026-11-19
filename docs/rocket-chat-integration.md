@@ -132,6 +132,19 @@ A committee can have **Discussions** turned on from **HR → Committees → (com
 - Both use the Meteor login token in the `Authorization` header and check committee membership.
 - The service account can read every group's files. So each file URL in a message list carries a signature over (group, file), and the download route only serves a file whose signature matches that committee's group.
 
+**Video calls (Jitsi)**
+- Coordinators and members get a "Video call" button in the discussion header. The call opens embedded in the ERP (full window, or a small window in the top right corner that stays while the user moves around the ERP).
+- The ERP builds the link in the `workspaceJoinDiscussionVideoCall` mutation. The room name is an HMAC of the chat group id, so it's stable per discussion, unguessable, and hides the Rocket.Chat id. Observers can't get the link.
+- When nobody is in the room yet, the same mutation also posts "Started a video call" in the discussion, as the user. The message carries a `[Join call](videocall://join)` link that the discussion UI shows as a button. Joining a running call posts nothing.
+- "Nobody is in the room" comes from Jitsi's room census (prosody's `muc_census` module, `/room-census`). If the census can't be read, nothing is announced.
+- Meetings in a workspace use the same Jitsi setup for meetings held as a video call (room: HMAC of `meeting:<meetingId>`); see `docs/headless-modules/meetings-design-and-usage.md`.
+- Env on the ERP: `JITSI_URL` (reachable from users' browsers; `http://localhost:8000` with docker compose), `JITSI_ROOM_SECRET`, and `JITSI_ROOM_CENSUS_URL` (optional; `http://xmpp.meet.jitsi:5280/room-census` with docker compose). All are in `idreesia-web/.env.example`.
+- The census has no authentication. In production the ERP is on App Platform and Jitsi on a Droplet, so the census has to be exposed to the ERP only (a firewall rule for the ERP's egress, or a secret path or header at the Jitsi web server), never to the open internet.
+- Before joining, web and mobile show a screen with how many people are already in the call (from `workspaceDiscussionVideoCallInfo`) and Microphone / Camera switches (microphone off, camera on by default); the call starts, and a starting call is announced, only when the user presses Join call.
+- Mobile: the discussion's menu has "Video call", and the announcement message shows the same "Join call" button. On iOS the call opens in the in-app browser (`cordova-plugin-inappbrowser`, closed with "Done"); on Android it opens in the system browser, because the plugin's Android WebView doesn't grant camera/microphone access to web pages; in the browser build it opens a new tab. Phones need an HTTPS `JITSI_URL` they can reach (browsers only allow camera and microphone on HTTPS or localhost).
+- HTTPS for local phone testing: the `cloudflared` compose service is a Cloudflare quick tunnel (no account) that gives Jitsi a public `https://….trycloudflare.com` address with a publicly trusted certificate, so phones and browsers need no setup. The address is random and changes whenever the container restarts: read it with `docker compose logs cloudflared | grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' | tail -1`, set `JITSI_URL` in `idreesia-web/.env` to it, and recreate `idreesia-web`. Only call setup goes through the tunnel; audio and video still go straight to the bridge over the LAN (`JITSI_ADVERTISE_IPS` in the repo-root `.env`), so the phone must be on the same Wi-Fi as the computer running docker. Jitsi is reachable from the internet while the tunnel runs; stop it (`docker compose stop cloudflared`) when not testing.
+- Dev Jitsi runs in `docker-compose.yml` (`jitsi-*` services). It has no authentication, so anyone with a room link can join. Production needs HTTPS and UDP 10000 for the bridge, so a Droplet rather than App Platform.
+
 **Code layout**
 - The GraphQL resolvers and REST routes only check access. The work is done in shared business logic, so other hosts (e.g. teams) can reuse it after their own checks.
 
@@ -140,7 +153,7 @@ A committee can have **Discussions** turned on from **HR → Committees → (com
 | Rocket.Chat group calls | `idreesia-common/server/chat/groups.ts` |
 | Per-user tokens | `idreesia-common/server/business-logic/common/chat-user-credentials.ts` |
 | Discussions logic (generic) | `idreesia-common/server/business-logic/discussions/` |
-| Committee feature on/off | `idreesia-common/server/business-logic/hr/committee/` |
+| Committee feature on/off | `idreesia-common/server/business-logic/admin/committee/` |
 | Workspaces GraphQL (access checks) | `idreesia-common/server/graphql-api/workspaces/discussions/` |
 | File routes | `idreesia-web/imports/startup/server/setup-workspace-discussion-endpoints.ts` |
 | Reusable UI + `DiscussionDataProvider` | `idreesia-web/imports/ui/modules/common/discussions/` |

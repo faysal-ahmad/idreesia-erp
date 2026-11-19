@@ -32,6 +32,7 @@ const ANY = ['COORDINATOR', 'GUEST', 'MEMBER', 'OBSERVER'];
 // myCommittees has no committee id: it lists the caller's own committees.
 const expected: Array<[Root, string, string[] | undefined]> = [
   ['Query', 'myCommittees', undefined],
+  ['Query', 'myCommitteeLocations', undefined],
   ['Query', 'workspaceCommitteeById', ANY],
   ['Query', 'workspaceCommitteeKarkunSearch', C],
   ['Mutation', 'workspaceAddCommitteeMember', C],

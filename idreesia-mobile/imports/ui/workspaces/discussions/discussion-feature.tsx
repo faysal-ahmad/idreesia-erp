@@ -8,6 +8,7 @@ import { DiscussionsScreen } from './discussions-screen';
 import { SavedMessagesScreen } from './saved-messages-screen';
 import { SearchScreen } from './search-screen';
 import { ThreadScreen } from './thread-screen';
+import { VideoCallPopup } from './video-call-popup';
 
 const isAt = (pathname: string, path: string) => Boolean(matchPath(pathname, { path, exact: true }));
 
@@ -58,6 +59,7 @@ export const DiscussionRoutes = ({ scope, title }: RoutesProps) => {
         <Route exact path={paths.starredPattern} render={() => <SavedMessagesScreen kind="starred" />} />
         <Redirect to={paths.main} />
       </Switch>
+      <VideoCallPopup />
     </DiscussionProvider>
   );
 };

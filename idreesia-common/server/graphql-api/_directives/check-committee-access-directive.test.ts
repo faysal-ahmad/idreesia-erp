@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { graphql } from 'graphql';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
 import { getCommitteeAccess } from 'meteor/idreesia-common/server/graphql-api/workspaces/committee/access';
 
 import CheckCommitteeAccessDirective from './check-committee-access-directive';

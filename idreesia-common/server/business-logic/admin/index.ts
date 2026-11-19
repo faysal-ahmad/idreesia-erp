@@ -24,3 +24,33 @@ export {
   searchSecurityLogs,
   type SearchSecurityLogsParams,
 } from './security-logs';
+export {
+  addOrgLocationObserver,
+  assertLocationExists,
+  createOrgLocation,
+  removeOrgLocationObserver,
+  updateOrgLocation,
+  type OrgLocationValues,
+} from './org-locations';
+export {
+  getOrgLocationObserverStats,
+  type OrgLocationObserverStat,
+} from './org-location-observer-stats';
+export {
+  syncOrgLocationObservers,
+  type SyncOrgLocationObserversResult,
+} from './org-location-observers-sync';
+export {
+  addOrgLocationDutiesAttendanceUser,
+  disableOrgLocationFeature,
+  enableOrgLocationFeature,
+  getLocationDutiesAttendanceWorkspaceId,
+  removeOrgLocationDutiesAttendanceUser,
+  updateOrgLocationDutiesAttendanceUserPermissions,
+} from './org-location-features';
+export {
+  pagedFreeFormCities,
+  updateCityLocationMappings,
+  type FreeFormCitiesPage,
+  type FreeFormCityValue,
+} from './city-location-mappings';

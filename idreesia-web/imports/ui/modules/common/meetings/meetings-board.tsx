@@ -196,10 +196,10 @@ const MeetingsBoard = ({ provider, onOpenMeeting }: Props) => {
           <Typography.Link onClick={() => onOpenMeeting(meeting._id)}>
             {meeting.title}
           </Typography.Link>
-          {meeting.location ? (
+          {meeting.videoCall || meeting.location ? (
             <div>
               <Typography.Text type="secondary">
-                {meeting.location}
+                {meeting.videoCall ? 'Video call' : meeting.location}
               </Typography.Text>
             </div>
           ) : null}

@@ -15,6 +15,7 @@ const pages: Array<{ path: string; breadcrumbs: string[] }> = [
   { path: AdminPaths.userGroups, breadcrumbs: ['Admin', 'User Groups', 'List'] },
   { path: AdminPaths.physicalStores, breadcrumbs: ['Admin', 'Setup', 'Physical Stores', 'List'] },
   { path: AdminPaths.cities, breadcrumbs: ['Admin', 'Locations Management', 'Cities & Mehfils', 'List'] },
+  { path: AdminPaths.orgLocations, breadcrumbs: ['Admin', 'Locations'] },
   { path: AdminPaths.peopleTags, breadcrumbs: ['Admin', 'People Tags'] },
   { path: AdminPaths.deletedPeople, breadcrumbs: ['Admin', 'Data Management', 'Deleted People'] },
   { path: AdminPaths.jobDefinitions, breadcrumbs: ['Admin', 'Scheduled Jobs', 'Job Definitions'] },

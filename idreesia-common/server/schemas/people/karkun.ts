@@ -15,6 +15,15 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  // Org locations (type CITY / MEHFIL) that replace cityId / cityMehfilId.
+  cityLocationId: {
+    type: String,
+    optional: true,
+  },
+  mehfilLocationId: {
+    type: String,
+    optional: true,
+  },
   lastTarteebDate: {
     type: Date,
     optional: true,

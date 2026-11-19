@@ -115,7 +115,7 @@ Any operation that writes more than one collection, or more than one document th
   ```
 
 - **The transaction is ambient.** Collection calls made inside it use its session on their own: `insertAsync`, `updateAsync`, `removeAsync`, `findOneAsync`, `find`, `countAsync`, `aggregate` and `rawCollection()` calls, `Meteor.users` and `Accounts` included. Collection2 validation still runs. Reads see the operation's own uncommitted writes.
-- **Nesting joins.** A wrapped function called from another one runs in the caller's transaction, so composites (e.g. the committee actions in `hr/committee/`) are atomic as a whole.
+- **Nesting joins.** A wrapped function called from another one runs in the caller's transaction, so composites (e.g. the committee actions in `admin/committee/`) are atomic as a whole.
 - **Effects outside the database** can't be rolled back, and the driver may run the function more than once on transient errors:
   - Deleting files, notifications, and anything else that must only happen once the change is kept: `afterCommit(fn)`. The module notifiers and the `deleteFilesAfterCommit` / `removeAttachments` helpers already do this.
   - Creating something outside (storing a file, a chat group, a chat membership): do it inside the transaction, then register its undo with `onRollback(fn)`. The chat helpers in `business-logic/rocket-chat/chat-group-changes.ts` do this for chat groups.

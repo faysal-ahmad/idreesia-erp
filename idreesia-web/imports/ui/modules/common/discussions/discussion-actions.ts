@@ -16,6 +16,11 @@ export interface DiscussionActions {
   edit(messageId: string, text: string): Promise<boolean>;
   remove(messageId: string): void;
   openThread(threadId: string): void;
+  /**
+   * Joins the discussion's video call; undefined when the host has no video
+   * calls or the user cannot post. Reports its own errors.
+   */
+  joinVideoCall?: () => void;
   /** Scrolls to a message in the discussion (or its thread) and highlights it. */
   jumpTo(message: DiscussionMessage): void;
 }

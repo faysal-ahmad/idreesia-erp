@@ -101,10 +101,10 @@ App.setPreference('AndroidWindowSplashScreenBackground', '#F1F6F5', 'android');
 // idreesia-webview-camera and requested by cordova-plugin-android-permissions.
 App.appendToConfig(`
   <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge">
-    <string>Eastern Breeze ERP uses the camera to take photos, that can be uploaded to discussions, meetings and document workspaces.</string>
+    <string>Eastern Breeze ERP uses the camera to take photos, that can be uploaded to discussions, meetings and document workspaces, and for video calls.</string>
   </edit-config>
   <edit-config target="NSMicrophoneUsageDescription" file="*-Info.plist" mode="merge">
-    <string>Eastern Breeze ERP uses the microphone to record voice notes and send voice messsages in discussion groups.</string>
+    <string>Eastern Breeze ERP uses the microphone to record voice notes in discussion groups and for video calls.</string>
   </edit-config>
 `);
 

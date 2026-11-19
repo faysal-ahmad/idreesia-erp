@@ -46,11 +46,26 @@ export default class SubModulePaths {
   static peopleTagsPath = `${ModulePaths.admin}/people-tags`;
 
   // *************************************************************************************
-  // Central Committees Routes
+  // Free Form Data Routes
   // *************************************************************************************
-  static committeesPath = `${ModulePaths.admin}/committees`;
-  static committeesEditFormPath(committeeId = ':committeeId') {
-    return `${SubModulePaths.committeesPath}/${committeeId}`;
+  static freeFormDataPath = `${ModulePaths.admin}/free-form-data`;
+
+  // *************************************************************************************
+  // Locations Routes
+  // *************************************************************************************
+  static orgLocationsPath = `${ModulePaths.admin}/locations`;
+  static orgLocationsEditFormPath(orgLocationId = ':orgLocationId') {
+    return `${SubModulePaths.orgLocationsPath}/${orgLocationId}`;
+  }
+  // A committee is edited under the location it belongs to.
+  static orgLocationCommitteeEditFormPath(
+    orgLocationId = ':locationId',
+    committeeId = ':committeeId'
+  ) {
+    return `${SubModulePaths.orgLocationsPath}/${orgLocationId}/committees/${committeeId}`;
+  }
+  static orgLocationCommitteesTabPath(orgLocationId: string) {
+    return `${SubModulePaths.orgLocationsEditFormPath(orgLocationId)}?default-active-tab=committees`;
   }
 
   // *************************************************************************************

@@ -5,6 +5,8 @@ import type {
   MobileWorkspaceAbortMeetingAttachmentUploadMutationVariables,
   MobileWorkspaceAddMeetingAgendaItemMutation,
   MobileWorkspaceAddMeetingAgendaItemMutationVariables,
+  MobileWorkspaceJoinMeetingVideoCallMutation,
+  MobileWorkspaceJoinMeetingVideoCallMutationVariables,
   MobileWorkspaceCancelMeetingMutation,
   MobileWorkspaceCancelMeetingMutationVariables,
   MobileWorkspaceCompleteMeetingAttachmentUploadMutation,
@@ -473,5 +475,17 @@ export const MOBILE_MEETING_DELETE_ACTION_ITEM: TypedDocumentNode<
 > = gql`
   mutation mobileWorkspaceDeleteMeetingActionItem($committeeId: String!, $actionItemId: String!) {
     workspaceDeleteMeetingActionItem(committeeId: $committeeId, actionItemId: $actionItemId)
+  }
+`;
+
+/** The link that joins a meeting's video call. */
+export const MOBILE_JOIN_MEETING_VIDEO_CALL: TypedDocumentNode<
+  MobileWorkspaceJoinMeetingVideoCallMutation,
+  MobileWorkspaceJoinMeetingVideoCallMutationVariables
+> = gql`
+  mutation mobileWorkspaceJoinMeetingVideoCall($committeeId: String!, $meetingId: String!) {
+    workspaceJoinMeetingVideoCall(committeeId: $committeeId, meetingId: $meetingId) {
+      url
+    }
   }
 `;

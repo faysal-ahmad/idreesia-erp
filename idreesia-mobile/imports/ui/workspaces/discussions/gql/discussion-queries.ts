@@ -3,6 +3,8 @@ import type { TypedDocumentNode } from '@apollo/client';
 import type {
   MobileWorkspaceDiscussionInfoQuery,
   MobileWorkspaceDiscussionInfoQueryVariables,
+  MobileWorkspaceDiscussionVideoCallInfoQuery,
+  MobileWorkspaceDiscussionVideoCallInfoQueryVariables,
   MobileWorkspaceDiscussionOlderMessagesQuery,
   MobileWorkspaceDiscussionOlderMessagesQueryVariables,
   MobileWorkspaceDiscussionSyncQuery,
@@ -71,5 +73,17 @@ export const MOBILE_WORKSPACE_SEND_DISCUSSION_MESSAGE: TypedDocumentNode<
 > = gql`
   mutation mobileWorkspaceSendDiscussionMessage($committeeId: String!, $text: String!, $threadId: String) {
     workspaceSendDiscussionMessage(committeeId: $committeeId, text: $text, threadId: $threadId)
+  }
+`;
+
+// Who is in the video call, shown before joining; null when that can't be told.
+export const MOBILE_WORKSPACE_DISCUSSION_VIDEO_CALL_INFO: TypedDocumentNode<
+  MobileWorkspaceDiscussionVideoCallInfoQuery,
+  MobileWorkspaceDiscussionVideoCallInfoQueryVariables
+> = gql`
+  query mobileWorkspaceDiscussionVideoCallInfo($committeeId: String!) {
+    workspaceDiscussionVideoCallInfo(committeeId: $committeeId) {
+      participantCount
+    }
   }
 `;

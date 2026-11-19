@@ -82,11 +82,29 @@ export interface DiscussionInfo {
   canPin: boolean;
 }
 
+export interface DiscussionVideoCallInfo {
+  /** People in the video call right now; null when that can't be told. */
+  participantCount: number | null;
+}
+
 export interface DiscussionDataProvider {
   /** How often to check for new messages while the page is visible. */
   readonly pollIntervalMs: number;
 
   getInfo(): Promise<DiscussionInfo>;
+
+  /**
+   * The link that joins this discussion's video call. Leave it out when the
+   * host has no video calls. Rejects with an Error whose message is shown to
+   * the user.
+   */
+  getVideoCallUrl?(): Promise<string>;
+
+  /**
+   * Who is in the video call, for the screen shown before joining. Leave it
+   * out to join without that screen showing a count.
+   */
+  getVideoCallInfo?(): Promise<DiscussionVideoCallInfo>;
 
   /** People in the discussion, for @mention suggestions. */
   loadMembers(): Promise<DiscussionMember[]>;

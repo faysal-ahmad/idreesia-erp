@@ -1,5 +1,5 @@
 import { DutyDayAttendances, Teams } from 'meteor/idreesia-common/server/collections/hr';
-import { removePersonFromCommittees } from 'meteor/idreesia-common/server/business-logic/hr/committee';
+import { removePersonFromCommittees } from 'meteor/idreesia-common/server/business-logic/admin/committee';
 import { MehfilKarkuns, VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 

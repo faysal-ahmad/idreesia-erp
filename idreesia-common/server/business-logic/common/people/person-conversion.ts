@@ -1,4 +1,5 @@
-import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
+import { OrgLocationTypes } from 'meteor/idreesia-common/constants/organization';
+import { OrgLocations } from 'meteor/idreesia-common/server/collections/admin';
 import {
   isNil,
   isUndefined,
@@ -44,7 +45,15 @@ export function visitorToPerson(visitor: LooseRecord) {
 
 /** Maps flat karkun form values to a person document. */
 export async function karkunToPerson(karkun: LooseRecord) {
-  const city = karkun.cityId ? await Cities.findOneAsync(karkun.cityId) : null;
+  const cityLocation = karkun.cityLocationId
+    ? await OrgLocations.findOneAsync(karkun.cityLocationId)
+    : null;
+  const countryLocation = cityLocation
+    ? await OrgLocations.findOneAsync({
+        _id: { $in: cityLocation.allParentIds ?? [] },
+        type: OrgLocationTypes.COUNTRY,
+      })
+    : null;
 
   let person: LooseRecord = {
     _id: karkun._id,
@@ -69,8 +78,8 @@ export async function karkunToPerson(karkun: LooseRecord) {
       meansOfEarning: karkun.meansOfEarning,
     },
     karkunData: {
-      cityId: karkun.cityId,
-      cityMehfilId: karkun.cityMehfilId,
+      cityLocationId: karkun.cityLocationId,
+      mehfilLocationId: karkun.mehfilLocationId,
       ehadKarkun: karkun.ehadKarkun,
       ehadPermissionDate: karkun.ehadPermissionDate,
       lastTarteebDate: karkun.lastTarteebDate,
@@ -85,10 +94,10 @@ export async function karkunToPerson(karkun: LooseRecord) {
       employmentEndDate: karkun.employmentEndDate,
       bankAccountDetails: karkun.bankAccountDetails,
     },
-    visitorData: city
+    visitorData: cityLocation
       ? {
-          city: city.name,
-          country: city.country,
+          city: cityLocation.name,
+          country: countryLocation?.name,
         }
       : null,
   };

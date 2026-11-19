@@ -9,7 +9,7 @@ import {
   getCommitteeProjectsWorkspaceId,
   type CommitteeDoc,
   type ProjectsContext,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import { CommitteeMemberRoles } from 'meteor/idreesia-common/constants/organization';
 

@@ -18,6 +18,8 @@ export type MeetingsView = 'upcoming' | 'past' | 'cancelled' | 'all';
 export interface MeetingsInfo {
   /** The current user can schedule and manage meetings. */
   canManage: boolean;
+  /** The current user can join video-call meetings. */
+  canJoinVideoCall: boolean;
   /** The current user's participant id, if they can be invited. */
   myParticipantId: string | null;
   /** Largest attachment, in bytes, that can be uploaded. */
@@ -60,7 +62,8 @@ export interface Meeting {
   title: string;
   description: string | null;
   location: string | null;
-  onlineUrl: string | null;
+  /** Held as a video call that people join from the meeting. */
+  videoCall: boolean;
   startsAt: string;
   endsAt: string;
   status: MeetingStatus;
@@ -160,7 +163,7 @@ export interface MeetingDetails {
   startsAt: string;
   endsAt: string;
   location: string | null;
-  onlineUrl: string | null;
+  videoCall: boolean;
   description: string | null;
 }
 
@@ -205,6 +208,18 @@ export interface MeetingsDataProvider {
   getInfo(): Promise<MeetingsInfo>;
   /** Everyone who can be invited. */
   loadMembers(): Promise<MeetingMember[]>;
+
+  /**
+   * The link that joins a video-call meeting's call. Leave it out if the
+   * host has no video calls. Rejects with an Error whose message is shown to
+   * the user.
+   */
+  getVideoCallUrl?(meetingId: string): Promise<string>;
+  /**
+   * Who is in a meeting's call, for the screen shown before joining; null
+   * when it can't be told. Leave it out to show no count.
+   */
+  getVideoCallParticipantCount?(meetingId: string): Promise<number | null>;
 
   loadMeetings(query: MeetingsQuery): Promise<MeetingPage>;
   loadMeeting(meetingId: string): Promise<Meeting | null>;

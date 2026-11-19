@@ -24,8 +24,8 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
-  onlineUrl: {
-    type: String,
+  videoCall: {
+    type: Boolean,
     optional: true,
   },
   startsAt: {

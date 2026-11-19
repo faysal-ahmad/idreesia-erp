@@ -112,7 +112,7 @@ const AddMemberDrawer = ({
     fetchPolicy: 'network-only',
   });
   const [addCommitteeMember] = useMutation(ADD_COMMITTEE_MEMBER, {
-    refetchQueries: ['committeeById', 'committeeMembers', 'listAllCommittees'],
+    refetchQueries: ['committeeById', 'committeeMembers', 'locationCommittees'],
   });
 
   const karkuns: KarkunSelectionItem[] = (

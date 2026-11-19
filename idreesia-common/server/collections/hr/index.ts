@@ -4,7 +4,6 @@ export { default as DutyShifts } from './duty-shifts';
 export { default as DutyLocations } from './duty-locations';
 export { default as Salaries } from './salaries';
 export { default as Teams } from './teams';
-export { default as Committees } from './committees';
 export { default as DutyTeamAssignments } from './duty-team-assignments';
 export { default as DutyDayOverrides } from './duty-day-overrides';
 export { default as DutyDayAttendances } from './duty-day-attendances';

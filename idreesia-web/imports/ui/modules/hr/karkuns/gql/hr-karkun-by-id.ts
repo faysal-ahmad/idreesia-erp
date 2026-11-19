@@ -36,8 +36,8 @@ const HR_KARKUN_BY_ID: TypedDocumentNode<
         referenceName
       }
       karkunData {
-        cityId
-        cityMehfilId
+        cityLocationId
+        mehfilLocationId
         ehadKarkun
         ehadPermissionDate
         lastTarteebDate

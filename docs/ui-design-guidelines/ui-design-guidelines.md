@@ -96,11 +96,15 @@ Always include **Refresh** (`SyncOutlined`) in utilities, even when the list has
 | `bordered` | `true` |
 | `tableLayout` | `"fixed"` |
 | Pagination | In `footer`, not on Table |
-| `scroll.y` | Viewport-measured when useful |
+| `scroll.y` | **Always** viewport-measured: the page never scrolls, only the table body does (see below) |
 | Loading | Centered `Spin` — never blank `null` |
 | Delete | Prefer `Popconfirm` before destructive remove |
 
-**`scroll.y` measurement** (when used):
+**The page must not scroll; the table body scrolls.** Every list (including one inside a `Tabs` panel) fits the viewport: toolbar/tab bar and pagination footer stay on screen and only the rows scroll. Do not leave a list without `scroll.y` just because it is simple or "short today" — data grows. Only a tiny, fixed-size setup table (e.g. mehfil-duties) may omit it.
+
+**Use the shared hook** `useListScrollY` (`idreesia-web/imports/ui/modules/security/security-server/common/use-list-scroll-y.ts`) instead of re-implementing the measurement: attach the returned `containerRef` to the `list-container` div and pass `scroll={{ y: scrollY }}` to the `list-table` Table. Reference: `admin/free-form-data/values-table.tsx`. (Older lists carry their own copy of the same logic; don't copy that.)
+
+**`scroll.y` measurement** (what the hook does):
 
 - Measure after layout (`requestAnimationFrame`); re-run on resize and after content changes that alter title/footer height
 - Height = content padding-box bottom − title bottom − thead − footer − small gap (see `common/visitors/list.tsx` / `mehfils/list.tsx`)
@@ -153,7 +157,7 @@ References: `setup/mehfil-duties`, `setup/mehfil-langar-dishes`, `setup/mehfil-l
 1. Toolbar with `list-table-header` + utilities (in Table `title` when using `scroll.y`)
 2. Filter Popover + badge when multi-field filters; Refresh always; chips + Clear all; no form Reset
 3. `list-container` / `list-table`; middle, bordered, footer pagination; `Spin` while loading
-4. Viewport-measured `scroll.y` when the list can grow; omit only for tiny setup tables
+4. Viewport-measured `scroll.y` via `useListScrollY` so the page never scrolls, only the table body; omit only for tiny fixed-size setup tables
 5. Modal create for simple entities; full new page only when Part B §7 applies
 6. Shared CSS in `main.css`; page CSS next to the module, loaded from `client/main.tsx`
 7. Smoke-test apply/clear filters, vertical scroll, selection across pages, create/delete
@@ -335,6 +339,7 @@ Reference: `idreesia-web/imports/ui/modules/security/sidebar.tsx`
 - Dumping page-only rules into `main.css` when they will not be reused
 - Importing CSS from `.tsx` under `imports/ui` (file colocation is fine; load from `client/main.tsx`)
 - Naming colocated CSS the same as a sibling module (`list.css` next to `list.tsx`)
+- A list page (or tab panel) that scrolls as a whole instead of scrolling only its table body
 - Sticky table columns unless selection/scroll behavior is re-verified
 - Duplicate Reset + Clear all for the same filter state
 - Numeric tab keys that fight legacy URL remapping

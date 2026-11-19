@@ -1,6 +1,5 @@
 import type DataLoader from 'dataloader';
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { PeopleTags } from 'meteor/idreesia-common/server/collections/admin';
 import { compact } from 'meteor/idreesia-common/utilities/lodash';
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
@@ -15,9 +14,8 @@ interface Loaders {
     jobs: Loader;
     karkunTeams: DataLoader<string, unknown[]>;
   };
-  outstation: {
-    cities: Loader;
-    cityMehfils: Loader;
+  admin: {
+    orgLocations: Loader;
   };
 }
 
@@ -34,18 +32,13 @@ interface PersonSharedDataType {
 
 interface PersonKarkunDataType {
   _id?: string;
-  cityId?: string;
-  cityMehfilId?: string;
+  cityLocationId?: string;
+  mehfilLocationId?: string;
   attachmentIds?: string[];
 }
 
 interface PersonEmployeeDataType {
   jobId?: string;
-}
-
-interface FixCitySpellingArgs {
-  existingSpelling: string;
-  newSpelling: string;
 }
 
 interface ResolverContext {
@@ -88,22 +81,22 @@ export default {
       getPersonImageUrls(personSharedDataType).imageThumbnailUrl,
   },
   PersonKarkunDataType: {
-    city: async (
+    cityLocation: async (
       personKarkunDataType: PersonKarkunDataType,
       _args: unknown,
       { loaders }: ResolverContext
     ) => {
-      if (!personKarkunDataType.cityId) return null;
-      return loaders.outstation.cities.load(personKarkunDataType.cityId);
+      if (!personKarkunDataType.cityLocationId) return null;
+      return loaders.admin.orgLocations.load(personKarkunDataType.cityLocationId);
     },
-    cityMehfil: async (
+    mehfilLocation: async (
       personKarkunDataType: PersonKarkunDataType,
       _args: unknown,
       { loaders }: ResolverContext
     ) => {
-      if (!personKarkunDataType.cityMehfilId) return null;
-      return loaders.outstation.cityMehfils.load(
-        personKarkunDataType.cityMehfilId
+      if (!personKarkunDataType.mehfilLocationId) return null;
+      return loaders.admin.orgLocations.load(
+        personKarkunDataType.mehfilLocationId
       );
     },
     teams: async (
@@ -157,43 +150,6 @@ export default {
         'visitorData.country'
       );
       return compact(countries);
-    },
-  },
-
-  Mutation: {
-    fixCitySpelling: async (
-      _obj: unknown,
-      { existingSpelling, newSpelling }: FixCitySpellingArgs,
-      { user }: ResolverContext
-    ) => {
-      // If a city matching the existing spellings is present in the outstation
-      // cities list, then do not allow updating the spellings.
-      const outstationCity = await Cities.findOneAsync({
-        name: existingSpelling,
-      });
-
-      if (outstationCity) {
-        throw new Error(
-          'Spellings for this city cannot be changed as it exists in the Outstation city list.'
-        );
-      }
-
-      const date = new Date();
-      const count = await People.updateAsync(
-        {
-          'visitorData.city': { $eq: existingSpelling },
-        },
-        {
-          $set: {
-            'visitorData.city': newSpelling,
-            updatedAt: date,
-            updatedBy: user._id,
-          },
-        },
-        { multi: true }
-      );
-
-      return count;
     },
   },
 };

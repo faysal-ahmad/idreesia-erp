@@ -12,7 +12,7 @@ import {
   getMeetingUploadWorkspaceId,
   type CommitteeDoc,
   type ViewContext,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import {
   getCommitteeAccess,
@@ -28,6 +28,8 @@ export interface MeetingsAccess extends ViewContext {
    * they have the same rights as a member.
    */
   isGuest: boolean;
+  /** Observers can read meetings but not join their video calls. */
+  canJoinVideoCall: boolean;
 }
 
 const forbidden = (message: string) =>
@@ -62,6 +64,7 @@ export const getMeetingsAccess = (
     personId: user.personId ?? null,
     isCoordinator,
     isGuest: role === CommitteeMemberRoles.GUEST,
+    canJoinVideoCall: role !== CommitteeMemberRoles.OBSERVER,
   };
 };
 

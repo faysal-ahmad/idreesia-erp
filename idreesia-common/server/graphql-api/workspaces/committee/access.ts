@@ -5,7 +5,7 @@ import {
   CommitteeMemberRoles,
   type CommitteeMemberRole,
 } from 'meteor/idreesia-common/constants/organization';
-import { Committees } from 'meteor/idreesia-common/server/collections/hr';
+import { Committees } from 'meteor/idreesia-common/server/collections/admin';
 import { isSuperAdmin } from 'meteor/idreesia-common/server/business-logic/admin/users/super-admin';
 
 export interface WorkspaceUser {
@@ -46,7 +46,11 @@ export const getCommitteeRole = (
     entry => entry.karkunId === user!.personId
   );
   if (!member) return null;
-  return (member.role as CommitteeMemberRole) || CommitteeMemberRoles.MEMBER;
+  const role = (member.role as CommitteeMemberRole) || CommitteeMemberRoles.MEMBER;
+  // An inherited observer has exactly the access of an observer.
+  return role === CommitteeMemberRoles.INHERITED_OBSERVER
+    ? CommitteeMemberRoles.OBSERVER
+    : role;
 };
 
 /**

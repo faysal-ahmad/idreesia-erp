@@ -28,6 +28,7 @@ export const AdminPaths = {
   physicalStores: `${ModulePaths.admin}/physical-stores`,
   cities: `${ModulePaths.admin}/cities`,
   citiesNew: `${ModulePaths.admin}/cities/new`,
+  orgLocations: `${ModulePaths.admin}/locations`,
   peopleTags: `${ModulePaths.admin}/people-tags`,
   deletedPeople: `${ModulePaths.admin}/deleted-people`,
   jobs: `${ModulePaths.admin}/jobs`,

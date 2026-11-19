@@ -1,6 +1,7 @@
 export { default as useActiveModule } from './use-active-module';
 export { default as useAllCities } from './use-all-cities';
 export { default as useAllCityMehfils } from './use-all-city-mehfils';
+export { default as useAllCityMehfilLocations } from './use-all-city-mehfil-locations';
 export { default as useBreadcrumbs } from './use-breadcrumbs';
 export { default as useDynamicBreadcrumbs } from './use-dynamic-breadcrumbs';
 export { default as useLoggedInUser } from './use-logged-in-user';

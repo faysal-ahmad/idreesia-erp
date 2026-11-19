@@ -16,6 +16,11 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  // The location (see OrgLocations) this committee belongs to. Committees that
+  // predate locations were moved under the root location by migration 70.
+  locationId: {
+    type: String,
+  },
   members: {
     type: Array,
     optional: true,
@@ -26,7 +31,8 @@ export default new SimpleSchema({
   'members.$.karkunId': {
     type: String,
   },
-  // One of CommitteeMemberRoles: member, coordinator, guest or observer.
+  // One of CommitteeMemberRoles: member, coordinator, guest, observer or
+  // inherited_observer.
   'members.$.role': {
     type: String,
     allowedValues: CommitteeMemberRoleValues,

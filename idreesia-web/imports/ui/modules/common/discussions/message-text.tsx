@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { Button } from 'antd';
+import { VideoCameraOutlined } from '@ant-design/icons';
+
+import { DiscussionActionsContext } from './discussion-actions';
 
 /**
  * Renders the Rocket.Chat markdown subset the composer produces:
@@ -13,9 +17,17 @@ const CODE_BLOCK = /```(?:[^\n`]*\n)?([\s\S]*?)```/g;
 // italic, strike, @mention. Emphasis markers must hug non-space text and sit on word
 // boundaries, so snake_case_names and 2*3*4 stay plain.
 const INLINE =
-  /`([^`\n]+)`|\[([^\]\n]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+)\)|(https?:\/\/[^\s<]+[^\s<.,;:!?)\]'"])|(?<![\w*])\*(\S(?:[^*\n]*\S)?)\*(?![\w*])|(?<![\w_])_(\S(?:[^_\n]*\S)?)_(?![\w_])|(?<![\w~])~(\S(?:[^~\n]*\S)?)~(?![\w~])|(?<![\w@])@([A-Za-z0-9._-]*[A-Za-z0-9_])/g;
+  /`([^`\n]+)`|\[([^\]\n]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+|videocall:\/\/join)\)|(https?:\/\/[^\s<]+[^\s<.,;:!?)\]'"])|(?<![\w*])\*(\S(?:[^*\n]*\S)?)\*(?![\w*])|(?<![\w_])_(\S(?:[^_\n]*\S)?)_(?![\w_])|(?<![\w~])~(\S(?:[^~\n]*\S)?)~(?![\w~])|(?<![\w@])@([A-Za-z0-9._-]*[A-Za-z0-9_])/g;
 
-const renderInline = (text: string, keyPrefix: string): React.ReactNode[] => {
+// The link target of the "Join call" button in a video call announcement
+// (posted by the server; see business-logic/discussions/video-call.ts).
+const VIDEO_CALL_LINK = 'videocall://join';
+
+const renderInline = (
+  text: string,
+  keyPrefix: string,
+  joinVideoCall?: () => void
+): React.ReactNode[] => {
   const nodes: React.ReactNode[] = [];
   let lastIndex = 0;
 
@@ -32,6 +44,23 @@ const renderInline = (text: string, keyPrefix: string): React.ReactNode[] => {
         <code className="discussion-md-code" key={key}>
           {code}
         </code>
+      );
+    } else if (linkLabel !== undefined && linkUrl === VIDEO_CALL_LINK) {
+      // Only people who can join get the button; others see just the label.
+      nodes.push(
+        joinVideoCall ? (
+          <Button
+            size="small"
+            type="primary"
+            icon={<VideoCameraOutlined />}
+            onClick={joinVideoCall}
+            key={key}
+          >
+            {linkLabel}
+          </Button>
+        ) : (
+          linkLabel
+        )
       );
     } else if (linkLabel !== undefined) {
       nodes.push(
@@ -70,12 +99,13 @@ interface Props {
 }
 
 const MessageText = ({ text }: Props) => {
+  const joinVideoCall = useContext(DiscussionActionsContext)?.joinVideoCall;
   const nodes: React.ReactNode[] = [];
   let lastIndex = 0;
 
   for (const match of text.matchAll(CODE_BLOCK)) {
     if (match.index > lastIndex) {
-      nodes.push(...renderInline(text.slice(lastIndex, match.index), `t${lastIndex}`));
+      nodes.push(...renderInline(text.slice(lastIndex, match.index), `t${lastIndex}`, joinVideoCall));
     }
     nodes.push(
       <pre className="discussion-md-code-block" key={`b${match.index}`}>
@@ -85,7 +115,7 @@ const MessageText = ({ text }: Props) => {
     lastIndex = match.index + match[0].length;
   }
   if (lastIndex < text.length) {
-    nodes.push(...renderInline(text.slice(lastIndex), `t${lastIndex}`));
+    nodes.push(...renderInline(text.slice(lastIndex), `t${lastIndex}`, joinVideoCall));
   }
 
   return <div className="discussion-message-text">{nodes}</div>;

@@ -29,8 +29,8 @@ extend type Mutation {
     contactNumber2: String
     emailAddress: String
     currentAddress: String
-    cityId: String
-    cityMehfilId: String
+    cityLocationId: String
+    mehfilLocationId: String
     permanentAddress: String
     bloodGroup: String
     educationalQualification: String
@@ -54,8 +54,8 @@ extend type Mutation {
     emailAddress: String
     currentAddress: String
     permanentAddress: String
-    cityId: String
-    cityMehfilId: String
+    cityLocationId: String
+    mehfilLocationId: String
     bloodGroup: String
     educationalQualification: String
     meansOfEarning: String

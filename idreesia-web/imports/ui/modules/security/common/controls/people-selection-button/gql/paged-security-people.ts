@@ -30,10 +30,9 @@ const PAGED_SECURITY_PEOPLE: TypedDocumentNode<
           country
         }
         karkunData {
-          city {
+          cityLocation {
             _id
             name
-            country
           }
         }
       }

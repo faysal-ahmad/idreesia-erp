@@ -1,4 +1,4 @@
-import { getWorkspaceMonitoringAlerts } from 'meteor/idreesia-common/server/business-logic/hr/committee';
+import { getWorkspaceMonitoringAlerts } from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import { assertMonitoringAlertsEnabled } from './access';
 

@@ -2,7 +2,7 @@ import {
   getNightStayById,
   getNightStayHistory,
   getNightStays,
-} from 'meteor/idreesia-common/server/business-logic/hr/committee';
+} from 'meteor/idreesia-common/server/business-logic/admin/committee';
 
 import { assertNightStayReportEnabled } from './access';
 

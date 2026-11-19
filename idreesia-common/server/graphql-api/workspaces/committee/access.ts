@@ -46,7 +46,11 @@ export const getCommitteeRole = (
     entry => entry.karkunId === user!.personId
   );
   if (!member) return null;
-  return (member.role as CommitteeMemberRole) || CommitteeMemberRoles.MEMBER;
+  const role = (member.role as CommitteeMemberRole) || CommitteeMemberRoles.MEMBER;
+  // An inherited observer has exactly the access of an observer.
+  return role === CommitteeMemberRoles.INHERITED_OBSERVER
+    ? CommitteeMemberRoles.OBSERVER
+    : role;
 };
 
 /**

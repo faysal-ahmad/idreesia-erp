@@ -1428,6 +1428,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.syncOrgLocationObservers": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.updateCity": [
     {
       "args": {

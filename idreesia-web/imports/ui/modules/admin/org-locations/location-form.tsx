@@ -6,6 +6,7 @@ import {
   type OrgLocationType,
 } from 'meteor/idreesia-common/constants/organization';
 import {
+  CascaderField,
   CheckboxField,
   InputTextAreaField,
   InputTextField,
@@ -14,8 +15,10 @@ import {
 
 import {
   ORG_LOCATION_TYPE_LABELS,
-  getAllowedParentTypes,
-  getLocationPath,
+  buildParentCascaderOptions,
+  parentIdFromPath,
+  toParentPath,
+  validateParentPath,
   type LocationRecord,
 } from './org-location-types';
 
@@ -84,28 +87,32 @@ const LocationForm = ({
     .filter(type => type !== OrgLocationTypes.ROOT || !hasRoot)
     .map(type => ({ type, label: ORG_LOCATION_TYPE_LABELS[type] }));
 
-  const parentOptions = useMemo(() => {
-    if (!selectedType) return [];
-    const allowed = getAllowedParentTypes(selectedType);
-    return locations
-      .filter(l => allowed.includes(l.type))
-      .filter(
-        l =>
-          !editingId ||
-          (l._id !== editingId && !l.allParentIds.includes(editingId))
-      )
-      .map(l => ({ _id: l._id, name: getLocationPath(l, byId) }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [selectedType, locations, editingId, byId]);
+  const parentOptions = useMemo(
+    () =>
+      selectedType
+        ? buildParentCascaderOptions(locations, selectedType, editingId)
+        : [],
+    [selectedType, locations, editingId]
+  );
 
-  const handleFinish = (values: LocationFormValues) =>
-    onFinish({ ...values, type: (fixedType ?? values.type) as OrgLocationType });
+  const handleFinish = ({
+    parentPath,
+    ...values
+  }: LocationFormValues & { parentPath?: string[] }) =>
+    onFinish({
+      ...values,
+      type: (fixedType ?? values.type) as OrgLocationType,
+      parentId: parentIdFromPath(parentPath),
+    });
 
   return (
     <Form
       form={form}
       layout="horizontal"
-      initialValues={initialValues}
+      initialValues={{
+        ...initialValues,
+        parentPath: toParentPath(initialValues?.parentId, byId),
+      }}
       onFinish={handleFinish}
       onFieldsChange={onFieldsChange}
     >
@@ -128,16 +135,20 @@ const LocationForm = ({
         requiredMessage="Please input a name."
       />
       {selectedType && selectedType !== OrgLocationTypes.ROOT ? (
-        <SelectField
+        <CascaderField
           data={parentOptions}
-          fieldName="parentId"
+          fieldName="parentPath"
           fieldLabel="Parent"
-          allowClear={false}
-          // Read-only when editing: a location is moved by dragging it on the list.
-          disabled={!!editingId}
-          initialValue={initialValues?.parentId ?? null}
+          placeholder="Select a parent location"
+          initialValue={toParentPath(initialValues?.parentId, byId)}
           required
           requiredMessage="Please select a parent location."
+          rules={[
+            {
+              validator: (_, path) =>
+                validateParentPath(selectedType, byId, path),
+            },
+          ]}
         />
       ) : null}
       {selectedType === OrgLocationTypes.MEHFIL && !hideMehfilFields ? (

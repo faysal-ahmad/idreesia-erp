@@ -272,6 +272,8 @@ type OrgLocationType {
   # Karkuns observing this location.
   observerKarkunIds: [String]
   observers: [PersonType]
+  # Per observer: how many committees below this location they observe.
+  observerStats: [OrgLocationObserverStatType]
   # Features enabled on this location (mehfils only).
   features: [String]
 
@@ -279,6 +281,18 @@ type OrgLocationType {
   createdBy: String
   updatedAt: String
   updatedBy: String
+}
+
+type OrgLocationObserverStatType {
+  karkunId: String
+  observedCommitteeCount: Int
+  observedCommitteeIds: [String]
+}
+
+type SyncOrgLocationObserversResult {
+  committeesChecked: Int
+  addedCount: Int
+  removedCount: Int
 }
 
 type OrgLocationFeatureType {
@@ -364,6 +378,12 @@ extend type Mutation {
     @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
   removeOrgLocationObserver(locationId: String!, karkunId: String!): OrgLocationType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  # Makes the location's observers, and those of its ancestors, inherited
+  # observers of every committee in the location and the locations below it.
+  # Inherited observers that no longer apply are removed.
+  syncOrgLocationObservers(locationId: String!): SyncOrgLocationObserversResult
     @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
   enableOrgLocationFeature(locationId: String!, featureKey: String!): Boolean

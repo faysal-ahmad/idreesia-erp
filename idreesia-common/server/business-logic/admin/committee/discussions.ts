@@ -13,12 +13,15 @@ import {
   findUsersByPersonIds,
 } from 'meteor/idreesia-common/server/business-logic/admin/users';
 
+import { hasDiscussionRole } from './discussion-roles';
 import type { CommitteeDoc, CommitteeFeatureHandler } from './types';
 
 // ERP user ids of the committee members. Members are karkuns (people); only
 // those with an ERP user can take part.
 const memberUserIds = async (committee: CommitteeDoc) => {
-  const personIds = (committee.members ?? []).map(member => member.karkunId);
+  const personIds = (committee.members ?? [])
+    .filter(member => hasDiscussionRole(member.role))
+    .map(member => member.karkunId);
   if (personIds.length === 0) return [];
   const users = await findUsersByPersonIds(personIds);
   return users.map(user => user._id as string);
@@ -84,8 +87,9 @@ export const discussionsHandler: CommitteeFeatureHandler = {
   },
 
   // Keep the workspace's membership in step with the committee's.
-  async memberAdded(committee, karkunId) {
+  async memberAdded(committee, karkunId, role) {
     if (!committee.discussionsWorkspaceId) return;
+    if (!hasDiscussionRole(role)) return;
     const userId = await personUserId(karkunId);
     if (userId) {
       await discussionsModule.addUser(
@@ -136,8 +140,16 @@ export const setCommitteeMemberDiscussionAccess = async (
       extensions: { code: 'BAD_USER_INPUT' },
     });
   }
-  if (!(committee.members ?? []).some(member => member.karkunId === karkunId)) {
+  const member = (committee.members ?? []).find(
+    entry => entry.karkunId === karkunId
+  );
+  if (!member) {
     throw new GraphQLError('This person is not a member of the committee.', {
+      extensions: { code: 'BAD_USER_INPUT' },
+    });
+  }
+  if (!hasDiscussionRole(member.role)) {
+    throw new GraphQLError('Guests and observers cannot take part in discussions.', {
       extensions: { code: 'BAD_USER_INPUT' },
     });
   }

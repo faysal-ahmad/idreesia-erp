@@ -4,10 +4,11 @@ import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import {
   SyncOutlined,
+  TeamOutlined,
   UserAddOutlined,
   UserDeleteOutlined,
 } from '@ant-design/icons';
-import { Button, Drawer, Popconfirm, Row, Space, Table, Tooltip } from 'antd';
+import { Alert, Button, Drawer, Popconfirm, Row, Space, Table, Tooltip } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import type {
@@ -19,6 +20,8 @@ import type {
   LocationObserversQueryVariables,
   RemoveOrgLocationObserverMutation,
   RemoveOrgLocationObserverMutationVariables,
+  SyncOrgLocationObserversMutation,
+  SyncOrgLocationObserversMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 import {
   KarkunSelectionList,
@@ -27,6 +30,7 @@ import {
   type KarkunSelectionItem,
   type KarkunSelectionPageParams,
 } from '/imports/ui/modules/helpers/controls';
+import ObservedCommitteesDrawer from './observed-committees-drawer';
 
 const LOCATION_OBSERVERS: TypedDocumentNode<
   LocationObserversQuery,
@@ -35,6 +39,11 @@ const LOCATION_OBSERVERS: TypedDocumentNode<
   query locationObservers($_id: String!) {
     orgLocationById(_id: $_id) {
       _id
+      observerStats {
+        karkunId
+        observedCommitteeCount
+        observedCommitteeIds
+      }
       observers {
         _id
         sharedData {
@@ -93,6 +102,19 @@ const HR_LOCATION_OBSERVER_KARKUN_SEARCH: TypedDocumentNode<
   }
 `;
 
+const SYNC_ORG_LOCATION_OBSERVERS: TypedDocumentNode<
+  SyncOrgLocationObserversMutation,
+  SyncOrgLocationObserversMutationVariables
+> = gql`
+  mutation syncOrgLocationObservers($locationId: String!) {
+    syncOrgLocationObservers(locationId: $locationId) {
+      committeesChecked
+      addedCount
+      removedCount
+    }
+  }
+`;
+
 const REFETCH = ['locationObservers', 'orgLocationById'];
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -103,6 +125,8 @@ interface ObserverRow {
   imageThumbnailUrl?: string | null;
   contactNumber1?: string | null;
   contactNumber2?: string | null;
+  observedCommitteeCount: number;
+  observedCommitteeIds: string[];
 }
 
 interface Props {
@@ -115,15 +139,26 @@ const LocationObservers = ({ locationId }: Props) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [addingId, setAddingId] = useState<string | null>(null);
+  const [viewedObserverId, setViewedObserverId] = useState<string | null>(null);
 
   const { data, loading, refetch } = useQuery(LOCATION_OBSERVERS, {
     variables: { _id: locationId },
   });
+  const statsByKarkun = new Map(
+    (data?.orgLocationById?.observerStats ?? []).flatMap(stat =>
+      stat?.karkunId ? [[stat.karkunId, stat] as const] : []
+    )
+  );
   const observers: ObserverRow[] = (data?.orgLocationById?.observers ?? []).flatMap(
     person =>
       person?._id
         ? [
             {
+              observedCommitteeCount:
+                statsByKarkun.get(person._id)?.observedCommitteeCount ?? 0,
+              observedCommitteeIds: (
+                statsByKarkun.get(person._id)?.observedCommitteeIds ?? []
+              ).filter((id): id is string => id != null),
               _id: person._id,
               name: person.sharedData?.name,
               imageUrl: person.sharedData?.imageUrl,
@@ -134,6 +169,8 @@ const LocationObservers = ({ locationId }: Props) => {
           ]
         : []
   );
+
+  const viewedObserver = observers.find(o => o._id === viewedObserverId);
 
   const { data: searchData, loading: searching, refetch: refetchSearch } = useQuery(
     HR_LOCATION_OBSERVER_KARKUN_SEARCH,
@@ -177,6 +214,32 @@ const LocationObservers = ({ locationId }: Props) => {
   const [removeObserver] = useMutation(REMOVE_ORG_LOCATION_OBSERVER, {
     refetchQueries: REFETCH,
   });
+
+  const [syncObservers, { loading: syncing }] = useMutation(
+    SYNC_ORG_LOCATION_OBSERVERS,
+    { refetchQueries: [
+      'locationObservers',
+      'locationCommittees',
+      'committeeById',
+      'committeeMembers',
+    ] }
+  );
+
+  const handleSync = () => {
+    syncObservers({ variables: { locationId } })
+      .then(({ data: syncData }) => {
+        const result = syncData?.syncOrgLocationObservers;
+        message.success(
+          `Observers synced across ${result?.committeesChecked ?? 0} committees (${
+            result?.addedCount ?? 0
+          } added, ${result?.removedCount ?? 0} removed).`,
+          4
+        );
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
+  };
 
   const setPageParams = ({
     pageIndex: nextPageIndex,
@@ -237,6 +300,18 @@ const LocationObservers = ({ locationId }: Props) => {
       ),
     },
     {
+      title: 'Observed Committees',
+      dataIndex: 'observedCommitteeCount',
+      key: 'observedCommittees',
+      width: 190,
+      align: 'center' as const,
+      render: (count: number, record: ObserverRow) => (
+        <Button type="link" onClick={() => setViewedObserverId(record._id)}>
+          {count}
+        </Button>
+      ),
+    },
+    {
       key: 'action',
       width: 64,
       render: (_text: unknown, record: ObserverRow) => (
@@ -269,6 +344,9 @@ const LocationObservers = ({ locationId }: Props) => {
       </Space>
       <div className="list-table-header-utilities">
         <Space size={8}>
+          <Button icon={<TeamOutlined />} loading={syncing} onClick={handleSync}>
+            Sync Observers
+          </Button>
           <Button icon={<SyncOutlined />} onClick={handleRefresh} title="Reload Data" />
         </Space>
       </div>
@@ -278,6 +356,12 @@ const LocationObservers = ({ locationId }: Props) => {
   return (
     <>
       <div className="list-container">
+        <Alert
+          type="info"
+          showIcon
+          message="Observers can observe the data of all committees in the child locations. Use 'Sync Observers' to add them to the committees."
+          style={{ marginBottom: 12 }}
+        />
         <Table
           className="list-table"
           rowKey="_id"
@@ -292,6 +376,14 @@ const LocationObservers = ({ locationId }: Props) => {
           locale={{ emptyText: 'No observers added yet' }}
         />
       </div>
+
+      <ObservedCommitteesDrawer
+        open={viewedObserver != null}
+        locationId={locationId}
+        observerName={viewedObserver?.name}
+        observedCommitteeIds={viewedObserver?.observedCommitteeIds ?? []}
+        onClose={() => setViewedObserverId(null)}
+      />
 
       <Drawer
         title="Add Observer"

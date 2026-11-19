@@ -77,7 +77,8 @@ const runHandler = async (
 export const runMemberHooks = async (
   committee: CommitteeDoc,
   hook: 'memberAdded' | 'memberRemoved',
-  karkunId: string
+  karkunId: string,
+  role?: string
 ) => {
   for (const featureKey of committee.features ?? []) {
     if (!isCommitteeFeatureKey(featureKey)) continue;
@@ -85,7 +86,7 @@ export const runMemberHooks = async (
     const run = handler[hook];
     if (!run) continue;
     try {
-      await run.call(handler, committee, karkunId);
+      await run.call(handler, committee, karkunId, role);
     } catch (error) {
       if (error instanceof GraphQLError) throw error;
       const reason = error instanceof Error ? error.message : String(error);

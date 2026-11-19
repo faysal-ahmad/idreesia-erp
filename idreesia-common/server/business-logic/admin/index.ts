@@ -33,6 +33,14 @@ export {
   type OrgLocationValues,
 } from './org-locations';
 export {
+  getOrgLocationObserverStats,
+  type OrgLocationObserverStat,
+} from './org-location-observer-stats';
+export {
+  syncOrgLocationObservers,
+  type SyncOrgLocationObserversResult,
+} from './org-location-observers-sync';
+export {
   addOrgLocationDutiesAttendanceUser,
   disableOrgLocationFeature,
   enableOrgLocationFeature,

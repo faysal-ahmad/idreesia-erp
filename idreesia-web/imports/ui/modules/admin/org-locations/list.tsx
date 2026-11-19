@@ -18,6 +18,7 @@ import { toLocationRecords } from './helpers';
 import {
   ORG_LOCATION_TYPE_COLORS,
   ORG_LOCATION_TYPE_LABELS,
+  parentIdFromPath,
   type LocationRecord,
 } from './org-location-types';
 
@@ -262,7 +263,7 @@ const List = () => {
           variables: {
             name: values.name,
             type: values.type,
-            parentId: values.parentId,
+            parentId: parentIdFromPath(values.parentPath),
           },
         })
       )

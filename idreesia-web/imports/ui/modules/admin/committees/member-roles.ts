@@ -8,6 +8,7 @@ export const MEMBER_ROLE_LABELS: Record<CommitteeMemberRole, string> = {
   [CommitteeMemberRoles.COORDINATOR]: 'Coordinator',
   [CommitteeMemberRoles.GUEST]: 'Guest',
   [CommitteeMemberRoles.OBSERVER]: 'Observer',
+  [CommitteeMemberRoles.INHERITED_OBSERVER]: 'Inherited Observer',
 };
 
 export const MEMBER_ROLE_COLORS: Record<CommitteeMemberRole, string> = {
@@ -15,6 +16,7 @@ export const MEMBER_ROLE_COLORS: Record<CommitteeMemberRole, string> = {
   [CommitteeMemberRoles.COORDINATOR]: 'gold',
   [CommitteeMemberRoles.GUEST]: 'purple',
   [CommitteeMemberRoles.OBSERVER]: 'cyan',
+  [CommitteeMemberRoles.INHERITED_OBSERVER]: 'default',
 };
 
 // Unknown or missing values are treated as a plain member.

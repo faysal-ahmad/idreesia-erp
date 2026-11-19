@@ -24,8 +24,10 @@ import {
   disableOrgLocationFeature,
   enableOrgLocationFeature,
   getLocationDutiesAttendanceWorkspaceId,
+  getOrgLocationObserverStats,
   removeOrgLocationDutiesAttendanceUser,
   removeOrgLocationObserver,
+  syncOrgLocationObservers,
   updateOrgLocation,
   updateOrgLocationDutiesAttendanceUserPermissions,
 } from 'meteor/idreesia-common/server/business-logic/admin';
@@ -60,6 +62,9 @@ export default {
       location.observerKarkunIds ?? [],
 
     features: (location: OrgLocationDocument) => location.features ?? [],
+
+    observerStats: (location: OrgLocationDocument) =>
+      getOrgLocationObserverStats(location),
 
     observers: async (
       location: OrgLocationDocument,
@@ -132,6 +137,12 @@ export default {
       { locationId, karkunId }: { locationId: string; karkunId: string },
       { user }: ResolverContext
     ) => removeOrgLocationObserver(locationId, karkunId, user),
+
+    syncOrgLocationObservers: async (
+      _obj: unknown,
+      { locationId }: { locationId: string },
+      { user }: ResolverContext
+    ) => syncOrgLocationObservers(locationId, user),
 
     enableOrgLocationFeature: async (
       _obj: unknown,

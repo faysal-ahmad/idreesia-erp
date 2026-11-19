@@ -1,5 +1,6 @@
 import React from 'react';
 import { Cascader, Form } from 'antd';
+import type { Rule } from 'antd/es/form';
 
 interface CascaderOption {
   value?: string | number | null;
@@ -18,6 +19,8 @@ interface FieldProps {
   required?: boolean;
   requiredMessage?: string;
   disabled?: boolean;
+  /** Extra validation rules, after the required rule. */
+  rules?: Rule[];
 }
 
 const formItemLayout = {
@@ -45,12 +48,14 @@ const CascaderField = ({
   required,
   requiredMessage,
   disabled,
+  rules: extraRules = [],
 }: FieldProps) => {
   const rules = [
     {
       required,
       message: requiredMessage,
     },
+    ...extraRules,
   ];
 
   return (

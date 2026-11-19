@@ -31,7 +31,8 @@ export default new SimpleSchema({
   'members.$.karkunId': {
     type: String,
   },
-  // One of CommitteeMemberRoles: member, coordinator, guest or observer.
+  // One of CommitteeMemberRoles: member, coordinator, guest, observer or
+  // inherited_observer.
   'members.$.role': {
     type: String,
     allowedValues: CommitteeMemberRoleValues,

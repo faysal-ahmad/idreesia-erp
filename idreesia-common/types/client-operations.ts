@@ -2053,7 +2053,7 @@ export type LocationObserversQueryVariables = Exact<{
 }>;
 
 
-export type LocationObserversQuery = { orgLocationById: { _id: string | null, observers: Array<{ _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null> | null } | null };
+export type LocationObserversQuery = { orgLocationById: { _id: string | null, observerStats: Array<{ karkunId: string | null, observedCommitteeCount: number | null, observedCommitteeIds: Array<string | null> | null } | null> | null, observers: Array<{ _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null> | null } | null };
 
 export type AddOrgLocationObserverMutationVariables = Exact<{
   locationId: string;
@@ -2077,6 +2077,13 @@ export type HrLocationObserverKarkunSearchQueryVariables = Exact<{
 
 
 export type HrLocationObserverKarkunSearchQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null> | null } | null };
+
+export type SyncOrgLocationObserversMutationVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type SyncOrgLocationObserversMutation = { syncOrgLocationObservers: { committeesChecked: number | null, addedCount: number | null, removedCount: number | null } | null };
 
 export type AllPeopleTagsQueryVariables = Exact<{ [key: string]: never; }>;
 

@@ -10,7 +10,7 @@ import {
   type OrgLocationType,
 } from 'meteor/idreesia-common/constants/organization';
 import {
-  useBreadcrumbs,
+  useDynamicBreadcrumbs,
   useQueryParams,
 } from 'meteor/idreesia-common/hooks/common';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
@@ -37,7 +37,6 @@ type Props = RouteComponentProps<{ orgLocationId: string }>;
 const EditForm = ({ match, history, location }: Props) => {
   const { queryParams } = useQueryParams({ history, location });
   const _id = match.params.orgLocationId;
-  useBreadcrumbs(['Admin', 'Organization Locations', 'Edit']);
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [isMehfilTouched, setIsMehfilTouched] = useState(false);
 
@@ -45,6 +44,11 @@ const EditForm = ({ match, history, location }: Props) => {
   const { data, loading } = useQuery(ORG_LOCATION_BY_ID, {
     variables: { _id },
   });
+  useDynamicBreadcrumbs([
+    'Admin',
+    'Organization Locations',
+    data?.orgLocationById?.name?.trim() || 'Edit',
+  ]);
   const [updateOrgLocation] = useMutation(UPDATE_ORG_LOCATION, {
     refetchQueries: ['allOrgLocations', 'orgLocationById'],
   });

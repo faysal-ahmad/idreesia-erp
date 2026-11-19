@@ -199,6 +199,7 @@ const EditForm = ({ history, location, match }: Props) => {
             <Members
               committeeId={committeeById._id}
               roles={[CommitteeMemberRoles.GUEST]}
+              hideAccountColumns
               emptyText="No guests added yet"
               note="Guests can be added to Projects and Meetings and will have access to those specific projects/meetings only. They cannot see any other data in the committee."
             />
@@ -210,7 +211,11 @@ const EditForm = ({ history, location, match }: Props) => {
           children: (
             <Members
               committeeId={committeeById._id}
-              roles={[CommitteeMemberRoles.OBSERVER]}
+              roles={[
+                CommitteeMemberRoles.OBSERVER,
+                CommitteeMemberRoles.INHERITED_OBSERVER,
+              ]}
+              hideAccountColumns
               emptyText="No observers added yet"
               note="Observer users have read-only access to all data in the committee."
             />

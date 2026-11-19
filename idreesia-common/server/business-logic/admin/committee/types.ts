@@ -26,7 +26,11 @@ export interface CommitteeFeatureHandler {
     userId: string
   ): Promise<Record<string, unknown> | void>;
   /** Called, while the feature is enabled, before a member is added. */
-  memberAdded?(committee: CommitteeDoc, karkunId: string): Promise<void>;
+  memberAdded?(
+    committee: CommitteeDoc,
+    karkunId: string,
+    role?: string
+  ): Promise<void>;
   /** Called, while the feature is enabled, before a member is removed. */
   memberRemoved?(committee: CommitteeDoc, karkunId: string): Promise<void>;
 }

@@ -912,6 +912,7 @@ export type Mutation = {
   setUserGroupInstanceAccess?: Maybe<UserGroupType>;
   setUserGroupPermissions?: Maybe<UserGroupType>;
   startTwoFactorSetup?: Maybe<TwoFactorSetupType>;
+  syncOrgLocationObservers?: Maybe<SyncOrgLocationObserversResult>;
   updateAttachment?: Maybe<Attachment>;
   updateCity?: Maybe<CityType>;
   updateCityLocationMappings?: Maybe<Scalars['Int']['output']>;
@@ -1898,6 +1899,11 @@ export type MutationSetUserGroupInstanceAccessArgs = {
 export type MutationSetUserGroupPermissionsArgs = {
   _id: Scalars['String']['input'];
   permissions: Array<InputMaybe<Scalars['String']['input']>>;
+};
+
+
+export type MutationSyncOrgLocationObserversArgs = {
+  locationId: Scalars['String']['input'];
 };
 
 
@@ -2899,6 +2905,13 @@ export type OrgLocationMehfilDetailsType = {
   timingDetails?: Maybe<Scalars['String']['output']>;
 };
 
+export type OrgLocationObserverStatType = {
+  __typename?: 'OrgLocationObserverStatType';
+  karkunId?: Maybe<Scalars['String']['output']>;
+  observedCommitteeCount?: Maybe<Scalars['Int']['output']>;
+  observedCommitteeIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+};
+
 export type OrgLocationType = {
   __typename?: 'OrgLocationType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -2910,6 +2923,7 @@ export type OrgLocationType = {
   mehfilDetails?: Maybe<OrgLocationMehfilDetailsType>;
   name?: Maybe<Scalars['String']['output']>;
   observerKarkunIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  observerStats?: Maybe<Array<Maybe<OrgLocationObserverStatType>>>;
   observers?: Maybe<Array<Maybe<PersonType>>>;
   parent?: Maybe<OrgLocationType>;
   parentId?: Maybe<Scalars['String']['output']>;
@@ -4681,6 +4695,13 @@ export type StockItem = {
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
   verifiedOn?: Maybe<Scalars['String']['output']>;
+};
+
+export type SyncOrgLocationObserversResult = {
+  __typename?: 'SyncOrgLocationObserversResult';
+  addedCount?: Maybe<Scalars['Int']['output']>;
+  committeesChecked?: Maybe<Scalars['Int']['output']>;
+  removedCount?: Maybe<Scalars['Int']['output']>;
 };
 
 export type TeamMemberType = {

@@ -1,0 +1,4 @@
+/* The checks only show state; they are not for clicking. */
+.observed-committees-tree .ant-tree-checkbox {
+  pointer-events: none;
+}

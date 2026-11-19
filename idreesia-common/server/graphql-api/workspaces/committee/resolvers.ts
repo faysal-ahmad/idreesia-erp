@@ -210,7 +210,7 @@ const resolvers: ResolverMap = {
       if (member.role === 'coordinator') {
         throw new Error('Coordinators cannot be removed from here.');
       }
-      if (member.role === 'observer') {
+      if (member.role === 'observer' || member.role === 'inherited_observer') {
         throw new Error('Observers cannot be removed from here.');
       }
 

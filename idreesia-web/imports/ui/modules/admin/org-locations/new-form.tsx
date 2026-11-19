@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { Form, Input, Select, type FormInstance } from 'antd';
 
+import { CascaderField } from '/imports/ui/modules/helpers/fields';
+
 import {
   OrgLocationTypes,
   type OrgLocationType,
@@ -8,15 +10,17 @@ import {
 
 import {
   ORG_LOCATION_TYPE_LABELS,
+  buildParentCascaderOptions,
   getAllowedParentTypes,
-  getLocationPath,
+  validateParentPath,
   type LocationRecord,
 } from './org-location-types';
 
 export interface NewLocationFormValues {
   type: OrgLocationType;
   name: string;
-  parentId: string;
+  /** The path from the top down to the parent; the last one is the parent. */
+  parentPath: string[];
 }
 
 interface Props {
@@ -47,25 +51,18 @@ const NewForm = ({ form, locations }: Props) => {
     .filter(value => value !== OrgLocationTypes.ROOT)
     .map(value => ({ value, label: ORG_LOCATION_TYPE_LABELS[value] }));
 
-  const parentOptions = useMemo(() => {
-    if (!type) return [];
-    const allowed = getAllowedParentTypes(type);
-    return locations
-      .filter(location => allowed.includes(location.type))
-      .map(location => ({
-        value: location._id,
-        label: getLocationPath(location, byId),
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label));
-  }, [type, locations, byId]);
+  const parentOptions = useMemo(
+    () => (type ? buildParentCascaderOptions(locations, type) : []),
+    [type, locations]
+  );
 
   // The parent options follow the type, so a new type clears a parent that
   // no longer fits.
   const handleTypeChange = (value: OrgLocationType) => {
-    const parentId = form.getFieldValue('parentId');
-    const parent = parentId ? byId.get(parentId) : undefined;
+    const path: string[] | undefined = form.getFieldValue('parentPath');
+    const parent = path?.length ? byId.get(path[path.length - 1]) : undefined;
     if (parent && !getAllowedParentTypes(value).includes(parent.type)) {
-      form.setFieldValue('parentId', undefined);
+      form.setFieldValue('parentPath', undefined);
     }
   };
 
@@ -89,19 +86,19 @@ const NewForm = ({ form, locations }: Props) => {
       >
         <Input />
       </Form.Item>
-      <Form.Item
-        name="parentId"
-        label="Parent"
-        rules={[{ required: true, message: 'Please select a parent location.' }]}
-      >
-        <Select
-          showSearch
-          optionFilterProp="label"
-          placeholder={type ? 'Select a parent location' : 'Select a type first'}
-          disabled={!type}
-          options={parentOptions}
-        />
-      </Form.Item>
+      <CascaderField
+        data={parentOptions}
+        fieldName="parentPath"
+        fieldLabel="Parent"
+        placeholder={type ? 'Select a parent location' : 'Select a type first'}
+        disabled={!type}
+        required
+        requiredMessage="Please select a parent location."
+        fieldLayout={layout}
+        rules={[
+          { validator: (_, path) => validateParentPath(type, byId, path) },
+        ]}
+      />
     </Form>
   );
 };

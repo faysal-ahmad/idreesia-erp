@@ -21,12 +21,18 @@ RUN export OPENCV_LIB_DIR="/usr/lib/$(gcc -print-multiarch)" && npm install
 # Note: Meteor's server bundle nests npm dependencies (and rebuilds their
 # native addons in place via npm-rebuild.js) under npm/node_modules, not the
 # top-level node_modules this WORKDIR's own package.json resolves against.
+# On trixie (merged /usr), ldd reports /lib/... but dpkg only knows /usr/lib/...,
+# so paths go through realpath first. dpkg -S also prints "diversion by X from:"
+# lines for diverted files (e.g. libc), which must be dropped or "diversion",
+# "by", "from" end up in the package list.
 RUN set -eu; \
     addon=npm/node_modules/@u4/opencv4nodejs/build/Release/opencv4nodejs.node; \
     test -f "$addon"; \
     ldd "$addon" > /tmp/ldd.out; \
     awk '/=>/{print $3}' /tmp/ldd.out | sort -u \
-      | xargs -r dpkg -S 2>/dev/null | cut -d: -f1 | sort -u > /tmp/runtime-packages.txt; \
+      | xargs -r realpath | sort -u \
+      | xargs -r dpkg -S 2>/dev/null | grep -v '^diversion' \
+      | cut -d: -f1 | sort -u > /tmp/runtime-packages.txt; \
     test -s /tmp/runtime-packages.txt
 
 # ---- Runtime stage -------------------------------------------------------

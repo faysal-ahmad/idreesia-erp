@@ -8,7 +8,8 @@ import { useCommitteeProjectsProvider } from './use-committee-projects-provider'
 
 // One of a committee's projects.
 const ProjectPage = () => {
-  const { committeeId, projectId } = useParams<{
+  const { locationId, committeeId, projectId } = useParams<{
+    locationId: string;
     committeeId: string;
     projectId: string;
   }>();
@@ -24,7 +25,7 @@ const ProjectPage = () => {
       onBack={() =>
         // Back to the list as it was left (view / section).
         history.push({
-          pathname: paths.committeeProjectsPath(committeeId),
+          pathname: paths.committeeProjectsPath(locationId, committeeId),
           search: location.state?.listSearch ?? '',
         })
       }

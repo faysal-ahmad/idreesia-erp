@@ -381,6 +381,10 @@ jobs:
             "$RUNNER_TEMP/aligned.apk"
           "$build_tools/apksigner" verify "build/artifacts/idreesia-mobile-${MOBILE_VERSION}.apk"
 
+          # Unversioned copy of the same signed APK, so the stable URL
+          # releases/latest/download/idreesia-mobile.apk always works.
+          cp "build/artifacts/idreesia-mobile-${MOBILE_VERSION}.apk" build/artifacts/idreesia-mobile.apk
+
           # .aab: apksigner does not handle bundles, so use jarsigner.
           cp "$unsigned_aab" "build/artifacts/idreesia-mobile-${MOBILE_VERSION}.aab"
           jarsigner \

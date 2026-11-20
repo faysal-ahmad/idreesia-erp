@@ -321,6 +321,20 @@ jobs:
       # One Meteor build. By default it produces an unsigned .aab (for Google
       # Play) and keeps the generated Gradle project, which is reused below for
       # the .apk so the app is not bundled twice.
+      # Caches Gradle dependencies and the wrapper distribution so most builds
+      # don't hit Maven Central at all. The key changes when the Meteor release,
+      # Cordova plugins or mobile dependencies change; restore-keys falls back
+      # to the most recent cache so only the differences are downloaded.
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-android-${{ runner.os }}-${{ hashFiles('idreesia-mobile/.meteor/release', 'idreesia-mobile/.meteor/cordova-plugins', 'idreesia-mobile/yarn.lock') }}
+          restore-keys: |
+            gradle-android-${{ runner.os }}-
+
       - name: Build Android Project
         run: |
           meteor build ../build/mobile-android \
@@ -550,8 +564,17 @@ jobs:
       - name: Create Or Update GitHub Release
         run: |
           set -euo pipefail
-          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+          # Immutable releases reject asset uploads once published, so the
+          # release is created as a draft, filled, and only then published.
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            is_draft=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)
+            if [ "$is_draft" != "true" ]; then
+              echo "::error::Release $TAG is already published and immutable; assets cannot be added."
+              exit 1
+            fi
+          else
             gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
-              --verify-tag --title "$TAG" --generate-notes
+              --draft --verify-tag --title "$TAG" --generate-notes
           fi
           gh release upload "$TAG" mobile-builds/* --repo "$GITHUB_REPOSITORY" --clobber
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false

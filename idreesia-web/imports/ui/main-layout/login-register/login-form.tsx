@@ -10,6 +10,7 @@ import {
   Input,
   Typography,
 } from 'antd';
+import { AndroidOutlined } from '@ant-design/icons';
 import { message } from '/imports/ui/antd-feedback';
 import { type History, type Location } from 'history';
 import { useMutation } from '@apollo/client/react';
@@ -41,7 +42,20 @@ const LoginFormButtonStyle: CSSProperties = {
   width: '100%',
 };
 
+const AndroidButtonStyle: CSSProperties = {
+  height: 52,
+  fontSize: 16,
+  fontWeight: 600,
+  background: '#3ddc84',
+  borderColor: '#3ddc84',
+  color: '#073b1e',
+};
+
 const { Link } = Typography;
+
+// Stable URL: always the unversioned APK of the latest GitHub release.
+const ANDROID_APK_URL =
+  'https://github.com/faysal-ahmad/idreesia-erp/releases/latest/download/idreesia-mobile.apk';
 
 export const LoginForm = ({ history, location, setShowForm }: Props) => {
   const dispatch = useDispatch();
@@ -208,6 +222,26 @@ export const LoginForm = ({ history, location, setShowForm }: Props) => {
           Don't have an account? Register
         </Link>
       </Flex>
+      {!credentials && (
+        <>
+          <Divider />
+          <Flex vertical align="center" gap={8}>
+            <Typography.Text type="secondary">
+              Use Eastern Breeze ERP on your Android phone
+            </Typography.Text>
+            <Button
+              type="primary"
+              size="large"
+              href={ANDROID_APK_URL}
+              icon={<AndroidOutlined style={{ fontSize: 22 }} />}
+              style={AndroidButtonStyle}
+              block
+            >
+              Download Android app
+            </Button>
+          </Flex>
+        </>
+      )}
     </Card>
   );
 };

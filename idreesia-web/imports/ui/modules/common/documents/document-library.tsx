@@ -624,7 +624,7 @@ const DocumentLibrary = ({ provider, rootName }: Props) => {
           ) : null}
         </div>
       </div>
-      {searchText ? null : breadcrumb}
+      {searchText || !listing?.path.length ? null : breadcrumb}
       <div className="list-container">
         <Table
           className="list-table"

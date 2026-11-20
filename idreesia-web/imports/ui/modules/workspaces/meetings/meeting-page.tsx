@@ -8,7 +8,8 @@ import { useCommitteeMeetingsProvider } from './use-committee-meetings-provider'
 
 // One of a committee's meetings.
 const MeetingPage = () => {
-  const { committeeId, meetingId } = useParams<{
+  const { locationId, committeeId, meetingId } = useParams<{
+    locationId: string;
     committeeId: string;
     meetingId: string;
   }>();
@@ -24,7 +25,7 @@ const MeetingPage = () => {
       onBack={() =>
         // Back to the list as it was left (view, calendar month).
         history.push({
-          pathname: paths.committeeMeetingsPath(committeeId),
+          pathname: paths.committeeMeetingsPath(locationId, committeeId),
           search: location.state?.listSearch ?? '',
         })
       }

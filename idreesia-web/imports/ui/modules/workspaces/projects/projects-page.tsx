@@ -13,7 +13,10 @@ const TAB_PARAM = 'section';
 // A committee's projects and tasks: two sections of the reusable projects UI
 // with a committee data provider.
 const ProjectsPage = () => {
-  const { committeeId } = useParams<{ committeeId: string }>();
+  const { locationId, committeeId } = useParams<{
+    locationId: string;
+    committeeId: string;
+  }>();
   const history = useHistory();
   const location = useLocation();
   const provider = useCommitteeProjectsProvider(committeeId);
@@ -44,7 +47,7 @@ const ProjectsPage = () => {
               provider={provider}
               onOpenProject={projectId =>
                 history.push({
-                  pathname: paths.committeeProjectPath(committeeId, projectId),
+                  pathname: paths.committeeProjectPath(locationId, committeeId, projectId),
                   // So Back returns to the same list view.
                   state: { listSearch: location.search },
                 })

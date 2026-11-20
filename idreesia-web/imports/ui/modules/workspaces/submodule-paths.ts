@@ -1,64 +1,104 @@
 import { ModulePaths } from 'meteor/idreesia-common/constants';
 
+// URL segment used for committees that have no location.
+export const NO_LOCATION_SEGMENT = 'no-location';
+
 export default class SubModulePaths {
-  // Base path for a committee workspace. Committee sub-modules are nested
+  // Base path for a committee workspace, under its location (see
+  // NO_LOCATION_SEGMENT for committees without one). Committee sub-modules are nested
   // under this path.
-  static committeePath(committeeId = ':committeeId') {
-    return `${ModulePaths.workspaces}/committees/${committeeId}`;
+  static committeePath(
+    locationId = ':locationId',
+    committeeId = ':committeeId'
+  ) {
+    return `${SubModulePaths.locationPath(locationId)}/committees/${committeeId}`;
   }
 
-  static committeeMembersPath(committeeId = ':committeeId') {
-    return `${SubModulePaths.committeePath(committeeId)}/members`;
+  static committeeMembersPath(
+    locationId = ':locationId',
+    committeeId = ':committeeId'
+  ) {
+    return `${SubModulePaths.committeePath(locationId, committeeId)}/members`;
   }
 
-  static committeeDiscussionsPath(committeeId = ':committeeId') {
-    return `${SubModulePaths.committeePath(committeeId)}/discussions`;
+  static committeeDiscussionsPath(
+    locationId = ':locationId',
+    committeeId = ':committeeId'
+  ) {
+    return `${SubModulePaths.committeePath(locationId, committeeId)}/discussions`;
   }
 
-  static committeeDocumentsPath(committeeId = ':committeeId') {
-    return `${SubModulePaths.committeePath(committeeId)}/documents`;
+  static committeeDocumentsPath(
+    locationId = ':locationId',
+    committeeId = ':committeeId'
+  ) {
+    return `${SubModulePaths.committeePath(locationId, committeeId)}/documents`;
   }
 
-  static committeeMeetingsPath(committeeId = ':committeeId') {
-    return `${SubModulePaths.committeePath(committeeId)}/meetings`;
+  static committeeMeetingsPath(
+    locationId = ':locationId',
+    committeeId = ':committeeId'
+  ) {
+    return `${SubModulePaths.committeePath(locationId, committeeId)}/meetings`;
   }
 
   static committeeMeetingPath(
+    locationId = ':locationId',
     committeeId = ':committeeId',
     meetingId = ':meetingId'
   ) {
-    return `${SubModulePaths.committeeMeetingsPath(committeeId)}/${meetingId}`;
+    return `${SubModulePaths.committeeMeetingsPath(locationId, committeeId)}/${meetingId}`;
   }
 
-  static committeePollsPath(committeeId = ':committeeId') {
-    return `${SubModulePaths.committeePath(committeeId)}/polls`;
+  static committeePollsPath(
+    locationId = ':locationId',
+    committeeId = ':committeeId'
+  ) {
+    return `${SubModulePaths.committeePath(locationId, committeeId)}/polls`;
   }
 
-  static committeePollPath(committeeId = ':committeeId', pollId = ':pollId') {
-    return `${SubModulePaths.committeePollsPath(committeeId)}/${pollId}`;
+  static committeePollPath(
+    locationId = ':locationId',
+    committeeId = ':committeeId',
+    pollId = ':pollId'
+  ) {
+    return `${SubModulePaths.committeePollsPath(locationId, committeeId)}/${pollId}`;
   }
 
-  static committeeProjectsPath(committeeId = ':committeeId') {
-    return `${SubModulePaths.committeePath(committeeId)}/projects`;
+  static committeeProjectsPath(
+    locationId = ':locationId',
+    committeeId = ':committeeId'
+  ) {
+    return `${SubModulePaths.committeePath(locationId, committeeId)}/projects`;
   }
 
   static committeeProjectPath(
+    locationId = ':locationId',
     committeeId = ':committeeId',
     projectId = ':projectId'
   ) {
-    return `${SubModulePaths.committeeProjectsPath(committeeId)}/${projectId}`;
+    return `${SubModulePaths.committeeProjectsPath(locationId, committeeId)}/${projectId}`;
   }
 
-  static committeeNightStayReportPath(committeeId = ':committeeId') {
-    return `${SubModulePaths.committeePath(committeeId)}/night-stay-report`;
+  static committeeNightStayReportPath(
+    locationId = ':locationId',
+    committeeId = ':committeeId'
+  ) {
+    return `${SubModulePaths.committeePath(locationId, committeeId)}/night-stay-report`;
   }
 
-  static committeeMonitoringAlertsPath(committeeId = ':committeeId') {
-    return `${SubModulePaths.committeePath(committeeId)}/monitoring-alerts`;
+  static committeeMonitoringAlertsPath(
+    locationId = ':locationId',
+    committeeId = ':committeeId'
+  ) {
+    return `${SubModulePaths.committeePath(locationId, committeeId)}/monitoring-alerts`;
   }
 
-  static committeeMonitoringProfilesPath(committeeId = ':committeeId') {
-    return `${SubModulePaths.committeePath(committeeId)}/monitoring-profiles`;
+  static committeeMonitoringProfilesPath(
+    locationId = ':locationId',
+    committeeId = ':committeeId'
+  ) {
+    return `${SubModulePaths.committeePath(locationId, committeeId)}/monitoring-profiles`;
   }
 
   // Base path for a location's workspaces. Location-owned sub-modules (a

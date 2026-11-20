@@ -19,8 +19,11 @@ import {
   PlanningPage,
 } from './duties-attendance';
 import Landing from './landing';
+import { useWorkspaceBreadcrumbs } from './use-workspace-breadcrumbs';
 
-const Router = () => (
+const Router = () => {
+  useWorkspaceBreadcrumbs();
+  return (
   <Switch>
     <Route path={paths.committeeMembersPath()} component={MembersList} />
     <Route path={paths.committeeDiscussionsPath()} component={DiscussionsPage} />
@@ -61,6 +64,7 @@ const Router = () => (
     />
     <Route path={ModulePaths.workspaces} component={Landing} />
   </Switch>
-);
+  );
+};
 
 export default Router;

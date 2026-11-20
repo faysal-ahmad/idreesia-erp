@@ -525,7 +525,14 @@ jobs:
   # attached. Re-runs of the same release replace the files.
   github-release:
     needs: [release, mobile-android, mobile-ios]
-    if: ${{ github.ref_name == 'master' }}
+    # always() lets this run when one mobile build failed; it still requires
+    # `release` to pass and at least one mobile build to have succeeded. Only
+    # the successful build's artifacts exist, so only those get attached.
+    if: >-
+      ${{ always()
+      && github.ref_name == 'master'
+      && needs.release.result == 'success'
+      && (needs.mobile-android.result == 'success' || needs.mobile-ios.result == 'success') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write

@@ -9,7 +9,10 @@ import { useCommitteeMeetingsProvider } from './use-committee-meetings-provider'
 // A committee's meetings, using the reusable meetings UI with a committee
 // data provider.
 const MeetingsPage = () => {
-  const { committeeId } = useParams<{ committeeId: string }>();
+  const { locationId, committeeId } = useParams<{
+    locationId: string;
+    committeeId: string;
+  }>();
   const history = useHistory();
   const location = useLocation();
   const provider = useCommitteeMeetingsProvider(committeeId);
@@ -20,7 +23,7 @@ const MeetingsPage = () => {
       provider={provider}
       onOpenMeeting={meetingId =>
         history.push({
-          pathname: paths.committeeMeetingPath(committeeId, meetingId),
+          pathname: paths.committeeMeetingPath(locationId, committeeId, meetingId),
           // So Back returns to the same list view / calendar month.
           state: { listSearch: location.search },
         })

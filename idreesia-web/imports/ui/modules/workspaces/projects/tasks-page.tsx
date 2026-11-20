@@ -13,7 +13,10 @@ import { useCommitteeProjectsProvider } from './use-committee-projects-provider'
 
 // A committee's tasks, standalone and in projects.
 const TasksPage = () => {
-  const { committeeId } = useParams<{ committeeId: string }>();
+  const { locationId, committeeId } = useParams<{
+    locationId: string;
+    committeeId: string;
+  }>();
   const history = useHistory();
   const location = useLocation();
   const provider = useCommitteeProjectsProvider(committeeId);
@@ -45,7 +48,7 @@ const TasksPage = () => {
       members={members}
       onOpenProject={projectId =>
         history.push({
-          pathname: paths.committeeProjectPath(committeeId, projectId),
+          pathname: paths.committeeProjectPath(locationId, committeeId, projectId),
           state: { listSearch: location.search },
         })
       }

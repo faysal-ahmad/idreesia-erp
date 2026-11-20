@@ -8,7 +8,8 @@ import { useCommitteePollsProvider } from './use-committee-polls-provider';
 
 // One of a committee's polls.
 const PollPage = () => {
-  const { committeeId, pollId } = useParams<{
+  const { locationId, committeeId, pollId } = useParams<{
+    locationId: string;
     committeeId: string;
     pollId: string;
   }>();
@@ -24,7 +25,7 @@ const PollPage = () => {
       onBack={() =>
         // Back to the list as it was left (view).
         history.push({
-          pathname: paths.committeePollsPath(committeeId),
+          pathname: paths.committeePollsPath(locationId, committeeId),
           search: location.state?.listSearch ?? '',
         })
       }

@@ -25,7 +25,7 @@ import { useMyDutiesAttendanceLocations } from './duties-attendance';
 import { useMyCommitteeLocations } from './hooks/use-my-committee-locations';
 import { useMyCommittees } from './hooks/use-my-committees';
 import SubModuleNames from './submodule-names';
-import { default as paths } from './submodule-paths';
+import { default as paths, NO_LOCATION_SEGMENT } from './submodule-paths';
 
 const IconStyle: CSSProperties = {
   fontSize: '20px',
@@ -35,7 +35,7 @@ interface SidebarProps {
   history: History;
 }
 
-type PathBuilder = (committeeId?: string) => string;
+type PathBuilder = (locationId?: string, committeeId?: string) => string;
 type KeyPrefixHandler = [string, string, PathBuilder];
 
 // [menu key prefix, sub-module name, path builder] for each committee
@@ -151,7 +151,7 @@ const storeLocationId = (locationId: string) => {
 };
 
 const COMMITTEE_PATH_REGEX = new RegExp(
-  `^${paths.committeePath('([^/]+)')}/([^/]+)`
+  `^${paths.committeePath('([^/]+)', '([^/]+)')}/([^/]+)`
 );
 
 const LOCATION_PATH_REGEX = new RegExp(
@@ -174,7 +174,7 @@ const resolveMenuFromPath = (pathname: string): ActiveMenu | null => {
 
   const match = COMMITTEE_PATH_REGEX.exec(pathname);
   if (!match) return null;
-  const [, committeeId, prefix] = match;
+  const [, , committeeId, prefix] = match;
   const handler = KeyPrefixHandlers.find(([p]) => p === prefix);
   if (!handler) return null;
   return {
@@ -371,7 +371,7 @@ const Sidebar = ({ history }: SidebarProps) => {
     if (workspaceHandler) {
       const [prefix, , subModuleName, getPath] = workspaceHandler;
       setActiveSubModuleName(subModuleName);
-      history.push(getPath(key.slice(prefix.length + 1)));
+      history.push(getPath(key.slice(prefix.length + 1) as string));
       return;
     }
 
@@ -383,7 +383,10 @@ const Sidebar = ({ history }: SidebarProps) => {
     const [prefix, subModuleName, getPath] = handler;
     const committeeId = key.slice(prefix.length + 1);
     setActiveSubModuleName(subModuleName);
-    history.push(getPath(committeeId));
+    const committee = committees.find((row) => row._id === committeeId);
+    history.push(
+      getPath(committee?.locationId ?? NO_LOCATION_SEGMENT, committeeId)
+    );
   };
 
   if (loading) return null;

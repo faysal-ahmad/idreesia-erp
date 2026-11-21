@@ -10,6 +10,7 @@ interface FieldProps {
   initialValue?: unknown;
   required?: boolean;
   requiredMessage?: string;
+  onBlur?: React.FocusEventHandler<HTMLTextAreaElement>;
 }
 
 const formItemLayout = {
@@ -25,6 +26,7 @@ const formItemLayout = {
  * initialValue: Initial value for the form field.
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
+ * onBlur: Called when the field loses focus.
  */
 const InputTextAreaField = ({
   fieldName,
@@ -34,6 +36,7 @@ const InputTextAreaField = ({
   initialValue = null,
   required,
   requiredMessage,
+  onBlur,
 }: FieldProps) => {
   const rules = [
     {
@@ -44,7 +47,7 @@ const InputTextAreaField = ({
 
   return (
     <Form.Item name={fieldName} label={fieldLabel} initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <Input.TextArea placeholder={placeholder} />
+      <Input.TextArea placeholder={placeholder} onBlur={onBlur} />
     </Form.Item>
   );
 };

@@ -1,15 +1,13 @@
 /**
- * Constants for the headless Duties and Attendance module
- * (server/business-logic/duties-attendance).
+ * Constants for Duties and Attendance
+ * (server/business-logic/duties-attendance), a feature of a location.
  */
 
-/** The module's name as a headless module (notifications are keyed by it). */
-export const DUTIES_ATTENDANCE_MODULE = 'duties-attendance';
-
 /**
- * What a user of a workspace may do. They are stored on the user's entry in
- * the workspace (see DutiesAttendanceWorkspaceUsers). Every permission other
- * than VIEW implies VIEW.
+ * What a user of a location's Duties and Attendance may do. They are stored,
+ * prefixed with the feature key (`duties-attendance.view`), on the user's
+ * entry for the location (see OrgLocationUsers). Every permission other than
+ * VIEW implies VIEW.
  */
 export const DutiesAttendancePermissions = {
   /** See the duties, the plan, the attendance and the attendance sheet. */
@@ -63,5 +61,7 @@ export const DUTIES_ATTENDANCE_DEFAULT_PAGE_SIZE = 50;
 export const DUTIES_ATTENDANCE_MAX_PAGE_SIZE = 200;
 export const DUTIES_ATTENDANCE_MAX_NAME_LENGTH = 255;
 export const DUTIES_ATTENDANCE_MAX_DESCRIPTION_LENGTH = 2000;
+/** Longest source of a marked attendance (how it was marked). */
+export const DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH = 100;
 /** Days shown by the plan view. */
 export const DUTIES_ATTENDANCE_PLAN_DAY_COUNT = 7;

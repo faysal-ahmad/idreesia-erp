@@ -25,8 +25,8 @@ const addPerson = (_id: string, city: string, extra: Doc = {}) =>
     visitorData: { city },
     ...extra,
   });
-const addLocation = (_id: string, name: string) =>
-  raw(OrgLocations).insertOne({ _id, name, type: 'MEHFIL' });
+const addLocation = (_id: string, name: string, type = 'city') =>
+  raw(OrgLocations).insertOne({ _id, name, type });
 const mappings = async () =>
   (await CityLocationMappings.find({}).fetchAsync())
     .map(m => [m.city, m.locationId])
@@ -58,6 +58,17 @@ describe('updateCityLocationMappings', () => {
     await addLocation('l2', 'Lahore');
 
     expect(await updateCityLocationMappings(user)).toBe(0);
+  });
+
+  it('only matches city-type locations, ignoring a mehfil of the same name', async () => {
+    await addPerson('p1', 'Daska');
+    await addPerson('p2', 'Kotla');
+    await addLocation('l1', 'Daska', 'mehfil');
+    await addLocation('l2', 'Daska', 'city');
+    await addLocation('l3', 'Kotla', 'mehfil');
+
+    expect(await updateCityLocationMappings(user)).toBe(1);
+    expect(await mappings()).toEqual([['Daska', 'l2']]);
   });
 
   it('never changes an existing mapping and is repeatable', async () => {

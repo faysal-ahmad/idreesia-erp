@@ -25,6 +25,7 @@ import {
   OrgLocationsEditForm,
   OrgLocationsList,
 } from './org-locations';
+import { MehfilTemplatesList } from './mehfil-templates';
 
 const Router = () => (
   <Switch>
@@ -68,6 +69,8 @@ const Router = () => (
       component={OrgLocationsEditForm}
     />
     <Route path={paths.orgLocationsPath} component={OrgLocationsList} />
+
+    <Route path={paths.mehfilTemplatesPath} component={MehfilTemplatesList} />
 
     <Route
       path={paths.deletedPersonEditFormPath()}

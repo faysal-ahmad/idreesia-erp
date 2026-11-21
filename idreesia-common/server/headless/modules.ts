@@ -1,5 +1,4 @@
 import { discussionsModule } from 'meteor/idreesia-common/server/business-logic/discussions';
-import { dutiesAttendanceModule } from 'meteor/idreesia-common/server/business-logic/duties-attendance';
 import { dmsModule } from 'meteor/idreesia-common/server/business-logic/dms';
 import { meetingsModule } from 'meteor/idreesia-common/server/business-logic/meetings';
 import { pollsModule } from 'meteor/idreesia-common/server/business-logic/polls';
@@ -11,7 +10,6 @@ import { registerHeadlessModule } from './registry';
 // can reach it.
 registerHeadlessModule(discussionsModule);
 registerHeadlessModule(dmsModule);
-registerHeadlessModule(dutiesAttendanceModule);
 registerHeadlessModule(meetingsModule);
 registerHeadlessModule(pollsModule);
 registerHeadlessModule(projectsModule);

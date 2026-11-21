@@ -8,6 +8,8 @@ type OrgLocationMehfilDetailsType {
   lcdAvailability: Boolean
   tabAvailability: Boolean
   otherMehfilDetails: String
+  latitude: Float
+  longitude: Float
 }
 
 type OrgLocationType {
@@ -25,8 +27,6 @@ type OrgLocationType {
   observers: [PersonType]
   # Per observer: how many committees below this location they observe.
   observerStats: [OrgLocationObserverStatType]
-  # Features enabled on this location (mehfils only).
-  features: [String]
 
   createdAt: String
   createdBy: String
@@ -46,32 +46,28 @@ type SyncOrgLocationObserversResult {
   removedCount: Int
 }
 
-type OrgLocationFeatureType {
-  key: String!
-  name: String!
-  description: String!
-}
-
-type DutiesAttendancePermissionInfoType {
-  key: String!
-  name: String!
-  description: String!
-}
-
-# A user of the location's Duties and Attendance workspace.
-type OrgLocationDutiesAttendanceUserType {
-  _id: String!
+# A user holding a permission of a location feature.
+type OrgLocationFeaturePermissionUserType {
   userId: String!
+  # The karkun the user account belongs to.
+  personId: String
   username: String
   displayName: String
-  permissions: [String]!
 }
 
-# A user that can be added to a workspace.
-type DutiesAttendanceUserCandidateType {
-  _id: String!
-  username: String
-  displayName: String
+# A permission a feature supports, with the users holding it.
+type OrgLocationFeaturePermissionType {
+  key: String!
+  name: String!
+  description: String!
+  users: [OrgLocationFeaturePermissionUserType]!
+}
+
+# A permission group of a location (General or a feature), with its permissions.
+type OrgLocationFeaturePermissionsType {
+  featureKey: String!
+  featureName: String!
+  permissions: [OrgLocationFeaturePermissionType]!
 }
 
 input OrgLocationMehfilDetailsInput {
@@ -81,6 +77,8 @@ input OrgLocationMehfilDetailsInput {
   lcdAvailability: Boolean
   tabAvailability: Boolean
   otherMehfilDetails: String
+  latitude: Float
+  longitude: Float
 }
 
 extend type Query {
@@ -90,21 +88,11 @@ extend type Query {
   orgLocationById(_id: String!): OrgLocationType
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
 
-  allOrgLocationFeatures: [OrgLocationFeatureType]
-    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
-
-  allDutiesAttendancePermissions: [DutiesAttendancePermissionInfoType]
-    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
-
-  # Unlocked users matching the text, to add to a workspace.
-  dutiesAttendanceUserCandidates(
-    search: String
-  ): [DutiesAttendanceUserCandidateType]
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
-
-  orgLocationDutiesAttendanceUsers(
+  # The location's permission groups (General, and for a mehfil each feature),
+  # with the users holding each permission.
+  orgLocationFeaturePermissions(
     locationId: String!
-  ): [OrgLocationDutiesAttendanceUserType]
+  ): [OrgLocationFeaturePermissionsType]
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
 }
 
@@ -137,28 +125,17 @@ extend type Mutation {
   syncOrgLocationObservers(locationId: String!): SyncOrgLocationObserversResult
     @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
-  enableOrgLocationFeature(locationId: String!, featureKey: String!): Boolean
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
-
-  disableOrgLocationFeature(locationId: String!, featureKey: String!): Boolean
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
-
-  addOrgLocationDutiesAttendanceUser(
+  addOrgLocationFeatureUser(
     locationId: String!
-    userId: String!
-    permissions: [String]!
-  ): OrgLocationDutiesAttendanceUserType
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+    featureKey: String!
+    permissionKey: String!
+    karkunId: String!
+  ): Boolean @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
-  updateOrgLocationDutiesAttendanceUserPermissions(
+  removeOrgLocationFeatureUser(
     locationId: String!
-    userId: String!
-    permissions: [String]!
-  ): OrgLocationDutiesAttendanceUserType
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
-
-  removeOrgLocationDutiesAttendanceUser(
-    locationId: String!
+    featureKey: String!
+    permissionKey: String!
     userId: String!
   ): Boolean @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 }

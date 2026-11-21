@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ErrorBlock, NoticeBar, SpinLoading } from 'antd-mobile';
 
 import { backendUrl } from '/imports/startup/backend';
+import { setMonitoringUser } from '/imports/startup/monitoring';
 import {
   AccountPaths,
   AccountScreen,
@@ -65,6 +66,10 @@ const App = () => {
   useEffect(() => {
     if (!loggingIn) setStartupSettled(true);
   }, [loggingIn]);
+
+  useEffect(() => {
+    setMonitoringUser(userId);
+  }, [userId]);
 
   // Files saved on this device by someone else (e.g. a session ended elsewhere) go.
   useEffect(() => {

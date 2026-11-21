@@ -12,6 +12,8 @@ const SubModuleNames = {
   dutyPlanning: 'Duty Planning',
   dutyAttendance: 'Duty Attendance',
   attendanceSheet: 'Attendance Sheet',
+  mehfilDetails: 'Mehfil Details',
+  mehfilPermissions: 'Mehfil Permissions',
 };
 
 export default SubModuleNames;

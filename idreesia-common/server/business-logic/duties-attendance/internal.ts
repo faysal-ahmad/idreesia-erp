@@ -3,15 +3,17 @@ import {
   DUTIES_ATTENDANCE_MAX_NAME_LENGTH,
 } from 'meteor/idreesia-common/constants/duties-attendance';
 import {
+  MehfilTemplateDuties,
+  OrgLocations,
+  type OrgLocationDocument,
+} from 'meteor/idreesia-common/server/collections/admin';
+import {
   DutiesAttendanceDayOverrides,
   DutiesAttendanceDayRecords,
   DutiesAttendanceDuties,
-  DutiesAttendanceWorkspaces,
-  DutiesAttendanceWorkspaceUsers,
   type DutiesAttendanceDutyDocument,
-  type DutiesAttendanceMetadata,
-  type DutiesAttendanceWorkspaceDocument,
 } from 'meteor/idreesia-common/server/collections/duties-attendance';
+import { hasOrgLocationFeatures } from 'meteor/idreesia-common/server/business-logic/admin/org-location-features';
 
 import { dutiesAttendanceError } from './errors';
 
@@ -28,7 +30,7 @@ const hasControlCharacters = (value: string) =>
     return code < 0x20 || code === 0x7f;
   });
 
-/** Trims and checks a single-line name (workspace or duty). */
+/** Trims and checks a single-line name duty. */
 export function normalizeName(
   value: unknown,
   what = 'Name',
@@ -76,35 +78,6 @@ export function normalizeText(
   return trimmed || undefined;
 }
 
-/** Metadata keys are queryable as `metadata.<key>`, so they are restricted. */
-const METADATA_KEY_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
-
-export function validateMetadata(
-  metadata: unknown
-): DutiesAttendanceMetadata | undefined {
-  if (metadata === undefined || metadata === null) return undefined;
-  if (
-    typeof metadata !== 'object' ||
-    Array.isArray(metadata) ||
-    Object.getPrototypeOf(metadata) !== Object.prototype
-  ) {
-    throw dutiesAttendanceError(
-      'BAD_USER_INPUT',
-      'Metadata must be a plain object'
-    );
-  }
-  const badKey = Object.keys(metadata).find(
-    key => !METADATA_KEY_PATTERN.test(key)
-  );
-  if (badKey !== undefined) {
-    throw dutiesAttendanceError(
-      'BAD_USER_INPUT',
-      `Invalid metadata key "${badKey}" (letters, digits, _ and - only)`
-    );
-  }
-  return metadata as DutiesAttendanceMetadata;
-}
-
 export const uniqueIds = (
   ids: Array<string | null | undefined> | null | undefined
 ): string[] => [...new Set((ids ?? []).filter((id): id is string => !!id))];
@@ -133,31 +106,42 @@ export const touch = (userId: string) => ({
 // Lookups
 // ---------------------------------------------------------------------------
 
-export async function requireWorkspace(
-  workspaceId: string,
-  { includeDeleted = false }: { includeDeleted?: boolean } = {}
-): Promise<DutiesAttendanceWorkspaceDocument> {
-  const workspace = workspaceId
-    ? await DutiesAttendanceWorkspaces.findOneAsync(workspaceId)
+/** A location that has Duties and Attendance (a mehfil). */
+export async function requireLocation(
+  locationId: string
+): Promise<OrgLocationDocument> {
+  const location = locationId
+    ? await OrgLocations.findOneAsync(locationId)
     : undefined;
-  if (!workspace || (!includeDeleted && workspace.deletedAt)) {
-    throw dutiesAttendanceError('NOT_FOUND', 'Workspace not found');
+  if (!location || !hasOrgLocationFeatures(location)) {
+    throw dutiesAttendanceError('NOT_FOUND', 'Location not found');
   }
-  return workspace;
+  return location;
 }
 
-/** A duty in a live workspace (and in `workspaceId`, when given). */
+/** The names of duties, which they take from their mehfil template duty. */
+export async function getDutyNames(
+  duties: Array<{ _id: string; mehfilDutyId: string }>
+): Promise<Map<string, string>> {
+  const templates = await MehfilTemplateDuties.find({
+    _id: { $in: duties.map(duty => duty.mehfilDutyId) },
+  }).fetchAsync();
+  const names = new Map(templates.map(template => [template._id, template.name]));
+  return new Map(duties.map(duty => [duty._id, names.get(duty.mehfilDutyId) ?? '']));
+}
+
+/** A duty of a mehfil (and of `locationId`, when given). */
 export async function requireDuty(
   dutyId: string,
-  { workspaceId }: { workspaceId?: string } = {}
+  { locationId }: { locationId?: string } = {}
 ): Promise<DutiesAttendanceDutyDocument> {
   const duty = dutyId
     ? await DutiesAttendanceDuties.findOneAsync(dutyId)
     : undefined;
-  if (!duty || (workspaceId && duty.workspaceId !== workspaceId)) {
+  if (!duty || (locationId && duty.locationId !== locationId)) {
     throw dutiesAttendanceError('NOT_FOUND', 'Duty not found');
   }
-  await requireWorkspace(duty.workspaceId).catch(() => {
+  await requireLocation(duty.locationId).catch(() => {
     throw dutiesAttendanceError('NOT_FOUND', 'Duty not found');
   });
   return duty;
@@ -185,22 +169,15 @@ export function ensureDutiesAttendanceIndexes() {
 }
 
 async function createIndexes() {
-  const workspaceUsers = DutiesAttendanceWorkspaceUsers.rawCollection();
-  await workspaceUsers.createIndex(
-    { workspaceId: 1, userId: 1 },
-    { unique: true }
-  );
-  await workspaceUsers.createIndex({ userId: 1 });
-  await DutiesAttendanceDuties.rawCollection().createIndex({
-    workspaceId: 1,
-    name: 1,
-  });
+  const duties = DutiesAttendanceDuties.rawCollection();
+  await duties.createIndex({ locationId: 1, mehfilDutyId: 1 });
+  await duties.createIndex({ mehfilDutyId: 1 });
   await DutiesAttendanceDayOverrides.rawCollection().createIndex(
     { dutyId: 1, date: 1 },
     { unique: true }
   );
   const records = DutiesAttendanceDayRecords.rawCollection();
   await records.createIndex({ dutyId: 1, date: 1 }, { unique: true });
-  await records.createIndex({ workspaceId: 1, date: 1 });
+  await records.createIndex({ locationId: 1, date: 1 });
   await records.createIndex({ 'karkuns.karkunId': 1, date: 1 });
 }

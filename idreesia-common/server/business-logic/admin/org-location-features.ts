@@ -2,239 +2,312 @@ import { GraphQLError } from 'graphql';
 
 import {
   OrgLocationFeatureAllowedTypes,
-  OrgLocationFeatureKeys,
+  OrgLocationFeatures,
+  OrgLocationGeneralGroupKey,
+  OrgLocationGeneralPermissions,
   isOrgLocationFeatureKey,
-  type OrgLocationFeatureKey,
+  isOrgLocationGeneralGroupKey,
+  orgLocationGroupPermissionKeys,
+  toOrgLocationPermissionValue,
+  type OrgLocationFeaturePermission,
 } from 'meteor/idreesia-common/constants/organization';
 import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   OrgLocations,
+  OrgLocationUsers,
+  Users,
   type OrgLocationDocument,
 } from 'meteor/idreesia-common/server/collections/admin';
-import {
-  addDutiesAttendanceWorkspaceUser,
-  createDutiesAttendanceWorkspace,
-  deleteDutiesAttendanceWorkspace,
-  getDutiesAttendanceWorkspace,
-  removeDutiesAttendanceWorkspaceUser,
-  restoreDutiesAttendanceWorkspace,
-  updateDutiesAttendanceWorkspaceUserPermissions,
-} from 'meteor/idreesia-common/server/business-logic/duties-attendance';
 
 const fail = (code: string, message: string): never => {
   throw new GraphQLError(message, { extensions: { code } });
 };
 
+const isDuplicateKey = (error: unknown) =>
+  (error as { code?: number }).code === 11000 ||
+  (error instanceof Error && error.message.includes('E11000'));
+
+let indexesReady: Promise<void> | null = null;
+
 /**
- * Turns a location feature on or off. Each returns the extra fields to `$set`
- * on the location, if any.
+ * Creates the indexes of the location users once per process. Called outside
+ * any transaction (which can't create them) before the writes that rely on
+ * the unique index; the migration calls it too.
  */
-interface OrgLocationFeatureHandler {
-  enable(
-    location: OrgLocationDocument,
-    userId: string
-  ): Promise<Record<string, unknown> | void>;
-  disable(
-    location: OrgLocationDocument,
-    userId: string
-  ): Promise<Record<string, unknown> | void>;
+export const ensureOrgLocationUserIndexes = (): Promise<void> => {
+  if (!indexesReady) {
+    const users = OrgLocationUsers.rawCollection();
+    indexesReady = users
+      .createIndex({ locationId: 1, userId: 1 }, { unique: true })
+      .then(() => users.createIndex({ userId: 1 }))
+      .then(() => undefined)
+      .catch(error => {
+        indexesReady = null;
+        throw error;
+      });
+  }
+  return indexesReady;
+};
+
+// ---------------------------------------------------------------------------
+// Features: always available on the locations of the allowed types (mehfils)
+// ---------------------------------------------------------------------------
+
+/** True when the location has the features (it is a mehfil). */
+export const hasOrgLocationFeatures = (
+  location: Pick<OrgLocationDocument, 'type'>
+): boolean => OrgLocationFeatureAllowedTypes.includes(location.type);
+
+// ---------------------------------------------------------------------------
+// Permissions: who may do what on a location. One store (OrgLocationUsers) for
+// the location's own permissions ("General") and those of its features.
+// ---------------------------------------------------------------------------
+
+export interface OrgLocationFeaturePermissionUsers
+  extends OrgLocationFeaturePermission {
+  userIds: string[];
 }
 
-// The location's workspace (deleted ones included), or null when it no
-// longer exists, e.g. after being purged.
-const findDutiesAttendanceWorkspace = async (workspaceId: string) => {
-  try {
-    return await getDutiesAttendanceWorkspace(workspaceId, {
-      includeDeleted: true,
-    });
-  } catch (error) {
-    if ((error as GraphQLError).extensions?.code === 'NOT_FOUND') return null;
-    throw error;
-  }
-};
+/** A group of permissions: the General one or an enabled feature. */
+export interface OrgLocationFeaturePermissions {
+  /** `location` for the General group, else a feature key. */
+  featureKey: string;
+  featureName: string;
+  permissions: OrgLocationFeaturePermissionUsers[];
+}
 
 /**
- * Duties and Attendance: a workspace holds the location's duties.
- * - Enable restores the location's previous workspace when it still exists
- *   (with its duties, attendance and users), otherwise creates a new one.
- * - Disable soft-deletes the workspace, keeping everything for a later
- *   re-enable.
+ * The stored permissions of a user on a location that belong to a group
+ * (`location` or a feature key), without the group prefix.
  */
-const dutiesAttendanceHandler: OrgLocationFeatureHandler = {
-  async enable(location, userId) {
-    if (location.dutiesAttendanceWorkspaceId) {
-      const existing = await findDutiesAttendanceWorkspace(
-        location.dutiesAttendanceWorkspaceId
-      );
-      if (existing) {
-        if (existing.deletedAt) {
-          await restoreDutiesAttendanceWorkspace(existing._id, userId);
-        }
-        return { dutiesAttendanceWorkspaceId: existing._id };
-      }
-    }
-
-    const workspace = await createDutiesAttendanceWorkspace(
-      {
-        name: `${location.name} Duties and Attendance`,
-        metadata: { locationId: location._id },
-      },
-      userId
-    );
-    return { dutiesAttendanceWorkspaceId: workspace._id };
-  },
-
-  async disable(location, userId) {
-    if (!location.dutiesAttendanceWorkspaceId) return;
-    const existing = await findDutiesAttendanceWorkspace(
-      location.dutiesAttendanceWorkspaceId
-    );
-    if (existing && !existing.deletedAt) {
-      await deleteDutiesAttendanceWorkspace(existing._id, userId);
-    }
-  },
+export const getOrgLocationUserPermissions = async (
+  userId: string,
+  locationId: string,
+  groupKey: string
+): Promise<string[]> => {
+  const entry = await OrgLocationUsers.findOneAsync({ locationId, userId });
+  return entry ? orgLocationGroupPermissionKeys(entry.permissions, groupKey) : [];
 };
 
-// Every feature needs a handler; the Record type makes a missing one a
-// compile error when a feature is added to the constants.
-const featureHandlers: Record<OrgLocationFeatureKey, OrgLocationFeatureHandler> =
-  {
-    [OrgLocationFeatureKeys.DUTIES_ATTENDANCE]: dutiesAttendanceHandler,
-  };
-
-const loadLocation = async (
+/** True when the user holds the permission of the group on the location. */
+export const hasOrgLocationPermission = async (
+  userId: string,
   locationId: string,
-  featureKey: string
-): Promise<{
-  location: OrgLocationDocument;
-  handler: OrgLocationFeatureHandler;
-}> => {
-  if (!isOrgLocationFeatureKey(featureKey)) {
-    return fail('BAD_USER_INPUT', `Unknown location feature '${featureKey}'.`);
-  }
+  groupKey: string,
+  permissionKey: string
+): Promise<boolean> =>
+  (await getOrgLocationUserPermissions(userId, locationId, groupKey)).includes(
+    permissionKey
+  );
 
+/**
+ * The General permissions of a location and, for a mehfil, those of each
+ * feature, each with the ids of the users holding it. The General group is
+ * left out while there are no general permissions.
+ */
+export const listOrgLocationFeaturePermissions = async (
+  locationId: string
+): Promise<OrgLocationFeaturePermissions[]> => {
   const location = await OrgLocations.findOneAsync({ _id: locationId });
   if (!location) return fail('NOT_FOUND', 'Location not found.');
 
-  if (!OrgLocationFeatureAllowedTypes.includes(location.type)) {
+  const entries = await OrgLocationUsers.find({ locationId }).fetchAsync();
+  const group = (
+    featureKey: string,
+    featureName: string,
+    permissions: OrgLocationFeaturePermission[]
+  ): OrgLocationFeaturePermissions => ({
+    featureKey,
+    featureName,
+    permissions: permissions.map(permission => {
+      const value = toOrgLocationPermissionValue(featureKey, permission.key);
+      return {
+        ...permission,
+        userIds: entries
+          .filter(entry => entry.permissions.includes(value))
+          .map(entry => entry.userId),
+      };
+    }),
+  });
+
+  return [
+    ...(OrgLocationGeneralPermissions.length > 0
+      ? [group(OrgLocationGeneralGroupKey, 'General', OrgLocationGeneralPermissions)]
+      : []),
+    ...(hasOrgLocationFeatures(location)
+      ? OrgLocationFeatures.map(feature =>
+          group(feature.key, feature.name, feature.permissions)
+        )
+      : []),
+  ];
+};
+
+// The permission group (General or a feature of the location) and the
+// permission, both known.
+const loadPermission = async (
+  locationId: string,
+  groupKey: string,
+  permissionKey: string
+) => {
+  if (isOrgLocationGeneralGroupKey(groupKey)) {
+    const location = await OrgLocations.findOneAsync({ _id: locationId });
+    if (!location) return fail('NOT_FOUND', 'Location not found.');
+    if (!OrgLocationGeneralPermissions.some(item => item.key === permissionKey)) {
+      return fail('BAD_USER_INPUT', `Unknown permission '${permissionKey}'.`);
+    }
+    return { basePermissionKey: undefined };
+  }
+
+  if (!isOrgLocationFeatureKey(groupKey)) {
+    return fail('BAD_USER_INPUT', `Unknown location feature '${groupKey}'.`);
+  }
+  const location = await OrgLocations.findOneAsync({ _id: locationId });
+  if (!location) return fail('NOT_FOUND', 'Location not found.');
+  if (!hasOrgLocationFeatures(location)) {
     return fail(
       'BAD_USER_INPUT',
-      `Features can only be turned on or off for ${OrgLocationFeatureAllowedTypes.join(
+      `Features are only available for ${OrgLocationFeatureAllowedTypes.join(
         ', '
       )} locations.`
     );
   }
-
-  return { location, handler: featureHandlers[featureKey] };
-};
-
-/**
- * Enables a feature for a location (mehfils only), setting it up first and
- * then recording it, and any data the feature keeps, on the location.
- * Enabling an enabled feature re-runs its setup, which is safe.
- */
-export const enableOrgLocationFeature = (
-  locationId: string,
-  featureKey: string,
-  userId: string
-): Promise<true> =>
-  runInTransaction(async () => {
-    const { location, handler } = await loadLocation(locationId, featureKey);
-    const featureData = (await handler.enable(location, userId)) ?? {};
-
-    await OrgLocations.updateAsync(
-      { _id: locationId },
-      {
-        $addToSet: { features: featureKey },
-        $set: { ...featureData, updatedAt: new Date(), updatedBy: userId },
-      }
-    );
-    return true as const;
-  });
-
-/**
- * Disables a feature for a location. The feature's stored data (e.g. the
- * workspace id) is kept so a later enable can pick up where it left off.
- */
-export const disableOrgLocationFeature = (
-  locationId: string,
-  featureKey: string,
-  userId: string
-): Promise<true> =>
-  runInTransaction(async () => {
-    const { location, handler } = await loadLocation(locationId, featureKey);
-    const featureData = (await handler.disable(location, userId)) ?? {};
-
-    await OrgLocations.updateAsync(
-      { _id: locationId },
-      {
-        $pull: { features: featureKey },
-        $set: { ...featureData, updatedAt: new Date(), updatedBy: userId },
-      }
-    );
-    return true as const;
-  });
-
-/**
- * The Duties and Attendance workspace of a location. Throws when the
- * location doesn't have the feature enabled.
- */
-export const getLocationDutiesAttendanceWorkspaceId = (
-  location: Pick<OrgLocationDocument, 'features' | 'dutiesAttendanceWorkspaceId'>
-): string => {
-  const enabled = location.features?.includes(
-    OrgLocationFeatureKeys.DUTIES_ATTENDANCE
-  );
-  if (!enabled || !location.dutiesAttendanceWorkspaceId) {
-    throw new GraphQLError(
-      'Duties and Attendance is not enabled for this location.',
-      { extensions: { code: 'NOT_FOUND' } }
-    );
+  const feature = OrgLocationFeatures.find(item => item.key === groupKey);
+  if (!feature?.permissions.some(item => item.key === permissionKey)) {
+    return fail('BAD_USER_INPUT', `Unknown permission '${permissionKey}'.`);
   }
-  return location.dutiesAttendanceWorkspaceId;
+  return { basePermissionKey: feature.basePermissionKey };
 };
 
-// ---------------------------------------------------------------------------
-// Duties and Attendance workspace users, managed from the location's admin page
-// ---------------------------------------------------------------------------
+/**
+ * Gives a karkun a permission of a group (General or a feature of a mehfil). Locations
+ * are used through the karkun's user account, so the karkun needs an unlocked
+ * one. A feature's other permissions come with its base permission (View).
+ */
+export const addOrgLocationFeatureUser = async (
+  locationId: string,
+  groupKey: string,
+  permissionKey: string,
+  karkunId: string,
+  userId: string
+): Promise<true> => {
+  const { basePermissionKey } = await loadPermission(
+    locationId,
+    groupKey,
+    permissionKey
+  );
+  const targetUser = await Users.findOneAsync({ personId: karkunId });
+  if (!targetUser) {
+    return fail('BAD_USER_INPUT', 'This karkun does not have a user account.');
+  }
+  if (targetUser.locked) {
+    return fail('BAD_USER_INPUT', "This karkun's user account is locked.");
+  }
+  const targetUserId = targetUser._id as string;
 
-const requireLocationWorkspaceId = async (locationId: string) => {
-  const location = await OrgLocations.findOneAsync({ _id: locationId });
-  if (!location) return fail('NOT_FOUND', 'Location not found.');
-  return getLocationDutiesAttendanceWorkspaceId(location as OrgLocationDocument);
+  const toAdd = [
+    toOrgLocationPermissionValue(groupKey, permissionKey),
+    ...(basePermissionKey
+      ? [toOrgLocationPermissionValue(groupKey, basePermissionKey)]
+      : []),
+  ];
+
+  // Indexes are created outside the transaction, which can't create them.
+  await ensureOrgLocationUserIndexes();
+  try {
+    await runInTransaction(async () => {
+      const existing = await OrgLocationUsers.findOneAsync({
+        locationId,
+        userId: targetUserId,
+      });
+      if (!existing) {
+        const now = new Date();
+        await OrgLocationUsers.insertAsync({
+          locationId,
+          userId: targetUserId,
+          permissions: [...new Set(toAdd)],
+          createdAt: now,
+          createdBy: userId,
+          updatedAt: now,
+          updatedBy: userId,
+        });
+        return;
+      }
+      await OrgLocationUsers.updateAsync(
+        { _id: existing._id },
+        {
+          $set: {
+            permissions: [...new Set([...existing.permissions, ...toAdd])],
+            updatedAt: new Date(),
+            updatedBy: userId,
+          },
+        }
+      );
+    });
+  } catch (error) {
+    // A concurrent first grant to the same user: the other one won, retry.
+    if (isDuplicateKey(error)) {
+      return addOrgLocationFeatureUser(
+        locationId,
+        groupKey,
+        permissionKey,
+        karkunId,
+        userId
+      );
+    }
+    throw error;
+  }
+  return true;
 };
 
-export const addOrgLocationDutiesAttendanceUser = async (
+/**
+ * Takes a permission from a user. Taking a feature's base permission (View)
+ * takes all of the feature's permissions. A user left with no permissions is
+ * removed from the location.
+ */
+export const removeOrgLocationFeatureUser = async (
   locationId: string,
-  input: { userId: string; permissions: string[] },
-  userId: string
-) =>
-  addDutiesAttendanceWorkspaceUser(
-    await requireLocationWorkspaceId(locationId),
-    input,
-    userId
-  );
-
-export const updateOrgLocationDutiesAttendanceUserPermissions = async (
-  locationId: string,
-  targetUserId: string,
-  permissions: string[],
-  userId: string
-) =>
-  updateDutiesAttendanceWorkspaceUserPermissions(
-    await requireLocationWorkspaceId(locationId),
-    targetUserId,
-    permissions,
-    userId
-  );
-
-export const removeOrgLocationDutiesAttendanceUser = async (
-  locationId: string,
+  groupKey: string,
+  permissionKey: string,
   targetUserId: string,
   userId: string
-) =>
-  removeDutiesAttendanceWorkspaceUser(
-    await requireLocationWorkspaceId(locationId),
-    targetUserId,
-    userId
+): Promise<true> => {
+  const { basePermissionKey } = await loadPermission(
+    locationId,
+    groupKey,
+    permissionKey
   );
+  const value = toOrgLocationPermissionValue(groupKey, permissionKey);
+
+  await runInTransaction(async () => {
+    const existing = await OrgLocationUsers.findOneAsync({
+      locationId,
+      userId: targetUserId,
+    });
+    if (!existing || !existing.permissions.includes(value)) {
+      fail('NOT_FOUND', 'This user does not have this permission.');
+      return;
+    }
+
+    const prefix = `${groupKey}.`;
+    const remaining = existing.permissions.filter(item =>
+      permissionKey === basePermissionKey
+        ? !item.startsWith(prefix)
+        : item !== value
+    );
+    if (remaining.length === 0) {
+      await OrgLocationUsers.removeAsync({ _id: existing._id });
+    } else {
+      await OrgLocationUsers.updateAsync(
+        { _id: existing._id },
+        {
+          $set: {
+            permissions: remaining,
+            updatedAt: new Date(),
+            updatedBy: userId,
+          },
+        }
+      );
+    }
+  });
+  return true;
+};

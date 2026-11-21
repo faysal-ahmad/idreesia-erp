@@ -11,15 +11,13 @@ const MemberSchema = new SimpleSchema({
 });
 
 export default new SimpleSchema({
-  workspaceId: {
+  locationId: {
     type: String,
   },
-  name: {
+  // The mehfil template duty (admin Mehfil Templates) this is a duty of. Its
+  // name and description are read from there, never copied.
+  mehfilDutyId: {
     type: String,
-  },
-  description: {
-    type: String,
-    optional: true,
   },
   // First day the duty is planned (YYYY-MM-DD, Asia/Karachi): the day after it
   // was created or last made active. Earlier days never get a record.

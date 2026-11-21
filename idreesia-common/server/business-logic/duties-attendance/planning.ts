@@ -1,4 +1,5 @@
 import {
+  DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH,
   DUTIES_ATTENDANCE_PLAN_DAY_COUNT,
   DutyAttendanceStatuses,
   type DutyAttendanceStatus,
@@ -7,13 +8,15 @@ import {
   isInTransaction,
   runInTransaction,
 } from 'meteor/idreesia-common/server/collections';
+import { OrgLocationFeatureAllowedTypes } from 'meteor/idreesia-common/constants/organization';
+import { OrgLocations } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import {
   DutiesAttendanceDayOverrides,
   DutiesAttendanceDayRecords,
   DutiesAttendanceDuties,
-  DutiesAttendanceWorkspaces,
+  type AttendanceGeoLocation,
   type DayRecordKarkun,
   type DutiesAttendanceDayOverrideDocument,
   type DutiesAttendanceDayRecordDocument,
@@ -216,7 +219,7 @@ export async function lockDays(
     });
     try {
       await DutiesAttendanceDayRecords.insertAsync({
-        workspaceId: duty.workspaceId,
+        locationId: duty.locationId,
         dutyId: duty._id,
         date,
         karkuns,
@@ -243,19 +246,19 @@ export async function lockDutyDaysThroughToday(
 
 /**
  * The job body: writes today's locked record for every active duty of every
- * live workspace. Returns how many duties were processed.
+ * mehfil. Returns how many duties were processed.
  */
 export async function createTodayDayRecords(
   reportProgress?: (fraction: number) => Promise<void>
 ) {
   await ensureDutiesAttendanceIndexes();
   const today = todayInKarachi();
-  const liveWorkspaces = await DutiesAttendanceWorkspaces.find(
-    { deletedAt: { $exists: false } },
+  const mehfils = await OrgLocations.find(
+    { type: { $in: OrgLocationFeatureAllowedTypes } },
     { fields: { _id: 1 } }
   ).fetchAsync();
   const duties = await DutiesAttendanceDuties.find({
-    workspaceId: { $in: liveWorkspaces.map(({ _id }) => _id) },
+    locationId: { $in: mehfils.map(({ _id }) => _id as string) },
     isActive: { $ne: false },
   }).fetchAsync();
 
@@ -272,7 +275,7 @@ export async function createTodayDayRecords(
 // ---------------------------------------------------------------------------
 
 export async function setDutyDayOverride(args: {
-  workspaceId: string;
+  locationId: string;
   dutyId: string;
   date: string;
   addedKarkunIds?: Array<string | null> | null;
@@ -282,7 +285,7 @@ export async function setDutyDayOverride(args: {
   requireUserId(args.userId);
   await ensureDutiesAttendanceIndexes();
   const duty = await requireDuty(args.dutyId, {
-    workspaceId: args.workspaceId,
+    locationId: args.locationId,
   });
   assertDate(args.date, 'date');
   if (args.date <= todayInKarachi()) {
@@ -316,7 +319,7 @@ export async function setDutyDayOverride(args: {
     });
   } else {
     await DutiesAttendanceDayOverrides.insertAsync({
-      workspaceId: duty.workspaceId,
+      locationId: duty.locationId,
       ...selector,
       addedKarkunIds,
       absentKarkunIds,
@@ -353,13 +356,13 @@ export interface PlanDay {
  * roster and the overrides.
  */
 export async function getDutyPlanDays(args: {
-  workspaceId: string;
+  locationId: string;
   dutyId: string;
   startDate: string;
 }): Promise<{ startDate: string; days: PlanDay[] }> {
   await ensureDutiesAttendanceIndexes();
   const duty = await requireDuty(args.dutyId, {
-    workspaceId: args.workspaceId,
+    locationId: args.locationId,
   });
   assertDate(args.startDate, 'start date');
 
@@ -451,20 +454,60 @@ export async function getDutyPlanDays(args: {
 // Attendance marking
 // ---------------------------------------------------------------------------
 
+function normalizeSource(source: string | null | undefined) {
+  const trimmed = (source ?? '').trim();
+  if (trimmed.length > DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH) {
+    throw dutiesAttendanceError(
+      'BAD_USER_INPUT',
+      `The source can be at most ${DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH} characters.`
+    );
+  }
+  return trimmed || undefined;
+}
+
+function normalizeGeo(
+  geo: AttendanceGeoLocation | null | undefined
+): AttendanceGeoLocation | undefined {
+  if (!geo) return undefined;
+  const { latitude, longitude, accuracy } = geo;
+  if (
+    !Number.isFinite(latitude) ||
+    latitude < -90 ||
+    latitude > 90 ||
+    !Number.isFinite(longitude) ||
+    longitude < -180 ||
+    longitude > 180 ||
+    (accuracy != null && (!Number.isFinite(accuracy) || accuracy < 0))
+  ) {
+    throw dutiesAttendanceError('BAD_USER_INPUT', 'The location is not valid.');
+  }
+  return {
+    latitude,
+    longitude,
+    ...(accuracy != null ? { accuracy } : {}),
+  };
+}
+
 export async function setDutyAttendance(args: {
-  workspaceId: string;
+  locationId: string;
   dutyId: string;
   date: string;
   karkunId: string;
   status?: string | null;
+  /** How the attendance was marked; kept with the mark. */
+  source?: string | null;
+  /** Where it was marked from; kept with the mark. */
+  geo?: AttendanceGeoLocation | null;
   userId: string;
 }) {
   requireUserId(args.userId);
+  const source = normalizeSource(args.source);
+  const geo = normalizeGeo(args.geo);
   // Indexes are created outside the transaction, which can't create them.
   await ensureDutiesAttendanceIndexes();
   return runInTransaction(async () => {
     const duty = await requireDuty(args.dutyId, {
-      workspaceId: args.workspaceId,
+      locationId: args.locationId,
     });
     assertDate(args.date, 'date');
     if (args.date > todayInKarachi()) {
@@ -506,7 +549,14 @@ export async function setDutyAttendance(args: {
           'karkuns.$.attendance': status,
           'karkuns.$.attendanceUpdatedAt': new Date(),
           'karkuns.$.attendanceUpdatedBy': args.userId,
+          // A new mark replaces the source and place of the earlier one.
+          ...(source ? { 'karkuns.$.attendanceSource': source } : {}),
+          ...(geo ? { 'karkuns.$.attendanceGeo': geo } : {}),
           ...touch(args.userId),
+        },
+        $unset: {
+          ...(source ? {} : { 'karkuns.$.attendanceSource': '' }),
+          ...(geo ? {} : { 'karkuns.$.attendanceGeo': '' }),
         },
       });
     } else {
@@ -515,6 +565,8 @@ export async function setDutyAttendance(args: {
           'karkuns.$.attendance': '',
           'karkuns.$.attendanceUpdatedAt': '',
           'karkuns.$.attendanceUpdatedBy': '',
+          'karkuns.$.attendanceSource': '',
+          'karkuns.$.attendanceGeo': '',
         },
         $set: touch(args.userId),
       });

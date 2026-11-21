@@ -7,12 +7,14 @@ import {
 import type {
   MyDutiesAttendanceLocationsQuery,
   WorkspaceDaDutiesQuery,
+  WorkspaceDaMehfilDutiesQuery,
 } from 'meteor/idreesia-common/types/client-operations';
 
 import {
   MY_DUTIES_ATTENDANCE_LOCATIONS,
   WORKSPACE_DA_ACCESS,
   WORKSPACE_DA_DUTIES,
+  WORKSPACE_DA_MEHFIL_DUTIES,
 } from './gql';
 
 export type MyDutiesAttendanceLocation = NonNullable<
@@ -66,4 +68,22 @@ export const useDuties = (locationId: string) => {
     (duty): duty is Duty => duty != null
   );
   return { duties, loading: loading && !data, refetch };
+};
+
+export type MehfilDuty = NonNullable<
+  NonNullable<WorkspaceDaMehfilDutiesQuery['workspaceDaMehfilDuties']>[number]
+>;
+
+// The duties the location can choose from. Only asked for while the user is
+// adding a duty.
+export const useMehfilDuties = (locationId: string, skip: boolean) => {
+  const { data, loading } = useQuery(WORKSPACE_DA_MEHFIL_DUTIES, {
+    variables: { locationId },
+    skip,
+    fetchPolicy: 'cache-and-network',
+  });
+  const mehfilDuties = (data?.workspaceDaMehfilDuties ?? []).filter(
+    (duty): duty is MehfilDuty => duty != null
+  );
+  return { mehfilDuties, loading: loading && !data };
 };

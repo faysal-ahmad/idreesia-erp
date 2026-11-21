@@ -8,6 +8,8 @@ import CheckPermissionsDirective from './_directives/check-permissions';
 import CheckInstanceAccessDirective from './_directives/check-instance-access';
 import CheckCommitteeAccessDirective from './_directives/check-committee-access';
 import CheckDutiesAttendanceAccessDirective from './_directives/check-duties-attendance-access';
+import CheckMehfilDetailsAccessDirective from './_directives/check-mehfil-details-access';
+import CheckMehfilPermissionsAccessDirective from './_directives/check-mehfil-permissions-access';
 import SuperAdminOnlyDirective from './_directives/super-admin-only';
 
 import RootTypes from './_root-types/root-types';
@@ -51,6 +53,8 @@ import FreeFormDataSchema from './admin/free-form-data/free-form-data';
 import FreeFormDataResolvers from './admin/free-form-data/resolvers';
 import OrgLocationSchema from './admin/org-location/org-location';
 import OrgLocationResolvers from './admin/org-location/resolvers';
+import MehfilTemplateSchema from './admin/mehfil-template/mehfil-template';
+import MehfilTemplateResolvers from './admin/mehfil-template/resolvers';
 
 import DeletedPeopleSchema from './admin/deleted-people/deleted-people';
 import DeletedPeopleResolvers from './admin/deleted-people/resolvers';
@@ -157,6 +161,10 @@ import WorkspacePollsSchema from './workspaces/polls/polls';
 import WorkspacePollsResolvers from './workspaces/polls/resolvers';
 import WorkspaceDutiesAttendanceSchema from './workspaces/duties-attendance/duties-attendance';
 import WorkspaceDutiesAttendanceResolvers from './workspaces/duties-attendance/resolvers';
+import WorkspaceMehfilDetailsSchema from './workspaces/mehfil-details/mehfil-details';
+import WorkspaceMehfilDetailsResolvers from './workspaces/mehfil-details/resolvers';
+import WorkspaceMehfilPermissionsSchema from './workspaces/mehfil-permissions/mehfil-permissions';
+import WorkspaceMehfilPermissionsResolvers from './workspaces/mehfil-permissions/resolvers';
 import WorkspaceProjectsSchema from './workspaces/projects/projects';
 import WorkspaceProjectsResolvers from './workspaces/projects/resolvers';
 import WorkspaceNightStayReportSchema from './workspaces/night-stay-report/night-stay-report';
@@ -223,6 +231,8 @@ const typeDefs = [
   CheckInstanceAccessDirective,
   CheckCommitteeAccessDirective,
   CheckDutiesAttendanceAccessDirective,
+  CheckMehfilDetailsAccessDirective,
+  CheckMehfilPermissionsAccessDirective,
   SuperAdminOnlyDirective,
   RootTypes,
   ExternalTypes,
@@ -239,6 +249,7 @@ const typeDefs = [
   PeopleTagSchema,
   FreeFormDataSchema,
   OrgLocationSchema,
+  MehfilTemplateSchema,
   DeletedPeopleSchema,
   DuplicatePeopleSchema,
   AdminSecurityLogSchema,
@@ -277,6 +288,8 @@ const typeDefs = [
   WorkspaceMeetingsSchema,
   WorkspacePollsSchema,
   WorkspaceDutiesAttendanceSchema,
+  WorkspaceMehfilDetailsSchema,
+  WorkspaceMehfilPermissionsSchema,
   WorkspaceProjectsSchema,
   WorkspaceNightStayReportSchema,
   WorkspaceMonitoringAlertsSchema,
@@ -313,6 +326,7 @@ const resolvers = merge(
   PeopleTagResolvers,
   FreeFormDataResolvers,
   OrgLocationResolvers,
+  MehfilTemplateResolvers,
   DeletedPeopleResolvers,
   DuplicatePeopleResolvers,
   AdminSecurityLogResolvers,
@@ -351,6 +365,8 @@ const resolvers = merge(
   WorkspaceMeetingsResolvers,
   WorkspacePollsResolvers,
   WorkspaceDutiesAttendanceResolvers,
+  WorkspaceMehfilDetailsResolvers,
+  WorkspaceMehfilPermissionsResolvers,
   WorkspaceProjectsResolvers,
   WorkspaceNightStayReportResolvers,
   WorkspaceMonitoringAlertsResolvers,

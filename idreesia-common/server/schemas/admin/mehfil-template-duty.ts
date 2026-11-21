@@ -2,6 +2,7 @@ import SimpleSchema from 'simpl-schema';
 
 import { identifiable, timestamps } from '../common';
 
+// A duty name that every mehfil's Duties and Attendance can choose from.
 export default new SimpleSchema({
   name: {
     type: String,
@@ -9,11 +10,6 @@ export default new SimpleSchema({
   description: {
     type: String,
     optional: true,
-  },
-  metadata: {
-    type: Object,
-    optional: true,
-    blackbox: true,
   },
 })
   .extend(identifiable)

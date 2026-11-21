@@ -1,14 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { OrgLocations } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   DutiesAttendanceDayRecords,
   DutiesAttendanceDuties,
 } from 'meteor/idreesia-common/server/collections/duties-attendance';
+import { MehfilTemplateDuties } from 'meteor/idreesia-common/server/collections/admin';
+import { createMehfilDuty } from 'meteor/idreesia-common/server/business-logic/admin/mehfil-template-duties';
 
 import {
   addDutyMember,
-  createDutiesAttendanceWorkspace,
   createDuty,
   getDutyPlanDays,
   setDutyAttendance,
@@ -17,6 +19,18 @@ import {
 vi.mock('meteor/idreesia-common/server/file-storage', async () =>
   import('meteor/idreesia-common/server/test-utils/file-storage-mock')
 );
+
+// A location picks its duties from the mehfil template duties.
+const createNamedDuty = async (
+  locationId: string,
+  name: string,
+  userId: string
+) => {
+  const existing = await MehfilTemplateDuties.findOneAsync({ name });
+  const mehfilDutyId =
+    existing?._id ?? (await createMehfilDuty({ name }, userId))._id;
+  return createDuty(locationId, { mehfilDutyId }, userId);
+};
 
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] });
@@ -35,12 +49,12 @@ describe('transactions', () => {
       isKarkun: true,
       sharedData: { name: 'Zaid' },
     } as any);
-    const { _id: workspaceId } = await createDutiesAttendanceWorkspace(
-      { name: 'Duties' },
-      'u1'
-    );
-    const duty = await createDuty(workspaceId, { name: 'Gate' }, 'u1');
-    await addDutyMember(workspaceId, duty._id, { karkunId: 'k1' }, 'u1');
+    const locationId = (await OrgLocations.insertAsync({
+      name: 'Mehfil',
+      type: 'mehfil',
+    } as never)) as string;
+    const duty = await createNamedDuty(locationId, 'Gate', 'u1');
+    await addDutyMember(locationId, duty._id, { karkunId: 'k1' }, 'u1');
     vi.setSystemTime(new Date('2024-01-10T10:00:00Z'));
     await People.insertAsync({
       _id: 'k2',
@@ -53,7 +67,7 @@ describe('transactions', () => {
     );
 
     await expect(
-      addDutyMember(workspaceId, duty._id, { karkunId: 'k2' }, 'u1')
+      addDutyMember(locationId, duty._id, { karkunId: 'k2' }, 'u1')
     ).rejects.toThrow('boom');
 
     expect(
@@ -70,12 +84,12 @@ describe('transactions', () => {
       isKarkun: true,
       sharedData: { name: 'Zaid' },
     } as any);
-    const { _id: workspaceId } = await createDutiesAttendanceWorkspace(
-      { name: 'Duties' },
-      'u1'
-    );
-    const duty = await createDuty(workspaceId, { name: 'Gate' }, 'u1');
-    await addDutyMember(workspaceId, duty._id, { karkunId: 'k1' }, 'u1');
+    const locationId = (await OrgLocations.insertAsync({
+      name: 'Mehfil',
+      type: 'mehfil',
+    } as never)) as string;
+    const duty = await createNamedDuty(locationId, 'Gate', 'u1');
+    await addDutyMember(locationId, duty._id, { karkunId: 'k1' }, 'u1');
     vi.setSystemTime(new Date('2024-01-10T10:00:00Z'));
     vi.spyOn(DutiesAttendanceDayRecords, 'updateAsync').mockRejectedValueOnce(
       new Error('boom')
@@ -83,7 +97,7 @@ describe('transactions', () => {
 
     await expect(
       setDutyAttendance({
-        workspaceId,
+        locationId,
         dutyId: duty._id,
         date: '2024-01-10',
         karkunId: 'k1',
@@ -98,7 +112,7 @@ describe('transactions', () => {
     ).toBe(0);
     // They are written again on the next read, without the mark.
     const { days } = await getDutyPlanDays({
-      workspaceId,
+      locationId,
       dutyId: duty._id,
       startDate: '2024-01-10',
     });

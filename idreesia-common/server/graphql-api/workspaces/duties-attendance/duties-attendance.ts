@@ -20,6 +20,14 @@ type DaMyLocationType {
   permissions: [String!]!
 }
 
+# A duty a location can choose from (see the Mehfil Templates in Admin). A
+# location's duty reads its name and description from the one it chose.
+type DaMehfilDutyType {
+  _id: String!
+  name: String!
+  description: String
+}
+
 type DaDutyMemberType {
   karkunId: String!
   isCoordinator: Boolean
@@ -30,7 +38,8 @@ type DaDutyMemberType {
 
 type DaDutyType {
   _id: String!
-  workspaceId: String!
+  locationId: String!
+  mehfilDutyId: String
   name: String!
   description: String
   isActive: Boolean!
@@ -95,6 +104,10 @@ extend type Query {
   workspaceDaDuties(locationId: String!): [DaDutyType]
     @checkDutiesAttendanceAccess(permission: VIEW)
 
+  # The duties a location can choose from when adding a duty.
+  workspaceDaMehfilDuties(locationId: String!): [DaMehfilDutyType]
+    @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+
   workspaceDaDutyById(locationId: String!, dutyId: String!): DaDutyType
     @checkDutiesAttendanceAccess(permission: VIEW)
 
@@ -125,18 +138,23 @@ extend type Query {
     @checkDutiesAttendanceAccess(permission: VIEW)
 }
 
+input DaGeoLocationInput {
+  latitude: Float!
+  longitude: Float!
+  # Metres.
+  accuracy: Float
+}
+
 extend type Mutation {
-  workspaceDaCreateDuty(
+  # Adds duties chosen from the mehfil template duties, all or none.
+  workspaceDaAddDuties(
     locationId: String!
-    name: String!
-    description: String
-  ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+    mehfilDutyIds: [String!]!
+  ): [DaDutyType] @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
   workspaceDaUpdateDuty(
     locationId: String!
     dutyId: String!
-    name: String
-    description: String
     isActive: Boolean
   ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
@@ -174,13 +192,16 @@ extend type Mutation {
     absentKarkunIds: [String]
   ): Boolean @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
-  # status is present, late or absent; null clears the mark.
+  # status is present, late or absent; null clears the mark. source (how it
+  # was marked) and geo (where from) are optional and kept with the mark.
   workspaceDaSetAttendance(
     locationId: String!
     dutyId: String!
     date: String!
     karkunId: String!
     status: String
+    source: String
+    geo: DaGeoLocationInput
   ): Boolean @checkDutiesAttendanceAccess(permission: MARK_ATTENDANCE)
 }
 `;

@@ -69,6 +69,11 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
+  // Mehfil Templates Routes
+  // *************************************************************************************
+  static mehfilTemplatesPath = `${ModulePaths.admin}/mehfil-templates`;
+
+  // *************************************************************************************
   // Deleted Data Routes
   // *************************************************************************************
   static deletedPeoplePath = `${ModulePaths.admin}/deleted-people`;

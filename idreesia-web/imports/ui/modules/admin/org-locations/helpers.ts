@@ -36,4 +36,6 @@ export const toMehfilDetails = (values: LocationFormValues) => ({
   lcdAvailability: !!values.lcdAvailability,
   tabAvailability: !!values.tabAvailability,
   otherMehfilDetails: values.otherMehfilDetails,
+  latitude: values.latitude ?? undefined,
+  longitude: values.longitude ?? undefined,
 });

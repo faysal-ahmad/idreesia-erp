@@ -165,7 +165,7 @@ const List = ({ history, location }: Props) => {
               loading={updatingMappings}
               onClick={handleUpdateMappings}
             >
-              Update Mappings
+              Update Location Mappings
             </Button>
           ) : null}
           <Button

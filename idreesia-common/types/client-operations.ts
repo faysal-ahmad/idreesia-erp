@@ -4774,6 +4774,70 @@ export type WorkspaceJoinMeetingVideoCallMutationVariables = Exact<{
 
 export type WorkspaceJoinMeetingVideoCallMutation = { workspaceJoinMeetingVideoCall: { url: string } | null };
 
+export type MyMehfilDetailsLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyMehfilDetailsLocationsQuery = { myMehfilDetailsLocations: Array<{ locationId: string, name: string, type: string, parentId: string | null, hasWorkspace: boolean, permissions: Array<string> } | null> };
+
+export type WorkspaceMehfilDetailsQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type WorkspaceMehfilDetailsQuery = { workspaceMehfilDetails: { locationId: string, name: string, permissions: Array<string>, mehfilDetails: { address: string | null, mehfilStartYear: string | null, timingDetails: string | null, lcdAvailability: boolean | null, tabAvailability: boolean | null, otherMehfilDetails: string | null, latitude: number | null, longitude: number | null } | null } | null };
+
+export type WorkspaceUpdateMehfilDetailsMutationVariables = Exact<{
+  locationId: string;
+  mehfilDetails: Types.OrgLocationMehfilDetailsInput;
+}>;
+
+
+export type WorkspaceUpdateMehfilDetailsMutation = { workspaceUpdateMehfilDetails: { locationId: string, permissions: Array<string>, mehfilDetails: { address: string | null, mehfilStartYear: string | null, timingDetails: string | null, lcdAvailability: boolean | null, tabAvailability: boolean | null, otherMehfilDetails: string | null, latitude: number | null, longitude: number | null } | null } | null };
+
+export type MyMehfilPermissionsLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyMehfilPermissionsLocationsQuery = { myMehfilPermissionsLocations: Array<{ locationId: string, name: string, type: string, parentId: string | null, hasWorkspace: boolean, permissions: Array<string> } | null> };
+
+export type WorkspaceMehfilPermissionsQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type WorkspaceMehfilPermissionsQuery = { workspaceMehfilPermissions: { locationId: string, permissions: Array<string>, groups: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> } | null> } | null> } | null };
+
+export type WorkspaceMehfilPermissionsKarkunSearchQueryVariables = Exact<{
+  locationId: string;
+  name?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type WorkspaceMehfilPermissionsKarkunSearchQuery = { workspaceMehfilPermissionsKarkunSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
+
+export type WorkspaceAddMehfilPermissionUserMutationVariables = Exact<{
+  locationId: string;
+  featureKey: string;
+  permissionKey: string;
+  karkunId: string;
+}>;
+
+
+export type WorkspaceAddMehfilPermissionUserMutation = { workspaceAddMehfilPermissionUser: boolean | null };
+
+export type WorkspaceRemoveMehfilPermissionUserMutationVariables = Exact<{
+  locationId: string;
+  featureKey: string;
+  permissionKey: string;
+  userId: string;
+}>;
+
+
+export type WorkspaceRemoveMehfilPermissionUserMutation = { workspaceRemoveMehfilPermissionUser: boolean | null };
+
 export type WorkspaceCommitteeMembersQueryVariables = Exact<{
   committeeId: string;
 }>;

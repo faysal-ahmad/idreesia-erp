@@ -2,10 +2,20 @@ import {
   DutiesAttendancePermissionInfos,
   DutiesAttendancePermissions,
 } from '../duties-attendance';
+import {
+  MehfilDetailsPermissionInfos,
+  MehfilDetailsPermissions,
+} from '../mehfil-details';
+import {
+  MehfilPermissionsPermissionInfos,
+  MehfilPermissionsPermissions,
+} from '../mehfil-permissions';
 import { OrgLocationTypes, type OrgLocationType } from './org-location-types';
 
 export const OrgLocationFeatureKeys = {
   DUTIES_ATTENDANCE: 'duties-attendance',
+  MEHFIL_DETAILS: 'mehfil-details',
+  MEHFIL_PERMISSIONS: 'mehfil-permissions',
 } as const;
 
 export type OrgLocationFeatureKey =
@@ -42,6 +52,22 @@ export const OrgLocationFeatures: OrgLocationFeature[] = [
       'Define duties, plan who is on each duty each day and mark their attendance.',
     permissions: DutiesAttendancePermissionInfos,
     basePermissionKey: DutiesAttendancePermissions.VIEW,
+  },
+  {
+    key: OrgLocationFeatureKeys.MEHFIL_DETAILS,
+    name: 'Mehfil Details',
+    description:
+      "Update the mehfil's address, timings, facilities and map location.",
+    permissions: MehfilDetailsPermissionInfos,
+    basePermissionKey: MehfilDetailsPermissions.VIEW,
+  },
+  {
+    key: OrgLocationFeatureKeys.MEHFIL_PERMISSIONS,
+    name: 'Mehfil Permissions',
+    description:
+      "See and manage who holds which permission on the mehfil, from Workspaces.",
+    permissions: MehfilPermissionsPermissionInfos,
+    basePermissionKey: MehfilPermissionsPermissions.VIEW,
   },
 ];
 

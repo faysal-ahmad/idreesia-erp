@@ -9,7 +9,9 @@ import {
   ClusterOutlined,
   ContainerOutlined,
   FolderOpenOutlined,
+  EnvironmentOutlined,
   IdcardOutlined,
+  SafetyCertificateOutlined,
   MessageOutlined,
   MoonOutlined,
   ProjectOutlined,
@@ -22,6 +24,8 @@ import {
 import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
 import { useMyDutiesAttendanceLocations } from './duties-attendance';
+import { useMyMehfilDetailsLocations } from './mehfil-details';
+import { useMyMehfilPermissionsLocations } from './mehfil-permissions';
 import { useMyCommitteeLocations } from './hooks/use-my-committee-locations';
 import { useMyCommittees } from './hooks/use-my-committees';
 import SubModuleNames from './submodule-names';
@@ -89,6 +93,14 @@ const DutiesAttendanceHandlers: DutiesAttendanceHandler[] = [
     paths.locationAttendanceSheetPath,
   ],
 ];
+
+const MEHFIL_DETAILS_KEY_PREFIX = 'mehfil-details-';
+const MEHFIL_PERMISSIONS_KEY_PREFIX = 'mehfil-permissions-';
+
+const mehfilDetailsMenuKey = (locationId: string) =>
+  `${MEHFIL_DETAILS_KEY_PREFIX}${locationId}`;
+const mehfilPermissionsMenuKey = (locationId: string) =>
+  `${MEHFIL_PERMISSIONS_KEY_PREFIX}${locationId}`;
 
 // A workspace's submenu key, e.g. the committee's id or `da-${locationId}`.
 const dutiesAttendanceSubMenuKey = (locationId: string) => `da-${locationId}`;
@@ -158,7 +170,37 @@ const LOCATION_PATH_REGEX = new RegExp(
   `^${paths.locationDutiesAttendancePath('([^/]+)')}/([^/]+)`
 );
 
+const MEHFIL_DETAILS_PATH_REGEX = new RegExp(
+  `^${paths.locationMehfilDetailsPath('([^/]+)')}`
+);
+
+const MEHFIL_PERMISSIONS_PATH_REGEX = new RegExp(
+  `^${paths.locationMehfilPermissionsPath('([^/]+)')}`
+);
+
 const resolveMenuFromPath = (pathname: string): ActiveMenu | null => {
+  const permissionsMatch = MEHFIL_PERMISSIONS_PATH_REGEX.exec(pathname);
+  if (permissionsMatch) {
+    const [, locationId] = permissionsMatch;
+    return {
+      subMenuKey: mehfilPermissionsMenuKey(locationId),
+      locationId,
+      key: mehfilPermissionsMenuKey(locationId),
+      subModuleName: SubModuleNames.mehfilPermissions,
+    };
+  }
+
+  const detailsMatch = MEHFIL_DETAILS_PATH_REGEX.exec(pathname);
+  if (detailsMatch) {
+    const [, locationId] = detailsMatch;
+    return {
+      subMenuKey: mehfilDetailsMenuKey(locationId),
+      locationId,
+      key: mehfilDetailsMenuKey(locationId),
+      subModuleName: SubModuleNames.mehfilDetails,
+    };
+  }
+
   const locationMatch = LOCATION_PATH_REGEX.exec(pathname);
   if (locationMatch) {
     const [, locationId, segment] = locationMatch;
@@ -200,7 +242,16 @@ const Sidebar = ({ history }: SidebarProps) => {
     useMyCommitteeLocations();
   const { locations: dutiesAttendanceLocations, loading: daLoading } =
     useMyDutiesAttendanceLocations();
-  const loading = committeesLoading || locationsLoading || daLoading;
+  const { locations: mehfilDetailsLocations, loading: detailsLoading } =
+    useMyMehfilDetailsLocations();
+  const { locations: mehfilPermissionsLocations, loading: permissionsLoading } =
+    useMyMehfilPermissionsLocations();
+  const loading =
+    committeesLoading ||
+    locationsLoading ||
+    daLoading ||
+    detailsLoading ||
+    permissionsLoading;
   const [pathname, setPathname] = useState(history.location.pathname);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
 
@@ -236,6 +287,28 @@ const Sidebar = ({ history }: SidebarProps) => {
     [dutiesAttendanceLocations]
   );
 
+  // Mehfils whose details the user can open.
+  const mehfilDetailsLocationIds = useMemo(
+    () =>
+      new Set(
+        mehfilDetailsLocations
+          .filter((location) => location.hasWorkspace)
+          .map((location) => location.locationId)
+      ),
+    [mehfilDetailsLocations]
+  );
+
+  // Mehfils whose permissions the user can open.
+  const mehfilPermissionsLocationIds = useMemo(
+    () =>
+      new Set(
+        mehfilPermissionsLocations
+          .filter((location) => location.hasWorkspace)
+          .map((location) => location.locationId)
+      ),
+    [mehfilPermissionsLocations]
+  );
+
   // The locations of the user's committees and workspaces, plus all their
   // ancestors.
   const locations = useMemo(() => {
@@ -244,7 +317,11 @@ const Sidebar = ({ history }: SidebarProps) => {
       { _id?: string | null; name?: string | null; parentId?: string | null }
     >();
     committeeLocations.forEach((location) => byId.set(location._id!, location));
-    dutiesAttendanceLocations.forEach((location) => {
+    [
+      ...dutiesAttendanceLocations,
+      ...mehfilDetailsLocations,
+      ...mehfilPermissionsLocations,
+    ].forEach((location) => {
       if (!byId.has(location.locationId)) {
         byId.set(location.locationId, {
           _id: location.locationId,
@@ -254,7 +331,12 @@ const Sidebar = ({ history }: SidebarProps) => {
       }
     });
     return Array.from(byId.values());
-  }, [committeeLocations, dutiesAttendanceLocations]);
+  }, [
+    committeeLocations,
+    dutiesAttendanceLocations,
+    mehfilDetailsLocations,
+    mehfilPermissionsLocations,
+  ]);
 
   // Location tree for the dropdown. The query returns the user's locations
   // plus their ancestors; ancestors without committees or workspaces stay in
@@ -275,7 +357,9 @@ const Sidebar = ({ history }: SidebarProps) => {
           title: location.name ?? '',
           selectable:
             committeesByLocation.has(location._id!) ||
-            workspaceLocationsById.has(location._id!),
+            workspaceLocationsById.has(location._id!) ||
+            mehfilDetailsLocationIds.has(location._id!) ||
+            mehfilPermissionsLocationIds.has(location._id!),
           children: [],
         },
       ])
@@ -303,7 +387,13 @@ const Sidebar = ({ history }: SidebarProps) => {
       });
     }
     return roots;
-  }, [locations, committeesByLocation, workspaceLocationsById]);
+  }, [
+    locations,
+    committeesByLocation,
+    workspaceLocationsById,
+    mehfilDetailsLocationIds,
+    mehfilPermissionsLocationIds,
+  ]);
 
   // Selectable locations in tree order, used for the default selection.
   const selectableLocationIds = useMemo(() => {
@@ -365,6 +455,25 @@ const Sidebar = ({ history }: SidebarProps) => {
   };
 
   const handleMenuItemSelected = ({ key }: { key: string }) => {
+    if (key.startsWith(MEHFIL_DETAILS_KEY_PREFIX)) {
+      setActiveSubModuleName(SubModuleNames.mehfilDetails);
+      history.push(
+        paths.locationMehfilDetailsPath(
+          key.slice(MEHFIL_DETAILS_KEY_PREFIX.length)
+        )
+      );
+      return;
+    }
+    if (key.startsWith(MEHFIL_PERMISSIONS_KEY_PREFIX)) {
+      setActiveSubModuleName(SubModuleNames.mehfilPermissions);
+      history.push(
+        paths.locationMehfilPermissionsPath(
+          key.slice(MEHFIL_PERMISSIONS_KEY_PREFIX.length)
+        )
+      );
+      return;
+    }
+
     const workspaceHandler = DutiesAttendanceHandlers.find(([prefix]) =>
       key.startsWith(`${prefix}-`)
     );
@@ -517,6 +626,24 @@ const Sidebar = ({ history }: SidebarProps) => {
 
   const workspaceLocation = workspaceLocationsById.get(effectiveLocationId);
   const menuItems = [
+    ...(mehfilDetailsLocationIds.has(effectiveLocationId)
+      ? [
+          {
+            key: mehfilDetailsMenuKey(effectiveLocationId),
+            icon: <EnvironmentOutlined style={IconStyle} />,
+            label: <NameLabel name='Mehfil Details' />,
+          },
+        ]
+      : []),
+    ...(mehfilPermissionsLocationIds.has(effectiveLocationId)
+      ? [
+          {
+            key: mehfilPermissionsMenuKey(effectiveLocationId),
+            icon: <SafetyCertificateOutlined style={IconStyle} />,
+            label: <NameLabel name='Mehfil Permissions' />,
+          },
+        ]
+      : []),
     ...(committeesByLocation.get(effectiveLocationId) ?? []).map(
       buildCommitteeItem
     ),

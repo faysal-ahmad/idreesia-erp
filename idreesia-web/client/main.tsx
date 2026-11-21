@@ -30,6 +30,7 @@ import './stay-cards.css';
 import '../imports/ui/modules/hr/ms-duties/duty-expanded.styles.css';
 import '../imports/ui/modules/hr/duty-planning/duty-planning.styles.css';
 import '../imports/ui/modules/workspaces/duties-attendance/duties-attendance.styles.css';
+import '../imports/ui/modules/workspaces/mehfil-details/mehfil-details.styles.css';
 import 'leaflet/dist/leaflet.css';
 import '../imports/ui/modules/admin/org-locations/list.styles.css';
 import '../imports/ui/modules/admin/org-locations/location-map.styles.css';

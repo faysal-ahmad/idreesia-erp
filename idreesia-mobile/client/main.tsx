@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Meteor } from 'meteor/meteor';
 import { ApolloProvider } from '@apollo/client/react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { setDefaultConfig } from 'antd-mobile';
 import enUS from 'antd-mobile/cjs/locales/en-US';
 
@@ -37,6 +38,17 @@ import { HashRouter } from '../imports/ui/router';
 import { applyTheme, watchTextScale } from '../imports/ui/theme';
 import { apolloClient } from '../imports/startup/apollo-client';
 import { restoreApolloCache } from '../imports/startup/apollo-persist';
+import { initMonitoring, reportError } from '../imports/startup/monitoring';
+
+initMonitoring();
+
+// Errors that escape React (event handlers, timers, unhandled promises).
+window.addEventListener('error', event => {
+  reportError(event.error ?? event.message, { source: 'window-error' });
+});
+window.addEventListener('unhandledrejection', event => {
+  reportError(event.reason, { source: 'unhandled-rejection' });
+});
 
 // HashRouter: Cordova serves the bundle from a local origin with no server
 // side routing, so path-based URLs don't survive a reload there.
@@ -58,7 +70,19 @@ Meteor.startup(async () => {
   createRoot(container).render(
     <HashRouter>
       <ApolloProvider client={apolloClient}>
-        <App />
+        <ErrorBoundary
+          fallbackRender={({ error }) => (
+            <div style={{ padding: 24 }}>
+              <h3>Something went wrong</h3>
+              <pre style={{ whiteSpace: 'pre-wrap' }}>
+                {error?.message ?? String(error)}
+              </pre>
+            </div>
+          )}
+          onError={error => reportError(error, { source: 'app-root' })}
+        >
+          <App />
+        </ErrorBoundary>
       </ApolloProvider>
     </HashRouter>
   );

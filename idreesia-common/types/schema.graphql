@@ -35,6 +35,26 @@ directive @checkInstanceAccess(
   dataFieldName: String,
 ) on FIELD_DEFINITION
 
+enum MehfilDetailsPermission {
+  VIEW
+  UPDATE
+}
+
+directive @checkMehfilDetailsAccess(
+  permission: MehfilDetailsPermission!,
+  locationIdArgName: String,
+) on FIELD_DEFINITION
+
+enum MehfilPermissionsPermission {
+  VIEW
+  MANAGE
+}
+
+directive @checkMehfilPermissionsAccess(
+  permission: MehfilPermissionsPermission!,
+  locationIdArgName: String,
+) on FIELD_DEFINITION
+
 directive @checkPermissions(
   permissions: [Permission!],
   dataFieldName: String,
@@ -4213,6 +4233,133 @@ type WorkspaceMeetingsInfoType {
     ): Boolean
       @checkCommitteeAccess(roles: [COORDINATOR])
   }
+
+type MehfilDetailsAccessType {
+  locationId: String!
+  permissions: [String!]!
+}
+
+# A mehfil whose details the caller can open, or one of its ancestors
+# (hasWorkspace false), listed so the locations show in their hierarchy.
+type MyMehfilDetailsLocationType {
+  locationId: String!
+  name: String!
+  type: String!
+  parentId: String
+  hasWorkspace: Boolean!
+  permissions: [String!]!
+}
+
+type WorkspaceMehfilDetailsType {
+  locationId: String!
+  name: String!
+  mehfilDetails: OrgLocationMehfilDetailsType
+  # What the caller may do with the details.
+  permissions: [String!]!
+}
+
+extend type Query {
+  myMehfilDetailsLocations: [MyMehfilDetailsLocationType]!
+
+  workspaceMehfilDetails(locationId: String!): WorkspaceMehfilDetailsType
+    @checkMehfilDetailsAccess(permission: VIEW)
+}
+
+extend type Mutation {
+  workspaceUpdateMehfilDetails(
+    locationId: String!
+    mehfilDetails: OrgLocationMehfilDetailsInput!
+  ): WorkspaceMehfilDetailsType
+    @checkMehfilDetailsAccess(permission: UPDATE)
+}
+
+# A mehfil whose permissions the caller can open, or one of its ancestors
+# (hasWorkspace false), listed so the locations show in their hierarchy.
+type MyMehfilPermissionsLocationType {
+  locationId: String!
+  name: String!
+  type: String!
+  parentId: String
+  hasWorkspace: Boolean!
+  permissions: [String!]!
+}
+
+type MpUserType {
+  userId: String!
+  # The karkun the user account belongs to.
+  personId: String
+  username: String
+  displayName: String
+}
+
+type MpPermissionType {
+  key: String!
+  name: String!
+  description: String!
+  users: [MpUserType]!
+}
+
+# A permission group of the mehfil (General or a feature).
+type MpGroupType {
+  featureKey: String!
+  featureName: String!
+  permissions: [MpPermissionType]!
+}
+
+type MehfilPermissionsType {
+  locationId: String!
+  # What the caller may do here.
+  permissions: [String!]!
+  groups: [MpGroupType]!
+}
+
+type MpKarkunType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PagedMpKarkunType {
+  data: [MpKarkunType]
+  totalResults: Int
+}
+
+extend type Query {
+  myMehfilPermissionsLocations: [MyMehfilPermissionsLocationType]!
+
+  workspaceMehfilPermissions(locationId: String!): MehfilPermissionsType
+    @checkMehfilPermissionsAccess(permission: VIEW)
+
+  # Karkuns to choose from when giving a permission.
+  workspaceMehfilPermissionsKarkunSearch(
+    locationId: String!
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedMpKarkunType @checkMehfilPermissionsAccess(permission: MANAGE)
+}
+
+extend type Mutation {
+  workspaceAddMehfilPermissionUser(
+    locationId: String!
+    featureKey: String!
+    permissionKey: String!
+    karkunId: String!
+  ): Boolean @checkMehfilPermissionsAccess(permission: MANAGE)
+
+  workspaceRemoveMehfilPermissionUser(
+    locationId: String!
+    featureKey: String!
+    permissionKey: String!
+    userId: String!
+  ): Boolean @checkMehfilPermissionsAccess(permission: MANAGE)
+}
 
 type WorkspaceMonitoringAlertType {
   _id: String

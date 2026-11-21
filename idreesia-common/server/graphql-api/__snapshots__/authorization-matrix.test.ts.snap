@@ -1900,6 +1900,14 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkCommitteeAccess",
     },
   ],
+  "Mutation.workspaceAddMehfilPermissionUser": [
+    {
+      "args": {
+        "permission": "MANAGE",
+      },
+      "directive": "checkMehfilPermissionsAccess",
+    },
+  ],
   "Mutation.workspaceAddProjectParticipants": [
     {
       "args": {
@@ -2417,6 +2425,14 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkCommitteeAccess",
     },
   ],
+  "Mutation.workspaceRemoveMehfilPermissionUser": [
+    {
+      "args": {
+        "permission": "MANAGE",
+      },
+      "directive": "checkMehfilPermissionsAccess",
+    },
+  ],
   "Mutation.workspaceRemoveProjectParticipant": [
     {
       "args": {
@@ -2691,6 +2707,14 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         ],
       },
       "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Mutation.workspaceUpdateMehfilDetails": [
+    {
+      "args": {
+        "permission": "UPDATE",
+      },
+      "directive": "checkMehfilDetailsAccess",
     },
   ],
   "Mutation.workspaceUpdatePoll": [
@@ -4469,6 +4493,30 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         ],
       },
       "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceMehfilDetails": [
+    {
+      "args": {
+        "permission": "VIEW",
+      },
+      "directive": "checkMehfilDetailsAccess",
+    },
+  ],
+  "Query.workspaceMehfilPermissions": [
+    {
+      "args": {
+        "permission": "VIEW",
+      },
+      "directive": "checkMehfilPermissionsAccess",
+    },
+  ],
+  "Query.workspaceMehfilPermissionsKarkunSearch": [
+    {
+      "args": {
+        "permission": "MANAGE",
+      },
+      "directive": "checkMehfilPermissionsAccess",
     },
   ],
   "Query.workspaceMonitoringAlerts": [

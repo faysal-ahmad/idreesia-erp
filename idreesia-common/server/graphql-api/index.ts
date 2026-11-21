@@ -8,6 +8,8 @@ import CheckPermissionsDirective from './_directives/check-permissions';
 import CheckInstanceAccessDirective from './_directives/check-instance-access';
 import CheckCommitteeAccessDirective from './_directives/check-committee-access';
 import CheckDutiesAttendanceAccessDirective from './_directives/check-duties-attendance-access';
+import CheckMehfilDetailsAccessDirective from './_directives/check-mehfil-details-access';
+import CheckMehfilPermissionsAccessDirective from './_directives/check-mehfil-permissions-access';
 import SuperAdminOnlyDirective from './_directives/super-admin-only';
 
 import RootTypes from './_root-types/root-types';
@@ -159,6 +161,10 @@ import WorkspacePollsSchema from './workspaces/polls/polls';
 import WorkspacePollsResolvers from './workspaces/polls/resolvers';
 import WorkspaceDutiesAttendanceSchema from './workspaces/duties-attendance/duties-attendance';
 import WorkspaceDutiesAttendanceResolvers from './workspaces/duties-attendance/resolvers';
+import WorkspaceMehfilDetailsSchema from './workspaces/mehfil-details/mehfil-details';
+import WorkspaceMehfilDetailsResolvers from './workspaces/mehfil-details/resolvers';
+import WorkspaceMehfilPermissionsSchema from './workspaces/mehfil-permissions/mehfil-permissions';
+import WorkspaceMehfilPermissionsResolvers from './workspaces/mehfil-permissions/resolvers';
 import WorkspaceProjectsSchema from './workspaces/projects/projects';
 import WorkspaceProjectsResolvers from './workspaces/projects/resolvers';
 import WorkspaceNightStayReportSchema from './workspaces/night-stay-report/night-stay-report';
@@ -225,6 +231,8 @@ const typeDefs = [
   CheckInstanceAccessDirective,
   CheckCommitteeAccessDirective,
   CheckDutiesAttendanceAccessDirective,
+  CheckMehfilDetailsAccessDirective,
+  CheckMehfilPermissionsAccessDirective,
   SuperAdminOnlyDirective,
   RootTypes,
   ExternalTypes,
@@ -280,6 +288,8 @@ const typeDefs = [
   WorkspaceMeetingsSchema,
   WorkspacePollsSchema,
   WorkspaceDutiesAttendanceSchema,
+  WorkspaceMehfilDetailsSchema,
+  WorkspaceMehfilPermissionsSchema,
   WorkspaceProjectsSchema,
   WorkspaceNightStayReportSchema,
   WorkspaceMonitoringAlertsSchema,
@@ -355,6 +365,8 @@ const resolvers = merge(
   WorkspaceMeetingsResolvers,
   WorkspacePollsResolvers,
   WorkspaceDutiesAttendanceResolvers,
+  WorkspaceMehfilDetailsResolvers,
+  WorkspaceMehfilPermissionsResolvers,
   WorkspaceProjectsResolvers,
   WorkspaceNightStayReportResolvers,
   WorkspaceMonitoringAlertsResolvers,

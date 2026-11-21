@@ -72,3 +72,16 @@
   line-height: 24px;
   box-sizing: border-box;
 }
+
+/* Location features (Mehfil Details, Mehfil Permissions, Duties & Attendance). */
+.workspace-feature-icon-mehfil-details {
+  background: var(--app-color-feature-teal);
+}
+
+.workspace-feature-icon-mehfil-permissions {
+  background: var(--app-color-feature-red);
+}
+
+.workspace-feature-icon-da {
+  background: var(--app-color-feature-indigo);
+}

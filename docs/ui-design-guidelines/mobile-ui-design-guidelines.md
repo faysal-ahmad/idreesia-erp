@@ -29,6 +29,7 @@ antd-mobile only ships components and theming docs. It has no guidance on page p
 | Detail screen | `idreesia-mobile/imports/ui/apps/security/visitors/visitor-detail-screen.tsx` |
 | Keeping a list alive under its detail | `idreesia-mobile/imports/ui/apps/security/visitors/visitors-feature.tsx` + `imports/ui/layout/keep-alive.tsx` |
 | Paged query → infinite list | `idreesia-mobile/imports/ui/hooks/use-paged-query.ts` + `imports/ui/components/paged-list.tsx` |
+| Workspaces location selector (bar styled like a section heading, searchable tree in a bottom Popup) | `idreesia-mobile/imports/ui/workspaces/location-picker.tsx` + `use-workspace-locations.ts` |
 | Workspace screens (opened from the Workspaces tab) | `idreesia-mobile/imports/ui/workspaces/` + `workspaces-stack.tsx` |
 | Form screen | `idreesia-mobile/imports/ui/account/change-password-screen.tsx` |
 | Public chat (signed out, Rocket.Chat) | `idreesia-mobile/imports/ui/chat/` |
@@ -52,7 +53,7 @@ The mobile app uses the same functional modules as the web app (`ModuleNames` / 
 
 ```
 Home tab (/home)                         ← default after signing in; empty for now
-Workspaces tab (/workspaces)             ← the user's workspaces, each expanding to its features
+Workspaces tab (/workspaces)             ← a location bar (opens a bottom-sheet selector, with unread counts per location); under it, the selected location's features (Mehfil Details, Mehfil Permissions, Duties & Attendance; no mobile screens yet) and the user's committees there, each expanding to its features
 ├── Workspace members (/workspaces/committees/:committeeId/members)   ← imports/ui/workspaces; the Workspaces list stays alive under it
 ├── Workspace discussion (/workspaces/committees/:committeeId/discussions)   ← DiscussionFeature; main list stays alive under:
 │   ├── …/discussions/threads/:threadId

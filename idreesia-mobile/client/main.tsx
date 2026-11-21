@@ -18,6 +18,7 @@ import '../imports/ui/components/collapsible-section.styles.css';
 import '../imports/ui/components/video-call/video-call-prejoin-popup.styles.css';
 import '../imports/ui/home/home-screen.styles.css';
 import '../imports/ui/workspaces/workspaces-screen.styles.css';
+import '../imports/ui/workspaces/location-picker.styles.css';
 import '../imports/ui/apps/security/stay-report/stay-report.styles.css';
 import '../imports/ui/apps/security/visitors/photo-search.styles.css';
 import '../imports/ui/apps/security/visitors/visitor-detail.styles.css';

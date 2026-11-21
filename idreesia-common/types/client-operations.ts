@@ -761,7 +761,27 @@ export type MobileCommitteeDocumentNotificationsQuery = { myNotifications: Array
 export type MobileMyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MobileMyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, description: string | null, features: Array<string | null> | null } | null> | null };
+export type MobileMyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, description: string | null, features: Array<string | null> | null, locationId: string | null } | null> | null };
+
+export type MobileMyCommitteeLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileMyCommitteeLocationsQuery = { myCommitteeLocations: Array<{ _id: string | null, name: string | null, type: string | null, parentId: string | null } | null> | null };
+
+export type MobileMyDutiesAttendanceLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileMyDutiesAttendanceLocationsQuery = { myDutiesAttendanceLocations: Array<{ locationId: string, name: string, type: string, parentId: string | null, hasWorkspace: boolean } | null> };
+
+export type MobileMyMehfilDetailsLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileMyMehfilDetailsLocationsQuery = { myMehfilDetailsLocations: Array<{ locationId: string, name: string, type: string, parentId: string | null, hasWorkspace: boolean } | null> };
+
+export type MobileMyMehfilPermissionsLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileMyMehfilPermissionsLocationsQuery = { myMehfilPermissionsLocations: Array<{ locationId: string, name: string, type: string, parentId: string | null, hasWorkspace: boolean } | null> };
 
 export type MobileMyNotificationCountsQueryVariables = Exact<{ [key: string]: never; }>;
 

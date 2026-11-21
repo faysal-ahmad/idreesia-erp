@@ -1,5 +1,6 @@
 import { WebApp } from 'meteor/webapp';
 import { Accounts } from 'meteor/accounts-base';
+import cors from 'cors';
 import express from 'express';
 import multer from 'multer';
 import bodyParser from 'body-parser';
@@ -375,9 +376,10 @@ export function createRestApp() {
    * Public config for the browser monitoring agent. The client can't read
    * process.env, so it fetches this at startup. Returns 204 when monitoring
    * is disabled. These are New Relic's public browser-agent identifiers
-   * (they ship in every page that uses the agent), not secrets.
+   * (they ship in every page that uses the agent), not secrets. CORS is open
+   * because the mobile app (Cordova, a different origin) fetches it too.
    */
-  app.get('/api/monitoring-config', (req: Request, res: Response) => {
+  app.get('/api/monitoring-config', cors(), (req: Request, res: Response) => {
     const config = getBrowserMonitoringConfig();
     if (!config) {
       res.status(204).end();

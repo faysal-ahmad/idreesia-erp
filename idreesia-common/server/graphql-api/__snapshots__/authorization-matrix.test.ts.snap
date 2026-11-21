@@ -48,7 +48,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.addOrgLocationDutiesAttendanceUser": [
+  "Mutation.addOrgLocationFeatureUser": [
     {
       "args": {
         "permissions": [
@@ -352,6 +352,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.createMehfilDuty": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.createMissingSecurityServerAlertThumbnails": [
     {
       "args": {
@@ -608,6 +618,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.deleteMehfilDuty": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.deletePeopleTag": [
     {
       "args": {
@@ -679,31 +699,11 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.disableOrgLocationFeature": [
-    {
-      "args": {
-        "permissions": [
-          "ADMIN_MANAGE_ORG_LOCATIONS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Mutation.enableCommitteeFeature": [
     {
       "args": {
         "permissions": [
           "ADMIN_MANAGE_COMMITTEES",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Mutation.enableOrgLocationFeature": [
-    {
-      "args": {
-        "permissions": [
-          "ADMIN_MANAGE_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -965,7 +965,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.removeOrgLocationDutiesAttendanceUser": [
+  "Mutation.removeOrgLocationFeatureUser": [
     {
       "args": {
         "permissions": [
@@ -1597,7 +1597,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.updateOrgLocation": [
+  "Mutation.updateMehfilDuty": [
     {
       "args": {
         "permissions": [
@@ -1607,7 +1607,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.updateOrgLocationDutiesAttendanceUserPermissions": [
+  "Mutation.updateOrgLocation": [
     {
       "args": {
         "permissions": [
@@ -1900,6 +1900,14 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkCommitteeAccess",
     },
   ],
+  "Mutation.workspaceAddMehfilPermissionUser": [
+    {
+      "args": {
+        "permission": "MANAGE",
+      },
+      "directive": "checkMehfilPermissionsAccess",
+    },
+  ],
   "Mutation.workspaceAddProjectParticipants": [
     {
       "args": {
@@ -2098,7 +2106,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkCommitteeAccess",
     },
   ],
-  "Mutation.workspaceDaAddDutyMember": [
+  "Mutation.workspaceDaAddDuties": [
     {
       "args": {
         "permission": "MANAGE_AND_PLAN_DUTIES",
@@ -2106,7 +2114,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkDutiesAttendanceAccess",
     },
   ],
-  "Mutation.workspaceDaCreateDuty": [
+  "Mutation.workspaceDaAddDutyMember": [
     {
       "args": {
         "permission": "MANAGE_AND_PLAN_DUTIES",
@@ -2417,6 +2425,14 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkCommitteeAccess",
     },
   ],
+  "Mutation.workspaceRemoveMehfilPermissionUser": [
+    {
+      "args": {
+        "permission": "MANAGE",
+      },
+      "directive": "checkMehfilPermissionsAccess",
+    },
+  ],
   "Mutation.workspaceRemoveProjectParticipant": [
     {
       "args": {
@@ -2693,6 +2709,14 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkCommitteeAccess",
     },
   ],
+  "Mutation.workspaceUpdateMehfilDetails": [
+    {
+      "args": {
+        "permission": "UPDATE",
+      },
+      "directive": "checkMehfilDetailsAccess",
+    },
+  ],
   "Mutation.workspaceUpdatePoll": [
     {
       "args": {
@@ -2740,16 +2764,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "ADMIN_VIEW_COMMITTEES",
           "ADMIN_MANAGE_COMMITTEES",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.allDutiesAttendancePermissions": [
-    {
-      "args": {
-        "permissions": [
-          "ADMIN_VIEW_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -2814,22 +2828,22 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.allMehfilDuties": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.allMehfils": [
     {
       "args": {
         "permissions": [
           "SECURITY_VIEW_MEHFILS",
           "SECURITY_MANAGE_MEHFILS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.allOrgLocationFeatures": [
-    {
-      "args": {
-        "permissions": [
-          "ADMIN_VIEW_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -2998,16 +3012,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_MANAGE_DUPLICATE_PEOPLE",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.dutiesAttendanceUserCandidates": [
-    {
-      "args": {
-        "permissions": [
-          "ADMIN_MANAGE_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -3326,7 +3330,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.orgLocationDutiesAttendanceUsers": [
+  "Query.orgLocationFeaturePermissions": [
     {
       "args": {
         "permissions": [
@@ -4171,6 +4175,14 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkDutiesAttendanceAccess",
     },
   ],
+  "Query.workspaceDaMehfilDuties": [
+    {
+      "args": {
+        "permission": "MANAGE_AND_PLAN_DUTIES",
+      },
+      "directive": "checkDutiesAttendanceAccess",
+    },
+  ],
   "Query.workspaceDaPlanDays": [
     {
       "args": {
@@ -4481,6 +4493,30 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         ],
       },
       "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.workspaceMehfilDetails": [
+    {
+      "args": {
+        "permission": "VIEW",
+      },
+      "directive": "checkMehfilDetailsAccess",
+    },
+  ],
+  "Query.workspaceMehfilPermissions": [
+    {
+      "args": {
+        "permission": "VIEW",
+      },
+      "directive": "checkMehfilPermissionsAccess",
+    },
+  ],
+  "Query.workspaceMehfilPermissionsKarkunSearch": [
+    {
+      "args": {
+        "permission": "MANAGE",
+      },
+      "directive": "checkMehfilPermissionsAccess",
     },
   ],
   "Query.workspaceMonitoringAlerts": [

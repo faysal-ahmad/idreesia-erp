@@ -17,8 +17,16 @@ export {
   type OrgLocationDocument,
   type OrgLocationMehfilDetails,
 } from './org-locations';
+export {
+  default as OrgLocationUsers,
+  type OrgLocationUserDocument,
+} from './org-location-users';
 export { default as Committees } from './committees';
 export {
   default as CityLocationMappings,
   type CityLocationMappingDocument,
 } from './city-location-mappings';
+export {
+  default as MehfilTemplateDuties,
+  type MehfilTemplateDutyDocument,
+} from './mehfil-template-duties';

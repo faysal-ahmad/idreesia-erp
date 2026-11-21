@@ -10,10 +10,12 @@ import type {
   WorkspaceDaAddDutyMemberMutationVariables,
   WorkspaceDaAttendanceSheetQuery,
   WorkspaceDaAttendanceSheetQueryVariables,
-  WorkspaceDaCreateDutyMutation,
-  WorkspaceDaCreateDutyMutationVariables,
+  WorkspaceDaAddDutiesMutation,
+  WorkspaceDaAddDutiesMutationVariables,
   WorkspaceDaDutiesQuery,
   WorkspaceDaDutiesQueryVariables,
+  WorkspaceDaMehfilDutiesQuery,
+  WorkspaceDaMehfilDutiesQueryVariables,
   WorkspaceDaKarkunSearchQuery,
   WorkspaceDaKarkunSearchQueryVariables,
   WorkspaceDaPlanDaysQuery,
@@ -67,6 +69,7 @@ export const WORKSPACE_DA_DUTIES: TypedDocumentNode<
   query workspaceDaDuties($locationId: String!) {
     workspaceDaDuties(locationId: $locationId) {
       _id
+      mehfilDutyId
       name
       description
       isActive
@@ -89,6 +92,19 @@ export const WORKSPACE_DA_DUTIES: TypedDocumentNode<
       createdBy
       updatedAt
       updatedBy
+    }
+  }
+`;
+
+export const WORKSPACE_DA_MEHFIL_DUTIES: TypedDocumentNode<
+  WorkspaceDaMehfilDutiesQuery,
+  WorkspaceDaMehfilDutiesQueryVariables
+> = gql`
+  query workspaceDaMehfilDuties($locationId: String!) {
+    workspaceDaMehfilDuties(locationId: $locationId) {
+      _id
+      name
+      description
     }
   }
 `;
@@ -192,19 +208,17 @@ export const WORKSPACE_DA_KARKUN_SEARCH: TypedDocumentNode<
   }
 `;
 
-export const WORKSPACE_DA_CREATE_DUTY: TypedDocumentNode<
-  WorkspaceDaCreateDutyMutation,
-  WorkspaceDaCreateDutyMutationVariables
+export const WORKSPACE_DA_ADD_DUTIES: TypedDocumentNode<
+  WorkspaceDaAddDutiesMutation,
+  WorkspaceDaAddDutiesMutationVariables
 > = gql`
-  mutation workspaceDaCreateDuty(
+  mutation workspaceDaAddDuties(
     $locationId: String!
-    $name: String!
-    $description: String
+    $mehfilDutyIds: [String!]!
   ) {
-    workspaceDaCreateDuty(
+    workspaceDaAddDuties(
       locationId: $locationId
-      name: $name
-      description: $description
+      mehfilDutyIds: $mehfilDutyIds
     ) {
       _id
     }
@@ -218,15 +232,11 @@ export const WORKSPACE_DA_UPDATE_DUTY: TypedDocumentNode<
   mutation workspaceDaUpdateDuty(
     $locationId: String!
     $dutyId: String!
-    $name: String
-    $description: String
     $isActive: Boolean
   ) {
     workspaceDaUpdateDuty(
       locationId: $locationId
       dutyId: $dutyId
-      name: $name
-      description: $description
       isActive: $isActive
     ) {
       _id

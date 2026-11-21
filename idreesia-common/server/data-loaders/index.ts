@@ -1,4 +1,8 @@
-import { locationCommitteesDataLoader, orgLocationsDataLoader } from './admin';
+import {
+  locationCommitteesDataLoader,
+  mehfilTemplateDutiesDataLoader,
+  orgLocationsDataLoader,
+} from './admin';
 import {
   attachmentsDataLoader,
   peopleDataLoader,
@@ -18,6 +22,7 @@ export function getDataLoaders() {
   return {
     admin: {
       locationCommittees: locationCommitteesDataLoader(),
+      mehfilTemplateDuties: mehfilTemplateDutiesDataLoader(),
       orgLocations: orgLocationsDataLoader(),
     },
     common: {

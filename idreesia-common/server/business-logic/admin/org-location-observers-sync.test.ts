@@ -42,7 +42,7 @@ const INHERITED = 'inherited_observer';
 
 beforeEach(async () => {
   for (const _id of ['k1', 'k2', 'k3']) {
-    // eslint-disable-next-line no-await-in-loop
+     
     await People.insertAsync({ _id, isKarkun: true, sharedData: { name: _id } } as any);
   }
   const root = await createOrgLocation({ name: 'Idreesia', type: OrgLocationTypes.ROOT }, user);

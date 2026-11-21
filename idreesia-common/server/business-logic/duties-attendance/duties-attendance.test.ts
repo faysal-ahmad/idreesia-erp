@@ -1,34 +1,30 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { People } from 'meteor/idreesia-common/server/collections/common';
-import { Users } from 'meteor/idreesia-common/server/collections/admin';
+import {
+  OrgLocations,
+} from 'meteor/idreesia-common/server/collections/admin';
 import {
   DutiesAttendanceDayRecords,
-  DutiesAttendanceWorkspaces,
-  DutiesAttendanceWorkspaceUsers,
+  DutiesAttendanceDuties,
 } from 'meteor/idreesia-common/server/collections/duties-attendance';
 
+import { MehfilTemplateDuties } from 'meteor/idreesia-common/server/collections/admin';
+import { createMehfilDuty } from 'meteor/idreesia-common/server/business-logic/admin/mehfil-template-duties';
 import {
-  addDutiesAttendanceWorkspaceUser,
+  addDuties,
   addDutyMember,
   createDuty,
-  createDutiesAttendanceWorkspace,
   createTodayDayRecords,
-  deleteDutiesAttendanceWorkspace,
+  getDutyNames,
   getAttendanceSheet,
   getDutyPlanDays,
-  normalizePermissions,
-  purgeDutiesAttendanceWorkspace,
   removeDuty,
   removeDutyMember,
-  removeDutiesAttendanceWorkspaceUser,
-  restoreDutiesAttendanceWorkspace,
-  searchWorkspaceUserCandidates,
   setDutyAttendance,
   setDutyDayOverride,
   updateDuty,
   updateDutyMember,
-  updateDutiesAttendanceWorkspaceUserPermissions,
 } from './index';
 
 vi.mock('meteor/idreesia-common/server/file-storage', async () =>
@@ -36,6 +32,19 @@ vi.mock('meteor/idreesia-common/server/file-storage', async () =>
 );
 
 // 2024-01-10 is a Wednesday (Karachi time: 15:00).
+
+// A location picks its duties from the mehfil template duties.
+const createNamedDuty = async (
+  locationId: string,
+  name: string,
+  userId: string
+) => {
+  const existing = await MehfilTemplateDuties.findOneAsync({ name });
+  const mehfilDutyId =
+    existing?._id ?? (await createMehfilDuty({ name }, userId))._id;
+  return createDuty(locationId, { mehfilDutyId }, userId);
+};
+
 const TODAY = '2024-01-10';
 const TOMORROW = '2024-01-11';
 
@@ -64,178 +73,97 @@ const seedKarkuns = async () => {
   await addKarkun('k3', 'Bilal');
 };
 
-const seedWorkspace = async () => {
-  const workspace = await createDutiesAttendanceWorkspace(
-    { name: 'Mehfil Duties', metadata: { locationId: 'loc1' } },
-    'admin'
-  );
-  return workspace._id;
-};
+const seedWorkspace = async () =>
+  (await OrgLocations.insertAsync({
+    name: 'Gulshan Mehfil',
+    type: 'mehfil',
+  } as never)) as string;
 
 const failsWith = (code: string) => ({ extensions: { code } });
 
-describe('workspaces', () => {
-  it('creates, soft-deletes, restores and purges a workspace with its data', async () => {
-    const workspaceId = await seedWorkspace();
-    const duty = await createDuty(workspaceId, { name: 'Gate' }, 'admin');
-    await Users.insertAsync({ _id: 'u1' } as any);
-    await addDutiesAttendanceWorkspaceUser(
-      workspaceId,
-      { userId: 'u1', permissions: ['view'] },
-      'admin'
-    );
+describe('the location', () => {
+  it('has to be a mehfil', async () => {
+    const cityId = (await OrgLocations.insertAsync({
+      name: 'Karachi',
+      type: 'city',
+    } as never)) as string;
 
-    await deleteDutiesAttendanceWorkspace(workspaceId, 'admin');
     await expect(
-      createDuty(workspaceId, { name: 'Other' }, 'admin')
+      createNamedDuty(cityId, 'Gate', 'admin')
     ).rejects.toMatchObject(failsWith('NOT_FOUND'));
     await expect(
-      getDutyPlanDays({ workspaceId, dutyId: duty._id, startDate: TODAY })
+      createDuty('nowhere', { mehfilDutyId: 'x' }, 'admin')
     ).rejects.toMatchObject(failsWith('NOT_FOUND'));
-
-    await restoreDutiesAttendanceWorkspace(workspaceId, 'admin');
-    await expect(
-      createDuty(workspaceId, { name: 'Other' }, 'admin')
-    ).resolves.toBeTruthy();
-
-    await expect(
-      purgeDutiesAttendanceWorkspace(workspaceId, 'admin')
-    ).rejects.toMatchObject(failsWith('CONFLICT'));
-    await deleteDutiesAttendanceWorkspace(workspaceId, 'admin');
-    await purgeDutiesAttendanceWorkspace(workspaceId, 'admin');
-    expect(await DutiesAttendanceWorkspaces.findOneAsync(workspaceId)).toBeUndefined();
-    expect(await DutiesAttendanceWorkspaceUsers.find({ workspaceId }).countAsync()).toBe(0);
-  });
-});
-
-describe('workspace users', () => {
-  it('always includes view and keeps a canonical order', () => {
-    expect(normalizePermissions(['mark-attendance'])).toEqual([
-      'view',
-      'mark-attendance',
-    ]);
-    expect(
-      normalizePermissions(['mark-attendance', 'manage-and-plan-duties'])
-    ).toEqual(['view', 'manage-and-plan-duties', 'mark-attendance']);
-  });
-
-  it('rejects empty and unknown permissions', () => {
-    expect(() => normalizePermissions([])).toThrow();
-    expect(() => normalizePermissions(['fly'])).toThrow();
-  });
-
-  it('adds, updates and removes a user, refusing duplicates and unknown users', async () => {
-    const workspaceId = await seedWorkspace();
-    await Users.insertAsync({ _id: 'u1' } as any);
-
-    const added = await addDutiesAttendanceWorkspaceUser(
-      workspaceId,
-      { userId: 'u1', permissions: ['mark-attendance'] },
-      'admin'
-    );
-    expect(added.permissions).toEqual(['view', 'mark-attendance']);
-
-    await expect(
-      addDutiesAttendanceWorkspaceUser(
-        workspaceId,
-        { userId: 'u1', permissions: ['view'] },
-        'admin'
-      )
-    ).rejects.toMatchObject(failsWith('CONFLICT'));
-    await expect(
-      addDutiesAttendanceWorkspaceUser(
-        workspaceId,
-        { userId: 'nobody', permissions: ['view'] },
-        'admin'
-      )
-    ).rejects.toMatchObject(failsWith('NOT_FOUND'));
-
-    const updated = await updateDutiesAttendanceWorkspaceUserPermissions(
-      workspaceId,
-      'u1',
-      ['manage-and-plan-duties'],
-      'admin'
-    );
-    expect(updated.permissions).toEqual(['view', 'manage-and-plan-duties']);
-
-    await removeDutiesAttendanceWorkspaceUser(workspaceId, 'u1', 'admin');
-    await expect(
-      removeDutiesAttendanceWorkspaceUser(workspaceId, 'u1', 'admin')
-    ).rejects.toMatchObject(failsWith('NOT_FOUND'));
-    await expect(
-      updateDutiesAttendanceWorkspaceUserPermissions(
-        workspaceId,
-        'u1',
-        ['view'],
-        'admin'
-      )
-    ).rejects.toMatchObject(failsWith('NOT_FOUND'));
-  });
-});
-
-describe('searchWorkspaceUserCandidates', () => {
-  it('finds unlocked, person-linked users by username or display name, ignoring case and regex characters', async () => {
-    await Users.insertAsync({ _id: 'u1', username: 'faisal', displayName: 'Faisal Ahmad', personId: 'p1' } as any);
-    await Users.insertAsync({ _id: 'u2', username: 'ali', displayName: 'Ali (Gate)', personId: 'p2' } as any);
-    await Users.insertAsync({ _id: 'u3', username: 'faisal2', personId: 'p3', locked: true } as any);
-    await Users.insertAsync({ _id: 'u4', username: 'faisal3' } as any);
-
-    expect((await searchWorkspaceUserCandidates('FAIS')).map(user => user._id)).toEqual(['u1']);
-    expect((await searchWorkspaceUserCandidates('(gate)')).map(user => user._id)).toEqual(['u2']);
-    expect((await searchWorkspaceUserCandidates('.*')).length).toBe(0);
-    expect((await searchWorkspaceUserCandidates(undefined)).map(user => user._id).sort()).toEqual(['u1', 'u2']);
   });
 });
 
 describe('duties and their members', () => {
-  it('creates, renames and deactivates a duty, refusing a repeated name', async () => {
-    const workspaceId = await seedWorkspace();
-    const gate = await createDuty(workspaceId, { name: ' Gate  1 ' }, 'u1');
-    expect(gate).toMatchObject({ name: 'Gate 1', isActive: true, members: [] });
+  it('creates a duty from the template list and deactivates it, refusing a repeat', async () => {
+    const locationId = await seedWorkspace();
+    const gate = await createNamedDuty(locationId, ' Gate  1 ', 'u1');
+    expect(gate).toMatchObject({ isActive: true, members: [] });
+    // The name stays with the template duty; the duty keeps no copy.
+    expect(gate).not.toHaveProperty('name');
+    expect(gate).not.toHaveProperty('description');
+    expect([...(await getDutyNames([gate])).values()]).toEqual(['Gate 1']);
 
     await expect(
-      createDuty(workspaceId, { name: 'Gate 1' }, 'u1')
+      createNamedDuty(locationId, 'Gate 1', 'u1')
     ).rejects.toMatchObject(failsWith('CONFLICT'));
+    // Only the template list can be used, not a name of its own.
     await expect(
-      createDuty(workspaceId, { name: '  ' }, 'u1')
+      createDuty(locationId, { mehfilDutyId: 'nope' }, 'u1')
     ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
 
-    const kitchen = await createDuty(workspaceId, { name: 'Kitchen' }, 'u1');
-    await expect(
-      updateDuty(workspaceId, kitchen._id, { name: 'Gate 1' }, 'u1')
-    ).rejects.toMatchObject(failsWith('CONFLICT'));
-
+    const kitchen = await createNamedDuty(locationId, 'Kitchen', 'u1');
     const updated = await updateDuty(
-      workspaceId,
+      locationId,
       kitchen._id,
-      { name: 'Langar', description: 'Cooking', isActive: false },
+      { isActive: false },
       'u1'
     );
-    expect(updated).toMatchObject({
-      name: 'Langar',
-      description: 'Cooking',
-      isActive: false,
-    });
+    expect(updated).toMatchObject({ isActive: false });
   });
 
-  it("doesn't reach a duty through another workspace", async () => {
-    const workspaceId = await seedWorkspace();
-    const other = await createDutiesAttendanceWorkspace({ name: 'Other' }, 'u1');
-    const duty = await createDuty(workspaceId, { name: 'Gate' }, 'u1');
+  it('adds several template duties at once, all or none', async () => {
+    const locationId = await seedWorkspace();
+    const a = await createMehfilDuty({ name: 'Gate' }, 'u1');
+    const b = await createMehfilDuty({ name: 'Kitchen' }, 'u1');
+
+    const added = await addDuties(locationId, [a._id, b._id, a._id], 'u1');
+    expect(added).toHaveLength(2);
+
+    const c = await createMehfilDuty({ name: 'Langar' }, 'u1');
+    // One already there: nothing is added.
+    await expect(
+      addDuties(locationId, [c._id, a._id], 'u1')
+    ).rejects.toMatchObject(failsWith('CONFLICT'));
+    expect(
+      await DutiesAttendanceDuties.find({ locationId }).countAsync()
+    ).toBe(2);
+    await expect(addDuties(locationId, [], 'u1')).rejects.toMatchObject(
+      failsWith('BAD_USER_INPUT')
+    );
+  });
+
+  it("doesn't reach a duty through another location", async () => {
+    const locationId = await seedWorkspace();
+    const other = { _id: await seedWorkspace() };
+    const duty = await createNamedDuty(locationId, 'Gate', 'u1');
 
     await expect(
-      updateDuty(other._id, duty._id, { name: 'X' }, 'u1')
+      updateDuty(other._id, duty._id, { isActive: false }, 'u1')
     ).rejects.toMatchObject(failsWith('NOT_FOUND'));
   });
 
   it('adds, updates and removes members, validating them', async () => {
     await seedKarkuns();
     await People.insertAsync({ _id: 'p9', isKarkun: false } as any);
-    const workspaceId = await seedWorkspace();
-    const duty = await createDuty(workspaceId, { name: 'Gate' }, 'u1');
+    const locationId = await seedWorkspace();
+    const duty = await createNamedDuty(locationId, 'Gate', 'u1');
 
     const withMember = await addDutyMember(
-      workspaceId,
+      locationId,
       duty._id,
       { karkunId: 'k1', daysOfWeek: ['Mon', 'Mon', 'Tue'], isCoordinator: true },
       'u1'
@@ -245,14 +173,14 @@ describe('duties and their members', () => {
     ]);
 
     await expect(
-      addDutyMember(workspaceId, duty._id, { karkunId: 'k1' }, 'u1')
+      addDutyMember(locationId, duty._id, { karkunId: 'k1' }, 'u1')
     ).rejects.toMatchObject(failsWith('CONFLICT'));
     await expect(
-      addDutyMember(workspaceId, duty._id, { karkunId: 'p9' }, 'u1')
+      addDutyMember(locationId, duty._id, { karkunId: 'p9' }, 'u1')
     ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
     await expect(
       addDutyMember(
-        workspaceId,
+        locationId,
         duty._id,
         { karkunId: 'k2', daysOfWeek: ['Funday'] },
         'u1'
@@ -260,7 +188,7 @@ describe('duties and their members', () => {
     ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
 
     const changed = await updateDutyMember(
-      workspaceId,
+      locationId,
       duty._id,
       { karkunId: 'k1', daysOfWeek: [] },
       'u1'
@@ -268,34 +196,34 @@ describe('duties and their members', () => {
     expect(changed.members).toEqual([{ karkunId: 'k1' }]);
 
     await expect(
-      updateDutyMember(workspaceId, duty._id, { karkunId: 'k3' }, 'u1')
+      updateDutyMember(locationId, duty._id, { karkunId: 'k3' }, 'u1')
     ).rejects.toMatchObject(failsWith('NOT_FOUND'));
 
-    const emptied = await removeDutyMember(workspaceId, duty._id, 'k1', 'u1');
+    const emptied = await removeDutyMember(locationId, duty._id, 'k1', 'u1');
     expect(emptied.members).toEqual([]);
     await expect(
-      removeDutyMember(workspaceId, duty._id, 'k1', 'u1')
+      removeDutyMember(locationId, duty._id, 'k1', 'u1')
     ).rejects.toMatchObject(failsWith('NOT_FOUND'));
   });
 
   it('only deletes a duty that never had anybody on duty', async () => {
     await seedKarkuns();
     setNow('2024-01-08T10:00:00Z');
-    const workspaceId = await seedWorkspace();
-    const unused = await createDuty(workspaceId, { name: 'Unused' }, 'u1');
-    const used = await createDuty(workspaceId, { name: 'Used' }, 'u1');
-    await addDutyMember(workspaceId, used._id, { karkunId: 'k1' }, 'u1');
+    const locationId = await seedWorkspace();
+    const unused = await createNamedDuty(locationId, 'Unused', 'u1');
+    const used = await createNamedDuty(locationId, 'Used', 'u1');
+    await addDutyMember(locationId, used._id, { karkunId: 'k1' }, 'u1');
     setNow('2024-01-10T10:00:00Z');
     // Reading the plan writes the (empty) records of the unused duty too.
-    await getDutyPlanDays({ workspaceId, dutyId: unused._id, startDate: '2024-01-09' });
-    await getDutyPlanDays({ workspaceId, dutyId: used._id, startDate: '2024-01-09' });
+    await getDutyPlanDays({ locationId, dutyId: unused._id, startDate: '2024-01-09' });
+    await getDutyPlanDays({ locationId, dutyId: used._id, startDate: '2024-01-09' });
 
-    await removeDuty(workspaceId, unused._id, 'u1');
+    await removeDuty(locationId, unused._id, 'u1');
     expect(
       await DutiesAttendanceDayRecords.find({ dutyId: unused._id }).countAsync()
     ).toBe(0);
     await expect(
-      removeDuty(workspaceId, used._id, 'u1')
+      removeDuty(locationId, used._id, 'u1')
     ).rejects.toMatchObject(failsWith('CONFLICT'));
   });
 });
@@ -305,33 +233,33 @@ describe('duties and their members', () => {
 const seedPlan = async () => {
   await seedKarkuns();
   setNow('2024-01-07T10:00:00Z'); // Sunday
-  const workspaceId = await seedWorkspace();
-  const duty = await createDuty(workspaceId, { name: 'Gate' }, 'u1');
-  await addDutyMember(workspaceId, duty._id, { karkunId: 'k1' }, 'u1');
+  const locationId = await seedWorkspace();
+  const duty = await createNamedDuty(locationId, 'Gate', 'u1');
+  await addDutyMember(locationId, duty._id, { karkunId: 'k1' }, 'u1');
   await addDutyMember(
-    workspaceId,
+    locationId,
     duty._id,
     { karkunId: 'k2', daysOfWeek: ['Mon'] },
     'u1'
   );
   setNow('2024-01-10T10:00:00Z');
-  return { workspaceId, dutyId: duty._id };
+  return { locationId, dutyId: duty._id };
 };
 
 const planDays = async (
-  workspaceId: string,
+  locationId: string,
   dutyId: string,
   startDate = '2024-01-08'
-) => (await getDutyPlanDays({ workspaceId, dutyId, startDate })).days;
+) => (await getDutyPlanDays({ locationId, dutyId, startDate })).days;
 
 const names = (day: { karkuns: Array<{ name: string }> }) =>
   day.karkuns.map(karkun => karkun.name);
 
 describe('planning', () => {
   it('shows seven days: locked up to today, composed from the roster after', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
+    const { locationId, dutyId } = await seedPlan();
 
-    const days = await planDays(workspaceId, dutyId);
+    const days = await planDays(locationId, dutyId);
 
     expect(days.map(day => day.date)).toEqual([
       '2024-01-08',
@@ -362,33 +290,33 @@ describe('planning', () => {
   });
 
   it('keeps a locked day as it was when the roster changes later', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
-    await planDays(workspaceId, dutyId);
+    const { locationId, dutyId } = await seedPlan();
+    await planDays(locationId, dutyId);
 
-    await addDutyMember(workspaceId, dutyId, { karkunId: 'k3' }, 'u1');
-    await removeDutyMember(workspaceId, dutyId, 'k1', 'u1');
+    await addDutyMember(locationId, dutyId, { karkunId: 'k3' }, 'u1');
+    await removeDutyMember(locationId, dutyId, 'k1', 'u1');
 
-    const days = await planDays(workspaceId, dutyId);
+    const days = await planDays(locationId, dutyId);
     expect(names(days[2])).toEqual(['Zaid']); // today, locked
     expect(names(days[3])).toEqual(['Bilal']); // tomorrow, new roster
   });
 
   it('locks the days before a roster change even if nobody read them yet', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
+    const { locationId, dutyId } = await seedPlan();
 
-    await removeDutyMember(workspaceId, dutyId, 'k1', 'u1');
+    await removeDutyMember(locationId, dutyId, 'k1', 'u1');
 
-    const days = await planDays(workspaceId, dutyId);
+    const days = await planDays(locationId, dutyId);
     expect(names(days[1])).toEqual(['Zaid']);
     expect(names(days[2])).toEqual(['Zaid']);
     expect(names(days[3])).toEqual([]);
   });
 
   it('adds people for a future day and takes members off it', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
+    const { locationId, dutyId } = await seedPlan();
 
     await setDutyDayOverride({
-      workspaceId,
+      locationId,
       dutyId,
       date: TOMORROW,
       addedKarkunIds: ['k3'],
@@ -396,7 +324,7 @@ describe('planning', () => {
       userId: 'u1',
     });
 
-    const day = (await planDays(workspaceId, dutyId))[3];
+    const day = (await planDays(locationId, dutyId))[3];
     expect(day.addedKarkunIds).toEqual(['k3']);
     expect(day.absentKarkunIds).toEqual(['k1']);
     expect(day.karkuns.map(k => [k.name, k.off, k.addedForDay])).toEqual([
@@ -406,21 +334,21 @@ describe('planning', () => {
 
     // Clearing both lists removes the override.
     await setDutyDayOverride({
-      workspaceId,
+      locationId,
       dutyId,
       date: TOMORROW,
       userId: 'u1',
     });
-    const cleared = (await planDays(workspaceId, dutyId))[3];
+    const cleared = (await planDays(locationId, dutyId))[3];
     expect(names(cleared)).toEqual(['Zaid']);
     expect(cleared.karkuns[0].off).toBe(false);
   });
 
   it('locks an override that was set for a day that has now come', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
+    const { locationId, dutyId } = await seedPlan();
     setNow('2024-01-09T10:00:00Z');
     await setDutyDayOverride({
-      workspaceId,
+      locationId,
       dutyId,
       date: TODAY,
       addedKarkunIds: ['k3'],
@@ -428,17 +356,17 @@ describe('planning', () => {
     });
     setNow('2024-01-10T10:00:00Z');
 
-    const today = (await planDays(workspaceId, dutyId))[2];
+    const today = (await planDays(locationId, dutyId))[2];
     expect(names(today)).toEqual(['Bilal', 'Zaid']);
     expect(today.karkuns.find(k => k.name === 'Bilal')?.addedForDay).toBe(true);
   });
 
   it('refuses to plan today or the past, or with people who are not karkuns', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
+    const { locationId, dutyId } = await seedPlan();
 
     await expect(
       setDutyDayOverride({
-        workspaceId,
+        locationId,
         dutyId,
         date: TODAY,
         addedKarkunIds: ['k3'],
@@ -447,7 +375,7 @@ describe('planning', () => {
     ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
     await expect(
       setDutyDayOverride({
-        workspaceId,
+        locationId,
         dutyId,
         date: TOMORROW,
         addedKarkunIds: ['ghost'],
@@ -456,7 +384,7 @@ describe('planning', () => {
     ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
     await expect(
       setDutyDayOverride({
-        workspaceId,
+        locationId,
         dutyId,
         date: '2024-13-45',
         userId: 'u1',
@@ -466,14 +394,14 @@ describe('planning', () => {
 
   it('starts a new duty tomorrow, so its roster can be set up first', async () => {
     await seedKarkuns();
-    const workspaceId = await seedWorkspace();
-    const duty = await createDuty(workspaceId, { name: 'New' }, 'u1');
+    const locationId = await seedWorkspace();
+    const duty = await createNamedDuty(locationId, 'New', 'u1');
     expect(duty.startDate).toBe(TOMORROW);
 
-    await addDutyMember(workspaceId, duty._id, { karkunId: 'k1' }, 'u1');
-    await addDutyMember(workspaceId, duty._id, { karkunId: 'k2' }, 'u1');
+    await addDutyMember(locationId, duty._id, { karkunId: 'k1' }, 'u1');
+    await addDutyMember(locationId, duty._id, { karkunId: 'k2' }, 'u1');
 
-    const days = await planDays(workspaceId, duty._id, TODAY);
+    const days = await planDays(locationId, duty._id, TODAY);
     expect(days[0].locked).toBe(true);
     expect(days[0].karkuns).toEqual([]);
     expect(names(days[1])).toEqual(['Ali', 'Zaid']);
@@ -485,50 +413,50 @@ describe('planning', () => {
   it('never applies a roster to days that came before it', async () => {
     await seedKarkuns();
     setNow('2024-01-01T10:00:00Z');
-    const workspaceId = await seedWorkspace();
-    const duty = await createDuty(workspaceId, { name: 'Late roster' }, 'u1');
+    const locationId = await seedWorkspace();
+    const duty = await createNamedDuty(locationId, 'Late roster', 'u1');
     setNow('2024-01-05T10:00:00Z');
-    await addDutyMember(workspaceId, duty._id, { karkunId: 'k1' }, 'u1');
+    await addDutyMember(locationId, duty._id, { karkunId: 'k1' }, 'u1');
     setNow('2024-01-10T10:00:00Z');
 
-    const days = await planDays(workspaceId, duty._id, '2024-01-04');
+    const days = await planDays(locationId, duty._id, '2024-01-04');
 
     // The 4th and 5th had nobody; Zaid joins from the 6th.
     expect(days.map(day => names(day).length)).toEqual([0, 0, 1, 1, 1, 1, 1]);
   });
 
   it('stops planning an inactive duty, and picks up from tomorrow when it is active again', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
+    const { locationId, dutyId } = await seedPlan();
 
-    await updateDuty(workspaceId, dutyId, { isActive: false }, 'u1');
+    await updateDuty(locationId, dutyId, { isActive: false }, 'u1');
     // Days up to today were locked before it stopped.
     expect(
       await DutiesAttendanceDayRecords.find({ dutyId }).countAsync()
     ).toBe(3);
 
     setNow('2024-01-15T10:00:00Z');
-    await planDays(workspaceId, dutyId, '2024-01-10');
+    await planDays(locationId, dutyId, '2024-01-10');
     expect(
       await DutiesAttendanceDayRecords.find({ dutyId }).countAsync()
     ).toBe(3);
 
-    const again = await updateDuty(workspaceId, dutyId, { isActive: true }, 'u1');
+    const again = await updateDuty(locationId, dutyId, { isActive: true }, 'u1');
     expect(again.startDate).toBe('2024-01-16');
     // The 14th and 15th (today) were not planned; the 16th, a future day,
     // is composed from the roster again.
-    const days = await planDays(workspaceId, dutyId, '2024-01-14');
+    const days = await planDays(locationId, dutyId, '2024-01-14');
     expect(days.map(day => names(day).length)).toEqual([0, 0, 1, 1, 1, 1, 1]);
   });
 
-  it('writes the nightly record for active duties of live workspaces only', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
-    const inactive = await createDuty(workspaceId, { name: 'Closed' }, 'u1');
-    await addDutyMember(workspaceId, inactive._id, { karkunId: 'k3' }, 'u1');
-    await updateDuty(workspaceId, inactive._id, { isActive: false }, 'u1');
-    const gone = await createDutiesAttendanceWorkspace({ name: 'Gone' }, 'u1');
-    const goneDuty = await createDuty(gone._id, { name: 'Old' }, 'u1');
+  it('writes the nightly record for active duties of mehfils only', async () => {
+    const { locationId, dutyId } = await seedPlan();
+    const inactive = await createNamedDuty(locationId, 'Closed', 'u1');
+    await addDutyMember(locationId, inactive._id, { karkunId: 'k3' }, 'u1');
+    await updateDuty(locationId, inactive._id, { isActive: false }, 'u1');
+    const gone = { _id: await seedWorkspace() };
+    const goneDuty = await createNamedDuty(gone._id, 'Old', 'u1');
     await addDutyMember(gone._id, goneDuty._id, { karkunId: 'k3' }, 'u1');
-    await deleteDutiesAttendanceWorkspace(gone._id, 'u1');
+    await OrgLocations.updateAsync(gone._id, { $set: { type: 'city' } });
     const progress = vi.fn();
 
     const processed = await createTodayDayRecords(progress);
@@ -549,17 +477,17 @@ describe('planning', () => {
 
 describe('attendance', () => {
   it('marks, changes and clears attendance for today', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
+    const { locationId, dutyId } = await seedPlan();
     const mark = (karkunId: string, status?: string | null, date = TODAY) =>
       setDutyAttendance({
-        workspaceId,
+        locationId,
         dutyId,
         date,
         karkunId,
         status,
         userId: 'marker',
       });
-    const today = async () => (await planDays(workspaceId, dutyId))[2];
+    const today = async () => (await planDays(locationId, dutyId))[2];
 
     await mark('k1', 'present');
     expect((await today()).karkuns[0].attendance).toBe('present');
@@ -585,11 +513,73 @@ describe('attendance', () => {
     expect(cleared?.karkuns[0].attendanceUpdatedBy).toBeUndefined();
   });
 
+  it('keeps the source and location with a mark, replaces them with the next mark and clears them', async () => {
+    const { locationId, dutyId } = await seedPlan();
+    const mark = (extra: Record<string, unknown>) =>
+      setDutyAttendance({
+        locationId,
+        dutyId,
+        date: TODAY,
+        karkunId: 'k1',
+        userId: 'marker',
+        ...extra,
+      });
+    const stored = async () =>
+      (await DutiesAttendanceDayRecords.findOneAsync({ dutyId, date: TODAY }))
+        ?.karkuns[0];
+
+    await mark({
+      status: 'present',
+      source: ' kiosk ',
+      geo: { latitude: 24.86, longitude: 67.01, accuracy: 12 },
+    });
+    expect(await stored()).toMatchObject({
+      attendanceSource: 'kiosk',
+      attendanceGeo: { latitude: 24.86, longitude: 67.01, accuracy: 12 },
+    });
+
+    // Both are optional: a mark without them drops the earlier ones.
+    await mark({ status: 'late' });
+    const plain = await stored();
+    expect(plain?.attendance).toBe('late');
+    expect(plain?.attendanceSource).toBeUndefined();
+    expect(plain?.attendanceGeo).toBeUndefined();
+
+    await mark({ status: 'present', source: 'manual' });
+    expect((await stored())?.attendanceSource).toBe('manual');
+    await mark({ status: null });
+    expect((await stored())?.attendanceSource).toBeUndefined();
+  });
+
+  it('refuses an invalid location and an overlong source', async () => {
+    const { locationId, dutyId } = await seedPlan();
+    const mark = (extra: Record<string, unknown>) =>
+      setDutyAttendance({
+        locationId,
+        dutyId,
+        date: TODAY,
+        karkunId: 'k1',
+        status: 'present',
+        userId: 'marker',
+        ...extra,
+      });
+
+    await expect(
+      mark({ geo: { latitude: 91, longitude: 0 } })
+    ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
+    await expect(
+      mark({ geo: { latitude: 0, longitude: 0, accuracy: -1 } })
+    ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
+    await expect(mark({ source: 'x'.repeat(101) })).rejects.toMatchObject(
+      failsWith('BAD_USER_INPUT')
+    );
+  });
+
   it('can mark a past day, and locks it first if nobody read it yet', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
+    const { locationId, dutyId } = await seedPlan();
 
     await setDutyAttendance({
-      workspaceId,
+      locationId,
       dutyId,
       date: '2024-01-08',
       karkunId: 'k2',
@@ -597,17 +587,17 @@ describe('attendance', () => {
       userId: 'marker',
     });
 
-    expect((await planDays(workspaceId, dutyId))[0].karkuns[0]).toMatchObject({
+    expect((await planDays(locationId, dutyId))[0].karkuns[0]).toMatchObject({
       name: 'Ali',
       attendance: 'absent',
     });
   });
 
   it('refuses the future, bad statuses and people who are not on duty that day', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
+    const { locationId, dutyId } = await seedPlan();
     const mark = (karkunId: string, status: string, date: string) =>
       setDutyAttendance({
-        workspaceId,
+        locationId,
         dutyId,
         date,
         karkunId,
@@ -633,10 +623,10 @@ describe('attendance', () => {
 
 describe('attendance sheet', () => {
   it('totals the month per karkun and duty', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
+    const { locationId, dutyId } = await seedPlan();
     const mark = (karkunId: string, status: string, date: string) =>
       setDutyAttendance({
-        workspaceId,
+        locationId,
         dutyId,
         date,
         karkunId,
@@ -647,7 +637,7 @@ describe('attendance sheet', () => {
     await mark('k1', 'late', '2024-01-09');
     await mark('k2', 'absent', '2024-01-08');
 
-    const rows = await getAttendanceSheet({ workspaceId, month: '01-2024' });
+    const rows = await getAttendanceSheet({ locationId, month: '01-2024' });
 
     expect(rows).toHaveLength(2);
     expect(rows[0]).toMatchObject({
@@ -669,17 +659,17 @@ describe('attendance sheet', () => {
   });
 
   it('narrows to one duty and rejects a bad month', async () => {
-    const { workspaceId, dutyId } = await seedPlan();
-    const other = await createDuty(workspaceId, { name: 'Kitchen' }, 'u1');
+    const { locationId, dutyId } = await seedPlan();
+    const other = await createNamedDuty(locationId, 'Kitchen', 'u1');
 
     expect(
-      await getAttendanceSheet({ workspaceId, month: '01-2024', dutyId: other._id })
+      await getAttendanceSheet({ locationId, month: '01-2024', dutyId: other._id })
     ).toEqual([]);
     expect(
-      (await getAttendanceSheet({ workspaceId, month: '01-2024', dutyId })).length
+      (await getAttendanceSheet({ locationId, month: '01-2024', dutyId })).length
     ).toBeGreaterThan(0);
     await expect(
-      getAttendanceSheet({ workspaceId, month: '2024-01' })
+      getAttendanceSheet({ locationId, month: '2024-01' })
     ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
   });
 });

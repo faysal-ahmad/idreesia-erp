@@ -41,12 +41,15 @@ export {
   type SyncOrgLocationObserversResult,
 } from './org-location-observers-sync';
 export {
-  addOrgLocationDutiesAttendanceUser,
-  disableOrgLocationFeature,
-  enableOrgLocationFeature,
-  getLocationDutiesAttendanceWorkspaceId,
-  removeOrgLocationDutiesAttendanceUser,
-  updateOrgLocationDutiesAttendanceUserPermissions,
+  addOrgLocationFeatureUser,
+  hasOrgLocationFeatures,
+  ensureOrgLocationUserIndexes,
+  getOrgLocationUserPermissions,
+  hasOrgLocationPermission,
+  listOrgLocationFeaturePermissions,
+  removeOrgLocationFeatureUser,
+  type OrgLocationFeaturePermissions,
+  type OrgLocationFeaturePermissionUsers,
 } from './org-location-features';
 export {
   pagedFreeFormCities,
@@ -54,3 +57,11 @@ export {
   type FreeFormCitiesPage,
   type FreeFormCityValue,
 } from './city-location-mappings';
+export {
+  createMehfilDuty,
+  updateMehfilDuty,
+  removeMehfilDuty,
+  requireMehfilDuty,
+  type CreateMehfilDutyInput,
+  type UpdateMehfilDutyInput,
+} from './mehfil-template-duties';

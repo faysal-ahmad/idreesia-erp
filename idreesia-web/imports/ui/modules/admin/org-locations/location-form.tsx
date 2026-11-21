@@ -22,9 +22,17 @@ import {
   type LocationRecord,
 } from './org-location-types';
 
-export const MehfilDetailsFields = () => (
+export const MehfilDetailsFields = ({
+  onAddressBlur,
+}: {
+  onAddressBlur?: React.FocusEventHandler<HTMLTextAreaElement>;
+}) => (
   <>
-    <InputTextAreaField fieldName="address" fieldLabel="Address" />
+    <InputTextAreaField
+      fieldName="address"
+      fieldLabel="Address"
+      onBlur={onAddressBlur}
+    />
     <InputTextField fieldName="mehfilStartYear" fieldLabel="Start Year" />
     <InputTextAreaField fieldName="timingDetails" fieldLabel="Timing Details" />
     <CheckboxField fieldName="lcdAvailability" fieldLabel="LCD Available" />
@@ -46,6 +54,8 @@ export interface LocationFormValues {
   lcdAvailability?: boolean;
   tabAvailability?: boolean;
   otherMehfilDetails?: string;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 interface Props {

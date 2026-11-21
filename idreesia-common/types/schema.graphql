@@ -35,6 +35,26 @@ directive @checkInstanceAccess(
   dataFieldName: String,
 ) on FIELD_DEFINITION
 
+enum MehfilDetailsPermission {
+  VIEW
+  UPDATE
+}
+
+directive @checkMehfilDetailsAccess(
+  permission: MehfilDetailsPermission!,
+  locationIdArgName: String,
+) on FIELD_DEFINITION
+
+enum MehfilPermissionsPermission {
+  VIEW
+  MANAGE
+}
+
+directive @checkMehfilPermissionsAccess(
+  permission: MehfilPermissionsPermission!,
+  locationIdArgName: String,
+) on FIELD_DEFINITION
+
 directive @checkPermissions(
   permissions: [Permission!],
   dataFieldName: String,
@@ -250,6 +270,36 @@ extend type Mutation {
     @checkPermissions(permissions: [ADMIN_MANAGE_SCHEDULED_JOBS])
 }
 
+type MehfilDutyType {
+  _id: String!
+  name: String!
+  description: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allMehfilDuties: [MehfilDutyType]
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+}
+
+extend type Mutation {
+  createMehfilDuty(name: String!, description: String): MehfilDutyType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  updateMehfilDuty(
+    _id: String!
+    name: String
+    description: String
+  ): MehfilDutyType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  deleteMehfilDuty(_id: String!): Boolean
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+}
+
 type OrgLocationMehfilDetailsType {
   address: String
   mehfilStartYear: String
@@ -257,6 +307,8 @@ type OrgLocationMehfilDetailsType {
   lcdAvailability: Boolean
   tabAvailability: Boolean
   otherMehfilDetails: String
+  latitude: Float
+  longitude: Float
 }
 
 type OrgLocationType {
@@ -274,8 +326,6 @@ type OrgLocationType {
   observers: [PersonType]
   # Per observer: how many committees below this location they observe.
   observerStats: [OrgLocationObserverStatType]
-  # Features enabled on this location (mehfils only).
-  features: [String]
 
   createdAt: String
   createdBy: String
@@ -295,32 +345,28 @@ type SyncOrgLocationObserversResult {
   removedCount: Int
 }
 
-type OrgLocationFeatureType {
-  key: String!
-  name: String!
-  description: String!
-}
-
-type DutiesAttendancePermissionInfoType {
-  key: String!
-  name: String!
-  description: String!
-}
-
-# A user of the location's Duties and Attendance workspace.
-type OrgLocationDutiesAttendanceUserType {
-  _id: String!
+# A user holding a permission of a location feature.
+type OrgLocationFeaturePermissionUserType {
   userId: String!
+  # The karkun the user account belongs to.
+  personId: String
   username: String
   displayName: String
-  permissions: [String]!
 }
 
-# A user that can be added to a workspace.
-type DutiesAttendanceUserCandidateType {
-  _id: String!
-  username: String
-  displayName: String
+# A permission a feature supports, with the users holding it.
+type OrgLocationFeaturePermissionType {
+  key: String!
+  name: String!
+  description: String!
+  users: [OrgLocationFeaturePermissionUserType]!
+}
+
+# A permission group of a location (General or a feature), with its permissions.
+type OrgLocationFeaturePermissionsType {
+  featureKey: String!
+  featureName: String!
+  permissions: [OrgLocationFeaturePermissionType]!
 }
 
 input OrgLocationMehfilDetailsInput {
@@ -330,6 +376,8 @@ input OrgLocationMehfilDetailsInput {
   lcdAvailability: Boolean
   tabAvailability: Boolean
   otherMehfilDetails: String
+  latitude: Float
+  longitude: Float
 }
 
 extend type Query {
@@ -339,21 +387,11 @@ extend type Query {
   orgLocationById(_id: String!): OrgLocationType
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
 
-  allOrgLocationFeatures: [OrgLocationFeatureType]
-    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
-
-  allDutiesAttendancePermissions: [DutiesAttendancePermissionInfoType]
-    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
-
-  # Unlocked users matching the text, to add to a workspace.
-  dutiesAttendanceUserCandidates(
-    search: String
-  ): [DutiesAttendanceUserCandidateType]
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
-
-  orgLocationDutiesAttendanceUsers(
+  # The location's permission groups (General, and for a mehfil each feature),
+  # with the users holding each permission.
+  orgLocationFeaturePermissions(
     locationId: String!
-  ): [OrgLocationDutiesAttendanceUserType]
+  ): [OrgLocationFeaturePermissionsType]
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
 }
 
@@ -386,28 +424,17 @@ extend type Mutation {
   syncOrgLocationObservers(locationId: String!): SyncOrgLocationObserversResult
     @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
-  enableOrgLocationFeature(locationId: String!, featureKey: String!): Boolean
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
-
-  disableOrgLocationFeature(locationId: String!, featureKey: String!): Boolean
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
-
-  addOrgLocationDutiesAttendanceUser(
+  addOrgLocationFeatureUser(
     locationId: String!
-    userId: String!
-    permissions: [String]!
-  ): OrgLocationDutiesAttendanceUserType
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+    featureKey: String!
+    permissionKey: String!
+    karkunId: String!
+  ): Boolean @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
-  updateOrgLocationDutiesAttendanceUserPermissions(
+  removeOrgLocationFeatureUser(
     locationId: String!
-    userId: String!
-    permissions: [String]!
-  ): OrgLocationDutiesAttendanceUserType
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
-
-  removeOrgLocationDutiesAttendanceUser(
-    locationId: String!
+    featureKey: String!
+    permissionKey: String!
     userId: String!
   ): Boolean @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 }
@@ -3612,6 +3639,14 @@ type DaMyLocationType {
   permissions: [String!]!
 }
 
+# A duty a location can choose from (see the Mehfil Templates in Admin). A
+# location's duty reads its name and description from the one it chose.
+type DaMehfilDutyType {
+  _id: String!
+  name: String!
+  description: String
+}
+
 type DaDutyMemberType {
   karkunId: String!
   isCoordinator: Boolean
@@ -3622,7 +3657,8 @@ type DaDutyMemberType {
 
 type DaDutyType {
   _id: String!
-  workspaceId: String!
+  locationId: String!
+  mehfilDutyId: String
   name: String!
   description: String
   isActive: Boolean!
@@ -3687,6 +3723,10 @@ extend type Query {
   workspaceDaDuties(locationId: String!): [DaDutyType]
     @checkDutiesAttendanceAccess(permission: VIEW)
 
+  # The duties a location can choose from when adding a duty.
+  workspaceDaMehfilDuties(locationId: String!): [DaMehfilDutyType]
+    @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+
   workspaceDaDutyById(locationId: String!, dutyId: String!): DaDutyType
     @checkDutiesAttendanceAccess(permission: VIEW)
 
@@ -3717,18 +3757,23 @@ extend type Query {
     @checkDutiesAttendanceAccess(permission: VIEW)
 }
 
+input DaGeoLocationInput {
+  latitude: Float!
+  longitude: Float!
+  # Metres.
+  accuracy: Float
+}
+
 extend type Mutation {
-  workspaceDaCreateDuty(
+  # Adds duties chosen from the mehfil template duties, all or none.
+  workspaceDaAddDuties(
     locationId: String!
-    name: String!
-    description: String
-  ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+    mehfilDutyIds: [String!]!
+  ): [DaDutyType] @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
   workspaceDaUpdateDuty(
     locationId: String!
     dutyId: String!
-    name: String
-    description: String
     isActive: Boolean
   ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
@@ -3766,13 +3811,16 @@ extend type Mutation {
     absentKarkunIds: [String]
   ): Boolean @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
-  # status is present, late or absent; null clears the mark.
+  # status is present, late or absent; null clears the mark. source (how it
+  # was marked) and geo (where from) are optional and kept with the mark.
   workspaceDaSetAttendance(
     locationId: String!
     dutyId: String!
     date: String!
     karkunId: String!
     status: String
+    source: String
+    geo: DaGeoLocationInput
   ): Boolean @checkDutiesAttendanceAccess(permission: MARK_ATTENDANCE)
 }
 
@@ -4185,6 +4233,133 @@ type WorkspaceMeetingsInfoType {
     ): Boolean
       @checkCommitteeAccess(roles: [COORDINATOR])
   }
+
+type MehfilDetailsAccessType {
+  locationId: String!
+  permissions: [String!]!
+}
+
+# A mehfil whose details the caller can open, or one of its ancestors
+# (hasWorkspace false), listed so the locations show in their hierarchy.
+type MyMehfilDetailsLocationType {
+  locationId: String!
+  name: String!
+  type: String!
+  parentId: String
+  hasWorkspace: Boolean!
+  permissions: [String!]!
+}
+
+type WorkspaceMehfilDetailsType {
+  locationId: String!
+  name: String!
+  mehfilDetails: OrgLocationMehfilDetailsType
+  # What the caller may do with the details.
+  permissions: [String!]!
+}
+
+extend type Query {
+  myMehfilDetailsLocations: [MyMehfilDetailsLocationType]!
+
+  workspaceMehfilDetails(locationId: String!): WorkspaceMehfilDetailsType
+    @checkMehfilDetailsAccess(permission: VIEW)
+}
+
+extend type Mutation {
+  workspaceUpdateMehfilDetails(
+    locationId: String!
+    mehfilDetails: OrgLocationMehfilDetailsInput!
+  ): WorkspaceMehfilDetailsType
+    @checkMehfilDetailsAccess(permission: UPDATE)
+}
+
+# A mehfil whose permissions the caller can open, or one of its ancestors
+# (hasWorkspace false), listed so the locations show in their hierarchy.
+type MyMehfilPermissionsLocationType {
+  locationId: String!
+  name: String!
+  type: String!
+  parentId: String
+  hasWorkspace: Boolean!
+  permissions: [String!]!
+}
+
+type MpUserType {
+  userId: String!
+  # The karkun the user account belongs to.
+  personId: String
+  username: String
+  displayName: String
+}
+
+type MpPermissionType {
+  key: String!
+  name: String!
+  description: String!
+  users: [MpUserType]!
+}
+
+# A permission group of the mehfil (General or a feature).
+type MpGroupType {
+  featureKey: String!
+  featureName: String!
+  permissions: [MpPermissionType]!
+}
+
+type MehfilPermissionsType {
+  locationId: String!
+  # What the caller may do here.
+  permissions: [String!]!
+  groups: [MpGroupType]!
+}
+
+type MpKarkunType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PagedMpKarkunType {
+  data: [MpKarkunType]
+  totalResults: Int
+}
+
+extend type Query {
+  myMehfilPermissionsLocations: [MyMehfilPermissionsLocationType]!
+
+  workspaceMehfilPermissions(locationId: String!): MehfilPermissionsType
+    @checkMehfilPermissionsAccess(permission: VIEW)
+
+  # Karkuns to choose from when giving a permission.
+  workspaceMehfilPermissionsKarkunSearch(
+    locationId: String!
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedMpKarkunType @checkMehfilPermissionsAccess(permission: MANAGE)
+}
+
+extend type Mutation {
+  workspaceAddMehfilPermissionUser(
+    locationId: String!
+    featureKey: String!
+    permissionKey: String!
+    karkunId: String!
+  ): Boolean @checkMehfilPermissionsAccess(permission: MANAGE)
+
+  workspaceRemoveMehfilPermissionUser(
+    locationId: String!
+    featureKey: String!
+    permissionKey: String!
+    userId: String!
+  ): Boolean @checkMehfilPermissionsAccess(permission: MANAGE)
+}
 
 type WorkspaceMonitoringAlertType {
   _id: String

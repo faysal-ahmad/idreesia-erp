@@ -17,7 +17,6 @@ const ORG_LOCATION_BY_ID: TypedDocumentNode<
       parentId
       allParentIds
       observerKarkunIds
-      features
       mehfilDetails {
         address
         mehfilStartYear
@@ -25,6 +24,8 @@ const ORG_LOCATION_BY_ID: TypedDocumentNode<
         lcdAvailability
         tabAvailability
         otherMehfilDetails
+        latitude
+        longitude
       }
       createdAt
       createdBy

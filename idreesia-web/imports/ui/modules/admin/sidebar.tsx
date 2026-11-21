@@ -24,7 +24,10 @@ const menuItems = [
   {
     key: 'organization',
     label: 'Organization Management',
-    children: [{ key: 'org-locations', label: 'Organization Locations' }],
+    children: [
+      { key: 'org-locations', label: 'Organization Locations' },
+      { key: 'mehfil-templates', label: 'Mehfil Templates' },
+    ],
   },
   {
     key: 'locations',
@@ -101,6 +104,12 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['organization'],
     subModuleName: SubModuleNames.orgLocations,
     matches: (pathname) => isPath(pathname, paths.orgLocationsPath),
+  },
+  {
+    key: 'mehfil-templates',
+    openKeys: ['organization'],
+    subModuleName: SubModuleNames.mehfilTemplates,
+    matches: (pathname) => isPath(pathname, paths.mehfilTemplatesPath),
   },
   {
     key: 'cities',
@@ -215,6 +224,10 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'org-locations':
         history.push(paths.orgLocationsPath);
+        break;
+
+      case 'mehfil-templates':
+        history.push(paths.mehfilTemplatesPath);
         break;
 
       case 'cities':

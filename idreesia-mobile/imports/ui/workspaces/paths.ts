@@ -2,6 +2,8 @@ import { ModulePaths } from 'meteor/idreesia-common/constants';
 
 // Same URLs as the web's Workspaces module (submodule-paths.ts there).
 const committee = (committeeId: string) => `${ModulePaths.workspaces}/committees/${committeeId}`;
+const daLocation = (locationId: string) =>
+  `${ModulePaths.workspaces}/locations/${locationId}/duties-attendance`;
 
 /** The screens under one poll. */
 export type PollPart = 'edit' | 'results' | 'activity';
@@ -152,4 +154,16 @@ export const WorkspacesPaths = {
   committeeMonitoringProfilePattern: `${committee(':committeeId')}/monitoring-profiles/:profileId`,
   committeeMonitoringProfile: (committeeId: string, profileId: string) =>
     `${committee(committeeId)}/monitoring-profiles/${profileId}`,
+  /** A mehfil's Duties and Attendance pages (same URLs as the web). */
+  dutiesPattern: `${daLocation(':locationId')}/duties`,
+  duties: (locationId: string) => `${daLocation(locationId)}/duties`,
+  /** One duty, with its roster, under the duties list. */
+  dutyPattern: `${daLocation(':locationId')}/duties/:dutyId`,
+  duty: (locationId: string, dutyId: string) => `${daLocation(locationId)}/duties/${dutyId}`,
+  dutyPlanningPattern: `${daLocation(':locationId')}/planning`,
+  dutyPlanning: (locationId: string) => `${daLocation(locationId)}/planning`,
+  dutyAttendancePattern: `${daLocation(':locationId')}/attendance`,
+  dutyAttendance: (locationId: string) => `${daLocation(locationId)}/attendance`,
+  attendanceSheetPattern: `${daLocation(':locationId')}/attendance-sheet`,
+  attendanceSheet: (locationId: string) => `${daLocation(locationId)}/attendance-sheet`,
 };

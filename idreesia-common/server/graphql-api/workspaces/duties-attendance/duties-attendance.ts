@@ -60,6 +60,8 @@ type DaPlanKarkunType {
   addedForDay: Boolean!
   imageUrl: String
   imageThumbnailUrl: String
+  contactNumber1: String
+  contactNumber2: String
   # present, late or absent; null when not marked.
   attendance: String
 }

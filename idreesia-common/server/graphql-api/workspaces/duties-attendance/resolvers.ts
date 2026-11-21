@@ -145,7 +145,7 @@ export default {
       context: Context
     ) => {
       getDutiesAttendanceAccess(context, locationId);
-      return searchWorkspaceKarkuns(params);
+      return searchWorkspaceKarkuns({ ...params, locationId });
     },
 
     workspaceDaAttendanceSheet: async (

@@ -55,6 +55,8 @@ interface PersonDocument {
   _id: string;
   sharedData?: {
     name?: string | null;
+    contactNumber1?: string | null;
+    contactNumber2?: string | null;
     imageKey?: string | null;
     imageThumbnailKey?: string | null;
   } | null;
@@ -74,6 +76,14 @@ const personName = (people: Map<string, PersonDocument>, karkunId: string) =>
 
 const personImages = (people: Map<string, PersonDocument>, karkunId: string) =>
   getPersonImageUrls(people.get(karkunId)?.sharedData);
+
+const personContacts = (people: Map<string, PersonDocument>, karkunId: string) => {
+  const shared = people.get(karkunId)?.sharedData;
+  return {
+    contactNumber1: shared?.contactNumber1 || null,
+    contactNumber2: shared?.contactNumber2 || null,
+  };
+};
 
 export function assertDate(value: string, label: string) {
   if (!isCalendarDate(value)) {
@@ -338,6 +348,8 @@ export interface PlanKarkun {
   addedForDay: boolean;
   imageUrl: string | null;
   imageThumbnailUrl: string | null;
+  contactNumber1: string | null;
+  contactNumber2: string | null;
   attendance: DutyAttendanceStatus | null;
 }
 
@@ -414,6 +426,7 @@ export async function getDutyPlanDays(args: {
       addedForDay: karkun.addedForDay,
       attendance: karkun.attendance ?? null,
       ...personImages(people, karkun.karkunId),
+      ...personContacts(people, karkun.karkunId),
     }));
 
     // Members taken off for a future day are listed as off.
@@ -433,6 +446,7 @@ export async function getDutyPlanDays(args: {
           addedForDay: false,
           attendance: null,
           ...personImages(people, karkunId),
+          ...personContacts(people, karkunId),
         });
       });
     }

@@ -758,6 +758,132 @@ export type MobileCommitteeDocumentNotificationsQueryVariables = Exact<{
 
 export type MobileCommitteeDocumentNotificationsQuery = { myNotifications: Array<{ _id: string | null, entityId: string | null, eventType: string | null, eventDetails: string | null, createdAt: string | null, isRead: boolean | null } | null> | null };
 
+export type MobileDaAccessQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type MobileDaAccessQuery = { workspaceDaAccess: { locationId: string, permissions: Array<string> } | null };
+
+export type MobileDaDutiesQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type MobileDaDutiesQuery = { workspaceDaDuties: Array<{ _id: string, mehfilDutyId: string | null, name: string, description: string | null, isActive: boolean, members: Array<{ karkunId: string, isCoordinator: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null } | null> } | null> | null };
+
+export type MobileDaMehfilDutiesQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type MobileDaMehfilDutiesQuery = { workspaceDaMehfilDuties: Array<{ _id: string, name: string, description: string | null } | null> | null };
+
+export type MobileDaPlanDaysQueryVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  startDate: string;
+}>;
+
+
+export type MobileDaPlanDaysQuery = { workspaceDaPlanDays: { startDate: string, days: Array<{ date: string, dayOfWeek: string, locked: boolean, addedKarkunIds: Array<string | null>, absentKarkunIds: Array<string | null>, karkuns: Array<{ karkunId: string, name: string | null, off: boolean, addedForDay: boolean, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null, attendance: string | null } | null> } | null> } | null };
+
+export type MobileDaAttendanceSheetQueryVariables = Exact<{
+  locationId: string;
+  month: string;
+  dutyId?: string | null | undefined;
+}>;
+
+
+export type MobileDaAttendanceSheetQuery = { workspaceDaAttendanceSheet: Array<{ _id: string, karkunId: string, name: string | null, dutyId: string, dutyName: string | null, daysOnDuty: number, presentCount: number, lateCount: number, absentCount: number, unmarkedCount: number, percentage: number } | null> | null };
+
+export type MobileDaKarkunSearchQueryVariables = Exact<{
+  locationId: string;
+  name?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type MobileDaKarkunSearchQuery = { workspaceDaKarkunSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, parentName: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
+
+export type MobileDaAddDutiesMutationVariables = Exact<{
+  locationId: string;
+  mehfilDutyIds: Array<string> | string;
+}>;
+
+
+export type MobileDaAddDutiesMutation = { workspaceDaAddDuties: Array<{ _id: string } | null> | null };
+
+export type MobileDaUpdateDutyMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  isActive?: boolean | null | undefined;
+}>;
+
+
+export type MobileDaUpdateDutyMutation = { workspaceDaUpdateDuty: { _id: string } | null };
+
+export type MobileDaRemoveDutyMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+}>;
+
+
+export type MobileDaRemoveDutyMutation = { workspaceDaRemoveDuty: boolean | null };
+
+export type MobileDaAddDutyMemberMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  karkunId: string;
+}>;
+
+
+export type MobileDaAddDutyMemberMutation = { workspaceDaAddDutyMember: { _id: string } | null };
+
+export type MobileDaUpdateDutyMemberMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  karkunId: string;
+  isCoordinator?: boolean | null | undefined;
+  daysOfWeek?: Array<string | null | undefined> | string | null | undefined;
+}>;
+
+
+export type MobileDaUpdateDutyMemberMutation = { workspaceDaUpdateDutyMember: { _id: string } | null };
+
+export type MobileDaRemoveDutyMemberMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  karkunId: string;
+}>;
+
+
+export type MobileDaRemoveDutyMemberMutation = { workspaceDaRemoveDutyMember: { _id: string } | null };
+
+export type MobileDaSetDayOverrideMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  date: string;
+  addedKarkunIds?: Array<string | null | undefined> | string | null | undefined;
+  absentKarkunIds?: Array<string | null | undefined> | string | null | undefined;
+}>;
+
+
+export type MobileDaSetDayOverrideMutation = { workspaceDaSetDayOverride: boolean | null };
+
+export type MobileDaSetAttendanceMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  date: string;
+  karkunId: string;
+  status?: string | null | undefined;
+}>;
+
+
+export type MobileDaSetAttendanceMutation = { workspaceDaSetAttendance: boolean | null };
+
 export type MobileMyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
 

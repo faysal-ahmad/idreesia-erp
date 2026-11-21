@@ -2,6 +2,10 @@ import React from 'react';
 
 import { KeepAlive } from '../layout';
 import { matchPath, Redirect, Route, Switch, useLocation } from '../router';
+import { AttendanceScreen } from './duties-attendance/attendance-screen';
+import { AttendanceSheetScreen } from './duties-attendance/attendance-sheet-screen';
+import { DutiesFeature } from './duties-attendance/duties-feature';
+import { PlanningScreen } from './duties-attendance/planning-screen';
 import { DiscussionFeature } from './discussions/discussion-feature';
 import { DocumentsFeature } from './documents/documents-feature';
 import { MeetingsFeature } from './meetings/meetings-feature';
@@ -49,6 +53,10 @@ export const WorkspacesStack = () => {
           component={MonitoringProfilesFeature}
           path={WorkspacesPaths.committeeMonitoringProfilesPattern}
         />
+        <Route component={DutiesFeature} path={WorkspacesPaths.dutiesPattern} />
+        <Route exact component={PlanningScreen} path={WorkspacesPaths.dutyPlanningPattern} />
+        <Route exact component={AttendanceScreen} path={WorkspacesPaths.dutyAttendancePattern} />
+        <Route exact component={AttendanceSheetScreen} path={WorkspacesPaths.attendanceSheetPattern} />
         <Redirect to={WorkspacesPaths.root} />
       </Switch>
     </>

@@ -243,6 +243,8 @@ export type DaPlanKarkunType = {
   __typename?: 'DaPlanKarkunType';
   addedForDay: Scalars['Boolean']['output'];
   attendance?: Maybe<Scalars['String']['output']>;
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  contactNumber2?: Maybe<Scalars['String']['output']>;
   imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
   imageUrl?: Maybe<Scalars['String']['output']>;
   karkunId: Scalars['String']['output'];

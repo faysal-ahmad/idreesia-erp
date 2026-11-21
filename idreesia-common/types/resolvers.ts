@@ -807,6 +807,8 @@ export type DaPlanDaysTypeResolvers<ContextType = any, ParentType extends Resolv
 export type DaPlanKarkunTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DaPlanKarkunType'] = ResolversParentTypes['DaPlanKarkunType']> = ResolversObject<{
   addedForDay?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   attendance?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  contactNumber1?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  contactNumber2?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   imageThumbnailUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   imageUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   karkunId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

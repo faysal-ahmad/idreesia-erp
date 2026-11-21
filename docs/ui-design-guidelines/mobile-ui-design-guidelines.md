@@ -54,6 +54,11 @@ The mobile app uses the same functional modules as the web app (`ModuleNames` / 
 ```
 Home tab (/home)                         ← default after signing in; empty for now
 Workspaces tab (/workspaces)             ← a location bar (opens a bottom-sheet selector, with unread counts per location); under it, the selected location's features (Mehfil Details, Mehfil Permissions, Duties & Attendance; no mobile screens yet) and the user's committees there, each expanding to its features
+├── Duties & Attendance (/workspaces/locations/:locationId/duties-attendance/…)   ← a mehfil's location feature; four screens, imports/ui/workspaces/duties-attendance:
+│   ├── …/duties                          ← DutiesFeature; the list stays alive under …/duties/:dutyId (the roster; member actions in an ActionSheet, days and add-duties in bottom Popups, people search in a tall Popup)
+│   ├── …/planning                        ← duty bar ("All duties" by default) + day bar, one section per duty; future days editable
+│   ├── …/attendance                      ← duty bar + day bar, inline P / L / A buttons (tap the current one to clear)
+│   └── …/attendance-sheet                ← duty bar (or all duties) + month bar, totals per person
 ├── Workspace members (/workspaces/committees/:committeeId/members)   ← imports/ui/workspaces; the Workspaces list stays alive under it
 ├── Workspace discussion (/workspaces/committees/:committeeId/discussions)   ← DiscussionFeature; main list stays alive under:
 │   ├── …/discussions/threads/:threadId

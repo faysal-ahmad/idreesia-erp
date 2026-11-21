@@ -192,17 +192,25 @@ export type DaDutyType = {
   createdBy?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   isActive: Scalars['Boolean']['output'];
+  locationId: Scalars['String']['output'];
+  mehfilDutyId?: Maybe<Scalars['String']['output']>;
   members: Array<Maybe<DaDutyMemberType>>;
   name: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
-  workspaceId: Scalars['String']['output'];
 };
 
 export type DaGeoLocationInput = {
   accuracy?: InputMaybe<Scalars['Float']['input']>;
   latitude: Scalars['Float']['input'];
   longitude: Scalars['Float']['input'];
+};
+
+export type DaMehfilDutyType = {
+  __typename?: 'DaMehfilDutyType';
+  _id: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
 };
 
 export type DaMyLocationType = {
@@ -704,11 +712,12 @@ export type Location = {
 
 export type MehfilDutyType = {
   __typename?: 'MehfilDutyType';
-  _id?: Maybe<Scalars['String']['output']>;
+  _id: Scalars['String']['output'];
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
   mehfilUsedCount?: Maybe<Scalars['Int']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
   overallUsedCount?: Maybe<Scalars['Int']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
@@ -801,6 +810,7 @@ export type Mutation = {
   createJob?: Maybe<JobType>;
   createLocation?: Maybe<Location>;
   createMehfil?: Maybe<MehfilType>;
+  createMehfilDuty?: Maybe<MehfilDutyType>;
   createMissingSecurityServerAlertThumbnails?: Maybe<Scalars['Int']['output']>;
   createMissingSecurityServerProfileThumbnails?: Maybe<Scalars['Int']['output']>;
   createOrgLocation?: Maybe<OrgLocationType>;
@@ -824,6 +834,7 @@ export type Mutation = {
   deleteAllSalaries?: Maybe<Scalars['Int']['output']>;
   deleteDuplicatePeople?: Maybe<Scalars['Int']['output']>;
   deleteHrKarkun?: Maybe<Scalars['Int']['output']>;
+  deleteMehfilDuty?: Maybe<Scalars['Boolean']['output']>;
   deletePeopleTag?: Maybe<Scalars['Int']['output']>;
   deleteSalaries?: Maybe<Scalars['Int']['output']>;
   deleteSecurityServerChannel?: Maybe<Scalars['Int']['output']>;
@@ -831,10 +842,8 @@ export type Mutation = {
   deleteSecurityVisitor?: Maybe<Scalars['Int']['output']>;
   deleteUserGroup?: Maybe<Scalars['Int']['output']>;
   disableCommitteeFeature: Scalars['Boolean']['output'];
-  disableOrgLocationFeature?: Maybe<Scalars['Boolean']['output']>;
   disableTwoFactor?: Maybe<UserType>;
   enableCommitteeFeature: Scalars['Boolean']['output'];
-  enableOrgLocationFeature?: Maybe<Scalars['Boolean']['output']>;
   enableTwoFactor?: Maybe<UserType>;
   fixNameSpelling?: Maybe<Scalars['Int']['output']>;
   hardDeletePeople?: Maybe<Scalars['Int']['output']>;
@@ -922,6 +931,7 @@ export type Mutation = {
   updateLocation?: Maybe<Location>;
   updateLoginTime?: Maybe<Scalars['Int']['output']>;
   updateMehfil?: Maybe<MehfilType>;
+  updateMehfilDuty?: Maybe<MehfilDutyType>;
   updateOrgLocation?: Maybe<OrgLocationType>;
   updatePeopleTag?: Maybe<PeopleTagType>;
   updatePhysicalStore?: Maybe<PhysicalStore>;
@@ -967,8 +977,8 @@ export type Mutation = {
   workspaceCreatePoll?: Maybe<WorkspacePollType>;
   workspaceCreateProject?: Maybe<WorkspaceProjectType>;
   workspaceCreateTask?: Maybe<WorkspaceTaskType>;
+  workspaceDaAddDuties?: Maybe<Array<Maybe<DaDutyType>>>;
   workspaceDaAddDutyMember?: Maybe<DaDutyType>;
-  workspaceDaCreateDuty?: Maybe<DaDutyType>;
   workspaceDaRemoveDuty?: Maybe<Scalars['Boolean']['output']>;
   workspaceDaRemoveDutyMember?: Maybe<DaDutyType>;
   workspaceDaSetAttendance?: Maybe<Scalars['Boolean']['output']>;
@@ -1252,6 +1262,12 @@ export type MutationCreateMehfilArgs = {
 };
 
 
+export type MutationCreateMehfilDutyArgs = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationCreateOrgLocationArgs = {
   mehfilDetails?: InputMaybe<OrgLocationMehfilDetailsInput>;
   name: Scalars['String']['input'];
@@ -1428,6 +1444,11 @@ export type MutationDeleteHrKarkunArgs = {
 };
 
 
+export type MutationDeleteMehfilDutyArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
 export type MutationDeletePeopleTagArgs = {
   _id: Scalars['String']['input'];
 };
@@ -1465,12 +1486,6 @@ export type MutationDisableCommitteeFeatureArgs = {
 };
 
 
-export type MutationDisableOrgLocationFeatureArgs = {
-  featureKey: Scalars['String']['input'];
-  locationId: Scalars['String']['input'];
-};
-
-
 export type MutationDisableTwoFactorArgs = {
   code: Scalars['String']['input'];
 };
@@ -1479,12 +1494,6 @@ export type MutationDisableTwoFactorArgs = {
 export type MutationEnableCommitteeFeatureArgs = {
   committeeId: Scalars['String']['input'];
   featureKey: Scalars['String']['input'];
-};
-
-
-export type MutationEnableOrgLocationFeatureArgs = {
-  featureKey: Scalars['String']['input'];
-  locationId: Scalars['String']['input'];
 };
 
 
@@ -2033,6 +2042,13 @@ export type MutationUpdateMehfilArgs = {
 };
 
 
+export type MutationUpdateMehfilDutyArgs = {
+  _id: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationUpdateOrgLocationArgs = {
   _id: Scalars['String']['input'];
   mehfilDetails?: InputMaybe<OrgLocationMehfilDetailsInput>;
@@ -2399,19 +2415,18 @@ export type MutationWorkspaceCreateTaskArgs = {
 };
 
 
+export type MutationWorkspaceDaAddDutiesArgs = {
+  locationId: Scalars['String']['input'];
+  mehfilDutyIds: Array<Scalars['String']['input']>;
+};
+
+
 export type MutationWorkspaceDaAddDutyMemberArgs = {
   daysOfWeek?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   dutyId: Scalars['String']['input'];
   isCoordinator?: InputMaybe<Scalars['Boolean']['input']>;
   karkunId: Scalars['String']['input'];
   locationId: Scalars['String']['input'];
-};
-
-
-export type MutationWorkspaceDaCreateDutyArgs = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  locationId: Scalars['String']['input'];
-  name: Scalars['String']['input'];
 };
 
 
@@ -2449,11 +2464,9 @@ export type MutationWorkspaceDaSetDayOverrideArgs = {
 
 
 export type MutationWorkspaceDaUpdateDutyArgs = {
-  description?: InputMaybe<Scalars['String']['input']>;
   dutyId: Scalars['String']['input'];
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   locationId: Scalars['String']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2882,16 +2895,11 @@ export type OrgLocationFeaturePermissionsType = {
   permissions: Array<Maybe<OrgLocationFeaturePermissionType>>;
 };
 
-export type OrgLocationFeatureType = {
-  __typename?: 'OrgLocationFeatureType';
-  description: Scalars['String']['output'];
-  key: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-};
-
 export type OrgLocationMehfilDetailsInput = {
   address?: InputMaybe<Scalars['String']['input']>;
+  latitude?: InputMaybe<Scalars['Float']['input']>;
   lcdAvailability?: InputMaybe<Scalars['Boolean']['input']>;
+  longitude?: InputMaybe<Scalars['Float']['input']>;
   mehfilStartYear?: InputMaybe<Scalars['String']['input']>;
   otherMehfilDetails?: InputMaybe<Scalars['String']['input']>;
   tabAvailability?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2901,7 +2909,9 @@ export type OrgLocationMehfilDetailsInput = {
 export type OrgLocationMehfilDetailsType = {
   __typename?: 'OrgLocationMehfilDetailsType';
   address?: Maybe<Scalars['String']['output']>;
+  latitude?: Maybe<Scalars['Float']['output']>;
   lcdAvailability?: Maybe<Scalars['Boolean']['output']>;
+  longitude?: Maybe<Scalars['Float']['output']>;
   mehfilStartYear?: Maybe<Scalars['String']['output']>;
   otherMehfilDetails?: Maybe<Scalars['String']['output']>;
   tabAvailability?: Maybe<Scalars['Boolean']['output']>;
@@ -2922,7 +2932,6 @@ export type OrgLocationType = {
   committees?: Maybe<Array<Maybe<CommitteeBasicType>>>;
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
-  features?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   mehfilDetails?: Maybe<OrgLocationMehfilDetailsType>;
   name?: Maybe<Scalars['String']['output']>;
   observerKarkunIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -3368,8 +3377,8 @@ export type Query = {
   allJobDefinitions?: Maybe<Array<Maybe<JobDefinitionType>>>;
   allJobs?: Maybe<Array<Maybe<JobType>>>;
   allMSDuties?: Maybe<Array<Maybe<DutyType>>>;
+  allMehfilDuties?: Maybe<Array<Maybe<MehfilDutyType>>>;
   allMehfils?: Maybe<Array<Maybe<MehfilType>>>;
-  allOrgLocationFeatures?: Maybe<Array<Maybe<OrgLocationFeatureType>>>;
   allOrgLocations?: Maybe<Array<Maybe<OrgLocationType>>>;
   allPeopleTags?: Maybe<Array<Maybe<PeopleTagType>>>;
   allSecurityMehfilDuties?: Maybe<Array<Maybe<MehfilDutyType>>>;
@@ -3489,6 +3498,7 @@ export type Query = {
   workspaceDaDuties?: Maybe<Array<Maybe<DaDutyType>>>;
   workspaceDaDutyById?: Maybe<DaDutyType>;
   workspaceDaKarkunSearch?: Maybe<PagedWorkspaceKarkunType>;
+  workspaceDaMehfilDuties?: Maybe<Array<Maybe<DaMehfilDutyType>>>;
   workspaceDaPlanDays?: Maybe<DaPlanDaysType>;
   workspaceDiscussionInfo?: Maybe<DiscussionInfoType>;
   workspaceDiscussionMembers?: Maybe<Array<Maybe<DiscussionMemberType>>>;
@@ -4065,6 +4075,11 @@ export type QueryWorkspaceDaKarkunSearchArgs = {
   pageIndex?: InputMaybe<Scalars['String']['input']>;
   pageSize?: InputMaybe<Scalars['String']['input']>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryWorkspaceDaMehfilDutiesArgs = {
+  locationId: Scalars['String']['input'];
 };
 
 

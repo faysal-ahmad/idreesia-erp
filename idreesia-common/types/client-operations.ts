@@ -72,7 +72,9 @@ export type KarkunFilter = {
 
 export type OrgLocationMehfilDetailsInput = {
   address?: string | null | undefined;
+  latitude?: number | null | undefined;
   lcdAvailability?: boolean | null | undefined;
+  longitude?: number | null | undefined;
   mehfilStartYear?: string | null | undefined;
   otherMehfilDetails?: string | null | undefined;
   tabAvailability?: boolean | null | undefined;
@@ -1926,6 +1928,35 @@ export type UpdateJobDefinitionScheduleMutationVariables = Exact<{
 
 export type UpdateJobDefinitionScheduleMutation = { updateJobDefinitionSchedule: { _id: string | null, schedule: string | null, updatedAt: unknown } | null };
 
+export type AllMehfilDutiesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllMehfilDutiesQuery = { allMehfilDuties: Array<{ _id: string, name: string, description: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null> | null };
+
+export type CreateMehfilDutyMutationVariables = Exact<{
+  name: string;
+  description?: string | null | undefined;
+}>;
+
+
+export type CreateMehfilDutyMutation = { createMehfilDuty: { _id: string } | null };
+
+export type DeleteMehfilDutyMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type DeleteMehfilDutyMutation = { deleteMehfilDuty: boolean | null };
+
+export type UpdateMehfilDutyMutationVariables = Exact<{
+  _id: string;
+  name?: string | null | undefined;
+  description?: string | null | undefined;
+}>;
+
+
+export type UpdateMehfilDutyMutation = { updateMehfilDuty: { _id: string } | null };
+
 export type AllOrgLocationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1946,7 +1977,7 @@ export type OrgLocationByIdQueryVariables = Exact<{
 }>;
 
 
-export type OrgLocationByIdQuery = { orgLocationById: { _id: string | null, name: string | null, type: string | null, parentId: string | null, allParentIds: Array<string | null> | null, observerKarkunIds: Array<string | null> | null, features: Array<string | null> | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, mehfilDetails: { address: string | null, mehfilStartYear: string | null, timingDetails: string | null, lcdAvailability: boolean | null, tabAvailability: boolean | null, otherMehfilDetails: string | null } | null } | null };
+export type OrgLocationByIdQuery = { orgLocationById: { _id: string | null, name: string | null, type: string | null, parentId: string | null, allParentIds: Array<string | null> | null, observerKarkunIds: Array<string | null> | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, mehfilDetails: { address: string | null, mehfilStartYear: string | null, timingDetails: string | null, lcdAvailability: boolean | null, tabAvailability: boolean | null, otherMehfilDetails: string | null, latitude: number | null, longitude: number | null } | null } | null };
 
 export type UpdateOrgLocationMutationVariables = Exact<{
   _id: string;
@@ -2015,27 +2046,6 @@ export type RemoveOrgLocationFeatureUserMutationVariables = Exact<{
 
 
 export type RemoveOrgLocationFeatureUserMutation = { removeOrgLocationFeatureUser: boolean | null };
-
-export type AllOrgLocationFeaturesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AllOrgLocationFeaturesQuery = { allOrgLocationFeatures: Array<{ key: string, name: string, description: string } | null> | null };
-
-export type EnableOrgLocationFeatureMutationVariables = Exact<{
-  locationId: string;
-  featureKey: string;
-}>;
-
-
-export type EnableOrgLocationFeatureMutation = { enableOrgLocationFeature: boolean | null };
-
-export type DisableOrgLocationFeatureMutationVariables = Exact<{
-  locationId: string;
-  featureKey: string;
-}>;
-
-
-export type DisableOrgLocationFeatureMutation = { disableOrgLocationFeature: boolean | null };
 
 export type LocationObserversQueryVariables = Exact<{
   _id: string;
@@ -2876,14 +2886,14 @@ export type ComposerAllSecurityMehfilDutiesQueryVariables = Exact<{
 }>;
 
 
-export type ComposerAllSecurityMehfilDutiesQuery = { allSecurityMehfilDuties: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null, mehfilUsedCount: number | null } | null> | null };
+export type ComposerAllSecurityMehfilDutiesQuery = { allSecurityMehfilDuties: Array<{ _id: string, name: string, urduName: string | null, overallUsedCount: number | null, mehfilUsedCount: number | null } | null> | null };
 
 export type ComposerSecurityMehfilDutyByIdQueryVariables = Exact<{
   id: string;
 }>;
 
 
-export type ComposerSecurityMehfilDutyByIdQuery = { securityMehfilDutyById: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type ComposerSecurityMehfilDutyByIdQuery = { securityMehfilDutyById: { _id: string, name: string, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
 export type MehfilByIdQueryVariables = Exact<{
   _id: string;
@@ -2913,7 +2923,7 @@ export type MehfilKarkunsByIdsQueryVariables = Exact<{
 }>;
 
 
-export type MehfilKarkunsByIdsQuery = { mehfilKarkunsByIds: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, duty: { _id: string | null, name: string | null, urduName: string | null } | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { cityLocation: { _id: string | null, name: string | null } | null } | null } | null } | null> | null };
+export type MehfilKarkunsByIdsQuery = { mehfilKarkunsByIds: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, duty: { _id: string, name: string, urduName: string | null } | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { cityLocation: { _id: string | null, name: string | null } | null } | null } | null } | null> | null };
 
 export type MehfilKarkunsByMehfilIdQueryVariables = Exact<{
   mehfilId: string;
@@ -3156,7 +3166,7 @@ export type CreateSecurityMehfilDutyMutationVariables = Exact<{
 }>;
 
 
-export type CreateSecurityMehfilDutyMutation = { createSecurityMehfilDuty: { _id: string | null, name: string | null, urduName: string | null } | null };
+export type CreateSecurityMehfilDutyMutation = { createSecurityMehfilDuty: { _id: string, name: string, urduName: string | null } | null };
 
 export type RemoveSecurityMehfilDutyMutationVariables = Exact<{
   _id: string;
@@ -3168,14 +3178,14 @@ export type RemoveSecurityMehfilDutyMutation = { removeSecurityMehfilDuty: numbe
 export type SetupAllSecurityMehfilDutiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SetupAllSecurityMehfilDutiesQuery = { allSecurityMehfilDuties: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null } | null> | null };
+export type SetupAllSecurityMehfilDutiesQuery = { allSecurityMehfilDuties: Array<{ _id: string, name: string, urduName: string | null, overallUsedCount: number | null } | null> | null };
 
 export type SetupSecurityMehfilDutyByIdQueryVariables = Exact<{
   id: string;
 }>;
 
 
-export type SetupSecurityMehfilDutyByIdQuery = { securityMehfilDutyById: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type SetupSecurityMehfilDutyByIdQuery = { securityMehfilDutyById: { _id: string, name: string, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
 export type UpdateSecurityMehfilDutyMutationVariables = Exact<{
   id: string;
@@ -3184,7 +3194,7 @@ export type UpdateSecurityMehfilDutyMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSecurityMehfilDutyMutation = { updateSecurityMehfilDuty: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type UpdateSecurityMehfilDutyMutation = { updateSecurityMehfilDuty: { _id: string, name: string, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
 export type AllSecurityMehfilLangarDishesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -4335,7 +4345,14 @@ export type WorkspaceDaDutiesQueryVariables = Exact<{
 }>;
 
 
-export type WorkspaceDaDutiesQuery = { workspaceDaDuties: Array<{ _id: string, name: string, description: string | null, isActive: boolean, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, members: Array<{ karkunId: string, isCoordinator: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null } | null> } | null> | null };
+export type WorkspaceDaDutiesQuery = { workspaceDaDuties: Array<{ _id: string, mehfilDutyId: string | null, name: string, description: string | null, isActive: boolean, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, members: Array<{ karkunId: string, isCoordinator: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null } | null> } | null> | null };
+
+export type WorkspaceDaMehfilDutiesQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type WorkspaceDaMehfilDutiesQuery = { workspaceDaMehfilDuties: Array<{ _id: string, name: string, description: string | null } | null> | null };
 
 export type WorkspaceDaPlanDaysQueryVariables = Exact<{
   locationId: string;
@@ -4367,20 +4384,17 @@ export type WorkspaceDaKarkunSearchQueryVariables = Exact<{
 
 export type WorkspaceDaKarkunSearchQuery = { workspaceDaKarkunSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
 
-export type WorkspaceDaCreateDutyMutationVariables = Exact<{
+export type WorkspaceDaAddDutiesMutationVariables = Exact<{
   locationId: string;
-  name: string;
-  description?: string | null | undefined;
+  mehfilDutyIds: Array<string> | string;
 }>;
 
 
-export type WorkspaceDaCreateDutyMutation = { workspaceDaCreateDuty: { _id: string } | null };
+export type WorkspaceDaAddDutiesMutation = { workspaceDaAddDuties: Array<{ _id: string } | null> | null };
 
 export type WorkspaceDaUpdateDutyMutationVariables = Exact<{
   locationId: string;
   dutyId: string;
-  name?: string | null | undefined;
-  description?: string | null | undefined;
   isActive?: boolean | null | undefined;
 }>;
 

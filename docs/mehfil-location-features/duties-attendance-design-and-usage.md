@@ -1,6 +1,6 @@
 # Duties and Attendance
 
-A headless module owned by a **mehfil** (an org location of type `mehfil`) rather than a committee. A mehfil with the feature turned on gets one workspace where it defines duties, plans who is on each duty each day, and marks attendance.
+A feature of a **mehfil** (an org location of type `mehfil`) rather than a committee. A mehfil with the feature turned on defines duties, plans who is on each duty each day, and marks attendance.
 
 It is the [HR duty planning](../duty-planning-attendance.md) model without shifts, duty locations or teams: a duty has a direct roster of karkuns. The two are separate. They share no collections and no code paths; the names carry a `duties-attendance` / `Da` prefix so they don't collide with HR's duties and duty locations.
 
@@ -20,8 +20,8 @@ It is the [HR duty planning](../duty-planning-attendance.md) model without shift
 
 ## Overview
 
-- **Workspace.** One per mehfil, created when the feature is enabled on it. Disabling the feature soft-deletes the workspace; enabling it again restores the same workspace with its duties, attendance and users.
-- **Duty.** A named job (Gate, Langar...) with a roster. Each member can be limited to some days of the week.
+- **The location is the workspace.** There is no separate workspace record: duties, overrides and day records carry the mehfil's `locationId`. Every mehfil has the feature; there is nothing to turn on or off.
+- **Duty.** A named job (Gate, Langar...) with a roster. Each member can be limited to some days of the week. A mehfil can't define duty names of its own: it picks them from the **Mehfil Duties** list that administrators keep under Admin > Organization Management > Mehfil Templates. The duty stores only the template's id and reads the name and description from it, so there is no copy to keep in step.
 - **Plan.** Future days are planned by changing the roster, or by per-day overrides: people added for one day, members taken off one day.
 - **Attendance.** Each day's roster is locked at the start of the day. Attendance (present, late, absent) is marked against the locked roster.
 - **Sheet.** Monthly totals per karkun and duty, from the locked days.
@@ -46,17 +46,15 @@ Days are `YYYY-MM-DD` strings in the Asia/Karachi time zone.
 | Indexes | migration `71-create-duties-attendance-indexes.ts` (also created lazily by the module) |
 | Nightly job | `create-duties-attendance-day-records` (00:10), in `jobs/job-definitions-registry.ts` |
 
-The module is registered as a headless module (`duties-attendance`) in `server/headless/modules.ts`. It publishes no notifications: the notification plumbing is keyed by committee.
+It is not a headless module and publishes no notifications.
 
-## Turning it on
+## Availability
 
-On the mehfil's edit page (Admin → Locations), the **Features** tab lists the features. Only mehfils have the tab, and `enableOrgLocationFeature` / `disableOrgLocationFeature` reject any other location type.
-
-Enabling stores `features: ['duties-attendance']` and `dutiesAttendanceWorkspaceId` on the location. Both calls need `ADMIN_MANAGE_ORG_LOCATIONS`.
+Every location of the types in `OrgLocationFeatureAllowedTypes` (mehfils) has the feature. Other location types answer `FORBIDDEN`/`NOT_FOUND` for every operation.
 
 ## Users and permissions
 
-A workspace keeps its own users, one document per user in `duties-attendance-workspace-users`. Each has a set of permissions:
+Who may do what is kept on the location, one document per user in `org-location-users` (`locationId`, `userId`, `permissions[]`). It is the single store for every location permission, both the location's own (`location.<key>`, the "General" group) and those of its features (`<featureKey>.<key>`, e.g. `duties-attendance.view`). The Duties and Attendance permissions are:
 
 | Permission | Allows |
 |------------|--------|
@@ -66,9 +64,9 @@ A workspace keeps its own users, one document per user in `duties-attendance-wor
 
 A super-admin holds every permission in every workspace. Nobody else is let in by an admin permission: an admin who should use a workspace has to be added to it.
 
-**Users are managed from the mehfil's page in Admin** (the "Duties & Attendance Users" tab, shown while the feature is on), not inside the workspace. That needs `ADMIN_MANAGE_ORG_LOCATIONS` (and `ADMIN_VIEW_ORG_LOCATIONS` to see them). Only unlocked users linked to a person can be added, because the Workspaces menu is only shown to such users.
+**Users are managed from the mehfil's page in Admin** (the "Permissions" tab), not inside the workspace. That needs `ADMIN_MANAGE_ORG_LOCATIONS` (and `ADMIN_VIEW_ORG_LOCATIONS` to see them). Only unlocked users linked to a person can be added, because the Workspaces menu is only shown to such users.
 
-Every workspace operation carries `@checkDutiesAttendanceAccess(permission: ...)` and takes a `locationId`. The directive resolves the location's workspace, finds the caller's entry and refuses with `FORBIDDEN` if the permission is missing. A location the caller has no part in also answers `FORBIDDEN`, so its existence isn't revealed (a super-admin gets `NOT_FOUND` when the feature is off). The resolver reads the result with `getDutiesAttendanceAccess(context, locationId)`. `duties-attendance-permissions.test.ts` pins the permission each operation needs.
+Every workspace operation carries `@checkDutiesAttendanceAccess(permission: ...)` and takes a `locationId`. The directive finds the caller's entry on the location and refuses with `FORBIDDEN` if the permission is missing. A location the caller has no part in also answers `FORBIDDEN`, so its existence isn't revealed. The resolver reads the result with `getDutiesAttendanceAccess(context, locationId)`. `duties-attendance-permissions.test.ts` pins the permission each operation needs.
 
 ## How a day works
 
@@ -85,19 +83,18 @@ Every workspace operation carries `@checkDutiesAttendanceAccess(permission: ...)
 
 | Collection | Holds |
 |------------|-------|
-| `duties-attendance-workspaces` | `name`, `description?`, `metadata` (`{ locationId }`), soft delete |
-| `duties-attendance-workspace-users` | `workspaceId`, `userId`, `permissions[]`. Unique on `{workspaceId, userId}`. |
-| `duties-attendance-duties` | `workspaceId`, `name`, `description?`, `isActive`, `startDate`, `members[]` = `{ karkunId, isCoordinator?, daysOfWeek? }` |
-| `duties-attendance-day-overrides` | `workspaceId`, `dutyId`, `date`, `addedKarkunIds[]`, `absentKarkunIds[]`. Unique on `{dutyId, date}`. |
-| `duties-attendance-day-records` | `workspaceId`, `dutyId`, `date`, `karkuns[]` = `{ karkunId, name, addedForDay, attendance?, attendanceUpdatedAt/By }`. Unique on `{dutyId, date}`. |
+| `mehfil-template-duties` | `name`, `description?`. The duties every mehfil chooses from (`business-logic/admin/mehfil-template-duties.ts`). Names are unique ignoring case. Renaming one changes it for every mehfil that uses it; one in use can't be deleted. |
+| `org-location-users` | `locationId`, `userId`, `permissions[]` (prefixed, see above). Unique on `{locationId, userId}`. |
+| `duties-attendance-duties` | `locationId`, `mehfilDutyId` (the template duty; supplies name and description), `isActive`, `startDate`, `members[]` = `{ karkunId, isCoordinator?, daysOfWeek? }` |
+| `duties-attendance-day-overrides` | `locationId`, `dutyId`, `date`, `addedKarkunIds[]`, `absentKarkunIds[]`. Unique on `{dutyId, date}`. |
+| `duties-attendance-day-records` | `locationId`, `dutyId`, `date`, `karkuns[]` = `{ karkunId, name, addedForDay, attendance?, attendanceUpdatedAt/By }`. Unique on `{dutyId, date}`. |
 
 ## API
 
 Business logic (`business-logic/duties-attendance`, plain functions taking the acting user's id):
 
-- Workspaces: `createDutiesAttendanceWorkspace`, `getDutiesAttendanceWorkspace`, `deleteDutiesAttendanceWorkspace`, `restoreDutiesAttendanceWorkspace`, `purgeDutiesAttendanceWorkspace`
-- Users: `addDutiesAttendanceWorkspaceUser`, `updateDutiesAttendanceWorkspaceUserPermissions`, `removeDutiesAttendanceWorkspaceUser`, `searchWorkspaceUserCandidates`
-- Duties: `createDuty`, `updateDuty`, `removeDuty`, `addDutyMember`, `updateDutyMember`, `removeDutyMember`
+- Location permissions (in `business-logic/admin/org-location-features.ts`): `addOrgLocationFeatureUser`, `removeOrgLocationFeatureUser`, `listOrgLocationFeaturePermissions`, `hasOrgLocationPermission`
+- Duties: `createDuty` and `addDuties` (take `mehfilDutyId`s), `updateDuty` (active flag only), `removeDuty`, `addDutyMember`, `updateDutyMember`, `removeDutyMember`
 - Plan and attendance: `getDutyPlanDays`, `setDutyDayOverride`, `setDutyAttendance`, `createTodayDayRecords`, `getAttendanceSheet`
 - Other: `listMyDutiesAttendanceLocations`, `searchWorkspaceKarkuns`
 
@@ -106,11 +103,11 @@ Workspace GraphQL (all take `locationId`):
 | Operation | Permission |
 |-----------|------------|
 | `workspaceDaAccess`, `workspaceDaDuties`, `workspaceDaDutyById`, `workspaceDaPlanDays`, `workspaceDaAttendanceSheet` | `VIEW` |
-| `workspaceDaKarkunSearch`, `workspaceDaCreateDuty`, `workspaceDaUpdateDuty`, `workspaceDaRemoveDuty`, `workspaceDaAddDutyMember`, `workspaceDaUpdateDutyMember`, `workspaceDaRemoveDutyMember`, `workspaceDaSetDayOverride` | `MANAGE_AND_PLAN_DUTIES` |
+| `workspaceDaMehfilDuties` (the template list to choose from), `workspaceDaKarkunSearch`, `workspaceDaAddDuties`, `workspaceDaUpdateDuty`, `workspaceDaRemoveDuty`, `workspaceDaAddDutyMember`, `workspaceDaUpdateDutyMember`, `workspaceDaRemoveDutyMember`, `workspaceDaSetDayOverride` | `MANAGE_AND_PLAN_DUTIES` |
 | `workspaceDaSetAttendance` | `MARK_ATTENDANCE` |
 | `myDutiesAttendanceLocations` | caller's own (listed in `unprotected-fields.test.ts`) |
 
-Admin GraphQL (`ADMIN_VIEW_ORG_LOCATIONS` / `ADMIN_MANAGE_ORG_LOCATIONS`): `allOrgLocationFeatures`, `enableOrgLocationFeature`, `disableOrgLocationFeature`, `orgLocationFeaturePermissions`, `orgLocationFeatureUserCandidates`, `addOrgLocationFeatureUser`, `removeOrgLocationFeatureUser`. The location's Feature Permissions tab is generic: each feature lists its permissions in `OrgLocationFeatures` and provides grant/revoke/list handlers in `business-logic/admin/org-location-features.ts`.
+Admin GraphQL (`ADMIN_VIEW_ORG_LOCATIONS` / `ADMIN_MANAGE_ORG_LOCATIONS`): `allMehfilDuties`, `createMehfilDuty`, `updateMehfilDuty`, `deleteMehfilDuty` (Mehfil Templates), `orgLocationFeaturePermissions`, `orgLocationFeatureUserCandidates`, `addOrgLocationFeatureUser`, `removeOrgLocationFeatureUser`. The location's Permissions tab is generic: the General group (`OrgLocationGeneralPermissions`) and each feature list their permissions in `constants/organization/org-location-features.ts`, and grant/revoke/list work on `org-location-users` in `business-logic/admin/org-location-features.ts`.
 
 ## Web UI
 

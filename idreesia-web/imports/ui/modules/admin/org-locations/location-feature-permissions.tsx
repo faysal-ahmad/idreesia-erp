@@ -144,9 +144,9 @@ const userLabel = (user: {
     ? `${user.displayName} (${user.username ?? ''})`
     : (user.username ?? user.userId ?? '');
 
-// The enabled features of a location as a tree: each feature, then each of
-// its permissions with the users holding it. Managed here, by admins, rather
-// than inside the features' workspaces.
+// The location's permission groups (General, then each feature) as a tree:
+// each group, then each of its permissions with the users holding it. Managed
+// here, by admins, rather than inside the features' workspaces.
 const LocationFeaturePermissions = ({ locationId }: Props) => {
   const { containerRef, scrollY } = useListScrollY();
   const [adding, setAdding] = useState<PermissionRow | null>(null);
@@ -390,7 +390,7 @@ const LocationFeaturePermissions = ({ locationId }: Props) => {
           // all by default catches every feature.
           key={data ? 'loaded' : 'loading'}
           expandable={{ defaultExpandAllRows: true }}
-          locale={{ emptyText: 'No features enabled' }}
+          locale={{ emptyText: 'No permissions available' }}
         />
       </div>
 

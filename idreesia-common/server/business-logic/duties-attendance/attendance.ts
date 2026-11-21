@@ -7,8 +7,9 @@ import {
 import { dutiesAttendanceError } from './errors';
 import {
   ensureDutiesAttendanceIndexes,
+  getDutyNames,
   requireDuty,
-  requireWorkspace,
+  requireLocation,
 } from './internal';
 import { lockDays } from './planning';
 
@@ -94,22 +95,22 @@ export function summarizeAttendance(
 
 /**
  * The attendance sheet of a month for one duty, or for every duty of the
- * workspace. Locks the month's past days first, so every day somebody was on
+ * location. Locks the month's past days first, so every day somebody was on
  * duty is counted.
  */
 export async function getAttendanceSheet(args: {
-  workspaceId: string;
+  locationId: string;
   month: string;
   dutyId?: string | null;
 }): Promise<AttendanceSheetRow[]> {
   await ensureDutiesAttendanceIndexes();
   const { startDate, endDate } = monthRange(args.month);
-  await requireWorkspace(args.workspaceId);
+  await requireLocation(args.locationId);
 
   const duties = args.dutyId
-    ? [await requireDuty(args.dutyId, { workspaceId: args.workspaceId })]
+    ? [await requireDuty(args.dutyId, { locationId: args.locationId })]
     : await DutiesAttendanceDuties.find({
-        workspaceId: args.workspaceId,
+        locationId: args.locationId,
       }).fetchAsync();
 
   for (const duty of duties) {
@@ -117,14 +118,14 @@ export async function getAttendanceSheet(args: {
   }
 
   const records = await DutiesAttendanceDayRecords.find({
-    workspaceId: args.workspaceId,
+    locationId: args.locationId,
     dutyId: { $in: duties.map(({ _id }) => _id) },
     date: { $gte: startDate, $lte: endDate },
   }).fetchAsync();
 
   return summarizeAttendance(
     records,
-    new Map(duties.map(duty => [duty._id, duty.name]))
+    await getDutyNames(duties)
   ).sort(
     (left, right) =>
       left.name.localeCompare(right.name) ||

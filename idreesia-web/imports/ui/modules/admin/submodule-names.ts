@@ -12,6 +12,7 @@ const SubModuleNames = {
   deletedPeople: 'Deleted People',
   duplicatePeople: 'Duplicate People',
   orgLocations: 'Locations',
+  mehfilTemplates: 'Mehfil Templates',
 };
 
 export default SubModuleNames;

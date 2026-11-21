@@ -20,6 +20,14 @@ type DaMyLocationType {
   permissions: [String!]!
 }
 
+# A duty a location can choose from (see the Mehfil Templates in Admin). A
+# location's duty reads its name and description from the one it chose.
+type DaMehfilDutyType {
+  _id: String!
+  name: String!
+  description: String
+}
+
 type DaDutyMemberType {
   karkunId: String!
   isCoordinator: Boolean
@@ -30,7 +38,8 @@ type DaDutyMemberType {
 
 type DaDutyType {
   _id: String!
-  workspaceId: String!
+  locationId: String!
+  mehfilDutyId: String
   name: String!
   description: String
   isActive: Boolean!
@@ -95,6 +104,10 @@ extend type Query {
   workspaceDaDuties(locationId: String!): [DaDutyType]
     @checkDutiesAttendanceAccess(permission: VIEW)
 
+  # The duties a location can choose from when adding a duty.
+  workspaceDaMehfilDuties(locationId: String!): [DaMehfilDutyType]
+    @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+
   workspaceDaDutyById(locationId: String!, dutyId: String!): DaDutyType
     @checkDutiesAttendanceAccess(permission: VIEW)
 
@@ -133,17 +146,15 @@ input DaGeoLocationInput {
 }
 
 extend type Mutation {
-  workspaceDaCreateDuty(
+  # Adds duties chosen from the mehfil template duties, all or none.
+  workspaceDaAddDuties(
     locationId: String!
-    name: String!
-    description: String
-  ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
+    mehfilDutyIds: [String!]!
+  ): [DaDutyType] @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
   workspaceDaUpdateDuty(
     locationId: String!
     dutyId: String!
-    name: String
-    description: String
     isActive: Boolean
   ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 

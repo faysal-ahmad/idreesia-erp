@@ -22,6 +22,11 @@ export {
 export type { OrgLocationType } from './org-location-types';
 export {
   OrgLocationFeatureKeys,
+  OrgLocationGeneralGroupKey,
+  OrgLocationGeneralPermissions,
+  isOrgLocationGeneralGroupKey,
+  toOrgLocationPermissionValue,
+  orgLocationGroupPermissionKeys,
   OrgLocationFeatureAllowedTypes,
   OrgLocationFeatures,
   isOrgLocationFeatureKey,

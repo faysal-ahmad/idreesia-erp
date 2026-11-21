@@ -8,6 +8,8 @@ type OrgLocationMehfilDetailsType {
   lcdAvailability: Boolean
   tabAvailability: Boolean
   otherMehfilDetails: String
+  latitude: Float
+  longitude: Float
 }
 
 type OrgLocationType {
@@ -25,8 +27,6 @@ type OrgLocationType {
   observers: [PersonType]
   # Per observer: how many committees below this location they observe.
   observerStats: [OrgLocationObserverStatType]
-  # Features enabled on this location (mehfils only).
-  features: [String]
 
   createdAt: String
   createdBy: String
@@ -46,12 +46,6 @@ type SyncOrgLocationObserversResult {
   removedCount: Int
 }
 
-type OrgLocationFeatureType {
-  key: String!
-  name: String!
-  description: String!
-}
-
 # A user holding a permission of a location feature.
 type OrgLocationFeaturePermissionUserType {
   userId: String!
@@ -69,7 +63,7 @@ type OrgLocationFeaturePermissionType {
   users: [OrgLocationFeaturePermissionUserType]!
 }
 
-# An enabled feature of a location, with its permissions.
+# A permission group of a location (General or a feature), with its permissions.
 type OrgLocationFeaturePermissionsType {
   featureKey: String!
   featureName: String!
@@ -83,6 +77,8 @@ input OrgLocationMehfilDetailsInput {
   lcdAvailability: Boolean
   tabAvailability: Boolean
   otherMehfilDetails: String
+  latitude: Float
+  longitude: Float
 }
 
 extend type Query {
@@ -92,10 +88,8 @@ extend type Query {
   orgLocationById(_id: String!): OrgLocationType
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
 
-  allOrgLocationFeatures: [OrgLocationFeatureType]
-    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
-
-  # The enabled features of the location, with the users holding each permission.
+  # The location's permission groups (General, and for a mehfil each feature),
+  # with the users holding each permission.
   orgLocationFeaturePermissions(
     locationId: String!
   ): [OrgLocationFeaturePermissionsType]
@@ -129,12 +123,6 @@ extend type Mutation {
   # observers of every committee in the location and the locations below it.
   # Inherited observers that no longer apply are removed.
   syncOrgLocationObservers(locationId: String!): SyncOrgLocationObserversResult
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
-
-  enableOrgLocationFeature(locationId: String!, featureKey: String!): Boolean
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
-
-  disableOrgLocationFeature(locationId: String!, featureKey: String!): Boolean
     @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
   addOrgLocationFeatureUser(

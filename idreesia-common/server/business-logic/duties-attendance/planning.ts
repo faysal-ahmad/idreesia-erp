@@ -8,13 +8,14 @@ import {
   isInTransaction,
   runInTransaction,
 } from 'meteor/idreesia-common/server/collections';
+import { OrgLocationFeatureAllowedTypes } from 'meteor/idreesia-common/constants/organization';
+import { OrgLocations } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import {
   DutiesAttendanceDayOverrides,
   DutiesAttendanceDayRecords,
   DutiesAttendanceDuties,
-  DutiesAttendanceWorkspaces,
   type AttendanceGeoLocation,
   type DayRecordKarkun,
   type DutiesAttendanceDayOverrideDocument,
@@ -218,7 +219,7 @@ export async function lockDays(
     });
     try {
       await DutiesAttendanceDayRecords.insertAsync({
-        workspaceId: duty.workspaceId,
+        locationId: duty.locationId,
         dutyId: duty._id,
         date,
         karkuns,
@@ -245,19 +246,19 @@ export async function lockDutyDaysThroughToday(
 
 /**
  * The job body: writes today's locked record for every active duty of every
- * live workspace. Returns how many duties were processed.
+ * mehfil. Returns how many duties were processed.
  */
 export async function createTodayDayRecords(
   reportProgress?: (fraction: number) => Promise<void>
 ) {
   await ensureDutiesAttendanceIndexes();
   const today = todayInKarachi();
-  const liveWorkspaces = await DutiesAttendanceWorkspaces.find(
-    { deletedAt: { $exists: false } },
+  const mehfils = await OrgLocations.find(
+    { type: { $in: OrgLocationFeatureAllowedTypes } },
     { fields: { _id: 1 } }
   ).fetchAsync();
   const duties = await DutiesAttendanceDuties.find({
-    workspaceId: { $in: liveWorkspaces.map(({ _id }) => _id) },
+    locationId: { $in: mehfils.map(({ _id }) => _id as string) },
     isActive: { $ne: false },
   }).fetchAsync();
 
@@ -274,7 +275,7 @@ export async function createTodayDayRecords(
 // ---------------------------------------------------------------------------
 
 export async function setDutyDayOverride(args: {
-  workspaceId: string;
+  locationId: string;
   dutyId: string;
   date: string;
   addedKarkunIds?: Array<string | null> | null;
@@ -284,7 +285,7 @@ export async function setDutyDayOverride(args: {
   requireUserId(args.userId);
   await ensureDutiesAttendanceIndexes();
   const duty = await requireDuty(args.dutyId, {
-    workspaceId: args.workspaceId,
+    locationId: args.locationId,
   });
   assertDate(args.date, 'date');
   if (args.date <= todayInKarachi()) {
@@ -318,7 +319,7 @@ export async function setDutyDayOverride(args: {
     });
   } else {
     await DutiesAttendanceDayOverrides.insertAsync({
-      workspaceId: duty.workspaceId,
+      locationId: duty.locationId,
       ...selector,
       addedKarkunIds,
       absentKarkunIds,
@@ -355,13 +356,13 @@ export interface PlanDay {
  * roster and the overrides.
  */
 export async function getDutyPlanDays(args: {
-  workspaceId: string;
+  locationId: string;
   dutyId: string;
   startDate: string;
 }): Promise<{ startDate: string; days: PlanDay[] }> {
   await ensureDutiesAttendanceIndexes();
   const duty = await requireDuty(args.dutyId, {
-    workspaceId: args.workspaceId,
+    locationId: args.locationId,
   });
   assertDate(args.startDate, 'start date');
 
@@ -488,7 +489,7 @@ function normalizeGeo(
 }
 
 export async function setDutyAttendance(args: {
-  workspaceId: string;
+  locationId: string;
   dutyId: string;
   date: string;
   karkunId: string;
@@ -506,7 +507,7 @@ export async function setDutyAttendance(args: {
   await ensureDutiesAttendanceIndexes();
   return runInTransaction(async () => {
     const duty = await requireDuty(args.dutyId, {
-      workspaceId: args.workspaceId,
+      locationId: args.locationId,
     });
     assertDate(args.date, 'date');
     if (args.date > todayInKarachi()) {

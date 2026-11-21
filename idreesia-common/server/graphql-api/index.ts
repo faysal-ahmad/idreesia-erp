@@ -51,6 +51,8 @@ import FreeFormDataSchema from './admin/free-form-data/free-form-data';
 import FreeFormDataResolvers from './admin/free-form-data/resolvers';
 import OrgLocationSchema from './admin/org-location/org-location';
 import OrgLocationResolvers from './admin/org-location/resolvers';
+import MehfilTemplateSchema from './admin/mehfil-template/mehfil-template';
+import MehfilTemplateResolvers from './admin/mehfil-template/resolvers';
 
 import DeletedPeopleSchema from './admin/deleted-people/deleted-people';
 import DeletedPeopleResolvers from './admin/deleted-people/resolvers';
@@ -239,6 +241,7 @@ const typeDefs = [
   PeopleTagSchema,
   FreeFormDataSchema,
   OrgLocationSchema,
+  MehfilTemplateSchema,
   DeletedPeopleSchema,
   DuplicatePeopleSchema,
   AdminSecurityLogSchema,
@@ -313,6 +316,7 @@ const resolvers = merge(
   PeopleTagResolvers,
   FreeFormDataResolvers,
   OrgLocationResolvers,
+  MehfilTemplateResolvers,
   DeletedPeopleResolvers,
   DuplicatePeopleResolvers,
   AdminSecurityLogResolvers,

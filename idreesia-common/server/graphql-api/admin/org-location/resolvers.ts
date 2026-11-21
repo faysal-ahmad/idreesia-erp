@@ -1,7 +1,4 @@
-import {
-  OrgLocationFeatures,
-  type OrgLocationType,
-} from 'meteor/idreesia-common/constants/organization';
+import type { OrgLocationType } from 'meteor/idreesia-common/constants/organization';
 import { getDataLoaders } from 'meteor/idreesia-common/server/data-loaders';
 import {
   OrgLocations,
@@ -13,8 +10,6 @@ import {
   addOrgLocationFeatureUser,
   addOrgLocationObserver,
   createOrgLocation,
-  disableOrgLocationFeature,
-  enableOrgLocationFeature,
   getOrgLocationObserverStats,
   listOrgLocationFeaturePermissions,
   removeOrgLocationFeatureUser,
@@ -52,8 +47,6 @@ export default {
     observerKarkunIds: (location: OrgLocationDocument) =>
       location.observerKarkunIds ?? [],
 
-    features: (location: OrgLocationDocument) => location.features ?? [],
-
     observerStats: (location: OrgLocationDocument) =>
       getOrgLocationObserverStats(location),
 
@@ -82,8 +75,6 @@ export default {
   },
 
   Query: {
-    allOrgLocationFeatures: async () => OrgLocationFeatures,
-
     orgLocationFeaturePermissions: async (
       _obj: unknown,
       { locationId }: { locationId: string }
@@ -126,18 +117,6 @@ export default {
       { locationId }: { locationId: string },
       { user }: ResolverContext
     ) => syncOrgLocationObservers(locationId, user),
-
-    enableOrgLocationFeature: async (
-      _obj: unknown,
-      { locationId, featureKey }: { locationId: string; featureKey: string },
-      { user }: ResolverContext
-    ) => enableOrgLocationFeature(locationId, featureKey, user._id),
-
-    disableOrgLocationFeature: async (
-      _obj: unknown,
-      { locationId, featureKey }: { locationId: string; featureKey: string },
-      { user }: ResolverContext
-    ) => disableOrgLocationFeature(locationId, featureKey, user._id),
 
     addOrgLocationFeatureUser: async (
       _obj: unknown,

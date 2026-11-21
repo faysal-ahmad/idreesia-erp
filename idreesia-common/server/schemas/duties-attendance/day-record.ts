@@ -28,7 +28,7 @@ const RecordKarkunSchema = new SimpleSchema({
 });
 
 export default new SimpleSchema({
-  workspaceId: { type: String },
+  locationId: { type: String },
   dutyId: { type: String },
   // YYYY-MM-DD, Asia/Karachi.
   date: { type: String },

@@ -110,7 +110,7 @@ Workspace GraphQL (all take `locationId`):
 | `workspaceDaSetAttendance` | `MARK_ATTENDANCE` |
 | `myDutiesAttendanceLocations` | caller's own (listed in `unprotected-fields.test.ts`) |
 
-Admin GraphQL (`ADMIN_VIEW_ORG_LOCATIONS` / `ADMIN_MANAGE_ORG_LOCATIONS`): `allOrgLocationFeatures`, `enableOrgLocationFeature`, `disableOrgLocationFeature`, `allDutiesAttendancePermissions`, `dutiesAttendanceUserCandidates`, `orgLocationDutiesAttendanceUsers`, `addOrgLocationDutiesAttendanceUser`, `updateOrgLocationDutiesAttendanceUserPermissions`, `removeOrgLocationDutiesAttendanceUser`.
+Admin GraphQL (`ADMIN_VIEW_ORG_LOCATIONS` / `ADMIN_MANAGE_ORG_LOCATIONS`): `allOrgLocationFeatures`, `enableOrgLocationFeature`, `disableOrgLocationFeature`, `orgLocationFeaturePermissions`, `orgLocationFeatureUserCandidates`, `addOrgLocationFeatureUser`, `removeOrgLocationFeatureUser`. The location's Feature Permissions tab is generic: each feature lists its permissions in `OrgLocationFeatures` and provides grant/revoke/list handlers in `business-logic/admin/org-location-features.ts`.
 
 ## Web UI
 

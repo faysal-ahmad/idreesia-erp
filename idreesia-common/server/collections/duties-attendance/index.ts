@@ -10,6 +10,7 @@ export type {
   DutyMember,
   DutiesAttendanceDutyDocument,
   DutiesAttendanceDayOverrideDocument,
+  AttendanceGeoLocation,
   DayRecordKarkun,
   DutiesAttendanceDayRecordDocument,
 } from './types';

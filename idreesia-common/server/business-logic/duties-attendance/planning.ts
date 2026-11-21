@@ -1,4 +1,5 @@
 import {
+  DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH,
   DUTIES_ATTENDANCE_PLAN_DAY_COUNT,
   DutyAttendanceStatuses,
   type DutyAttendanceStatus,
@@ -14,6 +15,7 @@ import {
   DutiesAttendanceDayRecords,
   DutiesAttendanceDuties,
   DutiesAttendanceWorkspaces,
+  type AttendanceGeoLocation,
   type DayRecordKarkun,
   type DutiesAttendanceDayOverrideDocument,
   type DutiesAttendanceDayRecordDocument,
@@ -451,15 +453,55 @@ export async function getDutyPlanDays(args: {
 // Attendance marking
 // ---------------------------------------------------------------------------
 
+function normalizeSource(source: string | null | undefined) {
+  const trimmed = (source ?? '').trim();
+  if (trimmed.length > DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH) {
+    throw dutiesAttendanceError(
+      'BAD_USER_INPUT',
+      `The source can be at most ${DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH} characters.`
+    );
+  }
+  return trimmed || undefined;
+}
+
+function normalizeGeo(
+  geo: AttendanceGeoLocation | null | undefined
+): AttendanceGeoLocation | undefined {
+  if (!geo) return undefined;
+  const { latitude, longitude, accuracy } = geo;
+  if (
+    !Number.isFinite(latitude) ||
+    latitude < -90 ||
+    latitude > 90 ||
+    !Number.isFinite(longitude) ||
+    longitude < -180 ||
+    longitude > 180 ||
+    (accuracy != null && (!Number.isFinite(accuracy) || accuracy < 0))
+  ) {
+    throw dutiesAttendanceError('BAD_USER_INPUT', 'The location is not valid.');
+  }
+  return {
+    latitude,
+    longitude,
+    ...(accuracy != null ? { accuracy } : {}),
+  };
+}
+
 export async function setDutyAttendance(args: {
   workspaceId: string;
   dutyId: string;
   date: string;
   karkunId: string;
   status?: string | null;
+  /** How the attendance was marked; kept with the mark. */
+  source?: string | null;
+  /** Where it was marked from; kept with the mark. */
+  geo?: AttendanceGeoLocation | null;
   userId: string;
 }) {
   requireUserId(args.userId);
+  const source = normalizeSource(args.source);
+  const geo = normalizeGeo(args.geo);
   // Indexes are created outside the transaction, which can't create them.
   await ensureDutiesAttendanceIndexes();
   return runInTransaction(async () => {
@@ -506,7 +548,14 @@ export async function setDutyAttendance(args: {
           'karkuns.$.attendance': status,
           'karkuns.$.attendanceUpdatedAt': new Date(),
           'karkuns.$.attendanceUpdatedBy': args.userId,
+          // A new mark replaces the source and place of the earlier one.
+          ...(source ? { 'karkuns.$.attendanceSource': source } : {}),
+          ...(geo ? { 'karkuns.$.attendanceGeo': geo } : {}),
           ...touch(args.userId),
+        },
+        $unset: {
+          ...(source ? {} : { 'karkuns.$.attendanceSource': '' }),
+          ...(geo ? {} : { 'karkuns.$.attendanceGeo': '' }),
         },
       });
     } else {
@@ -515,6 +564,8 @@ export async function setDutyAttendance(args: {
           'karkuns.$.attendance': '',
           'karkuns.$.attendanceUpdatedAt': '',
           'karkuns.$.attendanceUpdatedBy': '',
+          'karkuns.$.attendanceSource': '',
+          'karkuns.$.attendanceGeo': '',
         },
         $set: touch(args.userId),
       });

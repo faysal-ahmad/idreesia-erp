@@ -94,6 +94,7 @@ export type ResolversTypes = ResolversObject<{
   DaAttendanceSheetRowType: ResolverTypeWrapper<Types.DaAttendanceSheetRowType>;
   DaDutyMemberType: ResolverTypeWrapper<Types.DaDutyMemberType>;
   DaDutyType: ResolverTypeWrapper<Types.DaDutyType>;
+  DaGeoLocationInput: Types.DaGeoLocationInput;
   DaMyLocationType: ResolverTypeWrapper<Types.DaMyLocationType>;
   DaPlanDayType: ResolverTypeWrapper<Types.DaPlanDayType>;
   DaPlanDaysType: ResolverTypeWrapper<Types.DaPlanDaysType>;
@@ -112,8 +113,6 @@ export type ResolversTypes = ResolversObject<{
   DuplicatePersonGroupType: ResolverTypeWrapper<Types.DuplicatePersonGroupType>;
   DuplicatePersonSummaryType: ResolverTypeWrapper<Types.DuplicatePersonSummaryType>;
   DutiesAttendancePermission: Types.DutiesAttendancePermission;
-  DutiesAttendancePermissionInfoType: ResolverTypeWrapper<Types.DutiesAttendancePermissionInfoType>;
-  DutiesAttendanceUserCandidateType: ResolverTypeWrapper<Types.DutiesAttendanceUserCandidateType>;
   DutyAttendanceCardType: ResolverTypeWrapper<Types.DutyAttendanceCardType>;
   DutyAttendanceSheetRowType: ResolverTypeWrapper<Types.DutyAttendanceSheetRowType>;
   DutyLocationType: ResolverTypeWrapper<Types.DutyLocationType>;
@@ -158,7 +157,9 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
   NotificationCountType: ResolverTypeWrapper<Types.NotificationCountType>;
   NotificationType: ResolverTypeWrapper<Types.NotificationType>;
-  OrgLocationDutiesAttendanceUserType: ResolverTypeWrapper<Types.OrgLocationDutiesAttendanceUserType>;
+  OrgLocationFeaturePermissionType: ResolverTypeWrapper<Types.OrgLocationFeaturePermissionType>;
+  OrgLocationFeaturePermissionUserType: ResolverTypeWrapper<Types.OrgLocationFeaturePermissionUserType>;
+  OrgLocationFeaturePermissionsType: ResolverTypeWrapper<Types.OrgLocationFeaturePermissionsType>;
   OrgLocationFeatureType: ResolverTypeWrapper<Types.OrgLocationFeatureType>;
   OrgLocationMehfilDetailsInput: Types.OrgLocationMehfilDetailsInput;
   OrgLocationMehfilDetailsType: ResolverTypeWrapper<Types.OrgLocationMehfilDetailsType>;
@@ -335,6 +336,7 @@ export type ResolversParentTypes = ResolversObject<{
   DaAttendanceSheetRowType: Types.DaAttendanceSheetRowType;
   DaDutyMemberType: Types.DaDutyMemberType;
   DaDutyType: Types.DaDutyType;
+  DaGeoLocationInput: Types.DaGeoLocationInput;
   DaMyLocationType: Types.DaMyLocationType;
   DaPlanDayType: Types.DaPlanDayType;
   DaPlanDaysType: Types.DaPlanDaysType;
@@ -352,8 +354,6 @@ export type ResolversParentTypes = ResolversObject<{
   DiscussionVideoCallType: Types.DiscussionVideoCallType;
   DuplicatePersonGroupType: Types.DuplicatePersonGroupType;
   DuplicatePersonSummaryType: Types.DuplicatePersonSummaryType;
-  DutiesAttendancePermissionInfoType: Types.DutiesAttendancePermissionInfoType;
-  DutiesAttendanceUserCandidateType: Types.DutiesAttendanceUserCandidateType;
   DutyAttendanceCardType: Types.DutyAttendanceCardType;
   DutyAttendanceSheetRowType: Types.DutyAttendanceSheetRowType;
   DutyLocationType: Types.DutyLocationType;
@@ -398,7 +398,9 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: Record<PropertyKey, never>;
   NotificationCountType: Types.NotificationCountType;
   NotificationType: Types.NotificationType;
-  OrgLocationDutiesAttendanceUserType: Types.OrgLocationDutiesAttendanceUserType;
+  OrgLocationFeaturePermissionType: Types.OrgLocationFeaturePermissionType;
+  OrgLocationFeaturePermissionUserType: Types.OrgLocationFeaturePermissionUserType;
+  OrgLocationFeaturePermissionsType: Types.OrgLocationFeaturePermissionsType;
   OrgLocationFeatureType: Types.OrgLocationFeatureType;
   OrgLocationMehfilDetailsInput: Types.OrgLocationMehfilDetailsInput;
   OrgLocationMehfilDetailsType: Types.OrgLocationMehfilDetailsType;
@@ -862,18 +864,6 @@ export type DuplicatePersonSummaryTypeResolvers<ContextType = any, ParentType ex
   updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
-export type DutiesAttendancePermissionInfoTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DutiesAttendancePermissionInfoType'] = ResolversParentTypes['DutiesAttendancePermissionInfoType']> = ResolversObject<{
-  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-}>;
-
-export type DutiesAttendanceUserCandidateTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DutiesAttendanceUserCandidateType'] = ResolversParentTypes['DutiesAttendanceUserCandidateType']> = ResolversObject<{
-  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  displayName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  username?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-}>;
-
 export type DutyAttendanceCardTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DutyAttendanceCardType'] = ResolversParentTypes['DutyAttendanceCardType']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   absentCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -1233,7 +1223,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   addHrKarkunAttachment?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.MutationAddHrKarkunAttachmentArgs, '_id' | 'attachmentId'>>;
   addIssuanceFormAttachment?: Resolver<Types.Maybe<ResolversTypes['IssuanceForm']>, ParentType, ContextType, RequireFields<Types.MutationAddIssuanceFormAttachmentArgs, '_id' | 'attachmentId' | 'physicalStoreId'>>;
   addMehfilKarkun?: Resolver<Types.Maybe<ResolversTypes['MehfilKarkunType']>, ParentType, ContextType, RequireFields<Types.MutationAddMehfilKarkunArgs, 'dutyId' | 'karkunId' | 'mehfilId'>>;
-  addOrgLocationDutiesAttendanceUser?: Resolver<Types.Maybe<ResolversTypes['OrgLocationDutiesAttendanceUserType']>, ParentType, ContextType, RequireFields<Types.MutationAddOrgLocationDutiesAttendanceUserArgs, 'locationId' | 'permissions' | 'userId'>>;
+  addOrgLocationFeatureUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddOrgLocationFeatureUserArgs, 'featureKey' | 'karkunId' | 'locationId' | 'permissionKey'>>;
   addOrgLocationObserver?: Resolver<Types.Maybe<ResolversTypes['OrgLocationType']>, ParentType, ContextType, RequireFields<Types.MutationAddOrgLocationObserverArgs, 'karkunId' | 'locationId'>>;
   addPurchaseFormAttachment?: Resolver<Types.Maybe<ResolversTypes['PurchaseForm']>, ParentType, ContextType, RequireFields<Types.MutationAddPurchaseFormAttachmentArgs, '_id' | 'attachmentId' | 'physicalStoreId'>>;
   addSecurityServerProfileImage?: Resolver<Types.Maybe<ResolversTypes['SecurityServerProfileType']>, ParentType, ContextType, RequireFields<Types.MutationAddSecurityServerProfileImageArgs, 'imageData' | 'profileId'>>;
@@ -1318,7 +1308,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeLocation?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveLocationArgs, '_id' | 'physicalStoreId'>>;
   removeMehfil?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveMehfilArgs, '_id'>>;
   removeMehfilKarkun?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveMehfilKarkunArgs, '_id'>>;
-  removeOrgLocationDutiesAttendanceUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemoveOrgLocationDutiesAttendanceUserArgs, 'locationId' | 'userId'>>;
+  removeOrgLocationFeatureUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemoveOrgLocationFeatureUserArgs, 'featureKey' | 'locationId' | 'permissionKey' | 'userId'>>;
   removeOrgLocationObserver?: Resolver<Types.Maybe<ResolversTypes['OrgLocationType']>, ParentType, ContextType, RequireFields<Types.MutationRemoveOrgLocationObserverArgs, 'karkunId' | 'locationId'>>;
   removePurchaseFormAttachment?: Resolver<Types.Maybe<ResolversTypes['PurchaseForm']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchaseFormAttachmentArgs, '_id' | 'attachmentId' | 'physicalStoreId'>>;
   removePurchaseForms?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchaseFormsArgs, '_ids' | 'physicalStoreId'>>;
@@ -1381,7 +1371,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateLoginTime?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   updateMehfil?: Resolver<Types.Maybe<ResolversTypes['MehfilType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateMehfilArgs, '_id' | 'name'>>;
   updateOrgLocation?: Resolver<Types.Maybe<ResolversTypes['OrgLocationType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateOrgLocationArgs, '_id' | 'name'>>;
-  updateOrgLocationDutiesAttendanceUserPermissions?: Resolver<Types.Maybe<ResolversTypes['OrgLocationDutiesAttendanceUserType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateOrgLocationDutiesAttendanceUserPermissionsArgs, 'locationId' | 'permissions' | 'userId'>>;
   updatePeopleTag?: Resolver<Types.Maybe<ResolversTypes['PeopleTagType']>, ParentType, ContextType, RequireFields<Types.MutationUpdatePeopleTagArgs, '_id' | 'color' | 'moduleNames' | 'name' | 'textColor'>>;
   updatePhysicalStore?: Resolver<Types.Maybe<ResolversTypes['PhysicalStore']>, ParentType, ContextType, RequireFields<Types.MutationUpdatePhysicalStoreArgs, 'id' | 'name'>>;
   updatePurchaseForm?: Resolver<Types.Maybe<ResolversTypes['PurchaseForm']>, ParentType, ContextType, RequireFields<Types.MutationUpdatePurchaseFormArgs, '_id' | 'physicalStoreId' | 'purchaseDate' | 'purchasedBy' | 'receivedBy'>>;
@@ -1512,12 +1501,24 @@ export type NotificationTypeResolvers<ContextType = any, ParentType extends Reso
   updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
-export type OrgLocationDutiesAttendanceUserTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrgLocationDutiesAttendanceUserType'] = ResolversParentTypes['OrgLocationDutiesAttendanceUserType']> = ResolversObject<{
-  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+export type OrgLocationFeaturePermissionTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrgLocationFeaturePermissionType'] = ResolversParentTypes['OrgLocationFeaturePermissionType']> = ResolversObject<{
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  users?: Resolver<Array<Types.Maybe<ResolversTypes['OrgLocationFeaturePermissionUserType']>>, ParentType, ContextType>;
+}>;
+
+export type OrgLocationFeaturePermissionUserTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrgLocationFeaturePermissionUserType'] = ResolversParentTypes['OrgLocationFeaturePermissionUserType']> = ResolversObject<{
   displayName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  permissions?: Resolver<Array<Types.Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
+  personId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   username?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type OrgLocationFeaturePermissionsTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrgLocationFeaturePermissionsType'] = ResolversParentTypes['OrgLocationFeaturePermissionsType']> = ResolversObject<{
+  featureKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  featureName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  permissions?: Resolver<Array<Types.Maybe<ResolversTypes['OrgLocationFeaturePermissionType']>>, ParentType, ContextType>;
 }>;
 
 export type OrgLocationFeatureTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrgLocationFeatureType'] = ResolversParentTypes['OrgLocationFeatureType']> = ResolversObject<{
@@ -1883,7 +1884,6 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   allCities?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CityType']>>>, ParentType, ContextType>;
   allCityMehfils?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CityMehfilType']>>>, ParentType, ContextType>;
   allCommitteeFeatures?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CommitteeFeatureType']>>>, ParentType, ContextType>;
-  allDutiesAttendancePermissions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DutiesAttendancePermissionInfoType']>>>, ParentType, ContextType>;
   allDutyLocations?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DutyLocationType']>>>, ParentType, ContextType>;
   allDutyShifts?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DutyShiftType']>>>, ParentType, ContextType>;
   allJobDefinitions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['JobDefinitionType']>>>, ParentType, ContextType>;
@@ -1914,7 +1914,6 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   duplicatePersonById?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.QueryDuplicatePersonByIdArgs, '_id'>>;
   duplicatePersonRelationCounts?: Resolver<Types.Maybe<Array<ResolversTypes['PersonRelationCounts']>>, ParentType, ContextType, RequireFields<Types.QueryDuplicatePersonRelationCountsArgs, 'ids'>>;
   duplicatePhoneNumbers?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DuplicatePersonGroupType']>>>, ParentType, ContextType>;
-  dutiesAttendanceUserCandidates?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DutiesAttendanceUserCandidateType']>>>, ParentType, ContextType, Partial<Types.QueryDutiesAttendanceUserCandidatesArgs>>;
   dutyAttendanceCards?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DutyAttendanceCardType']>>>, ParentType, ContextType, RequireFields<Types.QueryDutyAttendanceCardsArgs, 'dutyId' | 'karkunIds' | 'month'>>;
   dutyAttendanceSheet?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['DutyAttendanceSheetRowType']>>>, ParentType, ContextType, RequireFields<Types.QueryDutyAttendanceSheetArgs, 'dutyId' | 'month'>>;
   dutyPlanDays?: Resolver<Types.Maybe<ResolversTypes['DutyPlanDaysType']>, ParentType, ContextType, RequireFields<Types.QueryDutyPlanDaysArgs, 'dutyId' | 'locationId' | 'startDate'>>;
@@ -1943,7 +1942,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   myNotificationCounts?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['NotificationCountType']>>>, ParentType, ContextType>;
   myNotifications?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['NotificationType']>>>, ParentType, ContextType, Partial<Types.QueryMyNotificationsArgs>>;
   orgLocationById?: Resolver<Types.Maybe<ResolversTypes['OrgLocationType']>, ParentType, ContextType, RequireFields<Types.QueryOrgLocationByIdArgs, '_id'>>;
-  orgLocationDutiesAttendanceUsers?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['OrgLocationDutiesAttendanceUserType']>>>, ParentType, ContextType, RequireFields<Types.QueryOrgLocationDutiesAttendanceUsersArgs, 'locationId'>>;
+  orgLocationFeaturePermissions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['OrgLocationFeaturePermissionsType']>>>, ParentType, ContextType, RequireFields<Types.QueryOrgLocationFeaturePermissionsArgs, 'locationId'>>;
   pagedCities?: Resolver<Types.Maybe<ResolversTypes['PagedCityType']>, ParentType, ContextType, Partial<Types.QueryPagedCitiesArgs>>;
   pagedDeletedPeople?: Resolver<Types.Maybe<ResolversTypes['PagedPeopleType']>, ParentType, ContextType, Partial<Types.QueryPagedDeletedPeopleArgs>>;
   pagedFreeFormCities?: Resolver<Types.Maybe<ResolversTypes['PagedFreeFormCity']>, ParentType, ContextType, RequireFields<Types.QueryPagedFreeFormCitiesArgs, 'pageIndex' | 'pageSize'>>;
@@ -2968,8 +2967,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   DiscussionVideoCallType?: DiscussionVideoCallTypeResolvers<ContextType>;
   DuplicatePersonGroupType?: DuplicatePersonGroupTypeResolvers<ContextType>;
   DuplicatePersonSummaryType?: DuplicatePersonSummaryTypeResolvers<ContextType>;
-  DutiesAttendancePermissionInfoType?: DutiesAttendancePermissionInfoTypeResolvers<ContextType>;
-  DutiesAttendanceUserCandidateType?: DutiesAttendanceUserCandidateTypeResolvers<ContextType>;
   DutyAttendanceCardType?: DutyAttendanceCardTypeResolvers<ContextType>;
   DutyAttendanceSheetRowType?: DutyAttendanceSheetRowTypeResolvers<ContextType>;
   DutyLocationType?: DutyLocationTypeResolvers<ContextType>;
@@ -3007,7 +3004,9 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   NotificationCountType?: NotificationCountTypeResolvers<ContextType>;
   NotificationType?: NotificationTypeResolvers<ContextType>;
-  OrgLocationDutiesAttendanceUserType?: OrgLocationDutiesAttendanceUserTypeResolvers<ContextType>;
+  OrgLocationFeaturePermissionType?: OrgLocationFeaturePermissionTypeResolvers<ContextType>;
+  OrgLocationFeaturePermissionUserType?: OrgLocationFeaturePermissionUserTypeResolvers<ContextType>;
+  OrgLocationFeaturePermissionsType?: OrgLocationFeaturePermissionsTypeResolvers<ContextType>;
   OrgLocationFeatureType?: OrgLocationFeatureTypeResolvers<ContextType>;
   OrgLocationMehfilDetailsType?: OrgLocationMehfilDetailsTypeResolvers<ContextType>;
   OrgLocationObserverStatType?: OrgLocationObserverStatTypeResolvers<ContextType>;

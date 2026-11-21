@@ -301,26 +301,28 @@ type OrgLocationFeatureType {
   description: String!
 }
 
-type DutiesAttendancePermissionInfoType {
+# A user holding a permission of a location feature.
+type OrgLocationFeaturePermissionUserType {
+  userId: String!
+  # The karkun the user account belongs to.
+  personId: String
+  username: String
+  displayName: String
+}
+
+# A permission a feature supports, with the users holding it.
+type OrgLocationFeaturePermissionType {
   key: String!
   name: String!
   description: String!
+  users: [OrgLocationFeaturePermissionUserType]!
 }
 
-# A user of the location's Duties and Attendance workspace.
-type OrgLocationDutiesAttendanceUserType {
-  _id: String!
-  userId: String!
-  username: String
-  displayName: String
-  permissions: [String]!
-}
-
-# A user that can be added to a workspace.
-type DutiesAttendanceUserCandidateType {
-  _id: String!
-  username: String
-  displayName: String
+# An enabled feature of a location, with its permissions.
+type OrgLocationFeaturePermissionsType {
+  featureKey: String!
+  featureName: String!
+  permissions: [OrgLocationFeaturePermissionType]!
 }
 
 input OrgLocationMehfilDetailsInput {
@@ -342,18 +344,10 @@ extend type Query {
   allOrgLocationFeatures: [OrgLocationFeatureType]
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
 
-  allDutiesAttendancePermissions: [DutiesAttendancePermissionInfoType]
-    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
-
-  # Unlocked users matching the text, to add to a workspace.
-  dutiesAttendanceUserCandidates(
-    search: String
-  ): [DutiesAttendanceUserCandidateType]
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
-
-  orgLocationDutiesAttendanceUsers(
+  # The enabled features of the location, with the users holding each permission.
+  orgLocationFeaturePermissions(
     locationId: String!
-  ): [OrgLocationDutiesAttendanceUserType]
+  ): [OrgLocationFeaturePermissionsType]
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
 }
 
@@ -392,22 +386,17 @@ extend type Mutation {
   disableOrgLocationFeature(locationId: String!, featureKey: String!): Boolean
     @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
-  addOrgLocationDutiesAttendanceUser(
+  addOrgLocationFeatureUser(
     locationId: String!
-    userId: String!
-    permissions: [String]!
-  ): OrgLocationDutiesAttendanceUserType
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+    featureKey: String!
+    permissionKey: String!
+    karkunId: String!
+  ): Boolean @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
-  updateOrgLocationDutiesAttendanceUserPermissions(
+  removeOrgLocationFeatureUser(
     locationId: String!
-    userId: String!
-    permissions: [String]!
-  ): OrgLocationDutiesAttendanceUserType
-    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
-
-  removeOrgLocationDutiesAttendanceUser(
-    locationId: String!
+    featureKey: String!
+    permissionKey: String!
     userId: String!
   ): Boolean @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 }
@@ -3717,6 +3706,13 @@ extend type Query {
     @checkDutiesAttendanceAccess(permission: VIEW)
 }
 
+input DaGeoLocationInput {
+  latitude: Float!
+  longitude: Float!
+  # Metres.
+  accuracy: Float
+}
+
 extend type Mutation {
   workspaceDaCreateDuty(
     locationId: String!
@@ -3766,13 +3762,16 @@ extend type Mutation {
     absentKarkunIds: [String]
   ): Boolean @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
-  # status is present, late or absent; null clears the mark.
+  # status is present, late or absent; null clears the mark. source (how it
+  # was marked) and geo (where from) are optional and kept with the mark.
   workspaceDaSetAttendance(
     locationId: String!
     dutyId: String!
     date: String!
     karkunId: String!
     status: String
+    source: String
+    geo: DaGeoLocationInput
   ): Boolean @checkDutiesAttendanceAccess(permission: MARK_ATTENDANCE)
 }
 

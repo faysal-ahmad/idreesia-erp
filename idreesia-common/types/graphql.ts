@@ -199,6 +199,12 @@ export type DaDutyType = {
   workspaceId: Scalars['String']['output'];
 };
 
+export type DaGeoLocationInput = {
+  accuracy?: InputMaybe<Scalars['Float']['input']>;
+  latitude: Scalars['Float']['input'];
+  longitude: Scalars['Float']['input'];
+};
+
 export type DaMyLocationType = {
   __typename?: 'DaMyLocationType';
   hasWorkspace: Scalars['Boolean']['output'];
@@ -337,20 +343,6 @@ export enum DutiesAttendancePermission {
   MarkAttendance = 'MARK_ATTENDANCE',
   View = 'VIEW'
 }
-
-export type DutiesAttendancePermissionInfoType = {
-  __typename?: 'DutiesAttendancePermissionInfoType';
-  description: Scalars['String']['output'];
-  key: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-};
-
-export type DutiesAttendanceUserCandidateType = {
-  __typename?: 'DutiesAttendanceUserCandidateType';
-  _id: Scalars['String']['output'];
-  displayName?: Maybe<Scalars['String']['output']>;
-  username?: Maybe<Scalars['String']['output']>;
-};
 
 export type DutyAttendanceCardType = {
   __typename?: 'DutyAttendanceCardType';
@@ -783,7 +775,7 @@ export type Mutation = {
   addHrKarkunAttachment?: Maybe<PersonType>;
   addIssuanceFormAttachment?: Maybe<IssuanceForm>;
   addMehfilKarkun?: Maybe<MehfilKarkunType>;
-  addOrgLocationDutiesAttendanceUser?: Maybe<OrgLocationDutiesAttendanceUserType>;
+  addOrgLocationFeatureUser?: Maybe<Scalars['Boolean']['output']>;
   addOrgLocationObserver?: Maybe<OrgLocationType>;
   addPurchaseFormAttachment?: Maybe<PurchaseForm>;
   addSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
@@ -868,7 +860,7 @@ export type Mutation = {
   removeLocation?: Maybe<Scalars['Int']['output']>;
   removeMehfil?: Maybe<Scalars['Int']['output']>;
   removeMehfilKarkun?: Maybe<Scalars['Int']['output']>;
-  removeOrgLocationDutiesAttendanceUser?: Maybe<Scalars['Boolean']['output']>;
+  removeOrgLocationFeatureUser?: Maybe<Scalars['Boolean']['output']>;
   removeOrgLocationObserver?: Maybe<OrgLocationType>;
   removePurchaseFormAttachment?: Maybe<PurchaseForm>;
   removePurchaseForms?: Maybe<Scalars['Int']['output']>;
@@ -931,7 +923,6 @@ export type Mutation = {
   updateLoginTime?: Maybe<Scalars['Int']['output']>;
   updateMehfil?: Maybe<MehfilType>;
   updateOrgLocation?: Maybe<OrgLocationType>;
-  updateOrgLocationDutiesAttendanceUserPermissions?: Maybe<OrgLocationDutiesAttendanceUserType>;
   updatePeopleTag?: Maybe<PeopleTagType>;
   updatePhysicalStore?: Maybe<PhysicalStore>;
   updatePurchaseForm?: Maybe<PurchaseForm>;
@@ -1068,10 +1059,11 @@ export type MutationAddMehfilKarkunArgs = {
 };
 
 
-export type MutationAddOrgLocationDutiesAttendanceUserArgs = {
+export type MutationAddOrgLocationFeatureUserArgs = {
+  featureKey: Scalars['String']['input'];
+  karkunId: Scalars['String']['input'];
   locationId: Scalars['String']['input'];
-  permissions: Array<InputMaybe<Scalars['String']['input']>>;
-  userId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
 };
 
 
@@ -1634,8 +1626,10 @@ export type MutationRemoveMehfilKarkunArgs = {
 };
 
 
-export type MutationRemoveOrgLocationDutiesAttendanceUserArgs = {
+export type MutationRemoveOrgLocationFeatureUserArgs = {
+  featureKey: Scalars['String']['input'];
   locationId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
   userId: Scalars['String']['input'];
 };
 
@@ -2047,13 +2041,6 @@ export type MutationUpdateOrgLocationArgs = {
 };
 
 
-export type MutationUpdateOrgLocationDutiesAttendanceUserPermissionsArgs = {
-  locationId: Scalars['String']['input'];
-  permissions: Array<InputMaybe<Scalars['String']['input']>>;
-  userId: Scalars['String']['input'];
-};
-
-
 export type MutationUpdatePeopleTagArgs = {
   _id: Scalars['String']['input'];
   color: Scalars['String']['input'];
@@ -2444,8 +2431,10 @@ export type MutationWorkspaceDaRemoveDutyMemberArgs = {
 export type MutationWorkspaceDaSetAttendanceArgs = {
   date: Scalars['String']['input'];
   dutyId: Scalars['String']['input'];
+  geo?: InputMaybe<DaGeoLocationInput>;
   karkunId: Scalars['String']['input'];
   locationId: Scalars['String']['input'];
+  source?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2870,13 +2859,27 @@ export type NotificationType = {
   updatedAt?: Maybe<Scalars['String']['output']>;
 };
 
-export type OrgLocationDutiesAttendanceUserType = {
-  __typename?: 'OrgLocationDutiesAttendanceUserType';
-  _id: Scalars['String']['output'];
+export type OrgLocationFeaturePermissionType = {
+  __typename?: 'OrgLocationFeaturePermissionType';
+  description: Scalars['String']['output'];
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  users: Array<Maybe<OrgLocationFeaturePermissionUserType>>;
+};
+
+export type OrgLocationFeaturePermissionUserType = {
+  __typename?: 'OrgLocationFeaturePermissionUserType';
   displayName?: Maybe<Scalars['String']['output']>;
-  permissions: Array<Maybe<Scalars['String']['output']>>;
+  personId?: Maybe<Scalars['String']['output']>;
   userId: Scalars['String']['output'];
   username?: Maybe<Scalars['String']['output']>;
+};
+
+export type OrgLocationFeaturePermissionsType = {
+  __typename?: 'OrgLocationFeaturePermissionsType';
+  featureKey: Scalars['String']['output'];
+  featureName: Scalars['String']['output'];
+  permissions: Array<Maybe<OrgLocationFeaturePermissionType>>;
 };
 
 export type OrgLocationFeatureType = {
@@ -3360,7 +3363,6 @@ export type Query = {
   allCities?: Maybe<Array<Maybe<CityType>>>;
   allCityMehfils?: Maybe<Array<Maybe<CityMehfilType>>>;
   allCommitteeFeatures?: Maybe<Array<Maybe<CommitteeFeatureType>>>;
-  allDutiesAttendancePermissions?: Maybe<Array<Maybe<DutiesAttendancePermissionInfoType>>>;
   allDutyLocations?: Maybe<Array<Maybe<DutyLocationType>>>;
   allDutyShifts?: Maybe<Array<Maybe<DutyShiftType>>>;
   allJobDefinitions?: Maybe<Array<Maybe<JobDefinitionType>>>;
@@ -3391,7 +3393,6 @@ export type Query = {
   duplicatePersonById?: Maybe<PersonType>;
   duplicatePersonRelationCounts?: Maybe<Array<PersonRelationCounts>>;
   duplicatePhoneNumbers?: Maybe<Array<Maybe<DuplicatePersonGroupType>>>;
-  dutiesAttendanceUserCandidates?: Maybe<Array<Maybe<DutiesAttendanceUserCandidateType>>>;
   dutyAttendanceCards?: Maybe<Array<Maybe<DutyAttendanceCardType>>>;
   dutyAttendanceSheet?: Maybe<Array<Maybe<DutyAttendanceSheetRowType>>>;
   dutyPlanDays?: Maybe<DutyPlanDaysType>;
@@ -3420,7 +3421,7 @@ export type Query = {
   myNotificationCounts?: Maybe<Array<Maybe<NotificationCountType>>>;
   myNotifications?: Maybe<Array<Maybe<NotificationType>>>;
   orgLocationById?: Maybe<OrgLocationType>;
-  orgLocationDutiesAttendanceUsers?: Maybe<Array<Maybe<OrgLocationDutiesAttendanceUserType>>>;
+  orgLocationFeaturePermissions?: Maybe<Array<Maybe<OrgLocationFeaturePermissionsType>>>;
   pagedCities?: Maybe<PagedCityType>;
   pagedDeletedPeople?: Maybe<PagedPeopleType>;
   pagedFreeFormCities?: Maybe<PagedFreeFormCity>;
@@ -3593,11 +3594,6 @@ export type QueryDuplicatePersonRelationCountsArgs = {
 };
 
 
-export type QueryDutiesAttendanceUserCandidatesArgs = {
-  search?: InputMaybe<Scalars['String']['input']>;
-};
-
-
 export type QueryDutyAttendanceCardsArgs = {
   dutyId: Scalars['String']['input'];
   karkunIds: Array<Scalars['String']['input']>;
@@ -3727,7 +3723,7 @@ export type QueryOrgLocationByIdArgs = {
 };
 
 
-export type QueryOrgLocationDutiesAttendanceUsersArgs = {
+export type QueryOrgLocationFeaturePermissionsArgs = {
   locationId: Scalars['String']['input'];
 };
 

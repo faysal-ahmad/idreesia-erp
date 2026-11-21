@@ -48,7 +48,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.addOrgLocationDutiesAttendanceUser": [
+  "Mutation.addOrgLocationFeatureUser": [
     {
       "args": {
         "permissions": [
@@ -965,7 +965,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.removeOrgLocationDutiesAttendanceUser": [
+  "Mutation.removeOrgLocationFeatureUser": [
     {
       "args": {
         "permissions": [
@@ -1598,16 +1598,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Mutation.updateOrgLocation": [
-    {
-      "args": {
-        "permissions": [
-          "ADMIN_MANAGE_ORG_LOCATIONS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Mutation.updateOrgLocationDutiesAttendanceUserPermissions": [
     {
       "args": {
         "permissions": [
@@ -2745,16 +2735,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.allDutiesAttendancePermissions": [
-    {
-      "args": {
-        "permissions": [
-          "ADMIN_VIEW_ORG_LOCATIONS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Query.allDutyLocations": [
     {
       "args": {
@@ -2998,16 +2978,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_MANAGE_DUPLICATE_PEOPLE",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.dutiesAttendanceUserCandidates": [
-    {
-      "args": {
-        "permissions": [
-          "ADMIN_MANAGE_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -3326,7 +3296,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.orgLocationDutiesAttendanceUsers": [
+  "Query.orgLocationFeaturePermissions": [
     {
       "args": {
         "permissions": [

@@ -63,5 +63,7 @@ export const DUTIES_ATTENDANCE_DEFAULT_PAGE_SIZE = 50;
 export const DUTIES_ATTENDANCE_MAX_PAGE_SIZE = 200;
 export const DUTIES_ATTENDANCE_MAX_NAME_LENGTH = 255;
 export const DUTIES_ATTENDANCE_MAX_DESCRIPTION_LENGTH = 2000;
+/** Longest source of a marked attendance (how it was marked). */
+export const DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH = 100;
 /** Days shown by the plan view. */
 export const DUTIES_ATTENDANCE_PLAN_DAY_COUNT = 7;

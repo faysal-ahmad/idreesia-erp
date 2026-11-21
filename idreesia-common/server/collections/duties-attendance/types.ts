@@ -57,6 +57,13 @@ export interface DutiesAttendanceDayOverrideDocument extends Timestamps {
   absentKarkunIds?: string[];
 }
 
+export interface AttendanceGeoLocation {
+  latitude: number;
+  longitude: number;
+  /** Metres. */
+  accuracy?: number;
+}
+
 export interface DayRecordKarkun {
   karkunId: string;
   name?: string;
@@ -64,6 +71,10 @@ export interface DayRecordKarkun {
   attendance?: DutyAttendanceStatus;
   attendanceUpdatedAt?: Date;
   attendanceUpdatedBy?: string;
+  /** How the attendance was marked. */
+  attendanceSource?: string;
+  /** Where the attendance was marked from. */
+  attendanceGeo?: AttendanceGeoLocation;
 }
 
 export interface DutiesAttendanceDayRecordDocument extends Timestamps {

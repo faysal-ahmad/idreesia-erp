@@ -1982,50 +1982,39 @@ export type RemoveLocationCommitteeMutationVariables = Exact<{
 
 export type RemoveLocationCommitteeMutation = { removeCommittee: number | null };
 
-export type OrgLocationDutiesAttendanceUsersQueryVariables = Exact<{
+export type OrgLocationFeaturePermissionsQueryVariables = Exact<{
   locationId: string;
 }>;
 
 
-export type OrgLocationDutiesAttendanceUsersQuery = { orgLocationDutiesAttendanceUsers: Array<{ _id: string, userId: string, username: string | null, displayName: string | null, permissions: Array<string | null> } | null> | null };
+export type OrgLocationFeaturePermissionsQuery = { orgLocationFeaturePermissions: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> } | null> } | null> | null };
 
-export type AllDutiesAttendancePermissionsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AllDutiesAttendancePermissionsQuery = { allDutiesAttendancePermissions: Array<{ key: string, name: string, description: string } | null> | null };
-
-export type DutiesAttendanceUserCandidatesQueryVariables = Exact<{
-  search?: string | null | undefined;
+export type HrFeatureUserKarkunSearchQueryVariables = Exact<{
+  filter?: Types.KarkunFilter | null | undefined;
 }>;
 
 
-export type DutiesAttendanceUserCandidatesQuery = { dutiesAttendanceUserCandidates: Array<{ _id: string, username: string | null, displayName: string | null } | null> | null };
+export type HrFeatureUserKarkunSearchQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null> | null } | null };
 
-export type AddOrgLocationDutiesAttendanceUserMutationVariables = Exact<{
+export type AddOrgLocationFeatureUserMutationVariables = Exact<{
   locationId: string;
-  userId: string;
-  permissions: Array<string | null | undefined> | string;
+  featureKey: string;
+  permissionKey: string;
+  karkunId: string;
 }>;
 
 
-export type AddOrgLocationDutiesAttendanceUserMutation = { addOrgLocationDutiesAttendanceUser: { _id: string } | null };
+export type AddOrgLocationFeatureUserMutation = { addOrgLocationFeatureUser: boolean | null };
 
-export type UpdateOrgLocationDutiesAttendanceUserPermissionsMutationVariables = Exact<{
+export type RemoveOrgLocationFeatureUserMutationVariables = Exact<{
   locationId: string;
-  userId: string;
-  permissions: Array<string | null | undefined> | string;
-}>;
-
-
-export type UpdateOrgLocationDutiesAttendanceUserPermissionsMutation = { updateOrgLocationDutiesAttendanceUserPermissions: { _id: string } | null };
-
-export type RemoveOrgLocationDutiesAttendanceUserMutationVariables = Exact<{
-  locationId: string;
+  featureKey: string;
+  permissionKey: string;
   userId: string;
 }>;
 
 
-export type RemoveOrgLocationDutiesAttendanceUserMutation = { removeOrgLocationDutiesAttendanceUser: boolean | null };
+export type RemoveOrgLocationFeatureUserMutation = { removeOrgLocationFeatureUser: boolean | null };
 
 export type AllOrgLocationFeaturesQueryVariables = Exact<{ [key: string]: never; }>;
 

@@ -125,6 +125,13 @@ extend type Query {
     @checkDutiesAttendanceAccess(permission: VIEW)
 }
 
+input DaGeoLocationInput {
+  latitude: Float!
+  longitude: Float!
+  # Metres.
+  accuracy: Float
+}
+
 extend type Mutation {
   workspaceDaCreateDuty(
     locationId: String!
@@ -174,13 +181,16 @@ extend type Mutation {
     absentKarkunIds: [String]
   ): Boolean @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
-  # status is present, late or absent; null clears the mark.
+  # status is present, late or absent; null clears the mark. source (how it
+  # was marked) and geo (where from) are optional and kept with the mark.
   workspaceDaSetAttendance(
     locationId: String!
     dutyId: String!
     date: String!
     karkunId: String!
     status: String
+    source: String
+    geo: DaGeoLocationInput
   ): Boolean @checkDutiesAttendanceAccess(permission: MARK_ATTENDANCE)
 }
 `;

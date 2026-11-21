@@ -585,6 +585,68 @@ describe('attendance', () => {
     expect(cleared?.karkuns[0].attendanceUpdatedBy).toBeUndefined();
   });
 
+  it('keeps the source and location with a mark, replaces them with the next mark and clears them', async () => {
+    const { workspaceId, dutyId } = await seedPlan();
+    const mark = (extra: Record<string, unknown>) =>
+      setDutyAttendance({
+        workspaceId,
+        dutyId,
+        date: TODAY,
+        karkunId: 'k1',
+        userId: 'marker',
+        ...extra,
+      });
+    const stored = async () =>
+      (await DutiesAttendanceDayRecords.findOneAsync({ dutyId, date: TODAY }))
+        ?.karkuns[0];
+
+    await mark({
+      status: 'present',
+      source: ' kiosk ',
+      geo: { latitude: 24.86, longitude: 67.01, accuracy: 12 },
+    });
+    expect(await stored()).toMatchObject({
+      attendanceSource: 'kiosk',
+      attendanceGeo: { latitude: 24.86, longitude: 67.01, accuracy: 12 },
+    });
+
+    // Both are optional: a mark without them drops the earlier ones.
+    await mark({ status: 'late' });
+    const plain = await stored();
+    expect(plain?.attendance).toBe('late');
+    expect(plain?.attendanceSource).toBeUndefined();
+    expect(plain?.attendanceGeo).toBeUndefined();
+
+    await mark({ status: 'present', source: 'manual' });
+    expect((await stored())?.attendanceSource).toBe('manual');
+    await mark({ status: null });
+    expect((await stored())?.attendanceSource).toBeUndefined();
+  });
+
+  it('refuses an invalid location and an overlong source', async () => {
+    const { workspaceId, dutyId } = await seedPlan();
+    const mark = (extra: Record<string, unknown>) =>
+      setDutyAttendance({
+        workspaceId,
+        dutyId,
+        date: TODAY,
+        karkunId: 'k1',
+        status: 'present',
+        userId: 'marker',
+        ...extra,
+      });
+
+    await expect(
+      mark({ geo: { latitude: 91, longitude: 0 } })
+    ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
+    await expect(
+      mark({ geo: { latitude: 0, longitude: 0, accuracy: -1 } })
+    ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
+    await expect(mark({ source: 'x'.repeat(101) })).rejects.toMatchObject(
+      failsWith('BAD_USER_INPUT')
+    );
+  });
+
   it('can mark a past day, and locks it first if nobody read it yet', async () => {
     const { workspaceId, dutyId } = await seedPlan();
 

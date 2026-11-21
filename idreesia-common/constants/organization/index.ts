@@ -28,5 +28,6 @@ export {
 } from './org-location-features';
 export type {
   OrgLocationFeature,
+  OrgLocationFeaturePermission,
   OrgLocationFeatureKey,
 } from './org-location-features';

@@ -1,20 +1,26 @@
 import { GraphQLError } from 'graphql';
 
+import { DutiesAttendancePermissions } from 'meteor/idreesia-common/constants/duties-attendance';
 import {
   OrgLocationFeatureAllowedTypes,
   OrgLocationFeatureKeys,
+  OrgLocationFeatures,
   isOrgLocationFeatureKey,
   type OrgLocationFeatureKey,
+  type OrgLocationFeaturePermission,
 } from 'meteor/idreesia-common/constants/organization';
 import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
   OrgLocations,
+  Users,
   type OrgLocationDocument,
 } from 'meteor/idreesia-common/server/collections/admin';
+import { DutiesAttendanceWorkspaceUsers } from 'meteor/idreesia-common/server/collections/duties-attendance';
 import {
   addDutiesAttendanceWorkspaceUser,
   createDutiesAttendanceWorkspace,
   deleteDutiesAttendanceWorkspace,
+  ensureDutiesAttendanceIndexes,
   getDutiesAttendanceWorkspace,
   removeDutiesAttendanceWorkspaceUser,
   restoreDutiesAttendanceWorkspace,
@@ -38,6 +44,24 @@ interface OrgLocationFeatureHandler {
     location: OrgLocationDocument,
     userId: string
   ): Promise<Record<string, unknown> | void>;
+  /** Ids of the feature's users, per permission key. */
+  listUserIds(
+    location: OrgLocationDocument
+  ): Promise<Record<string, string[]>>;
+  /** Gives the user the permission, making them a user of the feature if needed. */
+  grantPermission(
+    location: OrgLocationDocument,
+    permissionKey: string,
+    targetUserId: string,
+    actorId: string
+  ): Promise<void>;
+  /** Takes the permission from the user. */
+  revokePermission(
+    location: OrgLocationDocument,
+    permissionKey: string,
+    targetUserId: string,
+    actorId: string
+  ): Promise<void>;
 }
 
 // The location's workspace (deleted ones included), or null when it no
@@ -92,6 +116,73 @@ const dutiesAttendanceHandler: OrgLocationFeatureHandler = {
     if (existing && !existing.deletedAt) {
       await deleteDutiesAttendanceWorkspace(existing._id, userId);
     }
+  },
+
+  async listUserIds(location) {
+    const workspaceId = getLocationDutiesAttendanceWorkspaceId(location);
+    const users = await DutiesAttendanceWorkspaceUsers.find({
+      workspaceId,
+    }).fetchAsync();
+    const byPermission: Record<string, string[]> = {};
+    users.forEach(user => {
+      user.permissions.forEach(permission => {
+        (byPermission[permission] ??= []).push(user.userId);
+      });
+    });
+    return byPermission;
+  },
+
+  async grantPermission(location, permissionKey, targetUserId, actorId) {
+    const workspaceId = getLocationDutiesAttendanceWorkspaceId(location);
+    // Indexes are created outside the transaction, which can't create them.
+    await ensureDutiesAttendanceIndexes();
+    await runInTransaction(async () => {
+      const existing = await DutiesAttendanceWorkspaceUsers.findOneAsync({
+        workspaceId,
+        userId: targetUserId,
+      });
+      if (!existing) {
+        await addDutiesAttendanceWorkspaceUser(
+          workspaceId,
+          { userId: targetUserId, permissions: [permissionKey] },
+          actorId
+        );
+      } else if (!existing.permissions.some(key => key === permissionKey)) {
+        await updateDutiesAttendanceWorkspaceUserPermissions(
+          workspaceId,
+          targetUserId,
+          [...existing.permissions, permissionKey],
+          actorId
+        );
+      }
+    });
+  },
+
+  async revokePermission(location, permissionKey, targetUserId, actorId) {
+    const workspaceId = getLocationDutiesAttendanceWorkspaceId(location);
+    await runInTransaction(async () => {
+      const existing = await DutiesAttendanceWorkspaceUsers.findOneAsync({
+        workspaceId,
+        userId: targetUserId,
+      });
+      if (!existing || !existing.permissions.some(key => key === permissionKey)) {
+        fail('NOT_FOUND', 'This user does not have this permission.');
+      } else if (permissionKey === DutiesAttendancePermissions.VIEW) {
+        // Every other permission implies View, so without View there is no user.
+        await removeDutiesAttendanceWorkspaceUser(
+          workspaceId,
+          targetUserId,
+          actorId
+        );
+      } else {
+        await updateDutiesAttendanceWorkspaceUserPermissions(
+          workspaceId,
+          targetUserId,
+          existing.permissions.filter(key => key !== permissionKey),
+          actorId
+        );
+      }
+    });
   },
 };
 
@@ -195,46 +286,110 @@ export const getLocationDutiesAttendanceWorkspaceId = (
 };
 
 // ---------------------------------------------------------------------------
-// Duties and Attendance workspace users, managed from the location's admin page
+// Feature permissions: who may do what in each enabled feature of a location
 // ---------------------------------------------------------------------------
 
-const requireLocationWorkspaceId = async (locationId: string) => {
+export interface OrgLocationFeaturePermissionUsers
+  extends OrgLocationFeaturePermission {
+  userIds: string[];
+}
+
+export interface OrgLocationFeaturePermissions {
+  featureKey: OrgLocationFeatureKey;
+  featureName: string;
+  permissions: OrgLocationFeaturePermissionUsers[];
+}
+
+/**
+ * The enabled features of a location, each with its permissions and the ids
+ * of the users holding each one.
+ */
+export const listOrgLocationFeaturePermissions = async (
+  locationId: string
+): Promise<OrgLocationFeaturePermissions[]> => {
   const location = await OrgLocations.findOneAsync({ _id: locationId });
   if (!location) return fail('NOT_FOUND', 'Location not found.');
-  return getLocationDutiesAttendanceWorkspaceId(location as OrgLocationDocument);
+
+  const enabled = OrgLocationFeatures.filter(feature =>
+    location.features?.includes(feature.key)
+  );
+  return Promise.all(
+    enabled.map(async feature => {
+      const userIds = await featureHandlers[feature.key].listUserIds(location);
+      return {
+        featureKey: feature.key,
+        featureName: feature.name,
+        permissions: feature.permissions.map(permission => ({
+          ...permission,
+          userIds: userIds[permission.key] ?? [],
+        })),
+      };
+    })
+  );
 };
 
-export const addOrgLocationDutiesAttendanceUser = async (
+// The location and handler of a feature that is enabled, for a permission the
+// feature knows.
+const loadFeaturePermission = async (
   locationId: string,
-  input: { userId: string; permissions: string[] },
-  userId: string
-) =>
-  addDutiesAttendanceWorkspaceUser(
-    await requireLocationWorkspaceId(locationId),
-    input,
-    userId
-  );
+  featureKey: string,
+  permissionKey: string
+) => {
+  const { location, handler } = await loadLocation(locationId, featureKey);
+  const feature = OrgLocationFeatures.find(item => item.key === featureKey);
+  if (!location.features?.includes(featureKey)) {
+    return fail('NOT_FOUND', 'This feature is not enabled for this location.');
+  }
+  if (!feature?.permissions.some(item => item.key === permissionKey)) {
+    return fail('BAD_USER_INPUT', `Unknown permission '${permissionKey}'.`);
+  }
+  return { location, handler };
+};
 
-export const updateOrgLocationDutiesAttendanceUserPermissions = async (
+/**
+ * Gives a karkun a permission of a feature. Features are used through the
+ * karkun's user account, so the karkun needs an unlocked one.
+ */
+export const addOrgLocationFeatureUser = async (
   locationId: string,
-  targetUserId: string,
-  permissions: string[],
+  featureKey: string,
+  permissionKey: string,
+  karkunId: string,
   userId: string
-) =>
-  updateDutiesAttendanceWorkspaceUserPermissions(
-    await requireLocationWorkspaceId(locationId),
-    targetUserId,
-    permissions,
+): Promise<true> => {
+  const { location, handler } = await loadFeaturePermission(
+    locationId,
+    featureKey,
+    permissionKey
+  );
+  const targetUser = await Users.findOneAsync({ personId: karkunId });
+  if (!targetUser) {
+    return fail('BAD_USER_INPUT', 'This karkun does not have a user account.');
+  }
+  if (targetUser.locked) {
+    return fail('BAD_USER_INPUT', "This karkun's user account is locked.");
+  }
+  await handler.grantPermission(
+    location,
+    permissionKey,
+    targetUser._id as string,
     userId
   );
+  return true;
+};
 
-export const removeOrgLocationDutiesAttendanceUser = async (
+export const removeOrgLocationFeatureUser = async (
   locationId: string,
+  featureKey: string,
+  permissionKey: string,
   targetUserId: string,
   userId: string
-) =>
-  removeDutiesAttendanceWorkspaceUser(
-    await requireLocationWorkspaceId(locationId),
-    targetUserId,
-    userId
+): Promise<true> => {
+  const { location, handler } = await loadFeaturePermission(
+    locationId,
+    featureKey,
+    permissionKey
   );
+  await handler.revokePermission(location, permissionKey, targetUserId, userId);
+  return true;
+};

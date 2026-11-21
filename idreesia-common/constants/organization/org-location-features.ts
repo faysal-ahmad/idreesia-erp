@@ -1,3 +1,4 @@
+import { DutiesAttendancePermissionInfos } from '../duties-attendance';
 import { OrgLocationTypes, type OrgLocationType } from './org-location-types';
 
 export const OrgLocationFeatureKeys = {
@@ -7,10 +8,19 @@ export const OrgLocationFeatureKeys = {
 export type OrgLocationFeatureKey =
   (typeof OrgLocationFeatureKeys)[keyof typeof OrgLocationFeatureKeys];
 
+/** What a user of a feature may be given, one by one, on the location. */
+export interface OrgLocationFeaturePermission {
+  key: string;
+  name: string;
+  description: string;
+}
+
 export interface OrgLocationFeature {
   key: OrgLocationFeatureKey;
   name: string;
   description: string;
+  /** The permissions users of the feature can hold. */
+  permissions: OrgLocationFeaturePermission[];
 }
 
 // The features that can be enabled per location. They are fixed at build
@@ -23,6 +33,7 @@ export const OrgLocationFeatures: OrgLocationFeature[] = [
     name: 'Duties and Attendance',
     description:
       'Define duties, plan who is on each duty each day and mark their attendance.',
+    permissions: DutiesAttendancePermissionInfos,
   },
 ];
 

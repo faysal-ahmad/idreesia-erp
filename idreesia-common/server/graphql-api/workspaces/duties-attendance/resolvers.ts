@@ -271,7 +271,15 @@ export default {
         date,
         karkunId,
         status,
-      }: DutyArgs & { date: string; karkunId: string; status?: string },
+        source,
+        geo,
+      }: DutyArgs & {
+        date: string;
+        karkunId: string;
+        status?: string;
+        source?: string;
+        geo?: { latitude: number; longitude: number; accuracy?: number };
+      },
       context: Context
     ) => {
       const { workspaceId, userId } = getDutiesAttendanceAccess(
@@ -284,6 +292,8 @@ export default {
         date,
         karkunId,
         status,
+        source,
+        geo,
         userId,
       });
     },

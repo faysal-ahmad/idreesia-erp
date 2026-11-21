@@ -11,12 +11,12 @@ import {
 import { listMyDutiesAttendanceLocations } from 'meteor/idreesia-common/server/business-logic/duties-attendance';
 
 import {
-  addOrgLocationDutiesAttendanceUser,
+  addOrgLocationFeatureUser,
   disableOrgLocationFeature,
   enableOrgLocationFeature,
   getLocationDutiesAttendanceWorkspaceId,
-  removeOrgLocationDutiesAttendanceUser,
-  updateOrgLocationDutiesAttendanceUserPermissions,
+  listOrgLocationFeaturePermissions,
+  removeOrgLocationFeatureUser,
 } from './org-location-features';
 
 const FEATURE = 'duties-attendance';
@@ -39,6 +39,16 @@ beforeEach(async () => {
 
 const location = (id: string) => OrgLocations.findOneAsync({ _id: id }) as Promise<any>;
 const failsWith = (code: string) => ({ extensions: { code } });
+const addUser = (permission: string, userId = 'u1') =>
+  addOrgLocationFeatureUser(
+    mehfilId,
+    FEATURE,
+    permission,
+    `p-${userId}`,
+    'admin'
+  );
+const removeUser = (permission: string, userId = 'u1') =>
+  removeOrgLocationFeatureUser(mehfilId, FEATURE, permission, userId, 'admin');
 
 describe('enableOrgLocationFeature', () => {
   it('creates a workspace for a mehfil and records the feature', async () => {
@@ -87,12 +97,8 @@ describe('disableOrgLocationFeature', () => {
   it('soft-deletes the workspace and keeps it for a later enable', async () => {
     await enableOrgLocationFeature(mehfilId, FEATURE, 'admin');
     const workspaceId = (await location(mehfilId)).dutiesAttendanceWorkspaceId;
-    await Users.insertAsync({ _id: 'u1' } as any);
-    await addOrgLocationDutiesAttendanceUser(
-      mehfilId,
-      { userId: 'u1', permissions: ['view'] },
-      'admin'
-    );
+    await Users.insertAsync({ _id: 'u1', personId: 'p-u1' } as any);
+    await addUser('view');
 
     await disableOrgLocationFeature(mehfilId, FEATURE, 'admin');
 
@@ -127,37 +133,98 @@ describe('disableOrgLocationFeature', () => {
   });
 });
 
-describe('workspace users through the location', () => {
-  it('adds, changes and removes users, and needs the feature on', async () => {
-    await Users.insertAsync({ _id: 'u1' } as any);
-    await expect(
-      addOrgLocationDutiesAttendanceUser(
-        mehfilId,
-        { userId: 'u1', permissions: ['view'] },
-        'admin'
-      )
-    ).rejects.toMatchObject(failsWith('NOT_FOUND'));
+describe('feature permissions through the location', () => {
+  const workspaceUser = async (userId = 'u1') =>
+    DutiesAttendanceWorkspaceUsers.findOneAsync({
+      workspaceId: (await location(mehfilId)).dutiesAttendanceWorkspaceId,
+      userId,
+    });
+
+  it('needs the feature on and a known permission', async () => {
+    await Users.insertAsync({ _id: 'u1', personId: 'p-u1' } as any);
+    await expect(addUser('view')).rejects.toMatchObject(failsWith('NOT_FOUND'));
 
     await enableOrgLocationFeature(mehfilId, FEATURE, 'admin');
-    const workspaceId = (await location(mehfilId)).dutiesAttendanceWorkspaceId;
-
-    await addOrgLocationDutiesAttendanceUser(
-      mehfilId,
-      { userId: 'u1', permissions: ['mark-attendance'] },
-      'admin'
+    await expect(addUser('fly')).rejects.toMatchObject(
+      failsWith('BAD_USER_INPUT')
     );
-    const updated = await updateOrgLocationDutiesAttendanceUserPermissions(
-      mehfilId,
-      'u1',
-      ['manage-and-plan-duties'],
-      'admin'
-    );
-    expect(updated.permissions).toEqual(['view', 'manage-and-plan-duties']);
+    await expect(
+      addOrgLocationFeatureUser(mehfilId, 'teleport', 'view', 'p-u1', 'admin')
+    ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
+  });
 
-    await removeOrgLocationDutiesAttendanceUser(mehfilId, 'u1', 'admin');
+  it('needs a karkun with an unlocked user account', async () => {
+    await enableOrgLocationFeature(mehfilId, FEATURE, 'admin');
+    await expect(
+      addOrgLocationFeatureUser(mehfilId, FEATURE, 'view', 'p-none', 'admin')
+    ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
+
+    await Users.insertAsync({
+      _id: 'u3',
+      personId: 'p-u3',
+      locked: true,
+    } as any);
+    await expect(addUser('view', 'u3')).rejects.toMatchObject(
+      failsWith('BAD_USER_INPUT')
+    );
+  });
+
+  it('grants permissions one at a time, View coming along', async () => {
+    await Users.insertAsync({ _id: 'u1', personId: 'p-u1' } as any);
+    await enableOrgLocationFeature(mehfilId, FEATURE, 'admin');
+
+    await addUser('mark-attendance');
+    expect((await workspaceUser())?.permissions).toEqual([
+      'view',
+      'mark-attendance',
+    ]);
+
+    await addUser('manage-and-plan-duties');
+    await addUser('manage-and-plan-duties'); // repeating is harmless
+    expect((await workspaceUser())?.permissions).toEqual([
+      'view',
+      'manage-and-plan-duties',
+      'mark-attendance',
+    ]);
+  });
+
+  it('takes a permission away, and the user with View', async () => {
+    await Users.insertAsync({ _id: 'u1', personId: 'p-u1' } as any);
+    await enableOrgLocationFeature(mehfilId, FEATURE, 'admin');
+    await addUser('mark-attendance');
+
+    await removeUser('mark-attendance');
+    expect((await workspaceUser())?.permissions).toEqual(['view']);
+    await expect(removeUser('mark-attendance')).rejects.toMatchObject(
+      failsWith('NOT_FOUND')
+    );
+
+    await addUser('mark-attendance');
+    await removeUser('view');
+    expect(await workspaceUser()).toBeUndefined();
+  });
+
+  it('lists the enabled features with the users of each permission', async () => {
+    await Users.insertAsync({ _id: 'u1', personId: 'p-u1' } as any);
+    await Users.insertAsync({ _id: 'u2', personId: 'p-u2' } as any);
+    expect(await listOrgLocationFeaturePermissions(mehfilId)).toEqual([]);
+
+    await enableOrgLocationFeature(mehfilId, FEATURE, 'admin');
+    await addUser('mark-attendance', 'u1');
+    await addUser('view', 'u2');
+
+    const [feature] = await listOrgLocationFeaturePermissions(mehfilId);
+    expect(feature).toMatchObject({
+      featureKey: FEATURE,
+      featureName: 'Duties and Attendance',
+    });
     expect(
-      await DutiesAttendanceWorkspaceUsers.find({ workspaceId }).countAsync()
-    ).toBe(0);
+      feature.permissions.map(({ key, userIds }) => [key, userIds])
+    ).toEqual([
+      ['view', ['u1', 'u2']],
+      ['manage-and-plan-duties', []],
+      ['mark-attendance', ['u1']],
+    ]);
   });
 });
 
@@ -174,14 +241,10 @@ describe('listMyDutiesAttendanceLocations', () => {
   };
 
   it("lists the locations where the caller is a workspace user, with their permissions", async () => {
-    await Users.insertAsync({ _id: 'u1' } as any);
+    await Users.insertAsync({ _id: 'u1', personId: 'p-u1' } as any);
     await enableOrgLocationFeature(mehfilId, FEATURE, 'admin');
     await second();
-    await addOrgLocationDutiesAttendanceUser(
-      mehfilId,
-      { userId: 'u1', permissions: ['mark-attendance'] },
-      'admin'
-    );
+    await addUser('mark-attendance');
 
     // The city above the mehfil comes along, without a workspace (sorted by name).
     expect(await listMyDutiesAttendanceLocations({ _id: 'u1' })).toEqual([
@@ -224,13 +287,9 @@ describe('listMyDutiesAttendanceLocations', () => {
   });
 
   it('leaves out disabled locations, locked users and nobody', async () => {
-    await Users.insertAsync({ _id: 'u1' } as any);
+    await Users.insertAsync({ _id: 'u1', personId: 'p-u1' } as any);
     await enableOrgLocationFeature(mehfilId, FEATURE, 'admin');
-    await addOrgLocationDutiesAttendanceUser(
-      mehfilId,
-      { userId: 'u1', permissions: ['view'] },
-      'admin'
-    );
+    await addUser('view');
 
     expect(await listMyDutiesAttendanceLocations({ _id: 'u1', locked: true })).toEqual([]);
     expect(await listMyDutiesAttendanceLocations(null)).toEqual([]);

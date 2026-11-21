@@ -41,12 +41,14 @@ export {
   type SyncOrgLocationObserversResult,
 } from './org-location-observers-sync';
 export {
-  addOrgLocationDutiesAttendanceUser,
+  addOrgLocationFeatureUser,
   disableOrgLocationFeature,
   enableOrgLocationFeature,
   getLocationDutiesAttendanceWorkspaceId,
-  removeOrgLocationDutiesAttendanceUser,
-  updateOrgLocationDutiesAttendanceUserPermissions,
+  listOrgLocationFeaturePermissions,
+  removeOrgLocationFeatureUser,
+  type OrgLocationFeaturePermissions,
+  type OrgLocationFeaturePermissionUsers,
 } from './org-location-features';
 export {
   pagedFreeFormCities,

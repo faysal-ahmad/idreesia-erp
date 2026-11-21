@@ -1,7 +1,4 @@
 import {
-  DutiesAttendancePermissionInfos,
-} from 'meteor/idreesia-common/constants/duties-attendance';
-import {
   OrgLocationFeatures,
   type OrgLocationType,
 } from 'meteor/idreesia-common/constants/organization';
@@ -12,24 +9,18 @@ import {
   type OrgLocationDocument,
   type OrgLocationMehfilDetails,
 } from 'meteor/idreesia-common/server/collections/admin';
-import { searchWorkspaceUserCandidates } from 'meteor/idreesia-common/server/business-logic/duties-attendance';
 import {
-  DutiesAttendanceWorkspaceUsers,
-  type DutiesAttendanceWorkspaceUserDocument,
-} from 'meteor/idreesia-common/server/collections/duties-attendance';
-import {
-  addOrgLocationDutiesAttendanceUser,
+  addOrgLocationFeatureUser,
   addOrgLocationObserver,
   createOrgLocation,
   disableOrgLocationFeature,
   enableOrgLocationFeature,
-  getLocationDutiesAttendanceWorkspaceId,
   getOrgLocationObserverStats,
-  removeOrgLocationDutiesAttendanceUser,
+  listOrgLocationFeaturePermissions,
+  removeOrgLocationFeatureUser,
   removeOrgLocationObserver,
   syncOrgLocationObservers,
   updateOrgLocation,
-  updateOrgLocationDutiesAttendanceUserPermissions,
 } from 'meteor/idreesia-common/server/business-logic/admin';
 
 interface ResolverContext {
@@ -78,33 +69,25 @@ export default {
     },
   },
 
-  OrgLocationDutiesAttendanceUserType: {
-    username: async (entry: DutiesAttendanceWorkspaceUserDocument) =>
-      (await Users.findOneAsync(entry.userId))?.username,
-    displayName: async (entry: DutiesAttendanceWorkspaceUserDocument) =>
-      (await Users.findOneAsync(entry.userId))?.displayName,
+  OrgLocationFeaturePermissionType: {
+    users: async ({ userIds }: { userIds: string[] }) => {
+      const users = await Users.find({ _id: { $in: userIds } }).fetchAsync();
+      return users.map(user => ({
+        userId: user._id,
+        personId: user.personId,
+        username: user.username,
+        displayName: user.displayName,
+      }));
+    },
   },
 
   Query: {
     allOrgLocationFeatures: async () => OrgLocationFeatures,
 
-    dutiesAttendanceUserCandidates: async (
-      _obj: unknown,
-      { search }: { search?: string }
-    ) => searchWorkspaceUserCandidates(search),
-
-    allDutiesAttendancePermissions: async () => DutiesAttendancePermissionInfos,
-
-    orgLocationDutiesAttendanceUsers: async (
+    orgLocationFeaturePermissions: async (
       _obj: unknown,
       { locationId }: { locationId: string }
-    ) => {
-      const location = await OrgLocations.findOneAsync({ _id: locationId });
-      const workspaceId = getLocationDutiesAttendanceWorkspaceId(
-        (location ?? {}) as OrgLocationDocument
-      );
-      return DutiesAttendanceWorkspaceUsers.find({ workspaceId }).fetchAsync();
-    },
+    ) => listOrgLocationFeaturePermissions(locationId),
 
     allOrgLocations: async () =>
       OrgLocations.find({}, { sort: { name: 1 } }).fetchAsync(),
@@ -156,44 +139,40 @@ export default {
       { user }: ResolverContext
     ) => disableOrgLocationFeature(locationId, featureKey, user._id),
 
-    addOrgLocationDutiesAttendanceUser: async (
+    addOrgLocationFeatureUser: async (
       _obj: unknown,
-      {
-        locationId,
-        userId,
-        permissions,
-      }: { locationId: string; userId: string; permissions: string[] },
+      args: {
+        locationId: string;
+        featureKey: string;
+        permissionKey: string;
+        karkunId: string;
+      },
       { user }: ResolverContext
     ) =>
-      addOrgLocationDutiesAttendanceUser(
-        locationId,
-        { userId, permissions },
+      addOrgLocationFeatureUser(
+        args.locationId,
+        args.featureKey,
+        args.permissionKey,
+        args.karkunId,
         user._id
       ),
 
-    updateOrgLocationDutiesAttendanceUserPermissions: async (
+    removeOrgLocationFeatureUser: async (
       _obj: unknown,
-      {
-        locationId,
-        userId,
-        permissions,
-      }: { locationId: string; userId: string; permissions: string[] },
+      args: {
+        locationId: string;
+        featureKey: string;
+        permissionKey: string;
+        userId: string;
+      },
       { user }: ResolverContext
     ) =>
-      updateOrgLocationDutiesAttendanceUserPermissions(
-        locationId,
-        userId,
-        permissions,
+      removeOrgLocationFeatureUser(
+        args.locationId,
+        args.featureKey,
+        args.permissionKey,
+        args.userId,
         user._id
       ),
-
-    removeOrgLocationDutiesAttendanceUser: async (
-      _obj: unknown,
-      { locationId, userId }: { locationId: string; userId: string },
-      { user }: ResolverContext
-    ) => {
-      await removeOrgLocationDutiesAttendanceUser(locationId, userId, user._id);
-      return true;
-    },
   },
 };

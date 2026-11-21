@@ -5,7 +5,6 @@ import { Empty, Form, Spin, Tabs } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import {
-  OrgLocationFeatureKeys,
   OrgLocationTypes,
   type OrgLocationType,
 } from 'meteor/idreesia-common/constants/organization';
@@ -23,7 +22,7 @@ import {
   UPDATE_ORG_LOCATION,
 } from './gql';
 import LocationCommittees from './location-committees';
-import LocationDutiesAttendanceUsers from './location-duties-attendance-users';
+import LocationFeaturePermissions from './location-feature-permissions';
 import LocationFeatures from './location-features';
 import LocationObservers from './location-observers';
 import LocationForm, {
@@ -181,13 +180,12 @@ const EditForm = ({ match, history, location }: Props) => {
               },
             ]
           : []),
-        ...(type === OrgLocationTypes.MEHFIL &&
-        orgLocation.features?.includes(OrgLocationFeatureKeys.DUTIES_ATTENDANCE)
+        ...(type === OrgLocationTypes.MEHFIL && orgLocation.features?.length
           ? [
               {
-                key: 'duties-attendance-users',
-                label: 'Duties & Attendance Users',
-                children: <LocationDutiesAttendanceUsers locationId={_id} />,
+                key: 'feature-permissions',
+                label: 'Feature Permissions',
+                children: <LocationFeaturePermissions locationId={_id} />,
               },
             ]
           : []),

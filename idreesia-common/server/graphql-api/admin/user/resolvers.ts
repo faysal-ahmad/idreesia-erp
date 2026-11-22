@@ -5,8 +5,10 @@ import { Permissions as PermissionConstants } from 'meteor/idreesia-common/const
 import { DataSource } from 'meteor/idreesia-common/constants';
 import { ChatError } from 'meteor/idreesia-common/server/chat';
 import {
+  checkUserAccountAvailability,
   clearLoginBlocks,
   createChatAccount,
+  createServiceAccount,
   createUser,
   disableTwoFactor,
   enableTwoFactor,
@@ -15,6 +17,7 @@ import {
   recordUserLogin,
   registerUser,
   resetTwoFactor,
+  resetUserPassword,
   searchUsers,
   setUserInstanceAccess,
   setSuperAdmin,
@@ -117,6 +120,11 @@ export default {
       return _user;
     },
 
+    userAccountAvailability: async (
+      _obj: unknown,
+      { userName, email }: { userName?: string | null; email?: string | null }
+    ) => checkUserAccountAvailability({ userName, email }),
+
     userNames: async (_obj: unknown, { ids }: Pick<UserArgs, 'ids'>) => {
       const names: Array<string | undefined> = [];
       if (!ids) return names;
@@ -157,11 +165,23 @@ export default {
       { user }: ResolverContext
     ) => createUser(params, requireUser(user), DataSource.ADMIN),
 
+    createServiceAccount: async (
+      _obj: unknown,
+      params: { userName: string; displayName?: string },
+      { user }: ResolverContext
+    ) => createServiceAccount(params, requireUser(user), DataSource.ADMIN),
+
     updateUser: async (
       _obj: unknown,
       params: Record<string, unknown>,
       { user }: ResolverContext
     ) => updateUser(params, requireUser(user), DataSource.ADMIN),
+
+    resetUserPassword: async (
+      _obj: unknown,
+      params: { userId: string; password: string },
+      { user }: ResolverContext
+    ) => resetUserPassword(params, requireUser(user), DataSource.ADMIN),
 
     setPermissions: async (
       _obj: unknown,

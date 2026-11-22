@@ -1,5 +1,6 @@
 const SubModuleNames = {
   users: 'Users',
+  serviceAccounts: 'Service Accounts',
   userGroups: 'User Groups',
   securityLogs: 'Security Logs',
   physicalStores: 'Physical Stores',
@@ -12,6 +13,7 @@ const SubModuleNames = {
   deletedPeople: 'Deleted People',
   duplicatePeople: 'Duplicate People',
   orgLocations: 'Locations',
+  mehfilTemplates: 'Mehfil Templates',
 };
 
 export default SubModuleNames;

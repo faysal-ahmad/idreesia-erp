@@ -29,6 +29,9 @@ const ENTRIES: Entry[] = [
   { path: paths.locationDutyPlanningPath(), feature: names.dutyPlanning, scope: 'location' },
   { path: paths.locationDutyAttendancePath(), feature: names.dutyAttendance, scope: 'location' },
   { path: paths.locationAttendanceSheetPath(), feature: names.attendanceSheet, scope: 'location' },
+  { path: paths.locationMehfilDetailsPath(), feature: names.mehfilDetails, scope: 'location' },
+  { path: paths.locationMehfilKarkunsPath(), feature: names.mehfilKarkuns, scope: 'location' },
+  { path: paths.locationMehfilPermissionsPath(), feature: names.mehfilPermissions, scope: 'location' },
 ];
 
 // Sets the layout breadcrumbs for whichever Workspaces page is showing:

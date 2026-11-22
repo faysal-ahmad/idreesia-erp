@@ -17,6 +17,7 @@ export const MOBILE_MY_COMMITTEES: TypedDocumentNode<
       name
       description
       features
+      locationId
     }
   }
 `;

@@ -103,7 +103,9 @@ const EditForm = ({ history, location, match }: Props) => {
     committeeName || 'Edit',
   ]);
 
-  if (loading) {
+  // Only on the first load: a refetch (after adding a member) keeps the page,
+  // and the open drawer, in place.
+  if (loading && !data) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
         <Spin size="large" />
@@ -235,6 +237,7 @@ const EditForm = ({ history, location, match }: Props) => {
     />
     <AddMemberDrawer
       committeeId={addRole ? committeeById._id : null}
+      locationId={committeeById.locationId}
       memberIds={allMemberIds}
       role={addRole ?? undefined}
       title={addButtons.find(button => button.role === addRole)?.label}

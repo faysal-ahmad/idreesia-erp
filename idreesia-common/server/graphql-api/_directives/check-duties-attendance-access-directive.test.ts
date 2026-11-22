@@ -2,9 +2,10 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { graphql } from 'graphql';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
-import { OrgLocations } from 'meteor/idreesia-common/server/collections/admin';
-import { DutiesAttendanceWorkspaceUsers } from 'meteor/idreesia-common/server/collections/duties-attendance';
-import { enableOrgLocationFeature } from 'meteor/idreesia-common/server/business-logic/admin/org-location-features';
+import {
+  OrgLocations,
+  OrgLocationUsers,
+} from 'meteor/idreesia-common/server/collections/admin';
 import { getDutiesAttendanceAccess } from 'meteor/idreesia-common/server/graphql-api/workspaces/duties-attendance/access';
 
 import CheckDutiesAttendanceAccessDirective from './check-duties-attendance-access-directive';
@@ -31,7 +32,7 @@ const typeDefs = [
 const resolvers = {
   Query: {
     viewing: (_: unknown, args: { locationId: string }, context: any) =>
-      getDutiesAttendanceAccess(context, args.locationId).workspaceId,
+      getDutiesAttendanceAccess(context, args.locationId).locationId,
     marking: () => 'ok',
     managing: () => 'ok',
     otherArg: () => 'ok',
@@ -47,38 +48,34 @@ const run = (source: string, user: unknown) =>
   graphql({ schema, source, contextValue: { user } });
 
 let locationId: string;
-let workspaceId: string;
 
 beforeEach(async () => {
   locationId = (await OrgLocations.insertAsync({
     name: 'Mehfil',
     type: 'mehfil',
   } as never)) as string;
-  await enableOrgLocationFeature(locationId, 'duties-attendance', 'admin');
-  workspaceId = ((await OrgLocations.findOneAsync({ _id: locationId })) as any)
-    .dutiesAttendanceWorkspaceId;
 });
 
 const field = (name: string) => `{ ${name}(locationId: "${locationId}") }`;
 
 const addUser = (userId: string, permissions: string[]) =>
-  DutiesAttendanceWorkspaceUsers.insertAsync({
-    workspaceId,
+  OrgLocationUsers.insertAsync({
+    locationId,
     userId,
-    permissions,
+    permissions: permissions.map(permission => `duties-attendance.${permission}`),
   } as never);
 
 const codeOf = (result: Awaited<ReturnType<typeof run>>) =>
   result.errors?.[0]?.extensions?.code;
 
 describe('@checkDutiesAttendanceAccess', () => {
-  it('lets a workspace user in with the permission and hands the access on', async () => {
+  it('lets a location user in with the permission and hands the access on', async () => {
     await addUser('u1', ['view', 'mark-attendance']);
 
     const result = await run(field('viewing'), { _id: 'u1' });
 
     expect(result.errors).toBeUndefined();
-    expect(result.data?.viewing).toBe(workspaceId);
+    expect(result.data?.viewing).toBe(locationId);
     expect((await run(field('marking'), { _id: 'u1' })).errors).toBeUndefined();
   });
 
@@ -88,7 +85,7 @@ describe('@checkDutiesAttendanceAccess', () => {
     expect(codeOf(await run(field('managing'), { _id: 'u1' }))).toBe('FORBIDDEN');
   });
 
-  it('refuses people who are not users of the workspace, anonymous and locked callers', async () => {
+  it('refuses people who are not users of the location, anonymous and locked callers', async () => {
     await addUser('u1', ['view']);
     await addUser('locked', ['view']);
 
@@ -112,17 +109,20 @@ describe('@checkDutiesAttendanceAccess', () => {
     }
   });
 
-  it('refuses everyone but tells a super-admin when the feature is off', async () => {
-    await addUser('u1', ['view']);
-    await OrgLocations.updateAsync(
-      { _id: locationId },
-      { $pull: { features: 'duties-attendance' } }
-    );
+  it('refuses everyone for a location that is not a mehfil', async () => {
+    const cityId = (await OrgLocations.insertAsync({
+      name: 'Karachi',
+      type: 'city',
+    } as never)) as string;
+    await OrgLocationUsers.insertAsync({
+      locationId: cityId,
+      userId: 'u1',
+      permissions: ['duties-attendance.view'],
+    } as never);
+    const city = `{ viewing(locationId: "${cityId}") }`;
 
-    expect(codeOf(await run(field('viewing'), { _id: 'u1' }))).toBe('FORBIDDEN');
-    expect(
-      codeOf(await run(field('viewing'), { _id: 'sa', isSuperAdmin: true }))
-    ).toBe('NOT_FOUND');
+    expect(codeOf(await run(city, { _id: 'u1' }))).toBe('FORBIDDEN');
+    expect(codeOf(await run(city, { _id: 'sa', isSuperAdmin: true }))).toBe('FORBIDDEN');
   });
 
   it('refuses an unknown location', async () => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { List, PullToRefresh, Tag } from 'antd-mobile';
 
+import { MyDataPaths } from '../apps/my-data/paths';
 import { CollapsibleSection } from '../components/collapsible-section';
 import { PageError, PageLoading, Page } from '../layout';
 import { useHistory } from '../router';
@@ -36,10 +37,18 @@ const pollVoteTag = (poll: { hasVoted?: boolean | null; isEligible?: boolean | n
   return undefined;
 };
 
+/** How the user's attendance for the duty was marked today; nothing when unmarked. */
+const dutyAttendanceTag = (attendance?: string | null) => {
+  if (attendance === 'present') return <Tag color="success" fill="outline">Present</Tag>;
+  if (attendance === 'late') return <Tag color="warning" fill="outline">Late</Tag>;
+  if (attendance === 'absent') return <Tag color="danger" fill="outline">Absent</Tag>;
+  return undefined;
+};
+
 /** Home tab, the default screen after signing in. */
 export const HomeScreen = () => {
   const history = useHistory();
-  const { loading, error, meetings, polls, actionItems, refresh } = useHomeItems();
+  const { loading, error, meetings, polls, actionItems, duties, refresh } = useHomeItems();
 
   let content;
   if (loading) {
@@ -49,6 +58,24 @@ export const HomeScreen = () => {
   } else {
     content = (
       <PullToRefresh onRefresh={refresh}>
+        <CollapsibleSection count={duties.length} title="Today's Duties">
+          {duties.length === 0 ? (
+            <List.Item className="workspaces-empty-item">No duties today</List.Item>
+          ) : (
+            duties.map(duty => (
+              <List.Item
+                key={`${duty.locationId}-${duty.dutyId}`}
+                className="home-item"
+                description={duty.locationName}
+                extra={dutyAttendanceTag(duty.attendance)}
+                onClick={() => history.push(MyDataPaths.dutiesAttendance)}
+              >
+                <ItemTitle title={duty.dutyName} />
+              </List.Item>
+            ))
+          )}
+        </CollapsibleSection>
+
         <CollapsibleSection count={meetings.length} title="Upcoming Meetings">
           {meetings.length === 0 ? (
             <List.Item className="workspaces-empty-item">No upcoming meetings</List.Item>

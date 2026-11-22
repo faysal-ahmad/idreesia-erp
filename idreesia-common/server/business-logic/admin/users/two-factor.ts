@@ -16,7 +16,7 @@ import {
   TOO_MANY_ATTEMPTS_MESSAGE,
 } from './login-attempts';
 import { findOneUser, type MappedUser } from './map-user';
-import { assertCanManageUser } from './super-admin';
+import { isSuperAdmin } from './super-admin';
 import { isTwoFactorEnabled } from './two-factor-status';
 
 // Optional per-user two-factor authentication with an authenticator app
@@ -271,8 +271,9 @@ export async function disableTwoFactor(
 }
 
 /**
- * An administrator turns two-factor off for a user who lost their device.
- * The only recovery path, since there are no backup codes.
+ * A super admin turns two-factor off for a user who lost their device.
+ * The only recovery path, since there are no backup codes. Only a super
+ * admin can do it: with the password alone the account is then open.
  */
 export async function resetTwoFactor(
   { userId }: { userId: string },
@@ -281,7 +282,11 @@ export async function resetTwoFactor(
   dataSourceDetail: string | null = null
 ): Promise<MappedUser> {
   return runInTransaction(async () => {
-    await assertCanManageUser(userId, user);
+    const caller = await Users.findOneAsync(user._id);
+    if (!isSuperAdmin(caller)) {
+      throw new Error('Only a super admin can reset two-factor authentication.');
+    }
+
     const existingUser = await getUser(userId);
     if (!existingUser.services?.twoFactorAuthentication) {
       return findOneUser(userId);

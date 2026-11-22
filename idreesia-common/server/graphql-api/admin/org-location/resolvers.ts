@@ -1,10 +1,6 @@
-import {
-  DutiesAttendancePermissionInfos,
-} from 'meteor/idreesia-common/constants/duties-attendance';
-import {
-  OrgLocationFeatures,
-  type OrgLocationType,
-} from 'meteor/idreesia-common/constants/organization';
+import { DataSource } from 'meteor/idreesia-common/constants';
+import { ChatError } from 'meteor/idreesia-common/server/chat';
+import type { OrgLocationType } from 'meteor/idreesia-common/constants/organization';
 import { getDataLoaders } from 'meteor/idreesia-common/server/data-loaders';
 import {
   OrgLocations,
@@ -12,24 +8,23 @@ import {
   type OrgLocationDocument,
   type OrgLocationMehfilDetails,
 } from 'meteor/idreesia-common/server/collections/admin';
-import { searchWorkspaceUserCandidates } from 'meteor/idreesia-common/server/business-logic/duties-attendance';
 import {
-  DutiesAttendanceWorkspaceUsers,
-  type DutiesAttendanceWorkspaceUserDocument,
-} from 'meteor/idreesia-common/server/collections/duties-attendance';
-import {
-  addOrgLocationDutiesAttendanceUser,
+  addOrgLocationFeatureUser,
   addOrgLocationObserver,
   createOrgLocation,
-  disableOrgLocationFeature,
-  enableOrgLocationFeature,
-  getLocationDutiesAttendanceWorkspaceId,
+  createOrgLocationUserChatAccount,
   getOrgLocationObserverStats,
-  removeOrgLocationDutiesAttendanceUser,
+  linkOrgLocationUser,
+  listLinkableUsers,
+  listOrgLocationKarkuns,
+  listOrgLocationUsers,
+  listOrgLocationFeaturePermissions,
+  removeOrgLocationFeatureUser,
   removeOrgLocationObserver,
+  resetOrgLocationUserPassword,
+  setOrgLocationUserLocked,
   syncOrgLocationObservers,
   updateOrgLocation,
-  updateOrgLocationDutiesAttendanceUserPermissions,
 } from 'meteor/idreesia-common/server/business-logic/admin';
 
 interface ResolverContext {
@@ -61,8 +56,6 @@ export default {
     observerKarkunIds: (location: OrgLocationDocument) =>
       location.observerKarkunIds ?? [],
 
-    features: (location: OrgLocationDocument) => location.features ?? [],
-
     observerStats: (location: OrgLocationDocument) =>
       getOrgLocationObserverStats(location),
 
@@ -78,33 +71,47 @@ export default {
     },
   },
 
-  OrgLocationDutiesAttendanceUserType: {
-    username: async (entry: DutiesAttendanceWorkspaceUserDocument) =>
-      (await Users.findOneAsync(entry.userId))?.username,
-    displayName: async (entry: DutiesAttendanceWorkspaceUserDocument) =>
-      (await Users.findOneAsync(entry.userId))?.displayName,
+  OrgLocationFeaturePermissionType: {
+    users: async ({ userIds }: { userIds: string[] }) => {
+      const users = await Users.find({ _id: { $in: userIds } }).fetchAsync();
+      return users.map(user => ({
+        userId: user._id,
+        personId: user.personId,
+        username: user.username,
+        displayName: user.displayName,
+      }));
+    },
   },
 
   Query: {
-    allOrgLocationFeatures: async () => OrgLocationFeatures,
-
-    dutiesAttendanceUserCandidates: async (
-      _obj: unknown,
-      { search }: { search?: string }
-    ) => searchWorkspaceUserCandidates(search),
-
-    allDutiesAttendancePermissions: async () => DutiesAttendancePermissionInfos,
-
-    orgLocationDutiesAttendanceUsers: async (
+    orgLocationFeaturePermissions: async (
       _obj: unknown,
       { locationId }: { locationId: string }
-    ) => {
-      const location = await OrgLocations.findOneAsync({ _id: locationId });
-      const workspaceId = getLocationDutiesAttendanceWorkspaceId(
-        (location ?? {}) as OrgLocationDocument
-      );
-      return DutiesAttendanceWorkspaceUsers.find({ workspaceId }).fetchAsync();
-    },
+    ) => listOrgLocationFeaturePermissions(locationId),
+
+    pagedOrgLocationKarkuns: async (
+      _obj: unknown,
+      params: {
+        locationId: string;
+        name?: string | null;
+        cnicNumber?: string | null;
+        phoneNumber?: string | null;
+        withUserAccount?: boolean | null;
+        includeChildLocations?: boolean | null;
+        pageIndex?: string | null;
+        pageSize?: string | null;
+      }
+    ) => listOrgLocationKarkuns(params),
+
+    pagedOrgLocationUsers: async (
+      _obj: unknown,
+      params: { locationId: string; pageIndex?: string | null; pageSize?: string | null }
+    ) => listOrgLocationUsers(params),
+
+    pagedLinkableUsers: async (
+      _obj: unknown,
+      params: { search?: string | null; pageIndex?: string | null; pageSize?: string | null }
+    ) => listLinkableUsers(params),
 
     allOrgLocations: async () =>
       OrgLocations.find({}, { sort: { name: 1 } }).fetchAsync(),
@@ -126,6 +133,42 @@ export default {
       { user }: ResolverContext
     ) => updateOrgLocation(params, user),
 
+    linkOrgLocationUser: async (
+      _obj: unknown,
+      { locationId, karkunId, userId }: { locationId: string; karkunId: string; userId: string }
+    ) => linkOrgLocationUser(locationId, karkunId, userId),
+
+    resetOrgLocationUserPassword: async (
+      _obj: unknown,
+      params: { locationId: string; userId: string; password: string },
+      { user }: ResolverContext
+    ) => resetOrgLocationUserPassword(params, user, DataSource.ADMIN),
+
+    setOrgLocationUserLocked: async (
+      _obj: unknown,
+      params: { locationId: string; userId: string; locked: boolean },
+      { user }: ResolverContext
+    ) => setOrgLocationUserLocked(params, user, DataSource.ADMIN),
+
+    createOrgLocationUserChatAccount: async (
+      _obj: unknown,
+      params: { locationId: string; userId: string },
+      { user }: ResolverContext
+    ) => {
+      try {
+        return await createOrgLocationUserChatAccount(
+          params,
+          user,
+          DataSource.ADMIN
+        );
+      } catch (error) {
+        if (error instanceof ChatError) {
+          throw new Error(`Chat: ${error.message}`);
+        }
+        throw error;
+      }
+    },
+
     addOrgLocationObserver: async (
       _obj: unknown,
       { locationId, karkunId }: { locationId: string; karkunId: string },
@@ -144,56 +187,40 @@ export default {
       { user }: ResolverContext
     ) => syncOrgLocationObservers(locationId, user),
 
-    enableOrgLocationFeature: async (
+    addOrgLocationFeatureUser: async (
       _obj: unknown,
-      { locationId, featureKey }: { locationId: string; featureKey: string },
-      { user }: ResolverContext
-    ) => enableOrgLocationFeature(locationId, featureKey, user._id),
-
-    disableOrgLocationFeature: async (
-      _obj: unknown,
-      { locationId, featureKey }: { locationId: string; featureKey: string },
-      { user }: ResolverContext
-    ) => disableOrgLocationFeature(locationId, featureKey, user._id),
-
-    addOrgLocationDutiesAttendanceUser: async (
-      _obj: unknown,
-      {
-        locationId,
-        userId,
-        permissions,
-      }: { locationId: string; userId: string; permissions: string[] },
+      args: {
+        locationId: string;
+        featureKey: string;
+        permissionKey: string;
+        karkunId: string;
+      },
       { user }: ResolverContext
     ) =>
-      addOrgLocationDutiesAttendanceUser(
-        locationId,
-        { userId, permissions },
+      addOrgLocationFeatureUser(
+        args.locationId,
+        args.featureKey,
+        args.permissionKey,
+        args.karkunId,
         user._id
       ),
 
-    updateOrgLocationDutiesAttendanceUserPermissions: async (
+    removeOrgLocationFeatureUser: async (
       _obj: unknown,
-      {
-        locationId,
-        userId,
-        permissions,
-      }: { locationId: string; userId: string; permissions: string[] },
+      args: {
+        locationId: string;
+        featureKey: string;
+        permissionKey: string;
+        userId: string;
+      },
       { user }: ResolverContext
     ) =>
-      updateOrgLocationDutiesAttendanceUserPermissions(
-        locationId,
-        userId,
-        permissions,
+      removeOrgLocationFeatureUser(
+        args.locationId,
+        args.featureKey,
+        args.permissionKey,
+        args.userId,
         user._id
       ),
-
-    removeOrgLocationDutiesAttendanceUser: async (
-      _obj: unknown,
-      { locationId, userId }: { locationId: string; userId: string },
-      { user }: ResolverContext
-    ) => {
-      await removeOrgLocationDutiesAttendanceUser(locationId, userId, user._id);
-      return true;
-    },
   },
 };

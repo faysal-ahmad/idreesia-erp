@@ -10,59 +10,50 @@ import {
   isDayOfWeek,
 } from 'meteor/idreesia-common/server/business-logic/hr/duty-planning-dates';
 import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
+import { requireMehfilDuty } from 'meteor/idreesia-common/server/business-logic/admin/mehfil-template-duties';
 
 import { dutiesAttendanceError } from './errors';
 import {
   ensureDutiesAttendanceIndexes,
-  normalizeName,
-  normalizeText,
   requireDuty,
   requireUserId,
-  requireWorkspace,
+  requireLocation,
   stamp,
   touch,
 } from './internal';
 import { firstPlanningDate, lockDutyDaysThroughToday } from './planning';
 
 export interface CreateDutyInput {
-  name: string;
-  description?: string;
-}
-
-async function assertNameAvailable(
-  workspaceId: string,
-  name: string,
-  selfId?: string
-) {
-  const sameName = await DutiesAttendanceDuties.findOneAsync({
-    workspaceId,
-    name,
-    ...(selfId ? { _id: { $ne: selfId } } : {}),
-  });
-  if (sameName) {
-    throw dutiesAttendanceError(
-      'CONFLICT',
-      `A duty named '${name}' already exists`
-    );
-  }
+  /** The mehfil template duty to use. */
+  mehfilDutyId: string;
 }
 
 export async function createDuty(
-  workspaceId: string,
+  locationId: string,
   input: CreateDutyInput,
   userId: string
 ): Promise<DutiesAttendanceDutyDocument> {
   return runInTransaction(async () => {
     requireUserId(userId);
-    await requireWorkspace(workspaceId);
-    const name = normalizeName(input.name, 'Duty name');
-    const description = normalizeText(input.description, 'Description');
-    await assertNameAvailable(workspaceId, name);
+    await requireLocation(locationId);
+    // A location can't define duties of its own, only pick from the list.
+    await requireMehfilDuty(input.mehfilDutyId).catch(() => {
+      throw dutiesAttendanceError('BAD_USER_INPUT', 'Please select a valid duty.');
+    });
+    const existing = await DutiesAttendanceDuties.findOneAsync({
+      locationId,
+      mehfilDutyId: input.mehfilDutyId,
+    });
+    if (existing) {
+      throw dutiesAttendanceError(
+        'CONFLICT',
+        'This duty has already been added'
+      );
+    }
 
     const dutyId = await DutiesAttendanceDuties.insertAsync({
-      workspaceId,
-      name,
-      ...(description ? { description } : {}),
+      locationId,
+      mehfilDutyId: input.mehfilDutyId,
       isActive: true,
       startDate: firstPlanningDate(),
       members: [],
@@ -72,15 +63,32 @@ export async function createDuty(
   });
 }
 
+/** Adds several template duties to a location, all or none. */
+export async function addDuties(
+  locationId: string,
+  mehfilDutyIds: string[],
+  userId: string
+): Promise<DutiesAttendanceDutyDocument[]> {
+  const ids = [...new Set(mehfilDutyIds)];
+  if (ids.length === 0) {
+    throw dutiesAttendanceError('BAD_USER_INPUT', 'Please select a duty.');
+  }
+  return runInTransaction(async () => {
+    const duties: DutiesAttendanceDutyDocument[] = [];
+    for (const mehfilDutyId of ids) {
+       
+      duties.push(await createDuty(locationId, { mehfilDutyId }, userId));
+    }
+    return duties;
+  });
+}
+
 export interface UpdateDutyInput {
-  name?: string;
-  /** null clears it. */
-  description?: string | null;
   isActive?: boolean;
 }
 
 export async function updateDuty(
-  workspaceId: string,
+  locationId: string,
   dutyId: string,
   changes: UpdateDutyInput,
   userId: string
@@ -89,26 +97,15 @@ export async function updateDuty(
   await ensureDutiesAttendanceIndexes();
   return runInTransaction(async () => {
     requireUserId(userId);
-    const duty = await requireDuty(dutyId, { workspaceId });
+    const duty = await requireDuty(dutyId, { locationId });
 
     const $set: Record<string, unknown> = { ...touch(userId) };
-    const $unset: Record<string, 1> = {};
 
-    if (changes.name !== undefined) {
-      const name = normalizeName(changes.name, 'Duty name');
-      await assertNameAvailable(workspaceId, name, dutyId);
-      $set.name = name;
-    }
-    if (changes.description !== undefined) {
-      const description = normalizeText(changes.description, 'Description');
-      if (description) $set.description = description;
-      else $unset.description = 1;
-    }
     if (changes.isActive !== undefined && changes.isActive !== null) {
       const isActive = !!changes.isActive;
       if (isActive !== (duty.isActive !== false)) {
         // Days up to today are locked before the duty stops being planned.
-        // When it starts again, it picks up from tomorrow: the days in
+        // When it starts again, it picks up from that day: the days in
         // between never get a record.
         if (isActive) $set.startDate = firstPlanningDate();
         else await lockDutyDaysThroughToday(duty);
@@ -116,10 +113,7 @@ export async function updateDuty(
       $set.isActive = isActive;
     }
 
-    await DutiesAttendanceDuties.updateAsync(dutyId, {
-      $set,
-      ...(Object.keys($unset).length ? { $unset } : {}),
-    });
+    await DutiesAttendanceDuties.updateAsync(dutyId, { $set });
     return requireDuty(dutyId);
   });
 }
@@ -129,13 +123,13 @@ export async function updateDuty(
  * history can only be made inactive.
  */
 export async function removeDuty(
-  workspaceId: string,
+  locationId: string,
   dutyId: string,
   userId: string
 ): Promise<void> {
   return runInTransaction(async () => {
     requireUserId(userId);
-    await requireDuty(dutyId, { workspaceId });
+    await requireDuty(dutyId, { locationId });
     const records = await DutiesAttendanceDayRecords.find({
       dutyId,
       'karkuns.0': { $exists: true },
@@ -159,6 +153,8 @@ export async function removeDuty(
 export interface DutyMemberInput {
   karkunId: string;
   isCoordinator?: boolean | null;
+  /** The member may mark their own attendance. On update, missing keeps it. */
+  canMarkOwnAttendance?: boolean | null;
   /** Empty or missing: every day. */
   daysOfWeek?: string[] | null;
 }
@@ -189,7 +185,7 @@ async function ensureKarkun(karkunId: string) {
 // Runs a roster change on a duty. The days up to today are locked first, so
 // the change only affects days that are still being planned.
 async function changeRoster(
-  workspaceId: string,
+  locationId: string,
   dutyId: string,
   userId: string,
   change: (duty: DutiesAttendanceDutyDocument) => Promise<DutyMember[]>
@@ -198,7 +194,7 @@ async function changeRoster(
   await ensureDutiesAttendanceIndexes();
   return runInTransaction(async () => {
     requireUserId(userId);
-    const duty = await requireDuty(dutyId, { workspaceId });
+    const duty = await requireDuty(dutyId, { locationId });
     await lockDutyDaysThroughToday(duty);
     const members = await change(duty);
     await DutiesAttendanceDuties.updateAsync(dutyId, {
@@ -209,14 +205,14 @@ async function changeRoster(
 }
 
 export async function addDutyMember(
-  workspaceId: string,
+  locationId: string,
   dutyId: string,
   input: DutyMemberInput,
   userId: string
 ) {
   await ensureKarkun(input.karkunId);
   const daysOfWeek = normalizeDays(input.daysOfWeek);
-  return changeRoster(workspaceId, dutyId, userId, async duty => {
+  return changeRoster(locationId, dutyId, userId, async duty => {
     if (duty.members.some(member => member.karkunId === input.karkunId)) {
       throw dutiesAttendanceError(
         'CONFLICT',
@@ -228,6 +224,7 @@ export async function addDutyMember(
       {
         karkunId: input.karkunId,
         ...(input.isCoordinator ? { isCoordinator: true } : {}),
+        ...(input.canMarkOwnAttendance ? { canMarkOwnAttendance: true } : {}),
         ...(daysOfWeek.length ? { daysOfWeek } : {}),
       },
     ];
@@ -235,13 +232,13 @@ export async function addDutyMember(
 }
 
 export async function updateDutyMember(
-  workspaceId: string,
+  locationId: string,
   dutyId: string,
   input: DutyMemberInput,
   userId: string
 ) {
   const daysOfWeek = normalizeDays(input.daysOfWeek);
-  return changeRoster(workspaceId, dutyId, userId, async duty => {
+  return changeRoster(locationId, dutyId, userId, async duty => {
     if (!duty.members.some(member => member.karkunId === input.karkunId)) {
       throw dutiesAttendanceError(
         'NOT_FOUND',
@@ -253,6 +250,9 @@ export async function updateDutyMember(
         ? {
             karkunId: member.karkunId,
             ...(input.isCoordinator ? { isCoordinator: true } : {}),
+            ...((input.canMarkOwnAttendance ?? member.canMarkOwnAttendance)
+              ? { canMarkOwnAttendance: true }
+              : {}),
             ...(daysOfWeek.length ? { daysOfWeek } : {}),
           }
         : member
@@ -261,12 +261,12 @@ export async function updateDutyMember(
 }
 
 export async function removeDutyMember(
-  workspaceId: string,
+  locationId: string,
   dutyId: string,
   karkunId: string,
   userId: string
 ) {
-  return changeRoster(workspaceId, dutyId, userId, async duty => {
+  return changeRoster(locationId, dutyId, userId, async duty => {
     if (!duty.members.some(member => member.karkunId === karkunId)) {
       throw dutiesAttendanceError(
         'NOT_FOUND',

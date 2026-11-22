@@ -71,7 +71,70 @@ describe('createOrgLocation', () => {
       },
       user
     );
-    expect(mehfil!.mehfilDetails).toEqual({ address: 'Street 1', lcdAvailability: true });
+    expect(mehfil!.mehfilDetails).toEqual({
+      address: 'Street 1',
+      lcdAvailability: true,
+    });
+  });
+
+  it('keeps the attendance geofence only when the mehfil has a location', async () => {
+    const { city } = await seedTree();
+    const withLocation = await createOrgLocation(
+      {
+        name: 'Mehfil 1',
+        type: OrgLocationTypes.MEHFIL,
+        parentId: city._id,
+        mehfilDetails: {
+          latitude: 31.5,
+          longitude: 74.3,
+          attendanceGeofenceMeters: 100,
+        },
+      },
+      user
+    );
+    expect(withLocation!.mehfilDetails?.attendanceGeofenceMeters).toBe(100);
+
+    const withoutLocation = await createOrgLocation(
+      {
+        name: 'Mehfil 2',
+        type: OrgLocationTypes.MEHFIL,
+        parentId: city._id,
+        mehfilDetails: { attendanceGeofenceMeters: 100 },
+      },
+      user
+    );
+    expect(withoutLocation!.mehfilDetails?.attendanceGeofenceMeters).toBeUndefined();
+
+    // Clearing the location turns it off.
+    const cleared = await updateOrgLocation(
+      {
+        _id: withLocation!._id!,
+        name: 'Mehfil 1',
+        parentId: city._id,
+        mehfilDetails: { attendanceGeofenceMeters: 100 },
+      },
+      user
+    );
+    expect(cleared!.mehfilDetails?.attendanceGeofenceMeters).toBeUndefined();
+  });
+
+  it('refuses a geofence that is not one of the offered radii', async () => {
+    const { city } = await seedTree();
+    await expect(
+      createOrgLocation(
+        {
+          name: 'Mehfil 3',
+          type: OrgLocationTypes.MEHFIL,
+          parentId: city._id,
+          mehfilDetails: {
+            latitude: 31.5,
+            longitude: 74.3,
+            attendanceGeofenceMeters: 75,
+          },
+        },
+        user
+      )
+    ).rejects.toThrow('attendance geofence');
   });
 });
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Meteor } from 'meteor/meteor';
 import { ApolloProvider } from '@apollo/client/react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { setDefaultConfig } from 'antd-mobile';
 import enUS from 'antd-mobile/cjs/locales/en-US';
 
@@ -9,6 +10,7 @@ import './main.css';
 /* Page CSS lives next to its screen as *.styles.css and is loaded only from
  * here (same rule as idreesia-web: a CSS file sharing a .tsx basename breaks
  * Meteor's extensionless imports). */
+import 'leaflet/dist/leaflet.css';
 import '../imports/ui/account/account-screen.styles.css';
 import '../imports/ui/account/two-factor.styles.css';
 import '../imports/ui/chat/chat-screen.styles.css';
@@ -17,6 +19,10 @@ import '../imports/ui/components/collapsible-section.styles.css';
 import '../imports/ui/components/video-call/video-call-prejoin-popup.styles.css';
 import '../imports/ui/home/home-screen.styles.css';
 import '../imports/ui/workspaces/workspaces-screen.styles.css';
+import '../imports/ui/workspaces/location-picker.styles.css';
+import '../imports/ui/workspaces/duties-attendance/duties-attendance.styles.css';
+import '../imports/ui/workspaces/mehfil-details/mehfil-details.styles.css';
+import '../imports/ui/workspaces/mehfil-permissions/mehfil-permissions.styles.css';
 import '../imports/ui/apps/security/stay-report/stay-report.styles.css';
 import '../imports/ui/apps/security/visitors/photo-search.styles.css';
 import '../imports/ui/apps/security/visitors/visitor-detail.styles.css';
@@ -37,6 +43,17 @@ import { HashRouter } from '../imports/ui/router';
 import { applyTheme, watchTextScale } from '../imports/ui/theme';
 import { apolloClient } from '../imports/startup/apollo-client';
 import { restoreApolloCache } from '../imports/startup/apollo-persist';
+import { initMonitoring, reportError } from '../imports/startup/monitoring';
+
+initMonitoring();
+
+// Errors that escape React (event handlers, timers, unhandled promises).
+window.addEventListener('error', event => {
+  reportError(event.error ?? event.message, { source: 'window-error' });
+});
+window.addEventListener('unhandledrejection', event => {
+  reportError(event.reason, { source: 'unhandled-rejection' });
+});
 
 // HashRouter: Cordova serves the bundle from a local origin with no server
 // side routing, so path-based URLs don't survive a reload there.
@@ -58,7 +75,19 @@ Meteor.startup(async () => {
   createRoot(container).render(
     <HashRouter>
       <ApolloProvider client={apolloClient}>
-        <App />
+        <ErrorBoundary
+          fallbackRender={({ error }) => (
+            <div style={{ padding: 24 }}>
+              <h3>Something went wrong</h3>
+              <pre style={{ whiteSpace: 'pre-wrap' }}>
+                {error?.message ?? String(error)}
+              </pre>
+            </div>
+          )}
+          onError={error => reportError(error, { source: 'app-root' })}
+        >
+          <App />
+        </ErrorBoundary>
       </ApolloProvider>
     </HashRouter>
   );

@@ -1,3 +1,4 @@
+import { OrgLocationTypes } from 'meteor/idreesia-common/constants/organization';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import {
   CityLocationMappings,
@@ -63,8 +64,9 @@ export async function pagedFreeFormCities(
 
 /**
  * Maps every free-form visitor city that has no mapping yet to the
- * organization location whose name is an exact (case-sensitive) match. A city
- * with no match, or with several locations of that name, is left unmapped;
+ * city-type organization location whose name is an exact (case-sensitive)
+ * match; only cities are ever matched. A city with no match, or with several
+ * cities of that name, is left unmapped;
  * existing mappings are never changed. Returns the number of mappings added.
  */
 export async function updateCityLocationMappings(
@@ -91,7 +93,7 @@ export async function updateCityLocationMappings(
     if (unmapped.length === 0) return 0;
 
     const locations = await OrgLocations.find(
-      { name: { $in: unmapped } },
+      { name: { $in: unmapped }, type: OrgLocationTypes.CITY },
       { fields: { name: 1 } }
     ).fetchAsync();
 

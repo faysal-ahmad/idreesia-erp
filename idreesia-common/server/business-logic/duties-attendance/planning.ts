@@ -1,5 +1,7 @@
 import {
+  DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH,
   DUTIES_ATTENDANCE_PLAN_DAY_COUNT,
+  DUTIES_ATTENDANCE_SELF_SOURCE,
   DutyAttendanceStatuses,
   type DutyAttendanceStatus,
 } from 'meteor/idreesia-common/constants/duties-attendance';
@@ -7,13 +9,15 @@ import {
   isInTransaction,
   runInTransaction,
 } from 'meteor/idreesia-common/server/collections';
+import { OrgLocationFeatureAllowedTypes } from 'meteor/idreesia-common/constants/organization';
+import { OrgLocations } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import {
   DutiesAttendanceDayOverrides,
   DutiesAttendanceDayRecords,
   DutiesAttendanceDuties,
-  DutiesAttendanceWorkspaces,
+  type AttendanceGeoLocation,
   type DayRecordKarkun,
   type DutiesAttendanceDayOverrideDocument,
   type DutiesAttendanceDayRecordDocument,
@@ -31,10 +35,12 @@ import {
 import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
 
 import { dutiesAttendanceError } from './errors';
+import { assertWithinGeofence } from './geofence';
 import {
   ensureDutiesAttendanceIndexes,
   isDuplicateKey,
   requireDuty,
+  requireLocation,
   requireUserId,
   stamp,
   touch,
@@ -52,6 +58,8 @@ interface PersonDocument {
   _id: string;
   sharedData?: {
     name?: string | null;
+    contactNumber1?: string | null;
+    contactNumber2?: string | null;
     imageKey?: string | null;
     imageThumbnailKey?: string | null;
   } | null;
@@ -71,6 +79,14 @@ const personName = (people: Map<string, PersonDocument>, karkunId: string) =>
 
 const personImages = (people: Map<string, PersonDocument>, karkunId: string) =>
   getPersonImageUrls(people.get(karkunId)?.sharedData);
+
+const personContacts = (people: Map<string, PersonDocument>, karkunId: string) => {
+  const shared = people.get(karkunId)?.sharedData;
+  return {
+    contactNumber1: shared?.contactNumber1 || null,
+    contactNumber2: shared?.contactNumber2 || null,
+  };
+};
 
 export function assertDate(value: string, label: string) {
   if (!isCalendarDate(value)) {
@@ -110,7 +126,7 @@ function overrideIds(override?: DutiesAttendanceDayOverrideDocument) {
 }
 
 /** Who is on duty on a day: available members, less absent, plus added. */
-function composeKarkuns(args: {
+export function composeKarkuns(args: {
   duty: DutiesAttendanceDutyDocument;
   weekday: DayOfWeek;
   override?: DutiesAttendanceDayOverrideDocument;
@@ -150,12 +166,13 @@ function composeKarkuns(args: {
 }
 
 /**
- * The first day a duty is planned: the day after it was created or last made
- * active, so a new roster can be set up before it starts.
+ * The first day a duty is planned: the day it was created or last made active.
+ * Its roster can still be set up on that day (see lockDutyDaysThroughToday).
  */
-export const firstPlanningDate = () => addCalendarDays(todayInKarachi(), 1);
+export const firstPlanningDate = () => todayInKarachi();
 
-function dutyStartDate(duty: DutiesAttendanceDutyDocument) {
+/** The first day the duty has day records (YYYY-MM-DD). */
+export function dutyStartDate(duty: DutiesAttendanceDutyDocument) {
   return (
     duty.startDate ||
     (duty.createdAt
@@ -216,7 +233,7 @@ export async function lockDays(
     });
     try {
       await DutiesAttendanceDayRecords.insertAsync({
-        workspaceId: duty.workspaceId,
+        locationId: duty.locationId,
         dutyId: duty._id,
         date,
         karkuns,
@@ -231,31 +248,50 @@ export async function lockDays(
 }
 
 /**
+ * Whether today can still be planned: it is the day the duty starts and has
+ * no record yet (nobody has marked attendance or looked at it as locked). The
+ * first day stays open so the roster and the day's people can be set up.
+ */
+export async function isTodayOpen(duty: DutiesAttendanceDutyDocument) {
+  const today = todayInKarachi();
+  if (duty.isActive === false || dutyStartDate(duty) !== today) return false;
+  const record = await DutiesAttendanceDayRecords.findOneAsync(
+    { dutyId: duty._id, date: today },
+    { fields: { _id: 1 } }
+  );
+  return !record;
+}
+
+/**
  * Locks every day up to today for a duty, so that a change to its roster only
- * affects days that are still being planned. Run it inside the transaction
- * that changes the roster.
+ * affects days that are still being planned. The day the duty starts is still
+ * being set up, so it is left open until the duty has started; a change made
+ * that day applies to it. Run it inside the transaction that changes the
+ * roster.
  */
 export async function lockDutyDaysThroughToday(
   duty: DutiesAttendanceDutyDocument
 ) {
-  await lockDays(duty, dutyStartDate(duty), todayInKarachi());
+  const today = todayInKarachi();
+  const start = dutyStartDate(duty);
+  await lockDays(duty, start, start < today ? today : addCalendarDays(today, -1));
 }
 
 /**
  * The job body: writes today's locked record for every active duty of every
- * live workspace. Returns how many duties were processed.
+ * mehfil. Returns how many duties were processed.
  */
 export async function createTodayDayRecords(
   reportProgress?: (fraction: number) => Promise<void>
 ) {
   await ensureDutiesAttendanceIndexes();
   const today = todayInKarachi();
-  const liveWorkspaces = await DutiesAttendanceWorkspaces.find(
-    { deletedAt: { $exists: false } },
+  const mehfils = await OrgLocations.find(
+    { type: { $in: OrgLocationFeatureAllowedTypes } },
     { fields: { _id: 1 } }
   ).fetchAsync();
   const duties = await DutiesAttendanceDuties.find({
-    workspaceId: { $in: liveWorkspaces.map(({ _id }) => _id) },
+    locationId: { $in: mehfils.map(({ _id }) => _id as string) },
     isActive: { $ne: false },
   }).fetchAsync();
 
@@ -272,7 +308,7 @@ export async function createTodayDayRecords(
 // ---------------------------------------------------------------------------
 
 export async function setDutyDayOverride(args: {
-  workspaceId: string;
+  locationId: string;
   dutyId: string;
   date: string;
   addedKarkunIds?: Array<string | null> | null;
@@ -282,13 +318,17 @@ export async function setDutyDayOverride(args: {
   requireUserId(args.userId);
   await ensureDutiesAttendanceIndexes();
   const duty = await requireDuty(args.dutyId, {
-    workspaceId: args.workspaceId,
+    locationId: args.locationId,
   });
   assertDate(args.date, 'date');
-  if (args.date <= todayInKarachi()) {
+  const today = todayInKarachi();
+  if (
+    args.date < today ||
+    (args.date === today && !(await isTodayOpen(duty)))
+  ) {
     throw dutiesAttendanceError(
       'BAD_USER_INPUT',
-      'Only future days can be changed. The plan for today is locked.'
+      'Only days that have not started can be changed. The plan for today is locked.'
     );
   }
 
@@ -316,7 +356,7 @@ export async function setDutyDayOverride(args: {
     });
   } else {
     await DutiesAttendanceDayOverrides.insertAsync({
-      workspaceId: duty.workspaceId,
+      locationId: duty.locationId,
       ...selector,
       addedKarkunIds,
       absentKarkunIds,
@@ -335,6 +375,8 @@ export interface PlanKarkun {
   addedForDay: boolean;
   imageUrl: string | null;
   imageThumbnailUrl: string | null;
+  contactNumber1: string | null;
+  contactNumber2: string | null;
   attendance: DutyAttendanceStatus | null;
 }
 
@@ -349,17 +391,17 @@ export interface PlanDay {
 
 /**
  * Seven days of a duty's plan from `startDate`. Days up to today are locked:
- * they show the record, with attendance. Later days are composed from the
- * roster and the overrides.
+ * they show the record, with attendance. Later days, and today when it is the
+ * duty's first day, are composed from the roster and the overrides.
  */
 export async function getDutyPlanDays(args: {
-  workspaceId: string;
+  locationId: string;
   dutyId: string;
   startDate: string;
 }): Promise<{ startDate: string; days: PlanDay[] }> {
   await ensureDutiesAttendanceIndexes();
   const duty = await requireDuty(args.dutyId, {
-    workspaceId: args.workspaceId,
+    locationId: args.locationId,
   });
   assertDate(args.startDate, 'start date');
 
@@ -370,7 +412,14 @@ export async function getDutyPlanDays(args: {
   const range = { $gte: args.startDate, $lte: endDate };
   const today = todayInKarachi();
 
-  await lockDays(duty, args.startDate, endDate);
+  // The day the duty starts stays open until it is locked by marking
+  // attendance, so its people can be planned.
+  const todayOpen = await isTodayOpen(duty);
+  await lockDays(
+    duty,
+    args.startDate,
+    todayOpen && endDate >= today ? addCalendarDays(today, -1) : endDate
+  );
 
   const overrides = (await DutiesAttendanceDayOverrides.find({
     dutyId: duty._id,
@@ -396,7 +445,7 @@ export async function getDutyPlanDays(args: {
 
   const days: PlanDay[] = datesBetween(args.startDate, endDate).map(date => {
     const weekday = dayOfWeek(date);
-    const locked = date <= today;
+    const locked = date < today || (date === today && !todayOpen);
     const override = overrideByDate.get(date);
     const { addedKarkunIds, absentKarkunIds } = overrideIds(override);
 
@@ -411,6 +460,7 @@ export async function getDutyPlanDays(args: {
       addedForDay: karkun.addedForDay,
       attendance: karkun.attendance ?? null,
       ...personImages(people, karkun.karkunId),
+      ...personContacts(people, karkun.karkunId),
     }));
 
     // Members taken off for a future day are listed as off.
@@ -430,6 +480,7 @@ export async function getDutyPlanDays(args: {
           addedForDay: false,
           attendance: null,
           ...personImages(people, karkunId),
+          ...personContacts(people, karkunId),
         });
       });
     }
@@ -451,20 +502,68 @@ export async function getDutyPlanDays(args: {
 // Attendance marking
 // ---------------------------------------------------------------------------
 
+function normalizeSource(source: string | null | undefined) {
+  const trimmed = (source ?? '').trim();
+  if (trimmed.length > DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH) {
+    throw dutiesAttendanceError(
+      'BAD_USER_INPUT',
+      `The source can be at most ${DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH} characters.`
+    );
+  }
+  return trimmed || undefined;
+}
+
+function normalizeGeo(
+  geo: AttendanceGeoLocation | null | undefined
+): AttendanceGeoLocation | undefined {
+  if (!geo) return undefined;
+  const { latitude, longitude, accuracy } = geo;
+  if (
+    !Number.isFinite(latitude) ||
+    latitude < -90 ||
+    latitude > 90 ||
+    !Number.isFinite(longitude) ||
+    longitude < -180 ||
+    longitude > 180 ||
+    (accuracy != null && (!Number.isFinite(accuracy) || accuracy < 0))
+  ) {
+    throw dutiesAttendanceError('BAD_USER_INPUT', 'The location is not valid.');
+  }
+  return {
+    latitude,
+    longitude,
+    ...(accuracy != null ? { accuracy } : {}),
+  };
+}
+
 export async function setDutyAttendance(args: {
-  workspaceId: string;
+  locationId: string;
   dutyId: string;
   date: string;
   karkunId: string;
   status?: string | null;
+  /** How the attendance was marked; kept with the mark. */
+  source?: string | null;
+  /** Where it was marked from; kept with the mark. */
+  geo?: AttendanceGeoLocation | null;
   userId: string;
+  /** The caller holds Mark attendance, so may mark anybody. */
+  canMarkAnyone: boolean;
+  /** The caller's own karkun, for a member marking themselves. */
+  callerKarkunId?: string | null;
 }) {
   requireUserId(args.userId);
+  const isSelfMark = !args.canMarkAnyone;
+  const geo = normalizeGeo(args.geo);
+  // A member's own mark is always stamped as such, whatever the client sent.
+  const source = isSelfMark
+    ? DUTIES_ATTENDANCE_SELF_SOURCE
+    : normalizeSource(args.source);
   // Indexes are created outside the transaction, which can't create them.
   await ensureDutiesAttendanceIndexes();
   return runInTransaction(async () => {
     const duty = await requireDuty(args.dutyId, {
-      workspaceId: args.workspaceId,
+      locationId: args.locationId,
     });
     assertDate(args.date, 'date');
     if (args.date > todayInKarachi()) {
@@ -475,6 +574,39 @@ export async function setDutyAttendance(args: {
     }
 
     const status = args.status || null;
+
+    if (isSelfMark) {
+      const member = duty.members.find(
+        ({ karkunId }) => karkunId === args.karkunId
+      );
+      if (
+        !args.callerKarkunId ||
+        args.callerKarkunId !== args.karkunId ||
+        !member?.canMarkOwnAttendance
+      ) {
+        throw dutiesAttendanceError(
+          'FORBIDDEN',
+          'You are not allowed to mark attendance for this duty.'
+        );
+      }
+      if (args.date !== todayInKarachi()) {
+        throw dutiesAttendanceError(
+          'FORBIDDEN',
+          'You can only mark or unmark your own attendance for today.'
+        );
+      }
+      // Marking needs where you are; unmarking does not.
+      if (status && !geo) {
+        throw dutiesAttendanceError(
+          'BAD_USER_INPUT',
+          'Your location is required to mark your own attendance.'
+        );
+      }
+    }
+    if (geo) {
+      assertWithinGeofence(await requireLocation(duty.locationId), geo);
+    }
+
     if (
       status &&
       !Object.values(DutyAttendanceStatuses).includes(
@@ -484,6 +616,20 @@ export async function setDutyAttendance(args: {
       throw dutiesAttendanceError(
         'BAD_USER_INPUT',
         'Please select present, late, or absent.'
+      );
+    }
+
+    // Say why, instead of "not on duty": no record is made for these days.
+    if (duty.isActive === false) {
+      throw dutiesAttendanceError(
+        'BAD_USER_INPUT',
+        'This duty is not active, so attendance cannot be marked.'
+      );
+    }
+    if (args.date < dutyStartDate(duty)) {
+      throw dutiesAttendanceError(
+        'BAD_USER_INPUT',
+        `This duty starts on ${dutyStartDate(duty)}; attendance cannot be marked before then.`
       );
     }
 
@@ -499,6 +645,28 @@ export async function setDutyAttendance(args: {
       );
     }
 
+    if (isSelfMark) {
+      const existing = record.karkuns.find(
+        karkun => karkun.karkunId === args.karkunId
+      );
+      if (status && existing?.attendance) {
+        throw dutiesAttendanceError(
+          'FORBIDDEN',
+          'Your attendance is already marked for this day. Unmark it first to mark it again.'
+        );
+      }
+      // A mark somebody else made is theirs to change.
+      if (
+        !status &&
+        existing?.attendanceSource !== DUTIES_ATTENDANCE_SELF_SOURCE
+      ) {
+        throw dutiesAttendanceError(
+          'FORBIDDEN',
+          'Only attendance you marked yourself can be unmarked.'
+        );
+      }
+    }
+
     const selector = { _id: record._id, 'karkuns.karkunId': args.karkunId };
     if (status) {
       await DutiesAttendanceDayRecords.updateAsync(selector, {
@@ -506,7 +674,14 @@ export async function setDutyAttendance(args: {
           'karkuns.$.attendance': status,
           'karkuns.$.attendanceUpdatedAt': new Date(),
           'karkuns.$.attendanceUpdatedBy': args.userId,
+          // A new mark replaces the source and place of the earlier one.
+          ...(source ? { 'karkuns.$.attendanceSource': source } : {}),
+          ...(geo ? { 'karkuns.$.attendanceGeo': geo } : {}),
           ...touch(args.userId),
+        },
+        $unset: {
+          ...(source ? {} : { 'karkuns.$.attendanceSource': '' }),
+          ...(geo ? {} : { 'karkuns.$.attendanceGeo': '' }),
         },
       });
     } else {
@@ -515,6 +690,8 @@ export async function setDutyAttendance(args: {
           'karkuns.$.attendance': '',
           'karkuns.$.attendanceUpdatedAt': '',
           'karkuns.$.attendanceUpdatedBy': '',
+          'karkuns.$.attendanceSource': '',
+          'karkuns.$.attendanceGeo': '',
         },
         $set: touch(args.userId),
       });

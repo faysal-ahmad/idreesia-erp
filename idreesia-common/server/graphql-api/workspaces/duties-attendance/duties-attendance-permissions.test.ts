@@ -22,7 +22,6 @@ const permissionOf = (root: 'Query' | 'Mutation', name: string) => {
 
 const VIEW = 'VIEW';
 const MANAGE = 'MANAGE_AND_PLAN_DUTIES';
-const MARK = 'MARK_ATTENDANCE';
 
 // The permission each operation needs, as in the module's design document.
 const expected: Array<['Query' | 'Mutation', string, string]> = [
@@ -32,14 +31,17 @@ const expected: Array<['Query' | 'Mutation', string, string]> = [
   ['Query', 'workspaceDaPlanDays', VIEW],
   ['Query', 'workspaceDaAttendanceSheet', VIEW],
   ['Query', 'workspaceDaKarkunSearch', MANAGE],
-  ['Mutation', 'workspaceDaCreateDuty', MANAGE],
+  ['Query', 'workspaceDaMehfilDuties', MANAGE],
+  ['Mutation', 'workspaceDaAddDuties', MANAGE],
   ['Mutation', 'workspaceDaUpdateDuty', MANAGE],
   ['Mutation', 'workspaceDaRemoveDuty', MANAGE],
   ['Mutation', 'workspaceDaAddDutyMember', MANAGE],
   ['Mutation', 'workspaceDaUpdateDutyMember', MANAGE],
   ['Mutation', 'workspaceDaRemoveDutyMember', MANAGE],
   ['Mutation', 'workspaceDaSetDayOverride', MANAGE],
-  ['Mutation', 'workspaceDaSetAttendance', MARK],
+  // Marking is checked in the business logic: Mark attendance, or a member
+  // marking their own attendance.
+  ['Mutation', 'workspaceDaSetAttendance', VIEW],
 ];
 
 describe('duties and attendance permission rules', () => {

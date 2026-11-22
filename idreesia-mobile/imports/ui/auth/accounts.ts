@@ -47,7 +47,6 @@ const ensureServerReachable = async () => {
   connection.reconnect();
   const deadline = Date.now() + CONNECT_WAIT_MS;
   while (Date.now() < deadline) {
-    // eslint-disable-next-line no-await-in-loop
     await new Promise(resolve => {
       setTimeout(resolve, 250);
     });

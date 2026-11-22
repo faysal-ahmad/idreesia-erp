@@ -36,13 +36,22 @@ interface Declaration {
 type FieldInfo = { field: string; declarations: Declaration[] };
 
 // Workspace directives, checked by their own tests rather than probed here.
-const WORKSPACE_DIRECTIVES = ['checkCommitteeAccess', 'checkDutiesAttendanceAccess'];
+const WORKSPACE_DIRECTIVES = [
+  'checkCommitteeAccess',
+  'checkDutiesAttendanceAccess',
+  'checkMehfilDetailsAccess',
+  'checkMehfilKarkunsAccess',
+  'checkMehfilPermissionsAccess',
+];
 
 const PROTECTION = [
   'checkPermissions',
   'checkInstanceAccess',
   'checkCommitteeAccess',
   'checkDutiesAttendanceAccess',
+  'checkMehfilDetailsAccess',
+  'checkMehfilKarkunsAccess',
+  'checkMehfilPermissionsAccess',
   'superAdminOnly',
 ];
 

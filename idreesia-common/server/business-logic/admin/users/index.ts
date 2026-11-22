@@ -10,9 +10,16 @@ export {
   type UserSearchResult,
 } from './search-users';
 export {
+  checkEmailAvailability,
+  checkUserAccountAvailability,
+  checkUserNameAvailability,
+  type UserAccountAvailability,
+  type UserNameAvailability,
   createChatAccount,
+  createServiceAccount,
   createUser,
   recordUserLogin,
+  resetUserPassword,
   setUserInstanceAccess,
   setUserPermissions,
   updateUser,

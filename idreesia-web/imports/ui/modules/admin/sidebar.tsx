@@ -12,6 +12,7 @@ const menuItems = [
     label: 'Access Management',
     children: [
       { key: 'users', label: 'Users' },
+      { key: 'service-accounts', label: 'Service Accounts' },
       { key: 'user-groups', label: 'User Groups' },
       { key: 'security-logs', label: 'Security Logs' },
     ],
@@ -24,7 +25,10 @@ const menuItems = [
   {
     key: 'organization',
     label: 'Organization Management',
-    children: [{ key: 'org-locations', label: 'Organization Locations' }],
+    children: [
+      { key: 'org-locations', label: 'Organization Locations' },
+      { key: 'mehfil-templates', label: 'Mehfil Templates' },
+    ],
   },
   {
     key: 'locations',
@@ -79,6 +83,12 @@ const menuRouteMatches: MenuRouteMatch[] = [
     matches: (pathname) => isPath(pathname, paths.usersPath),
   },
   {
+    key: 'service-accounts',
+    openKeys: ['access'],
+    subModuleName: SubModuleNames.serviceAccounts,
+    matches: (pathname) => isPath(pathname, paths.serviceAccountsPath),
+  },
+  {
     key: 'user-groups',
     openKeys: ['access'],
     subModuleName: SubModuleNames.userGroups,
@@ -101,6 +111,12 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['organization'],
     subModuleName: SubModuleNames.orgLocations,
     matches: (pathname) => isPath(pathname, paths.orgLocationsPath),
+  },
+  {
+    key: 'mehfil-templates',
+    openKeys: ['organization'],
+    subModuleName: SubModuleNames.mehfilTemplates,
+    matches: (pathname) => isPath(pathname, paths.mehfilTemplatesPath),
   },
   {
     key: 'cities',
@@ -201,6 +217,10 @@ const Sidebar = ({ history }: SidebarProps) => {
         history.push(paths.usersPath);
         break;
 
+      case 'service-accounts':
+        history.push(paths.serviceAccountsPath);
+        break;
+
       case 'user-groups':
         history.push(paths.userGroupsPath);
         break;
@@ -215,6 +235,10 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'org-locations':
         history.push(paths.orgLocationsPath);
+        break;
+
+      case 'mehfil-templates':
+        history.push(paths.mehfilTemplatesPath);
         break;
 
       case 'cities':

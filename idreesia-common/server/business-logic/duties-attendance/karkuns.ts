@@ -14,6 +14,8 @@ interface PersonDocument {
 }
 
 export interface WorkspaceKarkunSearchParams {
+  /** The mehfil whose duties the karkuns are for: only its karkuns are listed. */
+  locationId: string;
   name?: string | null;
   cnicNumber?: string | null;
   phoneNumber?: string | null;
@@ -23,7 +25,8 @@ export interface WorkspaceKarkunSearchParams {
 
 /**
  * Karkuns to choose from when building a duty roster, with only the fields
- * needed to pick a person.
+ * needed to pick a person. Only karkuns (not other kinds of people) whose
+ * mehfil is the location are listed.
  */
 export async function searchWorkspaceKarkuns(
   params: WorkspaceKarkunSearchParams
@@ -35,6 +38,7 @@ export async function searchWorkspaceKarkuns(
       phoneNumber: params.phoneNumber ?? undefined,
       pageIndex: params.pageIndex ?? undefined,
       pageSize: params.pageSize ?? undefined,
+      mehfilLocationId: params.locationId,
     },
     { includeKarkuns: true }
   )) as { data: PersonDocument[]; totalResults: number };

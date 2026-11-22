@@ -67,7 +67,7 @@ export async function syncOrgLocationObservers(
   };
 
   for (const committee of committees) {
-    // eslint-disable-next-line no-await-in-loop
+     
     await runInTransaction(async () => {
       const wanted = new Set(
         (chainOf.get(committee.locationId) ?? []).flatMap(
@@ -79,7 +79,7 @@ export async function syncOrgLocationObservers(
 
       for (const karkunId of wanted) {
         if (!existing.has(karkunId)) {
-          // eslint-disable-next-line no-await-in-loop
+           
           await addCommitteeMember(
             committee._id,
             karkunId,
@@ -96,7 +96,7 @@ export async function syncOrgLocationObservers(
           member.role === CommitteeMemberRoles.INHERITED_OBSERVER &&
           !wanted.has(member.karkunId)
         ) {
-          // eslint-disable-next-line no-await-in-loop
+           
           await removeCommitteeMember(committee._id, member.karkunId, user._id, {
             fromSync: true,
           });

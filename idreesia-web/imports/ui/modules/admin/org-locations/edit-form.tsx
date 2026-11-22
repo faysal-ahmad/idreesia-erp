@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Empty, Form, Spin, Tabs } from 'antd';
+import { Empty, Spin, Tabs } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import {
-  OrgLocationFeatureKeys,
   OrgLocationTypes,
   type OrgLocationType,
 } from 'meteor/idreesia-common/constants/organization';
@@ -23,14 +22,12 @@ import {
   UPDATE_ORG_LOCATION,
 } from './gql';
 import LocationCommittees from './location-committees';
-import LocationDutiesAttendanceUsers from './location-duties-attendance-users';
-import LocationFeatures from './location-features';
+import LocationFeaturePermissions from './location-feature-permissions';
+import LocationMehfilDetails from './location-mehfil-details';
 import LocationObservers from './location-observers';
-import LocationForm, {
-  MehfilDetailsFields,
-  type LocationFormValues,
-} from './location-form';
-import { toLocationRecords, toMehfilDetails } from './helpers';
+import LocationUsers from './location-users';
+import LocationForm, { type LocationFormValues } from './location-form';
+import { toLocationRecords } from './helpers';
 
 type Props = RouteComponentProps<{ orgLocationId: string }>;
 
@@ -38,7 +35,6 @@ const EditForm = ({ match, history, location }: Props) => {
   const { queryParams } = useQueryParams({ history, location });
   const _id = match.params.orgLocationId;
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const [isMehfilTouched, setIsMehfilTouched] = useState(false);
 
   const { data: allData, loading: allLoading } = useQuery(ALL_ORG_LOCATIONS);
   const { data, loading } = useQuery(ORG_LOCATION_BY_ID, {
@@ -65,7 +61,6 @@ const EditForm = ({ match, history, location }: Props) => {
   if (!orgLocation) return <Empty description="Location not found" />;
 
   const type = orgLocation.type as OrgLocationType;
-  const details = orgLocation.mehfilDetails;
 
   const handleFinish = (values: LocationFormValues) => {
     updateOrgLocation({
@@ -80,24 +75,6 @@ const EditForm = ({ match, history, location }: Props) => {
       .then(() => {
         message.success('Location saved', 2);
         setIsFieldsTouched(false);
-      })
-      .catch((error: Error) => {
-        message.error(error.message, 5);
-      });
-  };
-
-  const handleMehfilFinish = (values: LocationFormValues) => {
-    updateOrgLocation({
-      variables: {
-        _id,
-        name: orgLocation.name ?? '',
-        parentId: orgLocation.parentId,
-        mehfilDetails: toMehfilDetails(values),
-      },
-    })
-      .then(() => {
-        message.success('Mehfil details saved', 2);
-        setIsMehfilTouched(false);
       })
       .catch((error: Error) => {
         message.error(error.message, 5);
@@ -128,28 +105,6 @@ const EditForm = ({ match, history, location }: Props) => {
     </>
   );
 
-  const mehfilDetails = (
-    <Form
-      layout="horizontal"
-      initialValues={{
-        address: details?.address ?? undefined,
-        mehfilStartYear: details?.mehfilStartYear ?? undefined,
-        timingDetails: details?.timingDetails ?? undefined,
-        lcdAvailability: details?.lcdAvailability ?? false,
-        tabAvailability: details?.tabAvailability ?? false,
-        otherMehfilDetails: details?.otherMehfilDetails ?? undefined,
-      }}
-      onFieldsChange={() => setIsMehfilTouched(true)}
-      onFinish={handleMehfilFinish}
-    >
-      <MehfilDetailsFields />
-      <FormButtonsSaveCancel
-        handleCancel={() => history.push(paths.orgLocationsPath)}
-        isFieldsTouched={isMehfilTouched}
-      />
-    </Form>
-  );
-
   return (
     <Tabs
       defaultActiveKey={(queryParams['default-active-tab'] as string) || 'general'}
@@ -160,42 +115,36 @@ const EditForm = ({ match, history, location }: Props) => {
               {
                 key: 'mehfil-details',
                 label: 'Mehfil Details',
-                children: mehfilDetails,
-              },
-            ]
-          : []),
-        // Features, and the users of what they switch on, are for mehfils only.
-        ...(type === OrgLocationTypes.MEHFIL
-          ? [
-              {
-                key: 'features',
-                label: 'Features',
                 children: (
-                  <LocationFeatures
-                    locationId={_id}
-                    enabledFeatures={(orgLocation.features ?? []).filter(
-                      (feature): feature is string => feature != null
-                    )}
+                  <LocationMehfilDetails
+                    key={_id}
+                    orgLocation={orgLocation}
+                    onCancel={() => history.push(paths.orgLocationsPath)}
                   />
                 ),
               },
             ]
           : []),
-        ...(type === OrgLocationTypes.MEHFIL &&
-        orgLocation.features?.includes(OrgLocationFeatureKeys.DUTIES_ATTENDANCE)
+        {
+          key: 'committees',
+          label: `Committees (${orgLocation.committees?.length ?? 0})`,
+          children: <LocationCommittees locationId={_id} />,
+        },
+        // The mehfil's users, and who may do what on it, for its features too.
+        ...(type === OrgLocationTypes.MEHFIL
           ? [
               {
-                key: 'duties-attendance-users',
-                label: 'Duties & Attendance Users',
-                children: <LocationDutiesAttendanceUsers locationId={_id} />,
+                key: 'users',
+                label: 'Users',
+                children: <LocationUsers locationId={_id} />,
+              },
+              {
+                key: 'permissions',
+                label: 'Permissions',
+                children: <LocationFeaturePermissions locationId={_id} />,
               },
             ]
           : []),
-        {
-          key: 'committees',
-          label: 'Committees',
-          children: <LocationCommittees locationId={_id} />,
-        },
         {
           key: 'observers',
           label: `Observers (${orgLocation.observerKarkunIds?.length ?? 0})`,

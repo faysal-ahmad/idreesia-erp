@@ -1,9 +1,7 @@
 import SimpleSchema from 'simpl-schema';
 
-import {
-  OrgLocationFeatures,
-  OrgLocationTypeValues,
-} from 'meteor/idreesia-common/constants/organization';
+import { ATTENDANCE_GEOFENCE_METERS } from 'meteor/idreesia-common/constants/duties-attendance';
+import { OrgLocationTypeValues } from 'meteor/idreesia-common/constants/organization';
 import { identifiable, timestamps } from '../common';
 
 const MehfilDetailsSchema = new SimpleSchema({
@@ -13,6 +11,13 @@ const MehfilDetailsSchema = new SimpleSchema({
   lcdAvailability: { type: Boolean, optional: true },
   tabAvailability: { type: Boolean, optional: true },
   otherMehfilDetails: { type: String, optional: true },
+  latitude: { type: Number, optional: true },
+  longitude: { type: Number, optional: true },
+  attendanceGeofenceMeters: {
+    type: SimpleSchema.Integer,
+    optional: true,
+    allowedValues: [...ATTENDANCE_GEOFENCE_METERS],
+  },
 });
 
 export default new SimpleSchema({
@@ -45,20 +50,6 @@ export default new SimpleSchema({
   },
   'observerKarkunIds.$': {
     type: String,
-  },
-  // Features enabled on this location (mehfils only), and the workspace each
-  // feature keeps its data in.
-  features: {
-    type: Array,
-    optional: true,
-  },
-  'features.$': {
-    type: String,
-    allowedValues: OrgLocationFeatures.map(feature => feature.key),
-  },
-  dutiesAttendanceWorkspaceId: {
-    type: String,
-    optional: true,
   },
 })
   .extend(identifiable)

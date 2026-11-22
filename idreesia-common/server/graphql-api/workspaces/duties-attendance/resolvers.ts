@@ -1,14 +1,18 @@
+import { DutiesAttendancePermissions } from 'meteor/idreesia-common/constants/duties-attendance';
 import { getDataLoaders } from 'meteor/idreesia-common/server/data-loaders';
 import {
   DutiesAttendanceDuties,
   type DutiesAttendanceDutyDocument,
   type DutyMember,
 } from 'meteor/idreesia-common/server/collections/duties-attendance';
+import { MehfilTemplateDuties } from 'meteor/idreesia-common/server/collections/admin';
 import {
   addDutyMember,
-  createDuty,
+  addDuties,
   getAttendanceSheet,
   getDutyPlanDays,
+  getDutyNames,
+  listMyDuties,
   listMyDutiesAttendanceLocations,
   searchWorkspaceKarkuns,
   removeDuty,
@@ -39,6 +43,21 @@ interface DutyArgs {
 export default {
   DaDutyType: {
     isActive: (duty: DutiesAttendanceDutyDocument) => duty.isActive !== false,
+    // Name and description belong to the mehfil template duty.
+    name: async (
+      duty: DutiesAttendanceDutyDocument,
+      args: unknown,
+      { loaders }: Pick<Context, 'loaders'>
+    ) =>
+      (await loaders.admin.mehfilTemplateDuties.load(duty.mehfilDutyId))
+        ?.name ?? '',
+    description: async (
+      duty: DutiesAttendanceDutyDocument,
+      args: unknown,
+      { loaders }: Pick<Context, 'loaders'>
+    ) =>
+      (await loaders.admin.mehfilTemplateDuties.load(duty.mehfilDutyId))
+        ?.description,
   },
 
   DaDutyMemberType: {
@@ -56,6 +75,12 @@ export default {
       { user }: Context
     ) => listMyDutiesAttendanceLocations(user),
 
+    myDuties: async (
+      obj: unknown,
+      { date }: { date: string },
+      { user }: Context
+    ) => listMyDuties(user, date),
+
     workspaceDaAccess: async (
       obj: unknown,
       { locationId }: { locationId: string },
@@ -70,11 +95,24 @@ export default {
       { locationId }: { locationId: string },
       context: Context
     ) => {
-      const { workspaceId } = getDutiesAttendanceAccess(context, locationId);
-      return DutiesAttendanceDuties.find(
-        { workspaceId },
-        { sort: { name: 1 } }
-      ).fetchAsync();
+      getDutiesAttendanceAccess(context, locationId);
+      const duties = await DutiesAttendanceDuties.find({
+        locationId,
+      }).fetchAsync();
+      // Sorted by the template duty's name.
+      const names = await getDutyNames(duties);
+      return duties.sort((left, right) =>
+        (names.get(left._id) ?? '').localeCompare(names.get(right._id) ?? '')
+      );
+    },
+
+    workspaceDaMehfilDuties: async (
+      obj: unknown,
+      { locationId }: { locationId: string },
+      context: Context
+    ) => {
+      getDutiesAttendanceAccess(context, locationId);
+      return MehfilTemplateDuties.find({}, { sort: { name: 1 } }).fetchAsync();
     },
 
     workspaceDaDutyById: async (
@@ -82,8 +120,8 @@ export default {
       { locationId, dutyId }: DutyArgs,
       context: Context
     ) => {
-      const { workspaceId } = getDutiesAttendanceAccess(context, locationId);
-      return DutiesAttendanceDuties.findOneAsync({ _id: dutyId, workspaceId });
+      getDutiesAttendanceAccess(context, locationId);
+      return DutiesAttendanceDuties.findOneAsync({ _id: dutyId, locationId });
     },
 
     workspaceDaPlanDays: async (
@@ -95,8 +133,8 @@ export default {
       }: DutyArgs & { startDate: string },
       context: Context
     ) => {
-      const { workspaceId } = getDutiesAttendanceAccess(context, locationId);
-      return getDutyPlanDays({ workspaceId, dutyId, startDate });
+      getDutiesAttendanceAccess(context, locationId);
+      return getDutyPlanDays({ locationId, dutyId, startDate });
     },
 
     workspaceDaKarkunSearch: async (
@@ -115,7 +153,7 @@ export default {
       context: Context
     ) => {
       getDutiesAttendanceAccess(context, locationId);
-      return searchWorkspaceKarkuns(params);
+      return searchWorkspaceKarkuns({ ...params, locationId });
     },
 
     workspaceDaAttendanceSheet: async (
@@ -127,26 +165,22 @@ export default {
       }: { locationId: string; month: string; dutyId?: string | null },
       context: Context
     ) => {
-      const { workspaceId } = getDutiesAttendanceAccess(context, locationId);
-      return getAttendanceSheet({ workspaceId, month, dutyId });
+      getDutiesAttendanceAccess(context, locationId);
+      return getAttendanceSheet({ locationId, month, dutyId });
     },
   },
 
   Mutation: {
-    workspaceDaCreateDuty: async (
+    workspaceDaAddDuties: async (
       obj: unknown,
       {
         locationId,
-        name,
-        description,
-      }: { locationId: string; name: string; description?: string },
+        mehfilDutyIds,
+      }: { locationId: string; mehfilDutyIds: string[] },
       context: Context
     ) => {
-      const { workspaceId, userId } = getDutiesAttendanceAccess(
-        context,
-        locationId
-      );
-      return createDuty(workspaceId, { name, description }, userId);
+      const { userId } = getDutiesAttendanceAccess(context, locationId);
+      return addDuties(locationId, mehfilDutyIds, userId);
     },
 
     workspaceDaUpdateDuty: async (
@@ -156,17 +190,12 @@ export default {
         dutyId,
         ...changes
       }: DutyArgs & {
-        name?: string;
-        description?: string | null;
         isActive?: boolean;
       },
       context: Context
     ) => {
-      const { workspaceId, userId } = getDutiesAttendanceAccess(
-        context,
-        locationId
-      );
-      return updateDuty(workspaceId, dutyId, changes, userId);
+      const { userId } = getDutiesAttendanceAccess(context, locationId);
+      return updateDuty(locationId, dutyId, changes, userId);
     },
 
     workspaceDaRemoveDuty: async (
@@ -174,11 +203,8 @@ export default {
       { locationId, dutyId }: DutyArgs,
       context: Context
     ) => {
-      const { workspaceId, userId } = getDutiesAttendanceAccess(
-        context,
-        locationId
-      );
-      await removeDuty(workspaceId, dutyId, userId);
+      const { userId } = getDutiesAttendanceAccess(context, locationId);
+      await removeDuty(locationId, dutyId, userId);
       return true;
     },
 
@@ -191,15 +217,13 @@ export default {
       }: DutyArgs & {
         karkunId: string;
         isCoordinator?: boolean;
+        canMarkOwnAttendance?: boolean;
         daysOfWeek?: string[];
       },
       context: Context
     ) => {
-      const { workspaceId, userId } = getDutiesAttendanceAccess(
-        context,
-        locationId
-      );
-      return addDutyMember(workspaceId, dutyId, member, userId);
+      const { userId } = getDutiesAttendanceAccess(context, locationId);
+      return addDutyMember(locationId, dutyId, member, userId);
     },
 
     workspaceDaUpdateDutyMember: async (
@@ -211,15 +235,13 @@ export default {
       }: DutyArgs & {
         karkunId: string;
         isCoordinator?: boolean;
+        canMarkOwnAttendance?: boolean;
         daysOfWeek?: string[];
       },
       context: Context
     ) => {
-      const { workspaceId, userId } = getDutiesAttendanceAccess(
-        context,
-        locationId
-      );
-      return updateDutyMember(workspaceId, dutyId, member, userId);
+      const { userId } = getDutiesAttendanceAccess(context, locationId);
+      return updateDutyMember(locationId, dutyId, member, userId);
     },
 
     workspaceDaRemoveDutyMember: async (
@@ -227,11 +249,8 @@ export default {
       { locationId, dutyId, karkunId }: DutyArgs & { karkunId: string },
       context: Context
     ) => {
-      const { workspaceId, userId } = getDutiesAttendanceAccess(
-        context,
-        locationId
-      );
-      return removeDutyMember(workspaceId, dutyId, karkunId, userId);
+      const { userId } = getDutiesAttendanceAccess(context, locationId);
+      return removeDutyMember(locationId, dutyId, karkunId, userId);
     },
 
     workspaceDaSetDayOverride: async (
@@ -249,12 +268,9 @@ export default {
       },
       context: Context
     ) => {
-      const { workspaceId, userId } = getDutiesAttendanceAccess(
-        context,
-        locationId
-      );
+      const { userId } = getDutiesAttendanceAccess(context, locationId);
       return setDutyDayOverride({
-        workspaceId,
+        locationId,
         dutyId,
         date,
         addedKarkunIds,
@@ -271,20 +287,34 @@ export default {
         date,
         karkunId,
         status,
-      }: DutyArgs & { date: string; karkunId: string; status?: string },
+        source,
+        geo,
+      }: DutyArgs & {
+        date: string;
+        karkunId: string;
+        status?: string;
+        source?: string;
+        geo?: { latitude: number; longitude: number; accuracy?: number };
+      },
       context: Context
     ) => {
-      const { workspaceId, userId } = getDutiesAttendanceAccess(
+      const { userId, permissions } = getDutiesAttendanceAccess(
         context,
         locationId
       );
       return setDutyAttendance({
-        workspaceId,
+        locationId,
         dutyId,
         date,
         karkunId,
         status,
+        source,
+        geo,
         userId,
+        canMarkAnyone: permissions.includes(
+          DutiesAttendancePermissions.MARK_ATTENDANCE
+        ),
+        callerKarkunId: context.user?.personId,
       });
     },
   },

@@ -13,6 +13,7 @@ export interface MappedUser extends Record<string, any> {
   groups: string[];
   locked?: boolean;
   isSuperAdmin: boolean;
+  isServiceAccount: boolean;
 }
 
 /** The fields of an ERP user that the API exposes. */
@@ -32,6 +33,7 @@ export const mapUser = (user: AppUser): MappedUser => ({
   chatUserId: user.chatUserId,
   twoFactorEnabled: isTwoFactorEnabled(user),
   isSuperAdmin: user.isSuperAdmin === true,
+  isServiceAccount: user.isServiceAccount === true,
 });
 
 export async function findOneUser(userId: string | null): Promise<MappedUser> {

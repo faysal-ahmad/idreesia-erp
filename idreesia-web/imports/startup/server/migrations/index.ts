@@ -73,6 +73,8 @@ import './69-create-org-locations';
 import './70-assign-committees-to-root-location';
 import './71-create-duties-attendance-indexes';
 import './72-create-city-location-mapping-indexes';
+import './73-location-is-the-duties-attendance-workspace';
+import './74-attendance-geofence-meters';
 
 Migrations.config({
   log: true,

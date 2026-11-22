@@ -107,6 +107,18 @@ export default class SubModulePaths {
     return `${ModulePaths.workspaces}/locations/${locationId}`;
   }
 
+  static locationMehfilDetailsPath(locationId = ':locationId') {
+    return `${SubModulePaths.locationPath(locationId)}/mehfil-details`;
+  }
+
+  static locationMehfilKarkunsPath(locationId = ':locationId') {
+    return `${SubModulePaths.locationPath(locationId)}/mehfil-karkuns`;
+  }
+
+  static locationMehfilPermissionsPath(locationId = ':locationId') {
+    return `${SubModulePaths.locationPath(locationId)}/mehfil-permissions`;
+  }
+
   static locationDutiesAttendancePath(locationId = ':locationId') {
     return `${SubModulePaths.locationPath(locationId)}/duties-attendance`;
   }

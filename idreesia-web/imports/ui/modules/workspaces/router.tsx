@@ -18,6 +18,9 @@ import {
   DutiesPage,
   PlanningPage,
 } from './duties-attendance';
+import { MehfilDetailsPage } from './mehfil-details';
+import { MehfilKarkunsPage } from './mehfil-karkuns';
+import { MehfilPermissionsPage } from './mehfil-permissions';
 import Landing from './landing';
 import { useWorkspaceBreadcrumbs } from './use-workspace-breadcrumbs';
 
@@ -55,6 +58,18 @@ const Router = () => {
     <Route
       path={paths.locationAttendanceSheetPath()}
       component={AttendanceSheetPage}
+    />
+    <Route
+      path={paths.locationMehfilDetailsPath()}
+      component={MehfilDetailsPage}
+    />
+    <Route
+      path={paths.locationMehfilKarkunsPath()}
+      component={MehfilKarkunsPage}
+    />
+    <Route
+      path={paths.locationMehfilPermissionsPath()}
+      component={MehfilPermissionsPage}
     />
     <Route
       path={paths.locationDutiesAttendancePath()}

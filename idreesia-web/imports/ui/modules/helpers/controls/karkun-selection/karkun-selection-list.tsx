@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Pagination, Space, Table } from 'antd';
-import { UserAddOutlined } from '@ant-design/icons';
+import { LinkOutlined, UserAddOutlined } from '@ant-design/icons';
 
 import ListFilter, {
   KarkunsFilterChips,
@@ -37,12 +37,19 @@ interface Props {
   /** Karkuns already selected/added; their row shows a disabled button. */
   selectedIds?: string[];
   selectedLabel?: string;
+  /** The text of the row button that adds a karkun. */
+  addLabel?: string;
+  /** Shows the S/O (parent name) column. Defaults to true. */
+  showParentName?: boolean;
   /** Karkun whose add is in flight; its button shows a spinner. */
   addingId?: string | null;
   /** Partial filter/paging updates, same shape the HR karkuns list uses. */
   setPageParams(params: KarkunSelectionPageParams): void;
   refreshData(): Promise<unknown>;
   onAdd(karkun: KarkunSelectionItem): void;
+  /** When set, a second button below the add button, e.g. "Link User". */
+  linkLabel?: string;
+  onLink?(karkun: KarkunSelectionItem): void;
 }
 
 const TABLE_HEADER_ROW_HEIGHT = 55;
@@ -64,10 +71,14 @@ const KarkunSelectionList = ({
   filter,
   selectedIds = [],
   selectedLabel = 'Member',
+  addLabel = 'Add',
+  showParentName = true,
   addingId,
   setPageParams,
   refreshData,
   onAdd,
+  linkLabel = 'Link',
+  onLink,
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(360);
@@ -141,11 +152,15 @@ const KarkunSelectionList = ({
         />
       ),
     },
-    {
-      title: 'S/O',
-      dataIndex: 'parentName',
-      key: 'parentName',
-    },
+    ...(showParentName
+      ? [
+          {
+            title: 'S/O',
+            dataIndex: 'parentName',
+            key: 'parentName',
+          },
+        ]
+      : []),
     {
       title: 'CNIC Number',
       dataIndex: 'cnicNumber',
@@ -160,7 +175,7 @@ const KarkunSelectionList = ({
     },
     {
       key: 'action',
-      width: 110,
+      width: 140,
       render: (_text: unknown, record: KarkunSelectionItem) => {
         if (selectedIds.includes(record._id)) {
           return (
@@ -169,7 +184,7 @@ const KarkunSelectionList = ({
             </Button>
           );
         }
-        return (
+        const addButton = (
           <Button
             size="small"
             type="primary"
@@ -177,8 +192,21 @@ const KarkunSelectionList = ({
             loading={addingId === record._id}
             onClick={() => onAdd(record)}
           >
-            Add
+            {addLabel}
           </Button>
+        );
+        if (!onLink) return addButton;
+        return (
+          <Space direction="vertical" size={4}>
+            {addButton}
+            <Button
+              size="small"
+              icon={<LinkOutlined />}
+              onClick={() => onLink(record)}
+            >
+              {linkLabel}
+            </Button>
+          </Space>
         );
       },
     },

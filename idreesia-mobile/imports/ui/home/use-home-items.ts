@@ -3,10 +3,13 @@ import { useApolloClient } from '@apollo/client/react';
 
 import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import type {
+  MobileDaMyDutiesQuery,
   MobileWorkspaceMeetingActionItemsQuery,
   MobileWorkspaceMeetingsQuery,
   MobileWorkspacePollsQuery,
 } from 'meteor/idreesia-common/types/client-operations';
+import { MOBILE_DA_MY_DUTIES } from '../workspaces/duties-attendance/gql';
+import { todayInKarachi } from '../workspaces/duties-attendance/dates';
 import { MOBILE_MY_COMMITTEES } from '../workspaces/gql';
 import { MOBILE_WORKSPACE_MEETING_ACTION_ITEMS, MOBILE_WORKSPACE_MEETINGS } from '../workspaces/meetings/gql';
 import { MOBILE_WORKSPACE_POLLS } from '../workspaces/polls/gql';
@@ -19,6 +22,7 @@ type ActionItem = NonNullable<
 >[number];
 type Poll = NonNullable<NonNullable<MobileWorkspacePollsQuery['workspacePolls']>['data']>[number];
 
+export type HomeDuty = NonNullable<NonNullable<MobileDaMyDutiesQuery['myDuties']>[number]>;
 export type HomeMeeting = NonNullable<Meeting> & { _id: string; committeeId: string; committeeName: string };
 export type HomeActionItem = NonNullable<ActionItem> & { _id: string; meetingId: string; committeeId: string };
 export type HomePoll = NonNullable<Poll> & { _id: string; committeeId: string; committeeName: string };
@@ -37,12 +41,24 @@ export const useHomeItems = () => {
     meetings: HomeMeeting[];
     polls: HomePoll[];
     actionItems: HomeActionItem[];
-  }>({ loading: true, error: null, meetings: [], polls: [], actionItems: [] });
+    duties: HomeDuty[];
+  }>({ loading: true, error: null, meetings: [], polls: [], actionItems: [], duties: [] });
 
   // Reads from the server, or (cache-only) from what was loaded before, so
   // the Home tab still shows something when the device is offline.
   const fetchItems = useCallback(
     async (fetchPolicy: 'network-only' | 'cache-only') => {
+      // Today's duties, in every location the user can open. Kept apart from
+      // the workspaces so a failure here doesn't hide the rest of the page.
+      const dutiesPromise = client
+        .query({
+          query: MOBILE_DA_MY_DUTIES,
+          variables: { date: todayInKarachi() },
+          fetchPolicy,
+        })
+        .then(result => (result.data?.myDuties ?? []).filter((d): d is HomeDuty => d != null))
+        .catch(() => [] as HomeDuty[]);
+
       const { data } = await client.query({
         query: MOBILE_MY_COMMITTEES,
         fetchPolicy,
@@ -116,7 +132,8 @@ export const useHomeItems = () => {
       const actionItems = perCommittee
         .flatMap(item => item.actionItems)
         .sort((a, b) => Number(a.meetingEndsAt) - Number(b.meetingEndsAt));
-      return { meetings, polls, actionItems };
+      const duties = await dutiesPromise;
+      return { meetings, polls, actionItems, duties };
     },
     [client],
   );

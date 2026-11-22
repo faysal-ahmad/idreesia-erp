@@ -33,6 +33,22 @@ export {
   type OrgLocationValues,
 } from './org-locations';
 export {
+  listOrgLocationKarkuns,
+  type OrgLocationKarkunsParams,
+} from './org-location-karkuns';
+export {
+  linkOrgLocationUser,
+  listLinkableUsers,
+  listOrgLocationUsers,
+  type LinkableUsersParams,
+  type OrgLocationUsersParams,
+} from './org-location-users';
+export {
+  createOrgLocationUserChatAccount,
+  resetOrgLocationUserPassword,
+  setOrgLocationUserLocked,
+} from './org-location-user-actions';
+export {
   getOrgLocationObserverStats,
   type OrgLocationObserverStat,
 } from './org-location-observer-stats';
@@ -41,12 +57,15 @@ export {
   type SyncOrgLocationObserversResult,
 } from './org-location-observers-sync';
 export {
-  addOrgLocationDutiesAttendanceUser,
-  disableOrgLocationFeature,
-  enableOrgLocationFeature,
-  getLocationDutiesAttendanceWorkspaceId,
-  removeOrgLocationDutiesAttendanceUser,
-  updateOrgLocationDutiesAttendanceUserPermissions,
+  addOrgLocationFeatureUser,
+  hasOrgLocationFeatures,
+  ensureOrgLocationUserIndexes,
+  getOrgLocationUserPermissions,
+  hasOrgLocationPermission,
+  listOrgLocationFeaturePermissions,
+  removeOrgLocationFeatureUser,
+  type OrgLocationFeaturePermissions,
+  type OrgLocationFeaturePermissionUsers,
 } from './org-location-features';
 export {
   pagedFreeFormCities,
@@ -54,3 +73,11 @@ export {
   type FreeFormCitiesPage,
   type FreeFormCityValue,
 } from './city-location-mappings';
+export {
+  createMehfilDuty,
+  updateMehfilDuty,
+  removeMehfilDuty,
+  requireMehfilDuty,
+  type CreateMehfilDutyInput,
+  type UpdateMehfilDutyInput,
+} from './mehfil-template-duties';

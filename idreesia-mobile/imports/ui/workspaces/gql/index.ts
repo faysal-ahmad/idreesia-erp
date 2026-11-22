@@ -1,2 +1,8 @@
 export { MOBILE_MY_COMMITTEES } from './my-committees';
 export { MOBILE_MY_NOTIFICATION_COUNTS } from './my-notification-counts';
+export {
+  MOBILE_MY_COMMITTEE_LOCATIONS,
+  MOBILE_MY_DUTIES_ATTENDANCE_LOCATIONS,
+  MOBILE_MY_MEHFIL_DETAILS_LOCATIONS,
+  MOBILE_MY_MEHFIL_PERMISSIONS_LOCATIONS,
+} from './my-locations';

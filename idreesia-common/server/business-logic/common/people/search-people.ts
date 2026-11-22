@@ -73,6 +73,7 @@ export async function buildPeopleSearchPipeline(
     cityLocationId,
     cityLocationIds,
     mehfilLocationId,
+    locationIds,
     region,
     // employee related fields
     jobId,
@@ -326,6 +327,18 @@ export async function buildPeopleSearchPipeline(
       pipeline.push({
         $match: {
           'karkunData.mehfilLocationId': { $eq: mehfilLocationId },
+        },
+      });
+    }
+
+    // Karkuns of any of these locations, by their mehfil or their city.
+    if (locationIds) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { 'karkunData.mehfilLocationId': { $in: locationIds } },
+            { 'karkunData.cityLocationId': { $in: locationIds } },
+          ],
         },
       });
     }

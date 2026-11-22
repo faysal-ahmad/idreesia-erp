@@ -9,6 +9,13 @@ export interface OrgLocationMehfilDetails {
   lcdAvailability?: boolean;
   tabAvailability?: boolean;
   otherMehfilDetails?: string;
+  latitude?: number;
+  longitude?: number;
+  /**
+   * Attendance must be marked within this many metres of the location (50,
+   * 100 or 200). Missing: no geofence. Only with a location set.
+   */
+  attendanceGeofenceMeters?: number;
 }
 
 export interface OrgLocationDocument {
@@ -19,8 +26,6 @@ export interface OrgLocationDocument {
   allParentIds?: string[];
   mehfilDetails?: OrgLocationMehfilDetails;
   observerKarkunIds?: string[];
-  features?: string[];
-  dutiesAttendanceWorkspaceId?: string;
   createdAt?: Date;
   createdBy?: string;
   updatedAt?: Date;

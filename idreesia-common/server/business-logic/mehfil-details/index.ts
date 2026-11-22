@@ -177,7 +177,9 @@ export async function updateMehfilDetails(
     ? location.mehfilDetails?.attendanceGeofenceMeters
     : undefined;
 
-  const { attendanceGeofenceMeters: _ignored, ...callerDetails } = mehfilDetails;
+  // Whatever geofence the caller sent is dropped.
+  const callerDetails = { ...mehfilDetails };
+  delete callerDetails.attendanceGeofenceMeters;
 
   await OrgLocations.updateAsync(
     { _id: locationId },

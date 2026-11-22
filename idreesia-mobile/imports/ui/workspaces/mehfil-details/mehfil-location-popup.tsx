@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Popup, TextArea } from 'antd-mobile';
 
 import { showError, showInfo, showWarning } from '../../layout';
+import { getCurrentLocation } from '../../utilities';
 import { geocodeAddress } from './geocode-address';
 import { MehfilDetailsMap } from './mehfil-details-map';
 
@@ -30,6 +31,7 @@ const PopupBody = ({ address, latitude, longitude, onOk, onClose }: Omit<Props, 
   const [pin, setPin] = useState<Pin>({ latitude: latitude ?? null, longitude: longitude ?? null });
   const [focusToken, setFocusToken] = useState(0);
   const [locating, setLocating] = useState(false);
+  const [locatingMe, setLocatingMe] = useState(false);
 
   const locateFromAddress = async () => {
     const text = searchAddress.trim();
@@ -53,6 +55,20 @@ const PopupBody = ({ address, latitude, longitude, onOk, onClose }: Omit<Props, 
     }
   };
 
+  // Puts the pin where the user is standing; they can still drag it to adjust.
+  const locateFromDevice = async () => {
+    setLocatingMe(true);
+    try {
+      const { latitude: lat, longitude: lng } = await getCurrentLocation();
+      setPin({ latitude: lat, longitude: lng });
+      setFocusToken(token => token + 1);
+    } catch (failure) {
+      showError(failure, 'Could not find your location.');
+    } finally {
+      setLocatingMe(false);
+    }
+  };
+
   return (
     <>
       <div className="da-popup-header">
@@ -71,6 +87,9 @@ const PopupBody = ({ address, latitude, longitude, onOk, onClose }: Omit<Props, 
         <Button block disabled={!searchAddress.trim()} loading={locating} onClick={locateFromAddress}>
           Find from address
         </Button>
+        <Button block loading={locatingMe} onClick={locateFromDevice}>
+          Use my current location
+        </Button>
         <MehfilDetailsMap
           focusToken={focusToken}
           latitude={pin.latitude}
@@ -87,7 +106,7 @@ const PopupBody = ({ address, latitude, longitude, onOk, onClose }: Omit<Props, 
             onClose();
           }}
         >
-          Use this location
+          Save location
         </Button>
       </div>
     </>
@@ -95,8 +114,9 @@ const PopupBody = ({ address, latitude, longitude, onOk, onClose }: Omit<Props, 
 };
 
 /**
- * Sets the mehfil's location: look an address up or place the pin by hand.
- * Nothing is stored here: "Use this location" only sets it in the form.
+ * Sets the mehfil's location: look an address up, use the device's current
+ * location, or place the pin by hand.
+ * Nothing is stored here: "Save location" only sets it in the form.
  */
 export const MehfilLocationPopup = ({ visible, onClose, ...bodyProps }: Props) => (
   <Popup destroyOnClose bodyClassName="da-popup mehfil-location-popup" position="bottom" visible={visible}>

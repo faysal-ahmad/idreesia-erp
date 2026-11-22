@@ -108,7 +108,8 @@ extend type Query {
   orgLocationById(_id: String!): OrgLocationType
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
 
-  # The karkuns of the mehfil.
+  # The karkuns of the mehfil, or with includeChildLocations of the location
+  # and every location below it.
   pagedOrgLocationKarkuns(
     locationId: String!
     name: String
@@ -116,6 +117,7 @@ extend type Query {
     phoneNumber: String
     # Only the karkuns that have a user account.
     withUserAccount: Boolean
+    includeChildLocations: Boolean
     pageIndex: String
     pageSize: String
   ): PagedOrgLocationKarkunType!

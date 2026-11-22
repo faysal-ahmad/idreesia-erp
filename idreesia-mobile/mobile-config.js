@@ -108,15 +108,16 @@ App.appendToConfig(`
   </edit-config>
 `);
 
-// Location (attendance marked by the karkun themselves, imports/ui/apps/my-data):
+// Location (attendance marked by the karkun themselves, imports/ui/apps/my-data:
 // where they are when they mark it is kept with the attendance, and checked
-// against the mehfil's geofence. It uses the WebView's own navigator.geolocation,
+// against the mehfil's geofence; and the mehfil's location, set to where the
+// user is, in imports/ui/workspaces/mehfil-details). It uses the WebView's own navigator.geolocation,
 // so no plugin is needed: iOS needs the usage description, and on Android
 // cordova-android asks for the location permission at the first request once
 // the manifest declares it.
 App.appendToConfig(`
   <edit-config target="NSLocationWhenInUseUsageDescription" file="*-Info.plist" mode="merge">
-    <string>Eastern Breeze ERP uses your location when you mark your own attendance, to record where you were.</string>
+    <string>Eastern Breeze ERP uses your location when you mark your own attendance, to record where you were, and when you set a mehfil's location to where you are.</string>
   </edit-config>
   <platform name="android">
     <config-file target="AndroidManifest.xml" parent="/manifest">

@@ -97,6 +97,7 @@ export default {
         cnicNumber?: string | null;
         phoneNumber?: string | null;
         withUserAccount?: boolean | null;
+        includeChildLocations?: boolean | null;
         pageIndex?: string | null;
         pageSize?: string | null;
       }

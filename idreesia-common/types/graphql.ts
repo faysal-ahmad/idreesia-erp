@@ -4042,6 +4042,7 @@ export type QueryPagedMehfilKarkunsArgs = {
 
 export type QueryPagedOrgLocationKarkunsArgs = {
   cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  includeChildLocations?: InputMaybe<Scalars['Boolean']['input']>;
   locationId: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;

@@ -1866,12 +1866,17 @@ export type DistinctRegionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type DistinctRegionsQuery = { distinctRegions: Array<string | null> | null };
 
-export type HrCommitteeKarkunSearchQueryVariables = Exact<{
-  filter?: Types.KarkunFilter | null | undefined;
+export type CommitteeLocationKarkunsQueryVariables = Exact<{
+  locationId: string;
+  name?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
 }>;
 
 
-export type HrCommitteeKarkunSearchQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null> | null } | null };
+export type CommitteeLocationKarkunsQuery = { pagedOrgLocationKarkuns: { totalResults: number, data: Array<{ _id: string, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null }> } };
 
 export type AddCommitteeMemberMutationVariables = Exact<{
   committeeId: string;

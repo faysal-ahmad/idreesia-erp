@@ -478,12 +478,10 @@ const Sidebar = ({ history }: SidebarProps) => {
   // The location the URL names. The URL is the source of truth: the selector
   // follows it, and choosing a location navigates to it.
   const routeLocationSegment = ROUTE_LOCATION_REGEX.exec(pathname)?.[1];
-  const routeLocationId =
-    routeLocationSegment === undefined
-      ? undefined
-      : routeLocationSegment === NO_LOCATION_SEGMENT
-        ? NO_LOCATION
-        : routeLocationSegment;
+  let routeLocationId: string | undefined = routeLocationSegment;
+  if (routeLocationSegment === NO_LOCATION_SEGMENT) {
+    routeLocationId = NO_LOCATION;
+  }
 
   useEffect(() => {
     if (routeLocationId !== undefined) {

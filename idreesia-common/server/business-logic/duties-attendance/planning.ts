@@ -123,7 +123,7 @@ function overrideIds(override?: DutiesAttendanceDayOverrideDocument) {
 }
 
 /** Who is on duty on a day: available members, less absent, plus added. */
-function composeKarkuns(args: {
+export function composeKarkuns(args: {
   duty: DutiesAttendanceDutyDocument;
   weekday: DayOfWeek;
   override?: DutiesAttendanceDayOverrideDocument;

@@ -5,6 +5,7 @@ import {
   OrgLocationUsers,
   Users,
 } from 'meteor/idreesia-common/server/collections/admin';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 import {
   addMehfilPermissionUser,
@@ -14,7 +15,6 @@ import {
   removeMehfilPermissionUser,
   searchMehfilPermissionsKarkuns,
 } from './index';
-import { People } from 'meteor/idreesia-common/server/collections/common';
 
 let cityId: string;
 let mehfilId: string;

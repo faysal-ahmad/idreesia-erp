@@ -96,6 +96,7 @@ export type ResolversTypes = ResolversObject<{
   DaDutyType: ResolverTypeWrapper<Types.DaDutyType>;
   DaGeoLocationInput: Types.DaGeoLocationInput;
   DaMehfilDutyType: ResolverTypeWrapper<Types.DaMehfilDutyType>;
+  DaMyDutyType: ResolverTypeWrapper<Types.DaMyDutyType>;
   DaMyLocationType: ResolverTypeWrapper<Types.DaMyLocationType>;
   DaPlanDayType: ResolverTypeWrapper<Types.DaPlanDayType>;
   DaPlanDaysType: ResolverTypeWrapper<Types.DaPlanDaysType>;
@@ -357,6 +358,7 @@ export type ResolversParentTypes = ResolversObject<{
   DaDutyType: Types.DaDutyType;
   DaGeoLocationInput: Types.DaGeoLocationInput;
   DaMehfilDutyType: Types.DaMehfilDutyType;
+  DaMyDutyType: Types.DaMyDutyType;
   DaMyLocationType: Types.DaMyLocationType;
   DaPlanDayType: Types.DaPlanDayType;
   DaPlanDaysType: Types.DaPlanDaysType;
@@ -799,6 +801,15 @@ export type DaMehfilDutyTypeResolvers<ContextType = any, ParentType extends Reso
   _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+}>;
+
+export type DaMyDutyTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DaMyDutyType'] = ResolversParentTypes['DaMyDutyType']> = ResolversObject<{
+  attendance?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  date?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  dutyId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  dutyName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  locationId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  locationName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type DaMyLocationTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DaMyLocationType'] = ResolversParentTypes['DaMyLocationType']> = ResolversObject<{
@@ -2113,6 +2124,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   mehfilKarkunsByMehfilId?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['MehfilKarkunType']>>>, ParentType, ContextType, RequireFields<Types.QueryMehfilKarkunsByMehfilIdArgs, 'mehfilId'>>;
   myCommitteeLocations?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceLocationType']>>>, ParentType, ContextType>;
   myCommittees?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceCommitteeType']>>>, ParentType, ContextType>;
+  myDuties?: Resolver<Array<Types.Maybe<ResolversTypes['DaMyDutyType']>>, ParentType, ContextType, RequireFields<Types.QueryMyDutiesArgs, 'date'>>;
   myDutiesAttendanceLocations?: Resolver<Array<Types.Maybe<ResolversTypes['DaMyLocationType']>>, ParentType, ContextType>;
   myMehfilDetailsLocations?: Resolver<Array<Types.Maybe<ResolversTypes['MyMehfilDetailsLocationType']>>, ParentType, ContextType>;
   myMehfilKarkunsLocations?: Resolver<Array<Types.Maybe<ResolversTypes['MyMehfilKarkunsLocationType']>>, ParentType, ContextType>;
@@ -3152,6 +3164,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   DaDutyMemberType?: DaDutyMemberTypeResolvers<ContextType>;
   DaDutyType?: DaDutyTypeResolvers<ContextType>;
   DaMehfilDutyType?: DaMehfilDutyTypeResolvers<ContextType>;
+  DaMyDutyType?: DaMyDutyTypeResolvers<ContextType>;
   DaMyLocationType?: DaMyLocationTypeResolvers<ContextType>;
   DaPlanDayType?: DaPlanDayTypeResolvers<ContextType>;
   DaPlanDaysType?: DaPlanDaysTypeResolvers<ContextType>;

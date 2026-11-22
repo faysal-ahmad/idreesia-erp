@@ -249,6 +249,13 @@ const GeneralInfo = ({ userId, history }: Props) => {
     createChatAccountReason = 'Set and save a user name and display name first';
   }
 
+  let resetPasswordReason: string | undefined;
+  if (!isSuperAdminCaller) {
+    resetPasswordReason = SUPER_ADMIN_ONLY;
+  } else if (userById.isServiceAccount) {
+    resetPasswordReason = 'A service account has no password';
+  }
+
   const settingsItems: NonNullable<MenuProps['items']> = [
     commandItem(
       'create-chat-account',
@@ -260,11 +267,7 @@ const GeneralInfo = ({ userId, history }: Props) => {
     commandItem(
       'reset-password',
       'Reset Password',
-      !isSuperAdminCaller
-        ? SUPER_ADMIN_ONLY
-        : userById.isServiceAccount
-          ? 'A service account has no password'
-          : undefined,
+      resetPasswordReason,
       () => setResetPasswordOpen(true)
     ),
     userById.isSuperAdmin

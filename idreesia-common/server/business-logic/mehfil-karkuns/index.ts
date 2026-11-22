@@ -127,18 +127,22 @@ export async function listMyMehfilKarkunsLocations(
   const toItem = (
     location: (typeof locations)[number],
     hasWorkspace: boolean
-  ): MyMehfilKarkunsLocation => ({
-    locationId: location._id as string,
-    name: location.name,
-    type: location.type,
-    parentId: location.parentId ?? null,
-    hasWorkspace,
-    permissions: !hasWorkspace
-      ? []
-      : superAdmin
+  ): MyMehfilKarkunsLocation => {
+    let permissions: typeof MehfilKarkunsPermissionValues = [];
+    if (hasWorkspace) {
+      permissions = superAdmin
         ? MehfilKarkunsPermissionValues
-        : (permissionsByLocation.get(location._id as string) ?? []),
-  });
+        : (permissionsByLocation.get(location._id as string) ?? []);
+    }
+    return {
+      locationId: location._id as string,
+      name: location.name,
+      type: location.type,
+      parentId: location.parentId ?? null,
+      hasWorkspace,
+      permissions,
+    };
+  };
 
   const withWorkspace = new Set(locations.map(location => location._id));
   return [

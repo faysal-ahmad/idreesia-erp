@@ -213,6 +213,16 @@ export type DaMehfilDutyType = {
   name: Scalars['String']['output'];
 };
 
+export type DaMyDutyType = {
+  __typename?: 'DaMyDutyType';
+  attendance?: Maybe<Scalars['String']['output']>;
+  date: Scalars['String']['output'];
+  dutyId: Scalars['String']['output'];
+  dutyName: Scalars['String']['output'];
+  locationId: Scalars['String']['output'];
+  locationName: Scalars['String']['output'];
+};
+
 export type DaMyLocationType = {
   __typename?: 'DaMyLocationType';
   hasWorkspace: Scalars['Boolean']['output'];
@@ -3610,6 +3620,7 @@ export type Query = {
   mehfilKarkunsByMehfilId?: Maybe<Array<Maybe<MehfilKarkunType>>>;
   myCommitteeLocations?: Maybe<Array<Maybe<WorkspaceLocationType>>>;
   myCommittees?: Maybe<Array<Maybe<WorkspaceCommitteeType>>>;
+  myDuties: Array<Maybe<DaMyDutyType>>;
   myDutiesAttendanceLocations: Array<Maybe<DaMyLocationType>>;
   myMehfilDetailsLocations: Array<Maybe<MyMehfilDetailsLocationType>>;
   myMehfilKarkunsLocations: Array<Maybe<MyMehfilKarkunsLocationType>>;
@@ -3912,6 +3923,11 @@ export type QueryMehfilKarkunsByIdsArgs = {
 export type QueryMehfilKarkunsByMehfilIdArgs = {
   dutyId?: InputMaybe<Scalars['String']['input']>;
   mehfilId: Scalars['String']['input'];
+};
+
+
+export type QueryMyDutiesArgs = {
+  date: Scalars['String']['input'];
 };
 
 

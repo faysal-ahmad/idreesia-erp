@@ -16,6 +16,7 @@ export interface DutiesAttendanceUser {
   _id?: string;
   locked?: boolean;
   isSuperAdmin?: boolean;
+  personId?: string | null;
 }
 
 /** What `@checkDutiesAttendanceAccess` found out about the caller. */

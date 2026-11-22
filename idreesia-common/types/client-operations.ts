@@ -767,6 +767,13 @@ export type MobileDaAccessQueryVariables = Exact<{
 
 export type MobileDaAccessQuery = { workspaceDaAccess: { locationId: string, permissions: Array<string> } | null };
 
+export type MobileDaMyDutiesQueryVariables = Exact<{
+  date: string;
+}>;
+
+
+export type MobileDaMyDutiesQuery = { myDuties: Array<{ locationId: string, locationName: string, dutyId: string, dutyName: string, date: string, attendance: string | null } | null> };
+
 export type MobileDaDutiesQueryVariables = Exact<{
   locationId: string;
 }>;

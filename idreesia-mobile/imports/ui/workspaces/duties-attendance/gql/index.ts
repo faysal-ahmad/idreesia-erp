@@ -15,6 +15,8 @@ import type {
   MobileDaKarkunSearchQueryVariables,
   MobileDaMehfilDutiesQuery,
   MobileDaMehfilDutiesQueryVariables,
+  MobileDaMyDutiesQuery,
+  MobileDaMyDutiesQueryVariables,
   MobileDaPlanDaysQuery,
   MobileDaPlanDaysQueryVariables,
   MobileDaRemoveDutyMemberMutation,
@@ -40,6 +42,19 @@ export const MOBILE_DA_ACCESS: TypedDocumentNode<MobileDaAccessQuery, MobileDaAc
     workspaceDaAccess(locationId: $locationId) {
       locationId
       permissions
+    }
+  }
+`;
+
+export const MOBILE_DA_MY_DUTIES: TypedDocumentNode<MobileDaMyDutiesQuery, MobileDaMyDutiesQueryVariables> = gql`
+  query mobileDaMyDuties($date: String!) {
+    myDuties(date: $date) {
+      locationId
+      locationName
+      dutyId
+      dutyName
+      date
+      attendance
     }
   }
 `;

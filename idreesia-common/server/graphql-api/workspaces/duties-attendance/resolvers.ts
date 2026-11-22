@@ -11,6 +11,7 @@ import {
   getAttendanceSheet,
   getDutyPlanDays,
   getDutyNames,
+  listMyDuties,
   listMyDutiesAttendanceLocations,
   searchWorkspaceKarkuns,
   removeDuty,
@@ -72,6 +73,12 @@ export default {
       args: unknown,
       { user }: Context
     ) => listMyDutiesAttendanceLocations(user),
+
+    myDuties: async (
+      obj: unknown,
+      { date }: { date: string },
+      { user }: Context
+    ) => listMyDuties(user, date),
 
     workspaceDaAccess: async (
       obj: unknown,

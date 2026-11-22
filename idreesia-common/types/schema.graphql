@@ -3809,8 +3809,23 @@ type DaAttendanceSheetRowType {
   percentage: Int!
 }
 
+# A duty the caller is on for a day.
+type DaMyDutyType {
+  locationId: String!
+  locationName: String!
+  dutyId: String!
+  dutyName: String!
+  date: String!
+  # present, late or absent; null when not marked.
+  attendance: String
+}
+
 extend type Query {
   myDutiesAttendanceLocations: [DaMyLocationType]!
+
+  # The duties the caller is on for date (YYYY-MM-DD), in every location whose
+  # Duties and Attendance they can open.
+  myDuties(date: String!): [DaMyDutyType]!
 
   workspaceDaAccess(locationId: String!): DaAccessType
     @checkDutiesAttendanceAccess(permission: VIEW)

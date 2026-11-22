@@ -7,8 +7,8 @@ import { Drawer } from 'antd';
 import type {
   AddCommitteeMemberMutation,
   AddCommitteeMemberMutationVariables,
-  HrCommitteeKarkunSearchQuery,
-  HrCommitteeKarkunSearchQueryVariables,
+  CommitteeLocationKarkunsQuery,
+  CommitteeLocationKarkunsQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 import {
   KarkunSelectionList,
@@ -18,23 +18,37 @@ import {
 } from '/imports/ui/modules/helpers/controls';
 import { message } from '/imports/ui/antd-feedback';
 
-const HR_COMMITTEE_KARKUN_SEARCH: TypedDocumentNode<
-  HrCommitteeKarkunSearchQuery,
-  HrCommitteeKarkunSearchQueryVariables
+// The karkuns of the committee's location and every location below it.
+const COMMITTEE_LOCATION_KARKUNS: TypedDocumentNode<
+  CommitteeLocationKarkunsQuery,
+  CommitteeLocationKarkunsQueryVariables
 > = gql`
-  query hrCommitteeKarkunSearch($filter: KarkunFilter) {
-    pagedHrKarkuns(filter: $filter) {
+  query committeeLocationKarkuns(
+    $locationId: String!
+    $name: String
+    $cnicNumber: String
+    $phoneNumber: String
+    $pageIndex: String
+    $pageSize: String
+  ) {
+    pagedOrgLocationKarkuns(
+      locationId: $locationId
+      includeChildLocations: true
+      name: $name
+      cnicNumber: $cnicNumber
+      phoneNumber: $phoneNumber
+      pageIndex: $pageIndex
+      pageSize: $pageSize
+    ) {
       totalResults
       data {
         _id
-        sharedData {
-          name
-          parentName
-          cnicNumber
-          contactNumber1
-          imageUrl
-          imageThumbnailUrl
-        }
+        name
+        parentName
+        cnicNumber
+        contactNumber1
+        imageUrl
+        imageThumbnailUrl
       }
     }
   }
@@ -63,6 +77,8 @@ const DEFAULT_PAGE_SIZE = 20;
 
 interface Props {
   committeeId: string | null;
+  /** The committee's location: its karkuns, and those below it, are listed. */
+  locationId: string;
   memberIds: string[];
   /** The role the added people get; defaults to member. */
   role?: string;
@@ -73,6 +89,7 @@ interface Props {
 
 const AddMemberDrawer = ({
   committeeId,
+  locationId,
   memberIds,
   role,
   title = 'Add Member',
@@ -96,17 +113,14 @@ const AddMemberDrawer = ({
     }
   };
 
-  const { data, loading, refetch } = useQuery(HR_COMMITTEE_KARKUN_SEARCH, {
+  const { data, loading, refetch } = useQuery(COMMITTEE_LOCATION_KARKUNS, {
     variables: {
-      filter: {
-        name: filter.name || undefined,
-        cnicNumber: filter.cnicNumber || undefined,
-        phoneNumber: filter.phoneNumber || undefined,
-        // Only karkuns can be committee members (enforced server-side).
-        isKarkun: true,
-        pageIndex: String(pageIndex),
-        pageSize: String(pageSize),
-      },
+      locationId,
+      name: filter.name || undefined,
+      cnicNumber: filter.cnicNumber || undefined,
+      phoneNumber: filter.phoneNumber || undefined,
+      pageIndex: String(pageIndex),
+      pageSize: String(pageSize),
     },
     skip: !open,
     fetchPolicy: 'network-only',
@@ -116,23 +130,23 @@ const AddMemberDrawer = ({
   });
 
   const karkuns: KarkunSelectionItem[] = (
-    data?.pagedHrKarkuns?.data ?? []
+    data?.pagedOrgLocationKarkuns?.data ?? []
   ).flatMap(person =>
     person?._id
       ? [
           {
             _id: person._id,
-            name: person.sharedData?.name,
-            parentName: person.sharedData?.parentName,
-            cnicNumber: person.sharedData?.cnicNumber,
-            contactNumber1: person.sharedData?.contactNumber1,
-            imageUrl: person.sharedData?.imageUrl,
-            imageThumbnailUrl: person.sharedData?.imageThumbnailUrl,
+            name: person.name,
+            parentName: person.parentName,
+            cnicNumber: person.cnicNumber,
+            contactNumber1: person.contactNumber1,
+            imageUrl: person.imageUrl,
+            imageThumbnailUrl: person.imageThumbnailUrl,
           },
         ]
       : []
   );
-  const totalResults = data?.pagedHrKarkuns?.totalResults ?? 0;
+  const totalResults = data?.pagedOrgLocationKarkuns?.totalResults ?? 0;
 
   const handleClose = () => {
     setFilter({});

@@ -1,3 +1,4 @@
+import { DutiesAttendancePermissions } from 'meteor/idreesia-common/constants/duties-attendance';
 import { getDataLoaders } from 'meteor/idreesia-common/server/data-loaders';
 import {
   DutiesAttendanceDuties,
@@ -11,6 +12,7 @@ import {
   getAttendanceSheet,
   getDutyPlanDays,
   getDutyNames,
+  listMyDuties,
   listMyDutiesAttendanceLocations,
   searchWorkspaceKarkuns,
   removeDuty,
@@ -72,6 +74,12 @@ export default {
       args: unknown,
       { user }: Context
     ) => listMyDutiesAttendanceLocations(user),
+
+    myDuties: async (
+      obj: unknown,
+      { date }: { date: string },
+      { user }: Context
+    ) => listMyDuties(user, date),
 
     workspaceDaAccess: async (
       obj: unknown,
@@ -145,7 +153,7 @@ export default {
       context: Context
     ) => {
       getDutiesAttendanceAccess(context, locationId);
-      return searchWorkspaceKarkuns(params);
+      return searchWorkspaceKarkuns({ ...params, locationId });
     },
 
     workspaceDaAttendanceSheet: async (
@@ -209,6 +217,7 @@ export default {
       }: DutyArgs & {
         karkunId: string;
         isCoordinator?: boolean;
+        canMarkOwnAttendance?: boolean;
         daysOfWeek?: string[];
       },
       context: Context
@@ -226,6 +235,7 @@ export default {
       }: DutyArgs & {
         karkunId: string;
         isCoordinator?: boolean;
+        canMarkOwnAttendance?: boolean;
         daysOfWeek?: string[];
       },
       context: Context
@@ -288,7 +298,10 @@ export default {
       },
       context: Context
     ) => {
-      const { userId } = getDutiesAttendanceAccess(context, locationId);
+      const { userId, permissions } = getDutiesAttendanceAccess(
+        context,
+        locationId
+      );
       return setDutyAttendance({
         locationId,
         dutyId,
@@ -298,6 +311,10 @@ export default {
         source,
         geo,
         userId,
+        canMarkAnyone: permissions.includes(
+          DutiesAttendancePermissions.MARK_ATTENDANCE
+        ),
+        callerKarkunId: context.user?.personId,
       });
     },
   },

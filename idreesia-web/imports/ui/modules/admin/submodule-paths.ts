@@ -9,6 +9,13 @@ export default class SubModulePaths {
   static usersEditFormPath = `${SubModulePaths.usersPath}/:userId`;
 
   // *************************************************************************************
+  // Service Accounts Routes (an account is edited with the same form as a user)
+  // *************************************************************************************
+  static serviceAccountsPath = `${ModulePaths.admin}/service-accounts`;
+  static serviceAccountsNewFormPath = `${SubModulePaths.serviceAccountsPath}/new`;
+  static serviceAccountsEditFormPath = `${SubModulePaths.serviceAccountsPath}/:userId`;
+
+  // *************************************************************************************
   // User Groups Routes
   // *************************************************************************************
   static userGroupsPath = `${ModulePaths.admin}/user-groups`;

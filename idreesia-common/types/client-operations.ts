@@ -18,6 +18,12 @@ export type CityFilter = {
   region?: string | null | undefined;
 };
 
+export type DaGeoLocationInput = {
+  accuracy?: number | null | undefined;
+  latitude: number;
+  longitude: number;
+};
+
 export type InboxConversationFilter = {
   pageIndex?: string | null | undefined;
   pageSize?: string | null | undefined;
@@ -72,6 +78,7 @@ export type KarkunFilter = {
 
 export type OrgLocationMehfilDetailsInput = {
   address?: string | null | undefined;
+  attendanceGeofenceMeters?: number | null | undefined;
   latitude?: number | null | undefined;
   lcdAvailability?: boolean | null | undefined;
   longitude?: number | null | undefined;
@@ -144,6 +151,7 @@ export type UserFilter = {
   moduleAccess?: string | null | undefined;
   pageIndex?: string | null | undefined;
   pageSize?: string | null | undefined;
+  serviceAccounts?: string | null | undefined;
   showActive?: string | null | undefined;
   showInactive?: string | null | undefined;
   showLocked?: string | null | undefined;
@@ -758,10 +766,164 @@ export type MobileCommitteeDocumentNotificationsQueryVariables = Exact<{
 
 export type MobileCommitteeDocumentNotificationsQuery = { myNotifications: Array<{ _id: string | null, entityId: string | null, eventType: string | null, eventDetails: string | null, createdAt: string | null, isRead: boolean | null } | null> | null };
 
+export type MobileDaAccessQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type MobileDaAccessQuery = { workspaceDaAccess: { locationId: string, permissions: Array<string> } | null };
+
+export type MobileDaMyDutiesQueryVariables = Exact<{
+  date: string;
+}>;
+
+
+export type MobileDaMyDutiesQuery = { myDuties: Array<{ locationId: string, locationName: string, dutyId: string, dutyName: string, date: string, attendance: string | null, attendanceSource: string | null, canMarkOwnAttendance: boolean } | null> };
+
+export type MobileDaDutiesQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type MobileDaDutiesQuery = { workspaceDaDuties: Array<{ _id: string, mehfilDutyId: string | null, name: string, description: string | null, isActive: boolean, members: Array<{ karkunId: string, isCoordinator: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null } | null> } | null> | null };
+
+export type MobileDaMehfilDutiesQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type MobileDaMehfilDutiesQuery = { workspaceDaMehfilDuties: Array<{ _id: string, name: string, description: string | null } | null> | null };
+
+export type MobileDaPlanDaysQueryVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  startDate: string;
+}>;
+
+
+export type MobileDaPlanDaysQuery = { workspaceDaPlanDays: { startDate: string, days: Array<{ date: string, dayOfWeek: string, locked: boolean, addedKarkunIds: Array<string | null>, absentKarkunIds: Array<string | null>, karkuns: Array<{ karkunId: string, name: string | null, off: boolean, addedForDay: boolean, imageUrl: string | null, imageThumbnailUrl: string | null, contactNumber1: string | null, contactNumber2: string | null, attendance: string | null } | null> } | null> } | null };
+
+export type MobileDaAttendanceSheetQueryVariables = Exact<{
+  locationId: string;
+  month: string;
+  dutyId?: string | null | undefined;
+}>;
+
+
+export type MobileDaAttendanceSheetQuery = { workspaceDaAttendanceSheet: Array<{ _id: string, karkunId: string, name: string | null, dutyId: string, dutyName: string | null, daysOnDuty: number, presentCount: number, lateCount: number, absentCount: number, unmarkedCount: number, percentage: number } | null> | null };
+
+export type MobileDaKarkunSearchQueryVariables = Exact<{
+  locationId: string;
+  name?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type MobileDaKarkunSearchQuery = { workspaceDaKarkunSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, parentName: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
+
+export type MobileDaAddDutiesMutationVariables = Exact<{
+  locationId: string;
+  mehfilDutyIds: Array<string> | string;
+}>;
+
+
+export type MobileDaAddDutiesMutation = { workspaceDaAddDuties: Array<{ _id: string } | null> | null };
+
+export type MobileDaUpdateDutyMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  isActive?: boolean | null | undefined;
+}>;
+
+
+export type MobileDaUpdateDutyMutation = { workspaceDaUpdateDuty: { _id: string } | null };
+
+export type MobileDaRemoveDutyMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+}>;
+
+
+export type MobileDaRemoveDutyMutation = { workspaceDaRemoveDuty: boolean | null };
+
+export type MobileDaAddDutyMemberMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  karkunId: string;
+}>;
+
+
+export type MobileDaAddDutyMemberMutation = { workspaceDaAddDutyMember: { _id: string } | null };
+
+export type MobileDaUpdateDutyMemberMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  karkunId: string;
+  isCoordinator?: boolean | null | undefined;
+  daysOfWeek?: Array<string | null | undefined> | string | null | undefined;
+}>;
+
+
+export type MobileDaUpdateDutyMemberMutation = { workspaceDaUpdateDutyMember: { _id: string } | null };
+
+export type MobileDaRemoveDutyMemberMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  karkunId: string;
+}>;
+
+
+export type MobileDaRemoveDutyMemberMutation = { workspaceDaRemoveDutyMember: { _id: string } | null };
+
+export type MobileDaSetDayOverrideMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  date: string;
+  addedKarkunIds?: Array<string | null | undefined> | string | null | undefined;
+  absentKarkunIds?: Array<string | null | undefined> | string | null | undefined;
+}>;
+
+
+export type MobileDaSetDayOverrideMutation = { workspaceDaSetDayOverride: boolean | null };
+
+export type MobileDaSetAttendanceMutationVariables = Exact<{
+  locationId: string;
+  dutyId: string;
+  date: string;
+  karkunId: string;
+  status?: string | null | undefined;
+  geo?: Types.DaGeoLocationInput | null | undefined;
+}>;
+
+
+export type MobileDaSetAttendanceMutation = { workspaceDaSetAttendance: boolean | null };
+
 export type MobileMyCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MobileMyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, description: string | null, features: Array<string | null> | null } | null> | null };
+export type MobileMyCommitteesQuery = { myCommittees: Array<{ _id: string | null, name: string | null, description: string | null, features: Array<string | null> | null, locationId: string | null } | null> | null };
+
+export type MobileMyCommitteeLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileMyCommitteeLocationsQuery = { myCommitteeLocations: Array<{ _id: string | null, name: string | null, type: string | null, parentId: string | null } | null> | null };
+
+export type MobileMyDutiesAttendanceLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileMyDutiesAttendanceLocationsQuery = { myDutiesAttendanceLocations: Array<{ locationId: string, name: string, type: string, parentId: string | null, hasWorkspace: boolean } | null> };
+
+export type MobileMyMehfilDetailsLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileMyMehfilDetailsLocationsQuery = { myMehfilDetailsLocations: Array<{ locationId: string, name: string, type: string, parentId: string | null, hasWorkspace: boolean } | null> };
+
+export type MobileMyMehfilPermissionsLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileMyMehfilPermissionsLocationsQuery = { myMehfilPermissionsLocations: Array<{ locationId: string, name: string, type: string, parentId: string | null, hasWorkspace: boolean } | null> };
 
 export type MobileMyNotificationCountsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1071,6 +1233,59 @@ export type MobileWorkspaceMeetingVideoCallInfoQueryVariables = Exact<{
 
 
 export type MobileWorkspaceMeetingVideoCallInfoQuery = { workspaceMeetingVideoCallInfo: { participantCount: number | null } | null };
+
+export type MobileMehfilDetailsQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type MobileMehfilDetailsQuery = { workspaceMehfilDetails: { locationId: string, name: string, permissions: Array<string>, mehfilDetails: { address: string | null, mehfilStartYear: string | null, timingDetails: string | null, lcdAvailability: boolean | null, tabAvailability: boolean | null, otherMehfilDetails: string | null, latitude: number | null, longitude: number | null } | null } | null };
+
+export type MobileUpdateMehfilDetailsMutationVariables = Exact<{
+  locationId: string;
+  mehfilDetails: Types.OrgLocationMehfilDetailsInput;
+}>;
+
+
+export type MobileUpdateMehfilDetailsMutation = { workspaceUpdateMehfilDetails: { locationId: string, permissions: Array<string>, mehfilDetails: { address: string | null, mehfilStartYear: string | null, timingDetails: string | null, lcdAvailability: boolean | null, tabAvailability: boolean | null, otherMehfilDetails: string | null, latitude: number | null, longitude: number | null } | null } | null };
+
+export type MobileMehfilPermissionsQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type MobileMehfilPermissionsQuery = { workspaceMehfilPermissions: { locationId: string, permissions: Array<string>, groups: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> } | null> } | null> } | null };
+
+export type MobileMehfilPermissionsKarkunSearchQueryVariables = Exact<{
+  locationId: string;
+  name?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type MobileMehfilPermissionsKarkunSearchQuery = { workspaceMehfilPermissionsKarkunSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, parentName: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
+
+export type MobileAddMehfilPermissionUserMutationVariables = Exact<{
+  locationId: string;
+  featureKey: string;
+  permissionKey: string;
+  karkunId: string;
+}>;
+
+
+export type MobileAddMehfilPermissionUserMutation = { workspaceAddMehfilPermissionUser: boolean | null };
+
+export type MobileRemoveMehfilPermissionUserMutationVariables = Exact<{
+  locationId: string;
+  featureKey: string;
+  permissionKey: string;
+  userId: string;
+}>;
+
+
+export type MobileRemoveMehfilPermissionUserMutation = { workspaceRemoveMehfilPermissionUser: boolean | null };
 
 export type MobileWorkspaceCommitteeMembersQueryVariables = Exact<{
   committeeId: string;
@@ -1651,12 +1866,17 @@ export type DistinctRegionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type DistinctRegionsQuery = { distinctRegions: Array<string | null> | null };
 
-export type HrCommitteeKarkunSearchQueryVariables = Exact<{
-  filter?: Types.KarkunFilter | null | undefined;
+export type CommitteeLocationKarkunsQueryVariables = Exact<{
+  locationId: string;
+  name?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
 }>;
 
 
-export type HrCommitteeKarkunSearchQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null> | null } | null };
+export type CommitteeLocationKarkunsQuery = { pagedOrgLocationKarkuns: { totalResults: number, data: Array<{ _id: string, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null }> } };
 
 export type AddCommitteeMemberMutationVariables = Exact<{
   committeeId: string;
@@ -1977,7 +2197,7 @@ export type OrgLocationByIdQueryVariables = Exact<{
 }>;
 
 
-export type OrgLocationByIdQuery = { orgLocationById: { _id: string | null, name: string | null, type: string | null, parentId: string | null, allParentIds: Array<string | null> | null, observerKarkunIds: Array<string | null> | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, mehfilDetails: { address: string | null, mehfilStartYear: string | null, timingDetails: string | null, lcdAvailability: boolean | null, tabAvailability: boolean | null, otherMehfilDetails: string | null, latitude: number | null, longitude: number | null } | null } | null };
+export type OrgLocationByIdQuery = { orgLocationById: { _id: string | null, name: string | null, type: string | null, parentId: string | null, allParentIds: Array<string | null> | null, observerKarkunIds: Array<string | null> | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, committees: Array<{ _id: string | null } | null> | null, mehfilDetails: { address: string | null, mehfilStartYear: string | null, timingDetails: string | null, lcdAvailability: boolean | null, tabAvailability: boolean | null, otherMehfilDetails: string | null, latitude: number | null, longitude: number | null, attendanceGeofenceMeters: number | null } | null } | null };
 
 export type UpdateOrgLocationMutationVariables = Exact<{
   _id: string;
@@ -1988,6 +2208,44 @@ export type UpdateOrgLocationMutationVariables = Exact<{
 
 
 export type UpdateOrgLocationMutation = { updateOrgLocation: { _id: string | null, name: string | null } | null };
+
+export type LocationKarkunsQueryVariables = Exact<{
+  locationId: string;
+  name?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type LocationKarkunsQuery = { pagedOrgLocationKarkuns: { totalResults: number, data: Array<{ _id: string, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, hasUserAccount: boolean }> } };
+
+export type UserAccountAvailabilityQueryVariables = Exact<{
+  userName?: string | null | undefined;
+  email?: string | null | undefined;
+}>;
+
+
+export type UserAccountAvailabilityQuery = { userAccountAvailability: { userNameMessage: string | null, emailMessage: string | null } };
+
+export type LinkableUsersQueryVariables = Exact<{
+  search?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type LinkableUsersQuery = { pagedLinkableUsers: { totalResults: number | null, data: Array<{ _id: string | null, username: string | null, email: string | null, displayName: string | null } | null> | null } | null };
+
+export type LinkOrgLocationUserMutationVariables = Exact<{
+  locationId: string;
+  karkunId: string;
+  userId: string;
+}>;
+
+
+export type LinkOrgLocationUserMutation = { linkOrgLocationUser: { _id: string | null } | null };
 
 export type LocationCommitteesQueryVariables = Exact<{
   locationId: string;
@@ -2021,11 +2279,16 @@ export type OrgLocationFeaturePermissionsQueryVariables = Exact<{
 export type OrgLocationFeaturePermissionsQuery = { orgLocationFeaturePermissions: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> } | null> } | null> | null };
 
 export type HrFeatureUserKarkunSearchQueryVariables = Exact<{
-  filter?: Types.KarkunFilter | null | undefined;
+  locationId: string;
+  name?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
 }>;
 
 
-export type HrFeatureUserKarkunSearchQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null> | null } | null };
+export type HrFeatureUserKarkunSearchQuery = { pagedOrgLocationKarkuns: { totalResults: number, data: Array<{ _id: string, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null }> } };
 
 export type AddOrgLocationFeatureUserMutationVariables = Exact<{
   locationId: string;
@@ -2083,6 +2346,41 @@ export type SyncOrgLocationObserversMutationVariables = Exact<{
 
 
 export type SyncOrgLocationObserversMutation = { syncOrgLocationObservers: { committeesChecked: number | null, addedCount: number | null, removedCount: number | null } | null };
+
+export type LocationUsersQueryVariables = Exact<{
+  locationId: string;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type LocationUsersQuery = { pagedOrgLocationUsers: { totalResults: number | null, data: Array<{ _id: string | null, username: string | null, email: string | null, locked: boolean | null, lastActiveAt: string | null, hasChatAccount: boolean | null, twoFactorEnabled: boolean | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null } | null> | null } | null };
+
+export type ResetOrgLocationUserPasswordMutationVariables = Exact<{
+  locationId: string;
+  userId: string;
+  password: string;
+}>;
+
+
+export type ResetOrgLocationUserPasswordMutation = { resetOrgLocationUserPassword: { _id: string | null } | null };
+
+export type SetOrgLocationUserLockedMutationVariables = Exact<{
+  locationId: string;
+  userId: string;
+  locked: boolean;
+}>;
+
+
+export type SetOrgLocationUserLockedMutation = { setOrgLocationUserLocked: { _id: string | null, locked: boolean | null } | null };
+
+export type CreateOrgLocationUserChatAccountMutationVariables = Exact<{
+  locationId: string;
+  userId: string;
+}>;
+
+
+export type CreateOrgLocationUserChatAccountMutation = { createOrgLocationUserChatAccount: { _id: string | null, hasChatAccount: boolean | null } | null };
 
 export type AllPeopleTagsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2239,6 +2537,14 @@ export type CreateChatAccountMutationVariables = Exact<{
 
 export type CreateChatAccountMutation = { createChatAccount: { _id: string | null, username: string | null, hasChatAccount: boolean | null } | null };
 
+export type CreateServiceAccountMutationVariables = Exact<{
+  userName: string;
+  displayName?: string | null | undefined;
+}>;
+
+
+export type CreateServiceAccountMutation = { createServiceAccount: { _id: string | null } | null };
+
 export type CreateUserMutationVariables = Exact<{
   userName?: string | null | undefined;
   password?: string | null | undefined;
@@ -2263,6 +2569,14 @@ export type ResetTwoFactorMutationVariables = Exact<{
 
 
 export type ResetTwoFactorMutation = { resetTwoFactor: { _id: string | null, twoFactorEnabled: boolean | null } | null };
+
+export type ResetUserPasswordMutationVariables = Exact<{
+  userId: string;
+  password: string;
+}>;
+
+
+export type ResetUserPasswordMutation = { resetUserPassword: { _id: string | null } | null };
 
 export type SetInstanceAccessMutationVariables = Exact<{
   userId: string;
@@ -2291,7 +2605,6 @@ export type SetSuperAdminMutation = { setSuperAdmin: { _id: string | null, isSup
 export type UpdateUserMutationVariables = Exact<{
   userId: string;
   userName?: string | null | undefined;
-  password?: string | null | undefined;
   email?: string | null | undefined;
   displayName?: string | null | undefined;
   locked?: boolean | null | undefined;
@@ -2305,7 +2618,7 @@ export type AdminUserByIdQueryVariables = Exact<{
 }>;
 
 
-export type AdminUserByIdQuery = { userById: { _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, hasChatAccount: boolean | null, twoFactorEnabled: boolean | null, isSuperAdmin: boolean | null, loginBlockedAddresses: number | null, untrustedLoginAddressesBlocked: boolean | null, instances: Array<string | null> | null, permissions: Array<string | null> | null, personId: string | null, karkun: { _id: string | null, sharedData: { name: string | null } | null } | null } | null };
+export type AdminUserByIdQuery = { userById: { _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, hasChatAccount: boolean | null, chatUserId: string | null, twoFactorEnabled: boolean | null, isSuperAdmin: boolean | null, isServiceAccount: boolean | null, loginBlockedAddresses: number | null, untrustedLoginAddressesBlocked: boolean | null, instances: Array<string | null> | null, permissions: Array<string | null> | null, personId: string | null, karkun: { _id: string | null, sharedData: { name: string | null } | null } | null } | null };
 
 export type UserNamesQueryVariables = Exact<{
   ids?: Array<string | null | undefined> | string | null | undefined;
@@ -4345,7 +4658,7 @@ export type WorkspaceDaDutiesQueryVariables = Exact<{
 }>;
 
 
-export type WorkspaceDaDutiesQuery = { workspaceDaDuties: Array<{ _id: string, mehfilDutyId: string | null, name: string, description: string | null, isActive: boolean, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, members: Array<{ karkunId: string, isCoordinator: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null } | null> } | null> | null };
+export type WorkspaceDaDutiesQuery = { workspaceDaDuties: Array<{ _id: string, mehfilDutyId: string | null, name: string, description: string | null, isActive: boolean, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, members: Array<{ karkunId: string, isCoordinator: boolean | null, canMarkOwnAttendance: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null } | null> } | null> | null };
 
 export type WorkspaceDaMehfilDutiesQueryVariables = Exact<{
   locationId: string;
@@ -4414,6 +4727,7 @@ export type WorkspaceDaAddDutyMemberMutationVariables = Exact<{
   dutyId: string;
   karkunId: string;
   isCoordinator?: boolean | null | undefined;
+  canMarkOwnAttendance?: boolean | null | undefined;
   daysOfWeek?: Array<string | null | undefined> | string | null | undefined;
 }>;
 
@@ -4425,6 +4739,7 @@ export type WorkspaceDaUpdateDutyMemberMutationVariables = Exact<{
   dutyId: string;
   karkunId: string;
   isCoordinator?: boolean | null | undefined;
+  canMarkOwnAttendance?: boolean | null | undefined;
   daysOfWeek?: Array<string | null | undefined> | string | null | undefined;
 }>;
 
@@ -4793,6 +5108,21 @@ export type WorkspaceUpdateMehfilDetailsMutationVariables = Exact<{
 
 
 export type WorkspaceUpdateMehfilDetailsMutation = { workspaceUpdateMehfilDetails: { locationId: string, permissions: Array<string>, mehfilDetails: { address: string | null, mehfilStartYear: string | null, timingDetails: string | null, lcdAvailability: boolean | null, tabAvailability: boolean | null, otherMehfilDetails: string | null, latitude: number | null, longitude: number | null } | null } | null };
+
+export type MyMehfilKarkunsLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyMehfilKarkunsLocationsQuery = { myMehfilKarkunsLocations: Array<{ locationId: string, name: string, type: string, parentId: string | null, hasWorkspace: boolean, permissions: Array<string> } | null> };
+
+export type PagedMehfilKarkunsQueryVariables = Exact<{
+  locationId: string;
+  name?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type PagedMehfilKarkunsQuery = { pagedMehfilKarkuns: { totalResults: number, data: Array<{ _id: string, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null }> } };
 
 export type MyMehfilPermissionsLocationsQueryVariables = Exact<{ [key: string]: never; }>;
 

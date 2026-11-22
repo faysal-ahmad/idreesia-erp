@@ -12,7 +12,6 @@ const UPDATE_USER: TypedDocumentNode<
   mutation updateUser(
     $userId: String!
     $userName: String
-    $password: String
     $email: String
     $displayName: String
     $locked: Boolean
@@ -20,7 +19,6 @@ const UPDATE_USER: TypedDocumentNode<
     updateUser(
       userId: $userId
       userName: $userName
-      password: $password
       email: $email
       displayName: $displayName
       locked: $locked

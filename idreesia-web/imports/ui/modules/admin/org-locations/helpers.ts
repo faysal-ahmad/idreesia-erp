@@ -38,4 +38,5 @@ export const toMehfilDetails = (values: LocationFormValues) => ({
   otherMehfilDetails: values.otherMehfilDetails,
   latitude: values.latitude ?? undefined,
   longitude: values.longitude ?? undefined,
+  attendanceGeofenceMeters: values.attendanceGeofenceMeters || undefined,
 });

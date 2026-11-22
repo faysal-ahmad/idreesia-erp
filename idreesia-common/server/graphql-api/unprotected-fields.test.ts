@@ -18,6 +18,7 @@ const PROTECTION_DIRECTIVES = [
   'checkCommitteeAccess',
   'checkDutiesAttendanceAccess',
   'checkMehfilDetailsAccess',
+  'checkMehfilKarkunsAccess',
   'checkMehfilPermissionsAccess',
   'superAdminOnly',
 ];
@@ -48,8 +49,12 @@ const ALLOWED: Record<string, string> = {
   'Query.myCommitteeLocations': "locations of the caller's own committees",
   'Query.myDutiesAttendanceLocations':
     "locations of the caller's own Duties and Attendance workspaces",
+  'Query.myDuties':
+    "duties of the caller, in locations they can open",
   'Query.myMehfilPermissionsLocations':
     "mehfils whose permissions the caller can open",
+  'Query.myMehfilKarkunsLocations':
+    "mehfils whose karkuns the caller can see",
   'Query.myMehfilDetailsLocations':
     "mehfils whose details the caller can update",
   'Query.myNotifications': "caller's own notifications",

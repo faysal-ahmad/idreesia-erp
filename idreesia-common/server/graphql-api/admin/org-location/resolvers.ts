@@ -1,3 +1,5 @@
+import { DataSource } from 'meteor/idreesia-common/constants';
+import { ChatError } from 'meteor/idreesia-common/server/chat';
 import type { OrgLocationType } from 'meteor/idreesia-common/constants/organization';
 import { getDataLoaders } from 'meteor/idreesia-common/server/data-loaders';
 import {
@@ -10,10 +12,17 @@ import {
   addOrgLocationFeatureUser,
   addOrgLocationObserver,
   createOrgLocation,
+  createOrgLocationUserChatAccount,
   getOrgLocationObserverStats,
+  linkOrgLocationUser,
+  listLinkableUsers,
+  listOrgLocationKarkuns,
+  listOrgLocationUsers,
   listOrgLocationFeaturePermissions,
   removeOrgLocationFeatureUser,
   removeOrgLocationObserver,
+  resetOrgLocationUserPassword,
+  setOrgLocationUserLocked,
   syncOrgLocationObservers,
   updateOrgLocation,
 } from 'meteor/idreesia-common/server/business-logic/admin';
@@ -80,6 +89,30 @@ export default {
       { locationId }: { locationId: string }
     ) => listOrgLocationFeaturePermissions(locationId),
 
+    pagedOrgLocationKarkuns: async (
+      _obj: unknown,
+      params: {
+        locationId: string;
+        name?: string | null;
+        cnicNumber?: string | null;
+        phoneNumber?: string | null;
+        withUserAccount?: boolean | null;
+        includeChildLocations?: boolean | null;
+        pageIndex?: string | null;
+        pageSize?: string | null;
+      }
+    ) => listOrgLocationKarkuns(params),
+
+    pagedOrgLocationUsers: async (
+      _obj: unknown,
+      params: { locationId: string; pageIndex?: string | null; pageSize?: string | null }
+    ) => listOrgLocationUsers(params),
+
+    pagedLinkableUsers: async (
+      _obj: unknown,
+      params: { search?: string | null; pageIndex?: string | null; pageSize?: string | null }
+    ) => listLinkableUsers(params),
+
     allOrgLocations: async () =>
       OrgLocations.find({}, { sort: { name: 1 } }).fetchAsync(),
 
@@ -99,6 +132,42 @@ export default {
       params: Omit<OrgLocationArgs, 'type'>,
       { user }: ResolverContext
     ) => updateOrgLocation(params, user),
+
+    linkOrgLocationUser: async (
+      _obj: unknown,
+      { locationId, karkunId, userId }: { locationId: string; karkunId: string; userId: string }
+    ) => linkOrgLocationUser(locationId, karkunId, userId),
+
+    resetOrgLocationUserPassword: async (
+      _obj: unknown,
+      params: { locationId: string; userId: string; password: string },
+      { user }: ResolverContext
+    ) => resetOrgLocationUserPassword(params, user, DataSource.ADMIN),
+
+    setOrgLocationUserLocked: async (
+      _obj: unknown,
+      params: { locationId: string; userId: string; locked: boolean },
+      { user }: ResolverContext
+    ) => setOrgLocationUserLocked(params, user, DataSource.ADMIN),
+
+    createOrgLocationUserChatAccount: async (
+      _obj: unknown,
+      params: { locationId: string; userId: string },
+      { user }: ResolverContext
+    ) => {
+      try {
+        return await createOrgLocationUserChatAccount(
+          params,
+          user,
+          DataSource.ADMIN
+        );
+      } catch (error) {
+        if (error instanceof ChatError) {
+          throw new Error(`Chat: ${error.message}`);
+        }
+        throw error;
+      }
+    },
 
     addOrgLocationObserver: async (
       _obj: unknown,

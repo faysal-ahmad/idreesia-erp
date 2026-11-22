@@ -10,6 +10,7 @@ type OrgLocationMehfilDetailsType {
   otherMehfilDetails: String
   latitude: Float
   longitude: Float
+  attendanceGeofenceMeters: Int
 }
 
 type OrgLocationType {
@@ -32,6 +33,24 @@ type OrgLocationType {
   createdBy: String
   updatedAt: String
   updatedBy: String
+}
+
+# A karkun of a mehfil, and whether they already have a user account.
+type OrgLocationKarkunType {
+  _id: String!
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  contactNumber2: String
+  imageUrl: String
+  imageThumbnailUrl: String
+  hasUserAccount: Boolean!
+}
+
+type PagedOrgLocationKarkunType {
+  data: [OrgLocationKarkunType!]!
+  totalResults: Int!
 }
 
 type OrgLocationObserverStatType {
@@ -79,6 +98,7 @@ input OrgLocationMehfilDetailsInput {
   otherMehfilDetails: String
   latitude: Float
   longitude: Float
+  attendanceGeofenceMeters: Int
 }
 
 extend type Query {
@@ -87,6 +107,38 @@ extend type Query {
 
   orgLocationById(_id: String!): OrgLocationType
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+
+  # The karkuns of the mehfil, or with includeChildLocations of the location
+  # and every location below it.
+  pagedOrgLocationKarkuns(
+    locationId: String!
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    # Only the karkuns that have a user account.
+    withUserAccount: Boolean
+    includeChildLocations: Boolean
+    pageIndex: String
+    pageSize: String
+  ): PagedOrgLocationKarkunType!
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+
+  # The user accounts of the karkuns of the mehfil.
+  pagedOrgLocationUsers(
+    locationId: String!
+    pageIndex: String
+    pageSize: String
+  ): PagedUserType
+    @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
+
+  # Users that can be linked to a karkun: not service accounts, and with no
+  # karkun linked. The search matches the user name, display name or email.
+  pagedLinkableUsers(
+    search: String
+    pageIndex: String
+    pageSize: String
+  ): PagedUserType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
   # The location's permission groups (General, and for a mehfil each feature),
   # with the users holding each permission.
@@ -112,6 +164,32 @@ extend type Mutation {
     mehfilDetails: OrgLocationMehfilDetailsInput
   ): OrgLocationType
     @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  # Links an existing user account to a karkun of the mehfil.
+  linkOrgLocationUser(
+    locationId: String!
+    karkunId: String!
+    userId: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  # Limited actions on the account of a karkun of the mehfil, for those who
+  # manage the location. Not available for service accounts or super-admins.
+  resetOrgLocationUserPassword(
+    locationId: String!
+    userId: String!
+    password: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  setOrgLocationUserLocked(
+    locationId: String!
+    userId: String!
+    locked: Boolean!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  createOrgLocationUserChatAccount(
+    locationId: String!
+    userId: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
   addOrgLocationObserver(locationId: String!, karkunId: String!): OrgLocationType
     @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])

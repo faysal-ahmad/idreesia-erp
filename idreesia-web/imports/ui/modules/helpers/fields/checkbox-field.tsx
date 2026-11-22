@@ -8,6 +8,7 @@ interface FieldProps {
   initialValue?: boolean;
   required?: boolean;
   requiredMessage?: string;
+  disabled?: boolean;
 }
 
 const formItemLayout = {
@@ -30,6 +31,7 @@ const CheckboxField = ({
   initialValue = false,
   required,
   requiredMessage,
+  disabled,
 }: FieldProps) => {
   const rules = [
     {
@@ -40,7 +42,7 @@ const CheckboxField = ({
 
   return (
     <Form.Item name={fieldName} label={fieldLabel} valuePropName="checked" initialValue={initialValue} rules={rules} {...fieldLayout}>
-      <Checkbox />
+      <Checkbox disabled={disabled} />
     </Form.Item>
   );
 };

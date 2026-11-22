@@ -33,7 +33,8 @@ const idsOf = (rows: Array<string | null> | null | undefined) =>
   (rows ?? []).filter((id): id is string => !!id);
 
 // Seven days of a duty's plan. Future days can be changed (add somebody for
-// the day, take a member off it); today and earlier are locked.
+// the day, take a member off it); today and earlier are locked, except a
+// duty's first day.
 const PlanningPage = () => {
   const { locationId } = useParams<{ locationId: string }>();
   const today = todayInKarachi();
@@ -175,7 +176,7 @@ const PlanningPage = () => {
             <Alert
               type="info"
               showIcon
-              message="Add somebody for a single day, or take a member off a day, on the days after today. To change who is on the duty every week, change its members on the Duties page."
+              message="Add somebody for a single day, or take a member off a day, on days that have not started (today too, on a duty's first day). To change who is on the duty every week, change its members on the Duties page."
             />
           ) : null}
           {loading && !plan ? (

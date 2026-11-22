@@ -169,11 +169,26 @@ export async function updateMehfilDetails(
     });
   }
 
+  // Attendance Geofencing is Admin's to set: keep what is stored, whatever the
+  // caller sent, and drop it if the location is being cleared.
+  const hasLocation =
+    mehfilDetails.latitude != null && mehfilDetails.longitude != null;
+  const attendanceGeofenceMeters = hasLocation
+    ? location.mehfilDetails?.attendanceGeofenceMeters
+    : undefined;
+
+  // Whatever geofence the caller sent is dropped.
+  const callerDetails = { ...mehfilDetails };
+  delete callerDetails.attendanceGeofenceMeters;
+
   await OrgLocations.updateAsync(
     { _id: locationId },
     {
       $set: {
-        mehfilDetails,
+        mehfilDetails: {
+          ...callerDetails,
+          ...(attendanceGeofenceMeters ? { attendanceGeofenceMeters } : {}),
+        },
         updatedAt: new Date(),
         updatedBy: user._id,
       },

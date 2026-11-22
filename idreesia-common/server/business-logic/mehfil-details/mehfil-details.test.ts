@@ -89,6 +89,49 @@ describe('updateMehfilDetails', () => {
     expect(result?.updatedBy).toBe('u1');
   });
 
+  it('leaves the attendance geofence to Admin', async () => {
+    await OrgLocations.updateAsync(
+      { _id: mehfilId },
+      {
+        $set: {
+          mehfilDetails: {
+            latitude: 1,
+            longitude: 2,
+            attendanceGeofenceMeters: 100,
+          },
+        },
+      }
+    );
+
+    // Whatever the caller sends, the stored value stays while there is a location.
+    const kept = await updateMehfilDetails(
+      mehfilId,
+      { latitude: 1, longitude: 2, attendanceGeofenceMeters: 50 },
+      { _id: 'u1' }
+    );
+    expect(kept?.mehfilDetails?.attendanceGeofenceMeters).toBe(100);
+
+    // Nor can the caller turn it on.
+    await OrgLocations.updateAsync(
+      { _id: mehfilId },
+      { $unset: { 'mehfilDetails.attendanceGeofenceMeters': '' } }
+    );
+    const notEnabled = await updateMehfilDetails(
+      mehfilId,
+      { latitude: 1, longitude: 2, attendanceGeofenceMeters: 100 },
+      { _id: 'u1' }
+    );
+    expect(notEnabled?.mehfilDetails?.attendanceGeofenceMeters).toBeUndefined();
+
+    // Clearing the location switches it off.
+    await OrgLocations.updateAsync(
+      { _id: mehfilId },
+      { $set: { 'mehfilDetails.attendanceGeofenceMeters': 100 } }
+    );
+    const cleared = await updateMehfilDetails(mehfilId, {}, { _id: 'u1' });
+    expect(cleared?.mehfilDetails?.attendanceGeofenceMeters).toBeUndefined();
+  });
+
   it('refuses a location that is not a mehfil', async () => {
     await expect(
       updateMehfilDetails(cityId, { address: 'x' }, { _id: 'u1' })

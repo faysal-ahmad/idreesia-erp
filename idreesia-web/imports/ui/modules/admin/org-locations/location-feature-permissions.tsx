@@ -51,19 +51,32 @@ const HR_FEATURE_USER_KARKUN_SEARCH: TypedDocumentNode<
   HrFeatureUserKarkunSearchQuery,
   HrFeatureUserKarkunSearchQueryVariables
 > = gql`
-  query hrFeatureUserKarkunSearch($filter: KarkunFilter) {
-    pagedHrKarkuns(filter: $filter) {
+  query hrFeatureUserKarkunSearch(
+    $locationId: String!
+    $name: String
+    $cnicNumber: String
+    $phoneNumber: String
+    $pageIndex: String
+    $pageSize: String
+  ) {
+    pagedOrgLocationKarkuns(
+      locationId: $locationId
+      name: $name
+      cnicNumber: $cnicNumber
+      phoneNumber: $phoneNumber
+      withUserAccount: true
+      pageIndex: $pageIndex
+      pageSize: $pageSize
+    ) {
       totalResults
       data {
         _id
-        sharedData {
-          name
-          parentName
-          cnicNumber
-          contactNumber1
-          imageUrl
-          imageThumbnailUrl
-        }
+        name
+        parentName
+        cnicNumber
+        contactNumber1
+        imageUrl
+        imageThumbnailUrl
       }
     }
   }
@@ -165,14 +178,12 @@ const LocationFeaturePermissions = ({ locationId }: Props) => {
     refetch: refetchSearch,
   } = useQuery(HR_FEATURE_USER_KARKUN_SEARCH, {
     variables: {
-      filter: {
-        name: filter.name || undefined,
-        cnicNumber: filter.cnicNumber || undefined,
-        phoneNumber: filter.phoneNumber || undefined,
-        isKarkun: true,
-        pageIndex: String(pageIndex),
-        pageSize: String(pageSize),
-      },
+      locationId,
+      name: filter.name || undefined,
+      cnicNumber: filter.cnicNumber || undefined,
+      phoneNumber: filter.phoneNumber || undefined,
+      pageIndex: String(pageIndex),
+      pageSize: String(pageSize),
     },
     skip: !adding,
     fetchPolicy: 'network-only',
@@ -221,22 +232,16 @@ const LocationFeaturePermissions = ({ locationId }: Props) => {
     .find(row => row.key === adding?.key);
 
   const karkuns: KarkunSelectionItem[] = (
-    searchData?.pagedHrKarkuns?.data ?? []
-  ).flatMap(person =>
-    person?._id
-      ? [
-          {
-            _id: person._id,
-            name: person.sharedData?.name,
-            parentName: person.sharedData?.parentName,
-            cnicNumber: person.sharedData?.cnicNumber,
-            contactNumber1: person.sharedData?.contactNumber1,
-            imageUrl: person.sharedData?.imageUrl,
-            imageThumbnailUrl: person.sharedData?.imageThumbnailUrl,
-          },
-        ]
-      : []
-  );
+    searchData?.pagedOrgLocationKarkuns?.data ?? []
+  ).map(person => ({
+    _id: person._id,
+    name: person.name,
+    parentName: person.parentName,
+    cnicNumber: person.cnicNumber,
+    contactNumber1: person.contactNumber1,
+    imageUrl: person.imageUrl,
+    imageThumbnailUrl: person.imageThumbnailUrl,
+  }));
 
   const setPageParams = ({
     pageIndex: nextPageIndex,
@@ -403,7 +408,7 @@ const LocationFeaturePermissions = ({ locationId }: Props) => {
       >
         <KarkunSelectionList
           karkuns={karkuns}
-          totalResults={searchData?.pagedHrKarkuns?.totalResults ?? 0}
+          totalResults={searchData?.pagedOrgLocationKarkuns?.totalResults ?? 0}
           loading={searching}
           pageIndex={pageIndex}
           pageSize={pageSize}

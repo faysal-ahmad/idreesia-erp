@@ -5,6 +5,7 @@ const ModuleNames = {
   security: 'Security',
   correspondence: 'Correspondence',
   workspaces: 'Workspaces',
+  myData: 'My Data',
 };
 
 export default ModuleNames;

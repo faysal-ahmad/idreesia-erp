@@ -1,5 +1,6 @@
 const SubModuleNames = {
   users: 'Users',
+  serviceAccounts: 'Service Accounts',
   userGroups: 'User Groups',
   securityLogs: 'Security Logs',
   physicalStores: 'Physical Stores',

@@ -39,10 +39,7 @@ export default {
 
     workspaceMehfilPermissionsKarkunSearch: async (
       _obj: unknown,
-      {
-        locationId: _locationId,
-        ...params
-      }: {
+      params: {
         locationId: string;
         name?: string;
         cnicNumber?: string;

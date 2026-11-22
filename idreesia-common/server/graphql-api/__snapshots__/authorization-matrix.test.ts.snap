@@ -392,6 +392,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.createOrgLocationUserChatAccount": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.createPeopleTag": [
     {
       "args": {
@@ -494,6 +504,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createServiceAccount": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
         ],
       },
       "directive": "checkPermissions",
@@ -734,6 +754,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.linkOrgLocationUser": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1176,14 +1206,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.resetTwoFactor": [
+  "Mutation.resetOrgLocationUserPassword": [
     {
       "args": {
         "permissions": [
-          "ADMIN_MANAGE_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.resetTwoFactor": [
+    {
+      "args": {},
+      "directive": "superAdminOnly",
+    },
+  ],
+  "Mutation.resetUserPassword": [
+    {
+      "args": {},
+      "directive": "superAdminOnly",
     },
   ],
   "Mutation.restorePerson": [
@@ -1321,6 +1363,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setOrgLocationUserLocked": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -2141,7 +2193,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   "Mutation.workspaceDaSetAttendance": [
     {
       "args": {
-        "permission": "MARK_ATTENDANCE",
+        "permission": "VIEW",
       },
       "directive": "checkDutiesAttendanceAccess",
     },
@@ -3438,6 +3490,44 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.pagedLinkableUsers": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedMehfilKarkuns": [
+    {
+      "args": {
+        "permission": "VIEW",
+      },
+      "directive": "checkMehfilKarkunsAccess",
+    },
+  ],
+  "Query.pagedOrgLocationKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedOrgLocationUsers": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.pagedPurchaseForms": [
     {
       "args": {
@@ -4040,6 +4130,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "returnType": "list",
       },
       "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.userAccountAvailability": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
     },
   ],
   "Query.userById": [

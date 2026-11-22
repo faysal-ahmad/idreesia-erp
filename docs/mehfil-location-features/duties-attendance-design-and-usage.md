@@ -70,13 +70,13 @@ Every workspace operation carries `@checkDutiesAttendanceAccess(permission: ...)
 
 ## How a day works
 
-- **A duty starts tomorrow.** Its first planned day is the day after it was created (or after it was last made active again), so its roster can be set up first.
+- **A duty starts today.** Its first planned day is the day it was created (or last made active again). That first day stays open while the roster is set up, so members added that day are on it; from the next day on, roster changes apply from tomorrow (below).
 - **The roster** is the duty's members who are available that weekday (no days set means every day), less those taken off for the day, plus those added for the day.
-- **Locking.** Today and earlier are locked. A day's roster is written to a day record once and is never recomputed; from then on only attendance changes. Records are written by the nightly job, and lazily whenever a day is read or marked or the roster changes, so a missed job run only delays them. A day nobody is on duty still gets an (empty) record, so a roster set up later never applies to days that came before it.
+- **Locking.** Today and earlier are locked, except the first day of a duty, which stays open (and can be planned) until it has a record, that is until attendance is marked or the nightly job runs. A day's roster is written to a day record once and is never recomputed; from then on only attendance changes. Records are written by the nightly job, and lazily whenever a day is read or marked or the roster changes, so a missed job run only delays them. A day nobody is on duty still gets an (empty) record, so a roster set up later never applies to days that came before it.
 - **Roster changes apply from tomorrow.** Before a member is added, changed or removed, the days up to today are locked with the old roster.
-- **Overrides** can only be set for days after today.
+- **Overrides** can only be set for days that are not locked: days after today, and today on a duty's first day.
 - **Attendance** can be marked for today and for earlier days that have a record, for people on that day's roster. It can't be marked for a future day.
-- **Inactive duties** are not planned. Deactivating locks the days up to today first; reactivating restarts planning from tomorrow, so the days in between never get records.
+- **Inactive duties** are not planned. Deactivating locks the days up to today first; reactivating restarts planning from today, so the days in between never get records.
 - **Deleting a duty** is only possible if nobody has ever been on duty on it; otherwise make it inactive.
 
 ## Data model

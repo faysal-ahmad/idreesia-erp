@@ -192,6 +192,8 @@ describe('resetTwoFactor', () => {
       services: { twoFactorAuthentication: { secret: 'ABC', type: 'otp' } },
     });
 
+    await Users.insertAsync({ _id: 'admin1', isSuperAdmin: true } as never);
+
     const result = await resetTwoFactor(
       { userId: user._id },
       { _id: 'admin1' },
@@ -206,5 +208,17 @@ describe('resetTwoFactor', () => {
       operationType: SecurityOperationType.TWO_FACTOR_RESET,
       operationBy: 'admin1',
     });
+  });
+
+  it('refuses a caller who is not a super admin', async () => {
+    const user = await insertUser({
+      services: { twoFactorAuthentication: { secret: 'ABC', type: 'otp' } },
+    });
+    await Users.insertAsync({ _id: 'manager' } as never);
+
+    await expect(
+      resetTwoFactor({ userId: user._id }, { _id: 'manager' }, 'admin')
+    ).rejects.toThrow('super admin');
+    expect(await twoFactorOf(user._id)).toBeDefined();
   });
 });

@@ -12,7 +12,7 @@ interface FieldProps<T> {
   data?: T[];
   getDataValue?(data: T): OptionValue;
   getDataText?(data: T): React.ReactNode;
-  initialValue?: string | string[] | null;
+  initialValue?: string | string[] | number | null;
   fieldLayout?: Record<string, unknown>;
   fieldName: string;
   fieldLabel?: string;

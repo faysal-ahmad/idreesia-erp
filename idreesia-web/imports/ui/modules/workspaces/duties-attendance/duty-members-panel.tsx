@@ -4,6 +4,8 @@ import {
   CalendarOutlined,
   CrownFilled,
   CrownOutlined,
+  EnvironmentFilled,
+  EnvironmentOutlined,
   UserAddOutlined,
   UserDeleteOutlined,
 } from '@ant-design/icons';
@@ -56,7 +58,7 @@ interface Props {
 }
 
 // The roster of a duty, shown under its row: who is on it and on which days
-// of the week. Roster changes apply from tomorrow.
+// of the week. Roster changes apply from tomorrow (a new duty's roster can be set today).
 const DutyMembersPanel = ({ locationId, duty, canManage, onChanged }: Props) => {
   const [daysForm] = Form.useForm<{ daysOfWeek: string[] }>();
   const [adding, setAdding] = useState(false);
@@ -107,6 +109,22 @@ const DutyMembersPanel = ({ locationId, duty, canManage, onChanged }: Props) => 
         dutyId,
         karkunId: member.karkunId,
         isCoordinator: !member.isCoordinator,
+        canMarkOwnAttendance: !!member.canMarkOwnAttendance,
+        daysOfWeek: daysOf(member),
+      },
+    })
+      .then(() => onChanged())
+      .catch(reportError);
+  };
+
+  const handleToggleOwnAttendance = (member: Member) => {
+    updateMember({
+      variables: {
+        locationId,
+        dutyId,
+        karkunId: member.karkunId,
+        isCoordinator: !!member.isCoordinator,
+        canMarkOwnAttendance: !member.canMarkOwnAttendance,
         daysOfWeek: daysOf(member),
       },
     })
@@ -130,6 +148,7 @@ const DutyMembersPanel = ({ locationId, duty, canManage, onChanged }: Props) => 
           dutyId,
           karkunId: editing.karkunId,
           isCoordinator: !!editing.isCoordinator,
+          canMarkOwnAttendance: !!editing.canMarkOwnAttendance,
           daysOfWeek,
         },
       });
@@ -164,6 +183,12 @@ const DutyMembersPanel = ({ locationId, duty, canManage, onChanged }: Props) => 
       render: (_text: unknown, member: Member) => formatDays(member),
     },
     {
+      title: 'Marks own attendance',
+      key: 'ownAttendance',
+      render: (_text: unknown, member: Member) =>
+        member.canMarkOwnAttendance ? 'Yes' : 'No',
+    },
+    {
       title: 'Contact Number',
       key: 'contactNumber',
       render: (_text: unknown, member: Member) => {
@@ -178,7 +203,7 @@ const DutyMembersPanel = ({ locationId, duty, canManage, onChanged }: Props) => 
     },
     {
       key: 'action',
-      width: 110,
+      width: 140,
       render: (_text: unknown, member: Member) => {
         if (!canManage) {
           return member.isCoordinator ? (
@@ -207,6 +232,25 @@ const DutyMembersPanel = ({ locationId, duty, canManage, onChanged }: Props) => 
                 <CrownOutlined
                   className="list-actions-icon"
                   onClick={() => handleToggleCoordinator(member)}
+                />
+              )}
+            </Tooltip>
+            <Tooltip
+              title={
+                member.canMarkOwnAttendance
+                  ? 'Do not allow marking own attendance'
+                  : 'Allow marking own attendance'
+              }
+            >
+              {member.canMarkOwnAttendance ? (
+                <EnvironmentFilled
+                  className="list-actions-icon"
+                  onClick={() => handleToggleOwnAttendance(member)}
+                />
+              ) : (
+                <EnvironmentOutlined
+                  className="list-actions-icon"
+                  onClick={() => handleToggleOwnAttendance(member)}
                 />
               )}
             </Tooltip>
@@ -240,7 +284,7 @@ const DutyMembersPanel = ({ locationId, duty, canManage, onChanged }: Props) => 
           </Button>
           <span className="da-note" style={{ marginLeft: 12 }}>
             Roster changes apply from tomorrow; days up to today keep the roster
-            they had.
+            they had. A new duty can still be set up today.
           </span>
         </div>
       ) : null}

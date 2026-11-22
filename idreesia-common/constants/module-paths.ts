@@ -5,6 +5,7 @@ const ModulePaths = {
   security: '/security',
   correspondence: '/correspondence',
   workspaces: '/workspaces',
+  myData: '/my-data',
 };
 
 export default ModulePaths;

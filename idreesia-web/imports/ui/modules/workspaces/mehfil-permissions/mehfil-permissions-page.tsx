@@ -21,6 +21,7 @@ const REFETCH = [
   'workspaceMehfilPermissions',
   'myMehfilPermissionsLocations',
   'myMehfilDetailsLocations',
+  'myMehfilKarkunsLocations',
   'myDutiesAttendanceLocations',
 ];
 

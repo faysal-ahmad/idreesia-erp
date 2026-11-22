@@ -1,5 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 
+import { ATTENDANCE_GEOFENCE_METERS } from 'meteor/idreesia-common/constants/duties-attendance';
 import { OrgLocationTypeValues } from 'meteor/idreesia-common/constants/organization';
 import { identifiable, timestamps } from '../common';
 
@@ -12,6 +13,11 @@ const MehfilDetailsSchema = new SimpleSchema({
   otherMehfilDetails: { type: String, optional: true },
   latitude: { type: Number, optional: true },
   longitude: { type: Number, optional: true },
+  attendanceGeofenceMeters: {
+    type: SimpleSchema.Integer,
+    optional: true,
+    allowedValues: [...ATTENDANCE_GEOFENCE_METERS],
+  },
 });
 
 export default new SimpleSchema({

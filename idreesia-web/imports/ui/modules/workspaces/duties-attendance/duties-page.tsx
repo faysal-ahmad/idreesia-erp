@@ -307,7 +307,7 @@ const DutiesPage = () => {
             name="isActive"
             label="Active"
             valuePropName="checked"
-            extra="An inactive duty is no longer planned. When it is made active again, it picks up from tomorrow."
+            extra="An inactive duty is no longer planned. When it is made active again, it picks up from today."
           >
             <Switch />
           </Form.Item>

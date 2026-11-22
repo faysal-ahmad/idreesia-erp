@@ -13,6 +13,7 @@ const SubModuleNames = {
   dutyAttendance: 'Duty Attendance',
   attendanceSheet: 'Attendance Sheet',
   mehfilDetails: 'Mehfil Details',
+  mehfilKarkuns: 'Mehfil Karkuns',
   mehfilPermissions: 'Mehfil Permissions',
 };
 

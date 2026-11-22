@@ -5,6 +5,7 @@ import {
   OrgLocationUsers,
   Users,
 } from 'meteor/idreesia-common/server/collections/admin';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 
 import {
   addMehfilPermissionUser,
@@ -12,6 +13,7 @@ import {
   listMyMehfilPermissionsLocations,
   loadMehfilPermissionsAccess,
   removeMehfilPermissionUser,
+  searchMehfilPermissionsKarkuns,
 } from './index';
 
 let cityId: string;
@@ -194,5 +196,31 @@ describe('removeMehfilPermissionUser', () => {
     await expect(
       removeMehfilPermissionUser(mehfilId, 'mehfil-details', 'view', 'u1', 'admin')
     ).rejects.toThrow('does not have this permission');
+  });
+});
+
+describe('searchMehfilPermissionsKarkuns', () => {
+  // Straight to the driver: these tests are about which people are listed.
+  const insert = (collection: { rawCollection(): unknown }, doc: Record<string, unknown>) =>
+    (collection.rawCollection() as { insertOne(d: unknown): Promise<unknown> }).insertOne(doc);
+  const addKarkun = (_id: string, mehfilLocationId: string) =>
+    insert(People, {
+      _id,
+      isKarkun: true,
+      sharedData: { name: _id },
+      karkunData: { mehfilLocationId },
+    });
+
+  it('lists only karkuns of the mehfil who have a user account', async () => {
+    await addKarkun('with-account', 'm1');
+    await addKarkun('no-account', 'm1');
+    await addKarkun('other-mehfil', 'm2');
+    await insert(Users, { _id: 'ua', username: 'amy', personId: 'with-account' });
+    await insert(Users, { _id: 'ub', username: 'bob', personId: 'other-mehfil' });
+
+    const result = await searchMehfilPermissionsKarkuns({ locationId: 'm1' });
+
+    expect(result.totalResults).toBe(1);
+    expect(result.data.map(row => row._id)).toEqual(['with-account']);
   });
 });

@@ -34,6 +34,9 @@ export type { PlanDay, PlanKarkun } from './planning';
 export { getAttendanceSheet } from './attendance';
 export type { AttendanceSheetRow } from './attendance';
 
+export { listMyDuties } from './my-duties';
+export type { MyDuty } from './my-duties';
+
 export { searchWorkspaceKarkuns } from './karkuns';
 export type { WorkspaceKarkunSearchParams } from './karkuns';
 

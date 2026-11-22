@@ -1,0 +1,180 @@
+/* Workspaces location selector (location-picker.tsx). Loaded from client/main.tsx. */
+
+.location-bar-icon {
+  flex-shrink: 0;
+  font-size: 20px;
+}
+
+.location-bar-text {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.location-bar-name {
+  flex-shrink: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The parent path fills what's left of the line and is cut off first. */
+.location-bar-parent {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-popup {
+  display: flex;
+  max-height: 80vh;
+  flex-direction: column;
+  border-radius: var(--app-radius-large) var(--app-radius-large) 0 0;
+}
+
+.location-popup-searching {
+  height: 80vh; /* keeps the sheet from shrinking as the matches drop away */
+}
+
+.location-popup-header {
+  position: relative;
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 52px;
+}
+
+.location-popup-title {
+  font-size: 1rem; /* 17px */
+  font-weight: 600;
+  text-align: center;
+}
+
+.location-popup-search-button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: none;
+  color: var(--app-color-primary);
+  font-size: 22px;
+}
+
+.location-popup-search {
+  padding: 0 12px 8px;
+}
+
+.location-popup-list {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
+
+.location-row {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--app-color-border);
+  background: var(--app-color-surface);
+  color: var(--app-color-text);
+  font: inherit;
+  text-align: left;
+}
+
+.location-row:disabled {
+  color: var(--app-color-text-weak);
+}
+
+.location-row-active {
+  background: var(--app-color-primary-light);
+  color: var(--app-color-primary);
+  font-weight: 500;
+}
+
+.location-row-text {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.location-row-path {
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+  font-weight: 400;
+}
+
+.location-popup-empty {
+  padding: 24px 16px;
+  color: var(--app-color-text-secondary);
+  text-align: center;
+}
+
+/* The name, with a tick right after it on the selected location. */
+.location-row-title {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.location-row-check {
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+/* A location's type, at the right (country, zone, city, mehfil). */
+.location-row-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-type-pill {
+  flex-shrink: 0;
+  padding: 0 8px;
+  border: 1px solid currentColor;
+  border-radius: 10px;
+  font-size: 0.6471rem; /* 11px */
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.location-type-country {
+  color: var(--app-color-feature-purple);
+}
+
+.location-type-group {
+  color: var(--app-color-feature-orange);
+}
+
+.location-type-city {
+  color: var(--app-color-feature-blue);
+}
+
+.location-type-mehfil {
+  color: var(--app-color-feature-green);
+}
+
+.location-row:disabled .location-type-pill {
+  opacity: 0.6;
+}

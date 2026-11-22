@@ -43,15 +43,15 @@ const buildTree = (locations: LocationRecord[]): TreeRow[] => {
 };
 
 /**
- * Keeps the rows whose name matches the term together with their ancestors,
- * so a match always shows where it sits.
+ * Keeps the rows whose name matches, with all their descendants (so a matching
+ * city still lists its mehfils) and their ancestors (so a match always shows
+ * where it sits). Other branches are dropped.
  */
 const filterTree = (rows: TreeRow[], term: string): TreeRow[] =>
   rows.flatMap(row => {
+    if (row.name.toLowerCase().includes(term)) return [row];
     const children = row.children ? filterTree(row.children, term) : [];
-    const matches = row.name.toLowerCase().includes(term);
-    if (!matches && children.length === 0) return [];
-    return [{ ...row, children: children.length > 0 ? children : undefined }];
+    return children.length > 0 ? [{ ...row, children }] : [];
   });
 
 const collectParentKeys = (rows: TreeRow[]): string[] =>

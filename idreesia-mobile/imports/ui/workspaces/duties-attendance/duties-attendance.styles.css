@@ -1,0 +1,311 @@
+/* Duties & Attendance screens (workspaces/duties-attendance). Loaded from client/main.tsx. */
+
+/* The duty bar: a one-line button showing the chosen duty. */
+.da-bar {
+  display: flex;
+  width: calc(100% - 24px);
+  height: 40px;
+  align-items: center;
+  gap: 8px;
+  margin: 0 12px 8px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  color: var(--app-color-text);
+  font: inherit;
+  text-align: left;
+}
+
+.da-bar-label {
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+}
+
+.da-bar-value {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  font-size: 0.9412rem; /* 16px */
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The date bar: previous / date / next. */
+.da-date-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.da-date-step,
+.da-date {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  color: var(--app-color-text);
+  font: inherit;
+}
+
+.da-date-step {
+  width: 40px;
+  flex-shrink: 0;
+  color: var(--app-color-primary);
+  font-size: 18px;
+}
+
+.da-date-step:disabled {
+  color: var(--app-color-text-disabled);
+}
+
+.da-date {
+  flex: 1;
+  gap: 8px;
+  font-size: 0.9412rem; /* 16px */
+  font-weight: 500;
+}
+
+.da-date .antd-mobile-icon {
+  color: var(--app-color-primary);
+  font-size: 18px;
+}
+
+/* Present / late / absent marks. */
+.da-mark-group {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.da-mark {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--app-color-border);
+  border-radius: 50%;
+  background: var(--app-color-surface);
+  color: var(--app-color-text-weak);
+  font: inherit;
+  font-size: 0.9412rem; /* 16px */
+  font-weight: 600;
+}
+
+.da-mark:disabled {
+  opacity: 0.5;
+}
+
+/* Read-only badge: smaller than the buttons. */
+span.da-mark {
+  width: 32px;
+  height: 32px;
+}
+
+.da-mark-present.da-mark-on,
+span.da-mark-present {
+  border-color: var(--app-color-success);
+  background: var(--app-color-success);
+  color: var(--app-color-on-primary);
+}
+
+.da-mark-late.da-mark-on,
+span.da-mark-late {
+  border-color: var(--app-color-warning);
+  background: var(--app-color-warning);
+  color: var(--app-color-on-primary);
+}
+
+.da-mark-absent.da-mark-on,
+span.da-mark-absent {
+  border-color: var(--app-color-danger);
+  background: var(--app-color-danger);
+  color: var(--app-color-on-primary);
+}
+
+.da-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 12px 4px;
+}
+
+/* Planning: one card per day. */
+.da-day {
+  margin-bottom: 8px;
+}
+
+.da-day-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 16px 0;
+  color: var(--app-color-text-secondary);
+  font-size: 0.8824rem; /* 15px */
+  font-weight: 600;
+}
+
+.da-day-header > span:first-child {
+  flex: 1;
+}
+
+.da-day-today {
+  color: var(--app-color-primary);
+}
+
+.da-day-date {
+  font-weight: 400;
+}
+
+.da-off .adm-list-item-content-main {
+  color: var(--app-color-text-weak);
+  text-decoration: line-through;
+}
+
+.da-add-item {
+  color: var(--app-color-primary);
+}
+
+.da-empty-item .adm-list-item-content-main {
+  color: var(--app-color-text-secondary);
+  font-size: 0.8824rem; /* 15px */
+}
+
+.da-summary {
+  margin: 0 16px 8px;
+}
+
+.da-summary p,
+.da-note {
+  margin: 8px 0 0;
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+}
+
+.da-note-block {
+  margin: 0 16px 4px;
+}
+
+/* Bottom sheets. */
+.da-popup,
+.da-karkun-popup {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--app-radius-large) var(--app-radius-large) 0 0;
+}
+
+.da-popup {
+  max-height: 80vh;
+}
+
+.da-karkun-popup {
+  height: 90vh;
+}
+
+.da-popup-header {
+  position: relative;
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 72px;
+}
+
+.da-popup-title {
+  font-size: 1rem; /* 17px */
+  font-weight: 600;
+  text-align: center;
+}
+
+.da-popup-done {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  height: 44px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  color: var(--app-color-primary);
+  font: inherit;
+  font-weight: 500;
+}
+
+.da-popup-hint {
+  margin: 0 16px 8px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+}
+
+.da-popup-body {
+  overflow-y: auto;
+}
+
+.da-popup-footer {
+  padding: 12px 16px;
+}
+
+.da-karkun-body {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.da-added-tag {
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* The add button in a duty's header, where the lock sits on a locked day. */
+.da-day-add {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  margin: -12px -12px -12px 0;
+  border: 0;
+  background: none;
+  color: var(--app-color-primary);
+  font-size: 22px;
+}
+
+/* InfoNote: icon plus a hint cut to one line until tapped. */
+.da-info-note {
+  display: flex;
+  width: calc(100% - 24px);
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 12px 8px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-primary-light);
+  color: var(--app-color-text-secondary);
+  font: inherit;
+  font-size: 0.7647rem; /* 13px */
+  line-height: 1.4;
+  text-align: left;
+}
+
+.da-info-note-icon {
+  flex-shrink: 0;
+  /* Centre the icon on the first line of text: half of (line height - icon size). */
+  margin-top: calc((0.7647rem * 1.4 - 20px) / 2);
+  color: var(--app-color-primary);
+  font-size: 20px;
+}
+
+.da-info-note-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.da-info-note-clamped {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -23,16 +23,14 @@ import {
 } from './org-location-types';
 
 export const MehfilDetailsFields = ({
-  onAddressBlur,
+  afterAddress,
 }: {
-  onAddressBlur?: React.FocusEventHandler<HTMLTextAreaElement>;
+  /** Shown right below the address (the Coordinates row of the edit tab). */
+  afterAddress?: React.ReactNode;
 }) => (
   <>
-    <InputTextAreaField
-      fieldName="address"
-      fieldLabel="Address"
-      onBlur={onAddressBlur}
-    />
+    <InputTextAreaField fieldName="address" fieldLabel="Address" />
+    {afterAddress}
     <InputTextField fieldName="mehfilStartYear" fieldLabel="Start Year" />
     <InputTextAreaField fieldName="timingDetails" fieldLabel="Timing Details" />
     <CheckboxField fieldName="lcdAvailability" fieldLabel="LCD Available" />
@@ -56,6 +54,8 @@ export interface LocationFormValues {
   otherMehfilDetails?: string;
   latitude?: number | null;
   longitude?: number | null;
+  /** 0 or missing: no geofence. */
+  attendanceGeofenceMeters?: number;
 }
 
 interface Props {

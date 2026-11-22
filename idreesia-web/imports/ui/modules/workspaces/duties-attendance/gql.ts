@@ -76,6 +76,7 @@ export const WORKSPACE_DA_DUTIES: TypedDocumentNode<
       members {
         karkunId
         isCoordinator
+        canMarkOwnAttendance
         daysOfWeek
         karkun {
           _id
@@ -262,6 +263,7 @@ export const WORKSPACE_DA_ADD_DUTY_MEMBER: TypedDocumentNode<
     $dutyId: String!
     $karkunId: String!
     $isCoordinator: Boolean
+    $canMarkOwnAttendance: Boolean
     $daysOfWeek: [String]
   ) {
     workspaceDaAddDutyMember(
@@ -269,6 +271,7 @@ export const WORKSPACE_DA_ADD_DUTY_MEMBER: TypedDocumentNode<
       dutyId: $dutyId
       karkunId: $karkunId
       isCoordinator: $isCoordinator
+      canMarkOwnAttendance: $canMarkOwnAttendance
       daysOfWeek: $daysOfWeek
     ) {
       _id
@@ -285,6 +288,7 @@ export const WORKSPACE_DA_UPDATE_DUTY_MEMBER: TypedDocumentNode<
     $dutyId: String!
     $karkunId: String!
     $isCoordinator: Boolean
+    $canMarkOwnAttendance: Boolean
     $daysOfWeek: [String]
   ) {
     workspaceDaUpdateDutyMember(
@@ -292,6 +296,7 @@ export const WORKSPACE_DA_UPDATE_DUTY_MEMBER: TypedDocumentNode<
       dutyId: $dutyId
       karkunId: $karkunId
       isCoordinator: $isCoordinator
+      canMarkOwnAttendance: $canMarkOwnAttendance
       daysOfWeek: $daysOfWeek
     ) {
       _id

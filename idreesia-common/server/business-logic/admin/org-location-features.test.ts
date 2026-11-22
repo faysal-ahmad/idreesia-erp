@@ -168,7 +168,7 @@ describe('general permissions of the location', () => {
     expect(await hasOrgLocationPermission('u2', mehfilId, 'location', 'edit-details')).toBe(false);
 
     const groups = await listOrgLocationFeaturePermissions(mehfilId);
-    expect(groups.map(group => group.featureKey)).toEqual(['location', FEATURE, 'mehfil-details', 'mehfil-permissions']);
+    expect(groups.map(group => group.featureKey)).toEqual(['location', FEATURE, 'mehfil-details', 'mehfil-karkuns', 'mehfil-permissions']);
     expect(groups[0].permissions).toMatchObject([
       { key: 'edit-details', userIds: ['u1'] },
     ]);

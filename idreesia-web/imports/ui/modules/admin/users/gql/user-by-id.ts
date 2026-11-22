@@ -17,8 +17,10 @@ const USER_BY_ID: TypedDocumentNode<
       displayName
       locked
       hasChatAccount
+      chatUserId
       twoFactorEnabled
       isSuperAdmin
+      isServiceAccount
       loginBlockedAddresses
       untrustedLoginAddressesBlocked
       instances

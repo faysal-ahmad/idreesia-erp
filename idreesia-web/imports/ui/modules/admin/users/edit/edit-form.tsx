@@ -49,7 +49,11 @@ const EditForm = ({ match, location, history }: Props) => {
   const userById = data?.userById;
   const userName = (userById?.displayName || userById?.username)?.trim();
 
-  useDynamicBreadcrumbs(['Admin', 'Users', userName || 'Edit']);
+  useDynamicBreadcrumbs([
+    'Admin',
+    userById?.isServiceAccount ? 'Service Accounts' : 'Users',
+    userName || 'Edit',
+  ]);
 
   if (loading) {
     return (

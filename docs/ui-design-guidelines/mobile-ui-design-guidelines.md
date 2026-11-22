@@ -29,6 +29,7 @@ antd-mobile only ships components and theming docs. It has no guidance on page p
 | Detail screen | `idreesia-mobile/imports/ui/apps/security/visitors/visitor-detail-screen.tsx` |
 | Keeping a list alive under its detail | `idreesia-mobile/imports/ui/apps/security/visitors/visitors-feature.tsx` + `imports/ui/layout/keep-alive.tsx` |
 | Paged query → infinite list | `idreesia-mobile/imports/ui/hooks/use-paged-query.ts` + `imports/ui/components/paged-list.tsx` |
+| Workspaces location selector (bar styled like a section heading, searchable tree in a bottom Popup) | `idreesia-mobile/imports/ui/workspaces/location-picker.tsx` + `use-workspace-locations.ts` |
 | Workspace screens (opened from the Workspaces tab) | `idreesia-mobile/imports/ui/workspaces/` + `workspaces-stack.tsx` |
 | Form screen | `idreesia-mobile/imports/ui/account/change-password-screen.tsx` |
 | Public chat (signed out, Rocket.Chat) | `idreesia-mobile/imports/ui/chat/` |
@@ -52,7 +53,14 @@ The mobile app uses the same functional modules as the web app (`ModuleNames` / 
 
 ```
 Home tab (/home)                         ← default after signing in; empty for now
-Workspaces tab (/workspaces)             ← the user's workspaces, each expanding to its features
+Workspaces tab (/workspaces)             ← a location bar (opens a bottom-sheet selector, with unread counts per location); under it, the selected location's features (Mehfil Details, Mehfil Permissions, Duties & Attendance) and the user's committees there, each expanding to its features
+├── Mehfil Details (/workspaces/locations/:locationId/mehfil-details)   ← imports/ui/workspaces/mehfil-details; a form for those who can update, label / value rows for the rest; the map pin is set in a bottom Popup (OpenStreetMap via Leaflet: look an address up, tap the map or drag the pin); read-only users see the map, and everyone gets "Open in maps"
+├── Mehfil Permissions (/workspaces/locations/:locationId/mehfil-permissions)   ← imports/ui/workspaces/mehfil-permissions; one card per feature, each permission with its people as tags (tap to remove, add icon opens a people-search Popup) for those who can manage
+├── Duties & Attendance (/workspaces/locations/:locationId/duties-attendance/…)   ← a mehfil's location feature; four screens, imports/ui/workspaces/duties-attendance:
+│   ├── …/duties                          ← DutiesFeature; the list stays alive under …/duties/:dutyId (the roster; member actions in an ActionSheet, days and add-duties in bottom Popups, people search in a tall Popup)
+│   ├── …/planning                        ← duty bar ("All duties" by default) + day bar, one section per duty; future days editable
+│   ├── …/attendance                      ← duty bar + day bar, inline P / L / A buttons (tap the current one to clear)
+│   └── …/attendance-sheet                ← duty bar (or all duties) + month bar, totals per person
 ├── Workspace members (/workspaces/committees/:committeeId/members)   ← imports/ui/workspaces; the Workspaces list stays alive under it
 ├── Workspace discussion (/workspaces/committees/:committeeId/discussions)   ← DiscussionFeature; main list stays alive under:
 │   ├── …/discussions/threads/:threadId
@@ -75,8 +83,8 @@ Workspaces tab (/workspaces)             ← the user's workspaces, each expandi
 ├── Workspace Night Stay Report (/workspaces/committees/:committeeId/night-stay-report)   ← NightStayReportFeature; read-only, one night at a time; report stays alive under:
 │   └── …/night-stay-report/:stayId   ← one stay, with a large photo
 └── Workspace Security Server Alerts (/workspaces/committees/:committeeId/security-server-alerts)   ← read-only, one day at a time
-Apps tab (/apps)                         ← lists the user's modules
-└── Security (/security)                 ← module screen, lists its features
+Apps tab (/apps)                         ← one collapsible section per module the user can use, with its features listed under the heading (like the Home tab's sections)
+└── Security (/security)                 ← module screen (deep link; the Apps tab links straight to its features)
     └── Visitors (/security/visitors)    ← feature; owns every route below it
         ├── /security/visitors/:id       ← detail
         └── /security/visitors/new       ← form
@@ -88,6 +96,7 @@ Account tab (/account)
 - **Features** are `FeatureDefinition`s inside their module. Each one has a `path` under the module's path, a list of `permissions`, and a `component`. The component owns every route under its path, so it renders its own `<Switch>` for list, detail and form screens.
 - **Visibility follows permissions.**
   - A feature is shown when the user has **any** of its permissions (`Permissions` from idreesia-common).
+  - A feature with an empty `permissions` list is open to every signed-in user. Use it only for the user's own data (the My Data module), whose queries need no permission on the server.
   - A module is shown when the user can use at least one of its features. On the web, a module only needs one permission with the module's prefix; on mobile, a module with nothing usable in it would be a dead end.
   - `FeatureGate` blocks deep links to features the user can't use.
   - Hiding things in the UI isn't security. The server still enforces permissions on every query and mutation.
@@ -108,7 +117,7 @@ Account tab (/account)
 
 ## 2. Navigation
 
-- **Tab bar:** Home, Workspaces, Apps and Account are the only top-level destinations, in that order. Home is the default screen after signing in. The tab bar shows only on their root screens. Don't add tabs per module; modules are listed on the Apps tab.
+- **Tab bar:** Home, Workspaces, Apps and Account are the only top-level destinations, in that order. Home is the default screen after signing in. The tab bar shows only on their root screens. Don't add tabs per module; modules are sections on the Apps tab.
 - **Drill-down:** every screen below a tab root is full-screen, with a back arrow in the nav bar. Keep the hierarchy to at most **module → feature → list → detail → form**. If you need more levels, rethink the flow, for example with a popup or tabs inside the detail screen.
 - **Back:** set `backTo` on `Page` to the parent route. That gives the screen a back arrow and a swipe right from the left edge (`layout/use-swipe-back.ts`), on every platform; both run the same back action. `useNavigateBack` uses `history.goBack()` when the user got there within the app, which keeps Android's hardware back button in step. On a deep link or after a reload, it replaces the current route with the parent, so the back arrow never leaves the app.
 - **Coming back keeps the screen as it was:** a list (or search) that opens a detail screen stays mounted underneath it inside `KeepAlive`, so back shows the same search, loaded pages and scroll position. The feature component decides which screens are still in the back stack; see `visitors-feature.tsx`. When another feature opens a record (e.g. the stay report opening a visitor), route the detail screen under that feature's own path (`/security/stay-report/:visitorId`) and reuse the screen component with its `backTo`, so the opening screen stays alive; see `stay-report-feature.tsx`. Don't store screen state in module variables or the URL to fake this.
@@ -260,7 +269,7 @@ After a flow completes and the user needs to know what happens next (for example
 
 - Use sentence case for titles, buttons and labels ("Change password", not "Change Password").
 - Buttons say what they do: "Register visitor", "Check in", "Save changes".
-- Keep list descriptions to one short line. The Apps tab's module screens show feature descriptions such as "Look up and register visitors".
+- Keep list descriptions to one short line. The Apps tab's sections show feature descriptions such as "Look up and register visitors".
 - Refer to people and places the same way the web app does, so users recognise them across both apps.
 
 ---

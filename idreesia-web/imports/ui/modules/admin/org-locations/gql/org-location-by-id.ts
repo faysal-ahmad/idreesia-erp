@@ -17,6 +17,9 @@ const ORG_LOCATION_BY_ID: TypedDocumentNode<
       parentId
       allParentIds
       observerKarkunIds
+      committees {
+        _id
+      }
       mehfilDetails {
         address
         mehfilStartYear
@@ -26,6 +29,7 @@ const ORG_LOCATION_BY_ID: TypedDocumentNode<
         otherMehfilDetails
         latitude
         longitude
+        attendanceGeofenceMeters
       }
       createdAt
       createdBy

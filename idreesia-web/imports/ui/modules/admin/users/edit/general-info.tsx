@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { MessageOutlined } from '@ant-design/icons';
+import { SettingOutlined } from '@ant-design/icons';
 import {
   Button,
   Collapse,
+  Dropdown,
   Form,
   Popconfirm,
   Space,
   Spin,
   Tooltip,
   type CollapseProps,
+  type MenuProps,
 } from 'antd';
 import { useLoggedInUser } from 'meteor/idreesia-common/hooks/common';
-import { message } from '/imports/ui/antd-feedback';
+import { message, modal } from '/imports/ui/antd-feedback';
 import {
   InputTextField,
   SwitchField,
@@ -22,6 +24,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
+import ResetPasswordModal from './reset-password-modal';
 import {
   USER_BY_ID,
   PAGED_USERS,
@@ -39,7 +42,6 @@ interface Props {
 
 interface FormValues {
   userName?: string;
-  password?: string;
   email?: string;
   displayName?: string;
   locked?: boolean;
@@ -47,6 +49,7 @@ interface FormValues {
 
 const GeneralInfo = ({ userId, history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
   const { data, loading } = useQuery(USER_BY_ID, {
     variables: { _id: userId },
   });
@@ -87,7 +90,9 @@ const GeneralInfo = ({ userId, history }: Props) => {
   const userById = data?.userById;
 
   const handleCancel = () => {
-    history.push(paths.usersPath);
+    history.push(
+      userById?.isServiceAccount ? paths.serviceAccountsPath : paths.usersPath
+    );
   };
 
   const handleFieldsChange = () => {
@@ -96,7 +101,6 @@ const GeneralInfo = ({ userId, history }: Props) => {
 
   const handleFinish = ({
     userName,
-    password,
     email,
     displayName,
     locked,
@@ -106,7 +110,6 @@ const GeneralInfo = ({ userId, history }: Props) => {
         userId: userById?._id ?? userId,
         // A user name can only be set once; after that the field is locked.
         userName: !userById?.username && userName ? userName : undefined,
-        password,
         email,
         displayName,
         locked,
@@ -182,38 +185,6 @@ const GeneralInfo = ({ userId, history }: Props) => {
   // is created from the stored user name and display name.
   const canCreateChatAccount =
     !!userById.username && !!userById.displayName?.trim();
-  const createChatAccountButton = userById.hasChatAccount ? null : (
-    <Tooltip
-      title={
-        canCreateChatAccount
-          ? undefined
-          : 'Set and save a user name and display name first'
-      }
-    >
-      <Button
-        size="large"
-        icon={<MessageOutlined />}
-        disabled={!canCreateChatAccount}
-        loading={creatingChatAccount}
-        onClick={handleCreateChatAccount}
-      >
-        Create Chat Account
-      </Button>
-    </Tooltip>
-  );
-
-  const resetTwoFactorButton = userById.twoFactorEnabled ? (
-    <Popconfirm
-      title="Turn off two-factor authentication for this user?"
-      description="They will be able to log in with only their password."
-      okText="Turn Off"
-      onConfirm={handleResetTwoFactor}
-    >
-      <Button size="large" loading={resettingTwoFactor}>
-        Reset Two-Factor
-      </Button>
-    </Popconfirm>
-  ) : null;
 
   const blockedAddresses = userById.loginBlockedAddresses ?? 0;
   const isLoginBlocked =
@@ -242,64 +213,132 @@ const GeneralInfo = ({ userId, history }: Props) => {
     </Popconfirm>
   ) : null;
 
-  // Only a super admin can grant or revoke super admin rights, and only to a
-  // user who has two-factor authentication enabled and is not locked.
-  let superAdminButton: React.ReactNode = null;
-  if (loggedInUser?.isSuperAdmin) {
-    if (userById.isSuperAdmin) {
-      superAdminButton = (
-        <Popconfirm
-          title="Remove super admin rights from this user?"
-          description="They will keep only the permissions granted to them."
-          okText="Remove"
-          onConfirm={() => handleSetSuperAdmin(false)}
-        >
-          <Button size="large" loading={settingSuperAdmin}>
-            Remove Super Admin
-          </Button>
-        </Popconfirm>
-      );
-    } else {
-      let disabledReason: string | undefined;
-      if (userById.locked) {
-        disabledReason = 'A locked user cannot be made a super admin';
-      } else if (!userById.twoFactorEnabled) {
-        disabledReason = 'The user must enable two-factor authentication first';
-      }
-      superAdminButton = (
-        <Tooltip title={disabledReason}>
-          <Popconfirm
-            title="Make this user a super admin?"
-            description="They will have every permission and access to every instance and committee."
-            okText="Make Super Admin"
-            disabled={!!disabledReason}
-            onConfirm={() => handleSetSuperAdmin(true)}
-          >
-            <Button
-              size="large"
-              disabled={!!disabledReason}
-              loading={settingSuperAdmin}
-            >
-              Make Super Admin
-            </Button>
-          </Popconfirm>
-        </Tooltip>
-      );
-    }
+  // Commands in the cog menus on the section headers. Every command is always
+  // listed; one that doesn't apply is disabled, with the reason as a tooltip.
+  const isSuperAdminCaller = !!loggedInUser?.isSuperAdmin;
+  const SUPER_ADMIN_ONLY = 'Only a super admin can do this';
+
+  const commandItem = (
+    key: string,
+    text: string,
+    disabledReason: string | undefined,
+    onClick: () => void,
+    busy = false
+  ): NonNullable<MenuProps['items']>[number] => ({
+    key,
+    label: <Tooltip title={disabledReason}>{text}</Tooltip>,
+    disabled: !!disabledReason || busy,
+    onClick,
+  });
+
+  // Super admin rights can only be granted to a user who has two-factor
+  // authentication enabled and is not locked.
+  let makeSuperAdminReason: string | undefined;
+  if (!isSuperAdminCaller) makeSuperAdminReason = SUPER_ADMIN_ONLY;
+  else if (userById.isServiceAccount)
+    makeSuperAdminReason = 'A service account cannot be a super admin';
+  else if (userById.locked)
+    makeSuperAdminReason = 'A locked user cannot be made a super admin';
+  else if (!userById.twoFactorEnabled)
+    makeSuperAdminReason = 'The user must enable two-factor authentication first';
+
+  let createChatAccountReason: string | undefined;
+  if (userById.hasChatAccount) {
+    createChatAccountReason = 'This user already has a chat account';
+  } else if (!canCreateChatAccount) {
+    createChatAccountReason = 'Set and save a user name and display name first';
   }
 
-  const extraButtons =
-    createChatAccountButton ||
-    resetTwoFactorButton ||
-    clearLoginBlocksButton ||
-    superAdminButton ? (
-      <Space>
-        {createChatAccountButton}
-        {resetTwoFactorButton}
-        {clearLoginBlocksButton}
-        {superAdminButton}
-      </Space>
-    ) : null;
+  const settingsItems: NonNullable<MenuProps['items']> = [
+    commandItem(
+      'create-chat-account',
+      'Create Chat Account',
+      createChatAccountReason,
+      handleCreateChatAccount,
+      creatingChatAccount
+    ),
+    commandItem(
+      'reset-password',
+      'Reset Password',
+      !isSuperAdminCaller
+        ? SUPER_ADMIN_ONLY
+        : userById.isServiceAccount
+          ? 'A service account has no password'
+          : undefined,
+      () => setResetPasswordOpen(true)
+    ),
+    userById.isSuperAdmin
+      ? commandItem(
+          'remove-super-admin',
+          'Remove Super Admin',
+          isSuperAdminCaller ? undefined : SUPER_ADMIN_ONLY,
+          () =>
+            modal.confirm({
+              title: 'Remove super admin rights from this user?',
+              content: 'They will keep only the permissions granted to them.',
+              okText: 'Remove',
+              onOk: () => handleSetSuperAdmin(false),
+            }),
+          settingSuperAdmin
+        )
+      : commandItem(
+          'make-super-admin',
+          'Make Super Admin',
+          makeSuperAdminReason,
+          () =>
+            modal.confirm({
+              title: 'Make this user a super admin?',
+              content:
+                'They will have every permission and access to every instance and committee.',
+              okText: 'Make Super Admin',
+              onOk: () => handleSetSuperAdmin(true),
+            }),
+          settingSuperAdmin
+        ),
+  ];
+
+  // For a user who lost the phone with their authenticator app; they can then
+  // log in with only their password and set it up again.
+  let resetTwoFactorReason: string | undefined;
+  if (!isSuperAdminCaller) resetTwoFactorReason = SUPER_ADMIN_ONLY;
+  else if (userById.isServiceAccount)
+    resetTwoFactorReason = 'A service account does not use two-factor authentication';
+  else if (!userById.twoFactorEnabled)
+    resetTwoFactorReason = 'Two-factor authentication is not enabled for this user';
+
+  const statusItems: NonNullable<MenuProps['items']> = [
+    commandItem(
+      'reset-two-factor',
+      'Reset Two-Factor',
+      resetTwoFactorReason,
+      () =>
+        modal.confirm({
+          title: 'Turn off two-factor authentication for this user?',
+          content: 'They will be able to log in with only their password.',
+          okText: 'Turn Off',
+          onOk: handleResetTwoFactor,
+        }),
+      resettingTwoFactor
+    ),
+  ];
+
+  const cogMenu = (items: NonNullable<MenuProps['items']>, title: string) => (
+    <Dropdown menu={{ items }} trigger={['click']}>
+      <Button
+        type="text"
+        icon={<SettingOutlined />}
+        title={title}
+        // Keep the click from collapsing the section.
+        onClick={event => event.stopPropagation()}
+      />
+    </Dropdown>
+  );
+  const statusMenu = cogMenu(statusItems, 'Status commands');
+  const settingsMenu = cogMenu(settingsItems, 'Account commands');
+
+  const extraButtons = clearLoginBlocksButton ? (
+    <Space>{clearLoginBlocksButton}</Space>
+  ) : null;
 
   const karkunField = userById.personId ? (
     <InputTextField
@@ -319,6 +358,7 @@ const GeneralInfo = ({ userId, history }: Props) => {
   const accountItem: NonNullable<CollapseProps['items']>[number] = {
     key: 'account',
     label: 'Account Information',
+    extra: settingsMenu,
     forceRender: true,
     children: (
       <>
@@ -327,43 +367,6 @@ const GeneralInfo = ({ userId, history }: Props) => {
           fieldLabel="User name"
           disabled={!!userById.username}
           initialValue={userById.username}
-        />
-
-        <SwitchField
-          fieldName="locked"
-          fieldLabel="Locked"
-          initialValue={userById.locked ?? undefined}
-        />
-
-        {/* Read-only status (not a form field), so it updates after a reset. */}
-        <Form.Item
-          label="Two-Factor"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 14 }}
-        >
-          {userById.twoFactorEnabled ? 'Enabled' : 'Not enabled'}
-        </Form.Item>
-
-        <Form.Item
-          label="Login"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 14 }}
-        >
-          {isLoginBlocked ? loginBlockStatus : 'Not blocked'}
-        </Form.Item>
-
-        <Form.Item
-          label="Super Admin"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 14 }}
-        >
-          {userById.isSuperAdmin ? 'Yes' : 'No'}
-        </Form.Item>
-
-        <InputTextField
-          fieldName="password"
-          fieldLabel="Password"
-          type="password"
         />
 
         <InputTextField
@@ -379,6 +382,69 @@ const GeneralInfo = ({ userId, history }: Props) => {
         />
 
         {karkunField}
+
+        {/* Read-only; empty until a chat account is created. */}
+        <Form.Item
+          label="Chat User ID"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
+        >
+          {userById.chatUserId || '-'}
+        </Form.Item>
+
+        <Form.Item
+          label="Super Admin"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
+        >
+          {userById.isSuperAdmin ? 'Yes' : 'No'}
+        </Form.Item>
+
+        {/* Only worth showing on a service account; a user is never one. */}
+        {userById.isServiceAccount ? (
+          <Form.Item
+            label="Service Account"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14 }}
+          >
+            Yes
+          </Form.Item>
+        ) : null}
+      </>
+    ),
+  };
+
+  const statusItem: NonNullable<CollapseProps['items']>[number] = {
+    key: 'status',
+    label: 'Account Status',
+    extra: statusMenu,
+    forceRender: true,
+    children: (
+      <>
+        <SwitchField
+          fieldName="locked"
+          fieldLabel="Locked"
+          initialValue={userById.locked ?? undefined}
+        />
+
+        {/* A service account can't log in, so two-factor doesn't apply. */}
+        {userById.isServiceAccount ? null : (
+          <Form.Item
+            label="Two-Factor"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14 }}
+          >
+            {userById.twoFactorEnabled ? 'Enabled' : 'Not enabled'}
+          </Form.Item>
+        )}
+
+        <Form.Item
+          label="Login"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
+        >
+          {isLoginBlocked ? loginBlockStatus : 'Not blocked'}
+        </Form.Item>
       </>
     ),
   };
@@ -393,8 +459,8 @@ const GeneralInfo = ({ userId, history }: Props) => {
         <Space orientation="vertical" size={16} style={{ display: 'flex', width: '100%' }}>
           <Collapse
             className="visitor-form-sections"
-            defaultActiveKey={['account']}
-            items={[accountItem]}
+            defaultActiveKey={['account', 'status']}
+            items={[accountItem, statusItem]}
           />
 
           <FormButtonsSaveCancel
@@ -405,6 +471,12 @@ const GeneralInfo = ({ userId, history }: Props) => {
           />
         </Space>
       </Form>
+
+      <ResetPasswordModal
+        userId={userById._id ?? userId}
+        open={resetPasswordOpen}
+        onClose={() => setResetPasswordOpen(false)}
+      />
     </div>
   );
 };

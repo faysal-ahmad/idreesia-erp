@@ -13,11 +13,19 @@ const names = async (params: Record<string, unknown>) =>
   (await searchUsers(params)).data.map(user => user.username);
 
 describe('buildUserSearchPipeline', () => {
-  it('has no stages without filters', () => {
-    expect(buildUserSearchPipeline({})).toEqual([]);
+  const regularUsersOnly = { $match: { isServiceAccount: { $ne: true } } };
+
+  it('only keeps regular users without other filters', () => {
+    expect(buildUserSearchPipeline({})).toEqual([regularUsersOnly]);
     expect(
       buildUserSearchPipeline({ showLocked: 'true', showUnlocked: 'true' })
-    ).toEqual([]);
+    ).toEqual([regularUsersOnly]);
+  });
+
+  it('keeps only service accounts when asked', () => {
+    expect(buildUserSearchPipeline({ serviceAccounts: 'true' })).toEqual([
+      { $match: { isServiceAccount: { $eq: true } } },
+    ]);
   });
 
   it('is null when the filters exclude every user', () => {
@@ -31,6 +39,7 @@ describe('buildUserSearchPipeline', () => {
 
   it('matches the module as a kebab-case permission prefix', () => {
     expect(buildUserSearchPipeline({ moduleAccess: 'Security Server' })).toEqual([
+      regularUsersOnly,
       {
         $match: {
           permissions: { $elemMatch: { $regex: '^security-server' } },
@@ -76,6 +85,14 @@ describe('searchUsers', () => {
       'never',
       'stale',
     ]);
+  });
+
+  it('lists service accounts apart from regular users', async () => {
+    await insertUser('human');
+    await insertUser('robot', { isServiceAccount: true });
+
+    expect(await names({})).toEqual(['human']);
+    expect(await names({ serviceAccounts: 'true' })).toEqual(['robot']);
   });
 
   it('filters by module access', async () => {

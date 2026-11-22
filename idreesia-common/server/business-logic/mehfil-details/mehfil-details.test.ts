@@ -89,6 +89,41 @@ describe('updateMehfilDetails', () => {
     expect(result?.updatedBy).toBe('u1');
   });
 
+  it('leaves attendance geofencing to Admin', async () => {
+    await OrgLocations.updateAsync(
+      { _id: mehfilId },
+      { $set: { mehfilDetails: { latitude: 1, longitude: 2, attendanceGeofencing: true } } }
+    );
+
+    // Whatever the caller sends, the stored value stays while there is a location.
+    const kept = await updateMehfilDetails(
+      mehfilId,
+      { latitude: 1, longitude: 2, attendanceGeofencing: false },
+      { _id: 'u1' }
+    );
+    expect(kept?.mehfilDetails?.attendanceGeofencing).toBe(true);
+
+    // Nor can the caller turn it on.
+    await OrgLocations.updateAsync(
+      { _id: mehfilId },
+      { $set: { 'mehfilDetails.attendanceGeofencing': false } }
+    );
+    const notEnabled = await updateMehfilDetails(
+      mehfilId,
+      { latitude: 1, longitude: 2, attendanceGeofencing: true },
+      { _id: 'u1' }
+    );
+    expect(notEnabled?.mehfilDetails?.attendanceGeofencing).toBe(false);
+
+    // Clearing the location switches it off.
+    await OrgLocations.updateAsync(
+      { _id: mehfilId },
+      { $set: { 'mehfilDetails.attendanceGeofencing': true } }
+    );
+    const cleared = await updateMehfilDetails(mehfilId, {}, { _id: 'u1' });
+    expect(cleared?.mehfilDetails?.attendanceGeofencing).toBe(false);
+  });
+
   it('refuses a location that is not a mehfil', async () => {
     await expect(
       updateMehfilDetails(cityId, { address: 'x' }, { _id: 'u1' })

@@ -27,6 +27,19 @@ type PlanKarkun = NonNullable<NonNullable<PlanDay['karkuns']>[number]>;
 
 const idsOf = (rows: Array<string | null> | null | undefined) => (rows ?? []).filter((id): id is string => !!id);
 
+const rowExtra = (karkun: PlanKarkun, locked: boolean) => {
+  if (locked) return <AttendanceMark status={asStatus(karkun.attendance)} />;
+  if (karkun.off) return <Tag fill="outline">Off</Tag>;
+  if (karkun.addedForDay) {
+    return (
+      <Tag color="primary" fill="outline">
+        Added
+      </Tag>
+    );
+  }
+  return undefined;
+};
+
 interface SectionProps {
   locationId: string;
   duty: Duty;
@@ -71,6 +84,33 @@ const DutySection = ({ locationId, duty, date, canEdit, online, register }: Sect
   const added = idsOf(day?.addedKarkunIds);
   const absent = idsOf(day?.absentKarkunIds);
 
+  const actionFor = (person: PlanKarkun) => {
+    if (person.addedForDay) {
+      return {
+        key: 'remove',
+        text: 'Remove from this day',
+        danger: true,
+        disabled: !online,
+        onClick: () => saveOverride(added.filter(id => id !== person.karkunId), absent),
+      };
+    }
+    if (person.off) {
+      return {
+        key: 'back',
+        text: 'Put back on this day',
+        disabled: !online,
+        onClick: () => saveOverride(added, absent.filter(id => id !== person.karkunId)),
+      };
+    }
+    return {
+      key: 'off',
+      text: 'Take off this day',
+      danger: true,
+      disabled: !online,
+      onClick: () => saveOverride(added, [...absent, person.karkunId]),
+    };
+  };
+
   return (
     <section className="da-day">
       <h3 className="da-day-header">
@@ -98,17 +138,7 @@ const DutySection = ({ locationId, duty, date, canEdit, online, register }: Sect
             className={karkun.off ? 'da-off' : undefined}
             clickable={editable}
             description={[karkun.contactNumber1, karkun.contactNumber2].filter(Boolean).join(' · ') || undefined}
-            extra={
-              locked ? (
-                <AttendanceMark status={asStatus(karkun.attendance)} />
-              ) : karkun.off ? (
-                <Tag fill="outline">Off</Tag>
-              ) : karkun.addedForDay ? (
-                <Tag color="primary" fill="outline">
-                  Added
-                </Tag>
-              ) : undefined
-            }
+            extra={rowExtra(karkun, locked)}
             prefix={<Avatar src={toDeviceUrl(karkun.imageThumbnailUrl ?? karkun.imageUrl) ?? ''} />}
             onClick={editable ? () => setSelected(karkun) : undefined}
           >
@@ -117,37 +147,7 @@ const DutySection = ({ locationId, duty, date, canEdit, online, register }: Sect
         ))}
       </List>
       <ActionSheet
-        actions={
-          selected
-            ? [
-                selected.addedForDay
-                  ? {
-                      key: 'remove',
-                      text: 'Remove from this day',
-                      danger: true,
-                      disabled: !online,
-                      onClick: () => saveOverride(
-                        added.filter(id => id !== selected.karkunId),
-                        absent,
-                      ),
-                    }
-                  : selected.off
-                    ? {
-                        key: 'back',
-                        text: 'Put back on this day',
-                        disabled: !online,
-                        onClick: () => saveOverride(added, absent.filter(id => id !== selected.karkunId)),
-                      }
-                    : {
-                        key: 'off',
-                        text: 'Take off this day',
-                        danger: true,
-                        disabled: !online,
-                        onClick: () => saveOverride(added, [...absent, selected.karkunId]),
-                      },
-              ]
-            : []
-        }
+        actions={selected ? [actionFor(selected)] : []}
         cancelText="Cancel"
         extra={selected?.name ?? undefined}
         visible={selected != null}

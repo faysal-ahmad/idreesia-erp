@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
 import { UsersNewForm, UsersEditForm, UsersList } from './users';
+import { ServiceAccountsNewForm, ServiceAccountsList } from './service-accounts';
 import {
   UserGroupsNewForm,
   UserGroupsEditForm,
@@ -32,6 +33,13 @@ const Router = () => (
     <Route path={paths.usersNewFormPath} component={UsersNewForm} />
     <Route path={paths.usersEditFormPath} component={UsersEditForm} />
     <Route path={paths.usersPath} component={UsersList} />
+
+    <Route
+      path={paths.serviceAccountsNewFormPath}
+      component={ServiceAccountsNewForm}
+    />
+    <Route path={paths.serviceAccountsEditFormPath} component={UsersEditForm} />
+    <Route path={paths.serviceAccountsPath} component={ServiceAccountsList} />
 
     <Route path={paths.userGroupsNewFormPath} component={UserGroupsNewForm} />
     <Route path={paths.userGroupsEditFormPath} component={UserGroupsEditForm} />

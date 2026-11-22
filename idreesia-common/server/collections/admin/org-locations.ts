@@ -11,6 +11,8 @@ export interface OrgLocationMehfilDetails {
   otherMehfilDetails?: string;
   latitude?: number;
   longitude?: number;
+  /** Attendance is checked against the location. Only with a location set. */
+  attendanceGeofencing?: boolean;
 }
 
 export interface OrgLocationDocument {

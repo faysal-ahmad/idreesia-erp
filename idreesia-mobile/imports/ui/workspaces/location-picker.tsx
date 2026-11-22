@@ -31,15 +31,28 @@ export const LocationPicker = ({ locations, selectedId, onChange, unreadByLocati
 
   const selected = locations.find(location => location.id === selectedId);
   const parentPath = selected ? selected.path.split(' › ').slice(0, -1).join(' › ') : '';
-  const searching = query.trim() !== '';
 
-  // While searching, show the selectable matches flat, with their full path.
+  // Like the web's Locations screen: keep the rows whose name matches, with
+  // their descendants (a matching city still lists its mehfils) and their
+  // ancestors (a match always shows where it sits), still as an indented tree.
   const rows = useMemo(() => {
     const text = query.trim().toLowerCase();
     if (!text) return locations;
-    return locations.filter(
-      location => location.selectable && location.name.toLowerCase().includes(text),
-    );
+    const keep = new Set<string>();
+    const stack: LocationRow[] = [];
+    let matchedDepth: number | null = null;
+    locations.forEach(location => {
+      stack.length = location.depth;
+      if (matchedDepth !== null && location.depth <= matchedDepth) matchedDepth = null;
+      const matches = location.name.toLowerCase().includes(text);
+      if (matches && matchedDepth === null) matchedDepth = location.depth;
+      if (matches || matchedDepth !== null) {
+        keep.add(location.id);
+        if (matches) stack.forEach(ancestor => keep.add(ancestor.id));
+      }
+      stack[location.depth] = location;
+    });
+    return locations.filter(location => keep.has(location.id));
   }, [locations, query]);
 
   const close = () => {
@@ -68,7 +81,7 @@ export const LocationPicker = ({ locations, selectedId, onChange, unreadByLocati
         onMaskClick={close}
         onClose={close}
         position="bottom"
-        bodyClassName="location-popup"
+        bodyClassName={searchOpen ? 'location-popup location-popup-searching' : 'location-popup'}
       >
         <div className="location-popup-header">
           <span className="location-popup-title">Select location</span>
@@ -96,7 +109,7 @@ export const LocationPicker = ({ locations, selectedId, onChange, unreadByLocati
                 type="button"
                 disabled={!location.selectable}
                 className={`location-row${active ? ' location-row-active' : ''}`}
-                style={{ paddingLeft: 16 + (searching ? 0 : location.depth * 20) }}
+                style={{ paddingLeft: 16 + location.depth * 20 }}
                 onClick={() => {
                   onChange(location.id);
                   close();
@@ -107,7 +120,6 @@ export const LocationPicker = ({ locations, selectedId, onChange, unreadByLocati
                     <span className="location-row-name">{location.name}</span>
                     {active ? <CheckOutline className="location-row-check" /> : null}
                   </span>
-                  {searching ? <span className="location-row-path">{location.path}</span> : null}
                 </span>
                 {TYPE_LABELS[location.type] ? (
                   <span className={`location-type-pill location-type-${location.type}`}>

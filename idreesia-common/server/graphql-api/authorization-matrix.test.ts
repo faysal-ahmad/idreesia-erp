@@ -40,6 +40,7 @@ const WORKSPACE_DIRECTIVES = [
   'checkCommitteeAccess',
   'checkDutiesAttendanceAccess',
   'checkMehfilDetailsAccess',
+  'checkMehfilKarkunsAccess',
   'checkMehfilPermissionsAccess',
 ];
 
@@ -49,6 +50,7 @@ const PROTECTION = [
   'checkCommitteeAccess',
   'checkDutiesAttendanceAccess',
   'checkMehfilDetailsAccess',
+  'checkMehfilKarkunsAccess',
   'checkMehfilPermissionsAccess',
   'superAdminOnly',
 ];

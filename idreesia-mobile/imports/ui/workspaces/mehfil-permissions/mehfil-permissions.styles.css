@@ -1,0 +1,19 @@
+/* Mehfil Permissions screen (workspaces/mehfil-permissions). Loaded from client/main.tsx. */
+
+.mehfil-permission-users {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.mehfil-permission-description {
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+}
+
+.mehfil-permission-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}

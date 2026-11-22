@@ -16,6 +16,8 @@ export interface AppUser extends LooseRecord {
   groups?: string[];
   chatUserId?: string;
   isSuperAdmin?: boolean;
+  /** A non-human account (an integration); it can never log in. */
+  isServiceAccount?: boolean;
 }
 
 interface UsersCollection extends Mongo.Collection<AppUser> {

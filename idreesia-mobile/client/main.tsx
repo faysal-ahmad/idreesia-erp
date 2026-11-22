@@ -10,6 +10,7 @@ import './main.css';
 /* Page CSS lives next to its screen as *.styles.css and is loaded only from
  * here (same rule as idreesia-web: a CSS file sharing a .tsx basename breaks
  * Meteor's extensionless imports). */
+import 'leaflet/dist/leaflet.css';
 import '../imports/ui/account/account-screen.styles.css';
 import '../imports/ui/account/two-factor.styles.css';
 import '../imports/ui/chat/chat-screen.styles.css';
@@ -20,6 +21,8 @@ import '../imports/ui/home/home-screen.styles.css';
 import '../imports/ui/workspaces/workspaces-screen.styles.css';
 import '../imports/ui/workspaces/location-picker.styles.css';
 import '../imports/ui/workspaces/duties-attendance/duties-attendance.styles.css';
+import '../imports/ui/workspaces/mehfil-details/mehfil-details.styles.css';
+import '../imports/ui/workspaces/mehfil-permissions/mehfil-permissions.styles.css';
 import '../imports/ui/apps/security/stay-report/stay-report.styles.css';
 import '../imports/ui/apps/security/visitors/photo-search.styles.css';
 import '../imports/ui/apps/security/visitors/visitor-detail.styles.css';

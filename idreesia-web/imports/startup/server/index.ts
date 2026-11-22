@@ -33,6 +33,7 @@ import {
   CheckCommitteeAccessDirective,
   CheckDutiesAttendanceAccessDirective,
   CheckMehfilDetailsAccessDirective,
+  CheckMehfilKarkunsAccessDirective,
   CheckMehfilPermissionsAccessDirective,
   SuperAdminOnlyDirective,
 } from 'meteor/idreesia-common/server/graphql-api/_directives';
@@ -69,6 +70,7 @@ if (webServerEnabled) {
   schema = CheckCommitteeAccessDirective(schema) as any;
   schema = CheckDutiesAttendanceAccessDirective(schema) as any;
   schema = CheckMehfilDetailsAccessDirective(schema) as any;
+  schema = CheckMehfilKarkunsAccessDirective(schema) as any;
   schema = CheckMehfilPermissionsAccessDirective(schema) as any;
   schema = SuperAdminOnlyDirective(schema) as any;
 

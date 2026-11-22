@@ -9,6 +9,7 @@ import CheckInstanceAccessDirective from './_directives/check-instance-access';
 import CheckCommitteeAccessDirective from './_directives/check-committee-access';
 import CheckDutiesAttendanceAccessDirective from './_directives/check-duties-attendance-access';
 import CheckMehfilDetailsAccessDirective from './_directives/check-mehfil-details-access';
+import CheckMehfilKarkunsAccessDirective from './_directives/check-mehfil-karkuns-access';
 import CheckMehfilPermissionsAccessDirective from './_directives/check-mehfil-permissions-access';
 import SuperAdminOnlyDirective from './_directives/super-admin-only';
 
@@ -163,6 +164,8 @@ import WorkspaceDutiesAttendanceSchema from './workspaces/duties-attendance/duti
 import WorkspaceDutiesAttendanceResolvers from './workspaces/duties-attendance/resolvers';
 import WorkspaceMehfilDetailsSchema from './workspaces/mehfil-details/mehfil-details';
 import WorkspaceMehfilDetailsResolvers from './workspaces/mehfil-details/resolvers';
+import WorkspaceMehfilKarkunsSchema from './workspaces/mehfil-karkuns/mehfil-karkuns';
+import WorkspaceMehfilKarkunsResolvers from './workspaces/mehfil-karkuns/resolvers';
 import WorkspaceMehfilPermissionsSchema from './workspaces/mehfil-permissions/mehfil-permissions';
 import WorkspaceMehfilPermissionsResolvers from './workspaces/mehfil-permissions/resolvers';
 import WorkspaceProjectsSchema from './workspaces/projects/projects';
@@ -232,6 +235,7 @@ const typeDefs = [
   CheckCommitteeAccessDirective,
   CheckDutiesAttendanceAccessDirective,
   CheckMehfilDetailsAccessDirective,
+  CheckMehfilKarkunsAccessDirective,
   CheckMehfilPermissionsAccessDirective,
   SuperAdminOnlyDirective,
   RootTypes,
@@ -289,6 +293,7 @@ const typeDefs = [
   WorkspacePollsSchema,
   WorkspaceDutiesAttendanceSchema,
   WorkspaceMehfilDetailsSchema,
+  WorkspaceMehfilKarkunsSchema,
   WorkspaceMehfilPermissionsSchema,
   WorkspaceProjectsSchema,
   WorkspaceNightStayReportSchema,
@@ -366,6 +371,7 @@ const resolvers = merge(
   WorkspacePollsResolvers,
   WorkspaceDutiesAttendanceResolvers,
   WorkspaceMehfilDetailsResolvers,
+  WorkspaceMehfilKarkunsResolvers,
   WorkspaceMehfilPermissionsResolvers,
   WorkspaceProjectsResolvers,
   WorkspaceNightStayReportResolvers,

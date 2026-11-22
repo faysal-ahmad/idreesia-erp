@@ -94,6 +94,23 @@ export const DutiesScreen = () => {
     );
   }
 
+  let addBody;
+  if (templatesLoading && !templates) {
+    addBody = <PageLoading />;
+  } else if (available.length === 0) {
+    addBody = <PageEmpty title="No more duties to add" />;
+  } else {
+    addBody = (
+      <CheckList multiple value={chosen} onChange={values => setChosen(values as string[])}>
+        {available.map(duty => (
+          <CheckList.Item key={duty._id} description={duty.description ?? undefined} value={duty._id}>
+            {duty.name}
+          </CheckList.Item>
+        ))}
+      </CheckList>
+    );
+  }
+
   return (
     <Page
       backTo={WorkspacesPaths.root}
@@ -107,19 +124,7 @@ export const DutiesScreen = () => {
         </div>
         <p className="da-popup-hint">Duties are defined by the administrators. Choose the ones this mehfil uses.</p>
         <div className="da-popup-body">
-          {templatesLoading && !templates ? (
-            <PageLoading />
-          ) : available.length === 0 ? (
-            <PageEmpty title="No more duties to add" />
-          ) : (
-            <CheckList multiple value={chosen} onChange={values => setChosen(values as string[])}>
-              {available.map(duty => (
-                <CheckList.Item key={duty._id} description={duty.description ?? undefined} value={duty._id}>
-                  {duty.name}
-                </CheckList.Item>
-              ))}
-            </CheckList>
-          )}
+          {addBody}
         </div>
         <div className="da-popup-footer">
           <Button block color="primary" disabled={chosen.length === 0} loading={saving} onClick={save}>

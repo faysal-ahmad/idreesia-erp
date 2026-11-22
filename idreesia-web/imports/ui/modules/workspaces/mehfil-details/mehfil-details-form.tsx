@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Flex, Form } from 'antd';
+import { EnvironmentOutlined } from '@ant-design/icons';
+import { Button, Flex, Form, Input, Space, Tooltip } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import {
@@ -9,8 +10,8 @@ import {
   InputTextField,
 } from '/imports/ui/modules/helpers/fields';
 
-import { geocodeAddress } from './geocode-address';
 import MehfilDetailsMap from './mehfil-details-map';
+import MehfilLocationModal from './mehfil-location-modal';
 
 export interface MehfilDetailsValue {
   address?: string | null;
@@ -23,6 +24,19 @@ export interface MehfilDetailsValue {
   longitude?: number | null;
 }
 
+// Only the fields the input type has: the query result also carries
+// `__typename`, which the server rejects.
+const pickDetails = (details?: MehfilDetailsValue | null): MehfilDetailsValue => ({
+  address: details?.address,
+  mehfilStartYear: details?.mehfilStartYear,
+  timingDetails: details?.timingDetails,
+  lcdAvailability: details?.lcdAvailability,
+  tabAvailability: details?.tabAvailability,
+  otherMehfilDetails: details?.otherMehfilDetails,
+  latitude: details?.latitude,
+  longitude: details?.longitude,
+});
+
 interface FormValues {
   address?: string;
   mehfilStartYear?: string;
@@ -32,7 +46,7 @@ interface FormValues {
   otherMehfilDetails?: string;
 }
 
-interface Pin {
+interface Location {
   latitude: number | null;
   longitude: number | null;
 }
@@ -50,71 +64,49 @@ const MehfilDetailsForm = ({ details, onSubmit, readOnly = false }: Props) => {
   const [form] = Form.useForm<FormValues>();
   const address = Form.useWatch('address', form);
   const [isTouched, setIsTouched] = useState(false);
-  // Kept outside the form: the map is not a form field.
-  const [pin, setPin] = useState<Pin>({
+  // What is stored, kept to reset the form to.
+  const [saved, setSaved] = useState<MehfilDetailsValue>(
+    pickDetails(details)
+  );
+  // The location in the form. Set from the location modal; stored by Save
+  // with the other fields.
+  const [location, setLocation] = useState<Location>({
     latitude: details?.latitude ?? null,
     longitude: details?.longitude ?? null,
   });
-  const [focusToken, setFocusToken] = useState(0);
-  const [isLocating, setIsLocating] = useState(false);
-  // A pin placed by hand, or already saved, is never replaced by an address
-  // lookup that runs on its own.
-  const [isPinProtected, setIsPinProtected] = useState(
-    details?.latitude != null && details?.longitude != null
-  );
-
-  const locateFromAddress = async () => {
-    const text = (form.getFieldValue('address') ?? '').trim();
-    if (!text) return;
-    setIsLocating(true);
-    try {
-      const result = await geocodeAddress(text);
-      if (!result) {
-        message.warning(
-          'Could not find this address on the map. Click the map to place the pin.',
-          5
-        );
-        return;
-      }
-      setPin({ latitude: result.latitude, longitude: result.longitude });
-      setIsPinProtected(false);
-      setFocusToken(token => token + 1);
-      setIsTouched(true);
-      if (!result.isFullMatch) {
-        message.info(
-          `Approximate location (matched "${result.matchedQuery}"). Drag the pin to adjust.`,
-          6
-        );
-      }
-    } catch (error) {
-      message.error((error as Error).message, 5);
-    } finally {
-      setIsLocating(false);
-    }
-  };
-
-  const handleAddressBlur = () => {
-    if (!readOnly && !isPinProtected && !isLocating) locateFromAddress();
-  };
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
   const handleFinish = (values: FormValues) => {
-    onSubmit({
+    const next: MehfilDetailsValue = {
       address: values.address,
       mehfilStartYear: values.mehfilStartYear,
       timingDetails: values.timingDetails,
       lcdAvailability: !!values.lcdAvailability,
       tabAvailability: !!values.tabAvailability,
       otherMehfilDetails: values.otherMehfilDetails,
-      latitude: pin.latitude ?? undefined,
-      longitude: pin.longitude ?? undefined,
-    })
+      latitude: location.latitude ?? undefined,
+      longitude: location.longitude ?? undefined,
+    };
+    onSubmit(next)
       .then(() => {
+        setSaved(next);
         message.success('Mehfil details saved', 2);
         setIsTouched(false);
       })
       .catch((error: Error) => {
         message.error(error.message, 5);
       });
+  };
+
+  // Takes the location chosen in the modal into the form; Save stores it.
+  const handleLocationOk = (
+    latitude: number | null,
+    longitude: number | null
+  ) => {
+    if (latitude !== location.latitude || longitude !== location.longitude) {
+      setLocation({ latitude, longitude });
+      setIsTouched(true);
+    }
   };
 
   return (
@@ -135,11 +127,32 @@ const MehfilDetailsForm = ({ details, onSubmit, readOnly = false }: Props) => {
         onFieldsChange={() => setIsTouched(true)}
         onFinish={handleFinish}
       >
-        <InputTextAreaField
-          fieldName="address"
-          fieldLabel="Address"
-          onBlur={handleAddressBlur}
-        />
+        <InputTextAreaField fieldName="address" fieldLabel="Address" />
+        {/* Not a form field: set from the modal, stored by Save. */}
+        <Form.Item
+          label="Coordinates"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
+        >
+          <Space.Compact style={{ width: '100%' }}>
+            <Input
+              readOnly
+              value={
+                location.latitude != null && location.longitude != null
+                  ? `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`
+                  : ''
+              }
+            />
+            {readOnly ? null : (
+              <Tooltip title="Set location">
+                <Button
+                  icon={<EnvironmentOutlined />}
+                  onClick={() => setIsLocationModalOpen(true)}
+                />
+              </Tooltip>
+            )}
+          </Space.Compact>
+        </Form.Item>
         <InputTextField fieldName="mehfilStartYear" fieldLabel="Start Year" />
         <InputTextAreaField
           fieldName="timingDetails"
@@ -155,38 +168,35 @@ const MehfilDetailsForm = ({ details, onSubmit, readOnly = false }: Props) => {
           <FormButtonsSaveCancel
             handleCancel={() => {
               form.resetFields();
+              setLocation({
+                latitude: saved.latitude ?? null,
+                longitude: saved.longitude ?? null,
+              });
               setIsTouched(false);
             }}
             isFieldsTouched={isTouched}
           />
         )}
       </Form>
-      <div style={{ flex: '1 1 360px', minWidth: 320 }}>
-        {readOnly ? null : (
-          <Button
-            style={{ marginBottom: 8 }}
-            loading={isLocating}
-            disabled={!address?.trim()}
-            onClick={locateFromAddress}
-          >
-            Find from address
-          </Button>
-        )}
-        <MehfilDetailsMap
-          latitude={pin.latitude}
-          longitude={pin.longitude}
-          focusToken={focusToken}
-          onChange={
-            readOnly
-              ? undefined
-              : (latitude, longitude) => {
-                  setPin({ latitude, longitude });
-                  setIsPinProtected(latitude != null);
-                  setIsTouched(true);
-                }
-          }
+      {location.latitude != null && location.longitude != null ? (
+        <div style={{ flex: '1 1 360px', minWidth: 320 }}>
+          <MehfilDetailsMap
+            key={`${location.latitude},${location.longitude}`}
+            latitude={location.latitude}
+            longitude={location.longitude}
+          />
+        </div>
+      ) : null}
+      {readOnly ? null : (
+        <MehfilLocationModal
+          open={isLocationModalOpen}
+          address={address}
+          latitude={location.latitude}
+          longitude={location.longitude}
+          onOk={handleLocationOk}
+          onClose={() => setIsLocationModalOpen(false)}
         />
-      </div>
+      )}
     </Flex>
   );
 };

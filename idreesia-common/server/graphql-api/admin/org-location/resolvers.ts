@@ -11,6 +11,10 @@ import {
   addOrgLocationObserver,
   createOrgLocation,
   getOrgLocationObserverStats,
+  linkOrgLocationUser,
+  listLinkableUsers,
+  listOrgLocationKarkuns,
+  listOrgLocationUsers,
   listOrgLocationFeaturePermissions,
   removeOrgLocationFeatureUser,
   removeOrgLocationObserver,
@@ -80,6 +84,29 @@ export default {
       { locationId }: { locationId: string }
     ) => listOrgLocationFeaturePermissions(locationId),
 
+    pagedOrgLocationKarkuns: async (
+      _obj: unknown,
+      params: {
+        locationId: string;
+        name?: string | null;
+        cnicNumber?: string | null;
+        phoneNumber?: string | null;
+        withUserAccount?: boolean | null;
+        pageIndex?: string | null;
+        pageSize?: string | null;
+      }
+    ) => listOrgLocationKarkuns(params),
+
+    pagedOrgLocationUsers: async (
+      _obj: unknown,
+      params: { locationId: string; pageIndex?: string | null; pageSize?: string | null }
+    ) => listOrgLocationUsers(params),
+
+    pagedLinkableUsers: async (
+      _obj: unknown,
+      params: { search?: string | null; pageIndex?: string | null; pageSize?: string | null }
+    ) => listLinkableUsers(params),
+
     allOrgLocations: async () =>
       OrgLocations.find({}, { sort: { name: 1 } }).fetchAsync(),
 
@@ -99,6 +126,11 @@ export default {
       params: Omit<OrgLocationArgs, 'type'>,
       { user }: ResolverContext
     ) => updateOrgLocation(params, user),
+
+    linkOrgLocationUser: async (
+      _obj: unknown,
+      { locationId, karkunId, userId }: { locationId: string; karkunId: string; userId: string }
+    ) => linkOrgLocationUser(locationId, karkunId, userId),
 
     addOrgLocationObserver: async (
       _obj: unknown,

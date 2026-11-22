@@ -27,9 +27,24 @@ const EMPTY_RESULT: UserSearchResult = { data: [], totalResults: 0 };
 export function buildUserSearchPipeline(
   params: LooseRecord
 ): LooseRecord[] | null {
-  const pipeline: LooseRecord[] = [];
-  const { showLocked, showUnlocked, showActive, showInactive, moduleAccess } =
-    params;
+  const {
+    showLocked,
+    showUnlocked,
+    showActive,
+    showInactive,
+    moduleAccess,
+    serviceAccounts,
+  } = params;
+
+  // Service accounts are listed on their own page and kept off the Users page.
+  const pipeline: LooseRecord[] = [
+    {
+      $match: {
+        isServiceAccount:
+          serviceAccounts === 'true' ? { $eq: true } : { $ne: true },
+      },
+    },
+  ];
 
   if (showLocked === 'true' && showUnlocked === 'false') {
     pipeline.push({

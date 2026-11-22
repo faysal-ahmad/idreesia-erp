@@ -429,6 +429,7 @@ interface PersonDocument {
 }
 
 export interface MehfilPermissionsKarkunSearchParams {
+  locationId: string;
   name?: string | null;
   cnicNumber?: string | null;
   phoneNumber?: string | null;
@@ -436,7 +437,10 @@ export interface MehfilPermissionsKarkunSearchParams {
   pageSize?: string | null;
 }
 
-/** Karkuns to choose from, with only the fields needed to pick a person. */
+/**
+ * Karkuns to choose from: those of the mehfil who have a user account (a
+ * permission is held by a user), with only the fields needed to pick a person.
+ */
 export async function searchMehfilPermissionsKarkuns(
   params: MehfilPermissionsKarkunSearchParams
 ) {
@@ -447,6 +451,8 @@ export async function searchMehfilPermissionsKarkuns(
       phoneNumber: params.phoneNumber ?? undefined,
       pageIndex: params.pageIndex ?? undefined,
       pageSize: params.pageSize ?? undefined,
+      mehfilLocationId: params.locationId,
+      userAccount: 'true',
     },
     { includeKarkuns: true }
   )) as { data: PersonDocument[]; totalResults: number };

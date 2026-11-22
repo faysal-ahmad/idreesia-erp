@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client/react';
-import { Button, Flex, Form } from 'antd';
+import { EnvironmentOutlined } from '@ant-design/icons';
+import { Button, Flex, Form, Input, Space, Tooltip } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import type { OrgLocationByIdQuery } from 'meteor/idreesia-common/types/client-operations';
-import { FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
+import { CheckboxField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
 
 import { UPDATE_ORG_LOCATION } from './gql';
-import { geocodeAddress } from './geocode-address';
 import { toMehfilDetails } from './helpers';
 import LocationMap from './location-map';
+import LocationPinModal from './location-pin-modal';
 import { MehfilDetailsFields, type LocationFormValues } from './location-form';
 
 type OrgLocation = NonNullable<OrgLocationByIdQuery['orgLocationById']>;
@@ -24,56 +25,23 @@ interface Props {
   onCancel(): void;
 }
 
-/** The Mehfil Details tab: the form on the left, the map beside it. */
+/**
+ * The Mehfil Details tab: the form on the left, the map beside it. The
+ * location is set from a modal (address lookup or a hand-placed pin); Ok puts
+ * it in the form and Save stores it with the other fields.
+ */
 const LocationMehfilDetails = ({ orgLocation, onCancel }: Props) => {
   const details = orgLocation.mehfilDetails;
   const [isTouched, setIsTouched] = useState(false);
-  // Kept outside the form: the map is not a form field.
+  // The location in the form: kept outside it, the map is not a form field.
   const [pin, setPin] = useState<Pin>({
     latitude: details?.latitude ?? null,
     longitude: details?.longitude ?? null,
   });
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
 
   const [form] = Form.useForm<LocationFormValues>();
   const address = Form.useWatch('address', form);
-  const [focusToken, setFocusToken] = useState(0);
-  const [isLocating, setIsLocating] = useState(false);
-  // A pin placed by hand, or already saved, is never replaced by an address
-  // lookup that runs on its own.
-  const [isPinProtected, setIsPinProtected] = useState(
-    details?.latitude != null && details?.longitude != null
-  );
-
-  const locateFromAddress = async () => {
-    const text = (form.getFieldValue('address') ?? '').trim();
-    if (!text) return;
-    setIsLocating(true);
-    try {
-      const result = await geocodeAddress(text);
-      if (!result) {
-        message.warning('Could not find this address on the map. Click the map to place the pin.', 5);
-        return;
-      }
-      setPin({ latitude: result.latitude, longitude: result.longitude });
-      setIsPinProtected(false);
-      setFocusToken(token => token + 1);
-      setIsTouched(true);
-      if (!result.isFullMatch) {
-        message.info(
-          `Approximate location (matched "${result.matchedQuery}"). Drag the pin to adjust.`,
-          6
-        );
-      }
-    } catch (error) {
-      message.error((error as Error).message, 5);
-    } finally {
-      setIsLocating(false);
-    }
-  };
-
-  const handleAddressBlur = () => {
-    if (!isPinProtected && !isLocating) locateFromAddress();
-  };
 
   const [updateOrgLocation] = useMutation(UPDATE_ORG_LOCATION, {
     refetchQueries: ['allOrgLocations', 'orgLocationById'],
@@ -97,6 +65,20 @@ const LocationMehfilDetails = ({ orgLocation, onCancel }: Props) => {
       });
   };
 
+  // Takes the location chosen in the modal into the form; Save stores it.
+  const handlePinOk = (latitude: number | null, longitude: number | null) => {
+    if (latitude !== pin.latitude || longitude !== pin.longitude) {
+      setPin({ latitude, longitude });
+      // Geofencing checks against the location, so it goes off with it.
+      if (latitude == null || longitude == null) {
+        form.setFieldValue('attendanceGeofencing', false);
+      }
+      setIsTouched(true);
+    }
+  };
+
+  const hasPin = pin.latitude != null && pin.longitude != null;
+
   return (
     <Flex gap={24} wrap align="flex-start">
       <Form
@@ -110,36 +92,67 @@ const LocationMehfilDetails = ({ orgLocation, onCancel }: Props) => {
           lcdAvailability: details?.lcdAvailability ?? false,
           tabAvailability: details?.tabAvailability ?? false,
           otherMehfilDetails: details?.otherMehfilDetails ?? undefined,
+          attendanceGeofencing: details?.attendanceGeofencing ?? false,
         }}
         onFieldsChange={() => setIsTouched(true)}
         onFinish={handleFinish}
       >
-        <MehfilDetailsFields onAddressBlur={handleAddressBlur} />
+        <MehfilDetailsFields
+          afterAddress={
+            <>
+            {/* Not a form field: set from the modal, stored by Save. */}
+            <Form.Item
+              label="Coordinates"
+              labelCol={{ span: 6 }}
+              wrapperCol={{ span: 14 }}
+            >
+              <Space.Compact style={{ width: '100%' }}>
+                <Input
+                  readOnly
+                  value={
+                    hasPin
+                      ? `${pin.latitude!.toFixed(6)}, ${pin.longitude!.toFixed(6)}`
+                      : ''
+                  }
+                />
+                <Tooltip title="Set location">
+                  <Button
+                    icon={<EnvironmentOutlined />}
+                    onClick={() => setIsPinModalOpen(true)}
+                  />
+                </Tooltip>
+              </Space.Compact>
+            </Form.Item>
+            <CheckboxField
+              fieldName="attendanceGeofencing"
+              fieldLabel="Attendance Geofencing"
+              disabled={!hasPin}
+            />
+            </>
+          }
+        />
         <FormButtonsSaveCancel
           handleCancel={onCancel}
           isFieldsTouched={isTouched}
         />
       </Form>
-      <div style={{ flex: '1 1 360px', minWidth: 320 }}>
-        <Button
-          style={{ marginBottom: 8 }}
-          loading={isLocating}
-          disabled={!address?.trim()}
-          onClick={locateFromAddress}
-        >
-          Find from address
-        </Button>
-        <LocationMap
-          latitude={pin.latitude}
-          longitude={pin.longitude}
-          focusToken={focusToken}
-          onChange={(latitude, longitude) => {
-            setPin({ latitude, longitude });
-            setIsPinProtected(latitude != null);
-            setIsTouched(true);
-          }}
-        />
-      </div>
+      {hasPin ? (
+        <div style={{ flex: '1 1 360px', minWidth: 320 }}>
+          <LocationMap
+            key={`${pin.latitude},${pin.longitude}`}
+            latitude={pin.latitude}
+            longitude={pin.longitude}
+          />
+        </div>
+      ) : null}
+      <LocationPinModal
+        open={isPinModalOpen}
+        address={address}
+        latitude={pin.latitude}
+        longitude={pin.longitude}
+        onOk={handlePinOk}
+        onClose={() => setIsPinModalOpen(false)}
+      />
     </Flex>
   );
 };

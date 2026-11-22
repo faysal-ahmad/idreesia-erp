@@ -7,6 +7,10 @@ import {
   MehfilDetailsPermissions,
 } from '../mehfil-details';
 import {
+  MehfilKarkunsPermissionInfos,
+  MehfilKarkunsPermissions,
+} from '../mehfil-karkuns';
+import {
   MehfilPermissionsPermissionInfos,
   MehfilPermissionsPermissions,
 } from '../mehfil-permissions';
@@ -15,6 +19,7 @@ import { OrgLocationTypes, type OrgLocationType } from './org-location-types';
 export const OrgLocationFeatureKeys = {
   DUTIES_ATTENDANCE: 'duties-attendance',
   MEHFIL_DETAILS: 'mehfil-details',
+  MEHFIL_KARKUNS: 'mehfil-karkuns',
   MEHFIL_PERMISSIONS: 'mehfil-permissions',
 } as const;
 
@@ -60,6 +65,13 @@ export const OrgLocationFeatures: OrgLocationFeature[] = [
       "Update the mehfil's address, timings, facilities and map location.",
     permissions: MehfilDetailsPermissionInfos,
     basePermissionKey: MehfilDetailsPermissions.VIEW,
+  },
+  {
+    key: OrgLocationFeatureKeys.MEHFIL_KARKUNS,
+    name: 'Mehfil Karkuns',
+    description: 'See the karkuns who belong to the mehfil, from Workspaces.',
+    permissions: MehfilKarkunsPermissionInfos,
+    basePermissionKey: MehfilKarkunsPermissions.VIEW,
   },
   {
     key: OrgLocationFeatureKeys.MEHFIL_PERMISSIONS,

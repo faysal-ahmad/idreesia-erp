@@ -6,9 +6,12 @@ import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 
 import {
+  checkUserAccountAvailability,
   createChatAccount,
+  createServiceAccount,
   createUser,
   recordUserLogin,
+  resetUserPassword,
   setUserInstanceAccess,
   setUserPermissions,
   updateUser,
@@ -66,7 +69,53 @@ const logsOf = async (userId: string | null) =>
 const logTypes = async (userId: string) =>
   (await logsOf(userId)).map(log => log.operationType);
 
+describe('checkUserAccountAvailability', () => {
+  it('reports a taken user name, ignoring case, and a taken email', async () => {
+    await Users.insertAsync({
+      _id: 'u1',
+      username: 'Ali',
+      emails: [{ address: 'Ali@Example.com', verified: false }],
+    } as never);
+    await Users.insertAsync({ _id: 'u2', username: 'bob', email: 'bob@example.com' } as never);
+
+    expect(
+      await checkUserAccountAvailability({ userName: 'ali', email: 'ali@example.COM' })
+    ).toEqual({
+      userNameMessage: "User name 'ali' is already in use.",
+      emailMessage: "Email 'ali@example.COM' is already in use.",
+    });
+    // An email stored on the user itself counts too.
+    expect((await checkUserAccountAvailability({ email: 'BOB@example.com' })).emailMessage).toBe(
+      "Email 'BOB@example.com' is already in use."
+    );
+  });
+
+  it('accepts free names, rejects bad ones and skips what is not given', async () => {
+    expect(
+      await checkUserAccountAvailability({ userName: 'carol', email: 'carol@example.com' })
+    ).toEqual({ userNameMessage: null, emailMessage: null });
+    expect(
+      (await checkUserAccountAvailability({ userName: 'bad name' })).userNameMessage
+    ).toContain('may only contain');
+    expect(await checkUserAccountAvailability({})).toEqual({
+      userNameMessage: null,
+      emailMessage: null,
+    });
+  });
+});
+
 describe('createUser', () => {
+  it('refuses an email another user already has', async () => {
+    await Users.insertAsync({
+      _id: 'u1',
+      emails: [{ address: 'taken@example.com', verified: false }],
+    } as never);
+
+    await expect(
+      createUser({ email: 'Taken@example.com' }, caller, 'erp')
+    ).rejects.toThrow("Email 'Taken@example.com' is already in use.");
+  });
+
   it('creates an account from a user name and password, with a security log', async () => {
     const created = await createUser(
       {
@@ -216,21 +265,6 @@ describe('updateUser', () => {
     expect(await logTypes('target')).toEqual([]);
   });
 
-  it('resets the password and logs it', async () => {
-    await insertUser();
-    await updateUser({ userId: 'target', password: 'new-pw' }, caller, 'test');
-    expect(accounts.setPasswordAsync).toHaveBeenCalledWith('target', 'new-pw');
-    expect(await logTypes('target')).toEqual([
-      SecurityOperationType.PASSWORD_RESET,
-    ]);
-  });
-
-  it('does not touch the password when none is given', async () => {
-    await insertUser();
-    await updateUser({ userId: 'target' }, caller, 'test');
-    expect(accounts.setPasswordAsync).not.toHaveBeenCalled();
-  });
-
   it('refuses to lock the last unlocked super admin', async () => {
     await insertUser({ isSuperAdmin: true });
     await Users.insertAsync({ _id: 'admin', isSuperAdmin: true });
@@ -244,11 +278,84 @@ describe('updateUser', () => {
 
   it('rolls everything back when a later write fails', async () => {
     await insertUser();
-    accounts.setPasswordAsync.mockRejectedValueOnce(new Error('boom'));
+    // The lock log is written first; the user update that follows fails.
+    vi.spyOn(Users, 'updateAsync').mockRejectedValueOnce(new Error('boom'));
     await expect(
-      updateUser({ userId: 'target', locked: true, password: 'x' }, caller, 'test')
+      updateUser({ userId: 'target', locked: true }, caller, 'test')
     ).rejects.toThrow('boom');
     expect(await logTypes('target')).toEqual([]);
+  });
+});
+
+describe('createServiceAccount', () => {
+  it('creates a flagged account without a password, with a security log', async () => {
+    const created = await createServiceAccount(
+      { userName: ' robot ', displayName: 'Robot' },
+      caller,
+      'test'
+    );
+    expect(accounts.createUserAsync).toHaveBeenCalledWith({ username: 'robot' });
+    expect(created).toMatchObject({
+      username: 'robot',
+      displayName: 'Robot',
+      isServiceAccount: true,
+    });
+    expect(await logTypes(created._id)).toEqual([
+      SecurityOperationType.ACCOUNT_CREATED,
+    ]);
+  });
+
+  it('uses the user name as display name when none is given', async () => {
+    const created = await createServiceAccount({ userName: 'bot' }, caller, 'test');
+    expect(created.displayName).toBe('bot');
+  });
+
+  it('refuses a missing, bad or taken user name', async () => {
+    await expect(
+      createServiceAccount({ userName: '  ' }, caller, 'test')
+    ).rejects.toThrow('user name is required');
+    await expect(
+      createServiceAccount({ userName: 'bad name' }, caller, 'test')
+    ).rejects.toThrow('may only contain');
+    await Users.insertAsync({ _id: 'u1', username: 'taken' } as never);
+    await expect(
+      createServiceAccount({ userName: 'taken' }, caller, 'test')
+    ).rejects.toThrow('already in use');
+  });
+});
+
+describe('resetUserPassword', () => {
+  it('sets the password and logs it, when a super admin asks', async () => {
+    await Users.insertAsync({ _id: 'admin', isSuperAdmin: true });
+    await Users.insertAsync({ _id: 'target' });
+    await resetUserPassword(
+      { userId: 'target', password: 'new-pw' },
+      caller,
+      'test'
+    );
+    expect(accounts.setPasswordAsync).toHaveBeenCalledWith('target', 'new-pw');
+    expect(await logTypes('target')).toEqual([
+      SecurityOperationType.PASSWORD_RESET,
+    ]);
+  });
+
+  it('refuses a caller who is not a super admin', async () => {
+    await Users.insertAsync({ _id: 'admin' });
+    await Users.insertAsync({ _id: 'target' });
+    await expect(
+      resetUserPassword({ userId: 'target', password: 'x' }, caller, 'test')
+    ).rejects.toThrow('super admin');
+    expect(accounts.setPasswordAsync).not.toHaveBeenCalled();
+  });
+
+  it('refuses an empty password and an unknown user', async () => {
+    await Users.insertAsync({ _id: 'admin', isSuperAdmin: true });
+    await expect(
+      resetUserPassword({ userId: 'target', password: '' }, caller, 'test')
+    ).rejects.toThrow('password is required');
+    await expect(
+      resetUserPassword({ userId: 'nobody', password: 'x' }, caller, 'test')
+    ).rejects.toThrow('User not found');
   });
 });
 

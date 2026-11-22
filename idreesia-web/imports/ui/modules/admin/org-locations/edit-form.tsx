@@ -25,6 +25,7 @@ import LocationCommittees from './location-committees';
 import LocationFeaturePermissions from './location-feature-permissions';
 import LocationMehfilDetails from './location-mehfil-details';
 import LocationObservers from './location-observers';
+import LocationUsers from './location-users';
 import LocationForm, { type LocationFormValues } from './location-form';
 import { toLocationRecords } from './helpers';
 
@@ -124,9 +125,19 @@ const EditForm = ({ match, history, location }: Props) => {
               },
             ]
           : []),
-        // Who may do what on a mehfil, for its features too.
+        {
+          key: 'committees',
+          label: `Committees (${orgLocation.committees?.length ?? 0})`,
+          children: <LocationCommittees locationId={_id} />,
+        },
+        // The mehfil's users, and who may do what on it, for its features too.
         ...(type === OrgLocationTypes.MEHFIL
           ? [
+              {
+                key: 'users',
+                label: 'Users',
+                children: <LocationUsers locationId={_id} />,
+              },
               {
                 key: 'permissions',
                 label: 'Permissions',
@@ -134,11 +145,6 @@ const EditForm = ({ match, history, location }: Props) => {
               },
             ]
           : []),
-        {
-          key: 'committees',
-          label: 'Committees',
-          children: <LocationCommittees locationId={_id} />,
-        },
         {
           key: 'observers',
           label: `Observers (${orgLocation.observerKarkunIds?.length ?? 0})`,

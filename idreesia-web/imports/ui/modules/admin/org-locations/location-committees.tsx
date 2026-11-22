@@ -98,10 +98,10 @@ const LocationCommittees = ({ locationId }: Props) => {
   // Refetch this list directly (and the workspaces sidebar's committees).
   const [createCommittee, { loading: creating }] = useMutation(
     CREATE_LOCATION_COMMITTEE,
-    { refetchQueries: ['myCommittees', 'myCommitteeLocations'] }
+    { refetchQueries: ['myCommittees', 'myCommitteeLocations', 'orgLocationById'] }
   );
   const [removeCommittee] = useMutation(REMOVE_LOCATION_COMMITTEE, {
-    refetchQueries: ['myCommittees', 'myCommitteeLocations'],
+    refetchQueries: ['myCommittees', 'myCommitteeLocations', 'orgLocationById'],
   });
 
   const handleCloseNewForm = () => {

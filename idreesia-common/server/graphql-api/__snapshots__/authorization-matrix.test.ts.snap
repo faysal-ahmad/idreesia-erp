@@ -499,6 +499,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.createServiceAccount": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.createStockAdjustment": [
     {
       "args": {
@@ -734,6 +744,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.linkOrgLocationUser": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
         ],
       },
       "directive": "checkPermissions",
@@ -1178,12 +1198,14 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   ],
   "Mutation.resetTwoFactor": [
     {
-      "args": {
-        "permissions": [
-          "ADMIN_MANAGE_USERS_AND_GROUPS",
-        ],
-      },
-      "directive": "checkPermissions",
+      "args": {},
+      "directive": "superAdminOnly",
+    },
+  ],
+  "Mutation.resetUserPassword": [
+    {
+      "args": {},
+      "directive": "superAdminOnly",
     },
   ],
   "Mutation.restorePerson": [
@@ -3438,6 +3460,44 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.pagedLinkableUsers": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedMehfilKarkuns": [
+    {
+      "args": {
+        "permission": "VIEW",
+      },
+      "directive": "checkMehfilKarkunsAccess",
+    },
+  ],
+  "Query.pagedOrgLocationKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedOrgLocationUsers": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.pagedPurchaseForms": [
     {
       "args": {
@@ -4040,6 +4100,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "returnType": "list",
       },
       "directive": "checkInstanceAccess",
+    },
+  ],
+  "Query.userAccountAvailability": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
     },
   ],
   "Query.userById": [

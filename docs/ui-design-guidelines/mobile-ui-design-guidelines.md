@@ -53,7 +53,9 @@ The mobile app uses the same functional modules as the web app (`ModuleNames` / 
 
 ```
 Home tab (/home)                         ← default after signing in; empty for now
-Workspaces tab (/workspaces)             ← a location bar (opens a bottom-sheet selector, with unread counts per location); under it, the selected location's features (Mehfil Details, Mehfil Permissions, Duties & Attendance; no mobile screens yet) and the user's committees there, each expanding to its features
+Workspaces tab (/workspaces)             ← a location bar (opens a bottom-sheet selector, with unread counts per location); under it, the selected location's features (Mehfil Details, Mehfil Permissions, Duties & Attendance) and the user's committees there, each expanding to its features
+├── Mehfil Details (/workspaces/locations/:locationId/mehfil-details)   ← imports/ui/workspaces/mehfil-details; a form for those who can update, label / value rows for the rest; the map pin is set in a bottom Popup (OpenStreetMap via Leaflet: look an address up, tap the map or drag the pin); read-only users see the map, and everyone gets "Open in maps"
+├── Mehfil Permissions (/workspaces/locations/:locationId/mehfil-permissions)   ← imports/ui/workspaces/mehfil-permissions; one card per feature, each permission with its people as tags (tap to remove, add icon opens a people-search Popup) for those who can manage
 ├── Duties & Attendance (/workspaces/locations/:locationId/duties-attendance/…)   ← a mehfil's location feature; four screens, imports/ui/workspaces/duties-attendance:
 │   ├── …/duties                          ← DutiesFeature; the list stays alive under …/duties/:dutyId (the roster; member actions in an ActionSheet, days and add-duties in bottom Popups, people search in a tall Popup)
 │   ├── …/planning                        ← duty bar ("All duties" by default) + day bar, one section per duty; future days editable

@@ -12,6 +12,7 @@ const MehfilDetailsSchema = new SimpleSchema({
   otherMehfilDetails: { type: String, optional: true },
   latitude: { type: Number, optional: true },
   longitude: { type: Number, optional: true },
+  attendanceGeofencing: { type: Boolean, optional: true },
 });
 
 export default new SimpleSchema({

@@ -39,6 +39,10 @@
   border-radius: var(--app-radius-large) var(--app-radius-large) 0 0;
 }
 
+.location-popup-searching {
+  height: 80vh; /* keeps the sheet from shrinking as the matches drop away */
+}
+
 .location-popup-header {
   position: relative;
   display: flex;
@@ -74,6 +78,8 @@
 }
 
 .location-popup-list {
+  min-height: 0;
+  flex: 1;
   overflow-y: auto;
   padding-bottom: 16px;
 }

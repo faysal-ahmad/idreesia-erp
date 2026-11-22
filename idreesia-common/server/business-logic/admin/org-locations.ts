@@ -63,9 +63,14 @@ function cleanMehfilDetails(
   type: OrgLocationType,
   mehfilDetails?: OrgLocationMehfilDetails | null
 ) {
-  return type === OrgLocationTypes.MEHFIL && mehfilDetails
-    ? mehfilDetails
-    : undefined;
+  if (type !== OrgLocationTypes.MEHFIL || !mehfilDetails) return undefined;
+  // Geofencing checks against the location, so it needs one.
+  const hasLocation =
+    mehfilDetails.latitude != null && mehfilDetails.longitude != null;
+  return {
+    ...mehfilDetails,
+    attendanceGeofencing: hasLocation && !!mehfilDetails.attendanceGeofencing,
+  };
 }
 
 async function assertNameAvailable(

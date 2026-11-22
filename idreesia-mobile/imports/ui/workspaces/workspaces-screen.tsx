@@ -23,7 +23,7 @@ import {
 
 import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import { MoonOutline } from '../components/icons/moon-outline';
-import { Page, PageEmpty, PageError, PageLoading, showInfo } from '../layout';
+import { Page, PageEmpty, PageError, PageLoading } from '../layout';
 import { useHistory } from '../router';
 import { LocationPicker } from './location-picker';
 import { WorkspacesPaths } from './paths';
@@ -139,9 +139,7 @@ const getWorkspaceItems = (
 // item is keyed by feature. Modules not listed here use their own name.
 const NOTIFICATION_MODULE_ITEM: Record<string, string> = { dms: 'documents' };
 
-// A location's own features, as in the web's Workspaces sidebar. Duties &
-// Attendance opens its pages; Mehfil Details and Permissions have no mobile
-// screens yet, so tapping them says so.
+// A location's own features, as in the web's Workspaces sidebar.
 interface LocationFeatureItem {
   key: string;
   title: string;
@@ -155,8 +153,6 @@ const DUTIES_ATTENDANCE_PAGES: LocationFeatureItem[] = [
   { key: 'da', title: 'Duty Attendance', icon: <CheckCircleOutline />, path: WorkspacesPaths.dutyAttendance },
   { key: 'da', title: 'Attendance Sheet', icon: <BillOutline />, path: WorkspacesPaths.attendanceSheet },
 ];
-
-const showComingSoon = () => showInfo('Coming soon.');
 
 const SELECTED_LOCATION_STORAGE_KEY = 'workspaces-location';
 
@@ -254,10 +250,10 @@ export const WorkspacesScreen = () => {
   const locationCommittees = committees.filter(committee => committee.locationId === selectedId);
   const daId = `da-${selectedId}`;
 
-  const renderLocationFeature = (title: string, key: string, icon: React.ReactNode) => (
+  const renderLocationFeature = (title: string, key: string, icon: React.ReactNode, path: string) => (
     <List.Item
       key={key}
-      onClick={showComingSoon}
+      onClick={() => history.push(path)}
       prefix={<span className={`workspace-feature-icon workspace-feature-icon-${key}`}>{icon}</span>}
     >
       {title}
@@ -332,9 +328,19 @@ export const WorkspacesScreen = () => {
         />
         <List mode="card">
           {features.mehfilDetails &&
-            renderLocationFeature('Mehfil Details', 'mehfil-details', <EnvironmentOutline />)}
+            renderLocationFeature(
+              'Mehfil Details',
+              'mehfil-details',
+              <EnvironmentOutline />,
+              WorkspacesPaths.mehfilDetails(selectedId),
+            )}
           {features.mehfilPermissions &&
-            renderLocationFeature('Mehfil Permissions', 'mehfil-permissions', <CheckShieldOutline />)}
+            renderLocationFeature(
+              'Mehfil Permissions',
+              'mehfil-permissions',
+              <CheckShieldOutline />,
+              WorkspacesPaths.mehfilPermissions(selectedId),
+            )}
           {features.dutiesAttendance && (
             <List.Item
               arrowIcon={expandedId === daId ? <UpOutline /> : <DownOutline />}

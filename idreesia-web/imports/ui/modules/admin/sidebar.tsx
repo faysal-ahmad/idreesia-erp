@@ -12,6 +12,7 @@ const menuItems = [
     label: 'Access Management',
     children: [
       { key: 'users', label: 'Users' },
+      { key: 'service-accounts', label: 'Service Accounts' },
       { key: 'user-groups', label: 'User Groups' },
       { key: 'security-logs', label: 'Security Logs' },
     ],
@@ -80,6 +81,12 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['access'],
     subModuleName: SubModuleNames.users,
     matches: (pathname) => isPath(pathname, paths.usersPath),
+  },
+  {
+    key: 'service-accounts',
+    openKeys: ['access'],
+    subModuleName: SubModuleNames.serviceAccounts,
+    matches: (pathname) => isPath(pathname, paths.serviceAccountsPath),
   },
   {
     key: 'user-groups',
@@ -208,6 +215,10 @@ const Sidebar = ({ history }: SidebarProps) => {
     switch (key) {
       case 'users':
         history.push(paths.usersPath);
+        break;
+
+      case 'service-accounts':
+        history.push(paths.serviceAccountsPath);
         break;
 
       case 'user-groups':

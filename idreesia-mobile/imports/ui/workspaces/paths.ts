@@ -2,8 +2,8 @@ import { ModulePaths } from 'meteor/idreesia-common/constants';
 
 // Same URLs as the web's Workspaces module (submodule-paths.ts there).
 const committee = (committeeId: string) => `${ModulePaths.workspaces}/committees/${committeeId}`;
-const daLocation = (locationId: string) =>
-  `${ModulePaths.workspaces}/locations/${locationId}/duties-attendance`;
+const location = (locationId: string) => `${ModulePaths.workspaces}/locations/${locationId}`;
+const daLocation = (locationId: string) => `${location(locationId)}/duties-attendance`;
 
 /** The screens under one poll. */
 export type PollPart = 'edit' | 'results' | 'activity';
@@ -154,6 +154,11 @@ export const WorkspacesPaths = {
   committeeMonitoringProfilePattern: `${committee(':committeeId')}/monitoring-profiles/:profileId`,
   committeeMonitoringProfile: (committeeId: string, profileId: string) =>
     `${committee(committeeId)}/monitoring-profiles/${profileId}`,
+  /** A mehfil's Mehfil Details and Mehfil Permissions screens (same URLs as the web). */
+  mehfilDetailsPattern: `${location(':locationId')}/mehfil-details`,
+  mehfilDetails: (locationId: string) => `${location(locationId)}/mehfil-details`,
+  mehfilPermissionsPattern: `${location(':locationId')}/mehfil-permissions`,
+  mehfilPermissions: (locationId: string) => `${location(locationId)}/mehfil-permissions`,
   /** A mehfil's Duties and Attendance pages (same URLs as the web). */
   dutiesPattern: `${daLocation(':locationId')}/duties`,
   duties: (locationId: string) => `${daLocation(locationId)}/duties`,

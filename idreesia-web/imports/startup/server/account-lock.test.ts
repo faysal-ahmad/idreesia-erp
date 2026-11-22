@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-type Attempt = { allowed: boolean; user?: { locked?: boolean } };
-const hooks = vi.hoisted(() => [] as Array<(attempt: { allowed: boolean; user?: { locked?: boolean } }) => boolean>);
+type Attempt = { allowed: boolean; user?: { locked?: boolean; isServiceAccount?: boolean } };
+const hooks = vi.hoisted(() => [] as Array<(attempt: { allowed: boolean; user?: { locked?: boolean; isServiceAccount?: boolean } }) => boolean>);
 
 vi.mock('meteor/accounts-base', () => ({
   Accounts: { validateLoginAttempt: (fn: (a: Attempt) => boolean) => hooks.push(fn) },
@@ -37,6 +37,13 @@ describe('login validation hook', () => {
     } catch (e) {
       expect((e as { error: string }).error).toBe(ACCOUNT_LOCKED_ERROR);
     }
+  });
+
+  it('refuses an otherwise successful login of a service account', () => {
+    expect(() =>
+      hook({ allowed: true, user: { isServiceAccount: true } })
+    ).toThrow(/service account/);
+    expect(hook({ allowed: false, user: { isServiceAccount: true } })).toBe(false);
   });
 
   it('lets an unlocked login through and leaves a failed login failing quietly', () => {

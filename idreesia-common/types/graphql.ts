@@ -754,6 +754,10 @@ export type MehfilKarkunType = {
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
+export enum MehfilKarkunsPermission {
+  View = 'VIEW'
+}
+
 export type MehfilLangarDishType = {
   __typename?: 'MehfilLangarDishType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -776,6 +780,18 @@ export type MehfilLangarLocationType = {
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
   urduName?: Maybe<Scalars['String']['output']>;
+};
+
+export type MehfilLocationKarkunType = {
+  __typename?: 'MehfilLocationKarkunType';
+  _id: Scalars['String']['output'];
+  cnicNumber?: Maybe<Scalars['String']['output']>;
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  contactNumber2?: Maybe<Scalars['String']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  parentName?: Maybe<Scalars['String']['output']>;
 };
 
 export enum MehfilPermissionsPermission {
@@ -883,6 +899,7 @@ export type Mutation = {
   createSecurityServerChannel?: Maybe<SecurityServerChannelType>;
   createSecurityServerProfile?: Maybe<SecurityServerProfileType>;
   createSecurityVisitor?: Maybe<PersonType>;
+  createServiceAccount?: Maybe<UserType>;
   createStockAdjustment?: Maybe<StockAdjustment>;
   createStockItem?: Maybe<StockItem>;
   createTeam?: Maybe<TeamType>;
@@ -907,6 +924,7 @@ export type Mutation = {
   fixNameSpelling?: Maybe<Scalars['Int']['output']>;
   hardDeletePeople?: Maybe<Scalars['Int']['output']>;
   importSecurityVisitorsCsvData?: Maybe<Scalars['String']['output']>;
+  linkOrgLocationUser?: Maybe<UserType>;
   markNotificationsRead: Scalars['Boolean']['output'];
   mergeStockItems?: Maybe<StockItem>;
   moveCommittee?: Maybe<CommitteeType>;
@@ -947,6 +965,7 @@ export type Mutation = {
   renameFreeFormCountry?: Maybe<Scalars['Int']['output']>;
   resetJobDefinitionSchedule?: Maybe<JobDefinitionType>;
   resetTwoFactor?: Maybe<UserType>;
+  resetUserPassword?: Maybe<UserType>;
   restorePerson?: Maybe<Scalars['Int']['output']>;
   retryFailedJob?: Maybe<Scalars['Boolean']['output']>;
   runScheduledJobNow?: Maybe<Scalars['Boolean']['output']>;
@@ -1424,6 +1443,12 @@ export type MutationCreateSecurityVisitorArgs = {
 };
 
 
+export type MutationCreateServiceAccountArgs = {
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  userName: Scalars['String']['input'];
+};
+
+
 export type MutationCreateStockAdjustmentArgs = {
   adjustedBy: Scalars['String']['input'];
   adjustmentDate: Scalars['String']['input'];
@@ -1577,6 +1602,13 @@ export type MutationHardDeletePeopleArgs = {
 
 export type MutationImportSecurityVisitorsCsvDataArgs = {
   csvData: Scalars['String']['input'];
+};
+
+
+export type MutationLinkOrgLocationUserArgs = {
+  karkunId: Scalars['String']['input'];
+  locationId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -1805,6 +1837,12 @@ export type MutationResetJobDefinitionScheduleArgs = {
 
 
 export type MutationResetTwoFactorArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
+export type MutationResetUserPasswordArgs = {
+  password: Scalars['String']['input'];
   userId: Scalars['String']['input'];
 };
 
@@ -2270,7 +2308,6 @@ export type MutationUpdateUserArgs = {
   displayName?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   locked?: InputMaybe<Scalars['Boolean']['input']>;
-  password?: InputMaybe<Scalars['String']['input']>;
   userId: Scalars['String']['input'];
   userName?: InputMaybe<Scalars['String']['input']>;
 };
@@ -2942,6 +2979,16 @@ export type MyMehfilDetailsLocationType = {
   type: Scalars['String']['output'];
 };
 
+export type MyMehfilKarkunsLocationType = {
+  __typename?: 'MyMehfilKarkunsLocationType';
+  hasWorkspace: Scalars['Boolean']['output'];
+  locationId: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  parentId?: Maybe<Scalars['String']['output']>;
+  permissions: Array<Scalars['String']['output']>;
+  type: Scalars['String']['output'];
+};
+
 export type MyMehfilPermissionsLocationType = {
   __typename?: 'MyMehfilPermissionsLocationType';
   hasWorkspace: Scalars['Boolean']['output'];
@@ -2999,8 +3046,22 @@ export type OrgLocationFeaturePermissionsType = {
   permissions: Array<Maybe<OrgLocationFeaturePermissionType>>;
 };
 
+export type OrgLocationKarkunType = {
+  __typename?: 'OrgLocationKarkunType';
+  _id: Scalars['String']['output'];
+  cnicNumber?: Maybe<Scalars['String']['output']>;
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  contactNumber2?: Maybe<Scalars['String']['output']>;
+  hasUserAccount: Scalars['Boolean']['output'];
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  parentName?: Maybe<Scalars['String']['output']>;
+};
+
 export type OrgLocationMehfilDetailsInput = {
   address?: InputMaybe<Scalars['String']['input']>;
+  attendanceGeofencing?: InputMaybe<Scalars['Boolean']['input']>;
   latitude?: InputMaybe<Scalars['Float']['input']>;
   lcdAvailability?: InputMaybe<Scalars['Boolean']['input']>;
   longitude?: InputMaybe<Scalars['Float']['input']>;
@@ -3013,6 +3074,7 @@ export type OrgLocationMehfilDetailsInput = {
 export type OrgLocationMehfilDetailsType = {
   __typename?: 'OrgLocationMehfilDetailsType';
   address?: Maybe<Scalars['String']['output']>;
+  attendanceGeofencing?: Maybe<Scalars['Boolean']['output']>;
   latitude?: Maybe<Scalars['Float']['output']>;
   lcdAvailability?: Maybe<Scalars['Boolean']['output']>;
   longitude?: Maybe<Scalars['Float']['output']>;
@@ -3096,10 +3158,22 @@ export type PagedKarkunType = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PagedMehfilLocationKarkunType = {
+  __typename?: 'PagedMehfilLocationKarkunType';
+  data: Array<MehfilLocationKarkunType>;
+  totalResults: Scalars['Int']['output'];
+};
+
 export type PagedMpKarkunType = {
   __typename?: 'PagedMpKarkunType';
   data?: Maybe<Array<Maybe<MpKarkunType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedOrgLocationKarkunType = {
+  __typename?: 'PagedOrgLocationKarkunType';
+  data: Array<OrgLocationKarkunType>;
+  totalResults: Scalars['Int']['output'];
 };
 
 export type PagedPeopleType = {
@@ -3538,6 +3612,7 @@ export type Query = {
   myCommittees?: Maybe<Array<Maybe<WorkspaceCommitteeType>>>;
   myDutiesAttendanceLocations: Array<Maybe<DaMyLocationType>>;
   myMehfilDetailsLocations: Array<Maybe<MyMehfilDetailsLocationType>>;
+  myMehfilKarkunsLocations: Array<Maybe<MyMehfilKarkunsLocationType>>;
   myMehfilPermissionsLocations: Array<Maybe<MyMehfilPermissionsLocationType>>;
   myNotificationCounts?: Maybe<Array<Maybe<NotificationCountType>>>;
   myNotifications?: Maybe<Array<Maybe<NotificationType>>>;
@@ -3552,6 +3627,10 @@ export type Query = {
   pagedInboxConversations?: Maybe<PagedInboxConversationType>;
   pagedIssuanceForms?: Maybe<PagedIssuanceForm>;
   pagedJobLogs?: Maybe<PagedJobLogsType>;
+  pagedLinkableUsers?: Maybe<PagedUserType>;
+  pagedMehfilKarkuns: PagedMehfilLocationKarkunType;
+  pagedOrgLocationKarkuns: PagedOrgLocationKarkunType;
+  pagedOrgLocationUsers?: Maybe<PagedUserType>;
   pagedPurchaseForms?: Maybe<PagedPurchaseForm>;
   pagedSalariesByKarkun?: Maybe<PagedSalaryType>;
   pagedScheduledJobs?: Maybe<PagedScheduledJobsType>;
@@ -3597,6 +3676,7 @@ export type Query = {
   stockAdjustmentsByStockItem?: Maybe<Array<Maybe<StockAdjustment>>>;
   stockItemById?: Maybe<StockItem>;
   stockItemsById?: Maybe<Array<Maybe<StockItem>>>;
+  userAccountAvailability: UserAccountAvailabilityType;
   userById?: Maybe<UserType>;
   userGroupById?: Maybe<UserGroupType>;
   userNames?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -3901,6 +3981,39 @@ export type QueryPagedJobLogsArgs = {
 };
 
 
+export type QueryPagedLinkableUsersArgs = {
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedMehfilKarkunsArgs = {
+  locationId: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedOrgLocationKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  locationId: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  withUserAccount?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type QueryPagedOrgLocationUsersArgs = {
+  locationId: Scalars['String']['input'];
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryPagedPurchaseFormsArgs = {
   physicalStoreId: Scalars['String']['input'];
   queryString?: InputMaybe<Scalars['String']['input']>;
@@ -4111,6 +4224,12 @@ export type QueryStockItemByIdArgs = {
 export type QueryStockItemsByIdArgs = {
   _ids: Array<InputMaybe<Scalars['String']['input']>>;
   physicalStoreId: Scalars['String']['input'];
+};
+
+
+export type QueryUserAccountAvailabilityArgs = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  userName?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -4880,10 +4999,17 @@ export type TwoFactorSetupType = {
   uri?: Maybe<Scalars['String']['output']>;
 };
 
+export type UserAccountAvailabilityType = {
+  __typename?: 'UserAccountAvailabilityType';
+  emailMessage?: Maybe<Scalars['String']['output']>;
+  userNameMessage?: Maybe<Scalars['String']['output']>;
+};
+
 export type UserFilter = {
   moduleAccess?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;
   pageSize?: InputMaybe<Scalars['String']['input']>;
+  serviceAccounts?: InputMaybe<Scalars['String']['input']>;
   showActive?: InputMaybe<Scalars['String']['input']>;
   showInactive?: InputMaybe<Scalars['String']['input']>;
   showLocked?: InputMaybe<Scalars['String']['input']>;
@@ -4903,12 +5029,14 @@ export type UserGroupType = {
 export type UserType = {
   __typename?: 'UserType';
   _id?: Maybe<Scalars['String']['output']>;
+  chatUserId?: Maybe<Scalars['String']['output']>;
   displayName?: Maybe<Scalars['String']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   emailVerified?: Maybe<Scalars['Boolean']['output']>;
   groups?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   hasChatAccount?: Maybe<Scalars['Boolean']['output']>;
   instances?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  isServiceAccount?: Maybe<Scalars['Boolean']['output']>;
   isSuperAdmin?: Maybe<Scalars['Boolean']['output']>;
   karkun?: Maybe<PersonType>;
   lastActiveAt?: Maybe<Scalars['String']['output']>;

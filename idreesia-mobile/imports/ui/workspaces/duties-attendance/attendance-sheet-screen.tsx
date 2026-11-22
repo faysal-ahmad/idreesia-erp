@@ -15,6 +15,12 @@ import { useDuties } from './hooks';
 
 type Row = NonNullable<NonNullable<MobileDaAttendanceSheetQuery['workspaceDaAttendanceSheet']>[number]>;
 
+const percentColor = (percentage: number) => {
+  if (percentage >= 75) return 'success';
+  if (percentage >= 50) return 'warning';
+  return 'danger';
+};
+
 /**
  * Workspace → Duties & Attendance → Attendance Sheet: a month's attendance
  * totals per person and duty.
@@ -59,7 +65,7 @@ export const AttendanceSheetScreen = () => {
                   </>
                 }
                 extra={
-                  <Tag color={row.percentage >= 75 ? 'success' : row.percentage >= 50 ? 'warning' : 'danger'} fill="outline">
+                  <Tag color={percentColor(row.percentage)} fill="outline">
                     {row.percentage}%
                   </Tag>
                 }

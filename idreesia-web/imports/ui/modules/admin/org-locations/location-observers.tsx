@@ -401,6 +401,7 @@ const LocationObservers = ({ locationId }: Props) => {
           filter={filter}
           selectedIds={observers.map(o => o._id)}
           selectedLabel="Observer"
+          showParentName={false}
           addingId={addingId}
           setPageParams={setPageParams}
           refreshData={refetchSearch}

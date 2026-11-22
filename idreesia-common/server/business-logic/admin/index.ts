@@ -33,6 +33,17 @@ export {
   type OrgLocationValues,
 } from './org-locations';
 export {
+  listOrgLocationKarkuns,
+  type OrgLocationKarkunsParams,
+} from './org-location-karkuns';
+export {
+  linkOrgLocationUser,
+  listLinkableUsers,
+  listOrgLocationUsers,
+  type LinkableUsersParams,
+  type OrgLocationUsersParams,
+} from './org-location-users';
+export {
   getOrgLocationObserverStats,
   type OrgLocationObserverStat,
 } from './org-location-observer-stats';

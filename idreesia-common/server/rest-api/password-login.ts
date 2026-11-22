@@ -4,9 +4,13 @@ import { TOO_MANY_ATTEMPTS_ERROR } from 'meteor/idreesia-common/server/business-
 export const ACCOUNT_LOCKED_MESSAGE =
   'Your account is currently locked. Contact an administrator for support.';
 
+export const SERVICE_ACCOUNT_MESSAGE =
+  'This is a service account and cannot be used to log in.';
+
 export interface LoginCandidate {
   _id: string;
   locked?: boolean;
+  isServiceAccount?: boolean;
   services?: {
     password?: unknown;
     twoFactorAuthentication?: { secret?: string; type?: string };
@@ -51,7 +55,8 @@ export type LoginResult =
  *  3. the password (401);
  *  4. the lock (403), only *after* the password so a locked account isn't
  *     revealed to someone who doesn't know it;
- *  5. two-factor (401), each code usable once.
+ *  5. a service account (403), likewise only after the password;
+ *  6. two-factor (401), each code usable once.
  * Only a fully successful login clears the attempt count.
  */
 export async function passwordLogin(
@@ -75,6 +80,10 @@ export async function passwordLogin(
 
   if (user.locked === true) {
     return { status: 403, body: { error: ACCOUNT_LOCKED_MESSAGE } };
+  }
+
+  if (user.isServiceAccount === true) {
+    return { status: 403, body: { error: SERVICE_ACCOUNT_MESSAGE } };
   }
 
   const secret = user.services.twoFactorAuthentication?.secret;

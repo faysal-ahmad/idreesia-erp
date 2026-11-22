@@ -40,7 +40,7 @@ const MoveCommitteeModal = ({ committee, onClose, onMoved }: Props) => {
 
   const { data, loading } = useQuery(ALL_ORG_LOCATIONS, { skip: !open });
   const [moveCommittee, { loading: moving }] = useMutation(MOVE_COMMITTEE, {
-    refetchQueries: ['locationCommittees', 'allOrgLocations', 'committeeById'],
+    refetchQueries: ['locationCommittees', 'allOrgLocations', 'committeeById', 'orgLocationById'],
   });
 
   const { currentPath, options } = useMemo(() => {

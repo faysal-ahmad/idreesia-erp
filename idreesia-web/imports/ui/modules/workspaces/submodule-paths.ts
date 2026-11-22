@@ -111,6 +111,10 @@ export default class SubModulePaths {
     return `${SubModulePaths.locationPath(locationId)}/mehfil-details`;
   }
 
+  static locationMehfilKarkunsPath(locationId = ':locationId') {
+    return `${SubModulePaths.locationPath(locationId)}/mehfil-karkuns`;
+  }
+
   static locationMehfilPermissionsPath(locationId = ':locationId') {
     return `${SubModulePaths.locationPath(locationId)}/mehfil-permissions`;
   }

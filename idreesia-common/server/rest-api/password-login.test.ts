@@ -81,6 +81,17 @@ describe('passwordLogin', () => {
     expect((await passwordLogin({ username: 'a', password: 'x' }, wrong)).status).toBe(401);
   });
 
+  it('refuses a service account after the password is checked', async () => {
+    const service = { ...baseUser, isServiceAccount: true };
+    const right = makeDeps(service);
+    expect(await passwordLogin({ username: 'a', password: 'p' }, right)).toMatchObject({ status: 403 });
+
+    const wrong = makeDeps(service, {
+      checkPassword: vi.fn(async () => ({ userId: 'u1', error: 1 })),
+    });
+    expect(await passwordLogin({ username: 'a', password: 'p' }, wrong)).toMatchObject({ status: 401 });
+  });
+
   it('a locked account never gets two-factor consumed or a token', async () => {
     const deps = makeDeps({ ...twoFactorUser, locked: true });
     await passwordLogin({ username: 'a', password: 'p', code: '123456' }, deps);

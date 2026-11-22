@@ -17,6 +17,10 @@ import {
   vendorsDataLoader,
 } from './inventory';
 import { citiesDataLoader, cityMehfilsDataLoader } from './outstation';
+import {
+  purchasingOrdersDataLoader,
+  purchasingVendorsDataLoader,
+} from './purchasing';
 
 export function getDataLoaders() {
   return {
@@ -40,6 +44,10 @@ export function getDataLoaders() {
       physicalStores: physicalStoresDataLoader(),
       stockItems: stockItemsDataLoader(),
       vendors: vendorsDataLoader(),
+    },
+    purchasing: {
+      orders: purchasingOrdersDataLoader(),
+      vendors: purchasingVendorsDataLoader(),
     },
     outstation: {
       cities: citiesDataLoader(),

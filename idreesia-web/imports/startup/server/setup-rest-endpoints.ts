@@ -32,6 +32,13 @@ import {
 import { exportKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/karkuns-exporter';
 import { exportVisitors } from 'meteor/idreesia-common/server/business-logic/security/visitors-exporter';
 import {
+  exportPurchasingOpenOrders,
+  exportPurchasingPayablesAging,
+  exportPurchasingSpendingByMonth,
+  exportPurchasingSpendingByVendor,
+  exportPurchasingVendorLedger,
+} from 'meteor/idreesia-common/server/business-logic/purchasing/exporters';
+import {
   exportIsssuanceForms,
   exportPurchaseForms,
   exportStockAdjustmentForms,
@@ -74,6 +81,11 @@ const ReportGenerators: Record<ReportName, ReportGenerator> = {
   StockItems: { generate: exportStockItems },
   Karkuns: { generate: exportKarkuns },
   Visitors: { generate: exportVisitors },
+  PurchasingSpendingByVendor: { generate: exportPurchasingSpendingByVendor },
+  PurchasingSpendingByMonth: { generate: exportPurchasingSpendingByMonth },
+  PurchasingOpenOrders: { generate: () => exportPurchasingOpenOrders() },
+  PurchasingPayablesAging: { generate: () => exportPurchasingPayablesAging() },
+  PurchasingVendorLedger: { generate: exportPurchasingVendorLedger },
 };
 
 // Accounts._findUserByQuery/_checkPasswordAsync/_generateStampedLoginToken/

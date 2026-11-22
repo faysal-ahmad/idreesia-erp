@@ -18,4 +18,7 @@ export const StorageFolders = {
   // Meetings module (business-logic/meetings) - one object per attachment:
   // <folder>/<workspaceId>/<meetingId>/<attachmentId>.<ext>
   MeetingAttachments: 'meeting-attachments',
+  // Purchasing module (business-logic/purchasing) - one object per attachment:
+  // <folder>/<ownerType>/<ownerId>/<attachmentId>.<ext>
+  PurchasingAttachments: 'purchasing-attachments',
 } as const;

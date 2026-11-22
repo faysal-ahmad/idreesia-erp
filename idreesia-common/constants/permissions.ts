@@ -63,6 +63,33 @@ const Permissions = {
     'correspondence-inbox-reply-to-messages',
 
   // ****************************************************************************************
+  // Purchasing Module
+  // ****************************************************************************************
+  PURCHASING_VIEW_VENDORS: 'purchasing-view-vendors',
+  PURCHASING_MANAGE_VENDORS: 'purchasing-manage-vendors',
+  PURCHASING_MANAGE_CATALOG: 'purchasing-manage-catalog',
+
+  PURCHASING_VIEW_REQUISITIONS: 'purchasing-view-requisitions',
+  PURCHASING_MANAGE_REQUISITIONS: 'purchasing-manage-requisitions',
+  PURCHASING_APPROVE_REQUISITIONS: 'purchasing-approve-requisitions',
+
+  PURCHASING_VIEW_ORDERS: 'purchasing-view-orders',
+  PURCHASING_MANAGE_ORDERS: 'purchasing-manage-orders',
+  PURCHASING_APPROVE_ORDERS: 'purchasing-approve-orders',
+
+  PURCHASING_VIEW_RECEIPTS: 'purchasing-view-receipts',
+  PURCHASING_MANAGE_RECEIPTS: 'purchasing-manage-receipts',
+
+  PURCHASING_VIEW_INVOICES: 'purchasing-view-invoices',
+  PURCHASING_MANAGE_INVOICES: 'purchasing-manage-invoices',
+
+  PURCHASING_VIEW_PAYMENTS: 'purchasing-view-payments',
+  PURCHASING_MANAGE_PAYMENTS: 'purchasing-manage-payments',
+
+  PURCHASING_VIEW_REPORTS: 'purchasing-view-reports',
+  PURCHASING_VIEW_AUDIT_LOGS: 'purchasing-view-audit-logs',
+
+  // ****************************************************************************************
   // Stores Module
   // ****************************************************************************************
   IN_MANAGE_SETUP_DATA: 'stores-manage-setup-data',

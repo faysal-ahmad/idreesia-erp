@@ -26,6 +26,7 @@ vi.mock('meteor/idreesia-common/server/business-logic/common/stored-attachments'
 vi.mock('meteor/idreesia-common/server/business-logic/admin', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/hr/karkuns-exporter', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/security/visitors-exporter', stub);
+vi.mock('meteor/idreesia-common/server/business-logic/purchasing/exporters', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/inventory', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/rocket-chat', stub);
 vi.mock('meteor/idreesia-common/server/graphql-api/common/attachment/access', stub);

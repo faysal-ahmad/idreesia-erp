@@ -105,6 +105,28 @@ import SecurityServerProfileResolvers from './security/security-server-profile/r
 import SecurityServerAlertSchema from './security/security-server-alert/security-server-alert';
 import SecurityServerAlertResolvers from './security/security-server-alert/resolvers';
 
+import PurchasingVendorSchema from './purchasing/vendor/vendor';
+import PurchasingVendorResolvers from './purchasing/vendor/resolvers';
+import PurchasingCatalogItemSchema from './purchasing/catalog-item/catalog-item';
+import PurchasingCatalogItemResolvers from './purchasing/catalog-item/resolvers';
+import PurchasingRequisitionSchema from './purchasing/requisition/requisition';
+import PurchasingRequisitionResolvers from './purchasing/requisition/resolvers';
+import PurchasingQuoteSchema from './purchasing/quote/quote';
+import PurchasingQuoteResolvers from './purchasing/quote/resolvers';
+import PurchasingOrderSchema from './purchasing/order/order';
+import PurchasingOrderResolvers from './purchasing/order/resolvers';
+import PurchasingReceiptSchema from './purchasing/receipt/receipt';
+import PurchasingReceiptResolvers from './purchasing/receipt/resolvers';
+import PurchasingInvoiceSchema from './purchasing/invoice/invoice';
+import PurchasingInvoiceResolvers from './purchasing/invoice/resolvers';
+import PurchasingPaymentSchema from './purchasing/payment/payment';
+import PurchasingPaymentResolvers from './purchasing/payment/resolvers';
+import PurchasingReportSchema from './purchasing/report/report';
+import PurchasingReportResolvers from './purchasing/report/resolvers';
+import PurchasingAttachmentSchema from './purchasing/attachment/attachment';
+import PurchasingAttachmentResolvers from './purchasing/attachment/resolvers';
+import PurchasingAuditLogSchema from './purchasing/audit-log/audit-log';
+import PurchasingAuditLogResolvers from './purchasing/audit-log/resolvers';
 import InboxSchema from './correspondence/inbox/inbox';
 import InboxResolvers from './correspondence/inbox/resolvers';
 import SecurityServerUsageSchema from './security/security-server-usage/security-server-usage';
@@ -307,6 +329,17 @@ const typeDefs = [
   ItemCategorySchema,
   LocationSchema,
   VendorSchema,
+  PurchasingVendorSchema,
+  PurchasingCatalogItemSchema,
+  PurchasingRequisitionSchema,
+  PurchasingQuoteSchema,
+  PurchasingOrderSchema,
+  PurchasingReceiptSchema,
+  PurchasingInvoiceSchema,
+  PurchasingPaymentSchema,
+  PurchasingReportSchema,
+  PurchasingAuditLogSchema,
+  PurchasingAttachmentSchema,
   PhysicalStoreSchema,
   ReferenceDutySchema,
   ReferenceOrgLocationSchema,
@@ -385,6 +418,17 @@ const resolvers = merge(
   ItemCategoryResolvers,
   LocationResolvers,
   VendorResolvers,
+  PurchasingVendorResolvers,
+  PurchasingCatalogItemResolvers,
+  PurchasingRequisitionResolvers,
+  PurchasingQuoteResolvers,
+  PurchasingOrderResolvers,
+  PurchasingReceiptResolvers,
+  PurchasingInvoiceResolvers,
+  PurchasingPaymentResolvers,
+  PurchasingReportResolvers,
+  PurchasingAuditLogResolvers,
+  PurchasingAttachmentResolvers,
   PhysicalStoreResolvers,
   ReferenceDutyResolvers,
   ReferenceOrgLocationResolvers,

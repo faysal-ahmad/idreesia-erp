@@ -54,7 +54,8 @@ export interface LocationFormValues {
   otherMehfilDetails?: string;
   latitude?: number | null;
   longitude?: number | null;
-  attendanceGeofencing?: boolean;
+  /** 0 or missing: no geofence. */
+  attendanceGeofenceMeters?: number;
 }
 
 interface Props {

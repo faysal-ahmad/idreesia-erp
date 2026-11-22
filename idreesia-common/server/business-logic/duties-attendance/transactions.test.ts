@@ -97,6 +97,7 @@ describe('transactions', () => {
 
     await expect(
       setDutyAttendance({
+        canMarkAnyone: true,
         locationId,
         dutyId: duty._id,
         date: '2024-01-10',

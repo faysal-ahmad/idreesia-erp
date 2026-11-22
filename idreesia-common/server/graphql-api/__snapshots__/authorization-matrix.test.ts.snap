@@ -392,6 +392,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.createOrgLocationUserChatAccount": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.createPeopleTag": [
     {
       "args": {
@@ -753,7 +763,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permissions": [
-          "ADMIN_MANAGE_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1196,6 +1206,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.resetOrgLocationUserPassword": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.resetTwoFactor": [
     {
       "args": {},
@@ -1343,6 +1363,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setOrgLocationUserLocked": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -2163,7 +2193,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   "Mutation.workspaceDaSetAttendance": [
     {
       "args": {
-        "permission": "MARK_ATTENDANCE",
+        "permission": "VIEW",
       },
       "directive": "checkDutiesAttendanceAccess",
     },
@@ -3464,7 +3494,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permissions": [
-          "ADMIN_MANAGE_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_ORG_LOCATIONS",
         ],
       },
       "directive": "checkPermissions",

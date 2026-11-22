@@ -392,22 +392,71 @@ describe('planning', () => {
     ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
   });
 
-  it('starts a new duty tomorrow, so its roster can be set up first', async () => {
+  it('starts a new duty today, and a roster set up today applies to today', async () => {
     await seedKarkuns();
     const locationId = await seedWorkspace();
     const duty = await createNamedDuty(locationId, 'New', 'u1');
-    expect(duty.startDate).toBe(TOMORROW);
+    expect(duty.startDate).toBe(TODAY);
 
     await addDutyMember(locationId, duty._id, { karkunId: 'k1' }, 'u1');
     await addDutyMember(locationId, duty._id, { karkunId: 'k2' }, 'u1');
+    // Nothing is locked while the roster is being set up on the first day.
+    expect(
+      await DutiesAttendanceDayRecords.find({ dutyId: duty._id }).countAsync()
+    ).toBe(0);
 
+    // Viewing the first day does not lock it either.
     const days = await planDays(locationId, duty._id, TODAY);
-    expect(days[0].locked).toBe(true);
-    expect(days[0].karkuns).toEqual([]);
+    expect(days[0].locked).toBe(false);
+    expect(names(days[0])).toEqual(['Ali', 'Zaid']);
     expect(names(days[1])).toEqual(['Ali', 'Zaid']);
     expect(
       await DutiesAttendanceDayRecords.find({ dutyId: duty._id }).countAsync()
     ).toBe(0);
+
+    // Its people can be planned, and marking attendance then locks it.
+    await setDutyDayOverride({
+      locationId,
+      dutyId: duty._id,
+      date: TODAY,
+      addedKarkunIds: ['k3'],
+      userId: 'u1',
+    });
+    expect(names((await planDays(locationId, duty._id, TODAY))[0])).toEqual([
+      'Ali',
+      'Bilal',
+      'Zaid',
+    ]);
+    await setDutyAttendance({
+      locationId,
+      dutyId: duty._id,
+      date: TODAY,
+      karkunId: 'k3',
+      status: 'present',
+      userId: 'marker',
+      canMarkAnyone: true,
+    });
+    const locked = (await planDays(locationId, duty._id, TODAY))[0];
+    expect(locked.locked).toBe(true);
+    expect(names(locked)).toEqual(['Ali', 'Bilal', 'Zaid']);
+    await expect(
+      setDutyDayOverride({
+        locationId,
+        dutyId: duty._id,
+        date: TODAY,
+        addedKarkunIds: [],
+        userId: 'u1',
+      })
+    ).rejects.toMatchObject(failsWith('BAD_USER_INPUT'));
+  });
+
+  it('keeps the roster a day had once the duty is past its first day', async () => {
+    const { locationId, dutyId } = await seedPlan();
+    await addDutyMember(locationId, dutyId, { karkunId: 'k3' }, 'u1');
+    const days = await planDays(locationId, dutyId, TODAY);
+    // Today was locked before Bilal joined; he starts tomorrow.
+    expect(names(days[0])).toEqual(['Zaid']);
+    expect(names(days[1])).toEqual(['Bilal', 'Zaid']);
   });
 
   it('never applies a roster to days that came before it', async () => {
@@ -425,27 +474,26 @@ describe('planning', () => {
     expect(days.map(day => names(day).length)).toEqual([0, 0, 1, 1, 1, 1, 1]);
   });
 
-  it('stops planning an inactive duty, and picks up from tomorrow when it is active again', async () => {
+  it('stops planning an inactive duty, and picks up from today when it is active again', async () => {
     const { locationId, dutyId } = await seedPlan();
 
     await updateDuty(locationId, dutyId, { isActive: false }, 'u1');
     // Days up to today were locked before it stopped.
     expect(
       await DutiesAttendanceDayRecords.find({ dutyId }).countAsync()
-    ).toBe(3);
+    ).toBe(4);
 
     setNow('2024-01-15T10:00:00Z');
     await planDays(locationId, dutyId, '2024-01-10');
     expect(
       await DutiesAttendanceDayRecords.find({ dutyId }).countAsync()
-    ).toBe(3);
+    ).toBe(4);
 
     const again = await updateDuty(locationId, dutyId, { isActive: true }, 'u1');
-    expect(again.startDate).toBe('2024-01-16');
-    // The 14th and 15th (today) were not planned; the 16th, a future day,
-    // is composed from the roster again.
+    expect(again.startDate).toBe('2024-01-15');
+    // The 14th was not planned; the 15th (a Monday, so Ali too) and later are.
     const days = await planDays(locationId, dutyId, '2024-01-14');
-    expect(days.map(day => names(day).length)).toEqual([0, 0, 1, 1, 1, 1, 1]);
+    expect(days.map(day => names(day).length)).toEqual([0, 2, 1, 1, 1, 1, 1]);
   });
 
   it('writes the nightly record for active duties of mehfils only', async () => {
@@ -480,6 +528,7 @@ describe('attendance', () => {
     const { locationId, dutyId } = await seedPlan();
     const mark = (karkunId: string, status?: string | null, date = TODAY) =>
       setDutyAttendance({
+        canMarkAnyone: true,
         locationId,
         dutyId,
         date,
@@ -517,6 +566,7 @@ describe('attendance', () => {
     const { locationId, dutyId } = await seedPlan();
     const mark = (extra: Record<string, unknown>) =>
       setDutyAttendance({
+        canMarkAnyone: true,
         locationId,
         dutyId,
         date: TODAY,
@@ -555,6 +605,7 @@ describe('attendance', () => {
     const { locationId, dutyId } = await seedPlan();
     const mark = (extra: Record<string, unknown>) =>
       setDutyAttendance({
+        canMarkAnyone: true,
         locationId,
         dutyId,
         date: TODAY,
@@ -579,6 +630,7 @@ describe('attendance', () => {
     const { locationId, dutyId } = await seedPlan();
 
     await setDutyAttendance({
+      canMarkAnyone: true,
       locationId,
       dutyId,
       date: '2024-01-08',
@@ -597,6 +649,7 @@ describe('attendance', () => {
     const { locationId, dutyId } = await seedPlan();
     const mark = (karkunId: string, status: string, date: string) =>
       setDutyAttendance({
+        canMarkAnyone: true,
         locationId,
         dutyId,
         date,
@@ -621,11 +674,227 @@ describe('attendance', () => {
   });
 });
 
+describe('marking attendance before a duty starts', () => {
+  const mark = (locationId: string, dutyId: string) =>
+    setDutyAttendance({
+      locationId,
+      dutyId,
+      date: TODAY,
+      karkunId: 'k1',
+      status: 'present',
+      userId: 'marker',
+      canMarkAnyone: true,
+    });
+
+  it('says when the duty starts, for a duty that has not started', async () => {
+    await seedKarkuns();
+    const locationId = await seedWorkspace();
+    const duty = await createNamedDuty(locationId, 'Gate', 'u1');
+    await addDutyMember(locationId, duty._id, { karkunId: 'k1' }, 'u1');
+    await DutiesAttendanceDuties.updateAsync(duty._id, {
+      $set: { startDate: TOMORROW },
+    });
+    await expect(mark(locationId, duty._id)).rejects.toThrow(
+      `starts on ${TOMORROW}`
+    );
+  });
+
+  it('says when the duty is not active', async () => {
+    const { locationId, dutyId } = await seedPlan();
+    await updateDuty(locationId, dutyId, { isActive: false }, 'u1');
+    await expect(mark(locationId, dutyId)).rejects.toThrow('not active');
+  });
+});
+
+describe('marking your own attendance', () => {
+  const HERE = { latitude: 31.5, longitude: 74.3 };
+  // About 111 metres per 0.001 degrees of latitude.
+  const metresNorth = (metres: number) => ({
+    latitude: 31.5 + metres / 111195,
+    longitude: 74.3,
+  });
+
+  const seedSelf = async (geofenceMeters?: number) => {
+    const { locationId, dutyId } = await seedPlan();
+    await OrgLocations.updateAsync(locationId, {
+      $set: {
+        mehfilDetails: {
+          ...HERE,
+          ...(geofenceMeters ? { attendanceGeofenceMeters: geofenceMeters } : {}),
+        },
+      },
+    });
+    await updateDutyMember(
+      locationId,
+      dutyId,
+      { karkunId: 'k1', canMarkOwnAttendance: true },
+      'u1'
+    );
+    const selfMark = (args: {
+      karkunId?: string;
+      status?: string | null;
+      geo?: { latitude: number; longitude: number } | null;
+      source?: string;
+      callerKarkunId?: string;
+    }) =>
+      setDutyAttendance({
+        locationId,
+        dutyId,
+        date: TODAY,
+        karkunId: args.karkunId ?? 'k1',
+        status: args.status === undefined ? 'present' : args.status,
+        geo: args.geo === undefined ? HERE : args.geo,
+        source: args.source,
+        userId: 'user-k1',
+        canMarkAnyone: false,
+        callerKarkunId: args.callerKarkunId ?? 'k1',
+      });
+    return { locationId, dutyId, selfMark };
+  };
+
+  it('stores the mark with source "self" and the location', async () => {
+    const { dutyId, selfMark } = await seedSelf();
+    await selfMark({ source: 'web' });
+    const record = await DutiesAttendanceDayRecords.findOneAsync({
+      dutyId,
+      date: TODAY,
+    });
+    expect(record?.karkuns.find(k => k.karkunId === 'k1')).toMatchObject({
+      attendance: 'present',
+      attendanceSource: 'self',
+      attendanceGeo: HERE,
+    });
+  });
+
+  it('keeps the flag when the member is updated without it', async () => {
+    const { locationId, dutyId } = await seedSelf();
+    await updateDutyMember(
+      locationId,
+      dutyId,
+      { karkunId: 'k1', isCoordinator: true },
+      'u1'
+    );
+    const duty = await DutiesAttendanceDuties.findOneAsync(dutyId);
+    expect(
+      duty?.members.find(member => member.karkunId === 'k1')
+    ).toMatchObject({ isCoordinator: true, canMarkOwnAttendance: true });
+  });
+
+  it('needs the flag, being the member, a location and a status', async () => {
+    const { selfMark } = await seedSelf();
+    // k2 is on the duty but has no flag.
+    await expect(
+      selfMark({ karkunId: 'k2', callerKarkunId: 'k2' })
+    ).rejects.toMatchObject(failsWith('FORBIDDEN'));
+    // Marking somebody else.
+    await expect(
+      selfMark({ karkunId: 'k1', callerKarkunId: 'k2' })
+    ).rejects.toMatchObject(failsWith('FORBIDDEN'));
+    await expect(selfMark({ geo: null })).rejects.toMatchObject(
+      failsWith('BAD_USER_INPUT')
+    );
+  });
+
+  it('unmarks only a mark they made themselves, for today', async () => {
+    const { locationId, dutyId, selfMark } = await seedSelf();
+    // Nothing to unmark yet.
+    await expect(selfMark({ status: null, geo: null })).rejects.toMatchObject(
+      failsWith('FORBIDDEN')
+    );
+
+    await selfMark({ status: 'late' });
+    await selfMark({ status: null, geo: null });
+    const stored = async () =>
+      (
+        await DutiesAttendanceDayRecords.findOneAsync({ dutyId, date: TODAY })
+      )?.karkuns.find(k => k.karkunId === 'k1');
+    expect((await stored())?.attendance).toBeUndefined();
+    expect((await stored())?.attendanceGeo).toBeUndefined();
+
+    // Marked again, correctly this time.
+    await selfMark({ status: 'present' });
+    expect((await stored())?.attendance).toBe('present');
+
+    // A mark a manager made is theirs to change.
+    await setDutyAttendance({
+      locationId,
+      dutyId,
+      date: TODAY,
+      karkunId: 'k1',
+      status: 'absent',
+      source: 'web',
+      userId: 'marker',
+      canMarkAnyone: true,
+    });
+    await expect(selfMark({ status: null, geo: null })).rejects.toMatchObject(
+      failsWith('FORBIDDEN')
+    );
+  });
+
+  it('only marks or unmarks their own attendance for today', async () => {
+    const { locationId, dutyId } = await seedSelf();
+    await expect(
+      setDutyAttendance({
+        locationId,
+        dutyId,
+        date: '2024-01-09',
+        karkunId: 'k1',
+        status: 'present',
+        geo: HERE,
+        userId: 'user-k1',
+        canMarkAnyone: false,
+        callerKarkunId: 'k1',
+      })
+    ).rejects.toMatchObject(failsWith('FORBIDDEN'));
+  });
+
+  it('cannot change a mark that is already there', async () => {
+    const { selfMark } = await seedSelf();
+    await selfMark({ status: 'late' });
+    await expect(selfMark({ status: 'present' })).rejects.toMatchObject(
+      failsWith('FORBIDDEN')
+    );
+  });
+
+  it('is held to the mehfil geofence', async () => {
+    const { selfMark } = await seedSelf(100);
+    await expect(selfMark({ geo: metresNorth(150) })).rejects.toMatchObject(
+      failsWith('BAD_USER_INPUT')
+    );
+    await selfMark({ geo: metresNorth(50) });
+  });
+
+  it('is not held to a geofence the mehfil does not have', async () => {
+    const { selfMark } = await seedSelf();
+    await selfMark({ geo: metresNorth(5000) });
+  });
+
+  it('holds a mark by somebody with Mark attendance to the geofence too, when it has a location', async () => {
+    const { locationId, dutyId } = await seedSelf(50);
+    const mark = (geo?: { latitude: number; longitude: number }) =>
+      setDutyAttendance({
+        locationId,
+        dutyId,
+        date: TODAY,
+        karkunId: 'k1',
+        status: 'present',
+        geo,
+        userId: 'marker',
+        canMarkAnyone: true,
+      });
+    await mark();
+    await expect(mark(metresNorth(80))).rejects.toMatchObject(
+      failsWith('BAD_USER_INPUT')
+    );
+  });
+});
+
 describe('attendance sheet', () => {
   it('totals the month per karkun and duty', async () => {
     const { locationId, dutyId } = await seedPlan();
     const mark = (karkunId: string, status: string, date: string) =>
       setDutyAttendance({
+        canMarkAnyone: true,
         locationId,
         dutyId,
         date,
@@ -650,11 +919,11 @@ describe('attendance sheet', () => {
     });
     expect(rows[1]).toMatchObject({
       name: 'Zaid',
-      daysOnDuty: 3,
+      daysOnDuty: 4,
       presentCount: 1,
       lateCount: 1,
-      unmarkedCount: 1,
-      percentage: 67,
+      unmarkedCount: 2,
+      percentage: 50,
     });
   });
 

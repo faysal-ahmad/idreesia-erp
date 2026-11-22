@@ -1,3 +1,4 @@
+import { DutiesAttendancePermissions } from 'meteor/idreesia-common/constants/duties-attendance';
 import { getDataLoaders } from 'meteor/idreesia-common/server/data-loaders';
 import {
   DutiesAttendanceDuties,
@@ -216,6 +217,7 @@ export default {
       }: DutyArgs & {
         karkunId: string;
         isCoordinator?: boolean;
+        canMarkOwnAttendance?: boolean;
         daysOfWeek?: string[];
       },
       context: Context
@@ -233,6 +235,7 @@ export default {
       }: DutyArgs & {
         karkunId: string;
         isCoordinator?: boolean;
+        canMarkOwnAttendance?: boolean;
         daysOfWeek?: string[];
       },
       context: Context
@@ -295,7 +298,10 @@ export default {
       },
       context: Context
     ) => {
-      const { userId } = getDutiesAttendanceAccess(context, locationId);
+      const { userId, permissions } = getDutiesAttendanceAccess(
+        context,
+        locationId
+      );
       return setDutyAttendance({
         locationId,
         dutyId,
@@ -305,6 +311,10 @@ export default {
         source,
         geo,
         userId,
+        canMarkAnyone: permissions.includes(
+          DutiesAttendancePermissions.MARK_ATTENDANCE
+        ),
+        callerKarkunId: context.user?.personId,
       });
     },
   },

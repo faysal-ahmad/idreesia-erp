@@ -44,6 +44,11 @@ export {
   type OrgLocationUsersParams,
 } from './org-location-users';
 export {
+  createOrgLocationUserChatAccount,
+  resetOrgLocationUserPassword,
+  setOrgLocationUserLocked,
+} from './org-location-user-actions';
+export {
   getOrgLocationObserverStats,
   type OrgLocationObserverStat,
 } from './org-location-observer-stats';

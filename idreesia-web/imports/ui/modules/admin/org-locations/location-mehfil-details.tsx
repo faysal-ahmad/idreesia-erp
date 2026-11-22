@@ -4,14 +4,23 @@ import { EnvironmentOutlined } from '@ant-design/icons';
 import { Button, Flex, Form, Input, Space, Tooltip } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
+import { ATTENDANCE_GEOFENCE_METERS } from 'meteor/idreesia-common/constants/duties-attendance';
 import type { OrgLocationByIdQuery } from 'meteor/idreesia-common/types/client-operations';
-import { CheckboxField, FormButtonsSaveCancel } from '/imports/ui/modules/helpers/fields';
+import { FormButtonsSaveCancel, SelectField } from '/imports/ui/modules/helpers/fields';
 
 import { UPDATE_ORG_LOCATION } from './gql';
 import { toMehfilDetails } from './helpers';
 import LocationMap from './location-map';
 import LocationPinModal from './location-pin-modal';
 import { MehfilDetailsFields, type LocationFormValues } from './location-form';
+
+const GEOFENCE_OPTIONS = [
+  { value: 0, label: 'None' },
+  ...ATTENDANCE_GEOFENCE_METERS.map(meters => ({
+    value: meters,
+    label: `${meters} meters`,
+  })),
+];
 
 type OrgLocation = NonNullable<OrgLocationByIdQuery['orgLocationById']>;
 
@@ -71,7 +80,7 @@ const LocationMehfilDetails = ({ orgLocation, onCancel }: Props) => {
       setPin({ latitude, longitude });
       // Geofencing checks against the location, so it goes off with it.
       if (latitude == null || longitude == null) {
-        form.setFieldValue('attendanceGeofencing', false);
+        form.setFieldValue('attendanceGeofenceMeters', 0);
       }
       setIsTouched(true);
     }
@@ -92,7 +101,7 @@ const LocationMehfilDetails = ({ orgLocation, onCancel }: Props) => {
           lcdAvailability: details?.lcdAvailability ?? false,
           tabAvailability: details?.tabAvailability ?? false,
           otherMehfilDetails: details?.otherMehfilDetails ?? undefined,
-          attendanceGeofencing: details?.attendanceGeofencing ?? false,
+          attendanceGeofenceMeters: details?.attendanceGeofenceMeters ?? 0,
         }}
         onFieldsChange={() => setIsTouched(true)}
         onFinish={handleFinish}
@@ -123,9 +132,14 @@ const LocationMehfilDetails = ({ orgLocation, onCancel }: Props) => {
                 </Tooltip>
               </Space.Compact>
             </Form.Item>
-            <CheckboxField
-              fieldName="attendanceGeofencing"
+            <SelectField
+              fieldName="attendanceGeofenceMeters"
               fieldLabel="Attendance Geofencing"
+              allowClear={false}
+              initialValue={details?.attendanceGeofenceMeters ?? 0}
+              data={GEOFENCE_OPTIONS}
+              getDataValue={option => option.value}
+              getDataText={option => option.label}
               disabled={!hasPin}
             />
             </>

@@ -173,7 +173,7 @@ export const DutyScreen = () => {
           {duty.description && <p>{duty.description}</p>}
         </div>
         {canManageDuties && (
-          <InfoNote>Roster changes apply from tomorrow; days up to today keep the roster they had.</InfoNote>
+          <InfoNote>Roster changes apply from tomorrow; days up to today keep the roster they had. A new duty can still be set up today.</InfoNote>
         )}
         {members.length === 0 ? (
           <PageEmpty title="No members added yet" />

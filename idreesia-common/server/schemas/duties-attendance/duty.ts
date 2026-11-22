@@ -5,6 +5,7 @@ import { identifiable, timestamps } from '../common';
 const MemberSchema = new SimpleSchema({
   karkunId: { type: String },
   isCoordinator: { type: Boolean, optional: true },
+  canMarkOwnAttendance: { type: Boolean, optional: true },
   // Days the member is on duty. Empty or missing: every day.
   daysOfWeek: { type: Array, optional: true },
   'daysOfWeek.$': { type: String },

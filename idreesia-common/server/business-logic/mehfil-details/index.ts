@@ -173,14 +173,20 @@ export async function updateMehfilDetails(
   // caller sent, and drop it if the location is being cleared.
   const hasLocation =
     mehfilDetails.latitude != null && mehfilDetails.longitude != null;
-  const attendanceGeofencing =
-    hasLocation && !!location.mehfilDetails?.attendanceGeofencing;
+  const attendanceGeofenceMeters = hasLocation
+    ? location.mehfilDetails?.attendanceGeofenceMeters
+    : undefined;
+
+  const { attendanceGeofenceMeters: _ignored, ...callerDetails } = mehfilDetails;
 
   await OrgLocations.updateAsync(
     { _id: locationId },
     {
       $set: {
-        mehfilDetails: { ...mehfilDetails, attendanceGeofencing },
+        mehfilDetails: {
+          ...callerDetails,
+          ...(attendanceGeofenceMeters ? { attendanceGeofenceMeters } : {}),
+        },
         updatedAt: new Date(),
         updatedBy: user._id,
       },

@@ -1,3 +1,5 @@
+import { DataSource } from 'meteor/idreesia-common/constants';
+import { ChatError } from 'meteor/idreesia-common/server/chat';
 import type { OrgLocationType } from 'meteor/idreesia-common/constants/organization';
 import { getDataLoaders } from 'meteor/idreesia-common/server/data-loaders';
 import {
@@ -10,6 +12,7 @@ import {
   addOrgLocationFeatureUser,
   addOrgLocationObserver,
   createOrgLocation,
+  createOrgLocationUserChatAccount,
   getOrgLocationObserverStats,
   linkOrgLocationUser,
   listLinkableUsers,
@@ -18,6 +21,8 @@ import {
   listOrgLocationFeaturePermissions,
   removeOrgLocationFeatureUser,
   removeOrgLocationObserver,
+  resetOrgLocationUserPassword,
+  setOrgLocationUserLocked,
   syncOrgLocationObservers,
   updateOrgLocation,
 } from 'meteor/idreesia-common/server/business-logic/admin';
@@ -131,6 +136,37 @@ export default {
       _obj: unknown,
       { locationId, karkunId, userId }: { locationId: string; karkunId: string; userId: string }
     ) => linkOrgLocationUser(locationId, karkunId, userId),
+
+    resetOrgLocationUserPassword: async (
+      _obj: unknown,
+      params: { locationId: string; userId: string; password: string },
+      { user }: ResolverContext
+    ) => resetOrgLocationUserPassword(params, user, DataSource.ADMIN),
+
+    setOrgLocationUserLocked: async (
+      _obj: unknown,
+      params: { locationId: string; userId: string; locked: boolean },
+      { user }: ResolverContext
+    ) => setOrgLocationUserLocked(params, user, DataSource.ADMIN),
+
+    createOrgLocationUserChatAccount: async (
+      _obj: unknown,
+      params: { locationId: string; userId: string },
+      { user }: ResolverContext
+    ) => {
+      try {
+        return await createOrgLocationUserChatAccount(
+          params,
+          user,
+          DataSource.ADMIN
+        );
+      } catch (error) {
+        if (error instanceof ChatError) {
+          throw new Error(`Chat: ${error.message}`);
+        }
+        throw error;
+      }
+    },
 
     addOrgLocationObserver: async (
       _obj: unknown,

@@ -8,6 +8,9 @@ export const canUseFeature = (
   user: UserWithPermissions | null | undefined,
   feature: FeatureDefinition
 ) => {
+  // A feature with no permissions is open to every signed-in user (a user's
+  // own data, such as My Data).
+  if (feature.permissions.length === 0) return !!user;
   const granted = user?.permissions ?? [];
   return feature.permissions.some(permission => granted.includes(permission));
 };

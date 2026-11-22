@@ -31,6 +31,8 @@ type DaMehfilDutyType {
 type DaDutyMemberType {
   karkunId: String!
   isCoordinator: Boolean
+  # May mark their own attendance (mobile).
+  canMarkOwnAttendance: Boolean
   # Empty: every day.
   daysOfWeek: [String]
   karkun: PersonBasicType
@@ -106,6 +108,10 @@ type DaMyDutyType {
   date: String!
   # present, late or absent; null when not marked.
   attendance: String
+  # How the attendance was marked; "self" when the caller marked it.
+  attendanceSource: String
+  # The caller may mark their own attendance on this duty (from the mobile app).
+  canMarkOwnAttendance: Boolean!
 }
 
 extend type Query {
@@ -183,6 +189,7 @@ extend type Mutation {
     dutyId: String!
     karkunId: String!
     isCoordinator: Boolean
+    canMarkOwnAttendance: Boolean
     daysOfWeek: [String]
   ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
@@ -191,6 +198,7 @@ extend type Mutation {
     dutyId: String!
     karkunId: String!
     isCoordinator: Boolean
+    canMarkOwnAttendance: Boolean
     daysOfWeek: [String]
   ): DaDutyType @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
@@ -211,6 +219,10 @@ extend type Mutation {
 
   # status is present, late or absent; null clears the mark. source (how it
   # was marked) and geo (where from) are optional and kept with the mark.
+  # Needs Mark attendance, or the karkun being the caller, a member allowed
+  # to mark their own attendance, for today: then geo is required to mark, the
+  # source is set to "self", only an unmarked day can be marked, and a null
+  # status clears only a mark they made themselves.
   workspaceDaSetAttendance(
     locationId: String!
     dutyId: String!
@@ -219,6 +231,6 @@ extend type Mutation {
     status: String
     source: String
     geo: DaGeoLocationInput
-  ): Boolean @checkDutiesAttendanceAccess(permission: MARK_ATTENDANCE)
+  ): Boolean @checkDutiesAttendanceAccess(permission: VIEW)
 }
 `;

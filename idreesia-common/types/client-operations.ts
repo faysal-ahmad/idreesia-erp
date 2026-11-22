@@ -18,6 +18,12 @@ export type CityFilter = {
   region?: string | null | undefined;
 };
 
+export type DaGeoLocationInput = {
+  accuracy?: number | null | undefined;
+  latitude: number;
+  longitude: number;
+};
+
 export type InboxConversationFilter = {
   pageIndex?: string | null | undefined;
   pageSize?: string | null | undefined;
@@ -72,7 +78,7 @@ export type KarkunFilter = {
 
 export type OrgLocationMehfilDetailsInput = {
   address?: string | null | undefined;
-  attendanceGeofencing?: boolean | null | undefined;
+  attendanceGeofenceMeters?: number | null | undefined;
   latitude?: number | null | undefined;
   lcdAvailability?: boolean | null | undefined;
   longitude?: number | null | undefined;
@@ -772,7 +778,7 @@ export type MobileDaMyDutiesQueryVariables = Exact<{
 }>;
 
 
-export type MobileDaMyDutiesQuery = { myDuties: Array<{ locationId: string, locationName: string, dutyId: string, dutyName: string, date: string, attendance: string | null } | null> };
+export type MobileDaMyDutiesQuery = { myDuties: Array<{ locationId: string, locationName: string, dutyId: string, dutyName: string, date: string, attendance: string | null, attendanceSource: string | null, canMarkOwnAttendance: boolean } | null> };
 
 export type MobileDaDutiesQueryVariables = Exact<{
   locationId: string;
@@ -888,6 +894,7 @@ export type MobileDaSetAttendanceMutationVariables = Exact<{
   date: string;
   karkunId: string;
   status?: string | null | undefined;
+  geo?: Types.DaGeoLocationInput | null | undefined;
 }>;
 
 
@@ -2185,7 +2192,7 @@ export type OrgLocationByIdQueryVariables = Exact<{
 }>;
 
 
-export type OrgLocationByIdQuery = { orgLocationById: { _id: string | null, name: string | null, type: string | null, parentId: string | null, allParentIds: Array<string | null> | null, observerKarkunIds: Array<string | null> | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, committees: Array<{ _id: string | null } | null> | null, mehfilDetails: { address: string | null, mehfilStartYear: string | null, timingDetails: string | null, lcdAvailability: boolean | null, tabAvailability: boolean | null, otherMehfilDetails: string | null, latitude: number | null, longitude: number | null, attendanceGeofencing: boolean | null } | null } | null };
+export type OrgLocationByIdQuery = { orgLocationById: { _id: string | null, name: string | null, type: string | null, parentId: string | null, allParentIds: Array<string | null> | null, observerKarkunIds: Array<string | null> | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, committees: Array<{ _id: string | null } | null> | null, mehfilDetails: { address: string | null, mehfilStartYear: string | null, timingDetails: string | null, lcdAvailability: boolean | null, tabAvailability: boolean | null, otherMehfilDetails: string | null, latitude: number | null, longitude: number | null, attendanceGeofenceMeters: number | null } | null } | null };
 
 export type UpdateOrgLocationMutationVariables = Exact<{
   _id: string;
@@ -2343,6 +2350,32 @@ export type LocationUsersQueryVariables = Exact<{
 
 
 export type LocationUsersQuery = { pagedOrgLocationUsers: { totalResults: number | null, data: Array<{ _id: string | null, username: string | null, email: string | null, locked: boolean | null, lastActiveAt: string | null, hasChatAccount: boolean | null, twoFactorEnabled: boolean | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null } | null> | null } | null };
+
+export type ResetOrgLocationUserPasswordMutationVariables = Exact<{
+  locationId: string;
+  userId: string;
+  password: string;
+}>;
+
+
+export type ResetOrgLocationUserPasswordMutation = { resetOrgLocationUserPassword: { _id: string | null } | null };
+
+export type SetOrgLocationUserLockedMutationVariables = Exact<{
+  locationId: string;
+  userId: string;
+  locked: boolean;
+}>;
+
+
+export type SetOrgLocationUserLockedMutation = { setOrgLocationUserLocked: { _id: string | null, locked: boolean | null } | null };
+
+export type CreateOrgLocationUserChatAccountMutationVariables = Exact<{
+  locationId: string;
+  userId: string;
+}>;
+
+
+export type CreateOrgLocationUserChatAccountMutation = { createOrgLocationUserChatAccount: { _id: string | null, hasChatAccount: boolean | null } | null };
 
 export type AllPeopleTagsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -4620,7 +4653,7 @@ export type WorkspaceDaDutiesQueryVariables = Exact<{
 }>;
 
 
-export type WorkspaceDaDutiesQuery = { workspaceDaDuties: Array<{ _id: string, mehfilDutyId: string | null, name: string, description: string | null, isActive: boolean, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, members: Array<{ karkunId: string, isCoordinator: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null } | null> } | null> | null };
+export type WorkspaceDaDutiesQuery = { workspaceDaDuties: Array<{ _id: string, mehfilDutyId: string | null, name: string, description: string | null, isActive: boolean, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, members: Array<{ karkunId: string, isCoordinator: boolean | null, canMarkOwnAttendance: boolean | null, daysOfWeek: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null } | null> } | null> | null };
 
 export type WorkspaceDaMehfilDutiesQueryVariables = Exact<{
   locationId: string;
@@ -4689,6 +4722,7 @@ export type WorkspaceDaAddDutyMemberMutationVariables = Exact<{
   dutyId: string;
   karkunId: string;
   isCoordinator?: boolean | null | undefined;
+  canMarkOwnAttendance?: boolean | null | undefined;
   daysOfWeek?: Array<string | null | undefined> | string | null | undefined;
 }>;
 
@@ -4700,6 +4734,7 @@ export type WorkspaceDaUpdateDutyMemberMutationVariables = Exact<{
   dutyId: string;
   karkunId: string;
   isCoordinator?: boolean | null | undefined;
+  canMarkOwnAttendance?: boolean | null | undefined;
   daysOfWeek?: Array<string | null | undefined> | string | null | undefined;
 }>;
 

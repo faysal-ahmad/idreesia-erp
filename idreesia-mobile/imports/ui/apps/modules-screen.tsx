@@ -1,13 +1,14 @@
 import React from 'react';
 import { List } from 'antd-mobile';
 
+import { CollapsibleSection } from '../components/collapsible-section';
 import { useCurrentUser } from '../hooks';
 import { Page, PageEmpty, PageError, PageLoading } from '../layout';
 import { useHistory } from '../router';
-import { getUsableModules } from './access';
+import { getUsableFeatures, getUsableModules } from './access';
 import { modules } from './registry';
 
-/** Apps tab: the modules this user can use. */
+/** Apps tab: one section per module this user can use, with its features listed under it. */
 export const ModulesScreen = () => {
   const history = useHistory();
   const { user, userLoading, userError, refetchUser, refreshUser } = useCurrentUser();
@@ -26,18 +27,25 @@ export const ModulesScreen = () => {
           title="Nothing here yet"
         />
       ) : (
-        <List mode="card">
-          {usableModules.map(module => (
-            <List.Item
-              key={module.name}
-              description={module.description}
-              prefix={<span className="list-icon">{module.icon}</span>}
-              onClick={() => history.push(module.path)}
-            >
-              {module.name}
-            </List.Item>
-          ))}
-        </List>
+        <>
+          {usableModules.map(module => {
+            const features = getUsableFeatures(user, module);
+            return (
+              <CollapsibleSection key={module.name} count={features.length} title={module.name}>
+                {features.map(feature => (
+                  <List.Item
+                    key={feature.key}
+                    description={feature.description}
+                    prefix={<span className={feature.iconClassName ?? 'list-icon'}>{feature.icon}</span>}
+                    onClick={feature.comingSoon ? undefined : () => history.push(feature.path)}
+                  >
+                    {feature.title}
+                  </List.Item>
+                ))}
+              </CollapsibleSection>
+            );
+          })}
+        </>
       );
   }
 

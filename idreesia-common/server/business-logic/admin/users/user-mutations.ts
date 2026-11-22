@@ -339,18 +339,60 @@ export async function resetUserPassword(
       throw new Error('User not found.');
     }
 
-    await Accounts.setPasswordAsync(userId, password);
-
-    await SecurityLogs.insertAsync({
-      userId,
-      operationType: SecurityOperationType.PASSWORD_RESET,
-      operationBy: user._id,
-      operationTime: new Date(),
-      dataSource,
-      dataSourceDetail,
-    });
+    await applyPasswordReset(userId, password, user, dataSource, dataSourceDetail);
 
     return findOneUser(userId);
+  });
+}
+
+/**
+ * Sets the password and logs it. The caller has checked who may do this, and
+ * runs it in a transaction.
+ */
+export async function applyPasswordReset(
+  userId: string,
+  password: string,
+  user: UserRef,
+  dataSource: string,
+  dataSourceDetail: string | null = null
+) {
+  await Accounts.setPasswordAsync(userId, password);
+
+  await SecurityLogs.insertAsync({
+    userId,
+    operationType: SecurityOperationType.PASSWORD_RESET,
+    operationBy: user._id,
+    operationTime: new Date(),
+    dataSource,
+    dataSourceDetail,
+  });
+}
+
+/**
+ * Locks or unlocks the account and logs it. The caller has checked who may do
+ * this, and runs it in a transaction.
+ */
+export async function applyUserLocked(
+  userId: string,
+  locked: boolean,
+  user: UserRef,
+  dataSource: string,
+  dataSourceDetail: string | null = null
+) {
+  const target = await Users.findOneAsync(userId);
+  if (!target) throw new Error('User not found.');
+  if ((target.locked === true) === locked) return;
+
+  await Users.updateAsync(userId, { $set: { locked } });
+  await SecurityLogs.insertAsync({
+    userId,
+    operationType: locked
+      ? SecurityOperationType.ACCOUNT_LOCKED
+      : SecurityOperationType.ACCOUNT_UNLOCKED,
+    operationBy: user._id,
+    operationTime: new Date(),
+    dataSource,
+    dataSourceDetail,
   });
 }
 
@@ -445,40 +487,52 @@ export async function createChatAccount(
 ): Promise<MappedUser> {
   return runInTransaction(async () => {
     await assertCanManageUser(userId, user);
-    const existingUser = await Users.findOneAsync(userId);
-    if (!existingUser) {
-      throw new Error('User not found.');
-    }
-    if (existingUser.chatUserId) {
-      throw new Error('This user already has a chat account.');
-    }
-
-    const username = existingUser.username?.trim();
-    const name = existingUser.profile?.name?.trim();
-    if (!username || !name) {
-      throw new Error(
-        'A user name and display name are required to create a chat account.'
-      );
-    }
-
-    const chatUserId = await createChatUser({
-      username,
-      name,
-      email: get(existingUser, 'emails.0.address', null),
-    });
-
-    await Users.updateAsync(userId, { $set: { chatUserId } });
-
-    await SecurityLogs.insertAsync({
-      userId,
-      operationType: SecurityOperationType.CHAT_ACCOUNT_CREATED,
-      operationBy: user._id,
-      operationTime: new Date(),
-      dataSource,
-      dataSourceDetail,
-    });
-
+    await applyChatAccountCreation(userId, user, dataSource, dataSourceDetail);
     return findOneUser(userId);
+  });
+}
+
+/**
+ * Creates the user's chat account and logs it. The caller has checked who may
+ * do this, and runs it in a transaction.
+ */
+export async function applyChatAccountCreation(
+  userId: string,
+  user: UserRef,
+  dataSource: string,
+  dataSourceDetail: string | null = null
+) {
+  const existingUser = await Users.findOneAsync(userId);
+  if (!existingUser) {
+    throw new Error('User not found.');
+  }
+  if (existingUser.chatUserId) {
+    throw new Error('This user already has a chat account.');
+  }
+
+  const username = existingUser.username?.trim();
+  const name = existingUser.profile?.name?.trim();
+  if (!username || !name) {
+    throw new Error(
+      'A user name and display name are required to create a chat account.'
+    );
+  }
+
+  const chatUserId = await createChatUser({
+    username,
+    name,
+    email: get(existingUser, 'emails.0.address', null),
+  });
+
+  await Users.updateAsync(userId, { $set: { chatUserId } });
+
+  await SecurityLogs.insertAsync({
+    userId,
+    operationType: SecurityOperationType.CHAT_ACCOUNT_CREATED,
+    operationBy: user._id,
+    operationTime: new Date(),
+    dataSource,
+    dataSourceDetail,
   });
 }
 

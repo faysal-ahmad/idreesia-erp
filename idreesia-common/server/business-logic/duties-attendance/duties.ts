@@ -105,7 +105,7 @@ export async function updateDuty(
       const isActive = !!changes.isActive;
       if (isActive !== (duty.isActive !== false)) {
         // Days up to today are locked before the duty stops being planned.
-        // When it starts again, it picks up from tomorrow: the days in
+        // When it starts again, it picks up from that day: the days in
         // between never get a record.
         if (isActive) $set.startDate = firstPlanningDate();
         else await lockDutyDaysThroughToday(duty);
@@ -153,6 +153,8 @@ export async function removeDuty(
 export interface DutyMemberInput {
   karkunId: string;
   isCoordinator?: boolean | null;
+  /** The member may mark their own attendance. On update, missing keeps it. */
+  canMarkOwnAttendance?: boolean | null;
   /** Empty or missing: every day. */
   daysOfWeek?: string[] | null;
 }
@@ -222,6 +224,7 @@ export async function addDutyMember(
       {
         karkunId: input.karkunId,
         ...(input.isCoordinator ? { isCoordinator: true } : {}),
+        ...(input.canMarkOwnAttendance ? { canMarkOwnAttendance: true } : {}),
         ...(daysOfWeek.length ? { daysOfWeek } : {}),
       },
     ];
@@ -247,6 +250,9 @@ export async function updateDutyMember(
         ? {
             karkunId: member.karkunId,
             ...(input.isCoordinator ? { isCoordinator: true } : {}),
+            ...((input.canMarkOwnAttendance ?? member.canMarkOwnAttendance)
+              ? { canMarkOwnAttendance: true }
+              : {}),
             ...(daysOfWeek.length ? { daysOfWeek } : {}),
           }
         : member

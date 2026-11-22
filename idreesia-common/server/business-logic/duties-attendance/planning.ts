@@ -1,6 +1,7 @@
 import {
   DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH,
   DUTIES_ATTENDANCE_PLAN_DAY_COUNT,
+  DUTIES_ATTENDANCE_SELF_SOURCE,
   DutyAttendanceStatuses,
   type DutyAttendanceStatus,
 } from 'meteor/idreesia-common/constants/duties-attendance';
@@ -34,10 +35,12 @@ import {
 import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
 
 import { dutiesAttendanceError } from './errors';
+import { assertWithinGeofence } from './geofence';
 import {
   ensureDutiesAttendanceIndexes,
   isDuplicateKey,
   requireDuty,
+  requireLocation,
   requireUserId,
   stamp,
   touch,
@@ -163,12 +166,13 @@ export function composeKarkuns(args: {
 }
 
 /**
- * The first day a duty is planned: the day after it was created or last made
- * active, so a new roster can be set up before it starts.
+ * The first day a duty is planned: the day it was created or last made active.
+ * Its roster can still be set up on that day (see lockDutyDaysThroughToday).
  */
-export const firstPlanningDate = () => addCalendarDays(todayInKarachi(), 1);
+export const firstPlanningDate = () => todayInKarachi();
 
-function dutyStartDate(duty: DutiesAttendanceDutyDocument) {
+/** The first day the duty has day records (YYYY-MM-DD). */
+export function dutyStartDate(duty: DutiesAttendanceDutyDocument) {
   return (
     duty.startDate ||
     (duty.createdAt
@@ -244,14 +248,33 @@ export async function lockDays(
 }
 
 /**
+ * Whether today can still be planned: it is the day the duty starts and has
+ * no record yet (nobody has marked attendance or looked at it as locked). The
+ * first day stays open so the roster and the day's people can be set up.
+ */
+export async function isTodayOpen(duty: DutiesAttendanceDutyDocument) {
+  const today = todayInKarachi();
+  if (duty.isActive === false || dutyStartDate(duty) !== today) return false;
+  const record = await DutiesAttendanceDayRecords.findOneAsync(
+    { dutyId: duty._id, date: today },
+    { fields: { _id: 1 } }
+  );
+  return !record;
+}
+
+/**
  * Locks every day up to today for a duty, so that a change to its roster only
- * affects days that are still being planned. Run it inside the transaction
- * that changes the roster.
+ * affects days that are still being planned. The day the duty starts is still
+ * being set up, so it is left open until the duty has started; a change made
+ * that day applies to it. Run it inside the transaction that changes the
+ * roster.
  */
 export async function lockDutyDaysThroughToday(
   duty: DutiesAttendanceDutyDocument
 ) {
-  await lockDays(duty, dutyStartDate(duty), todayInKarachi());
+  const today = todayInKarachi();
+  const start = dutyStartDate(duty);
+  await lockDays(duty, start, start < today ? today : addCalendarDays(today, -1));
 }
 
 /**
@@ -298,10 +321,14 @@ export async function setDutyDayOverride(args: {
     locationId: args.locationId,
   });
   assertDate(args.date, 'date');
-  if (args.date <= todayInKarachi()) {
+  const today = todayInKarachi();
+  if (
+    args.date < today ||
+    (args.date === today && !(await isTodayOpen(duty)))
+  ) {
     throw dutiesAttendanceError(
       'BAD_USER_INPUT',
-      'Only future days can be changed. The plan for today is locked.'
+      'Only days that have not started can be changed. The plan for today is locked.'
     );
   }
 
@@ -364,8 +391,8 @@ export interface PlanDay {
 
 /**
  * Seven days of a duty's plan from `startDate`. Days up to today are locked:
- * they show the record, with attendance. Later days are composed from the
- * roster and the overrides.
+ * they show the record, with attendance. Later days, and today when it is the
+ * duty's first day, are composed from the roster and the overrides.
  */
 export async function getDutyPlanDays(args: {
   locationId: string;
@@ -385,7 +412,14 @@ export async function getDutyPlanDays(args: {
   const range = { $gte: args.startDate, $lte: endDate };
   const today = todayInKarachi();
 
-  await lockDays(duty, args.startDate, endDate);
+  // The day the duty starts stays open until it is locked by marking
+  // attendance, so its people can be planned.
+  const todayOpen = await isTodayOpen(duty);
+  await lockDays(
+    duty,
+    args.startDate,
+    todayOpen && endDate >= today ? addCalendarDays(today, -1) : endDate
+  );
 
   const overrides = (await DutiesAttendanceDayOverrides.find({
     dutyId: duty._id,
@@ -411,7 +445,7 @@ export async function getDutyPlanDays(args: {
 
   const days: PlanDay[] = datesBetween(args.startDate, endDate).map(date => {
     const weekday = dayOfWeek(date);
-    const locked = date <= today;
+    const locked = date < today || (date === today && !todayOpen);
     const override = overrideByDate.get(date);
     const { addedKarkunIds, absentKarkunIds } = overrideIds(override);
 
@@ -513,10 +547,18 @@ export async function setDutyAttendance(args: {
   /** Where it was marked from; kept with the mark. */
   geo?: AttendanceGeoLocation | null;
   userId: string;
+  /** The caller holds Mark attendance, so may mark anybody. */
+  canMarkAnyone: boolean;
+  /** The caller's own karkun, for a member marking themselves. */
+  callerKarkunId?: string | null;
 }) {
   requireUserId(args.userId);
-  const source = normalizeSource(args.source);
+  const isSelfMark = !args.canMarkAnyone;
   const geo = normalizeGeo(args.geo);
+  // A member's own mark is always stamped as such, whatever the client sent.
+  const source = isSelfMark
+    ? DUTIES_ATTENDANCE_SELF_SOURCE
+    : normalizeSource(args.source);
   // Indexes are created outside the transaction, which can't create them.
   await ensureDutiesAttendanceIndexes();
   return runInTransaction(async () => {
@@ -532,6 +574,39 @@ export async function setDutyAttendance(args: {
     }
 
     const status = args.status || null;
+
+    if (isSelfMark) {
+      const member = duty.members.find(
+        ({ karkunId }) => karkunId === args.karkunId
+      );
+      if (
+        !args.callerKarkunId ||
+        args.callerKarkunId !== args.karkunId ||
+        !member?.canMarkOwnAttendance
+      ) {
+        throw dutiesAttendanceError(
+          'FORBIDDEN',
+          'You are not allowed to mark attendance for this duty.'
+        );
+      }
+      if (args.date !== todayInKarachi()) {
+        throw dutiesAttendanceError(
+          'FORBIDDEN',
+          'You can only mark or unmark your own attendance for today.'
+        );
+      }
+      // Marking needs where you are; unmarking does not.
+      if (status && !geo) {
+        throw dutiesAttendanceError(
+          'BAD_USER_INPUT',
+          'Your location is required to mark your own attendance.'
+        );
+      }
+    }
+    if (geo) {
+      assertWithinGeofence(await requireLocation(duty.locationId), geo);
+    }
+
     if (
       status &&
       !Object.values(DutyAttendanceStatuses).includes(
@@ -541,6 +616,20 @@ export async function setDutyAttendance(args: {
       throw dutiesAttendanceError(
         'BAD_USER_INPUT',
         'Please select present, late, or absent.'
+      );
+    }
+
+    // Say why, instead of "not on duty": no record is made for these days.
+    if (duty.isActive === false) {
+      throw dutiesAttendanceError(
+        'BAD_USER_INPUT',
+        'This duty is not active, so attendance cannot be marked.'
+      );
+    }
+    if (args.date < dutyStartDate(duty)) {
+      throw dutiesAttendanceError(
+        'BAD_USER_INPUT',
+        `This duty starts on ${dutyStartDate(duty)}; attendance cannot be marked before then.`
       );
     }
 
@@ -554,6 +643,28 @@ export async function setDutyAttendance(args: {
         'BAD_USER_INPUT',
         'This karkun is not on duty on this day.'
       );
+    }
+
+    if (isSelfMark) {
+      const existing = record.karkuns.find(
+        karkun => karkun.karkunId === args.karkunId
+      );
+      if (status && existing?.attendance) {
+        throw dutiesAttendanceError(
+          'FORBIDDEN',
+          'Your attendance is already marked for this day. Unmark it first to mark it again.'
+        );
+      }
+      // A mark somebody else made is theirs to change.
+      if (
+        !status &&
+        existing?.attendanceSource !== DUTIES_ATTENDANCE_SELF_SOURCE
+      ) {
+        throw dutiesAttendanceError(
+          'FORBIDDEN',
+          'Only attendance you marked yourself can be unmarked.'
+        );
+      }
     }
 
     const selector = { _id: record._id, 'karkuns.karkunId': args.karkunId };

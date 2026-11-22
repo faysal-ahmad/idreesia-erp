@@ -83,8 +83,8 @@ Workspaces tab (/workspaces)             ← a location bar (opens a bottom-shee
 ├── Workspace Night Stay Report (/workspaces/committees/:committeeId/night-stay-report)   ← NightStayReportFeature; read-only, one night at a time; report stays alive under:
 │   └── …/night-stay-report/:stayId   ← one stay, with a large photo
 └── Workspace Security Server Alerts (/workspaces/committees/:committeeId/security-server-alerts)   ← read-only, one day at a time
-Apps tab (/apps)                         ← lists the user's modules
-└── Security (/security)                 ← module screen, lists its features
+Apps tab (/apps)                         ← one collapsible section per module the user can use, with its features listed under the heading (like the Home tab's sections)
+└── Security (/security)                 ← module screen (deep link; the Apps tab links straight to its features)
     └── Visitors (/security/visitors)    ← feature; owns every route below it
         ├── /security/visitors/:id       ← detail
         └── /security/visitors/new       ← form
@@ -96,6 +96,7 @@ Account tab (/account)
 - **Features** are `FeatureDefinition`s inside their module. Each one has a `path` under the module's path, a list of `permissions`, and a `component`. The component owns every route under its path, so it renders its own `<Switch>` for list, detail and form screens.
 - **Visibility follows permissions.**
   - A feature is shown when the user has **any** of its permissions (`Permissions` from idreesia-common).
+  - A feature with an empty `permissions` list is open to every signed-in user. Use it only for the user's own data (the My Data module), whose queries need no permission on the server.
   - A module is shown when the user can use at least one of its features. On the web, a module only needs one permission with the module's prefix; on mobile, a module with nothing usable in it would be a dead end.
   - `FeatureGate` blocks deep links to features the user can't use.
   - Hiding things in the UI isn't security. The server still enforces permissions on every query and mutation.
@@ -116,7 +117,7 @@ Account tab (/account)
 
 ## 2. Navigation
 
-- **Tab bar:** Home, Workspaces, Apps and Account are the only top-level destinations, in that order. Home is the default screen after signing in. The tab bar shows only on their root screens. Don't add tabs per module; modules are listed on the Apps tab.
+- **Tab bar:** Home, Workspaces, Apps and Account are the only top-level destinations, in that order. Home is the default screen after signing in. The tab bar shows only on their root screens. Don't add tabs per module; modules are sections on the Apps tab.
 - **Drill-down:** every screen below a tab root is full-screen, with a back arrow in the nav bar. Keep the hierarchy to at most **module → feature → list → detail → form**. If you need more levels, rethink the flow, for example with a popup or tabs inside the detail screen.
 - **Back:** set `backTo` on `Page` to the parent route. That gives the screen a back arrow and a swipe right from the left edge (`layout/use-swipe-back.ts`), on every platform; both run the same back action. `useNavigateBack` uses `history.goBack()` when the user got there within the app, which keeps Android's hardware back button in step. On a deep link or after a reload, it replaces the current route with the parent, so the back arrow never leaves the app.
 - **Coming back keeps the screen as it was:** a list (or search) that opens a detail screen stays mounted underneath it inside `KeepAlive`, so back shows the same search, loaded pages and scroll position. The feature component decides which screens are still in the back stack; see `visitors-feature.tsx`. When another feature opens a record (e.g. the stay report opening a visitor), route the detail screen under that feature's own path (`/security/stay-report/:visitorId`) and reuse the screen component with its `backTo`, so the opening screen stays alive; see `stay-report-feature.tsx`. Don't store screen state in module variables or the URL to fake this.
@@ -268,7 +269,7 @@ After a flow completes and the user needs to know what happens next (for example
 
 - Use sentence case for titles, buttons and labels ("Change password", not "Change Password").
 - Buttons say what they do: "Register visitor", "Check in", "Save changes".
-- Keep list descriptions to one short line. The Apps tab's module screens show feature descriptions such as "Look up and register visitors".
+- Keep list descriptions to one short line. The Apps tab's sections show feature descriptions such as "Look up and register visitors".
 - Refer to people and places the same way the web app does, so users recognise them across both apps.
 
 ---

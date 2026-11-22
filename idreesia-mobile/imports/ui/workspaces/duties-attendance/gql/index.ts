@@ -55,6 +55,8 @@ export const MOBILE_DA_MY_DUTIES: TypedDocumentNode<MobileDaMyDutiesQuery, Mobil
       dutyName
       date
       attendance
+      attendanceSource
+      canMarkOwnAttendance
     }
   }
 `;
@@ -284,6 +286,7 @@ export const MOBILE_DA_SET_ATTENDANCE: TypedDocumentNode<
     $date: String!
     $karkunId: String!
     $status: String
+    $geo: DaGeoLocationInput
   ) {
     workspaceDaSetAttendance(
       locationId: $locationId
@@ -291,6 +294,7 @@ export const MOBILE_DA_SET_ATTENDANCE: TypedDocumentNode<
       date: $date
       karkunId: $karkunId
       status: $status
+      geo: $geo
     )
   }
 `;

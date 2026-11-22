@@ -1,6 +1,7 @@
 import React from 'react';
 import { List, PullToRefresh, Tag } from 'antd-mobile';
 
+import { MyDataPaths } from '../apps/my-data/paths';
 import { CollapsibleSection } from '../components/collapsible-section';
 import { PageError, PageLoading, Page } from '../layout';
 import { useHistory } from '../router';
@@ -57,7 +58,7 @@ export const HomeScreen = () => {
   } else {
     content = (
       <PullToRefresh onRefresh={refresh}>
-        <CollapsibleSection count={duties.length} title="My Duties">
+        <CollapsibleSection count={duties.length} title="Today's Duties">
           {duties.length === 0 ? (
             <List.Item className="workspaces-empty-item">No duties today</List.Item>
           ) : (
@@ -65,10 +66,11 @@ export const HomeScreen = () => {
               <List.Item
                 key={`${duty.locationId}-${duty.dutyId}`}
                 className="home-item"
+                description={duty.locationName}
                 extra={dutyAttendanceTag(duty.attendance)}
-                onClick={() => history.push(WorkspacesPaths.dutyAttendance(duty.locationId))}
+                onClick={() => history.push(MyDataPaths.dutiesAttendance)}
               >
-                <ItemTitle title={duty.dutyName} workspace={duty.locationName} />
+                <ItemTitle title={duty.dutyName} />
               </List.Item>
             ))
           )}

@@ -335,7 +335,8 @@ const LocationAddUserDrawer = ({ open, locationId, onClose }: Props) => {
           pagination={false}
           loading={loadingLinkable}
           dataSource={(linkableData?.pagedLinkableUsers?.data ?? []).filter(
-            (row): row is NonNullable<typeof row> => row != null
+            (row): row is NonNullable<typeof row> & { _id: string } =>
+              row?._id != null
           )}
           columns={[
             { title: 'User Name', dataIndex: 'username', key: 'username' },

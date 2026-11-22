@@ -10,7 +10,7 @@ import { dayOfWeek } from 'meteor/idreesia-common/server/business-logic/hr/duty-
 
 import { getDutyNames } from './internal';
 import { listMyDutiesAttendanceLocations } from './locations';
-import { assertDate, composeKarkuns } from './planning';
+import { assertDate, composeKarkuns, dutyStartDate } from './planning';
 
 export interface MyDuty {
   locationId: string;
@@ -19,6 +19,10 @@ export interface MyDuty {
   dutyName: string;
   date: string;
   attendance: DutyAttendanceStatus | null;
+  /** How the day's attendance was marked; 'self' when the user marked it. */
+  attendanceSource: string | null;
+  /** The user may mark their own attendance on this duty. */
+  canMarkOwnAttendance: boolean;
 }
 
 interface MyDutiesUser {
@@ -75,6 +79,8 @@ export async function listMyDuties(
   const result: MyDuty[] = [];
   duties.forEach(duty => {
     const record = recordByDuty.get(duty._id);
+    // Days before the duty starts have no record and never will.
+    if (!record && date < dutyStartDate(duty)) return;
     const karkuns =
       record?.karkuns ??
       composeKarkuns({
@@ -92,6 +98,10 @@ export async function listMyDuties(
       dutyName: names.get(duty._id) ?? '',
       date,
       attendance: mine.attendance ?? null,
+      attendanceSource: mine.attendanceSource ?? null,
+      canMarkOwnAttendance:
+        duty.members.find(member => member.karkunId === karkunId)
+          ?.canMarkOwnAttendance === true,
     });
   });
 

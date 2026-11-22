@@ -29,7 +29,7 @@ const ORG_LOCATION_BY_ID: TypedDocumentNode<
         otherMehfilDetails
         latitude
         longitude
-        attendanceGeofencing
+        attendanceGeofenceMeters
       }
       createdAt
       createdBy

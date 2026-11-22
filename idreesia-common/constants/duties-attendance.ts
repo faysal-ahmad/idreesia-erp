@@ -63,5 +63,9 @@ export const DUTIES_ATTENDANCE_MAX_NAME_LENGTH = 255;
 export const DUTIES_ATTENDANCE_MAX_DESCRIPTION_LENGTH = 2000;
 /** Longest source of a marked attendance (how it was marked). */
 export const DUTIES_ATTENDANCE_MAX_SOURCE_LENGTH = 100;
+/** Source kept with an attendance a member marked for themselves. */
+export const DUTIES_ATTENDANCE_SELF_SOURCE = 'self';
+/** The geofence radii (metres) a mehfil can choose; none means no geofence. */
+export const ATTENDANCE_GEOFENCE_METERS = [50, 100, 200] as const;
 /** Days shown by the plan view. */
 export const DUTIES_ATTENDANCE_PLAN_DAY_COUNT = 7;

@@ -1,5 +1,6 @@
 import { GraphQLError } from 'graphql';
 
+import { ATTENDANCE_GEOFENCE_METERS } from 'meteor/idreesia-common/constants/duties-attendance';
 import {
   OrgLocationAllowedChildTypes,
   OrgLocationTypes,
@@ -67,9 +68,23 @@ function cleanMehfilDetails(
   // Geofencing checks against the location, so it needs one.
   const hasLocation =
     mehfilDetails.latitude != null && mehfilDetails.longitude != null;
+  const { attendanceGeofenceMeters, ...rest } = mehfilDetails;
+  if (
+    attendanceGeofenceMeters != null &&
+    !(ATTENDANCE_GEOFENCE_METERS as readonly number[]).includes(
+      attendanceGeofenceMeters
+    )
+  ) {
+    fail(
+      'BAD_USER_INPUT',
+      `The attendance geofence must be one of ${ATTENDANCE_GEOFENCE_METERS.join(', ')} meters.`
+    );
+  }
   return {
-    ...mehfilDetails,
-    attendanceGeofencing: hasLocation && !!mehfilDetails.attendanceGeofencing,
+    ...rest,
+    ...(hasLocation && attendanceGeofenceMeters
+      ? { attendanceGeofenceMeters }
+      : {}),
   };
 }
 

@@ -10,7 +10,7 @@ type OrgLocationMehfilDetailsType {
   otherMehfilDetails: String
   latitude: Float
   longitude: Float
-  attendanceGeofencing: Boolean
+  attendanceGeofenceMeters: Int
 }
 
 type OrgLocationType {
@@ -98,7 +98,7 @@ input OrgLocationMehfilDetailsInput {
   otherMehfilDetails: String
   latitude: Float
   longitude: Float
-  attendanceGeofencing: Boolean
+  attendanceGeofenceMeters: Int
 }
 
 extend type Query {
@@ -136,7 +136,7 @@ extend type Query {
     pageIndex: String
     pageSize: String
   ): PagedUserType
-    @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
   # The location's permission groups (General, and for a mehfil each feature),
   # with the users holding each permission.
@@ -168,7 +168,26 @@ extend type Mutation {
     locationId: String!
     karkunId: String!
     userId: String!
-  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  # Limited actions on the account of a karkun of the mehfil, for those who
+  # manage the location. Not available for service accounts or super-admins.
+  resetOrgLocationUserPassword(
+    locationId: String!
+    userId: String!
+    password: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  setOrgLocationUserLocked(
+    locationId: String!
+    userId: String!
+    locked: Boolean!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
+  createOrgLocationUserChatAccount(
+    locationId: String!
+    userId: String!
+  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
 
   addOrgLocationObserver(locationId: String!, karkunId: String!): OrgLocationType
     @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])

@@ -179,6 +179,7 @@ export type DaAttendanceSheetRowType = {
 
 export type DaDutyMemberType = {
   __typename?: 'DaDutyMemberType';
+  canMarkOwnAttendance?: Maybe<Scalars['Boolean']['output']>;
   daysOfWeek?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   isCoordinator?: Maybe<Scalars['Boolean']['output']>;
   karkun?: Maybe<PersonBasicType>;
@@ -216,6 +217,8 @@ export type DaMehfilDutyType = {
 export type DaMyDutyType = {
   __typename?: 'DaMyDutyType';
   attendance?: Maybe<Scalars['String']['output']>;
+  attendanceSource?: Maybe<Scalars['String']['output']>;
+  canMarkOwnAttendance: Scalars['Boolean']['output'];
   date: Scalars['String']['output'];
   dutyId: Scalars['String']['output'];
   dutyName: Scalars['String']['output'];
@@ -899,6 +902,7 @@ export type Mutation = {
   createMissingSecurityServerAlertThumbnails?: Maybe<Scalars['Int']['output']>;
   createMissingSecurityServerProfileThumbnails?: Maybe<Scalars['Int']['output']>;
   createOrgLocation?: Maybe<OrgLocationType>;
+  createOrgLocationUserChatAccount?: Maybe<UserType>;
   createPeopleTag?: Maybe<PeopleTagType>;
   createPhysicalStore?: Maybe<PhysicalStore>;
   createPurchaseForm?: Maybe<PurchaseForm>;
@@ -974,6 +978,7 @@ export type Mutation = {
   renameFreeFormCity?: Maybe<Scalars['Int']['output']>;
   renameFreeFormCountry?: Maybe<Scalars['Int']['output']>;
   resetJobDefinitionSchedule?: Maybe<JobDefinitionType>;
+  resetOrgLocationUserPassword?: Maybe<UserType>;
   resetTwoFactor?: Maybe<UserType>;
   resetUserPassword?: Maybe<UserType>;
   restorePerson?: Maybe<Scalars['Int']['output']>;
@@ -990,6 +995,7 @@ export type Mutation = {
   setHrKarkunProfileImage?: Maybe<PersonType>;
   setInstanceAccess?: Maybe<UserType>;
   setJobDefinitionEnabled?: Maybe<JobDefinitionType>;
+  setOrgLocationUserLocked?: Maybe<UserType>;
   setPermissions?: Maybe<UserType>;
   setScheduledJobEnabled?: Maybe<Scalars['Boolean']['output']>;
   setSecurityServerAlertReview?: Maybe<SecurityServerAlertType>;
@@ -1364,6 +1370,12 @@ export type MutationCreateOrgLocationArgs = {
   name: Scalars['String']['input'];
   parentId?: InputMaybe<Scalars['String']['input']>;
   type: Scalars['String']['input'];
+};
+
+
+export type MutationCreateOrgLocationUserChatAccountArgs = {
+  locationId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -1846,6 +1858,13 @@ export type MutationResetJobDefinitionScheduleArgs = {
 };
 
 
+export type MutationResetOrgLocationUserPasswordArgs = {
+  locationId: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+
 export type MutationResetTwoFactorArgs = {
   userId: Scalars['String']['input'];
 };
@@ -1951,6 +1970,13 @@ export type MutationSetInstanceAccessArgs = {
 export type MutationSetJobDefinitionEnabledArgs = {
   _id: Scalars['String']['input'];
   enabled: Scalars['Boolean']['input'];
+};
+
+
+export type MutationSetOrgLocationUserLockedArgs = {
+  locationId: Scalars['String']['input'];
+  locked: Scalars['Boolean']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -2539,6 +2565,7 @@ export type MutationWorkspaceDaAddDutiesArgs = {
 
 
 export type MutationWorkspaceDaAddDutyMemberArgs = {
+  canMarkOwnAttendance?: InputMaybe<Scalars['Boolean']['input']>;
   daysOfWeek?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   dutyId: Scalars['String']['input'];
   isCoordinator?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2588,6 +2615,7 @@ export type MutationWorkspaceDaUpdateDutyArgs = {
 
 
 export type MutationWorkspaceDaUpdateDutyMemberArgs = {
+  canMarkOwnAttendance?: InputMaybe<Scalars['Boolean']['input']>;
   daysOfWeek?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   dutyId: Scalars['String']['input'];
   isCoordinator?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3071,7 +3099,7 @@ export type OrgLocationKarkunType = {
 
 export type OrgLocationMehfilDetailsInput = {
   address?: InputMaybe<Scalars['String']['input']>;
-  attendanceGeofencing?: InputMaybe<Scalars['Boolean']['input']>;
+  attendanceGeofenceMeters?: InputMaybe<Scalars['Int']['input']>;
   latitude?: InputMaybe<Scalars['Float']['input']>;
   lcdAvailability?: InputMaybe<Scalars['Boolean']['input']>;
   longitude?: InputMaybe<Scalars['Float']['input']>;
@@ -3084,7 +3112,7 @@ export type OrgLocationMehfilDetailsInput = {
 export type OrgLocationMehfilDetailsType = {
   __typename?: 'OrgLocationMehfilDetailsType';
   address?: Maybe<Scalars['String']['output']>;
-  attendanceGeofencing?: Maybe<Scalars['Boolean']['output']>;
+  attendanceGeofenceMeters?: Maybe<Scalars['Int']['output']>;
   latitude?: Maybe<Scalars['Float']['output']>;
   lcdAvailability?: Maybe<Scalars['Boolean']['output']>;
   longitude?: Maybe<Scalars['Float']['output']>;

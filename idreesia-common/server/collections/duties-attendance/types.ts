@@ -12,6 +12,8 @@ interface Timestamps {
 export interface DutyMember {
   karkunId: string;
   isCoordinator?: boolean;
+  /** The member may mark their own attendance (from the mobile app). */
+  canMarkOwnAttendance?: boolean;
   /** Empty or missing: every day. */
   daysOfWeek?: string[];
 }

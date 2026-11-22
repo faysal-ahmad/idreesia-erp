@@ -777,6 +777,7 @@ export type DaAttendanceSheetRowTypeResolvers<ContextType = any, ParentType exte
 }>;
 
 export type DaDutyMemberTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DaDutyMemberType'] = ResolversParentTypes['DaDutyMemberType']> = ResolversObject<{
+  canMarkOwnAttendance?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   daysOfWeek?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   isCoordinator?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   karkun?: Resolver<Types.Maybe<ResolversTypes['PersonBasicType']>, ParentType, ContextType>;
@@ -805,6 +806,8 @@ export type DaMehfilDutyTypeResolvers<ContextType = any, ParentType extends Reso
 
 export type DaMyDutyTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DaMyDutyType'] = ResolversParentTypes['DaMyDutyType']> = ResolversObject<{
   attendance?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  attendanceSource?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  canMarkOwnAttendance?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   date?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   dutyId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   dutyName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1382,6 +1385,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createMissingSecurityServerAlertThumbnails?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   createMissingSecurityServerProfileThumbnails?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   createOrgLocation?: Resolver<Types.Maybe<ResolversTypes['OrgLocationType']>, ParentType, ContextType, RequireFields<Types.MutationCreateOrgLocationArgs, 'name' | 'type'>>;
+  createOrgLocationUserChatAccount?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationCreateOrgLocationUserChatAccountArgs, 'locationId' | 'userId'>>;
   createPeopleTag?: Resolver<Types.Maybe<ResolversTypes['PeopleTagType']>, ParentType, ContextType, RequireFields<Types.MutationCreatePeopleTagArgs, 'color' | 'moduleNames' | 'name' | 'textColor'>>;
   createPhysicalStore?: Resolver<Types.Maybe<ResolversTypes['PhysicalStore']>, ParentType, ContextType, RequireFields<Types.MutationCreatePhysicalStoreArgs, 'name'>>;
   createPurchaseForm?: Resolver<Types.Maybe<ResolversTypes['PurchaseForm']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchaseFormArgs, 'physicalStoreId' | 'purchaseDate' | 'purchasedBy' | 'receivedBy'>>;
@@ -1457,6 +1461,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   renameFreeFormCity?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRenameFreeFormCityArgs, 'existingSpelling' | 'newSpelling'>>;
   renameFreeFormCountry?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRenameFreeFormCountryArgs, 'existingSpelling' | 'newSpelling'>>;
   resetJobDefinitionSchedule?: Resolver<Types.Maybe<ResolversTypes['JobDefinitionType']>, ParentType, ContextType, RequireFields<Types.MutationResetJobDefinitionScheduleArgs, '_id'>>;
+  resetOrgLocationUserPassword?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationResetOrgLocationUserPasswordArgs, 'locationId' | 'password' | 'userId'>>;
   resetTwoFactor?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationResetTwoFactorArgs, 'userId'>>;
   resetUserPassword?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationResetUserPasswordArgs, 'password' | 'userId'>>;
   restorePerson?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRestorePersonArgs, '_id'>>;
@@ -1473,6 +1478,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   setHrKarkunProfileImage?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.MutationSetHrKarkunProfileImageArgs, '_id' | 'imageData'>>;
   setInstanceAccess?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationSetInstanceAccessArgs, 'instances' | 'userId'>>;
   setJobDefinitionEnabled?: Resolver<Types.Maybe<ResolversTypes['JobDefinitionType']>, ParentType, ContextType, RequireFields<Types.MutationSetJobDefinitionEnabledArgs, '_id' | 'enabled'>>;
+  setOrgLocationUserLocked?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationSetOrgLocationUserLockedArgs, 'locationId' | 'locked' | 'userId'>>;
   setPermissions?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationSetPermissionsArgs, 'permissions' | 'userId'>>;
   setScheduledJobEnabled?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationSetScheduledJobEnabledArgs, '_id' | 'enabled'>>;
   setSecurityServerAlertReview?: Resolver<Types.Maybe<ResolversTypes['SecurityServerAlertType']>, ParentType, ContextType, RequireFields<Types.MutationSetSecurityServerAlertReviewArgs, '_id'>>;
@@ -1698,7 +1704,7 @@ export type OrgLocationKarkunTypeResolvers<ContextType = any, ParentType extends
 
 export type OrgLocationMehfilDetailsTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrgLocationMehfilDetailsType'] = ResolversParentTypes['OrgLocationMehfilDetailsType']> = ResolversObject<{
   address?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  attendanceGeofencing?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  attendanceGeofenceMeters?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   latitude?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   lcdAvailability?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   longitude?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;

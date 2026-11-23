@@ -140,6 +140,7 @@ enum Permission {
   PURCHASING_MANAGE_PAYMENTS
   PURCHASING_VIEW_REPORTS
   PURCHASING_VIEW_AUDIT_LOGS
+  PURCHASING_MANAGE_PERMISSIONS
 }
 
 directive @superAdminOnly on FIELD_DEFINITION
@@ -694,13 +695,14 @@ extend type Query {
 extend type Mutation {
   createUserGroup(
     name: String!
-    moduleName: String!
+    moduleName: String
     description: String
   ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   updateUserGroup(
     _id: String!
     name: String
+    moduleName: String
     description: String
   ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
@@ -2512,8 +2514,19 @@ extend type Mutation {
     @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
 }
 
+input PurchasingAuditLogFilter {
+  entityId: String
+  # Limits the result to these document types (e.g. "purchasing-order").
+  entityTypes: [String]
+  # Milliseconds since the epoch, as a string.
+  fromDate: String
+  toDate: String
+  pageIndex: String
+  pageSize: String
+}
+
 extend type Query {
-  pagedPurchasingAuditLogs(filter: AuditLogFilter): PagedAuditLogType
+  pagedPurchasingAuditLogs(filter: PurchasingAuditLogFilter): PagedAuditLogType
     @checkPermissions(permissions: [PURCHASING_VIEW_AUDIT_LOGS])
 }
 
@@ -2877,6 +2890,76 @@ extend type Mutation {
     @checkPermissions(permissions: [PURCHASING_MANAGE_PAYMENTS])
 }
 
+type PurchasingPermissionHolder {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type PurchasingPermissionGroupHolder {
+  groupId: String!
+  name: String!
+}
+
+type PurchasingPermissionAssignment {
+  key: String!
+  name: String!
+  description: String
+  users: [PurchasingPermissionHolder]
+  groups: [PurchasingPermissionGroupHolder]
+}
+
+type PurchasingPermissionGroup {
+  featureKey: String!
+  featureName: String!
+  permissions: [PurchasingPermissionAssignment]
+}
+
+type PurchasingKarkunType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PagedPurchasingKarkunType {
+  data: [PurchasingKarkunType]
+  totalResults: Int
+}
+
+extend type Query {
+  purchasingPermissionAssignments: [PurchasingPermissionGroup]
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  # Karkuns to choose from when giving a permission or adding to a group.
+  purchasingKarkunSearch(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPurchasingKarkunType
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+}
+
+extend type Mutation {
+  addPurchasingPermissionUser(permissionKey: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  addPurchasingPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  removePurchasingPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  removePurchasingPermissionUser(permissionKey: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+}
+
 # A line of a quote, order or invoice that has a price.
 input PurchasingPricedLineInput {
   _id: String
@@ -3238,6 +3321,42 @@ extend type Mutation {
 
   rejectPurchasingRequisition(_id: String!, reason: String!): PurchasingRequisition
     @checkPermissions(permissions: [PURCHASING_APPROVE_REQUISITIONS])
+}
+
+type PurchasingGroupMember {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type PurchasingUserGroup {
+  _id: String!
+  name: String!
+  description: String
+  users: [PurchasingGroupMember]
+}
+
+extend type Query {
+  purchasingUserGroups: [PurchasingUserGroup]
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+}
+
+extend type Mutation {
+  createPurchasingUserGroup(name: String!, description: String): PurchasingUserGroup
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  updatePurchasingUserGroup(_id: String!, name: String!, description: String): PurchasingUserGroup
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  deletePurchasingUserGroup(_id: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  addPurchasingGroupMember(groupId: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  removePurchasingGroupMember(groupId: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 }
 
 type PurchasingVendor {

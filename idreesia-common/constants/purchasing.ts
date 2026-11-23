@@ -2,6 +2,8 @@
  * Constants for the Purchasing module (server/business-logic/purchasing).
  */
 
+import Permissions from './permissions';
+
 /** Longest allowed vendor / catalog item name. */
 export const MAX_NAME_LENGTH = 255;
 
@@ -129,3 +131,83 @@ export const ALLOWED_ATTACHMENT_TYPES = [
 ];
 export const ATTACHMENT_UPLOAD_URL_EXPIRY_SECONDS = 15 * 60;
 export const ATTACHMENT_DOWNLOAD_URL_EXPIRY_SECONDS = 5 * 60;
+
+// ---------------------------------------------------------------------------
+// The permissions of the module, grouped as the Permissions page shows them.
+// ---------------------------------------------------------------------------
+
+export interface PurchasingPermissionInfo {
+  /** The permission string, e.g. "purchasing-view-vendors". */
+  key: string;
+  name: string;
+  description: string;
+}
+
+export interface PurchasingPermissionGroup {
+  featureKey: string;
+  featureName: string;
+  permissions: PurchasingPermissionInfo[];
+}
+
+export const PurchasingPermissionCatalog: PurchasingPermissionGroup[] = [
+  {
+    featureKey: 'setup',
+    featureName: 'Setup',
+    permissions: [
+      { key: Permissions.PURCHASING_VIEW_VENDORS, name: 'View Vendors', description: 'See the vendor list' },
+      { key: Permissions.PURCHASING_MANAGE_VENDORS, name: 'Manage Vendors', description: 'Add, edit and deactivate vendors' },
+      { key: Permissions.PURCHASING_MANAGE_CATALOG, name: 'Manage Catalog', description: 'Add, edit and deactivate catalog items' },
+    ],
+  },
+  {
+    featureKey: 'requisitions',
+    featureName: 'Requisitions',
+    permissions: [
+      { key: Permissions.PURCHASING_VIEW_REQUISITIONS, name: 'View Requisitions', description: 'See requisitions' },
+      { key: Permissions.PURCHASING_MANAGE_REQUISITIONS, name: 'Manage Requisitions', description: 'Create, edit, submit and cancel requisitions' },
+      { key: Permissions.PURCHASING_APPROVE_REQUISITIONS, name: 'Approve Requisitions', description: 'Approve and reject requisitions' },
+    ],
+  },
+  {
+    featureKey: 'orders',
+    featureName: 'Purchase Orders',
+    permissions: [
+      { key: Permissions.PURCHASING_VIEW_ORDERS, name: 'View Orders', description: 'See purchase orders and quotes' },
+      { key: Permissions.PURCHASING_MANAGE_ORDERS, name: 'Manage Orders and Quotes', description: 'Create and edit orders and quotes, send, cancel and close orders' },
+      { key: Permissions.PURCHASING_APPROVE_ORDERS, name: 'Approve Orders', description: 'Approve orders and return them to draft' },
+    ],
+  },
+  {
+    featureKey: 'receipts',
+    featureName: 'Goods Receipts',
+    permissions: [
+      { key: Permissions.PURCHASING_VIEW_RECEIPTS, name: 'View Receipts', description: 'See goods receipts' },
+      { key: Permissions.PURCHASING_MANAGE_RECEIPTS, name: 'Manage Receipts', description: 'Post and void goods receipts' },
+    ],
+  },
+  {
+    featureKey: 'finance',
+    featureName: 'Invoices and Payments',
+    permissions: [
+      { key: Permissions.PURCHASING_VIEW_INVOICES, name: 'View Invoices', description: 'See vendor invoices' },
+      { key: Permissions.PURCHASING_MANAGE_INVOICES, name: 'Manage Invoices', description: 'Enter, edit, dispute and void invoices' },
+      { key: Permissions.PURCHASING_VIEW_PAYMENTS, name: 'View Payments', description: 'See payments' },
+      { key: Permissions.PURCHASING_MANAGE_PAYMENTS, name: 'Manage Payments', description: 'Post and void payments' },
+    ],
+  },
+  {
+    featureKey: 'administration',
+    featureName: 'Administration',
+    permissions: [
+      { key: Permissions.PURCHASING_VIEW_REPORTS, name: 'View Reports', description: 'Dashboard figures, reports and Excel downloads' },
+      { key: Permissions.PURCHASING_VIEW_AUDIT_LOGS, name: 'View Audit Logs', description: 'The Audit Logs page and the History tab of documents' },
+      { key: Permissions.PURCHASING_MANAGE_PERMISSIONS, name: 'Manage Purchasing Permissions', description: 'See who holds each Purchasing permission, and add or remove users' },
+    ],
+  },
+];
+
+/**
+ * The city location whose karkuns can be given Purchasing permissions and put
+ * in Purchasing user groups (matched by name, ignoring case).
+ */
+export const PURCHASING_KARKUN_CITY = 'Multan';

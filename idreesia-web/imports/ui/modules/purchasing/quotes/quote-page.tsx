@@ -307,7 +307,7 @@ const QuotePage = ({ match, history, location }: RouteComponentProps<{ quoteId?:
           </Space>
         </div>
       ) : null}
-      <Tabs items={items} />
+      <Tabs items={items} className={items.length === 1 ? 'purchasing-single-tab' : undefined} />
     </>
   );
 };

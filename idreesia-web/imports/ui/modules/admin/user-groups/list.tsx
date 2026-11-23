@@ -56,6 +56,11 @@ const getColumns = ({
     ),
   },
   {
+    title: 'Module',
+    dataIndex: 'moduleName',
+    key: 'moduleName',
+  },
+  {
     title: 'Description',
     dataIndex: 'description',
     key: 'description',

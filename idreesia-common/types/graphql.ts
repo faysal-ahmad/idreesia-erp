@@ -876,6 +876,9 @@ export type Mutation = {
   addOrgLocationFeatureUser?: Maybe<Scalars['Boolean']['output']>;
   addOrgLocationObserver?: Maybe<OrgLocationType>;
   addPurchaseFormAttachment?: Maybe<PurchaseForm>;
+  addPurchasingGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  addPurchasingPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
+  addPurchasingPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   addSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
   addTeamCoordinator?: Maybe<TeamType>;
   addTeamMember?: Maybe<TeamType>;
@@ -921,6 +924,7 @@ export type Mutation = {
   createPurchasingOrderFromRequisition?: Maybe<PurchasingOrder>;
   createPurchasingQuote?: Maybe<PurchasingQuote>;
   createPurchasingRequisition?: Maybe<PurchasingRequisition>;
+  createPurchasingUserGroup?: Maybe<PurchasingUserGroup>;
   createPurchasingVendor?: Maybe<PurchasingVendor>;
   createSalaries?: Maybe<Scalars['Int']['output']>;
   createSecurityMehfilDuty?: Maybe<MehfilDutyType>;
@@ -946,6 +950,7 @@ export type Mutation = {
   deletePurchasingOrder?: Maybe<Scalars['Boolean']['output']>;
   deletePurchasingQuote?: Maybe<Scalars['Boolean']['output']>;
   deletePurchasingRequisition?: Maybe<Scalars['Boolean']['output']>;
+  deletePurchasingUserGroup?: Maybe<Scalars['Boolean']['output']>;
   deleteSalaries?: Maybe<Scalars['Int']['output']>;
   deleteSecurityServerChannel?: Maybe<Scalars['Int']['output']>;
   deleteSecurityServerProfile?: Maybe<Scalars['Int']['output']>;
@@ -991,6 +996,9 @@ export type Mutation = {
   removePurchaseFormAttachment?: Maybe<PurchaseForm>;
   removePurchaseForms?: Maybe<Scalars['Int']['output']>;
   removePurchasingCatalogItem?: Maybe<Scalars['Boolean']['output']>;
+  removePurchasingGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  removePurchasingPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
+  removePurchasingPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   removePurchasingVendor?: Maybe<Scalars['Boolean']['output']>;
   removeSecurityMehfilDuty?: Maybe<Scalars['Int']['output']>;
   removeSecurityMehfilLangarDish?: Maybe<Scalars['Int']['output']>;
@@ -1070,6 +1078,7 @@ export type Mutation = {
   updatePurchasingOrder?: Maybe<PurchasingOrder>;
   updatePurchasingQuote?: Maybe<PurchasingQuote>;
   updatePurchasingRequisition?: Maybe<PurchasingRequisition>;
+  updatePurchasingUserGroup?: Maybe<PurchasingUserGroup>;
   updatePurchasingVendor?: Maybe<PurchasingVendor>;
   updateSalary?: Maybe<SalaryType>;
   updateSecurityMehfilDuty?: Maybe<MehfilDutyType>;
@@ -1233,6 +1242,24 @@ export type MutationAddPurchaseFormAttachmentArgs = {
   _id: Scalars['String']['input'];
   attachmentId: Scalars['String']['input'];
   physicalStoreId: Scalars['String']['input'];
+};
+
+
+export type MutationAddPurchasingGroupMemberArgs = {
+  groupId: Scalars['String']['input'];
+  karkunId: Scalars['String']['input'];
+};
+
+
+export type MutationAddPurchasingPermissionGroupArgs = {
+  groupId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
+export type MutationAddPurchasingPermissionUserArgs = {
+  karkunId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
 };
 
 
@@ -1559,6 +1586,12 @@ export type MutationCreatePurchasingRequisitionArgs = {
 };
 
 
+export type MutationCreatePurchasingUserGroupArgs = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationCreatePurchasingVendorArgs = {
   address?: InputMaybe<Scalars['String']['input']>;
   bankAccountNumber?: InputMaybe<Scalars['String']['input']>;
@@ -1682,7 +1715,7 @@ export type MutationCreateUserArgs = {
 
 export type MutationCreateUserGroupArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
-  moduleName: Scalars['String']['input'];
+  moduleName?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
@@ -1748,6 +1781,11 @@ export type MutationDeletePurchasingQuoteArgs = {
 
 
 export type MutationDeletePurchasingRequisitionArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationDeletePurchasingUserGroupArgs = {
   _id: Scalars['String']['input'];
 };
 
@@ -2011,6 +2049,24 @@ export type MutationRemovePurchaseFormsArgs = {
 
 export type MutationRemovePurchasingCatalogItemArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type MutationRemovePurchasingGroupMemberArgs = {
+  groupId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+
+export type MutationRemovePurchasingPermissionGroupArgs = {
+  groupId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
+export type MutationRemovePurchasingPermissionUserArgs = {
+  permissionKey: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -2558,6 +2614,13 @@ export type MutationUpdatePurchasingRequisitionArgs = {
 };
 
 
+export type MutationUpdatePurchasingUserGroupArgs = {
+  _id: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationUpdatePurchasingVendorArgs = {
   _id: Scalars['String']['input'];
   address?: InputMaybe<Scalars['String']['input']>;
@@ -2704,6 +2767,7 @@ export type MutationUpdateUserArgs = {
 export type MutationUpdateUserGroupArgs = {
   _id: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
+  moduleName?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -3607,6 +3671,12 @@ export type PagedPurchasingInvoices = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PagedPurchasingKarkunType = {
+  __typename?: 'PagedPurchasingKarkunType';
+  data?: Maybe<Array<Maybe<PurchasingKarkunType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
 export type PagedPurchasingOrders = {
   __typename?: 'PagedPurchasingOrders';
   data?: Maybe<Array<Maybe<PurchasingOrder>>>;
@@ -3832,6 +3902,7 @@ export enum Permission {
   PurchasingManageInvoices = 'PURCHASING_MANAGE_INVOICES',
   PurchasingManageOrders = 'PURCHASING_MANAGE_ORDERS',
   PurchasingManagePayments = 'PURCHASING_MANAGE_PAYMENTS',
+  PurchasingManagePermissions = 'PURCHASING_MANAGE_PERMISSIONS',
   PurchasingManageReceipts = 'PURCHASING_MANAGE_RECEIPTS',
   PurchasingManageRequisitions = 'PURCHASING_MANAGE_REQUISITIONS',
   PurchasingManageVendors = 'PURCHASING_MANAGE_VENDORS',
@@ -4051,6 +4122,15 @@ export type PurchasingAttachmentUpload = {
   url?: Maybe<Scalars['String']['output']>;
 };
 
+export type PurchasingAuditLogFilter = {
+  entityId?: InputMaybe<Scalars['String']['input']>;
+  entityTypes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  fromDate?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  toDate?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type PurchasingCatalogItem = {
   __typename?: 'PurchasingCatalogItem';
   _id?: Maybe<Scalars['String']['output']>;
@@ -4076,6 +4156,14 @@ export type PurchasingDashboard = {
   overdueInvoices?: Maybe<Scalars['Int']['output']>;
   requisitionsAwaitingApproval?: Maybe<Scalars['Int']['output']>;
   totalPayable?: Maybe<Scalars['Float']['output']>;
+};
+
+export type PurchasingGroupMember = {
+  __typename?: 'PurchasingGroupMember';
+  displayName?: Maybe<Scalars['String']['output']>;
+  personId?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['String']['output'];
+  username?: Maybe<Scalars['String']['output']>;
 };
 
 export type PurchasingInvoice = {
@@ -4116,6 +4204,17 @@ export type PurchasingInvoiceLine = {
   taxRate?: Maybe<Scalars['Float']['output']>;
   unit?: Maybe<Scalars['String']['output']>;
   unitPrice?: Maybe<Scalars['Float']['output']>;
+};
+
+export type PurchasingKarkunType = {
+  __typename?: 'PurchasingKarkunType';
+  _id?: Maybe<Scalars['String']['output']>;
+  cnicNumber?: Maybe<Scalars['String']['output']>;
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  parentName?: Maybe<Scalars['String']['output']>;
 };
 
 export type PurchasingLedgerEntry = {
@@ -4246,6 +4345,36 @@ export type PurchasingPaymentAllocationInput = {
   invoiceId: Scalars['String']['input'];
 };
 
+export type PurchasingPermissionAssignment = {
+  __typename?: 'PurchasingPermissionAssignment';
+  description?: Maybe<Scalars['String']['output']>;
+  groups?: Maybe<Array<Maybe<PurchasingPermissionGroupHolder>>>;
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  users?: Maybe<Array<Maybe<PurchasingPermissionHolder>>>;
+};
+
+export type PurchasingPermissionGroup = {
+  __typename?: 'PurchasingPermissionGroup';
+  featureKey: Scalars['String']['output'];
+  featureName: Scalars['String']['output'];
+  permissions?: Maybe<Array<Maybe<PurchasingPermissionAssignment>>>;
+};
+
+export type PurchasingPermissionGroupHolder = {
+  __typename?: 'PurchasingPermissionGroupHolder';
+  groupId: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type PurchasingPermissionHolder = {
+  __typename?: 'PurchasingPermissionHolder';
+  displayName?: Maybe<Scalars['String']['output']>;
+  personId?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['String']['output'];
+  username?: Maybe<Scalars['String']['output']>;
+};
+
 export type PurchasingPricedLineInput = {
   _id?: InputMaybe<Scalars['String']['input']>;
   catalogItemId?: InputMaybe<Scalars['String']['input']>;
@@ -4374,6 +4503,14 @@ export type PurchasingRequisitionLineInput = {
   estimatedUnitPrice?: InputMaybe<Scalars['Float']['input']>;
   quantity: Scalars['Float']['input'];
   unit?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PurchasingUserGroup = {
+  __typename?: 'PurchasingUserGroup';
+  _id: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  users?: Maybe<Array<Maybe<PurchasingGroupMember>>>;
 };
 
 export type PurchasingVendor = {
@@ -4530,15 +4667,18 @@ export type Query = {
   purchasingCatalogItemById?: Maybe<PurchasingCatalogItem>;
   purchasingDashboard?: Maybe<PurchasingDashboard>;
   purchasingInvoiceById?: Maybe<PurchasingInvoice>;
+  purchasingKarkunSearch?: Maybe<PagedPurchasingKarkunType>;
   purchasingOpenOrders?: Maybe<Array<Maybe<PurchasingOpenOrder>>>;
   purchasingOrderById?: Maybe<PurchasingOrder>;
   purchasingPayablesAging?: Maybe<Array<Maybe<PurchasingPayablesAgingRow>>>;
   purchasingPaymentById?: Maybe<PurchasingPayment>;
+  purchasingPermissionAssignments?: Maybe<Array<Maybe<PurchasingPermissionGroup>>>;
   purchasingQuoteById?: Maybe<PurchasingQuote>;
   purchasingReceiptById?: Maybe<PurchasingReceipt>;
   purchasingRequisitionById?: Maybe<PurchasingRequisition>;
   purchasingSpendingByMonth?: Maybe<Array<Maybe<PurchasingMonthlySpending>>>;
   purchasingSpendingByVendor?: Maybe<Array<Maybe<PurchasingVendorSpending>>>;
+  purchasingUserGroups?: Maybe<Array<Maybe<PurchasingUserGroup>>>;
   purchasingVendorById?: Maybe<PurchasingVendor>;
   purchasingVendorLedger?: Maybe<PurchasingVendorLedger>;
   referenceCityMehfilLocations?: Maybe<Array<Maybe<ReferenceOrgLocationType>>>;
@@ -4916,7 +5056,7 @@ export type QueryPagedPurchaseFormsArgs = {
 
 
 export type QueryPagedPurchasingAuditLogsArgs = {
-  filter?: InputMaybe<AuditLogFilter>;
+  filter?: InputMaybe<PurchasingAuditLogFilter>;
 };
 
 
@@ -5126,6 +5266,15 @@ export type QueryPurchasingCatalogItemByIdArgs = {
 
 export type QueryPurchasingInvoiceByIdArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type QueryPurchasingKarkunSearchArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 

@@ -9,6 +9,8 @@ const SubModuleNames = {
   vendors: 'Vendors',
   catalog: 'Catalog',
   reports: 'Reports',
+  auditLogs: 'Audit Logs',
+  permissions: 'Permissions',
 };
 
 export default SubModuleNames;

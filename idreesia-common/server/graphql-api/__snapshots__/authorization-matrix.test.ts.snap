@@ -98,6 +98,36 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkInstanceAccess",
     },
   ],
+  "Mutation.addPurchasingGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addPurchasingPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addPurchasingPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.addSecurityServerProfileImage": [
     {
       "args": {
@@ -600,6 +630,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.createPurchasingUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.createPurchasingVendor": [
     {
       "args": {
@@ -869,6 +909,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_MANAGE_REQUISITIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deletePurchasingUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1328,6 +1378,36 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_MANAGE_CATALOG",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removePurchasingGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removePurchasingPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removePurchasingPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -2116,6 +2196,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_MANAGE_REQUISITIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updatePurchasingUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -4490,6 +4580,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.purchasingKarkunSearch": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.purchasingOpenOrders": [
     {
       "args": {
@@ -4532,6 +4632,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "PURCHASING_VIEW_PAYMENTS",
           "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingPermissionAssignments": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -4588,6 +4698,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_VIEW_REPORTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingUserGroups": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",

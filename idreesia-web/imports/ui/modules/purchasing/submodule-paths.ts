@@ -59,4 +59,6 @@ export default class SubModulePaths {
   }
 
   static reportsPath = `${ModulePaths.purchasing}/reports`;
+  static permissionsPath = `${ModulePaths.purchasing}/permissions`;
+  static auditLogsPath = `${ModulePaths.purchasing}/audit-logs`;
 }

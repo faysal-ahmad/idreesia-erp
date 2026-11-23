@@ -4,7 +4,7 @@ import { UserGroup as UserGroupSchema } from 'meteor/idreesia-common/server/sche
 export interface UserGroupDocument {
   _id?: string;
   name: string;
-  moduleName: string;
+  moduleName?: string;
   description?: string;
   permissions?: string[];
   instances?: string[];

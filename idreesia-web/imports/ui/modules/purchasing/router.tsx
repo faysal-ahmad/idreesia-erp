@@ -3,6 +3,8 @@ import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
 import Landing from './landing';
+import { AuditLogsPage } from './audit-logs';
+import { PermissionsPage } from './permissions';
 import { Dashboard, ReportsPage } from './reports';
 import { RequisitionsList, RequisitionPage } from './requisitions';
 import { QuotesList, QuotePage } from './quotes';
@@ -50,6 +52,8 @@ const Router = () => (
     <Route path={paths.catalogPath} component={CatalogList} />
 
     <Route path={paths.reportsPath} component={ReportsPage} />
+    <Route path={paths.auditLogsPath} component={AuditLogsPage} />
+    <Route path={paths.permissionsPath} component={PermissionsPage} />
 
     {/* The module root: go to the first section the user can open. */}
     <Route component={Landing} />

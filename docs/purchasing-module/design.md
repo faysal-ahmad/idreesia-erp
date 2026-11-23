@@ -94,7 +94,7 @@ Shared helpers in `internal.ts`: `roundMoney`, `normalizeBaseLine`, `totalsOf`, 
 
 ## Permissions
 
-17 permissions, strings prefixed `purchasing-` (the header shows the module to anyone with at least one, through `isModuleAccessible`). Defined in `constants/permissions.ts`, mirrored in the `Permission` enum in `graphql-api/_directives/permission.ts`, and listed in the Admin permission picker through `PurchasingPermissionsData` (`access-management/permissions-data.ts`).
+18 permissions, strings prefixed `purchasing-` (the header shows the module to anyone with at least one, through `isModuleAccessible`). Defined in `constants/permissions.ts`, mirrored in the `Permission` enum in `graphql-api/_directives/permission.ts`, and listed in the Admin permission picker through `PurchasingPermissionsData` (`access-management/permissions-data.ts`).
 
 | Permission | Allows |
 |---|---|
@@ -106,7 +106,8 @@ Shared helpers in `internal.ts`: `roundMoney`, `normalizeBaseLine`, `totalsOf`, 
 | `purchasing-view-invoices` / `-manage-invoices` | See / enter, edit, dispute, void invoices |
 | `purchasing-view-payments` / `-manage-payments` | See / post and void payments |
 | `purchasing-view-reports` | Dashboard figures, reports, Excel downloads |
-| `purchasing-view-audit-logs` | The History tab of every document |
+| `purchasing-view-audit-logs` | The Audit Logs page and the History tab of every document |
+| `purchasing-manage-permissions` | The Permissions page: see who holds each Purchasing permission, add and remove users (one permission covers both viewing and changing) |
 
 Every workflow action maps to exactly one permission. Super admins receive all permissions automatically; everyone else is granted them in Admin (no seed migration).
 
@@ -116,6 +117,22 @@ Enforcement is in three places:
 3. Attachments are checked against the document they belong to (`graphql-api/purchasing/attachment/access.ts`: an invoice's files need an invoice permission).
 
 The UI hides buttons with the same permissions through `common/use-purchasing-access.ts`, for convenience only.
+
+### Permissions page
+
+The page (`permissions/`) has two tabs, URL-synced with `?tab=`: **Permissions** and **User Groups**. Both are gated by `PURCHASING_MANAGE_PERMISSIONS` only, for viewing and changing.
+
+**Permissions tab** (`business-logic/purchasing/permissions.ts`, `graphql-api/purchasing/permission/`). The list shown is `PurchasingPermissionCatalog` in `constants/purchasing.ts` (keep it in step with `PurchasingPermissionsData` in the Admin picker when adding permissions).
+- `purchasingPermissionAssignments` lists each permission with the users who hold it directly (`users.permissions`). Locked accounts and super admins (who hold everything implicitly) are left out.
+- Each permission also lists the Purchasing user groups that hold it (`UserGroups.permissions`). `addPurchasingPermissionGroup` / `removePurchasingPermissionGroup(permissionKey, groupId)` `$addToSet` / `$pull` it on the group (Purchasing groups only) and write a `PERMISSIONS_CHANGED` security log with `groupId`. This is data only: see "Groups do not grant access" below.
+- `purchasingKarkunSearch` feeds the Add User drawer, which is the same karkun picker the Mehfil Permissions page uses (`KarkunSelectionList`). It lists karkuns whose `cityLocationId` is the city location named `PURCHASING_KARKUN_CITY` (`Multan`, matched by name, ignoring case; `constants/purchasing.ts`) and who have a user account. Nobody is listed if that city location does not exist.
+- `addPurchasingPermissionUser(permissionKey, karkunId)` resolves the karkun's user account (`users.personId`), refusing a karkun without one, a locked account and a super admin. `removePurchasingPermissionUser(permissionKey, userId)` takes it away. Both `$addToSet` / `$pull` the permission on the user and write a `PERMISSIONS_CHANGED` security log (data source `operations`), the same record the Admin permissions form writes. Only Purchasing permissions can be changed this way.
+
+**User Groups tab** (`business-logic/purchasing/user-groups.ts`, `graphql-api/purchasing/user-group/`). Purchasing's groups are rows of the shared `user-groups` collection with `moduleName = ModuleNames.purchasing`; membership is the group id in the user's `groups` array. Operations: `purchasingUserGroups`, `create/update/deletePurchasingUserGroup`, `addPurchasingGroupMember(groupId, karkunId)` and `removePurchasingGroupMember(groupId, userId)`. The Add User drawer is the same karkun picker (`purchasingKarkunSearch`). Names are unique across all groups, ignoring case; a group with members cannot be deleted; groups of other modules cannot be touched through these operations.
+
+**Groups do not grant access.** Permission checks (`hasOnePermission`, and the logged-in user's permission list) read only `users.permissions`. Neither a group's `permissions` nor `users.groups` is applied anywhere in the app, so Purchasing groups only organise users for now, even when a permission is assigned to a group on the Permissions tab. Making groups effective would change permission resolution for every module and was deliberately left out.
+
+All operations are gated by `PURCHASING_MANAGE_PERMISSIONS`. As elsewhere, there is no "who" rule: a holder can change their own permissions.
 
 ## GraphQL API
 
@@ -155,9 +172,10 @@ Excel downloads go through `/generate-report` with generators `PurchasingSpendin
 `idreesia-web/imports/ui/modules/purchasing/`; follows `docs/ui-design-guidelines/ui-design-guidelines.md`.
 
 - Shell: `index.ts`, `router.tsx`, `sidebar.tsx`, `menu-entries.tsx` (each sidebar item is shown only to users holding one of its permissions), `landing.tsx`, `purchasing.styles.css` (imported in `client/main.tsx`). Registered in `main-layout/{header-content,main-content,sidebar-content}.tsx`.
-- Sidebar: Dashboard, Requisitions, Quotes, Purchase Orders, Goods Receipts, Invoices, Payments, Vendors, Catalog, Reports.
+- Audit Logs page (`audit-logs/`): module-wide list of every change across all Purchasing document types, filterable by document type and date range, backed by `pagedPurchasingAuditLogs` (which takes `PurchasingAuditLogFilter` and is always limited to the purchasing entity types). The per-document History tab uses the same query with an `entityId`.
+- Sidebar: Dashboard, Requisitions, Quotes, Purchase Orders, Goods Receipts, Invoices, Payments, then a Setup group (Vendors, Catalog) and an Administration group (Reports, Audit Logs).
 - Feature folders: `vendors`, `catalog`, `requisitions`, `quotes`, `orders` (with a print page), `receipts`, `invoices`, `payments`, `reports`.
-- Shared in `common/`: `line-items-editor` (one editor for requisition, quote, order and invoice lines; catalog picker that also accepts free text, "Add to catalog" row action, live totals), `lines-table`, `totals-summary`, `status-tag`, `vendor-select`, `record-select`, `document-list`, `reason-modal`, `run-action`, `history-tab`, `attachments-tab`, `format`.
+- Shared in `common/`: `line-items-editor` (one editor for requisition, quote, order and invoice lines; catalog picker that also accepts free text, "Add to catalog" row action, live totals), `lines-table`, `totals-summary`, `status-tag`, `vendor-select`, `record-select`, `document-list` (with `document-list-filter`: the Stores-style Filter popover, active-filter chips and Reload), `reason-modal`, `run-action`, `history-tab`, `attachments-tab`, `format`.
 - Document pages use URL-synced tabs (Details, Related Documents, Attachments, History) and action buttons that appear only when the status and the user's permissions allow.
 - Typed gql documents live in each feature's `gql/` folder; error handling goes through `run-action.ts` (Apollo `CombinedGraphQLErrors`).
 

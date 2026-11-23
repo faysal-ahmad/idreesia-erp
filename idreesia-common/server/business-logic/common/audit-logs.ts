@@ -16,6 +16,8 @@ export interface CreateAuditLogValues {
 export interface SearchAuditLogsParams {
   entityId?: string;
   entityTypes?: string[];
+  fromTime?: Date;
+  toTime?: Date;
   pageIndex?: string;
   pageSize?: string;
 }
@@ -83,7 +85,14 @@ export async function createAuditLog(
 export function searchAuditLogs(params: SearchAuditLogsParams = {}) {
   const pipeline: Record<string, unknown>[] = [];
 
-  const { entityId, entityTypes, pageIndex = '0', pageSize = '20' } = params;
+  const {
+    entityId,
+    entityTypes,
+    fromTime,
+    toTime,
+    pageIndex = '0',
+    pageSize = '20',
+  } = params;
 
   if (entityId) {
     pipeline.push({
@@ -97,6 +106,17 @@ export function searchAuditLogs(params: SearchAuditLogsParams = {}) {
     pipeline.push({
       $match: {
         entityType: { $in: entityTypes },
+      },
+    });
+  }
+
+  if (fromTime || toTime) {
+    pipeline.push({
+      $match: {
+        operationTime: {
+          ...(fromTime ? { $gte: fromTime } : {}),
+          ...(toTime ? { $lte: toTime } : {}),
+        },
       },
     });
   }

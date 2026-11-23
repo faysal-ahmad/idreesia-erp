@@ -146,7 +146,7 @@ const InvoicePage = ({ match, history }: RouteComponentProps<{ invoiceId: string
           </Space>
         </div>
       ) : null}
-      <Tabs items={items} />
+      <Tabs items={items} className={items.length === 1 ? 'purchasing-single-tab' : undefined} />
 
       <Modal
         title="Edit Invoice Details"

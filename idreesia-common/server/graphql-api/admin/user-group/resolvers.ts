@@ -21,7 +21,7 @@ interface UserGroupArgs {
   _id: string;
   queryString: string;
   name: string;
-  moduleName: string;
+  moduleName?: string;
   description?: string;
   permissions: string[];
   instances: string[];

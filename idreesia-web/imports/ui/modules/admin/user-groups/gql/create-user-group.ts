@@ -11,7 +11,7 @@ const CREATE_USER_GROUP: TypedDocumentNode<
 > = gql`
   mutation createUserGroup(
     $name: String!
-    $moduleName: String!
+    $moduleName: String
     $description: String
   ) {
     createUserGroup(

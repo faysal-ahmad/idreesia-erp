@@ -358,7 +358,7 @@ const RequisitionPage = ({ match, history }: RouteComponentProps<{ requisitionId
         </Space>
       ) : null}
       {actions}
-      <Tabs items={items} />
+      <Tabs items={items} className={items.length === 1 ? 'purchasing-single-tab' : undefined} />
 
       <ReasonModal
         open={rejecting}

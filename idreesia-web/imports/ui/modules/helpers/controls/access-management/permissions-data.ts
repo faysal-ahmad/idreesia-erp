@@ -409,6 +409,7 @@ export const PurchasingPermissionsData: PermissionNode = {
       children: [
         purchasingLeaf('View Reports', PermissionConstants.PURCHASING_VIEW_REPORTS),
         purchasingLeaf('View Audit Logs', PermissionConstants.PURCHASING_VIEW_AUDIT_LOGS),
+        purchasingLeaf('Manage Purchasing Permissions', PermissionConstants.PURCHASING_MANAGE_PERMISSIONS),
       ],
     },
   ],

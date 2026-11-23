@@ -104,7 +104,7 @@ const ReceiptPage = ({ match }: RouteComponentProps<{ receiptId: string }>) => {
           <Button danger onClick={() => setVoiding(true)}>Void Receipt</Button>
         </div>
       ) : null}
-      <Tabs items={items} />
+      <Tabs items={items} className={items.length === 1 ? 'purchasing-single-tab' : undefined} />
       <ReasonModal
         open={voiding}
         title="Void Receipt"

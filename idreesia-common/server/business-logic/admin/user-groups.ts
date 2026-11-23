@@ -38,7 +38,11 @@ export function searchUserGroups(queryString: string) {
   const params = parse(queryString);
   const pipeline: Record<string, unknown>[] = [];
 
-  const { pageIndex = '0', pageSize = '20' } = params;
+  const { pageIndex = '0', pageSize = '20', moduleName } = params;
+
+  if (moduleName) {
+    pipeline.push({ $match: { moduleName: String(moduleName) } });
+  }
 
   const countingPipeline = pipeline.concat({
     $count: 'total',
@@ -85,7 +89,7 @@ export async function createUserGroup(
 }
 
 export async function updateUserGroup(
-  { _id, name, description }: GroupValues,
+  { _id, name, moduleName, description }: GroupValues,
   user: UserRef
 ) {
   const date = new Date();
@@ -95,7 +99,9 @@ export async function updateUserGroup(
       description,
       updatedAt: date,
       updatedBy: user._id,
+      ...(moduleName ? { moduleName } : {}),
     },
+    ...(moduleName ? {} : { $unset: { moduleName: '' } }),
   });
 
   return UserGroups.findOneAsync(_id);

@@ -3,9 +3,12 @@ import { type History } from 'history';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Form } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
+import { ModuleNames } from 'meteor/idreesia-common/constants';
+import { values } from 'meteor/idreesia-common/utilities/lodash';
 import {
   InputTextField,
   InputTextAreaField,
+  SelectField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
@@ -22,7 +25,13 @@ interface Props {
 
 interface FormValues {
   name: string;
+  moduleName?: string;
   description?: string;
+}
+
+interface ModuleNameOption {
+  value: string;
+  text: string;
 }
 
 const GeneralInfo = ({ groupId, history }: Props) => {
@@ -43,11 +52,12 @@ const GeneralInfo = ({ groupId, history }: Props) => {
     setIsFieldsTouched(true);
   };
 
-  const handleFinish = ({ name, description }: FormValues) => {
+  const handleFinish = ({ name, moduleName, description }: FormValues) => {
     updateUserGroup({
       variables: {
         _id: userGroupById?._id ?? groupId,
         name,
+        moduleName,
         description,
       },
     })
@@ -61,6 +71,11 @@ const GeneralInfo = ({ groupId, history }: Props) => {
 
   if (loading || !userGroupById) return null;
 
+  const moduleNamesData = values(ModuleNames).map((name: string) => ({
+    value: name,
+    text: name,
+  }));
+
   return (
     <Form
       layout="horizontal"
@@ -71,6 +86,15 @@ const GeneralInfo = ({ groupId, history }: Props) => {
         fieldName="name"
         fieldLabel="Name"
         initialValue={userGroupById.name}
+      />
+
+      <SelectField
+        data={moduleNamesData}
+        getDataValue={({ value }: ModuleNameOption) => value}
+        getDataText={({ text }: ModuleNameOption) => text}
+        fieldName="moduleName"
+        fieldLabel="Module Name"
+        initialValue={userGroupById.moduleName}
       />
 
       <InputTextAreaField

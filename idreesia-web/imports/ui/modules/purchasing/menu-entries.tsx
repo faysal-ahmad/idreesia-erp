@@ -6,10 +6,14 @@ import {
   DashboardOutlined,
   FileDoneOutlined,
   FileTextOutlined,
+  AuditOutlined,
+  SafetyCertificateOutlined,
   FormOutlined,
   ProfileOutlined,
+  SettingOutlined,
   ShopOutlined,
   TagsOutlined,
+  ToolOutlined,
 } from '@ant-design/icons';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
@@ -29,7 +33,28 @@ export interface MenuEntry {
   icon: React.ReactNode;
   // The menu item shows for a user with any of these.
   permissions: string[];
+  // Key of the sidebar group this entry is nested under.
+  group?: string;
 }
+
+export interface MenuGroup {
+  key: string;
+  label: string;
+  icon: React.ReactNode;
+}
+
+export const menuGroups: MenuGroup[] = [
+  {
+    key: 'setup',
+    label: 'Setup',
+    icon: <ToolOutlined style={IconStyle} />,
+  },
+  {
+    key: 'administration',
+    label: 'Administration',
+    icon: <SettingOutlined style={IconStyle} />,
+  },
+];
 
 const P = Permissions;
 
@@ -108,6 +133,7 @@ const entries: MenuEntry[] = [
     basePath: paths.vendorsPath,
     icon: <ShopOutlined style={IconStyle} />,
     permissions: [P.PURCHASING_VIEW_VENDORS, P.PURCHASING_MANAGE_VENDORS],
+    group: 'setup',
   },
   {
     key: 'catalog',
@@ -116,6 +142,7 @@ const entries: MenuEntry[] = [
     basePath: paths.catalogPath,
     icon: <TagsOutlined style={IconStyle} />,
     permissions: [P.PURCHASING_MANAGE_CATALOG],
+    group: 'setup',
   },
   {
     key: 'reports',
@@ -124,6 +151,25 @@ const entries: MenuEntry[] = [
     basePath: paths.reportsPath,
     icon: <BarChartOutlined style={IconStyle} />,
     permissions: [P.PURCHASING_VIEW_REPORTS],
+    group: 'administration',
+  },
+  {
+    key: 'audit-logs',
+    label: 'Audit Logs',
+    subModuleName: SubModuleNames.auditLogs,
+    basePath: paths.auditLogsPath,
+    icon: <AuditOutlined style={IconStyle} />,
+    permissions: [P.PURCHASING_VIEW_AUDIT_LOGS],
+    group: 'administration',
+  },
+  {
+    key: 'permissions',
+    label: 'Permissions',
+    subModuleName: SubModuleNames.permissions,
+    basePath: paths.permissionsPath,
+    icon: <SafetyCertificateOutlined style={IconStyle} />,
+    permissions: [P.PURCHASING_MANAGE_PERMISSIONS],
+    group: 'administration',
   },
 ];
 

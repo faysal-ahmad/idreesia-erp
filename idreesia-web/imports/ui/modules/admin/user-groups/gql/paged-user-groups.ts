@@ -15,6 +15,7 @@ const PAGED_USER_GROUPS: TypedDocumentNode<
       data {
         _id
         name
+        moduleName
         description
       }
     }

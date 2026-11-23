@@ -115,7 +115,7 @@ const PaymentPage = ({ match }: RouteComponentProps<{ paymentId: string }>) => {
           <Button danger onClick={() => setVoiding(true)}>Void Payment</Button>
         </div>
       ) : null}
-      <Tabs items={items} />
+      <Tabs items={items} className={items.length === 1 ? 'purchasing-single-tab' : undefined} />
       <ReasonModal
         open={voiding}
         title="Void Payment"

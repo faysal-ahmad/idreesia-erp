@@ -9,7 +9,7 @@ const PAGED_PURCHASING_AUDIT_LOGS: TypedDocumentNode<
   PagedPurchasingAuditLogsQuery,
   PagedPurchasingAuditLogsQueryVariables
 > = gql`
-  query pagedPurchasingAuditLogs($filter: AuditLogFilter) {
+  query pagedPurchasingAuditLogs($filter: PurchasingAuditLogFilter) {
     pagedPurchasingAuditLogs(filter: $filter) {
       totalResults
       data {

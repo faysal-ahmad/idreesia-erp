@@ -26,13 +26,14 @@ extend type Query {
 extend type Mutation {
   createUserGroup(
     name: String!
-    moduleName: String!
+    moduleName: String
     description: String
   ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   updateUserGroup(
     _id: String!
     name: String
+    moduleName: String
     description: String
   ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 

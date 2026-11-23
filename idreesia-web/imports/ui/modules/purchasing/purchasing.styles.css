@@ -89,3 +89,8 @@
   gap: 12px;
   max-width: 1100px;
 }
+
+/* A document that is not saved yet has only the Details tab: no tab bar. */
+.purchasing-single-tab > .ant-tabs-nav {
+  display: none;
+}

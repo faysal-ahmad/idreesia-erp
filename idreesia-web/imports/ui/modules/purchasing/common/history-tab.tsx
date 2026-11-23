@@ -30,7 +30,7 @@ const formatValue = (value: unknown) => {
   return String(value);
 };
 
-const changeLines = (operationType: string | null | undefined, auditValues: (string | null)[] | null | undefined) =>
+export const changeLines = (operationType: string | null | undefined, auditValues: (string | null)[] | null | undefined) =>
   (auditValues ?? []).flatMap((entry, index) => {
     if (!entry) return [];
     let parsed: { fieldName?: string; changedFrom?: unknown; changedTo?: unknown };

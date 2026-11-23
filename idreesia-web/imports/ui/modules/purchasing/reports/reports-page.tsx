@@ -9,6 +9,7 @@ import type { Dayjs } from 'dayjs';
 
 import { message } from '/imports/ui/antd-feedback';
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import useListScrollY from '/imports/ui/modules/security/security-server/common/use-list-scroll-y';
 import { downloadReport } from 'meteor/idreesia-common/utilities';
 
 import { formatDate, formatMoney } from '../common/format';
@@ -74,11 +75,12 @@ interface ReportTableProps {
 /** A report: toolbar with refresh, and a table of what the query returns. */
 const ReportTable = ({ query, variables, dataKey, rowKey, columns, skip, summary, rowsOf, exportAs }: ReportTableProps) => {
   const { data, loading, refetch } = useQuery(query, { variables, skip });
+  const { containerRef, scrollY } = useListScrollY();
   const result = data?.[dataKey];
   const rows = ((rowsOf ? rowsOf(result) : result) ?? []).filter((row: any) => row != null);
 
   return (
-    <>
+    <div className="list-container" ref={containerRef}>
       <div style={{ marginBottom: 12, textAlign: 'right' }}>
         <Space>
           {exportAs ? <ExportButton {...exportAs} /> : null}
@@ -96,8 +98,9 @@ const ReportTable = ({ query, variables, dataKey, rowKey, columns, skip, summary
         columns={columns}
         locale={{ emptyText: <Empty description="Nothing to show" /> }}
         summary={summary ? () => summary(rows) : undefined}
+        scroll={{ y: scrollY }}
       />
-    </>
+    </div>
   );
 };
 
@@ -238,9 +241,10 @@ const VendorLedger = () => {
     skip: !vendorId,
   });
   const ledger = data?.purchasingVendorLedger;
+  const { containerRef, scrollY } = useListScrollY();
 
   return (
-    <>
+    <div className="list-container" ref={containerRef}>
       <Space style={{ marginBottom: 12 }} wrap>
         <VendorSelect includeInactive value={vendorId} onChange={setVendorId} />
         <DateRange value={range} onChange={setRange} />
@@ -257,6 +261,7 @@ const VendorLedger = () => {
           size="middle"
           bordered
           pagination={false}
+          scroll={{ y: scrollY }}
           dataSource={(ledger?.entries ?? []).filter((e) => e != null) as any[]}
           columns={[
             { title: 'Date', dataIndex: 'date', width: 130, render: formatDate },
@@ -290,7 +295,7 @@ const VendorLedger = () => {
           footer={() => <strong>Closing balance: {formatMoney(ledger?.closingBalance ?? 0)}</strong>}
         />
       )}
-    </>
+    </div>
   );
 };
 

@@ -4,7 +4,7 @@ import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
 import { Menu } from 'antd';
 
 import usePurchasingAccess from './common/use-purchasing-access';
-import menuEntries from './menu-entries';
+import menuEntries, { menuGroups } from './menu-entries';
 
 interface SidebarProps {
   history: History;
@@ -41,9 +41,24 @@ const Sidebar = ({ history }: SidebarProps) => {
     }
   }, [activeEntry, activeSubModuleName, setActiveSubModuleName]);
 
-  const items = menuEntries
-    .filter((entry) => can(...entry.permissions))
-    .map(({ key, label, icon }) => ({ key, label, icon }));
+  const toItem = ({ key, label, icon }: (typeof menuEntries)[number]) => ({ key, label, icon });
+  const visible = menuEntries.filter((entry) => can(...entry.permissions));
+  const items = [
+    ...visible.filter((entry) => !entry.group).map(toItem),
+    ...menuGroups.flatMap((group) => {
+      const children = visible.filter((entry) => entry.group === group.key).map(toItem);
+      return children.length
+        ? [{ key: group.key, label: group.label, icon: group.icon, children }]
+        : [];
+    }),
+  ];
+
+  // Keep the group holding the current page open; the user can still toggle it.
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+  const activeGroup = activeEntry?.group;
+  useEffect(() => {
+    if (activeGroup) setOpenKeys((keys) => (keys.includes(activeGroup) ? keys : [...keys, activeGroup]));
+  }, [activeGroup]);
 
   const handleMenuItemSelected = ({ key }: MenuClickInfo) => {
     const target = menuEntries.find((entry) => entry.key === key);
@@ -55,6 +70,8 @@ const Sidebar = ({ history }: SidebarProps) => {
       mode="inline"
       style={{ height: '100%', borderRight: 0 }}
       selectedKeys={activeEntry ? [activeEntry.key] : []}
+      openKeys={openKeys}
+      onOpenChange={setOpenKeys}
       onClick={handleMenuItemSelected}
       items={items}
     />

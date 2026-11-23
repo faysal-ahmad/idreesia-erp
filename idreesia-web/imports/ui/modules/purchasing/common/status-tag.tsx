@@ -41,6 +41,8 @@ interface StatusTagProps {
 const StatusTag = ({ status }: StatusTagProps) =>
   status ? <Tag color={COLORS[status] ?? 'default'}>{label(status)}</Tag> : null;
 
+export const statusDisplayName = label;
+
 export const statusOptions = (statuses: string[]) =>
   statuses.map((status) => ({ value: status, label: label(status) }));
 

@@ -131,3 +131,30 @@ export type {
   AttachmentUploadTicket,
   AttachmentDownload,
 } from './attachments';
+
+export {
+  listPermissionAssignments,
+  addPermissionUser,
+  removePermissionUser,
+} from './permissions';
+export type {
+  PermissionAssignmentGroup,
+  PermissionAssignment,
+  PermissionHolder,
+  PermissionGroupHolder,
+} from './permissions';
+
+export {
+  listUserGroups,
+  createUserGroup,
+  updateUserGroup,
+  deleteUserGroup,
+  addGroupMember,
+  removeGroupMember,
+  addGroupPermission,
+  removeGroupPermission,
+} from './user-groups';
+export type { PurchasingUserGroup, GroupMember } from './user-groups';
+
+export { searchPurchasingKarkuns } from './karkuns';
+export type { KarkunSearchParams } from './karkuns';

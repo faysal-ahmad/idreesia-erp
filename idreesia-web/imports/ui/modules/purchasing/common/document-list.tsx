@@ -2,17 +2,15 @@ import React from 'react';
 import { type RouteComponentProps } from 'react-router-dom';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import { PlusCircleOutlined, SyncOutlined } from '@ant-design/icons';
-import { Button, Checkbox, DatePicker, Input, Pagination, Select, Space, Spin, Table } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
+import { Button, Pagination, Space, Spin, Table } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import { useBreadcrumbs, useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { toSafeInteger } from 'meteor/idreesia-common/utilities/lodash';
 import useListScrollY from '/imports/ui/modules/security/security-server/common/use-list-scroll-y';
 
-import { toDayjs } from './format';
-import { statusOptions } from './status-tag';
-import VendorSelect from './vendor-select';
+import { DocumentFilterChips, DocumentListFilter, type DocumentFilterValues } from './document-list-filter';
 
 interface DocumentListProps extends RouteComponentProps {
   breadcrumbs: string[];
@@ -31,8 +29,6 @@ interface DocumentListProps extends RouteComponentProps {
   // name is both the URL parameter and the query variable.
   toggle?: { name: string; label: string };
 }
-
-const { RangePicker } = DatePicker;
 
 /**
  * A server-paged list of a purchasing document, with search, status, vendor
@@ -98,6 +94,31 @@ const DocumentList = ({
     });
   };
 
+  const filterValues: DocumentFilterValues = {
+    search,
+    status,
+    vendorId,
+    fromDate,
+    toDate,
+    toggled,
+  };
+  const filterProps = {
+    values: filterValues,
+    searchPlaceholder,
+    statuses,
+    showVendorFilter,
+    showDateRange,
+    toggle,
+    onApply: (next: Partial<DocumentFilterValues>) => {
+      const { toggled: nextToggled, ...rest } = next;
+      setPageParams({
+        ...rest,
+        ...(nextToggled === undefined ? {} : { toggle: nextToggled ? '1' : '' }),
+        pageIndex: 0,
+      });
+    },
+  };
+
   const handlePaginationChange = (page: number, size?: number) => {
     setPageParams({ pageIndex: page - 1, pageSize: size ?? pageSize });
   };
@@ -132,56 +153,8 @@ const DocumentList = ({
               ) : null}
             </Space>
             <div className="list-table-header-utilities">
-              <Space size={8} wrap>
-                <Input.Search
-                  allowClear
-                  placeholder={searchPlaceholder}
-                  defaultValue={search}
-                  style={{ width: 220 }}
-                  onSearch={(value) => setPageParams({ search: value, pageIndex: 0 })}
-                />
-                {statuses ? (
-                  <Select
-                    value={status}
-                    style={{ width: 170 }}
-                    options={[{ value: 'all', label: 'All statuses' }, ...statusOptions(statuses)]}
-                    onChange={(value) => setPageParams({ status: value, pageIndex: 0 })}
-                  />
-                ) : null}
-                {showVendorFilter ? (
-                  <VendorSelect
-                    includeInactive
-                    placeholder="All vendors"
-                    value={vendorId || undefined}
-                    style={{ minWidth: 200 }}
-                    onChange={(value) => setPageParams({ vendorId: value ?? '', pageIndex: 0 })}
-                  />
-                ) : null}
-                {showDateRange ? (
-                  <RangePicker
-                    format="DD MMM, YYYY"
-                    value={[toDayjs(fromDate), toDayjs(toDate)]}
-                    onChange={(range) =>
-                      setPageParams({
-                        fromDate: range?.[0] ? String(range[0].startOf('day').valueOf()) : '',
-                        toDate: range?.[1] ? String(range[1].endOf('day').valueOf()) : '',
-                        pageIndex: 0,
-                      })
-                    }
-                  />
-                ) : null}
-                {toggle ? (
-                  <Checkbox
-                    checked={toggled}
-                    onChange={(event) =>
-                      setPageParams({ toggle: event.target.checked ? '1' : '', pageIndex: 0 })
-                    }
-                  >
-                    {toggle.label}
-                  </Checkbox>
-                ) : null}
-                <Button icon={<SyncOutlined />} onClick={handleRefresh} title="Reload Data" />
-              </Space>
+              <DocumentListFilter {...filterProps} onRefresh={handleRefresh} />
+              <DocumentFilterChips {...filterProps} />
             </div>
           </div>
         )}

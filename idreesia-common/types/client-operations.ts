@@ -103,6 +103,15 @@ export type PersonFilter = {
   updatedBetween?: string | null | undefined;
 };
 
+export type PurchasingAuditLogFilter = {
+  entityId?: string | null | undefined;
+  entityTypes?: Array<string | null | undefined> | null | undefined;
+  fromDate?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+  toDate?: string | null | undefined;
+};
+
 export type PurchasingPaymentAllocationInput = {
   amount: number;
   invoiceId: string;
@@ -2488,7 +2497,7 @@ export type SecurityLogUsersQuery = { securityLogUsers: Array<{ _id: string, nam
 
 export type CreateUserGroupMutationVariables = Exact<{
   name: string;
-  moduleName: string;
+  moduleName?: string | null | undefined;
   description?: string | null | undefined;
 }>;
 
@@ -2507,7 +2516,7 @@ export type PagedUserGroupsQueryVariables = Exact<{
 }>;
 
 
-export type PagedUserGroupsQuery = { pagedUserGroups: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, description: string | null } | null> | null } | null };
+export type PagedUserGroupsQuery = { pagedUserGroups: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, moduleName: string | null, description: string | null } | null> | null } | null };
 
 export type SetUserGroupInstanceAccessMutationVariables = Exact<{
   _id: string;
@@ -2528,18 +2537,19 @@ export type SetUserGroupPermissionsMutation = { setUserGroupPermissions: { _id: 
 export type UpdateUserGroupMutationVariables = Exact<{
   _id: string;
   name: string;
+  moduleName?: string | null | undefined;
   description?: string | null | undefined;
 }>;
 
 
-export type UpdateUserGroupMutation = { updateUserGroup: { _id: string | null, name: string | null, description: string | null } | null };
+export type UpdateUserGroupMutation = { updateUserGroup: { _id: string | null, name: string | null, moduleName: string | null, description: string | null } | null };
 
 export type UserGroupGeneralInfoByIdQueryVariables = Exact<{
   _id: string;
 }>;
 
 
-export type UserGroupGeneralInfoByIdQuery = { userGroupById: { _id: string | null, name: string | null, description: string | null } | null };
+export type UserGroupGeneralInfoByIdQuery = { userGroupById: { _id: string | null, name: string | null, moduleName: string | null, description: string | null } | null };
 
 export type UserGroupInstanceAccessByIdQueryVariables = Exact<{
   _id: string;
@@ -3301,7 +3311,7 @@ export type DeletePurchasingAttachmentMutationVariables = Exact<{
 export type DeletePurchasingAttachmentMutation = { deletePurchasingAttachment: boolean | null };
 
 export type PagedPurchasingAuditLogsQueryVariables = Exact<{
-  filter?: Types.AuditLogFilter | null | undefined;
+  filter?: Types.PurchasingAuditLogFilter | null | undefined;
 }>;
 
 
@@ -3542,6 +3552,99 @@ export type VoidPurchasingPaymentMutationVariables = Exact<{
 
 
 export type VoidPurchasingPaymentMutation = { voidPurchasingPayment: { _id: string | null, status: string | null } | null };
+
+export type AddPurchasingGroupMemberMutationVariables = Exact<{
+  groupId: string;
+  karkunId: string;
+}>;
+
+
+export type AddPurchasingGroupMemberMutation = { addPurchasingGroupMember: boolean | null };
+
+export type AddPurchasingPermissionGroupMutationVariables = Exact<{
+  permissionKey: string;
+  groupId: string;
+}>;
+
+
+export type AddPurchasingPermissionGroupMutation = { addPurchasingPermissionGroup: boolean | null };
+
+export type AddPurchasingPermissionUserMutationVariables = Exact<{
+  permissionKey: string;
+  karkunId: string;
+}>;
+
+
+export type AddPurchasingPermissionUserMutation = { addPurchasingPermissionUser: boolean | null };
+
+export type CreatePurchasingUserGroupMutationVariables = Exact<{
+  name: string;
+  description?: string | null | undefined;
+}>;
+
+
+export type CreatePurchasingUserGroupMutation = { createPurchasingUserGroup: { _id: string, name: string, description: string | null } | null };
+
+export type DeletePurchasingUserGroupMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type DeletePurchasingUserGroupMutation = { deletePurchasingUserGroup: boolean | null };
+
+export type PurchasingKarkunSearchQueryVariables = Exact<{
+  name?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type PurchasingKarkunSearchQuery = { purchasingKarkunSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
+
+export type PurchasingPermissionAssignmentsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PurchasingPermissionAssignmentsQuery = { purchasingPermissionAssignments: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> | null, groups: Array<{ groupId: string, name: string } | null> | null } | null> | null } | null> | null };
+
+export type PurchasingUserGroupsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PurchasingUserGroupsQuery = { purchasingUserGroups: Array<{ _id: string, name: string, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> | null } | null> | null };
+
+export type RemovePurchasingGroupMemberMutationVariables = Exact<{
+  groupId: string;
+  userId: string;
+}>;
+
+
+export type RemovePurchasingGroupMemberMutation = { removePurchasingGroupMember: boolean | null };
+
+export type RemovePurchasingPermissionGroupMutationVariables = Exact<{
+  permissionKey: string;
+  groupId: string;
+}>;
+
+
+export type RemovePurchasingPermissionGroupMutation = { removePurchasingPermissionGroup: boolean | null };
+
+export type RemovePurchasingPermissionUserMutationVariables = Exact<{
+  permissionKey: string;
+  userId: string;
+}>;
+
+
+export type RemovePurchasingPermissionUserMutation = { removePurchasingPermissionUser: boolean | null };
+
+export type UpdatePurchasingUserGroupMutationVariables = Exact<{
+  _id: string;
+  name: string;
+  description?: string | null | undefined;
+}>;
+
+
+export type UpdatePurchasingUserGroupMutation = { updatePurchasingUserGroup: { _id: string, name: string, description: string | null } | null };
 
 export type CreatePurchasingQuoteMutationVariables = Exact<{
   requisitionId?: string | null | undefined;

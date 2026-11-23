@@ -466,7 +466,7 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
         </Space>
       ) : null}
       {actions}
-      <Tabs items={items} />
+      <Tabs items={items} className={items.length === 1 ? 'purchasing-single-tab' : undefined} />
       <ReasonModal
         open={rejecting}
         title="Return Order to Draft"

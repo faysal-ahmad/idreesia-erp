@@ -47,9 +47,9 @@ Each document gets a number automatically, such as `PR-2026-0001` (requisition),
 
 ## 3. Finding your way around
 
-The menu on the left lists: **Dashboard, Requisitions, Quotes, Purchase Orders, Goods Receipts, Invoices, Payments, Vendors, Catalog, Reports**.
+The menu on the left lists: **Dashboard, Requisitions, Quotes, Purchase Orders, Goods Receipts, Invoices, Payments**, then a **Setup** group (**Vendors**, **Catalog**) and an **Administration** group (**Reports**, **Audit Logs**, **Permissions**). Groups open and close when clicked.
 
-- **Lists** show every document with its status. Use the search box and filters to narrow them, and click a row to open it.
+- **Lists** show every document with its status. Click **Filter** to search by number and narrow by status, vendor and dates, then click **Search**. Active filters appear as tags above the table; click the x on a tag to remove it, or **Clear all**. The circular arrow button reloads the data. Click a row to open it.
 - **A document page** shows the details at the top, the items below, and tabs for related documents, attachments and history. The buttons across the top are the actions you can take right now. They change as the document moves along.
 - **Status tags** show where a document stands, for example Draft, Submitted, Approved.
 - Only a **draft** can be edited. Once a document moves on, its details are locked.
@@ -57,7 +57,7 @@ The menu on the left lists: **Dashboard, Requisitions, Quotes, Purchase Orders, 
 
 ## 4. Vendors
 
-**Purchasing > Vendors** is the list of businesses you buy from.
+**Setup > Vendors** is the list of businesses you buy from.
 
 To add a vendor, click the new button, fill in at least the name, and save. You can also store a contact person, phone, email, address, tax number, payment terms (days until an invoice is due), bank details and notes.
 
@@ -67,7 +67,7 @@ To add a vendor, click the new button, fill in at least the name, and save. You 
 
 ## 5. The item catalog
 
-**Purchasing > Catalog** is an optional list of things you buy often. It saves typing and keeps names and units consistent. You never have to use it, and it starts empty. It grows as you work.
+**Setup > Catalog** is an optional list of things you buy often. It saves typing and keeps names and units consistent. You never have to use it, and it starts empty. It grows as you work.
 
 Each item has a name, a unit (such as kg or piece), an optional category and an optional default price. After a purchase order is approved, the catalog also remembers the **last price** and **last vendor** for that item.
 
@@ -204,11 +204,13 @@ Quotes, orders, receipts, invoices, payments and requisitions each have an **Att
 
 The **History** tab on each document lists every change: who did it, when, and what. It shows only if you have the audit log permission.
 
+To review changes across all documents, open **Administration > Audit Logs**. It lists every change, newest first. Use the filters to show only certain document types (for example Invoices and Payments) or a date range, and click the document name to open it.
+
 ## 15. Dashboard and reports
 
 **Dashboard** shows counters at a glance: requisitions awaiting approval, orders awaiting approval, open orders, overdue invoices, total payable and the overdue amount.
 
-**Reports** (needs the reports permission) has five tabs. Each has an **Excel** download button.
+**Administration > Reports** (needs the reports permission) has five tabs. Each has an **Excel** download button.
 
 | Report | Answers |
 |---|---|
@@ -234,7 +236,23 @@ Purchasing has no fixed roles. What you can do depends only on the **permissions
 | View / Manage invoices | See / enter, edit, dispute and void invoices |
 | View / Manage payments | See / record and void payments |
 | View reports | Dashboard figures, reports and Excel downloads |
-| View audit logs | The History tab |
+| View audit logs | The Audit Logs page and the History tab |
+| Manage Purchasing permissions | The Permissions page (see below) |
+
+**Giving people access.** Users with the *Manage Purchasing permissions* permission see **Administration > Permissions**. The page lists every Purchasing permission with the people who hold it:
+
+- Click the add-user icon at the end of a row. A panel slides in listing the karkuns of Multan who have a user account; search by name, CNIC or phone number and click **Add**. Karkuns who already hold the permission show as **Added**. A karkun with no user account does not appear; an account must be created for them in Admin first.
+- Click the group icon next to it to give the permission to a user group instead. A panel lists your Purchasing user groups; click **Add**. Groups show as blue tags in the **Users & Groups** column.
+- Click the **x** on a person's or group's tag and confirm to take the permission away.
+
+The same permission is needed to see the page and to make changes. Permissions can also still be set in Admin on a user.
+
+**User Groups.** The page has a second tab, **User Groups**, for keeping Purchasing people organised, for example "Buyers" and "Approvers":
+
+- **New Group** creates a group with a name and an optional description. Use the pencil icon to rename it and the bin icon to delete it. A group that still has people in it cannot be deleted; remove them first.
+- Click the add-user icon on a group. The same panel of Multan karkuns opens; search and click **Add**. Karkuns already in the group show as **Member**. Click the **x** on a person's tag and confirm to take them out.
+
+Groups are for organising only: belonging to a group, or a group being listed on a permission, does not give anyone access yet. Access comes from the permissions given to people themselves on the **Permissions** tab.
 
 Important: the system does **not** stop someone who holds the approve permission from approving a document they created themselves. If your organization wants separation, the administrator should give create and approve permissions to different people.
 

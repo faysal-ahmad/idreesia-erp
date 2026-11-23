@@ -88,6 +88,7 @@ const Permissions = {
 
   PURCHASING_VIEW_REPORTS: 'purchasing-view-reports',
   PURCHASING_VIEW_AUDIT_LOGS: 'purchasing-view-audit-logs',
+  PURCHASING_MANAGE_PERMISSIONS: 'purchasing-manage-permissions',
 
   // ****************************************************************************************
   // Stores Module

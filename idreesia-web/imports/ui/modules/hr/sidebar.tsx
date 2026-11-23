@@ -7,6 +7,7 @@ import React, {
 import { type History } from 'history';
 import {
   AuditOutlined,
+  SafetyCertificateOutlined,
   ClusterOutlined,
   DollarOutlined,
   LaptopOutlined,
@@ -113,6 +114,11 @@ const menuItems = [
         icon: <AuditOutlined style={IconStyle} />,
         label: 'Audit Logs',
       },
+      {
+        key: 'permissions',
+        icon: <SafetyCertificateOutlined style={IconStyle} />,
+        label: 'Permissions',
+      },
     ],
   },
 ];
@@ -195,6 +201,12 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['administration'],
     subModuleName: SubModuleNames.auditLogs,
     matches: pathname => isPath(pathname, paths.auditLogsPath),
+  },
+  {
+    key: 'permissions',
+    openKeys: ['administration'],
+    subModuleName: SubModuleNames.permissions,
+    matches: pathname => isPath(pathname, paths.permissionsPath),
   },
 ];
 
@@ -281,6 +293,10 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'audit-logs':
         history.push(paths.auditLogsPath);
+        break;
+
+      case 'permissions':
+        history.push(paths.permissionsPath);
         break;
 
       default:

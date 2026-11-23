@@ -56,6 +56,21 @@ export const REPORT_ACCESS = {
       Permissions.SECURITY_MANAGE_VISITORS,
     ],
   },
+  PurchasingSpendingByVendor: {
+    permissions: [Permissions.PURCHASING_VIEW_REPORTS],
+  },
+  PurchasingSpendingByMonth: {
+    permissions: [Permissions.PURCHASING_VIEW_REPORTS],
+  },
+  PurchasingOpenOrders: {
+    permissions: [Permissions.PURCHASING_VIEW_REPORTS],
+  },
+  PurchasingPayablesAging: {
+    permissions: [Permissions.PURCHASING_VIEW_REPORTS],
+  },
+  PurchasingVendorLedger: {
+    permissions: [Permissions.PURCHASING_VIEW_REPORTS],
+  },
 } as const satisfies Record<string, ReportAccessRule>;
 
 export type ReportName = keyof typeof REPORT_ACCESS;

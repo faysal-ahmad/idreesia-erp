@@ -31,6 +31,7 @@ import {
   SalarySheetsEidReceipts,
 } from './salary-sheets';
 import { AuditLogsList } from './audit-logs';
+import { PermissionsPage } from './permissions';
 import { DutyAttendanceList, DutyPlanningList } from './duty-planning';
 
 const Router = () => (
@@ -82,6 +83,7 @@ const Router = () => (
     <Route path={paths.salarySheetsPath} component={SalarySheetsList} />
 
     <Route path={paths.auditLogsPath} component={AuditLogsList} />
+    <Route path={paths.permissionsPath} component={PermissionsPage} />
   </Switch>
 );
 

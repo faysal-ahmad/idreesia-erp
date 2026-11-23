@@ -122,12 +122,12 @@ export const HrPermissionsData: PermissionNode = {
   key: 'module-hr',
   children: [
     {
-      title: 'Delete Data',
-      key: PermissionConstants.HR_DELETE_DATA,
-    },
-    {
       title: 'View Audit Logs',
       key: PermissionConstants.HR_VIEW_AUDIT_LOGS,
+    },
+    {
+      title: 'Manage HR Permissions',
+      key: PermissionConstants.HR_MANAGE_PERMISSIONS,
     },
     {
       title: 'Karkuns',
@@ -308,16 +308,8 @@ export const SecurityPermissionsData: PermissionNode = {
       key: 'module-security-administration',
       children: [
         {
-          title: 'View Users',
-          key: PermissionConstants.SECURITY_VIEW_USERS,
-        },
-        {
-          title: 'Manage Users',
-          key: PermissionConstants.SECURITY_MANAGE_USERS,
-        },
-        {
-          title: 'Delete Data',
-          key: PermissionConstants.SECURITY_DELETE_DATA,
+          title: 'Manage Security Permissions',
+          key: PermissionConstants.SECURITY_MANAGE_PERMISSIONS,
         },
         {
           title: 'View Audit Logs',
@@ -344,6 +336,72 @@ export const CorrespondencePermissionsData: PermissionNode = {
           title: 'Reply to Messages',
           key: PermissionConstants.CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES,
         },
+      ],
+    },
+  ],
+};
+
+const purchasingLeaf = (title: string, key: string): PermissionNode => ({
+  title,
+  key,
+});
+
+export const PurchasingPermissionsData: PermissionNode = {
+  title: 'Purchasing',
+  key: 'module-purchasing',
+  children: [
+    {
+      title: 'Setup',
+      key: 'module-purchasing-setup',
+      children: [
+        purchasingLeaf('View Vendors', PermissionConstants.PURCHASING_VIEW_VENDORS),
+        purchasingLeaf('Manage Vendors', PermissionConstants.PURCHASING_MANAGE_VENDORS),
+        purchasingLeaf('Manage Catalog', PermissionConstants.PURCHASING_MANAGE_CATALOG),
+      ],
+    },
+    {
+      title: 'Requisitions',
+      key: 'module-purchasing-requisitions',
+      children: [
+        purchasingLeaf('View Requisitions', PermissionConstants.PURCHASING_VIEW_REQUISITIONS),
+        purchasingLeaf('Manage Requisitions', PermissionConstants.PURCHASING_MANAGE_REQUISITIONS),
+        purchasingLeaf('Approve Requisitions', PermissionConstants.PURCHASING_APPROVE_REQUISITIONS),
+      ],
+    },
+    {
+      title: 'Purchase Orders',
+      key: 'module-purchasing-orders',
+      children: [
+        purchasingLeaf('View Orders', PermissionConstants.PURCHASING_VIEW_ORDERS),
+        purchasingLeaf('Manage Orders and Quotes', PermissionConstants.PURCHASING_MANAGE_ORDERS),
+        purchasingLeaf('Approve Orders', PermissionConstants.PURCHASING_APPROVE_ORDERS),
+      ],
+    },
+    {
+      title: 'Goods Receipts',
+      key: 'module-purchasing-receipts',
+      children: [
+        purchasingLeaf('View Receipts', PermissionConstants.PURCHASING_VIEW_RECEIPTS),
+        purchasingLeaf('Manage Receipts', PermissionConstants.PURCHASING_MANAGE_RECEIPTS),
+      ],
+    },
+    {
+      title: 'Invoices and Payments',
+      key: 'module-purchasing-finance',
+      children: [
+        purchasingLeaf('View Invoices', PermissionConstants.PURCHASING_VIEW_INVOICES),
+        purchasingLeaf('Manage Invoices', PermissionConstants.PURCHASING_MANAGE_INVOICES),
+        purchasingLeaf('View Payments', PermissionConstants.PURCHASING_VIEW_PAYMENTS),
+        purchasingLeaf('Manage Payments', PermissionConstants.PURCHASING_MANAGE_PAYMENTS),
+      ],
+    },
+    {
+      title: 'Administration',
+      key: 'module-purchasing-administration',
+      children: [
+        purchasingLeaf('View Reports', PermissionConstants.PURCHASING_VIEW_REPORTS),
+        purchasingLeaf('View Audit Logs', PermissionConstants.PURCHASING_VIEW_AUDIT_LOGS),
+        purchasingLeaf('Manage Purchasing Permissions', PermissionConstants.PURCHASING_MANAGE_PERMISSIONS),
       ],
     },
   ],

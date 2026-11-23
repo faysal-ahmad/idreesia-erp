@@ -9,6 +9,7 @@ export { removeOwnedPersonRelations } from './remove-owned-person-relations';
 export * from './users';
 export {
   createUserGroup,
+  listUserGroupMembers,
   removeUserGroup,
   searchUserGroups,
   setUserGroupInstanceAccess,

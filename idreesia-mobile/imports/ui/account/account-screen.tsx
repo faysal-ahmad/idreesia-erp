@@ -66,6 +66,12 @@ export const AccountScreen = () => {
           >
             Two-factor authentication
           </List.Item>
+          <List.Item
+            prefix={<LockOutline />}
+            onClick={() => history.push(AccountPaths.quickLogin)}
+          >
+            Quick login (PIN)
+          </List.Item>
           {isOfflineStorageAvailable() && (
             <List.Item
               prefix={<DownlandOutline />}

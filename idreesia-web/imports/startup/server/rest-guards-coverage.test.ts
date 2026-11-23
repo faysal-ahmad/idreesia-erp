@@ -26,6 +26,7 @@ vi.mock('meteor/idreesia-common/server/business-logic/common/stored-attachments'
 vi.mock('meteor/idreesia-common/server/business-logic/admin', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/hr/karkuns-exporter', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/security/visitors-exporter', stub);
+vi.mock('meteor/idreesia-common/server/business-logic/purchasing/exporters', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/inventory', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/rocket-chat', stub);
 vi.mock('meteor/idreesia-common/server/graphql-api/common/attachment/access', stub);
@@ -53,6 +54,12 @@ const ALLOWED: Record<string, string> = {
   'POST /login': 'Exchanges credentials for a token, so it cannot need one.',
   'GET /api/monitoring-config':
     'New Relic public browser-agent identifiers, shipped in every page.',
+  'POST /api/attendance/match':
+    'Public attendance kiosk; returns only the matched karkun\'s name and photo, limited by its own router.',
+  'POST /api/attendance/check-in':
+    'Public attendance kiosk; takes the signed token from a match, limited by its own router.',
+  'POST /api/attendance/check-out':
+    'Public attendance kiosk; takes the signed token from a match, limited by its own router.',
   'GET /api/diagnostics/request':
     'Echo for checking the proxy chain, limited by its own router.',
 };

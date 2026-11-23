@@ -14,7 +14,7 @@ const SubModuleNames = {
   securityServerAlerts: 'Security Server Alerts',
   securityServerUsage: 'Security Server Usage',
   auditLogs: 'Audit Logs',
-  securityUsers: 'Security Users',
+  permissions: 'Permissions',
 };
 
 export default SubModuleNames;

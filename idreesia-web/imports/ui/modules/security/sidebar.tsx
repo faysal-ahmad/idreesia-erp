@@ -13,7 +13,7 @@ import {
   TagsOutlined,
   TeamOutlined,
   ToolOutlined,
-  UnlockOutlined,
+  SafetyCertificateOutlined,
   UnorderedListOutlined,
   UserOutlined,
   VideoCameraOutlined,
@@ -129,9 +129,9 @@ const menuItems = [
     label: 'Administration',
     children: [
       {
-        key: 'security-user-accounts',
-        icon: <UnlockOutlined style={IconStyle} />,
-        label: 'Security User Accounts',
+        key: 'permissions',
+        icon: <SafetyCertificateOutlined style={IconStyle} />,
+        label: 'Permissions',
       },
       {
         key: 'audit-logs',
@@ -245,10 +245,10 @@ const menuRouteMatches: MenuRouteMatch[] = [
     matches: (pathname) => isPath(pathname, paths.securityServerUsagePath),
   },
   {
-    key: 'security-user-accounts',
+    key: 'permissions',
     openKeys: ['administration'],
-    subModuleName: SubModuleNames.securityUsers,
-    matches: (pathname) => isPath(pathname, paths.securityUsersPath),
+    subModuleName: SubModuleNames.permissions,
+    matches: (pathname) => isPath(pathname, paths.permissionsPath),
   },
   {
     key: 'audit-logs',
@@ -351,8 +351,8 @@ const Sidebar = ({ history }: SidebarProps) => {
         history.push(paths.securityServerUsagePath);
         break;
 
-      case 'security-user-accounts':
-        history.push(paths.securityUsersPath);
+      case 'permissions':
+        history.push(paths.permissionsPath);
         break;
 
       case 'audit-logs':

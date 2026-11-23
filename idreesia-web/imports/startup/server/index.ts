@@ -16,6 +16,7 @@ initNewRelic();
 import './configure-services';
 import './account-lock';
 import './login-throttle';
+import './trusted-device-login';
 import './migrations';
 
 import express from 'express';

@@ -6,6 +6,7 @@ import { noticeError } from './newrelic';
 const STATUS_BY_CODE: Record<string, number> = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
+  CONFLICT: 409,
   BAD_USER_INPUT: 400,
   PAYLOAD_TOO_LARGE: 413,
   DISCUSSION_FAILED: 502,

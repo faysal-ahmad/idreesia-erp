@@ -57,6 +57,8 @@ input UserFilter {
   moduleAccess: String
   # 'true': only service accounts; otherwise only regular users.
   serviceAccounts: String
+  # Part of the user name or display name.
+  name: String
   pageIndex: String
   pageSize: String
 }

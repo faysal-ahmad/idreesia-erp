@@ -39,6 +39,9 @@ import KarkunSchema from './common/karkun/karkun';
 import UserSchema from './admin/user/user';
 import UserResolvers from './admin/user/resolvers';
 
+import TrustedDeviceSchema from './admin/trusted-device/trusted-device';
+import TrustedDeviceResolvers from './admin/trusted-device/resolvers';
+
 import UserGroupSchema from './admin/user-group/user-group';
 import UserGroupResolvers from './admin/user-group/resolvers';
 
@@ -69,6 +72,10 @@ import AdminSecurityLogResolvers from './admin/security-log/resolvers';
 /**
  * Schema and Resolvers for the Security module
  */
+import SecurityPermissionSchema from './security/permission/permission';
+import SecurityPermissionResolvers from './security/permission/resolvers';
+import SecurityUserGroupSchema from './security/user-group/user-group';
+import SecurityUserGroupResolvers from './security/user-group/resolvers';
 import SecurityAuditLogSchema from './security/audit-log/audit-log';
 import SecurityAuditLogResolvers from './security/audit-log/resolvers';
 
@@ -87,9 +94,6 @@ import SecurityMehfilLangarDishResolvers from './security/mehfil-langar-dish/res
 import SecurityMehfilLangarLocationSchema from './security/mehfil-langar-location/mehfil-langar-location';
 import SecurityMehfilLangarLocationResolvers from './security/mehfil-langar-location/resolvers';
 
-import SecurityUserSchema from './security/security-user/security-user';
-import SecurityUserResolvers from './security/security-user/resolvers';
-
 import SecurityVisitorSchema from './security/visitor/visitor';
 import SecurityVisitorResolvers from './security/visitor/resolvers';
 
@@ -105,6 +109,32 @@ import SecurityServerProfileResolvers from './security/security-server-profile/r
 import SecurityServerAlertSchema from './security/security-server-alert/security-server-alert';
 import SecurityServerAlertResolvers from './security/security-server-alert/resolvers';
 
+import PurchasingVendorSchema from './purchasing/vendor/vendor';
+import PurchasingVendorResolvers from './purchasing/vendor/resolvers';
+import PurchasingCatalogItemSchema from './purchasing/catalog-item/catalog-item';
+import PurchasingCatalogItemResolvers from './purchasing/catalog-item/resolvers';
+import PurchasingRequisitionSchema from './purchasing/requisition/requisition';
+import PurchasingRequisitionResolvers from './purchasing/requisition/resolvers';
+import PurchasingQuoteSchema from './purchasing/quote/quote';
+import PurchasingQuoteResolvers from './purchasing/quote/resolvers';
+import PurchasingOrderSchema from './purchasing/order/order';
+import PurchasingOrderResolvers from './purchasing/order/resolvers';
+import PurchasingReceiptSchema from './purchasing/receipt/receipt';
+import PurchasingReceiptResolvers from './purchasing/receipt/resolvers';
+import PurchasingInvoiceSchema from './purchasing/invoice/invoice';
+import PurchasingInvoiceResolvers from './purchasing/invoice/resolvers';
+import PurchasingPaymentSchema from './purchasing/payment/payment';
+import PurchasingPaymentResolvers from './purchasing/payment/resolvers';
+import PurchasingReportSchema from './purchasing/report/report';
+import PurchasingReportResolvers from './purchasing/report/resolvers';
+import PurchasingAttachmentSchema from './purchasing/attachment/attachment';
+import PurchasingAttachmentResolvers from './purchasing/attachment/resolvers';
+import PurchasingAuditLogSchema from './purchasing/audit-log/audit-log';
+import PurchasingAuditLogResolvers from './purchasing/audit-log/resolvers';
+import PurchasingPermissionSchema from './purchasing/permission/permission';
+import PurchasingPermissionResolvers from './purchasing/permission/resolvers';
+import PurchasingUserGroupSchema from './purchasing/user-group/user-group';
+import PurchasingUserGroupResolvers from './purchasing/user-group/resolvers';
 import InboxSchema from './correspondence/inbox/inbox';
 import InboxResolvers from './correspondence/inbox/resolvers';
 import SecurityServerUsageSchema from './security/security-server-usage/security-server-usage';
@@ -136,6 +166,11 @@ import CommitteeResolvers from './organization/committee/resolvers';
 
 import JobSchema from './hr/job/job';
 import JobResolvers from './hr/job/resolvers';
+
+import HrPermissionSchema from './hr/permission/permission';
+import HrPermissionResolvers from './hr/permission/resolvers';
+import HrUserGroupSchema from './hr/user-group/user-group';
+import HrUserGroupResolvers from './hr/user-group/resolvers';
 
 import HRKarkunSchema from './hr/karkun/karkun';
 import HRKarkunResolvers from './hr/karkun/resolvers';
@@ -247,6 +282,7 @@ const typeDefs = [
   KarkunSchema,
   PersonSchema,
   UserSchema,
+  TrustedDeviceSchema,
   UserGroupSchema,
   ScheduledJobSchema,
   JobDefinitionSchema,
@@ -264,7 +300,8 @@ const typeDefs = [
   SecurityMehfilKarkunSchema,
   SecurityMehfilLangarDishSchema,
   SecurityMehfilLangarLocationSchema,
-  SecurityUserSchema,
+  SecurityPermissionSchema,
+  SecurityUserGroupSchema,
   SecurityVisitorSchema,
   SecurityVisitorStaySchema,
   SecurityServerChannelSchema,
@@ -283,6 +320,8 @@ const typeDefs = [
   CommitteeSchema,
   JobSchema,
   HRKarkunSchema,
+  HrPermissionSchema,
+  HrUserGroupSchema,
   SalarySchema,
 
   WorkspaceCommitteeSchema,
@@ -307,6 +346,19 @@ const typeDefs = [
   ItemCategorySchema,
   LocationSchema,
   VendorSchema,
+  PurchasingVendorSchema,
+  PurchasingCatalogItemSchema,
+  PurchasingRequisitionSchema,
+  PurchasingQuoteSchema,
+  PurchasingOrderSchema,
+  PurchasingReceiptSchema,
+  PurchasingInvoiceSchema,
+  PurchasingPaymentSchema,
+  PurchasingReportSchema,
+  PurchasingAuditLogSchema,
+  PurchasingPermissionSchema,
+  PurchasingUserGroupSchema,
+  PurchasingAttachmentSchema,
   PhysicalStoreSchema,
   ReferenceDutySchema,
   ReferenceOrgLocationSchema,
@@ -325,6 +377,7 @@ const resolvers = merge(
   SecurityLogResolvers,
   PersonResolvers,
   UserResolvers,
+  TrustedDeviceResolvers,
   UserGroupResolvers,
   ScheduledJobResolvers,
   JobDefinitionResolvers,
@@ -342,7 +395,8 @@ const resolvers = merge(
   SecurityMehfilKarkunResolvers,
   SecurityMehfilLangarDishResolvers,
   SecurityMehfilLangarLocationResolvers,
-  SecurityUserResolvers,
+  SecurityPermissionResolvers,
+  SecurityUserGroupResolvers,
   SecurityVisitorResolvers,
   SecurityVisitorStayResolvers,
   SecurityServerChannelResolvers,
@@ -361,6 +415,8 @@ const resolvers = merge(
   CommitteeResolvers,
   JobResolvers,
   HRKarkunResolvers,
+  HrPermissionResolvers,
+  HrUserGroupResolvers,
   SalaryResolvers,
 
   WorkspaceCommitteeResolvers,
@@ -385,6 +441,19 @@ const resolvers = merge(
   ItemCategoryResolvers,
   LocationResolvers,
   VendorResolvers,
+  PurchasingVendorResolvers,
+  PurchasingCatalogItemResolvers,
+  PurchasingRequisitionResolvers,
+  PurchasingQuoteResolvers,
+  PurchasingOrderResolvers,
+  PurchasingReceiptResolvers,
+  PurchasingInvoiceResolvers,
+  PurchasingPaymentResolvers,
+  PurchasingReportResolvers,
+  PurchasingAuditLogResolvers,
+  PurchasingPermissionResolvers,
+  PurchasingUserGroupResolvers,
+  PurchasingAttachmentResolvers,
   PhysicalStoreResolvers,
   ReferenceDutyResolvers,
   ReferenceOrgLocationResolvers,

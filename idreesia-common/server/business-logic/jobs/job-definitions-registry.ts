@@ -7,6 +7,7 @@ import { publishExpiringLockNotifications } from 'meteor/idreesia-common/server/
 import { purgeNotifications } from 'meteor/idreesia-common/server/headless';
 import { createTodayDayRecords } from 'meteor/idreesia-common/server/business-logic/duties-attendance';
 import { createTodayDutyDayAttendances } from 'meteor/idreesia-common/server/business-logic/hr/duty-planning';
+import { markAttendanceFromCheckIns } from 'meteor/idreesia-common/server/business-logic/hr/duty-check-in-attendance';
 import { getSystemUser } from './system-user';
 import { createProgressReporter } from './report-progress';
 
@@ -51,6 +52,21 @@ const JOB_DEFINITIONS_REGISTRY: JobDefinitionSeed[] = [
     defaultSchedule: '5 0 * * *',
     handler: async agendaJob => {
       await createTodayDutyDayAttendances(createProgressReporter(agendaJob));
+    },
+  },
+  {
+    name: 'mark-duty-attendance-from-check-ins',
+    displayName: 'Mark Duty Attendance From Check-Ins',
+    // After the day (and any shift that runs past midnight) is over: marks
+    // yesterday's unmarked karkuns present, late or absent from their check-in time.
+    defaultSchedule: '0 4 * * *',
+    handler: async agendaJob => {
+      const systemUser = await getSystemUser();
+      await markAttendanceFromCheckIns(
+        systemUser,
+        undefined,
+        createProgressReporter(agendaJob)
+      );
     },
   },
   {

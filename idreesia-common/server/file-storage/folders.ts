@@ -8,6 +8,8 @@ export const StorageFolders = {
   // Publicly readable (see getPublicFileUrl) - keys must stay unguessable.
   PeopleImages: 'people-images',
   StockItemImages: 'stock-item-images',
+  // Purchasing catalog item pictures (business-logic/purchasing/catalog-item-images).
+  PurchasingCatalogItemImages: 'purchasing-catalog-item-images',
   // Private - served through short-lived presigned URLs.
   PurchaseFormAttachments: 'purchase-form-attachments',
   IssuanceFormAttachments: 'issuance-form-attachments',
@@ -18,4 +20,7 @@ export const StorageFolders = {
   // Meetings module (business-logic/meetings) - one object per attachment:
   // <folder>/<workspaceId>/<meetingId>/<attachmentId>.<ext>
   MeetingAttachments: 'meeting-attachments',
+  // Purchasing module (business-logic/purchasing) - one object per attachment:
+  // <folder>/<ownerType>/<ownerId>/<attachmentId>.<ext>
+  PurchasingAttachments: 'purchasing-attachments',
 } as const;

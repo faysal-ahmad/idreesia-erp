@@ -13,6 +13,7 @@ vi.mock('meteor/idreesia-common/server/headless', () => ({
 vi.mock('meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries', () => ({}));
 vi.mock('meteor/idreesia-common/server/business-logic/common/backfill-image-vector-data', () => ({}));
 vi.mock('meteor/idreesia-common/server/business-logic/hr/duty-planning', () => ({}));
+vi.mock('meteor/idreesia-common/server/business-logic/hr/duty-check-in-attendance', () => ({}));
 vi.mock('./system-user', () => ({ getSystemUser: vi.fn() }));
 vi.mock('./report-progress', () => ({ createProgressReporter: vi.fn() }));
 

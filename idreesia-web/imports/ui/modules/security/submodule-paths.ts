@@ -55,12 +55,9 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
-  // Security Users Routes
+  // Permissions Routes
   // *************************************************************************************
-  static securityUsersPath = `${ModulePaths.security}/security-users`;
-  static securityUsersEditFormPath(userId = ':userId') {
-    return `${SubModulePaths.securityUsersPath}/${userId}`;
-  }
+  static permissionsPath = `${ModulePaths.security}/permissions`;
 
   // *************************************************************************************
   // Security Server Routes

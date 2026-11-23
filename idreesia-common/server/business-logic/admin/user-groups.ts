@@ -6,7 +6,10 @@ import {
   Users,
   type UserGroupDocument,
 } from 'meteor/idreesia-common/server/collections/admin';
-import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
+import {
+  People,
+  SecurityLogs,
+} from 'meteor/idreesia-common/server/collections/common';
 import { difference, get } from 'meteor/idreesia-common/utilities/lodash';
 
 interface UserRef {
@@ -34,11 +37,21 @@ interface InstanceAccessValues {
   instances: string[];
 }
 
-export function searchUserGroups(queryString: string) {
+export async function searchUserGroups(queryString: string) {
   const params = parse(queryString);
   const pipeline: Record<string, unknown>[] = [];
 
-  const { pageIndex = '0', pageSize = '20' } = params;
+  const { pageIndex = '0', pageSize = '20', moduleName, userId } = params;
+
+  if (moduleName) {
+    pipeline.push({ $match: { moduleName: String(moduleName) } });
+  }
+
+  // Only the groups this user belongs to.
+  if (userId) {
+    const user = await Users.findOneAsync(String(userId));
+    pipeline.push({ $match: { _id: { $in: user?.groups ?? [] } } });
+  }
 
   const countingPipeline = pipeline.concat({
     $count: 'total',
@@ -58,6 +71,49 @@ export function searchUserGroups(queryString: string) {
   return Promise.all([userGroups, totalResults]).then(results => ({
     data: results[0],
     totalResults: get(results[1], ['0', 'total'], 0),
+  }));
+}
+
+export interface UserGroupMember {
+  userId: string;
+  personId?: string;
+  username?: string;
+  displayName?: string;
+}
+
+/**
+ * The users in a group. The name shown is the account's own, or that of the
+ * karkun it belongs to when the account has none.
+ */
+export async function listUserGroupMembers(
+  groupId: string
+): Promise<UserGroupMember[]> {
+  const users = await Users.find(
+    { groups: groupId },
+    { sort: { username: 1 } }
+  ).fetchAsync();
+
+  const personIds = users
+    .filter(user => !user.profile?.name && user.personId)
+    .map(user => user.personId as string);
+  const people = personIds.length
+    ? await People.find(
+        { _id: { $in: personIds } },
+        { fields: { 'sharedData.name': 1 } }
+      ).fetchAsync()
+    : [];
+  const personNames = new Map(
+    people.map(person => [person._id as string, person.sharedData?.name])
+  );
+
+  return users.map(user => ({
+    userId: user._id,
+    personId: user.personId,
+    username: user.username,
+    displayName:
+      user.profile?.name ||
+      (user.personId ? personNames.get(user.personId) : undefined) ||
+      undefined,
   }));
 }
 
@@ -85,7 +141,7 @@ export async function createUserGroup(
 }
 
 export async function updateUserGroup(
-  { _id, name, description }: GroupValues,
+  { _id, name, moduleName, description }: GroupValues,
   user: UserRef
 ) {
   const date = new Date();
@@ -95,7 +151,9 @@ export async function updateUserGroup(
       description,
       updatedAt: date,
       updatedBy: user._id,
+      ...(moduleName ? { moduleName } : {}),
     },
+    ...(moduleName ? {} : { $unset: { moduleName: '' } }),
   });
 
   return UserGroups.findOneAsync(_id);

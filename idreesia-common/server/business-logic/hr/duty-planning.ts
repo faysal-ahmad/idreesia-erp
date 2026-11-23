@@ -88,6 +88,8 @@ export interface DayKarkun {
   teamName?: string | null;
   addedForDay: boolean;
   attendance?: DutyAttendanceStatus | null;
+  checkInAt?: Date | null;
+  checkOutAt?: Date | null;
   attendanceUpdatedAt?: Date | null;
   attendanceUpdatedBy?: string | null;
 }

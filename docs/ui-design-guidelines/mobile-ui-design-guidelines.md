@@ -21,6 +21,8 @@ antd-mobile only ships components and theming docs. It has no guidance on page p
 | Module registry | `idreesia-mobile/imports/ui/apps/registry.ts` |
 | Permission rules | `idreesia-mobile/imports/ui/apps/access.ts` |
 | Example module (Security → Visitors) | `idreesia-mobile/imports/ui/apps/security/` |
+| Purchasing module (approvals, receiving with photos, browse lists, dashboard; shared list controls, document page, attachments section) | `idreesia-mobile/imports/ui/apps/purchasing/` |
+| Home tab Purchasing section (counts of what needs attention, each linking to its screen) | `idreesia-mobile/imports/ui/apps/purchasing/use-purchasing-home.ts` + `imports/ui/home/home-screen.tsx` |
 | List screen (search, filters, paging) | `idreesia-mobile/imports/ui/apps/security/visitors/visitors-list-screen.tsx` |
 | List row | `idreesia-mobile/imports/ui/apps/security/visitors/visitor-list-item.tsx` |
 | Camera capture (Cordova + browser) | `idreesia-mobile/imports/ui/utilities/capture-photo.ts` + `imports/ui/components/camera-view.tsx` |
@@ -88,6 +90,10 @@ Apps tab (/apps)                         ← one collapsible section per module 
     └── Visitors (/security/visitors)    ← feature; owns every route below it
         ├── /security/visitors/:id       ← detail
         └── /security/visitors/new       ← form
+    Purchasing (/purchasing)             ← module; features only for the Purchasing permissions the user holds
+    ├── Approvals (/purchasing/approvals)          ← tabs: requisitions / orders waiting for approval (?tab=orders); documents open under …/approvals/{requisitions,orders}/:id
+    ├── Receiving (/purchasing/receiving)          ← open orders; …/receiving/:orderId records a receipt with photos
+    ├── Dashboard, Requisitions (+ /new, /:id/edit), Purchase orders, Goods receipts, Invoices (?overdue=1), Payments, Vendors, Catalog
 Account tab (/account)
 └── Change password (/account/change-password)
 ```

@@ -4,6 +4,7 @@ import {
   StoresPermissionsData,
   SecurityPermissionsData,
   CorrespondencePermissionsData,
+  PurchasingPermissionsData,
 } from './permissions-data';
 
 export const AllModulePermissions = [
@@ -12,4 +13,5 @@ export const AllModulePermissions = [
   StoresPermissionsData,
   SecurityPermissionsData,
   CorrespondencePermissionsData,
+  PurchasingPermissionsData,
 ];

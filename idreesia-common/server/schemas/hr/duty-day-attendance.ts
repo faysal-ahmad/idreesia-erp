@@ -51,6 +51,16 @@ export default new SimpleSchema({
     optional: true,
     allowedValues: [...DUTY_ATTENDANCE_STATUSES],
   },
+  // When the karkun checked in / out at the attendance kiosk. A daily job
+  // turns the check-in time into present / late / absent.
+  'karkuns.$.checkInAt': {
+    type: Date,
+    optional: true,
+  },
+  'karkuns.$.checkOutAt': {
+    type: Date,
+    optional: true,
+  },
   'karkuns.$.attendanceUpdatedAt': {
     type: Date,
     optional: true,

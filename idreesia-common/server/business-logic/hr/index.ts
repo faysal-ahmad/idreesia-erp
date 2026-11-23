@@ -23,3 +23,26 @@ export {
   updateTeamMember,
   updateTeamMemberDays,
 } from './teams';
+export {
+  listPermissionAssignments,
+  addPermissionUser,
+  removePermissionUser,
+} from './permissions';
+export type {
+  PermissionAssignmentGroup,
+  PermissionAssignment,
+  PermissionHolder,
+  PermissionGroupHolder,
+} from './permissions';
+export {
+  listUserGroups,
+  createUserGroup,
+  updateUserGroup,
+  deleteUserGroup,
+  addGroupMember,
+  removeGroupMember,
+  addGroupPermission,
+  removeGroupPermission,
+} from './user-groups';
+export type { HrUserGroup, GroupMember } from './user-groups';
+export { searchHrPermissionKarkuns } from './permission-karkuns';

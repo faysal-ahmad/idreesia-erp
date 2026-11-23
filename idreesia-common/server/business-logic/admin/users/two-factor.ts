@@ -128,6 +128,24 @@ async function checkCodeEnteredByUser(
   await clearAttempts(userId, AttemptKind.TWO_FACTOR_CODE);
 }
 
+/**
+ * For an action a logged-in user may only take with a fresh code from the
+ * authenticator app (such as trusting a device): does nothing when the
+ * user's two-factor is off, otherwise throttles and consumes the code.
+ */
+export async function requireFreshTwoFactorCode(
+  user: AppUser,
+  code: string | null | undefined
+) {
+  if (!isTwoFactorEnabled(user)) return;
+  if (!code) throw new Error('A verification code is required.');
+  await checkCodeEnteredByUser(
+    user._id,
+    user.services.twoFactorAuthentication.secret,
+    code
+  );
+}
+
 async function getUser(userId: string): Promise<AppUser> {
   const user = await Users.findOneAsync(userId);
   if (!user) throw new Error('User not found.');

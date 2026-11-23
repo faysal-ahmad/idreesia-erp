@@ -17,7 +17,7 @@ import { CREATE_USER_GROUP, PAGED_USER_GROUPS } from './gql';
 
 interface FormValues {
   name: string;
-  moduleName: string;
+  moduleName?: string;
   description?: string;
 }
 
@@ -80,8 +80,6 @@ const NewForm = ({ history }: Props) => {
         getDataText={({ text }: ModuleNameOption) => text}
         fieldName="moduleName"
         fieldLabel="Module Name"
-        required
-        requiredMessage="Please select a module for the group."
       />
 
       <InputTextAreaField fieldName="description" fieldLabel="Description" />

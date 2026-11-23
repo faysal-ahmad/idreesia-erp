@@ -97,7 +97,7 @@ extend type Mutation {
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   deleteSecurityVisitor(_id: String!): Int
-  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
+  @superAdminOnly
 
   setSecurityVisitorImage(_id: String!, imageData: String!): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])

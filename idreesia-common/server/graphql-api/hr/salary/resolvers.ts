@@ -7,8 +7,6 @@ import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-lo
 import { parseDate } from 'meteor/idreesia-common/utilities/date-fns';
 import { getPagedSalariesByKarkun } from 'meteor/idreesia-common/server/business-logic/hr/salary-search';
 
-import { assertCanRemoveSalariesOfMonth } from './access';
-
 type ResolverField = ((...args: any[]) => any) | ResolverMap;
 interface ResolverMap {
   [key: string]: ResolverField;
@@ -116,17 +114,13 @@ const resolvers: ResolverMap = {
       return Salaries.findOneAsync(_id);
     },
 
-    deleteSalaries: async (obj, { month, ids }, { user }) => {
-      assertCanRemoveSalariesOfMonth(user, month);
-
+    deleteSalaries: async (obj, { month, ids }) => {
       return Salaries.removeAsync({
         _id: { $in: ids },
       });
     },
 
-    deleteAllSalaries: async (obj, { month }, { user }) => {
-      assertCanRemoveSalariesOfMonth(user, month);
-
+    deleteAllSalaries: async (obj, { month }) => {
       const formattedMonth = format(
         startOfMonth(parseDate(month, Formats.DATE_FORMAT)),
         'MM-yyyy'

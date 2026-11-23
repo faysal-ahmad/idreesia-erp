@@ -4,6 +4,7 @@ const ModuleNames = {
   stores: 'Stores',
   security: 'Security',
   correspondence: 'Correspondence',
+  purchasing: 'Purchasing',
   workspaces: 'Workspaces',
   myData: 'My Data',
 };

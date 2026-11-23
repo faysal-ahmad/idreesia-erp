@@ -37,6 +37,9 @@ const sidebarsMap: Record<
   [ModuleNames.correspondence]: React.lazy(
     () => import('/imports/ui/modules/correspondence/sidebar')
   ),
+  [ModuleNames.purchasing]: React.lazy(
+    () => import('/imports/ui/modules/purchasing/sidebar')
+  ),
   [ModuleNames.workspaces]: React.lazy(
     () => import('/imports/ui/modules/workspaces/sidebar')
   ),

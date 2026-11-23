@@ -98,6 +98,29 @@ export const loginWithPassword = async (
   );
 };
 
+/**
+ * Logs in a device that was trusted for PIN login: its id and secret from
+ * the device store, plus the PIN. Fails with TrustedDeviceErrorCode.INVALID_PIN
+ * for a wrong PIN, or DEVICE_NOT_TRUSTED once the server no longer trusts
+ * the device (removed, expired, revoked, or the password changed).
+ */
+export const loginWithTrustedDevice = async (
+  device: { deviceId: string; secret: string },
+  pin: string
+) => {
+  const accounts = requireAccounts();
+  await ensureServerReachable();
+
+  await toPromise((callback) =>
+    accounts.callLoginMethod({
+      methodArguments: [
+        { trustedDevice: { deviceId: device.deviceId, secret: device.secret, pin } },
+      ],
+      userCallback: callback,
+    })
+  );
+};
+
 export const logout = async () => {
   const accounts = requireAccounts();
   await toPromise((callback) => accounts.logout(callback));

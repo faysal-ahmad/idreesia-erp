@@ -11,6 +11,10 @@ import {
   Vendors,
 } from 'meteor/idreesia-common/server/collections/inventory';
 import { Cities, CityMehfils } from 'meteor/idreesia-common/server/collections/outstation';
+import {
+  PurchasingOrders,
+  PurchasingVendors,
+} from 'meteor/idreesia-common/server/collections/purchasing';
 
 import { getDataLoaders } from './index';
 import { getKarkunTeams } from './hr/karkun-teams';
@@ -27,6 +31,8 @@ const byIdLoaders = [
   ['inventory.physicalStores', PhysicalStores, (l: any) => l.inventory.physicalStores],
   ['inventory.stockItems', StockItems, (l: any) => l.inventory.stockItems],
   ['inventory.vendors', Vendors, (l: any) => l.inventory.vendors],
+  ['purchasing.orders', PurchasingOrders, (l: any) => l.purchasing.orders],
+  ['purchasing.vendors', PurchasingVendors, (l: any) => l.purchasing.vendors],
   ['outstation.cities', Cities, (l: any) => l.outstation.cities],
   ['outstation.cityMehfils', CityMehfils, (l: any) => l.outstation.cityMehfils],
 ] as const;

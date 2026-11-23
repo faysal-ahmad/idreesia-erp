@@ -32,6 +32,13 @@ import {
 import { exportKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/karkuns-exporter';
 import { exportVisitors } from 'meteor/idreesia-common/server/business-logic/security/visitors-exporter';
 import {
+  exportPurchasingOpenOrders,
+  exportPurchasingPayablesAging,
+  exportPurchasingSpendingByMonth,
+  exportPurchasingSpendingByVendor,
+  exportPurchasingVendorLedger,
+} from 'meteor/idreesia-common/server/business-logic/purchasing/exporters';
+import {
   exportIsssuanceForms,
   exportPurchaseForms,
   exportStockAdjustmentForms,
@@ -44,6 +51,7 @@ import {
 import { createSecurityServerRouter } from './setup-security-server-endpoints';
 import { createCorrespondenceRouter } from './setup-correspondence-endpoints';
 import { createWorkspaceDiscussionRouter } from './setup-workspace-discussion-endpoints';
+import { createAttendanceRouter } from './setup-attendance-endpoints';
 import { createDiagnosticsRouter } from './setup-diagnostics-endpoints';
 import { getBrowserMonitoringConfig } from './newrelic';
 import { getClientAddress, getThrottleAddress } from './client-address';
@@ -74,6 +82,11 @@ const ReportGenerators: Record<ReportName, ReportGenerator> = {
   StockItems: { generate: exportStockItems },
   Karkuns: { generate: exportKarkuns },
   Visitors: { generate: exportVisitors },
+  PurchasingSpendingByVendor: { generate: exportPurchasingSpendingByVendor },
+  PurchasingSpendingByMonth: { generate: exportPurchasingSpendingByMonth },
+  PurchasingOpenOrders: { generate: () => exportPurchasingOpenOrders() },
+  PurchasingPayablesAging: { generate: () => exportPurchasingPayablesAging() },
+  PurchasingVendorLedger: { generate: exportPurchasingVendorLedger },
 };
 
 // Accounts._findUserByQuery/_checkPasswordAsync/_generateStampedLoginToken/
@@ -409,6 +422,12 @@ export function createRestApp() {
    * its own router.
    */
   app.use('/api/diagnostics', createDiagnosticsRouter());
+
+  /**
+   * Public attendance kiosk: matches a face photo to a karkun. Rate limited
+   * by its own router.
+   */
+  app.use('/api/attendance', createAttendanceRouter());
 
   return app;
 }

@@ -6,3 +6,8 @@ export {
   MOBILE_ENABLE_TWO_FACTOR,
   MOBILE_START_TWO_FACTOR_SETUP,
 } from './two-factor';
+export {
+  MOBILE_ENROLL_TRUSTED_DEVICE,
+  MOBILE_MY_TRUSTED_DEVICES,
+  MOBILE_REMOVE_TRUSTED_DEVICE,
+} from './trusted-device';

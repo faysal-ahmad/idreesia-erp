@@ -290,6 +290,20 @@ describe('employee and user account filters', () => {
     expect(await find({ userAccount: 'true' })).toEqual(['with']);
     expect(await find({ userAccount: 'false' })).toEqual(['without']);
   });
+
+  it('filters by whether the person has an account that is not locked', async () => {
+    await addPerson('active');
+    await addPerson('locked');
+    await addPerson('both');
+    await addPerson('none');
+    await insert(Users, { _id: 'u1', personId: 'active' });
+    await insert(Users, { _id: 'u2', personId: 'locked', locked: true });
+    await insert(Users, { _id: 'u3', personId: 'both', locked: true });
+    await insert(Users, { _id: 'u4', personId: 'both' });
+
+    expect(await find({ userAccount: 'active' })).toEqual(['active', 'both']);
+    expect(await find({ userAccount: 'true' })).toEqual(['active', 'both', 'locked']);
+  });
 });
 
 describe('buildPeopleSearchPipeline', () => {

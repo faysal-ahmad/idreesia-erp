@@ -33,6 +33,8 @@ import {
   RESET_TWO_FACTOR,
   SET_SUPER_ADMIN,
   CLEAR_LOGIN_BLOCKS,
+  USER_TRUSTED_DEVICES,
+  REVOKE_USER_TRUSTED_DEVICES,
 } from '../gql';
 
 interface Props {
@@ -77,6 +79,13 @@ const GeneralInfo = ({ userId, history }: Props) => {
   const [clearLoginBlocks, { loading: clearingLoginBlocks }] = useMutation(
     CLEAR_LOGIN_BLOCKS
   );
+  const { data: trustedDevicesData } = useQuery(USER_TRUSTED_DEVICES, {
+    variables: { userId },
+  });
+  const [revokeTrustedDevices, { loading: revokingTrustedDevices }] =
+    useMutation(REVOKE_USER_TRUSTED_DEVICES, {
+      refetchQueries: ['userTrustedDevices'],
+    });
   const [setSuperAdmin, { loading: settingSuperAdmin }] = useMutation(
     SET_SUPER_ADMIN,
     {
@@ -152,6 +161,18 @@ const GeneralInfo = ({ userId, history }: Props) => {
     clearLoginBlocks({ variables: { userId: userById?._id ?? userId } })
       .then(() => {
         message.success('Login blocks cleared', 2);
+      })
+      .catch((error: Error) => {
+        message.error(error.message, 5);
+      });
+  };
+
+  // For a lost phone: its PIN login stops working, and the user has to log in
+  // with the password again.
+  const handleRevokeTrustedDevices = () => {
+    revokeTrustedDevices({ variables: { userId: userById?._id ?? userId } })
+      .then(() => {
+        message.success('Trusted devices revoked', 2);
       })
       .catch((error: Error) => {
         message.error(error.message, 5);
@@ -309,6 +330,13 @@ const GeneralInfo = ({ userId, history }: Props) => {
   else if (!userById.twoFactorEnabled)
     resetTwoFactorReason = 'Two-factor authentication is not enabled for this user';
 
+  const trustedDeviceCount = trustedDevicesData?.userTrustedDevices?.length ?? 0;
+  let revokeTrustedDevicesReason: string | undefined;
+  if (userById.isServiceAccount)
+    revokeTrustedDevicesReason = 'A service account has no trusted devices';
+  else if (trustedDeviceCount === 0)
+    revokeTrustedDevicesReason = 'This user has no trusted devices';
+
   const statusItems: NonNullable<MenuProps['items']> = [
     commandItem(
       'reset-two-factor',
@@ -322,6 +350,20 @@ const GeneralInfo = ({ userId, history }: Props) => {
           onOk: handleResetTwoFactor,
         }),
       resettingTwoFactor
+    ),
+    commandItem(
+      'revoke-trusted-devices',
+      'Revoke Trusted Devices',
+      revokeTrustedDevicesReason,
+      () =>
+        modal.confirm({
+          title: "Revoke this user's trusted devices?",
+          content:
+            'PIN login stops working on all their devices. They will have to log in with their password.',
+          okText: 'Revoke',
+          onOk: handleRevokeTrustedDevices,
+        }),
+      revokingTrustedDevices
     ),
   ];
 
@@ -448,6 +490,21 @@ const GeneralInfo = ({ userId, history }: Props) => {
         >
           {isLoginBlocked ? loginBlockStatus : 'Not blocked'}
         </Form.Item>
+
+        {/* Devices signed in with a PIN (mobile quick login). */}
+        {userById.isServiceAccount ? null : (
+          <Form.Item
+            label="Trusted Devices"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14 }}
+          >
+            {trustedDeviceCount === 0
+              ? 'None'
+              : (trustedDevicesData?.userTrustedDevices ?? [])
+                  .map(device => device?.name || 'Device')
+                  .join(', ')}
+          </Form.Item>
+        )}
       </>
     ),
   };

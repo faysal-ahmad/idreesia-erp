@@ -399,7 +399,7 @@ export const AttendancePage = () => {
               style={ActionButtonStyle}
               onClick={reset}
             >
-              Not me. Go back.
+              Go back
               <span style={CountdownStyle}>({Math.max(secondsLeft, 0)})</span>
             </Button>
           </div>

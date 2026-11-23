@@ -26,6 +26,7 @@ dayjs.extend(weekday);
 import { setLoggedInUserId } from 'meteor/idreesia-common/action-creators';
 
 import {
+  AttendancePage,
   LoggedInRoute,
   LoginRegisterForm,
   ResetForgottenPasswordForm,
@@ -43,6 +44,7 @@ const App = ({ userId }: Props) => {
   if (userId) {
     return (
       <Switch>
+        <Route path="/attendance" component={AttendancePage} />
         <Route path="/" component={LoggedInRoute} />
       </Switch>
     );
@@ -50,6 +52,7 @@ const App = ({ userId }: Props) => {
 
   return (
     <Switch>
+      <Route path="/attendance" component={AttendancePage} />
       <Route path="/set-initial-password/:token" component={SetInitialPasswordForm} />
       <Route path="/reset-forgotten-password/:token" component={ResetForgottenPasswordForm} />
       <Route path="/" component={LoginRegisterForm} />

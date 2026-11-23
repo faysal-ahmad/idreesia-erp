@@ -43,7 +43,14 @@ export interface ImageVectorData {
 // Shared by the enrollment path below and by face search, which embeds a throwaway probe photo
 // that is deliberately never stored as an Attachment. Both therefore apply exactly the same
 // quality gate, so a photo that can't enrol also can't be searched with - and reports why.
-export function computeVectorFromImageBuffer(buffer: Buffer): ImageVectorData {
+//
+// By default a photo with more than one face is refused, so that enrolling or searching never
+// silently picks the wrong person. `useLargestFace` is for callers that expect bystanders in the
+// frame (the public attendance kiosk): the most prominent - largest - face is used instead.
+export function computeVectorFromImageBuffer(
+  buffer: Buffer,
+  { useLargestFace = false }: { useLargestFace?: boolean } = {}
+): ImageVectorData {
   const computedAt = new Date();
   let image: cv.Mat | undefined;
 
@@ -60,11 +67,15 @@ export function computeVectorFromImageBuffer(buffer: Buffer): ImageVectorData {
     if (faces.length === 0) {
       return { status: ImageVectorStatus.NO_FACE, computedAt, modelVersion: MODEL_VERSION };
     }
-    if (faces.length > 1) {
+    if (faces.length > 1 && !useLargestFace) {
       return { status: ImageVectorStatus.MULTIPLE_FACES, computedAt, modelVersion: MODEL_VERSION };
     }
 
-    const [face] = faces;
+    const face = faces.reduce((largest, candidate) =>
+      candidate.box.width * candidate.box.height > largest.box.width * largest.box.height
+        ? candidate
+        : largest
+    );
     const minDimension = Math.min(face.box.width, face.box.height);
     if (minDimension < HARD_REJECT_MIN_PX) {
       return { status: ImageVectorStatus.TOO_SMALL, computedAt, modelVersion: MODEL_VERSION };

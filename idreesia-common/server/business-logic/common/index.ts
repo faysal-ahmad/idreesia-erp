@@ -11,6 +11,11 @@ export {
   PEOPLE_IMAGE_VECTOR_SEARCH_INDEX,
 } from './search-people-by-face-vector';
 export type { FaceMatch } from './search-people-by-face-vector';
+export { findKarkunByFaceImage } from './find-karkun-by-face-image';
+export type {
+  FindKarkunByFaceImageResult,
+  KarkunFaceMatch,
+} from './find-karkun-by-face-image';
 export { backfillImageVectorData } from './backfill-image-vector-data';
 export { setPersonImage } from './set-person-image';
 export { getPersonImageUrls, removePersonImageFiles } from './person-images';

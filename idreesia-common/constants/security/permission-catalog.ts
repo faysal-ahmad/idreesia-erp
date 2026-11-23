@@ -24,7 +24,6 @@ const SecurityPermissionCatalog: SecurityPermissionGroup[] = [
     permissions: [
       { key: Permissions.SECURITY_VIEW_VISITORS, name: 'View Visitors', description: 'See visitors and visitor stays' },
       { key: Permissions.SECURITY_MANAGE_VISITORS, name: 'Manage Visitors', description: 'Register and manage visitors and their stays' },
-      { key: Permissions.SECURITY_VIEW_KARKUN_VERIFICATION, name: 'View Karkun Verification', description: 'Verify mehfil cards of karkuns' },
     ],
   },
   {

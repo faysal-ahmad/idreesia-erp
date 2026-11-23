@@ -4151,7 +4151,6 @@ export enum Permission {
   SecurityManageVisitors = 'SECURITY_MANAGE_VISITORS',
   SecuritySyncSecurityServerData = 'SECURITY_SYNC_SECURITY_SERVER_DATA',
   SecurityViewAuditLogs = 'SECURITY_VIEW_AUDIT_LOGS',
-  SecurityViewKarkunVerification = 'SECURITY_VIEW_KARKUN_VERIFICATION',
   SecurityViewMehfils = 'SECURITY_VIEW_MEHFILS',
   SecurityViewSecurityServerData = 'SECURITY_VIEW_SECURITY_SERVER_DATA',
   SecurityViewVisitors = 'SECURITY_VIEW_VISITORS'

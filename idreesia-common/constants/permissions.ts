@@ -42,7 +42,6 @@ const Permissions = {
   SECURITY_VIEW_AUDIT_LOGS: 'security-view-audit-logs',
   SECURITY_MANAGE_PERMISSIONS: 'security-manage-permissions',
 
-  SECURITY_VIEW_KARKUN_VERIFICATION: 'security-view-karkun-verification',
   SECURITY_VIEW_VISITORS: 'security-view-visitors',
   SECURITY_MANAGE_VISITORS: 'security-manage-visitors',
 

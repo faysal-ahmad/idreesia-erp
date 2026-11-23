@@ -158,6 +158,36 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.addSecurityGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addSecurityPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addSecurityPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.addSecurityServerProfileImage": [
     {
       "args": {
@@ -750,6 +780,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.createSecurityUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.createSecurityVisitor": [
     {
       "args": {
@@ -990,14 +1030,20 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.deleteSecurityVisitor": [
+  "Mutation.deleteSecurityUserGroup": [
     {
       "args": {
         "permissions": [
-          "SECURITY_DELETE_DATA",
+          "SECURITY_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deleteSecurityVisitor": [
+    {
+      "args": {},
+      "directive": "superAdminOnly",
     },
   ],
   "Mutation.deleteUserGroup": [
@@ -1498,6 +1544,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.removeSecurityGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.removeSecurityMehfilDuty": [
     {
       "args": {
@@ -1523,6 +1579,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1934,16 +2010,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_SECURITY_SERVER_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Mutation.setSecurityUserPermissions": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_USERS",
         ],
       },
       "directive": "checkPermissions",
@@ -2381,6 +2447,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateSecurityUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -4427,17 +4503,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.pagedSecurityUsers": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_VIEW_USERS",
-          "SECURITY_MANAGE_USERS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Query.pagedSecurityVisitors": [
     {
       "args": {
@@ -5000,6 +5065,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.securityPermissionAssignments": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityPermissionKarkunSearch": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.securityServerAlertById": [
     {
       "args": {
@@ -5045,6 +5130,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_VIEW_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityUserGroups": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",

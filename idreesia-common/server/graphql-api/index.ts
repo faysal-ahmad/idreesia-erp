@@ -72,6 +72,10 @@ import AdminSecurityLogResolvers from './admin/security-log/resolvers';
 /**
  * Schema and Resolvers for the Security module
  */
+import SecurityPermissionSchema from './security/permission/permission';
+import SecurityPermissionResolvers from './security/permission/resolvers';
+import SecurityUserGroupSchema from './security/user-group/user-group';
+import SecurityUserGroupResolvers from './security/user-group/resolvers';
 import SecurityAuditLogSchema from './security/audit-log/audit-log';
 import SecurityAuditLogResolvers from './security/audit-log/resolvers';
 
@@ -89,9 +93,6 @@ import SecurityMehfilLangarDishResolvers from './security/mehfil-langar-dish/res
 
 import SecurityMehfilLangarLocationSchema from './security/mehfil-langar-location/mehfil-langar-location';
 import SecurityMehfilLangarLocationResolvers from './security/mehfil-langar-location/resolvers';
-
-import SecurityUserSchema from './security/security-user/security-user';
-import SecurityUserResolvers from './security/security-user/resolvers';
 
 import SecurityVisitorSchema from './security/visitor/visitor';
 import SecurityVisitorResolvers from './security/visitor/resolvers';
@@ -299,7 +300,8 @@ const typeDefs = [
   SecurityMehfilKarkunSchema,
   SecurityMehfilLangarDishSchema,
   SecurityMehfilLangarLocationSchema,
-  SecurityUserSchema,
+  SecurityPermissionSchema,
+  SecurityUserGroupSchema,
   SecurityVisitorSchema,
   SecurityVisitorStaySchema,
   SecurityServerChannelSchema,
@@ -393,7 +395,8 @@ const resolvers = merge(
   SecurityMehfilKarkunResolvers,
   SecurityMehfilLangarDishResolvers,
   SecurityMehfilLangarLocationResolvers,
-  SecurityUserResolvers,
+  SecurityPermissionResolvers,
+  SecurityUserGroupResolvers,
   SecurityVisitorResolvers,
   SecurityVisitorStayResolvers,
   SecurityServerChannelResolvers,

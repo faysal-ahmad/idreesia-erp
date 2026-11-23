@@ -4488,6 +4488,99 @@ export type UpdateMehfilMutationVariables = Exact<{
 
 export type UpdateMehfilMutation = { updateMehfil: { _id: string | null, name: string | null, mehfilDate: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
+export type AddSecurityGroupMemberMutationVariables = Exact<{
+  groupId: string;
+  karkunId: string;
+}>;
+
+
+export type AddSecurityGroupMemberMutation = { addSecurityGroupMember: boolean | null };
+
+export type AddSecurityPermissionGroupMutationVariables = Exact<{
+  permissionKey: string;
+  groupId: string;
+}>;
+
+
+export type AddSecurityPermissionGroupMutation = { addSecurityPermissionGroup: boolean | null };
+
+export type AddSecurityPermissionUserMutationVariables = Exact<{
+  permissionKey: string;
+  karkunId: string;
+}>;
+
+
+export type AddSecurityPermissionUserMutation = { addSecurityPermissionUser: boolean | null };
+
+export type CreateSecurityUserGroupMutationVariables = Exact<{
+  name: string;
+  description?: string | null | undefined;
+}>;
+
+
+export type CreateSecurityUserGroupMutation = { createSecurityUserGroup: { _id: string, name: string, description: string | null } | null };
+
+export type DeleteSecurityUserGroupMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type DeleteSecurityUserGroupMutation = { deleteSecurityUserGroup: boolean | null };
+
+export type RemoveSecurityGroupMemberMutationVariables = Exact<{
+  groupId: string;
+  userId: string;
+}>;
+
+
+export type RemoveSecurityGroupMemberMutation = { removeSecurityGroupMember: boolean | null };
+
+export type RemoveSecurityPermissionGroupMutationVariables = Exact<{
+  permissionKey: string;
+  groupId: string;
+}>;
+
+
+export type RemoveSecurityPermissionGroupMutation = { removeSecurityPermissionGroup: boolean | null };
+
+export type RemoveSecurityPermissionUserMutationVariables = Exact<{
+  permissionKey: string;
+  userId: string;
+}>;
+
+
+export type RemoveSecurityPermissionUserMutation = { removeSecurityPermissionUser: boolean | null };
+
+export type SecurityPermissionAssignmentsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SecurityPermissionAssignmentsQuery = { securityPermissionAssignments: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> | null, groups: Array<{ groupId: string, name: string } | null> | null } | null> | null } | null> | null };
+
+export type SecurityPermissionKarkunSearchQueryVariables = Exact<{
+  name?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type SecurityPermissionKarkunSearchQuery = { securityPermissionKarkunSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
+
+export type SecurityUserGroupsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SecurityUserGroupsQuery = { securityUserGroups: Array<{ _id: string, name: string, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> | null } | null> | null };
+
+export type UpdateSecurityUserGroupMutationVariables = Exact<{
+  _id: string;
+  name: string;
+  description?: string | null | undefined;
+}>;
+
+
+export type UpdateSecurityUserGroupMutation = { updateSecurityUserGroup: { _id: string, name: string, description: string | null } | null };
+
 export type AddSecurityServerProfileImageMutationVariables = Exact<{
   profileId: string;
   imageData: string;
@@ -4648,28 +4741,6 @@ export type UpdateSecurityServerProfileMutationVariables = Exact<{
 
 
 export type UpdateSecurityServerProfileMutation = { updateSecurityServerProfile: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
-
-export type PagedSecurityUsersQueryVariables = Exact<{
-  filter?: Types.UserFilter | null | undefined;
-}>;
-
-
-export type PagedSecurityUsersQuery = { pagedSecurityUsers: { totalResults: number | null, data: Array<{ _id: string | null, username: string | null, locked: boolean | null, lastActiveAt: string | null, permissions: Array<string | null> | null, person: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null } | null } | null> | null } | null };
-
-export type SetSecurityUserPermissionsMutationVariables = Exact<{
-  userId: string;
-  permissions: Array<string | null | undefined> | string;
-}>;
-
-
-export type SetSecurityUserPermissionsMutation = { setSecurityUserPermissions: { _id: string | null, permissions: Array<string | null> | null } | null };
-
-export type SecurityUserByIdQueryVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type SecurityUserByIdQuery = { userById: { _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, instances: Array<string | null> | null, permissions: Array<string | null> | null, personId: string | null, person: { _id: string | null, sharedData: { name: string | null } | null } | null } | null };
 
 export type CreateSecurityMehfilDutyMutationVariables = Exact<{
   name: string;

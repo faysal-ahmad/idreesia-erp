@@ -945,6 +945,9 @@ export type Mutation = {
   addPurchasingGroupMember?: Maybe<Scalars['Boolean']['output']>;
   addPurchasingPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   addPurchasingPermissionUser?: Maybe<Scalars['Boolean']['output']>;
+  addSecurityGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  addSecurityPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
+  addSecurityPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   addSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
   addTeamCoordinator?: Maybe<TeamType>;
   addTeamMember?: Maybe<TeamType>;
@@ -999,6 +1002,7 @@ export type Mutation = {
   createSecurityMehfilLangarLocation?: Maybe<MehfilLangarLocationType>;
   createSecurityServerChannel?: Maybe<SecurityServerChannelType>;
   createSecurityServerProfile?: Maybe<SecurityServerProfileType>;
+  createSecurityUserGroup?: Maybe<SecurityUserGroup>;
   createSecurityVisitor?: Maybe<PersonType>;
   createServiceAccount?: Maybe<UserType>;
   createStockAdjustment?: Maybe<StockAdjustment>;
@@ -1022,6 +1026,7 @@ export type Mutation = {
   deleteSalaries?: Maybe<Scalars['Int']['output']>;
   deleteSecurityServerChannel?: Maybe<Scalars['Int']['output']>;
   deleteSecurityServerProfile?: Maybe<Scalars['Int']['output']>;
+  deleteSecurityUserGroup?: Maybe<Scalars['Boolean']['output']>;
   deleteSecurityVisitor?: Maybe<Scalars['Int']['output']>;
   deleteUserGroup?: Maybe<Scalars['Int']['output']>;
   disableCommitteeFeature: Scalars['Boolean']['output'];
@@ -1073,9 +1078,12 @@ export type Mutation = {
   removePurchasingPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   removePurchasingPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   removePurchasingVendor?: Maybe<Scalars['Boolean']['output']>;
+  removeSecurityGroupMember?: Maybe<Scalars['Boolean']['output']>;
   removeSecurityMehfilDuty?: Maybe<Scalars['Int']['output']>;
   removeSecurityMehfilLangarDish?: Maybe<Scalars['Int']['output']>;
   removeSecurityMehfilLangarLocation?: Maybe<Scalars['Int']['output']>;
+  removeSecurityPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
+  removeSecurityPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   removeSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
   removeStockAdjustments?: Maybe<Scalars['Int']['output']>;
   removeStockItem?: Maybe<Scalars['Int']['output']>;
@@ -1117,7 +1125,6 @@ export type Mutation = {
   setScheduledJobEnabled?: Maybe<Scalars['Boolean']['output']>;
   setSecurityServerAlertReview?: Maybe<SecurityServerAlertType>;
   setSecurityServerProfileDefaultImage?: Maybe<SecurityServerProfileType>;
-  setSecurityUserPermissions?: Maybe<UserType>;
   setSecurityVisitorImage?: Maybe<PersonType>;
   setStockItemImage?: Maybe<StockItem>;
   setSuperAdmin?: Maybe<UserType>;
@@ -1163,6 +1170,7 @@ export type Mutation = {
   updateSecurityMehfilLangarLocation?: Maybe<MehfilLangarLocationType>;
   updateSecurityServerChannel?: Maybe<SecurityServerChannelType>;
   updateSecurityServerProfile?: Maybe<SecurityServerProfileType>;
+  updateSecurityUserGroup?: Maybe<SecurityUserGroup>;
   updateSecurityVisitor?: Maybe<PersonType>;
   updateSecurityVisitorNotes?: Maybe<PersonType>;
   updateStockAdjustment?: Maybe<StockAdjustment>;
@@ -1353,6 +1361,24 @@ export type MutationAddPurchasingPermissionGroupArgs = {
 
 
 export type MutationAddPurchasingPermissionUserArgs = {
+  karkunId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
+export type MutationAddSecurityGroupMemberArgs = {
+  groupId: Scalars['String']['input'];
+  karkunId: Scalars['String']['input'];
+};
+
+
+export type MutationAddSecurityPermissionGroupArgs = {
+  groupId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
+export type MutationAddSecurityPermissionUserArgs = {
   karkunId: Scalars['String']['input'];
   permissionKey: Scalars['String']['input'];
 };
@@ -1749,6 +1775,12 @@ export type MutationCreateSecurityServerProfileArgs = {
 };
 
 
+export type MutationCreateSecurityUserGroupArgs = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationCreateSecurityVisitorArgs = {
   birthDate?: InputMaybe<Scalars['String']['input']>;
   city?: InputMaybe<Scalars['String']['input']>;
@@ -1909,6 +1941,11 @@ export type MutationDeleteSecurityServerChannelArgs = {
 
 
 export type MutationDeleteSecurityServerProfileArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteSecurityUserGroupArgs = {
   _id: Scalars['String']['input'];
 };
 
@@ -2213,6 +2250,12 @@ export type MutationRemovePurchasingVendorArgs = {
 };
 
 
+export type MutationRemoveSecurityGroupMemberArgs = {
+  groupId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+
 export type MutationRemoveSecurityMehfilDutyArgs = {
   _id: Scalars['String']['input'];
 };
@@ -2225,6 +2268,18 @@ export type MutationRemoveSecurityMehfilLangarDishArgs = {
 
 export type MutationRemoveSecurityMehfilLangarLocationArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveSecurityPermissionGroupArgs = {
+  groupId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveSecurityPermissionUserArgs = {
+  permissionKey: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -2480,12 +2535,6 @@ export type MutationSetSecurityServerAlertReviewArgs = {
 export type MutationSetSecurityServerProfileDefaultImageArgs = {
   imageId: Scalars['String']['input'];
   profileId: Scalars['String']['input'];
-};
-
-
-export type MutationSetSecurityUserPermissionsArgs = {
-  permissions: Array<InputMaybe<Scalars['String']['input']>>;
-  userId: Scalars['String']['input'];
 };
 
 
@@ -2847,6 +2896,13 @@ export type MutationUpdateSecurityServerChannelArgs = {
 export type MutationUpdateSecurityServerProfileArgs = {
   _id: Scalars['String']['input'];
   isTest: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateSecurityUserGroupArgs = {
+  _id: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
@@ -3899,6 +3955,12 @@ export type PagedSecurityLogType = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PagedSecurityPermissionKarkunType = {
+  __typename?: 'PagedSecurityPermissionKarkunType';
+  data?: Maybe<Array<Maybe<SecurityPermissionKarkunType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
 export type PagedSecurityServerAlertGroupType = {
   __typename?: 'PagedSecurityServerAlertGroupType';
   data?: Maybe<Array<Maybe<SecurityServerAlertGroupType>>>;
@@ -4082,18 +4144,16 @@ export enum Permission {
   PurchasingViewReports = 'PURCHASING_VIEW_REPORTS',
   PurchasingViewRequisitions = 'PURCHASING_VIEW_REQUISITIONS',
   PurchasingViewVendors = 'PURCHASING_VIEW_VENDORS',
-  SecurityDeleteData = 'SECURITY_DELETE_DATA',
   SecurityManageMehfils = 'SECURITY_MANAGE_MEHFILS',
+  SecurityManagePermissions = 'SECURITY_MANAGE_PERMISSIONS',
   SecurityManageSecurityServerData = 'SECURITY_MANAGE_SECURITY_SERVER_DATA',
   SecurityManageSetupData = 'SECURITY_MANAGE_SETUP_DATA',
-  SecurityManageUsers = 'SECURITY_MANAGE_USERS',
   SecurityManageVisitors = 'SECURITY_MANAGE_VISITORS',
   SecuritySyncSecurityServerData = 'SECURITY_SYNC_SECURITY_SERVER_DATA',
   SecurityViewAuditLogs = 'SECURITY_VIEW_AUDIT_LOGS',
   SecurityViewKarkunVerification = 'SECURITY_VIEW_KARKUN_VERIFICATION',
   SecurityViewMehfils = 'SECURITY_VIEW_MEHFILS',
   SecurityViewSecurityServerData = 'SECURITY_VIEW_SECURITY_SERVER_DATA',
-  SecurityViewUsers = 'SECURITY_VIEW_USERS',
   SecurityViewVisitors = 'SECURITY_VIEW_VISITORS'
 }
 
@@ -4824,7 +4884,6 @@ export type Query = {
   pagedSecurityServerAlertGroups?: Maybe<PagedSecurityServerAlertGroupType>;
   pagedSecurityServerAlerts?: Maybe<PagedSecurityServerAlertType>;
   pagedSecurityServerProfiles?: Maybe<PagedSecurityServerProfileType>;
-  pagedSecurityUsers?: Maybe<PagedUserType>;
   pagedSecurityVisitors?: Maybe<PagedVisitorType>;
   pagedStockAdjustments?: Maybe<PagedStockAdjustment>;
   pagedStockItems?: Maybe<PagedStockItem>;
@@ -4867,11 +4926,14 @@ export type Query = {
   securityMehfilDutyById?: Maybe<MehfilDutyType>;
   securityMehfilLangarDishById?: Maybe<MehfilLangarDishType>;
   securityMehfilLangarLocationById?: Maybe<MehfilLangarLocationType>;
+  securityPermissionAssignments?: Maybe<Array<Maybe<SecurityPermissionGroup>>>;
+  securityPermissionKarkunSearch?: Maybe<PagedSecurityPermissionKarkunType>;
   securityServerAlertById?: Maybe<SecurityServerAlertType>;
   securityServerAlertSyncStatus?: Maybe<SecurityServerAlertSyncStatusType>;
   securityServerChannelById?: Maybe<SecurityServerChannelType>;
   securityServerProfileById?: Maybe<SecurityServerProfileType>;
   securityServerUsageStats?: Maybe<SecurityServerUsageSummaryType>;
+  securityUserGroups?: Maybe<Array<Maybe<SecurityUserGroup>>>;
   securityVisitorByCnic?: Maybe<PersonType>;
   securityVisitorById?: Maybe<PersonType>;
   securityVisitorsByFaceVector?: Maybe<Array<Maybe<VisitorFaceMatchType>>>;
@@ -5367,11 +5429,6 @@ export type QueryPagedSecurityServerProfilesArgs = {
 };
 
 
-export type QueryPagedSecurityUsersArgs = {
-  filter?: InputMaybe<UserFilter>;
-};
-
-
 export type QueryPagedSecurityVisitorsArgs = {
   filter?: InputMaybe<VisitorFilter>;
 };
@@ -5551,6 +5608,15 @@ export type QuerySecurityMehfilLangarDishByIdArgs = {
 
 export type QuerySecurityMehfilLangarLocationByIdArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QuerySecurityPermissionKarkunSearchArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6108,6 +6174,14 @@ export type ScheduledJobsFilterType = {
   status?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type SecurityGroupMember = {
+  __typename?: 'SecurityGroupMember';
+  displayName?: Maybe<Scalars['String']['output']>;
+  personId?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['String']['output'];
+  username?: Maybe<Scalars['String']['output']>;
+};
+
 export type SecurityLogFilter = {
   dataSource?: InputMaybe<Scalars['String']['input']>;
   endTime?: InputMaybe<Scalars['String']['input']>;
@@ -6140,6 +6214,47 @@ export type SecurityLogUserOption = {
   __typename?: 'SecurityLogUserOption';
   _id: Scalars['String']['output'];
   name: Scalars['String']['output'];
+};
+
+export type SecurityPermissionAssignment = {
+  __typename?: 'SecurityPermissionAssignment';
+  description?: Maybe<Scalars['String']['output']>;
+  groups?: Maybe<Array<Maybe<SecurityPermissionGroupHolder>>>;
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  users?: Maybe<Array<Maybe<SecurityPermissionHolder>>>;
+};
+
+export type SecurityPermissionGroup = {
+  __typename?: 'SecurityPermissionGroup';
+  featureKey: Scalars['String']['output'];
+  featureName: Scalars['String']['output'];
+  permissions?: Maybe<Array<Maybe<SecurityPermissionAssignment>>>;
+};
+
+export type SecurityPermissionGroupHolder = {
+  __typename?: 'SecurityPermissionGroupHolder';
+  groupId: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type SecurityPermissionHolder = {
+  __typename?: 'SecurityPermissionHolder';
+  displayName?: Maybe<Scalars['String']['output']>;
+  personId?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['String']['output'];
+  username?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityPermissionKarkunType = {
+  __typename?: 'SecurityPermissionKarkunType';
+  _id?: Maybe<Scalars['String']['output']>;
+  cnicNumber?: Maybe<Scalars['String']['output']>;
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  parentName?: Maybe<Scalars['String']['output']>;
 };
 
 export type SecurityServerAlertFilter = {
@@ -6304,6 +6419,14 @@ export type SecurityServerUsageSummaryType = {
   lastBucketAt?: Maybe<Scalars['String']['output']>;
   minutes?: Maybe<Scalars['Int']['output']>;
   server?: Maybe<SecurityServerUsageServerType>;
+};
+
+export type SecurityUserGroup = {
+  __typename?: 'SecurityUserGroup';
+  _id: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  users?: Maybe<Array<Maybe<SecurityGroupMember>>>;
 };
 
 export type StockAdjustment = {

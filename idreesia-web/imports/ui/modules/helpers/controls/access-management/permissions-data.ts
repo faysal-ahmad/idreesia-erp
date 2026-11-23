@@ -308,16 +308,8 @@ export const SecurityPermissionsData: PermissionNode = {
       key: 'module-security-administration',
       children: [
         {
-          title: 'View Users',
-          key: PermissionConstants.SECURITY_VIEW_USERS,
-        },
-        {
-          title: 'Manage Users',
-          key: PermissionConstants.SECURITY_MANAGE_USERS,
-        },
-        {
-          title: 'Delete Data',
-          key: PermissionConstants.SECURITY_DELETE_DATA,
+          title: 'Manage Security Permissions',
+          key: PermissionConstants.SECURITY_MANAGE_PERMISSIONS,
         },
         {
           title: 'View Audit Logs',

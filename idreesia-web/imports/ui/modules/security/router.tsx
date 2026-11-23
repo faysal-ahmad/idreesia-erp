@@ -28,7 +28,7 @@ import {
   VisitorRegistrationList,
 } from './visitor-registeration';
 import { VisitorCardVerificationForm } from './visitor-stays';
-import { SecurityUsersList, SecurityUsersEditForm } from './security-users';
+import { PermissionsPage } from './permissions';
 import { AuditLogsList } from './audit-logs';
 import { VisitorStayReport } from './visitor-stay-report';
 import {
@@ -90,8 +90,7 @@ const Router = () => (
     <Route path={paths.securityServerAlertsPath} component={SecurityServerAlertsList} />
     <Route path={paths.securityServerUsagePath} component={SecurityServerUsage} />
 
-    <Route path={paths.securityUsersEditFormPath()} component={SecurityUsersEditForm} />
-    <Route path={paths.securityUsersPath} component={SecurityUsersList} />
+    <Route path={paths.permissionsPath} component={PermissionsPage} />
 
     <Route path={paths.auditLogsPath} component={AuditLogsList} />
 

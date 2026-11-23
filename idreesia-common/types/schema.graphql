@@ -106,11 +106,9 @@ enum Permission {
   IN_MANAGE_STOCK_ADJUSTMENTS
   IN_APPROVE_STOCK_ADJUSTMENTS
 
-  SECURITY_DELETE_DATA
   SECURITY_MANAGE_SETUP_DATA
   SECURITY_VIEW_AUDIT_LOGS
-  SECURITY_VIEW_USERS
-  SECURITY_MANAGE_USERS
+  SECURITY_MANAGE_PERMISSIONS
   SECURITY_VIEW_KARKUN_VERIFICATION
   SECURITY_VIEW_VISITORS
   SECURITY_MANAGE_VISITORS
@@ -3849,6 +3847,76 @@ extend type Mutation {
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 }
 
+type SecurityPermissionHolder {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type SecurityPermissionGroupHolder {
+  groupId: String!
+  name: String!
+}
+
+type SecurityPermissionAssignment {
+  key: String!
+  name: String!
+  description: String
+  users: [SecurityPermissionHolder]
+  groups: [SecurityPermissionGroupHolder]
+}
+
+type SecurityPermissionGroup {
+  featureKey: String!
+  featureName: String!
+  permissions: [SecurityPermissionAssignment]
+}
+
+type SecurityPermissionKarkunType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PagedSecurityPermissionKarkunType {
+  data: [SecurityPermissionKarkunType]
+  totalResults: Int
+}
+
+extend type Query {
+  securityPermissionAssignments: [SecurityPermissionGroup]
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  # Karkuns to choose from when giving a permission or adding to a group.
+  securityPermissionKarkunSearch(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedSecurityPermissionKarkunType
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+}
+
+extend type Mutation {
+  addSecurityPermissionUser(permissionKey: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  addSecurityPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  removeSecurityPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  removeSecurityPermissionUser(permissionKey: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+}
+
 type SecurityServerAlertType {
     _id: String
     externalId: String
@@ -4165,16 +4233,40 @@ type SecurityServerProfileImageType {
       @checkPermissions(permissions: [SECURITY_VIEW_SECURITY_SERVER_DATA])
   }
 
+type SecurityGroupMember {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type SecurityUserGroup {
+  _id: String!
+  name: String!
+  description: String
+  users: [SecurityGroupMember]
+}
+
 extend type Query {
-  pagedSecurityUsers(filter: UserFilter): PagedUserType
-    @checkPermissions(permissions: [SECURITY_VIEW_USERS, SECURITY_MANAGE_USERS])
+  securityUserGroups: [SecurityUserGroup]
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 }
 
 extend type Mutation {
-  setSecurityUserPermissions(
-    userId: String!
-    permissions: [String]!
-  ): UserType @checkPermissions(permissions: [SECURITY_MANAGE_USERS])
+  createSecurityUserGroup(name: String!, description: String): SecurityUserGroup
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  updateSecurityUserGroup(_id: String!, name: String!, description: String): SecurityUserGroup
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  deleteSecurityUserGroup(_id: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  addSecurityGroupMember(groupId: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  removeSecurityGroupMember(groupId: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 }
 
 type VisitorStayType {
@@ -4346,7 +4438,7 @@ extend type Mutation {
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   deleteSecurityVisitor(_id: String!): Int
-  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
+  @superAdminOnly
 
   setSecurityVisitorImage(_id: String!, imageData: String!): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])

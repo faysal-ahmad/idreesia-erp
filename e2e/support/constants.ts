@@ -56,8 +56,8 @@ export const SecurityPaths = {
   visitorCardVerification: `${ModulePaths.security}/visitor-card-verification`,
   visitorStayReport: `${ModulePaths.security}/visitor-stay-report`,
   visitorRegistrationList: `${ModulePaths.security}/visitor-registration/list`,
-  securityUsers: `${ModulePaths.security}/security-users`,
   auditLogs: `${ModulePaths.security}/audit-logs`,
+  permissions: `${ModulePaths.security}/permissions`,
 } as const;
 
 /**

@@ -63,6 +63,8 @@ export interface OrderValues {
 export interface ListOrdersOptions extends PageOptions {
   search?: string;
   status?: OrderStatusValue;
+  /** Any of these statuses (e.g. every state goods can be received in). */
+  statuses?: OrderStatusValue[];
   vendorId?: string;
   requisitionId?: string;
   fromDate?: Date;
@@ -373,6 +375,7 @@ export async function deleteOrder(_id: string, user: ActingUser) {
 export async function listOrders({
   search,
   status,
+  statuses,
   vendorId,
   requisitionId,
   fromDate,
@@ -383,6 +386,7 @@ export async function listOrders({
   const text = search?.trim();
   if (text) selector.number = new RegExp(escapeRegExp(text), 'i');
   if (status) selector.status = status;
+  else if (statuses?.length) selector.status = { $in: statuses };
   if (vendorId) selector.vendorId = vendorId;
   if (requisitionId) selector.requisitionId = requisitionId;
   if (fromDate || toDate) {

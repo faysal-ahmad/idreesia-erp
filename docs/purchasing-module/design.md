@@ -17,6 +17,7 @@ It is **independent of Stores**. It has its own vendors and item catalog, never 
 - [Attachments](#attachments)
 - [Reports and Excel export](#reports-and-excel-export)
 - [Web UI](#web-ui)
+- [Mobile app](#mobile-app)
 - [Migration and indexes](#migration-and-indexes)
 - [Testing](#testing)
 - [Where things live](#where-things-live)
@@ -183,6 +184,24 @@ Excel downloads go through `/generate-report` with generators `PurchasingSpendin
 - Document pages use URL-synced tabs (Details, Related Documents, Attachments, History) and action buttons that appear only when the status and the user's permissions allow.
 - Typed gql documents live in each feature's `gql/` folder; error handling goes through `run-action.ts` (Apollo `CombinedGraphQLErrors`).
 
+## Mobile app
+
+`idreesia-mobile/imports/ui/apps/purchasing/` (module on the Apps tab; follows `docs/ui-design-guidelines/mobile-ui-design-guidelines.md`). It reuses the existing GraphQL operations and permissions; each feature shows only to holders of the matching permission, and the server still enforces everything. It covers the workflows that suit a phone (decisions, capture at the point of delivery, lookup); data-heavy work stays on the web.
+
+| Feature | What it does | Permissions |
+|---|---|---|
+| Approvals | Approve or reject submitted requisitions; approve or return to draft pending orders (reason required) | `approve-requisitions`, `approve-orders` |
+| Receiving | Pick an open order, enter accepted and rejected quantities per line, delivery note, photos (attached to the receipt after it is posted), post | `manage-receipts` |
+| Requisitions | List, detail, create and edit drafts, submit, reopen, cancel | view / manage / approve requisitions |
+| Orders, Goods receipts, Invoices, Payments, Vendors, Catalog | Read-only lists and details; attachments on documents; catalog picture capture | the matching view / manage permission |
+| Dashboard | Counters and payables aging | `view-reports` |
+
+- Every document detail screen has an attachments section (camera or file picker, presigned upload as on the web, 10 MB limit).
+- The **Home tab** has a Purchasing section for users who can use any Purchasing feature: counts of requisitions and orders awaiting their approval, orders awaiting delivery, their own draft requisitions and overdue invoices. Each row counts only what the user's permissions allow, hides when zero, and opens the screen that deals with it (`use-purchasing-home.ts`).
+- Offline is read-only: lists and details come from the saved cache; actions are disabled.
+- `pagedPurchasingOrders` also takes `statuses` (any of several statuses) so Receiving and the Home count can ask for every receivable status at once.
+- Not on mobile: purchase order, quote, invoice and payment entry, voids, vendor and catalog management, reports and Excel, audit logs and history, permissions admin.
+
 ## Migration and indexes
 
 `idreesia-web/imports/startup/server/migrations/75-create-purchasing-indexes.ts`, registered in `migrations/index.ts`. Creates unique document numbers per collection, a case-insensitive unique catalog name, a unique `(type, year)` on counters, a unique vendor invoice number per vendor, and lookup indexes on `status`, `vendorId`, `orderId`, `requisitionId`, `dueDate`, `lines.catalogItemId` and `(ownerType, ownerId)`. It runs on the first start after deploy.
@@ -212,6 +231,6 @@ Excel downloads go through `/generate-report` with generators `PurchasingSpendin
 
 - An approved order's lines are locked. To change one, cancel it and make a new order.
 - One approval step. No amount thresholds or multi-level approval.
-- No stock updates and no link to Stores; no multi-currency; no vendor portal; no mobile screens; no notifications.
+- No stock updates and no link to Stores; no multi-currency; no vendor portal; no notifications (push or otherwise); the mobile app covers only the workflows listed under [Mobile app](#mobile-app).
 - Payments must be allocated to invoices; advance payments are not supported.
 - The catalog has no merge or de-duplicate tool.

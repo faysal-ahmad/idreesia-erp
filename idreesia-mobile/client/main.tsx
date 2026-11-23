@@ -23,6 +23,7 @@ import '../imports/ui/workspaces/location-picker.styles.css';
 import '../imports/ui/workspaces/duties-attendance/duties-attendance.styles.css';
 import '../imports/ui/workspaces/mehfil-details/mehfil-details.styles.css';
 import '../imports/ui/workspaces/mehfil-permissions/mehfil-permissions.styles.css';
+import '../imports/ui/apps/purchasing/purchasing.styles.css';
 import '../imports/ui/apps/security/stay-report/stay-report.styles.css';
 import '../imports/ui/apps/security/visitors/photo-search.styles.css';
 import '../imports/ui/apps/security/visitors/visitor-detail.styles.css';

@@ -2,6 +2,7 @@ import React from 'react';
 import { List, PullToRefresh, Tag } from 'antd-mobile';
 
 import { MyDataPaths } from '../apps/my-data/paths';
+import { usePurchasingHome } from '../apps/purchasing/use-purchasing-home';
 import { CollapsibleSection } from '../components/collapsible-section';
 import { PageError, PageLoading, Page } from '../layout';
 import { useHistory } from '../router';
@@ -49,15 +50,17 @@ const dutyAttendanceTag = (attendance?: string | null) => {
 export const HomeScreen = () => {
   const history = useHistory();
   const { loading, error, meetings, polls, actionItems, duties, refresh } = useHomeItems();
+  const purchasing = usePurchasingHome();
+  const refreshAll = () => Promise.all([refresh(), purchasing.refresh()]);
 
   let content;
   if (loading) {
     content = <PageLoading />;
   } else if (error) {
-    content = <PageError error={error} onRetry={refresh} />;
+    content = <PageError error={error} onRetry={refreshAll} />;
   } else {
     content = (
-      <PullToRefresh onRefresh={refresh}>
+      <PullToRefresh onRefresh={refreshAll}>
         <CollapsibleSection count={duties.length} title="Today's Duties">
           {duties.length === 0 ? (
             <List.Item className="workspaces-empty-item">No duties today</List.Item>
@@ -112,6 +115,32 @@ export const HomeScreen = () => {
             ))
           )}
         </CollapsibleSection>
+
+        {purchasing.enabled && (
+          <CollapsibleSection alert count={purchasing.items.length} title="Purchasing">
+            {purchasing.items.length === 0 ? (
+              <List.Item className="workspaces-empty-item">
+                {purchasing.loading ? 'Loading…' : 'Nothing needs your attention'}
+              </List.Item>
+            ) : (
+              purchasing.items.map(item => (
+                <List.Item
+                  key={item.key}
+                  arrowIcon
+                  className="home-item"
+                  extra={
+                    <Tag color="warning" fill="outline">
+                      {item.count}
+                    </Tag>
+                  }
+                  onClick={() => history.push(item.path)}
+                >
+                  <ItemTitle title={item.label} />
+                </List.Item>
+              ))
+            )}
+          </CollapsibleSection>
+        )}
 
         <CollapsibleSection count={polls.length} title="Active Polls">
           {polls.length === 0 ? (

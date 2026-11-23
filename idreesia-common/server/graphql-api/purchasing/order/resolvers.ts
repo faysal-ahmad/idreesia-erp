@@ -62,6 +62,7 @@ export default {
       }: {
         search?: string;
         status?: OrderStatusValue;
+        statuses?: OrderStatusValue[];
         vendorId?: string;
         requisitionId?: string;
         fromDate?: string;

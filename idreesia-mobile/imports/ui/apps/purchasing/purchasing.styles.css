@@ -1,0 +1,346 @@
+/* Purchasing module screens (imports/ui/apps/purchasing). Loaded from client/main.tsx. */
+
+.purchasing-danger-text {
+  color: var(--app-color-danger);
+}
+
+/* Two pinned footer buttons side by side (reject / approve, edit / submit) */
+.purchasing-footer-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.purchasing-row-tags {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+/* Active filter chips under the search bar */
+.purchasing-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.purchasing-filter-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+}
+
+.purchasing-filter-popup .purchasing-section-title {
+  margin: 0;
+}
+
+/* Catalog picker sheet */
+.purchasing-picker-popup {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  padding-top: 12px;
+}
+
+.purchasing-picker-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Summary card at the top of a document */
+.purchasing-summary {
+  margin: 0 12px 10px;
+  padding: 14px 16px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.purchasing-summary-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 22px;
+}
+
+.purchasing-summary-eyebrow {
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+}
+
+.purchasing-summary-title {
+  margin: 4px 0 0;
+  font-size: 1.1765rem; /* 20px */
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.purchasing-summary-amount {
+  margin-top: 6px;
+  color: var(--app-color-primary);
+  font-size: 1.0588rem; /* 18px */
+  font-weight: 600;
+}
+
+/* Label / value rows */
+.purchasing-fields {
+  margin: 0 12px 10px;
+  padding: 2px 14px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.purchasing-field {
+  display: grid;
+  grid-template-columns: 8em 1fr;
+  gap: 10px;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--app-color-border);
+  font-size: 0.8824rem; /* 15px */
+  line-height: 1.4;
+}
+
+.purchasing-field:last-child {
+  border-bottom: 0;
+}
+
+.purchasing-field dt {
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+}
+
+.purchasing-field dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.purchasing-field-strong dt,
+.purchasing-field-strong dd {
+  color: var(--app-color-text);
+  font-weight: 600;
+}
+
+/* Sections of a document: items, attachments */
+.purchasing-section {
+  margin-bottom: 10px;
+}
+
+.purchasing-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 12px;
+}
+
+.purchasing-section-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.purchasing-section-title {
+  margin: 0 24px 6px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.8235rem; /* 14px */
+  font-weight: 500;
+}
+
+.purchasing-section-header .purchasing-section-title {
+  margin-left: 12px;
+}
+
+.purchasing-empty-note {
+  margin: 0 12px;
+  padding: 12px 14px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  color: var(--app-color-text-secondary);
+  font-size: 0.8824rem; /* 15px */
+}
+
+.purchasing-lines {
+  margin: 0 12px;
+  padding: 2px 14px;
+  list-style: none;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.purchasing-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--app-color-border);
+}
+
+.purchasing-line:last-child {
+  border-bottom: 0;
+}
+
+.purchasing-line-main {
+  min-width: 0;
+}
+
+.purchasing-line-title {
+  font-size: 0.8824rem; /* 15px */
+  overflow-wrap: anywhere;
+}
+
+.purchasing-line-detail {
+  margin-top: 2px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+}
+
+.purchasing-line-amount {
+  flex: none;
+  font-size: 0.8824rem; /* 15px */
+  font-variant-numeric: tabular-nums;
+}
+
+.purchasing-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 12px 8px;
+  padding: 12px 14px;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+}
+
+.purchasing-upload-name {
+  overflow: hidden;
+  color: var(--app-color-text-secondary);
+  font-size: 0.8824rem; /* 15px */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Requisition form: item headers */
+.purchasing-array-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Receiving */
+.purchasing-receive-hint {
+  margin-top: 2px;
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+  font-weight: 400;
+}
+
+.purchasing-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.purchasing-photo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  overflow: hidden;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface-muted);
+}
+
+.purchasing-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.purchasing-photo-add {
+  flex-direction: column;
+  gap: 4px;
+  padding: 0;
+  border: 1px dashed var(--app-color-border);
+  color: var(--app-color-primary);
+  font-size: 0.7647rem; /* 13px */
+}
+
+.purchasing-photo-add .antd-mobile-icon {
+  font-size: 24px;
+}
+
+.purchasing-photo-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  padding: 3px;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 55%);
+  color: #fff; /* on a dark scrim over a photo */
+  font-size: 14px;
+}
+
+/* Catalog item picture */
+.purchasing-item-photo {
+  display: block;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 10px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--app-radius-large);
+  background: var(--app-color-surface-muted);
+  box-shadow: var(--app-elevation);
+}
+
+.purchasing-item-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Dashboard */
+.purchasing-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0 12px 12px;
+}
+
+.purchasing-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border: 0;
+  border-radius: var(--app-radius-medium);
+  background: var(--app-color-surface);
+  color: var(--app-color-text);
+  text-align: left;
+}
+
+.purchasing-card:disabled {
+  opacity: 1;
+}
+
+.purchasing-card-value {
+  font-size: 1.2941rem; /* 22px */
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.purchasing-card-alert .purchasing-card-value {
+  color: var(--app-color-danger);
+}
+
+.purchasing-card-label {
+  color: var(--app-color-text-secondary);
+  font-size: 0.7647rem; /* 13px */
+}

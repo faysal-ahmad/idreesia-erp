@@ -63,6 +63,8 @@ extend type Query {
   pagedPurchasingOrders(
     search: String
     status: String
+    # Any of these statuses; ignored when status is given.
+    statuses: [String]
     vendorId: String
     requisitionId: String
     fromDate: String

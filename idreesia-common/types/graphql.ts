@@ -5106,6 +5106,7 @@ export type QueryPagedPurchasingOrdersArgs = {
   requisitionId?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
+  statuses?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   toDate?: InputMaybe<Scalars['String']['input']>;
   vendorId?: InputMaybe<Scalars['String']['input']>;
 };

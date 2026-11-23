@@ -579,6 +579,10 @@ describe('closing and cancelling orders', () => {
     expect((await getOrder(order._id)).status).toBe('received');
     expect((await closeOrder(order._id, user)).status).toBe('closed');
     expect((await listOrders({ status: 'closed' })).data.map((o) => o._id)).toContain(order._id);
+    const anyOf = async (statuses: Array<'closed' | 'sent'>) =>
+      (await listOrders({ statuses })).data.map((o) => o._id);
+    expect(await anyOf(['sent', 'closed'])).toContain(order._id);
+    expect(await anyOf(['sent'])).not.toContain(order._id);
   });
 });
 

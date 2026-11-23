@@ -344,6 +344,292 @@ export type SecurityDistinctStayAllowedByQueryVariables = Exact<{ [key: string]:
 
 export type SecurityDistinctStayAllowedByQuery = { distinctStayAllowedBy: Array<string | null> | null };
 
+export type MobilePurchasingAttachmentsQueryVariables = Exact<{
+  ownerType: string;
+  ownerId: string;
+}>;
+
+
+export type MobilePurchasingAttachmentsQuery = { purchasingAttachments: Array<{ _id: string | null, name: string | null, fileName: string | null, mimeType: string | null, size: number | null, createdAt: string | null } | null> | null };
+
+export type MobilePurchasingAttachmentDownloadQueryVariables = Exact<{
+  _id: string;
+  inline?: boolean | null | undefined;
+}>;
+
+
+export type MobilePurchasingAttachmentDownloadQuery = { purchasingAttachmentDownload: { url: string | null, fileName: string | null, mimeType: string | null } | null };
+
+export type MobilePurchasingCreateAttachmentUploadMutationVariables = Exact<{
+  ownerType: string;
+  ownerId: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  name?: string | null | undefined;
+}>;
+
+
+export type MobilePurchasingCreateAttachmentUploadMutation = { createPurchasingAttachmentUpload: { uploadId: string | null, url: string | null, contentType: string | null } | null };
+
+export type MobilePurchasingCompleteAttachmentUploadMutationVariables = Exact<{
+  uploadId: string;
+}>;
+
+
+export type MobilePurchasingCompleteAttachmentUploadMutation = { completePurchasingAttachmentUpload: { _id: string | null } | null };
+
+export type MobilePurchasingAbortAttachmentUploadMutationVariables = Exact<{
+  uploadId: string;
+}>;
+
+
+export type MobilePurchasingAbortAttachmentUploadMutation = { abortPurchasingAttachmentUpload: boolean | null };
+
+export type MobilePurchasingDeleteAttachmentMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingDeleteAttachmentMutation = { deletePurchasingAttachment: boolean | null };
+
+export type MobilePurchasingDashboardQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobilePurchasingDashboardQuery = { purchasingDashboard: { requisitionsAwaitingApproval: number | null, ordersAwaitingApproval: number | null, openOrders: number | null, overdueInvoices: number | null, totalPayable: number | null, overdueAmount: number | null } | null };
+
+export type MobilePurchasingPayablesAgingQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobilePurchasingPayablesAgingQuery = { purchasingPayablesAging: Array<{ vendorId: string | null, current: number | null, days1To30: number | null, days31To60: number | null, days61Plus: number | null, total: number | null, vendor: { _id: string | null, name: string | null } | null } | null> | null };
+
+export type MobilePurchasingPagedInvoicesQueryVariables = Exact<{
+  search?: string | null | undefined;
+  status?: string | null | undefined;
+  overdue?: boolean | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobilePurchasingPagedInvoicesQuery = { pagedPurchasingInvoices: { totalResults: number | null, data: Array<{ _id: string | null, number: string | null, vendorInvoiceNo: string | null, status: string | null, isDisputed: boolean | null, invoiceDate: string | null, dueDate: string | null, total: number | null, balance: number | null, vendor: { _id: string | null, name: string | null } | null } | null> | null } | null };
+
+export type MobilePurchasingInvoiceByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingInvoiceByIdQuery = { purchasingInvoiceById: { _id: string | null, number: string | null, vendorInvoiceNo: string | null, status: string | null, isDisputed: boolean | null, invoiceDate: string | null, dueDate: string | null, notes: string | null, subtotal: number | null, taxTotal: number | null, total: number | null, paidAmount: number | null, balance: number | null, vendor: { _id: string | null, name: string | null } | null, order: { _id: string | null, number: string | null } | null, lines: Array<{ _id: string | null, description: string | null, unit: string | null, quantity: number | null, unitPrice: number | null, taxRate: number | null } | null> | null } | null };
+
+export type MobilePurchasingPagedOrdersQueryVariables = Exact<{
+  search?: string | null | undefined;
+  status?: string | null | undefined;
+  statuses?: Array<string | null | undefined> | string | null | undefined;
+  vendorId?: string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobilePurchasingPagedOrdersQuery = { pagedPurchasingOrders: { totalResults: number | null, data: Array<{ _id: string | null, number: string | null, status: string | null, orderDate: string | null, expectedDeliveryDate: string | null, total: number | null, vendor: { _id: string | null, name: string | null } | null } | null> | null } | null };
+
+export type MobilePurchasingOrderByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingOrderByIdQuery = { purchasingOrderById: { _id: string | null, number: string | null, status: string | null, version: number | null, orderDate: string | null, expectedDeliveryDate: string | null, deliveryAddress: string | null, paymentTermsDays: number | null, notes: string | null, rejectionReason: string | null, subtotal: number | null, taxTotal: number | null, discount: number | null, shipping: number | null, total: number | null, vendor: { _id: string | null, name: string | null, phone: string | null } | null, lines: Array<{ _id: string | null, description: string | null, unit: string | null, quantity: number | null, unitPrice: number | null, taxRate: number | null, receivedQuantity: number | null, invoicedQuantity: number | null } | null> | null } | null };
+
+export type MobilePurchasingApproveOrderMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingApproveOrderMutation = { approvePurchasingOrder: { _id: string | null, status: string | null } | null };
+
+export type MobilePurchasingReturnOrderToDraftMutationVariables = Exact<{
+  _id: string;
+  reason: string;
+}>;
+
+
+export type MobilePurchasingReturnOrderToDraftMutation = { rejectPurchasingOrder: { _id: string | null, status: string | null } | null };
+
+export type MobilePurchasingPagedPaymentsQueryVariables = Exact<{
+  search?: string | null | undefined;
+  status?: string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobilePurchasingPagedPaymentsQuery = { pagedPurchasingPayments: { totalResults: number | null, data: Array<{ _id: string | null, number: string | null, status: string | null, paymentDate: string | null, method: string | null, amount: number | null, vendor: { _id: string | null, name: string | null } | null } | null> | null } | null };
+
+export type MobilePurchasingPaymentByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingPaymentByIdQuery = { purchasingPaymentById: { _id: string | null, number: string | null, status: string | null, paymentDate: string | null, method: string | null, reference: string | null, notes: string | null, amount: number | null, voidReason: string | null, vendor: { _id: string | null, name: string | null } | null, allocations: Array<{ invoiceId: string | null, amount: number | null, invoice: { _id: string | null, number: string | null, vendorInvoiceNo: string | null } | null } | null> | null } | null };
+
+export type MobilePurchasingPagedReceiptsQueryVariables = Exact<{
+  search?: string | null | undefined;
+  status?: string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobilePurchasingPagedReceiptsQuery = { pagedPurchasingReceipts: { totalResults: number | null, data: Array<{ _id: string | null, number: string | null, status: string | null, receivedDate: string | null, deliveryNoteNo: string | null, vendor: { _id: string | null, name: string | null } | null, order: { _id: string | null, number: string | null } | null } | null> | null } | null };
+
+export type MobilePurchasingReceiptByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingReceiptByIdQuery = { purchasingReceiptById: { _id: string | null, number: string | null, status: string | null, receivedDate: string | null, deliveryNoteNo: string | null, notes: string | null, voidReason: string | null, vendor: { _id: string | null, name: string | null } | null, order: { _id: string | null, number: string | null } | null, receivedByPerson: { _id: string | null, sharedData: { name: string | null } | null } | null, lines: Array<{ _id: string | null, description: string | null, unit: string | null, receivedQuantity: number | null, rejectedQuantity: number | null, remarks: string | null } | null> | null } | null };
+
+export type MobilePurchasingPostReceiptMutationVariables = Exact<{
+  orderId: string;
+  receivedDate: string;
+  receivedBy?: string | null | undefined;
+  deliveryNoteNo?: string | null | undefined;
+  notes?: string | null | undefined;
+  lines: Array<Types.PurchasingReceiptLineInput> | Types.PurchasingReceiptLineInput;
+}>;
+
+
+export type MobilePurchasingPostReceiptMutation = { postPurchasingReceipt: { _id: string | null, number: string | null } | null };
+
+export type MobilePurchasingRequisitionFieldsFragment = { _id: string | null, number: string | null, title: string | null, purpose: string | null, neededBy: string | null, estimatedTotal: number | null, status: string | null, version: number | null, rejectionReason: string | null, requestedBy: string | null, requestedByPerson: { _id: string | null, sharedData: { name: string | null } | null } | null, lines: Array<{ _id: string | null, catalogItemId: string | null, description: string | null, unit: string | null, quantity: number | null, estimatedUnitPrice: number | null } | null> | null };
+
+export type MobilePurchasingPagedRequisitionsQueryVariables = Exact<{
+  search?: string | null | undefined;
+  status?: string | null | undefined;
+  requestedBy?: string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobilePurchasingPagedRequisitionsQuery = { pagedPurchasingRequisitions: { totalResults: number | null, data: Array<{ _id: string | null, number: string | null, title: string | null, status: string | null, neededBy: string | null, estimatedTotal: number | null, requestedByPerson: { _id: string | null, sharedData: { name: string | null } | null } | null } | null> | null } | null };
+
+export type MobilePurchasingRequisitionByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingRequisitionByIdQuery = { purchasingRequisitionById: { _id: string | null, number: string | null, title: string | null, purpose: string | null, neededBy: string | null, estimatedTotal: number | null, status: string | null, version: number | null, rejectionReason: string | null, requestedBy: string | null, requestedByPerson: { _id: string | null, sharedData: { name: string | null } | null } | null, lines: Array<{ _id: string | null, catalogItemId: string | null, description: string | null, unit: string | null, quantity: number | null, estimatedUnitPrice: number | null } | null> | null } | null };
+
+export type MobilePurchasingCreateRequisitionMutationVariables = Exact<{
+  title: string;
+  purpose?: string | null | undefined;
+  requestedBy?: string | null | undefined;
+  neededBy?: string | null | undefined;
+  lines: Array<Types.PurchasingRequisitionLineInput> | Types.PurchasingRequisitionLineInput;
+}>;
+
+
+export type MobilePurchasingCreateRequisitionMutation = { createPurchasingRequisition: { _id: string | null } | null };
+
+export type MobilePurchasingUpdateRequisitionMutationVariables = Exact<{
+  _id: string;
+  version: number;
+  title: string;
+  purpose?: string | null | undefined;
+  requestedBy?: string | null | undefined;
+  neededBy?: string | null | undefined;
+  lines: Array<Types.PurchasingRequisitionLineInput> | Types.PurchasingRequisitionLineInput;
+}>;
+
+
+export type MobilePurchasingUpdateRequisitionMutation = { updatePurchasingRequisition: { _id: string | null } | null };
+
+export type MobilePurchasingSubmitRequisitionMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingSubmitRequisitionMutation = { submitPurchasingRequisition: { _id: string | null, status: string | null } | null };
+
+export type MobilePurchasingReopenRequisitionMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingReopenRequisitionMutation = { reopenPurchasingRequisition: { _id: string | null, status: string | null } | null };
+
+export type MobilePurchasingCancelRequisitionMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingCancelRequisitionMutation = { cancelPurchasingRequisition: { _id: string | null, status: string | null } | null };
+
+export type MobilePurchasingApprovePurchasingRequisitionMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingApprovePurchasingRequisitionMutation = { approvePurchasingRequisition: { _id: string | null, status: string | null } | null };
+
+export type MobilePurchasingRejectRequisitionMutationVariables = Exact<{
+  _id: string;
+  reason: string;
+}>;
+
+
+export type MobilePurchasingRejectRequisitionMutation = { rejectPurchasingRequisition: { _id: string | null, status: string | null } | null };
+
+export type MobilePurchasingPagedVendorsQueryVariables = Exact<{
+  search?: string | null | undefined;
+  isActive?: boolean | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobilePurchasingPagedVendorsQuery = { pagedPurchasingVendors: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, contactPerson: string | null, phone: string | null, isActive: boolean | null } | null> | null } | null };
+
+export type MobilePurchasingVendorByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingVendorByIdQuery = { purchasingVendorById: { _id: string | null, name: string | null, contactPerson: string | null, phone: string | null, email: string | null, address: string | null, paymentTermsDays: number | null, notes: string | null, isActive: boolean | null } | null };
+
+export type MobilePurchasingPagedCatalogItemsQueryVariables = Exact<{
+  search?: string | null | undefined;
+  isActive?: boolean | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type MobilePurchasingPagedCatalogItemsQuery = { pagedPurchasingCatalogItems: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, unit: string | null, category: string | null, company: string | null, imageUrl: string | null, isActive: boolean | null } | null> | null } | null };
+
+export type MobilePurchasingCatalogItemByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingCatalogItemByIdQuery = { purchasingCatalogItemById: { _id: string | null, name: string | null, unit: string | null, category: string | null, company: string | null, description: string | null, imageUrl: string | null, defaultUnitPrice: number | null, lastUnitPrice: number | null, isActive: boolean | null } | null };
+
+export type MobilePurchasingSetCatalogItemImageMutationVariables = Exact<{
+  _id: string;
+  imageData: string;
+}>;
+
+
+export type MobilePurchasingSetCatalogItemImageMutation = { setPurchasingCatalogItemImage: { _id: string | null, imageUrl: string | null } | null };
+
+export type MobilePurchasingRemoveCatalogItemImageMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type MobilePurchasingRemoveCatalogItemImageMutation = { removePurchasingCatalogItemImage: { _id: string | null, imageUrl: string | null } | null };
+
 export type MobilePagedVisitorStaysQueryVariables = Exact<{
   queryString: string;
 }>;

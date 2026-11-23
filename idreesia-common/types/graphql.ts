@@ -530,6 +530,63 @@ export type FreeFormValueType = {
   name?: Maybe<Scalars['String']['output']>;
 };
 
+export type HrGroupMember = {
+  __typename?: 'HrGroupMember';
+  displayName?: Maybe<Scalars['String']['output']>;
+  personId?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['String']['output'];
+  username?: Maybe<Scalars['String']['output']>;
+};
+
+export type HrPermissionAssignment = {
+  __typename?: 'HrPermissionAssignment';
+  description?: Maybe<Scalars['String']['output']>;
+  groups?: Maybe<Array<Maybe<HrPermissionGroupHolder>>>;
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  users?: Maybe<Array<Maybe<HrPermissionHolder>>>;
+};
+
+export type HrPermissionGroup = {
+  __typename?: 'HrPermissionGroup';
+  featureKey: Scalars['String']['output'];
+  featureName: Scalars['String']['output'];
+  permissions?: Maybe<Array<Maybe<HrPermissionAssignment>>>;
+};
+
+export type HrPermissionGroupHolder = {
+  __typename?: 'HrPermissionGroupHolder';
+  groupId: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type HrPermissionHolder = {
+  __typename?: 'HrPermissionHolder';
+  displayName?: Maybe<Scalars['String']['output']>;
+  personId?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['String']['output'];
+  username?: Maybe<Scalars['String']['output']>;
+};
+
+export type HrPermissionKarkunType = {
+  __typename?: 'HrPermissionKarkunType';
+  _id?: Maybe<Scalars['String']['output']>;
+  cnicNumber?: Maybe<Scalars['String']['output']>;
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  parentName?: Maybe<Scalars['String']['output']>;
+};
+
+export type HrUserGroup = {
+  __typename?: 'HrUserGroup';
+  _id: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  users?: Maybe<Array<Maybe<HrGroupMember>>>;
+};
+
 export type InboxAttachmentType = {
   __typename?: 'InboxAttachmentType';
   kind?: Maybe<Scalars['String']['output']>;
@@ -876,7 +933,10 @@ export type Mutation = {
   __typename?: 'Mutation';
   abortPurchasingAttachmentUpload?: Maybe<Scalars['Boolean']['output']>;
   addCommitteeMember?: Maybe<CommitteeType>;
+  addHrGroupMember?: Maybe<Scalars['Boolean']['output']>;
   addHrKarkunAttachment?: Maybe<PersonType>;
+  addHrPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
+  addHrPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   addIssuanceFormAttachment?: Maybe<IssuanceForm>;
   addMehfilKarkun?: Maybe<MehfilKarkunType>;
   addOrgLocationFeatureUser?: Maybe<Scalars['Boolean']['output']>;
@@ -909,6 +969,7 @@ export type Mutation = {
   createDutyLocation?: Maybe<DutyLocationType>;
   createDutyShift?: Maybe<DutyShiftType>;
   createHrKarkun?: Maybe<PersonType>;
+  createHrUserGroup?: Maybe<HrUserGroup>;
   createIssuanceForm?: Maybe<IssuanceForm>;
   createItemCategory?: Maybe<ItemCategory>;
   createJob?: Maybe<JobType>;
@@ -950,6 +1011,7 @@ export type Mutation = {
   deleteAllSalaries?: Maybe<Scalars['Int']['output']>;
   deleteDuplicatePeople?: Maybe<Scalars['Int']['output']>;
   deleteHrKarkun?: Maybe<Scalars['Int']['output']>;
+  deleteHrUserGroup?: Maybe<Scalars['Boolean']['output']>;
   deleteMehfilDuty?: Maybe<Scalars['Boolean']['output']>;
   deletePeopleTag?: Maybe<Scalars['Int']['output']>;
   deletePurchasingAttachment?: Maybe<Scalars['Boolean']['output']>;
@@ -990,7 +1052,10 @@ export type Mutation = {
   removeDuty?: Maybe<Scalars['Int']['output']>;
   removeDutyLocation?: Maybe<Scalars['Int']['output']>;
   removeDutyShift?: Maybe<Scalars['Int']['output']>;
+  removeHrGroupMember?: Maybe<Scalars['Boolean']['output']>;
   removeHrKarkunAttachment?: Maybe<PersonType>;
+  removeHrPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
+  removeHrPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   removeIssuanceFormAttachment?: Maybe<IssuanceForm>;
   removeIssuanceForms?: Maybe<Scalars['Int']['output']>;
   removeItemCategory?: Maybe<Scalars['Int']['output']>;
@@ -1071,6 +1136,7 @@ export type Mutation = {
   updateDutyLocation?: Maybe<DutyLocationType>;
   updateDutyShift?: Maybe<DutyShiftType>;
   updateHrKarkun?: Maybe<PersonType>;
+  updateHrUserGroup?: Maybe<HrUserGroup>;
   updateIssuanceForm?: Maybe<IssuanceForm>;
   updateItemCategory?: Maybe<ItemCategory>;
   updateJob?: Maybe<JobType>;
@@ -1215,9 +1281,27 @@ export type MutationAddCommitteeMemberArgs = {
 };
 
 
+export type MutationAddHrGroupMemberArgs = {
+  groupId: Scalars['String']['input'];
+  karkunId: Scalars['String']['input'];
+};
+
+
 export type MutationAddHrKarkunAttachmentArgs = {
   _id: Scalars['String']['input'];
   attachmentId: Scalars['String']['input'];
+};
+
+
+export type MutationAddHrPermissionGroupArgs = {
+  groupId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
+export type MutationAddHrPermissionUserArgs = {
+  karkunId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
 };
 
 
@@ -1435,6 +1519,12 @@ export type MutationCreateHrKarkunArgs = {
   parentName?: InputMaybe<Scalars['String']['input']>;
   permanentAddress?: InputMaybe<Scalars['String']['input']>;
   referenceName?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationCreateHrUserGroupArgs = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
 };
 
 
@@ -1767,6 +1857,11 @@ export type MutationDeleteHrKarkunArgs = {
 };
 
 
+export type MutationDeleteHrUserGroupArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteMehfilDutyArgs = {
   _id: Scalars['String']['input'];
 };
@@ -1994,9 +2089,27 @@ export type MutationRemoveDutyShiftArgs = {
 };
 
 
+export type MutationRemoveHrGroupMemberArgs = {
+  groupId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+
 export type MutationRemoveHrKarkunAttachmentArgs = {
   _id: Scalars['String']['input'];
   attachmentId: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveHrPermissionGroupArgs = {
+  groupId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveHrPermissionUserArgs = {
+  permissionKey: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -2502,6 +2615,13 @@ export type MutationUpdateHrKarkunArgs = {
   parentName?: InputMaybe<Scalars['String']['input']>;
   permanentAddress?: InputMaybe<Scalars['String']['input']>;
   referenceName?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationUpdateHrUserGroupArgs = {
+  _id: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
 };
 
 
@@ -3647,6 +3767,12 @@ export type PagedFreeFormValue = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PagedHrPermissionKarkunType = {
+  __typename?: 'PagedHrPermissionKarkunType';
+  data?: Maybe<Array<Maybe<HrPermissionKarkunType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
 export type PagedInboxConversationType = {
   __typename?: 'PagedInboxConversationType';
   data?: Maybe<Array<Maybe<InboxConversationType>>>;
@@ -3919,11 +4045,11 @@ export enum Permission {
   AdminViewUsersAndGroups = 'ADMIN_VIEW_USERS_AND_GROUPS',
   CorrespondenceInboxReplyToMessages = 'CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES',
   CorrespondenceInboxViewMessages = 'CORRESPONDENCE_INBOX_VIEW_MESSAGES',
-  HrDeleteData = 'HR_DELETE_DATA',
   HrManageEmployees = 'HR_MANAGE_EMPLOYEES',
   HrManageEmployeesSetupData = 'HR_MANAGE_EMPLOYEES_SETUP_DATA',
   HrManageKarkuns = 'HR_MANAGE_KARKUNS',
   HrManageKarkunsSetupData = 'HR_MANAGE_KARKUNS_SETUP_DATA',
+  HrManagePermissions = 'HR_MANAGE_PERMISSIONS',
   HrViewAuditLogs = 'HR_VIEW_AUDIT_LOGS',
   HrViewEmployees = 'HR_VIEW_EMPLOYEES',
   HrViewKarkuns = 'HR_VIEW_KARKUNS',
@@ -4637,6 +4763,9 @@ export type Query = {
   hrCommitteeOptions?: Maybe<Array<Maybe<CommitteeType>>>;
   hrKarkunById?: Maybe<PersonType>;
   hrKarkunsById?: Maybe<Array<Maybe<PersonType>>>;
+  hrPermissionAssignments?: Maybe<Array<Maybe<HrPermissionGroup>>>;
+  hrPermissionKarkunSearch?: Maybe<PagedHrPermissionKarkunType>;
+  hrUserGroups?: Maybe<Array<Maybe<HrUserGroup>>>;
   inboxConversation?: Maybe<InboxConversationDetailType>;
   isJobProcessorActive?: Maybe<Scalars['Boolean']['output']>;
   issuanceFormById?: Maybe<IssuanceForm>;
@@ -4911,6 +5040,15 @@ export type QueryHrKarkunByIdArgs = {
 
 export type QueryHrKarkunsByIdArgs = {
   _ids: Scalars['String']['input'];
+};
+
+
+export type QueryHrPermissionKarkunSearchArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 

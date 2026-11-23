@@ -34,23 +34,23 @@ type PagedSalaryType {
 extend type Query {
   pagedSalariesByKarkun(queryString: String): PagedSalaryType
     @checkPermissions(
-      permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_DELETE_DATA]
+      permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES]
       dataFieldName: "salaries"
     )
   salariesByMonth(
     month: String!
     jobId: String
   ): [SalaryType]
-    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
   salariesByIds(ids: String!): [SalaryType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
 }
 
 extend type Mutation {
   createSalaries(
     month: String!
   ): Int
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
   updateSalary(
     _id: String!
@@ -62,11 +62,11 @@ extend type Mutation {
     arrears: Int
     rashanMadad: Int
   ): SalaryType
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
   deleteSalaries(month: String!, ids: [String]!): Int
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @superAdminOnly
   deleteAllSalaries(month: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @superAdminOnly
 }
 `;

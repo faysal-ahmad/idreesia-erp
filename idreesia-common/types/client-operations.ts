@@ -3397,6 +3397,99 @@ export type RemoveDutyMutationVariables = Exact<{
 
 export type RemoveDutyMutation = { removeDuty: number | null };
 
+export type AddHrGroupMemberMutationVariables = Exact<{
+  groupId: string;
+  karkunId: string;
+}>;
+
+
+export type AddHrGroupMemberMutation = { addHrGroupMember: boolean | null };
+
+export type AddHrPermissionGroupMutationVariables = Exact<{
+  permissionKey: string;
+  groupId: string;
+}>;
+
+
+export type AddHrPermissionGroupMutation = { addHrPermissionGroup: boolean | null };
+
+export type AddHrPermissionUserMutationVariables = Exact<{
+  permissionKey: string;
+  karkunId: string;
+}>;
+
+
+export type AddHrPermissionUserMutation = { addHrPermissionUser: boolean | null };
+
+export type CreateHrUserGroupMutationVariables = Exact<{
+  name: string;
+  description?: string | null | undefined;
+}>;
+
+
+export type CreateHrUserGroupMutation = { createHrUserGroup: { _id: string, name: string, description: string | null } | null };
+
+export type DeleteHrUserGroupMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type DeleteHrUserGroupMutation = { deleteHrUserGroup: boolean | null };
+
+export type HrPermissionAssignmentsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HrPermissionAssignmentsQuery = { hrPermissionAssignments: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> | null, groups: Array<{ groupId: string, name: string } | null> | null } | null> | null } | null> | null };
+
+export type HrPermissionKarkunSearchQueryVariables = Exact<{
+  name?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type HrPermissionKarkunSearchQuery = { hrPermissionKarkunSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
+
+export type HrUserGroupsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HrUserGroupsQuery = { hrUserGroups: Array<{ _id: string, name: string, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> | null } | null> | null };
+
+export type RemoveHrGroupMemberMutationVariables = Exact<{
+  groupId: string;
+  userId: string;
+}>;
+
+
+export type RemoveHrGroupMemberMutation = { removeHrGroupMember: boolean | null };
+
+export type RemoveHrPermissionGroupMutationVariables = Exact<{
+  permissionKey: string;
+  groupId: string;
+}>;
+
+
+export type RemoveHrPermissionGroupMutation = { removeHrPermissionGroup: boolean | null };
+
+export type RemoveHrPermissionUserMutationVariables = Exact<{
+  permissionKey: string;
+  userId: string;
+}>;
+
+
+export type RemoveHrPermissionUserMutation = { removeHrPermissionUser: boolean | null };
+
+export type UpdateHrUserGroupMutationVariables = Exact<{
+  _id: string;
+  name: string;
+  description?: string | null | undefined;
+}>;
+
+
+export type UpdateHrUserGroupMutation = { updateHrUserGroup: { _id: string, name: string, description: string | null } | null };
+
 export type CreateSalariesMutationVariables = Exact<{
   month: string;
 }>;

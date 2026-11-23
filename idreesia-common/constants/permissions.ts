@@ -25,8 +25,8 @@ const Permissions = {
   // HR Module
   // ****************************************************************************************
   HR_MANAGE_KARKUNS_SETUP_DATA: 'hr-manage-karkuns-setup-data',
-  HR_DELETE_DATA: 'hr-delete-data',
   HR_VIEW_AUDIT_LOGS: 'hr-view-audit-logs',
+  HR_MANAGE_PERMISSIONS: 'hr-manage-permissions',
 
   HR_VIEW_KARKUNS: 'hr-view-karkuns',
   HR_MANAGE_KARKUNS: 'hr-manage-karkuns',

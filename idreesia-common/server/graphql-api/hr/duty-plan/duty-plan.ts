@@ -101,9 +101,9 @@ extend type Query {
     locationId: String
     shiftId: String
   ): [DutyAttendanceSheetRowType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
   karkunDutyAttendanceSheet(karkunId: String!): [DutyAttendanceSheetRowType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
   dutyAttendanceCards(
     month: String!
     dutyId: String!
@@ -111,7 +111,7 @@ extend type Query {
     shiftId: String
     karkunIds: [String!]!
   ): [DutyAttendanceCardType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
 }
 
 extend type Mutation {

@@ -60,4 +60,5 @@ export default class SubModulePaths {
   // Audit Logs
   // ******************************************************************************
   static auditLogsPath = `${ModulePaths.hr}/audit-logs`;
+  static permissionsPath = `${ModulePaths.hr}/permissions`;
 }

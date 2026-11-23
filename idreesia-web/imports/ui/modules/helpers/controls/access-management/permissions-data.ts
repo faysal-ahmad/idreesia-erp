@@ -122,12 +122,12 @@ export const HrPermissionsData: PermissionNode = {
   key: 'module-hr',
   children: [
     {
-      title: 'Delete Data',
-      key: PermissionConstants.HR_DELETE_DATA,
-    },
-    {
       title: 'View Audit Logs',
       key: PermissionConstants.HR_VIEW_AUDIT_LOGS,
+    },
+    {
+      title: 'Manage HR Permissions',
+      key: PermissionConstants.HR_MANAGE_PERMISSIONS,
     },
     {
       title: 'Karkuns',

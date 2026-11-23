@@ -26,11 +26,41 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.addHrGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.addHrKarkunAttachment": [
     {
       "args": {
         "permissions": [
           "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addHrPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addHrPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -392,6 +422,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.createHrUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.createIssuanceForm": [
     {
       "args": {
@@ -655,7 +695,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "HR_MANAGE_EMPLOYEES",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -821,13 +860,8 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   ],
   "Mutation.deleteAllSalaries": [
     {
-      "args": {
-        "permissions": [
-          "HR_MANAGE_EMPLOYEES",
-          "HR_DELETE_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
+      "args": {},
+      "directive": "superAdminOnly",
     },
   ],
   "Mutation.deleteDuplicatePeople": [
@@ -842,9 +876,15 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   ],
   "Mutation.deleteHrKarkun": [
     {
+      "args": {},
+      "directive": "superAdminOnly",
+    },
+  ],
+  "Mutation.deleteHrUserGroup": [
+    {
       "args": {
         "permissions": [
-          "HR_DELETE_DATA",
+          "HR_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -926,13 +966,8 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   ],
   "Mutation.deleteSalaries": [
     {
-      "args": {
-        "permissions": [
-          "HR_MANAGE_EMPLOYEES",
-          "HR_DELETE_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
+      "args": {},
+      "directive": "superAdminOnly",
     },
   ],
   "Mutation.deleteSecurityServerChannel": [
@@ -1217,11 +1252,41 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.removeHrGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.removeHrKarkunAttachment": [
     {
       "args": {
         "permissions": [
           "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeHrPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeHrPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1644,6 +1709,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.revokeUserTrustedDevices": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.runScheduledJobNow": [
     {
       "args": {
@@ -2037,6 +2112,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.updateHrUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.updateIssuanceForm": [
     {
       "args": {
@@ -2246,7 +2331,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "HR_MANAGE_EMPLOYEES",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3428,7 +3512,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "HR_VIEW_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES_SETUP_DATA",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3641,7 +3724,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_KARKUNS",
           "HR_MANAGE_KARKUNS",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3653,7 +3735,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_KARKUNS",
           "HR_MANAGE_KARKUNS",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3712,6 +3793,36 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "HR_MANAGE_KARKUNS",
           "HR_VIEW_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrPermissionAssignments": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrPermissionKarkunSearch": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrUserGroups": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -3836,7 +3947,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "HR_VIEW_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES_SETUP_DATA",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3848,7 +3958,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_KARKUNS",
           "HR_MANAGE_KARKUNS",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -4243,7 +4352,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -4823,7 +4931,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_KARKUNS",
           "HR_MANAGE_KARKUNS",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -4835,7 +4942,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -5089,6 +5195,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Query.userGroupById": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.userTrustedDevices": [
     {
       "args": {
         "permissions": [

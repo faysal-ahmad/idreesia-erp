@@ -67,7 +67,7 @@ extend type Mutation {
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
   deleteHrKarkun(_id: String!): Int
-  @checkPermissions(permissions: [HR_DELETE_DATA])
+  @superAdminOnly
 
   setHrKarkunEmploymentInfo(
     _id: String!

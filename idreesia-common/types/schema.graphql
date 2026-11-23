@@ -86,8 +86,8 @@ enum Permission {
   ADMIN_MANAGE_ORG_LOCATIONS
 
   HR_MANAGE_KARKUNS_SETUP_DATA
-  HR_DELETE_DATA
   HR_VIEW_AUDIT_LOGS
+  HR_MANAGE_PERMISSIONS
   HR_VIEW_KARKUNS
   HR_MANAGE_KARKUNS
   HR_VIEW_EMPLOYEES
@@ -1348,9 +1348,9 @@ extend type Query {
     locationId: String
     shiftId: String
   ): [DutyAttendanceSheetRowType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
   karkunDutyAttendanceSheet(karkunId: String!): [DutyAttendanceSheetRowType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
   dutyAttendanceCards(
     month: String!
     dutyId: String!
@@ -1358,7 +1358,7 @@ extend type Query {
     shiftId: String
     karkunIds: [String!]!
   ): [DutyAttendanceCardType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
 }
 
 extend type Mutation {
@@ -1478,9 +1478,9 @@ type JobType {
 
 extend type Query {
   allJobs: [JobType]
-    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA])
   jobById(id: String!): JobType
-    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA])
 }
 
 extend type Mutation {
@@ -1558,7 +1558,7 @@ extend type Mutation {
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
   deleteHrKarkun(_id: String!): Int
-  @checkPermissions(permissions: [HR_DELETE_DATA])
+  @superAdminOnly
 
   setHrKarkunEmploymentInfo(
     _id: String!
@@ -1578,6 +1578,76 @@ extend type Mutation {
 
   removeHrKarkunAttachment(_id: String!, attachmentId: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+}
+
+type HrPermissionHolder {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type HrPermissionGroupHolder {
+  groupId: String!
+  name: String!
+}
+
+type HrPermissionAssignment {
+  key: String!
+  name: String!
+  description: String
+  users: [HrPermissionHolder]
+  groups: [HrPermissionGroupHolder]
+}
+
+type HrPermissionGroup {
+  featureKey: String!
+  featureName: String!
+  permissions: [HrPermissionAssignment]
+}
+
+type HrPermissionKarkunType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PagedHrPermissionKarkunType {
+  data: [HrPermissionKarkunType]
+  totalResults: Int
+}
+
+extend type Query {
+  hrPermissionAssignments: [HrPermissionGroup]
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  # Karkuns to choose from when giving a permission or adding to a group.
+  hrPermissionKarkunSearch(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedHrPermissionKarkunType
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+}
+
+extend type Mutation {
+  addHrPermissionUser(permissionKey: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  addHrPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  removeHrPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  removeHrPermissionUser(permissionKey: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 }
 
 type SalaryType {
@@ -1613,23 +1683,23 @@ type PagedSalaryType {
 extend type Query {
   pagedSalariesByKarkun(queryString: String): PagedSalaryType
     @checkPermissions(
-      permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_DELETE_DATA]
+      permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES]
       dataFieldName: "salaries"
     )
   salariesByMonth(
     month: String!
     jobId: String
   ): [SalaryType]
-    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
   salariesByIds(ids: String!): [SalaryType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
 }
 
 extend type Mutation {
   createSalaries(
     month: String!
   ): Int
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
   updateSalary(
     _id: String!
@@ -1641,12 +1711,12 @@ extend type Mutation {
     arrears: Int
     rashanMadad: Int
   ): SalaryType
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
   deleteSalaries(month: String!, ids: [String]!): Int
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @superAdminOnly
   deleteAllSalaries(month: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @superAdminOnly
 }
 
 type TeamMemberType {
@@ -1694,6 +1764,42 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeTeamCoordinator(teamId: String!, karkunId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
+}
+
+type HrGroupMember {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type HrUserGroup {
+  _id: String!
+  name: String!
+  description: String
+  users: [HrGroupMember]
+}
+
+extend type Query {
+  hrUserGroups: [HrUserGroup]
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+}
+
+extend type Mutation {
+  createHrUserGroup(name: String!, description: String): HrUserGroup
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  updateHrUserGroup(_id: String!, name: String!, description: String): HrUserGroup
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  deleteHrUserGroup(_id: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  addHrGroupMember(groupId: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  removeHrGroupMember(groupId: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 }
 
 type ItemWithQuantity {

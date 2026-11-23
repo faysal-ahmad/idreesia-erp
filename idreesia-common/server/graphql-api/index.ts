@@ -166,6 +166,11 @@ import CommitteeResolvers from './organization/committee/resolvers';
 import JobSchema from './hr/job/job';
 import JobResolvers from './hr/job/resolvers';
 
+import HrPermissionSchema from './hr/permission/permission';
+import HrPermissionResolvers from './hr/permission/resolvers';
+import HrUserGroupSchema from './hr/user-group/user-group';
+import HrUserGroupResolvers from './hr/user-group/resolvers';
+
 import HRKarkunSchema from './hr/karkun/karkun';
 import HRKarkunResolvers from './hr/karkun/resolvers';
 
@@ -313,6 +318,8 @@ const typeDefs = [
   CommitteeSchema,
   JobSchema,
   HRKarkunSchema,
+  HrPermissionSchema,
+  HrUserGroupSchema,
   SalarySchema,
 
   WorkspaceCommitteeSchema,
@@ -405,6 +412,8 @@ const resolvers = merge(
   CommitteeResolvers,
   JobResolvers,
   HRKarkunResolvers,
+  HrPermissionResolvers,
+  HrUserGroupResolvers,
   SalaryResolvers,
 
   WorkspaceCommitteeResolvers,

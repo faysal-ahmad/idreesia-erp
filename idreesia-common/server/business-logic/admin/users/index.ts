@@ -35,6 +35,10 @@ export {
 } from './two-factor';
 export { isTwoFactorEnabled } from './two-factor-status';
 export {
+  resolveEffectiveAccess,
+  type EffectiveAccess,
+} from './effective-access';
+export {
   assertCanManageUser,
   isSuperAdmin,
   setSuperAdmin,

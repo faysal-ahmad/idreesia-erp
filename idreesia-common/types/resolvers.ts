@@ -314,6 +314,7 @@ export type ResolversTypes = ResolversObject<{
   URL: ResolverTypeWrapper<Types.Scalars['URL']['output']>;
   UserAccountAvailabilityType: ResolverTypeWrapper<Types.UserAccountAvailabilityType>;
   UserFilter: Types.UserFilter;
+  UserGroupMemberType: ResolverTypeWrapper<Types.UserGroupMemberType>;
   UserGroupType: ResolverTypeWrapper<Types.UserGroupType>;
   UserType: ResolverTypeWrapper<Types.UserType>;
   UtcOffset: ResolverTypeWrapper<Types.Scalars['UtcOffset']['output']>;
@@ -616,6 +617,7 @@ export type ResolversParentTypes = ResolversObject<{
   URL: Types.Scalars['URL']['output'];
   UserAccountAvailabilityType: Types.UserAccountAvailabilityType;
   UserFilter: Types.UserFilter;
+  UserGroupMemberType: Types.UserGroupMemberType;
   UserGroupType: Types.UserGroupType;
   UserType: Types.UserType;
   UtcOffset: Types.Scalars['UtcOffset']['output'];
@@ -1569,6 +1571,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removePurchaseFormAttachment?: Resolver<Types.Maybe<ResolversTypes['PurchaseForm']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchaseFormAttachmentArgs, '_id' | 'attachmentId' | 'physicalStoreId'>>;
   removePurchaseForms?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchaseFormsArgs, '_ids' | 'physicalStoreId'>>;
   removePurchasingCatalogItem?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingCatalogItemArgs, '_id'>>;
+  removePurchasingCatalogItemImage?: Resolver<Types.Maybe<ResolversTypes['PurchasingCatalogItem']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingCatalogItemImageArgs, '_id'>>;
   removePurchasingGroupMember?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingGroupMemberArgs, 'groupId' | 'userId'>>;
   removePurchasingPermissionGroup?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingPermissionGroupArgs, 'groupId' | 'permissionKey'>>;
   removePurchasingPermissionUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingPermissionUserArgs, 'permissionKey' | 'userId'>>;
@@ -1609,6 +1612,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   setOrgLocationUserLocked?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationSetOrgLocationUserLockedArgs, 'locationId' | 'locked' | 'userId'>>;
   setPermissions?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationSetPermissionsArgs, 'permissions' | 'userId'>>;
   setPurchasingCatalogItemActive?: Resolver<Types.Maybe<ResolversTypes['PurchasingCatalogItem']>, ParentType, ContextType, RequireFields<Types.MutationSetPurchasingCatalogItemActiveArgs, '_id' | 'isActive'>>;
+  setPurchasingCatalogItemImage?: Resolver<Types.Maybe<ResolversTypes['PurchasingCatalogItem']>, ParentType, ContextType, RequireFields<Types.MutationSetPurchasingCatalogItemImageArgs, '_id' | 'imageData'>>;
   setPurchasingInvoiceDisputed?: Resolver<Types.Maybe<ResolversTypes['PurchasingInvoice']>, ParentType, ContextType, RequireFields<Types.MutationSetPurchasingInvoiceDisputedArgs, '_id' | 'isDisputed'>>;
   setPurchasingVendorActive?: Resolver<Types.Maybe<ResolversTypes['PurchasingVendor']>, ParentType, ContextType, RequireFields<Types.MutationSetPurchasingVendorActiveArgs, '_id' | 'isActive'>>;
   setScheduledJobEnabled?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationSetScheduledJobEnabledArgs, '_id' | 'enabled'>>;
@@ -2288,10 +2292,12 @@ export type PurchasingAttachmentUploadResolvers<ContextType = any, ParentType ex
 export type PurchasingCatalogItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchasingCatalogItem'] = ResolversParentTypes['PurchasingCatalogItem']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   category?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  company?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   defaultUnitPrice?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  imageUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isActive?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   lastUnitPrice?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   lastVendorId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3171,6 +3177,14 @@ export type UserAccountAvailabilityTypeResolvers<ContextType = any, ParentType e
   userNameMessage?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
+export type UserGroupMemberTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserGroupMemberType'] = ResolversParentTypes['UserGroupMemberType']> = ResolversObject<{
+  displayName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  karkun?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType>;
+  personId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  username?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
 export type UserGroupTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserGroupType'] = ResolversParentTypes['UserGroupType']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3178,6 +3192,7 @@ export type UserGroupTypeResolvers<ContextType = any, ParentType extends Resolve
   moduleName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   permissions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  users?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['UserGroupMemberType']>>>, ParentType, ContextType>;
 }>;
 
 export type UserTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserType'] = ResolversParentTypes['UserType']> = ResolversObject<{
@@ -3963,6 +3978,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   TwoFactorSetupType?: TwoFactorSetupTypeResolvers<ContextType>;
   URL?: GraphQLScalarType;
   UserAccountAvailabilityType?: UserAccountAvailabilityTypeResolvers<ContextType>;
+  UserGroupMemberType?: UserGroupMemberTypeResolvers<ContextType>;
   UserGroupType?: UserGroupTypeResolvers<ContextType>;
   UserType?: UserTypeResolvers<ContextType>;
   UtcOffset?: GraphQLScalarType;

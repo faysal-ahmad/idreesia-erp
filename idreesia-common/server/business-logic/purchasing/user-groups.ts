@@ -17,8 +17,7 @@ import { userNameResolver } from './user-names';
 /**
  * Purchasing's own user groups: the shared `user-groups` collection, limited
  * to groups whose module is Purchasing. Membership is the group's id in the
- * user's `groups`. Note that nothing in the app grants access through a group
- * today; these groups only organise users.
+ * user's `groups`. A group's permissions are effective for its members.
  */
 const MODULE = ModuleNames.purchasing;
 

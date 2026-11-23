@@ -73,4 +73,19 @@ describe('getUser', () => {
     returning(userWithToken('t', new Date(), { locked: false }));
     expect(await getUser('t')).toBeDefined();
   });
+
+  it('adds the access granted by the user\'s groups', async () => {
+    const { UserGroups } = await import('meteor/idreesia-common/server/collections/admin');
+    const groupId = await UserGroups.insertAsync({
+      name: 'g',
+      permissions: ['b'],
+      instances: ['i2'],
+    } as never);
+    returning(
+      userWithToken('t', new Date(), { permissions: ['a'], instances: ['i1'], groups: [groupId] })
+    );
+    const user = await getUser('t');
+    expect(user?.permissions?.sort()).toEqual(['a', 'b']);
+    expect(user?.instances?.sort()).toEqual(['i1', 'i2']);
+  });
 });

@@ -58,7 +58,7 @@ All collections extend `AggregatableCollection` with SimpleSchema and the `ident
 | Collection | Notes |
 |---|---|
 | `purchasing-vendors` | name, contact, phone, email, address, tax id, payment terms (days), bank details, notes, `isActive`. |
-| `purchasing-catalog-items` | name (unique, case-insensitive), unit, category, default price, last price and last vendor (set when an order is approved), `isActive`. |
+| `purchasing-catalog-items` | name (unique, case-insensitive), unit, category, optional company (brand or maker), optional picture (`imageKey`), default price, last price and last vendor (set when an order is approved), `isActive`. |
 | `purchasing-requisitions` | number, title, purpose, requester, needed-by date, lines, estimated total, status, submit/approve/reject audit fields, `version`. |
 | `purchasing-quotes` | vendor, optional requisition, quote and valid-until dates, lines, total, status. |
 | `purchasing-orders` | number, vendor, optional requisition and quote, dates, delivery address, payment terms, lines (with `receivedQuantity` and `invoicedQuantity`), subtotal, tax, discount, shipping, total, status, approval fields, `version`. |
@@ -124,13 +124,13 @@ The page (`permissions/`) has two tabs, URL-synced with `?tab=`: **Permissions**
 
 **Permissions tab** (`business-logic/purchasing/permissions.ts`, `graphql-api/purchasing/permission/`). The list shown is `PurchasingPermissionCatalog` in `constants/purchasing.ts` (keep it in step with `PurchasingPermissionsData` in the Admin picker when adding permissions).
 - `purchasingPermissionAssignments` lists each permission with the users who hold it directly (`users.permissions`). Locked accounts and super admins (who hold everything implicitly) are left out.
-- Each permission also lists the Purchasing user groups that hold it (`UserGroups.permissions`). `addPurchasingPermissionGroup` / `removePurchasingPermissionGroup(permissionKey, groupId)` `$addToSet` / `$pull` it on the group (Purchasing groups only) and write a `PERMISSIONS_CHANGED` security log with `groupId`. This is data only: see "Groups do not grant access" below.
+- Each permission also lists the Purchasing user groups that hold it (`UserGroups.permissions`). `addPurchasingPermissionGroup` / `removePurchasingPermissionGroup(permissionKey, groupId)` `$addToSet` / `$pull` it on the group (Purchasing groups only) and write a `PERMISSIONS_CHANGED` security log with `groupId`. A group's permissions are effective for its members: see "Groups grant access" below.
 - `purchasingKarkunSearch` feeds the Add User drawer, which is the same karkun picker the Mehfil Permissions page uses (`KarkunSelectionList`). It lists karkuns whose `cityLocationId` is the city location named `PURCHASING_KARKUN_CITY` (`Multan`, matched by name, ignoring case; `constants/purchasing.ts`) and who have a user account. Nobody is listed if that city location does not exist.
 - `addPurchasingPermissionUser(permissionKey, karkunId)` resolves the karkun's user account (`users.personId`), refusing a karkun without one, a locked account and a super admin. `removePurchasingPermissionUser(permissionKey, userId)` takes it away. Both `$addToSet` / `$pull` the permission on the user and write a `PERMISSIONS_CHANGED` security log (data source `operations`), the same record the Admin permissions form writes. Only Purchasing permissions can be changed this way.
 
 **User Groups tab** (`business-logic/purchasing/user-groups.ts`, `graphql-api/purchasing/user-group/`). Purchasing's groups are rows of the shared `user-groups` collection with `moduleName = ModuleNames.purchasing`; membership is the group id in the user's `groups` array. Operations: `purchasingUserGroups`, `create/update/deletePurchasingUserGroup`, `addPurchasingGroupMember(groupId, karkunId)` and `removePurchasingGroupMember(groupId, userId)`. The Add User drawer is the same karkun picker (`purchasingKarkunSearch`). Names are unique across all groups, ignoring case; a group with members cannot be deleted; groups of other modules cannot be touched through these operations.
 
-**Groups do not grant access.** Permission checks (`hasOnePermission`, and the logged-in user's permission list) read only `users.permissions`. Neither a group's `permissions` nor `users.groups` is applied anywhere in the app, so Purchasing groups only organise users for now, even when a permission is assigned to a group on the Permissions tab. Making groups effective would change permission resolution for every module and was deliberately left out.
+**Groups grant access.** A user's effective permissions and instances are their own plus those of every user group they belong to (`users.groups`), resolved once when the user is loaded (`getUser`, and the `currentUser` query for the client), so `hasOnePermission` and every directive see them. The Permissions tab lists a user under a permission when they hold it directly or through any group that holds it. Assigning or removing a user's *direct* permission edits `users.permissions` only.
 
 All operations are gated by `PURCHASING_MANAGE_PERMISSIONS`. As elsewhere, there is no "who" rule: a holder can change their own permissions.
 
@@ -154,6 +154,10 @@ Quotes, orders, receipts, invoices, payments and requisitions can carry files: 1
 4. Downloads use presigned URLs valid for 5 minutes.
 
 Deleting a document deletes its files. Files live in object storage, never in Mongo.
+
+### Catalog item pictures
+
+A catalog item can have one picture, stored in object storage rather than Mongo (`StorageFolders.PurchasingCatalogItemImages`, key `purchasing-catalog-item-images/<itemId>/<random>.jpg`, public and immutable like the Stores stock item images). `setPurchasingCatalogItemImage(_id, imageData)` takes base64 image data, normalises it (EXIF rotation, 1280px cap, JPEG), stores it under a new key and deletes the file it replaces; `removePurchasingCatalogItemImage(_id)` clears it; deleting an item deletes its file (all after commit, so a rollback keeps the file). The item type's `imageUrl` field resolves the public URL. Both mutations need `purchasing-manage-catalog` and write an audit entry. The UI is `catalog/picture.tsx` (upload, camera, remove), shown on the item's edit page.
 
 ## Reports and Excel export
 

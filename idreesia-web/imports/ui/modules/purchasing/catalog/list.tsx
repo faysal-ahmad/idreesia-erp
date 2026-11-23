@@ -3,12 +3,14 @@ import { Link, type RouteComponentProps } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client/react';
 import {
   CheckCircleOutlined,
+  PictureOutlined,
   DeleteOutlined,
   PauseCircleOutlined,
   PlusCircleOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
 import {
+  Avatar,
   Button,
   Form,
   Input,
@@ -122,6 +124,7 @@ const List = ({ history, location }: RouteComponentProps) => {
             name: values.name,
             unit: values.unit,
             category: values.category,
+            company: values.company,
             defaultUnitPrice: values.defaultUnitPrice ?? undefined,
           },
         })
@@ -169,6 +172,19 @@ const List = ({ history, location }: RouteComponentProps) => {
 
   const columns: any[] = [
     {
+      title: '',
+      key: 'image',
+      width: 64,
+      render: (_text: unknown, record: ItemRow) => (
+        <Avatar
+          shape="square"
+          size={40}
+          src={record.imageUrl ?? undefined}
+          icon={<PictureOutlined />}
+        />
+      ),
+    },
+    {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
@@ -180,6 +196,7 @@ const List = ({ history, location }: RouteComponentProps) => {
       ),
     },
     { title: 'Unit', dataIndex: 'unit', key: 'unit', width: 120 },
+    { title: 'Company', dataIndex: 'company', key: 'company', width: 200 },
     { title: 'Category', dataIndex: 'category', key: 'category', width: 200 },
     {
       title: 'Default Price',

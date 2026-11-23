@@ -62,41 +62,58 @@ const holderOf = (user: {
 });
 
 /**
- * Every Purchasing permission with the users who hold it. Locked accounts are
- * left out. Super admins hold every permission implicitly and are not listed.
- * Purchasing user groups that hold a permission are listed too, but a group's
- * permissions are not applied anywhere, so they grant nothing yet.
+ * Every Purchasing permission with the users who hold it, directly or through a
+ * user group. Locked accounts are left out. Super admins hold every permission
+ * implicitly and are not listed. Purchasing user groups that hold a permission
+ * are listed too.
  */
 export async function listPermissionAssignments(): Promise<PermissionAssignmentGroup[]> {
-  const directUsers = await Users.find({
-    locked: { $ne: true },
-    isSuperAdmin: { $ne: true },
-    permissions: { $in: ALL_KEYS },
-  }).fetchAsync();
-
-  const nameOf = await userNameResolver(directUsers);
-  const purchasingGroups = await UserGroups.find(
-    { moduleName: ModuleNames.purchasing, permissions: { $in: ALL_KEYS } },
+  // Any group can grant a Purchasing permission, whatever its module.
+  const grantingGroups = await UserGroups.find(
+    { permissions: { $in: ALL_KEYS } },
     { sort: { name: 1 } }
   ).fetchAsync();
+  const groupIds = grantingGroups.map((g) => g._id as string);
+
+  const holders = await Users.find({
+    locked: { $ne: true },
+    isSuperAdmin: { $ne: true },
+    $or: [{ permissions: { $in: ALL_KEYS } }, { groups: { $in: groupIds } }],
+  }).fetchAsync();
+
+  const nameOf = await userNameResolver(holders);
+  const purchasingGroups = grantingGroups.filter(
+    (g) => g.moduleName === ModuleNames.purchasing
+  );
   const byName = (a: PermissionHolder, b: PermissionHolder) =>
     (a.displayName || a.username || '').localeCompare(b.displayName || b.username || '');
 
   return PurchasingPermissionCatalog.map((group: PurchasingPermissionGroup) => ({
     featureKey: group.featureKey,
     featureName: group.featureName,
-    permissions: group.permissions.map((permission) => ({
-      key: permission.key,
-      name: permission.name,
-      description: permission.description,
-      users: directUsers
-        .filter((user) => (user.permissions ?? []).includes(permission.key))
-        .map((user) => holderOf(user, nameOf))
-        .sort(byName),
-      groups: purchasingGroups
-        .filter((g) => (g.permissions ?? []).includes(permission.key))
-        .map((g) => ({ groupId: g._id as string, name: g.name })),
-    })),
+    permissions: group.permissions.map((permission) => {
+      const grantedBy = new Set(
+        grantingGroups
+          .filter((g) => (g.permissions ?? []).includes(permission.key))
+          .map((g) => g._id as string)
+      );
+      return {
+        key: permission.key,
+        name: permission.name,
+        description: permission.description,
+        users: holders
+          .filter(
+            (user) =>
+              (user.permissions ?? []).includes(permission.key) ||
+              (user.groups ?? []).some((id) => grantedBy.has(id))
+          )
+          .map((user) => holderOf(user, nameOf))
+          .sort(byName),
+        groups: purchasingGroups
+          .filter((g) => (g.permissions ?? []).includes(permission.key))
+          .map((g) => ({ groupId: g._id as string, name: g.name })),
+      };
+    }),
   }));
 }
 

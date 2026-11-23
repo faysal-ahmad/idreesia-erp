@@ -71,6 +71,10 @@ To add a vendor, click the new button, fill in at least the name, and save. You 
 
 Each item has a name, a unit (such as kg or piece), an optional category and an optional default price. After a purchase order is approved, the catalog also remembers the **last price** and **last vendor** for that item.
 
+Each item can also have a **Company** (the brand or maker, optional) and a **picture**. The list shows a small picture beside each name, and you can search by company as well as by name and category.
+
+To add or change a picture, open the item and use the **Picture** section: **Upload Picture** to choose a file from your computer, **Take Picture** to use a camera, and **Remove Picture** to take it away. The picture is saved straight away; you don't need to click Save. Company is saved with the rest of the form.
+
 Names must be unique (capital letters don't matter). An item used on documents can be made inactive but not deleted. Changing a catalog item never changes documents already created.
 
 ## 6. Entering items on a document

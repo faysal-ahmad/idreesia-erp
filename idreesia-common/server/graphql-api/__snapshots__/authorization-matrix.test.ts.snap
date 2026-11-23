@@ -1383,6 +1383,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.removePurchasingCatalogItemImage": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_CATALOG",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.removePurchasingGroupMember": [
     {
       "args": {
@@ -1785,6 +1795,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Mutation.setPurchasingCatalogItemActive": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_CATALOG",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setPurchasingCatalogItemImage": [
     {
       "args": {
         "permissions": [

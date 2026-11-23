@@ -1,6 +1,15 @@
 import gql from 'graphql-tag';
 
 export default gql`
+type UserGroupMemberType {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+  # The karkun the user account belongs to, if any.
+  karkun: PersonType
+}
+
 type UserGroupType {
   _id: String
   name: String
@@ -8,6 +17,7 @@ type UserGroupType {
   description: String
   permissions: [String]
   instances: [String]
+  users: [UserGroupMemberType]
 }
 
 type PagedUserGroupType {

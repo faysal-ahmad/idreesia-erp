@@ -158,3 +158,9 @@ export type { PurchasingUserGroup, GroupMember } from './user-groups';
 
 export { searchPurchasingKarkuns } from './karkuns';
 export type { KarkunSearchParams } from './karkuns';
+
+export {
+  getCatalogItemImageUrl,
+  setCatalogItemImage,
+  removeCatalogItemImage,
+} from './catalog-item-images';

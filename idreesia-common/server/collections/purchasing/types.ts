@@ -38,6 +38,8 @@ export interface PurchasingCatalogItemDocument extends Timestamps {
   name: string;
   unit: string;
   category?: string;
+  company?: string;
+  imageKey?: string;
   description?: string;
   defaultUnitPrice?: number;
   lastUnitPrice?: number;

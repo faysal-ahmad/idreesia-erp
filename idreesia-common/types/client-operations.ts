@@ -190,6 +190,7 @@ export type SecurityServerProfileFilter = {
 
 export type UserFilter = {
   moduleAccess?: string | null | undefined;
+  name?: string | null | undefined;
   pageIndex?: string | null | undefined;
   pageSize?: string | null | undefined;
   serviceAccounts?: string | null | undefined;
@@ -2516,7 +2517,7 @@ export type PagedUserGroupsQueryVariables = Exact<{
 }>;
 
 
-export type PagedUserGroupsQuery = { pagedUserGroups: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, moduleName: string | null, description: string | null } | null> | null } | null };
+export type PagedUserGroupsQuery = { pagedUserGroups: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, moduleName: string | null, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null } | null> | null } | null };
 
 export type SetUserGroupInstanceAccessMutationVariables = Exact<{
   _id: string;
@@ -3226,6 +3227,7 @@ export type CreatePurchasingCatalogItemMutationVariables = Exact<{
   name: string;
   unit: string;
   category?: string | null | undefined;
+  company?: string | null | undefined;
   description?: string | null | undefined;
   defaultUnitPrice?: number | null | undefined;
 }>;
@@ -3241,14 +3243,21 @@ export type PagedPurchasingCatalogItemsQueryVariables = Exact<{
 }>;
 
 
-export type PagedPurchasingCatalogItemsQuery = { pagedPurchasingCatalogItems: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, unit: string | null, category: string | null, defaultUnitPrice: number | null, lastUnitPrice: number | null, isActive: boolean | null } | null> | null } | null };
+export type PagedPurchasingCatalogItemsQuery = { pagedPurchasingCatalogItems: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, unit: string | null, category: string | null, company: string | null, imageUrl: string | null, defaultUnitPrice: number | null, lastUnitPrice: number | null, isActive: boolean | null } | null> | null } | null };
 
 export type PurchasingCatalogItemByIdQueryVariables = Exact<{
   _id: string;
 }>;
 
 
-export type PurchasingCatalogItemByIdQuery = { purchasingCatalogItemById: { _id: string | null, name: string | null, unit: string | null, category: string | null, description: string | null, defaultUnitPrice: number | null, lastUnitPrice: number | null, isActive: boolean | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type PurchasingCatalogItemByIdQuery = { purchasingCatalogItemById: { _id: string | null, name: string | null, unit: string | null, category: string | null, company: string | null, imageUrl: string | null, description: string | null, defaultUnitPrice: number | null, lastUnitPrice: number | null, isActive: boolean | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+
+export type RemovePurchasingCatalogItemImageMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type RemovePurchasingCatalogItemImageMutation = { removePurchasingCatalogItemImage: { _id: string | null, imageUrl: string | null } | null };
 
 export type RemovePurchasingCatalogItemMutationVariables = Exact<{
   _id: string;
@@ -3265,17 +3274,26 @@ export type SetPurchasingCatalogItemActiveMutationVariables = Exact<{
 
 export type SetPurchasingCatalogItemActiveMutation = { setPurchasingCatalogItemActive: { _id: string | null, isActive: boolean | null } | null };
 
+export type SetPurchasingCatalogItemImageMutationVariables = Exact<{
+  _id: string;
+  imageData: string;
+}>;
+
+
+export type SetPurchasingCatalogItemImageMutation = { setPurchasingCatalogItemImage: { _id: string | null, imageUrl: string | null } | null };
+
 export type UpdatePurchasingCatalogItemMutationVariables = Exact<{
   _id: string;
   name: string;
   unit: string;
   category?: string | null | undefined;
+  company?: string | null | undefined;
   description?: string | null | undefined;
   defaultUnitPrice?: number | null | undefined;
 }>;
 
 
-export type UpdatePurchasingCatalogItemMutation = { updatePurchasingCatalogItem: { _id: string | null, name: string | null, unit: string | null, category: string | null, description: string | null, defaultUnitPrice: number | null, lastUnitPrice: number | null, isActive: boolean | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type UpdatePurchasingCatalogItemMutation = { updatePurchasingCatalogItem: { _id: string | null, name: string | null, unit: string | null, category: string | null, company: string | null, imageUrl: string | null, description: string | null, defaultUnitPrice: number | null, lastUnitPrice: number | null, isActive: boolean | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
 export type AbortPurchasingAttachmentUploadMutationVariables = Exact<{
   uploadId: string;

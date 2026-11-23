@@ -6,6 +6,8 @@ type PurchasingCatalogItem {
   name: String
   unit: String
   category: String
+  company: String
+  imageUrl: String
   description: String
   defaultUnitPrice: Float
   lastUnitPrice: Float
@@ -41,6 +43,7 @@ extend type Mutation {
     name: String!
     unit: String!
     category: String
+    company: String
     description: String
     defaultUnitPrice: Float
   ): PurchasingCatalogItem
@@ -52,9 +55,17 @@ extend type Mutation {
     name: String!
     unit: String!
     category: String
+    company: String
     description: String
     defaultUnitPrice: Float
   ): PurchasingCatalogItem
+    @checkPermissions(permissions: [PURCHASING_MANAGE_CATALOG])
+
+  # imageData is base64 (with or without a data: URL prefix).
+  setPurchasingCatalogItemImage(_id: String!, imageData: String!): PurchasingCatalogItem
+    @checkPermissions(permissions: [PURCHASING_MANAGE_CATALOG])
+
+  removePurchasingCatalogItemImage(_id: String!): PurchasingCatalogItem
     @checkPermissions(permissions: [PURCHASING_MANAGE_CATALOG])
 
   setPurchasingCatalogItemActive(

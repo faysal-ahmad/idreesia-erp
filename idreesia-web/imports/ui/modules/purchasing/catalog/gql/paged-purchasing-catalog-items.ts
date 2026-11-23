@@ -17,6 +17,8 @@ const PAGED_PURCHASING_CATALOG_ITEMS: TypedDocumentNode<
         name
         unit
         category
+        company
+        imageUrl
         defaultUnitPrice
         lastUnitPrice
         isActive

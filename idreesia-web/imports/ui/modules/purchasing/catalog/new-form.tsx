@@ -5,6 +5,7 @@ export interface NewCatalogItemFormValues {
   name: string;
   unit: string;
   category?: string;
+  company?: string;
   defaultUnitPrice?: number | null;
 }
 
@@ -43,6 +44,9 @@ const NewForm = ({ form }: NewFormProps) => (
       <Input />
     </Form.Item>
     <Form.Item name="category" label="Category" {...formItemLayout}>
+      <Input />
+    </Form.Item>
+    <Form.Item name="company" label="Company" {...formItemLayout}>
       <Input />
     </Form.Item>
     <Form.Item

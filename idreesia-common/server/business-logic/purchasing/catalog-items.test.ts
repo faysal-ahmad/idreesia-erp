@@ -58,6 +58,18 @@ describe('purchasing catalog items', () => {
     expect(updated.defaultUnitPrice).toBeUndefined();
   });
 
+  it('keeps an optional company, trims it, clears it and searches by it', async () => {
+    await PurchasingCatalogItems.removeAsync({});
+    const item = await createCatalogItem({ name: 'Tea', unit: 'kg', company: '  Lipton   Ltd ' }, user);
+    expect(item.company).toBe('Lipton Ltd');
+    await createCatalogItem({ name: 'Rice', unit: 'kg' }, user);
+
+    expect((await listCatalogItems({ search: 'lipton' })).data.map((i) => i.name)).toEqual(['Tea']);
+
+    const cleared = await updateCatalogItem(item._id, { name: 'Tea', unit: 'kg' }, user);
+    expect(cleared.company).toBeUndefined();
+  });
+
   it('deactivates, deletes and lists', async () => {
     await PurchasingCatalogItems.removeAsync({});
     const a = await createCatalogItem({ name: 'Axe', unit: 'pc', category: 'Tools' }, user);

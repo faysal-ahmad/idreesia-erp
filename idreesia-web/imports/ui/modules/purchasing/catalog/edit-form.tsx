@@ -14,6 +14,7 @@ import {
 import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
 import { default as paths } from '../submodule-paths';
+import Picture from './picture';
 import {
   PURCHASING_CATALOG_ITEM_BY_ID,
   UPDATE_PURCHASING_CATALOG_ITEM,
@@ -23,11 +24,12 @@ interface FormValues {
   name: string;
   unit: string;
   category?: string;
+  company?: string;
   description?: string;
   defaultUnitPrice?: number | null;
 }
 
-const SECTION_KEYS = ['general', 'pricing'];
+const SECTION_KEYS = ['general', 'picture', 'pricing'];
 
 const EditForm = ({
   match,
@@ -75,6 +77,7 @@ const EditForm = ({
         name: values.name,
         unit: values.unit,
         category: values.category,
+        company: values.company,
         description: values.description,
         defaultUnitPrice: values.defaultUnitPrice ?? undefined,
       },
@@ -114,6 +117,11 @@ const EditForm = ({
             fieldLabel="Category"
             initialValue={item.category}
           />
+          <InputTextField
+            fieldName="company"
+            fieldLabel="Company"
+            initialValue={item.company}
+          />
           <InputTextAreaField
             fieldName="description"
             fieldLabel="Description"
@@ -121,6 +129,11 @@ const EditForm = ({
           />
         </>
       ),
+    },
+    {
+      key: 'picture',
+      label: 'Picture',
+      children: <Picture itemId={item._id!} imageUrl={item.imageUrl} />,
     },
     {
       key: 'pricing',

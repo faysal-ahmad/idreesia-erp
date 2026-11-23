@@ -15,6 +15,8 @@ const PURCHASING_CATALOG_ITEM_BY_ID: TypedDocumentNode<
       name
       unit
       category
+      company
+      imageUrl
       description
       defaultUnitPrice
       lastUnitPrice

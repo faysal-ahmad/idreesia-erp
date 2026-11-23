@@ -996,6 +996,7 @@ export type Mutation = {
   removePurchaseFormAttachment?: Maybe<PurchaseForm>;
   removePurchaseForms?: Maybe<Scalars['Int']['output']>;
   removePurchasingCatalogItem?: Maybe<Scalars['Boolean']['output']>;
+  removePurchasingCatalogItemImage?: Maybe<PurchasingCatalogItem>;
   removePurchasingGroupMember?: Maybe<Scalars['Boolean']['output']>;
   removePurchasingPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   removePurchasingPermissionUser?: Maybe<Scalars['Boolean']['output']>;
@@ -1036,6 +1037,7 @@ export type Mutation = {
   setOrgLocationUserLocked?: Maybe<UserType>;
   setPermissions?: Maybe<UserType>;
   setPurchasingCatalogItemActive?: Maybe<PurchasingCatalogItem>;
+  setPurchasingCatalogItemImage?: Maybe<PurchasingCatalogItem>;
   setPurchasingInvoiceDisputed?: Maybe<PurchasingInvoice>;
   setPurchasingVendorActive?: Maybe<PurchasingVendor>;
   setScheduledJobEnabled?: Maybe<Scalars['Boolean']['output']>;
@@ -1523,6 +1525,7 @@ export type MutationCreatePurchasingAttachmentUploadArgs = {
 
 export type MutationCreatePurchasingCatalogItemArgs = {
   category?: InputMaybe<Scalars['String']['input']>;
+  company?: InputMaybe<Scalars['String']['input']>;
   defaultUnitPrice?: InputMaybe<Scalars['Float']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -2052,6 +2055,11 @@ export type MutationRemovePurchasingCatalogItemArgs = {
 };
 
 
+export type MutationRemovePurchasingCatalogItemImageArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
 export type MutationRemovePurchasingGroupMemberArgs = {
   groupId: Scalars['String']['input'];
   userId: Scalars['String']['input'];
@@ -2296,6 +2304,12 @@ export type MutationSetPermissionsArgs = {
 export type MutationSetPurchasingCatalogItemActiveArgs = {
   _id: Scalars['String']['input'];
   isActive: Scalars['Boolean']['input'];
+};
+
+
+export type MutationSetPurchasingCatalogItemImageArgs = {
+  _id: Scalars['String']['input'];
+  imageData: Scalars['String']['input'];
 };
 
 
@@ -2560,6 +2574,7 @@ export type MutationUpdatePurchaseFormArgs = {
 export type MutationUpdatePurchasingCatalogItemArgs = {
   _id: Scalars['String']['input'];
   category?: InputMaybe<Scalars['String']['input']>;
+  company?: InputMaybe<Scalars['String']['input']>;
   defaultUnitPrice?: InputMaybe<Scalars['Float']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -4135,10 +4150,12 @@ export type PurchasingCatalogItem = {
   __typename?: 'PurchasingCatalogItem';
   _id?: Maybe<Scalars['String']['output']>;
   category?: Maybe<Scalars['String']['output']>;
+  company?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
   defaultUnitPrice?: Maybe<Scalars['Float']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
   isActive?: Maybe<Scalars['Boolean']['output']>;
   lastUnitPrice?: Maybe<Scalars['Float']['output']>;
   lastVendorId?: Maybe<Scalars['String']['output']>;
@@ -6209,6 +6226,7 @@ export type UserAccountAvailabilityType = {
 
 export type UserFilter = {
   moduleAccess?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;
   pageSize?: InputMaybe<Scalars['String']['input']>;
   serviceAccounts?: InputMaybe<Scalars['String']['input']>;
@@ -6216,6 +6234,15 @@ export type UserFilter = {
   showInactive?: InputMaybe<Scalars['String']['input']>;
   showLocked?: InputMaybe<Scalars['String']['input']>;
   showUnlocked?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UserGroupMemberType = {
+  __typename?: 'UserGroupMemberType';
+  displayName?: Maybe<Scalars['String']['output']>;
+  karkun?: Maybe<PersonType>;
+  personId?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['String']['output'];
+  username?: Maybe<Scalars['String']['output']>;
 };
 
 export type UserGroupType = {
@@ -6226,6 +6253,7 @@ export type UserGroupType = {
   moduleName?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   permissions?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  users?: Maybe<Array<Maybe<UserGroupMemberType>>>;
 };
 
 export type UserType = {

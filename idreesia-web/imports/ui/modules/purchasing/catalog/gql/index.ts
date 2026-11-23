@@ -4,3 +4,5 @@ export { default as CREATE_PURCHASING_CATALOG_ITEM } from './create-purchasing-c
 export { default as UPDATE_PURCHASING_CATALOG_ITEM } from './update-purchasing-catalog-item';
 export { default as SET_PURCHASING_CATALOG_ITEM_ACTIVE } from './set-purchasing-catalog-item-active';
 export { default as REMOVE_PURCHASING_CATALOG_ITEM } from './remove-purchasing-catalog-item';
+export { default as SET_PURCHASING_CATALOG_ITEM_IMAGE } from './set-purchasing-catalog-item-image';
+export { default as REMOVE_PURCHASING_CATALOG_ITEM_IMAGE } from './remove-purchasing-catalog-item-image';

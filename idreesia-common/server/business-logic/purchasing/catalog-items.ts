@@ -12,12 +12,14 @@ import {
 import { escapeRegExp } from 'meteor/idreesia-common/utilities/lodash';
 
 import { createAuditLog } from '../common/audit-logs';
+import { removeCatalogItemImageFiles } from './catalog-item-images';
 import { purchasingError } from './errors';
 
 export interface CatalogItemValues {
   name: string;
   unit: string;
   category?: string;
+  company?: string;
   description?: string;
   defaultUnitPrice?: number;
 }
@@ -53,8 +55,13 @@ function normalize(values: CatalogItemValues): CatalogItemValues {
 
   const result: CatalogItemValues = { name, unit };
   const category = clean(values.category);
+  const company = clean(values.company);
+  if (company && company.length > MAX_NAME_LENGTH) {
+    throw purchasingError('BAD_USER_INPUT', 'The company name is too long.');
+  }
   const description = values.description?.trim();
   if (category) result.category = category;
+  if (company) result.company = company;
   if (description) result.description = description;
   if (values.defaultUnitPrice != null) {
     result.defaultUnitPrice = values.defaultUnitPrice;
@@ -128,7 +135,7 @@ export async function updateCatalogItem(
       updatedBy: user._id,
     };
     const $unset: Record<string, ''> = {};
-    (['category', 'description', 'defaultUnitPrice'] as const).forEach(
+    (['category', 'company', 'description', 'defaultUnitPrice'] as const).forEach(
       (field) => {
         if (data[field] !== undefined) $set[field] = data[field];
         else $unset[field] = '';
@@ -207,7 +214,7 @@ export async function deleteCatalogItem(
   user: ActingUser
 ): Promise<void> {
   await runInTransaction(async () => {
-    await getCatalogItem(_id);
+    const existing = await getCatalogItem(_id);
     if ((await countCatalogItemReferences(_id)) > 0) {
       throw purchasingError(
         'CONFLICT',
@@ -222,6 +229,7 @@ export async function deleteCatalogItem(
       operationBy: user._id,
       operationTime: new Date(),
     });
+    await removeCatalogItemImageFiles(existing);
   });
 }
 
@@ -235,7 +243,7 @@ export async function listCatalogItems({
   const text = search?.trim();
   if (text) {
     const regex = new RegExp(escapeRegExp(text), 'i');
-    selector.$or = [{ name: regex }, { category: regex }];
+    selector.$or = [{ name: regex }, { category: regex }, { company: regex }];
   }
   if (isActive !== undefined && isActive !== null) selector.isActive = isActive;
 

@@ -9,8 +9,8 @@ const CREATE_PURCHASING_CATALOG_ITEM: TypedDocumentNode<
   CreatePurchasingCatalogItemMutation,
   CreatePurchasingCatalogItemMutationVariables
 > = gql`
-  mutation createPurchasingCatalogItem($name: String!, $unit: String!, $category: String, $description: String, $defaultUnitPrice: Float) {
-    createPurchasingCatalogItem(name: $name, unit: $unit, category: $category, description: $description, defaultUnitPrice: $defaultUnitPrice) {
+  mutation createPurchasingCatalogItem($name: String!, $unit: String!, $category: String, $company: String, $description: String, $defaultUnitPrice: Float) {
+    createPurchasingCatalogItem(name: $name, unit: $unit, category: $category, company: $company, description: $description, defaultUnitPrice: $defaultUnitPrice) {
       _id
     }
   }

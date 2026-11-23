@@ -14,7 +14,7 @@ export interface KarkunSearchParams {
 }
 
 /**
- * The karkuns of the Purchasing city who have a user account (a permission or
+ * The karkuns of the Purchasing city who have an unlocked user account (a permission or
  * a group belongs to a user), with only the fields needed to pick a person.
  * Nobody is found when the city location does not exist.
  */
@@ -33,7 +33,7 @@ export async function searchPurchasingKarkuns(params: KarkunSearchParams) {
       pageIndex: params.pageIndex ?? undefined,
       pageSize: params.pageSize ?? undefined,
       cityLocationId: city._id as string,
-      userAccount: 'true',
+      userAccount: 'active',
     },
     { includeKarkuns: true }
   )) as {

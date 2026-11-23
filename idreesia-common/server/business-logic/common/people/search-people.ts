@@ -390,7 +390,8 @@ export async function buildPeopleSearchPipeline(
   // Add criteria for user account related fields
   // ********************************************
   if (userAccount) {
-    const userAccountValue = userAccount === 'true';
+    // 'active' means an account that is not locked.
+    const userAccountValue = userAccount === 'true' || userAccount === 'active';
     pipeline.push({
       $lookup: {
         from: 'users',
@@ -400,7 +401,13 @@ export async function buildPeopleSearchPipeline(
       },
     });
 
-    if (userAccountValue) {
+    if (userAccount === 'active') {
+      pipeline.push({
+        $match: {
+          users: { $elemMatch: { locked: { $ne: true } } },
+        },
+      });
+    } else if (userAccountValue) {
       pipeline.push({
         $match: {
           'users.0': { $exists: true },

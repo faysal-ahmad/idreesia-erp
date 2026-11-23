@@ -10,7 +10,7 @@ export interface SecurityPermissionKarkunSearchParams {
 }
 
 /**
- * The karkuns who have a user account (a permission or a group belongs to a
+ * The karkuns who have an unlocked user account (a permission or a group belongs to a
  * user), with only the fields needed to pick a person.
  */
 export async function searchSecurityPermissionKarkuns(params: SecurityPermissionKarkunSearchParams) {
@@ -21,7 +21,7 @@ export async function searchSecurityPermissionKarkuns(params: SecurityPermission
       phoneNumber: params.phoneNumber ?? undefined,
       pageIndex: params.pageIndex ?? undefined,
       pageSize: params.pageSize ?? undefined,
-      userAccount: 'true',
+      userAccount: 'active',
     },
     { includeKarkuns: true }
   )) as {

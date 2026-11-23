@@ -94,7 +94,7 @@ erDiagram
         string shiftId FK
         string shiftName "denormalized"
         string date "today or earlier"
-        object_array karkuns "karkunId, name, teamId, teamName, addedForDay, attendance, attendanceUpdatedAt, attendanceUpdatedBy"
+        object_array karkuns "karkunId, name, teamId, teamName, addedForDay, attendance, checkInAt, checkOutAt, attendanceUpdatedAt, attendanceUpdatedBy"
     }
 ```
 
@@ -137,6 +137,8 @@ karkuns: Array<{
   teamName?: string;             // team name at the time
   addedForDay: boolean;          // added through the day's override
   attendance?: 'present' | 'late' | 'absent'; // missing = not marked
+  checkInAt?: Date;              // set at the attendance kiosk
+  checkOutAt?: Date;
   attendanceUpdatedAt?: Date;
   attendanceUpdatedBy?: string;
 }>
@@ -171,6 +173,18 @@ Dates are `YYYY-MM-DD` strings compared in Karachi time (`todayInKarachi`).
   - A committee can't be deleted while a duty names it as responsible.
   - Day attendance records are history and don't block deletes.
 - **Person delete** removes the person from committee members, team members and day attendance records, and counts all three in the person's relation counts.
+
+## 3a. Kiosk check-in and automatic attendance
+
+The public `/attendance` page (an attendance kiosk) identifies a karkun by face photo (`POST /api/attendance/match`, which answers with a signed token for the karkun) and shows their month's attendance and today's duties. Its buttons call `/api/attendance/check-in` and `/check-out` with that token (the karkun id and a 2-minute expiry, signed with `ATTENDANCE_KIOSK_TOKEN_SECRET`; nothing is stored), which set `checkInAt` / `checkOutAt` on their entry in today's day record.
+
+- **Check in** goes to the first of the karkun's duties today (by shift start time) that hasn't ended and has no check-in yet. **Check out** goes to the duty they checked in to most recently and haven't checked out of. Each time is set only once.
+- The job `mark-duty-attendance-from-check-ins` ("Mark Duty Attendance From Check-Ins", 04:00) marks **yesterday's** records for every entry that has no attendance yet, from the check-in time and the shift's start time:
+  - no check-in → `absent`
+  - check-in up to 15 minutes after the start (or earlier) → `present`
+  - check-in later than that → `late`
+  - A shift with no start time: a check-in makes the karkun `present`; no check-in leaves them unmarked.
+- Marks set by hand are never overwritten. The job stamps `attendanceUpdatedBy` with the system user.
 
 ## 4. Attendance report
 

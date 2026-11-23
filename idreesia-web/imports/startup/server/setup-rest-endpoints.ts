@@ -51,6 +51,7 @@ import {
 import { createSecurityServerRouter } from './setup-security-server-endpoints';
 import { createCorrespondenceRouter } from './setup-correspondence-endpoints';
 import { createWorkspaceDiscussionRouter } from './setup-workspace-discussion-endpoints';
+import { createAttendanceRouter } from './setup-attendance-endpoints';
 import { createDiagnosticsRouter } from './setup-diagnostics-endpoints';
 import { getBrowserMonitoringConfig } from './newrelic';
 import { getClientAddress, getThrottleAddress } from './client-address';
@@ -421,6 +422,12 @@ export function createRestApp() {
    * its own router.
    */
   app.use('/api/diagnostics', createDiagnosticsRouter());
+
+  /**
+   * Public attendance kiosk: matches a face photo to a karkun. Rate limited
+   * by its own router.
+   */
+  app.use('/api/attendance', createAttendanceRouter());
 
   return app;
 }

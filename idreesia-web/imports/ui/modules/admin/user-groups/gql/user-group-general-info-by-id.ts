@@ -13,6 +13,7 @@ const USER_GROUP_GENERAL_INFO_BY_ID: TypedDocumentNode<
     userGroupById(_id: $_id) {
       _id
       name
+      moduleName
       description
     }
   }

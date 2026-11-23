@@ -5,10 +5,14 @@ import {
   UserGroups,
   Users,
 } from 'meteor/idreesia-common/server/collections/admin';
-import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
+import {
+  People,
+  SecurityLogs,
+} from 'meteor/idreesia-common/server/collections/common';
 
 import {
   createUserGroup,
+  listUserGroupMembers,
   removeUserGroup,
   searchUserGroups,
   setUserGroupInstanceAccess,
@@ -195,7 +199,67 @@ describe('searchUserGroups', () => {
     expect(first.data.map(group => group.name)).toEqual(['A', 'B']);
   });
 
+  it('filters by module', async () => {
+    await createUserGroup({ name: 'A', moduleName: 'Purchasing' }, user);
+    await createUserGroup({ name: 'B', moduleName: 'HR' }, user);
+    const result = await searchUserGroups('moduleName=HR');
+    expect(result.data.map(group => group.name)).toEqual(['B']);
+    expect(result.totalResults).toBe(1);
+  });
+
+  it('filters by a user, to the groups that user belongs to', async () => {
+    const a = await createUserGroup({ name: 'A' }, user);
+    await createUserGroup({ name: 'B' }, user);
+    const c = await createUserGroup({ name: 'C' }, user);
+    await Users.insertAsync({ _id: 'm1', username: 'm1', groups: [a!._id!, c!._id!] });
+    await Users.insertAsync({ _id: 'm2', username: 'm2' });
+
+    const result = await searchUserGroups('userId=m1');
+    expect(result.data.map(group => group.name)).toEqual(['A', 'C']);
+    expect(result.totalResults).toBe(2);
+    expect((await searchUserGroups('userId=m2')).data).toEqual([]);
+    expect((await searchUserGroups('userId=nobody')).data).toEqual([]);
+  });
+
+  it('combines the module and user filters', async () => {
+    const a = await createUserGroup({ name: 'A', moduleName: 'Purchasing' }, user);
+    const b = await createUserGroup({ name: 'B', moduleName: 'HR' }, user);
+    await Users.insertAsync({ _id: 'm1', username: 'm1', groups: [a!._id!, b!._id!] });
+    const result = await searchUserGroups('moduleName=HR&userId=m1');
+    expect(result.data.map(group => group.name)).toEqual(['B']);
+  });
+
   it('reports zero results for no groups', async () => {
     expect(await searchUserGroups('')).toEqual({ data: [], totalResults: 0 });
+  });
+});
+
+describe('listUserGroupMembers', () => {
+  it('lists the group users by user name, with the account name or else the karkun name', async () => {
+    const group = await createUserGroup({ name: 'A' }, user);
+    const other = await createUserGroup({ name: 'B' }, user);
+    await (People.rawCollection() as any).insertOne({
+      _id: 'p2',
+      sharedData: { name: 'Karkun Two' },
+    });
+    await Users.insertAsync({
+      _id: 'u-a',
+      username: 'a',
+      profile: { name: 'Account A' },
+      groups: [group!._id!],
+    });
+    await Users.insertAsync({
+      _id: 'u-b',
+      username: 'b',
+      personId: 'p2',
+      groups: [group!._id!],
+    });
+    await Users.insertAsync({ _id: 'u-c', username: 'c', groups: [other!._id!] });
+
+    expect(await listUserGroupMembers(group!._id!)).toEqual([
+      { userId: 'u-a', personId: undefined, username: 'a', displayName: 'Account A' },
+      { userId: 'u-b', personId: 'p2', username: 'b', displayName: 'Karkun Two' },
+    ]);
+    expect(await listUserGroupMembers('none')).toEqual([]);
   });
 });

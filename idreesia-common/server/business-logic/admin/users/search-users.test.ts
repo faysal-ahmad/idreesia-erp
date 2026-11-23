@@ -1,7 +1,10 @@
 import { subMinutes } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
-import { Users } from 'meteor/idreesia-common/server/collections/admin';
+import {
+  UserGroups,
+  Users,
+} from 'meteor/idreesia-common/server/collections/admin';
 
 import { findUsersByPersonIds, mapUser } from './map-user';
 import { buildUserSearchPipeline, searchUsers } from './search-users';
@@ -40,11 +43,16 @@ describe('buildUserSearchPipeline', () => {
   it('matches the module as a kebab-case permission prefix', () => {
     expect(buildUserSearchPipeline({ moduleAccess: 'Security Server' })).toEqual([
       regularUsersOnly,
+      expect.objectContaining({ $lookup: expect.objectContaining({ from: 'user-groups' }) }),
       {
         $match: {
-          permissions: { $elemMatch: { $regex: '^security-server' } },
+          $or: [
+            { permissions: { $elemMatch: { $regex: '^security-server' } } },
+            { 'groupDocs.permissions': { $elemMatch: { $regex: '^security-server' } } },
+          ],
         },
       },
+      { $project: { groupDocs: 0 } },
     ]);
   });
 });
@@ -101,6 +109,28 @@ describe('searchUsers', () => {
     await insertUser('none');
 
     expect(await names({ moduleAccess: 'HR' })).toEqual(['hr1']);
+  });
+
+  it('includes users who get module access from a group', async () => {
+    const groupId = await UserGroups.insertAsync({
+      name: 'hr-team',
+      permissions: ['hr-view'],
+    } as never);
+    await insertUser('direct', { permissions: ['hr-view'] });
+    await insertUser('viaGroup', { groups: [groupId] });
+    await insertUser('none');
+
+    expect((await names({ moduleAccess: 'HR' })).sort()).toEqual(['direct', 'viaGroup']);
+  });
+
+  it('filters by part of the user name or the display name, ignoring case', async () => {
+    await insertUser('ali.khan', { profile: { name: 'Ali Khan' } });
+    await insertUser('bo', { profile: { name: 'Bilal Aslam' } });
+    await insertUser('cy');
+
+    expect(await names({ name: 'ALI' })).toEqual(['ali.khan']);
+    expect(await names({ name: 'aslam' })).toEqual(['bo']);
+    expect(await names({ name: 'a.b' })).toEqual([]); // Not a pattern.
   });
 
   it('pages users sorted by user name, with a total count', async () => {

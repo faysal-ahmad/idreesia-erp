@@ -5,6 +5,10 @@ export {
   type LoginAttemptDocument,
 } from './login-attempts';
 export {
+  default as TrustedDevices,
+  type TrustedDeviceDocument,
+} from './trusted-devices';
+export {
   default as JobDefinitions,
   type JobDefinitionDocument,
 } from './job-definitions';

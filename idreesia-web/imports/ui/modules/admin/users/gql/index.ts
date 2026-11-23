@@ -10,3 +10,5 @@ export { default as SET_SUPER_ADMIN } from './set-super-admin';
 export { default as CLEAR_LOGIN_BLOCKS } from './clear-login-blocks';
 export { default as RESET_USER_PASSWORD } from './reset-user-password';
 export { default as CREATE_SERVICE_ACCOUNT } from './create-service-account';
+export { default as USER_TRUSTED_DEVICES } from './user-trusted-devices';
+export { default as REVOKE_USER_TRUSTED_DEVICES } from './revoke-user-trusted-devices';

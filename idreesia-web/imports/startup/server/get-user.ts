@@ -1,4 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
+import { resolveEffectiveAccess } from 'meteor/idreesia-common/server/business-logic/admin/users/effective-access';
 
 import { isAccountLocked } from './account-lock';
 
@@ -15,6 +16,9 @@ const AccountsPrivate = Accounts as unknown as AccountsPrivateApi;
 interface MeteorUser {
   _id: string;
   locked?: boolean;
+  permissions?: string[];
+  instances?: string[];
+  groups?: string[];
   services?: {
     resume?: {
       loginTokens?: Array<{ hashedToken: string; when: Date }>;
@@ -40,5 +44,11 @@ export const getUser = async (
 
   const isExpired = AccountsPrivate._tokenExpiration(tokenInfo.when) < new Date();
   // A token issued before the account was locked stops working too.
-  return isExpired || isAccountLocked(user) ? undefined : user;
+  if (isExpired || isAccountLocked(user)) return undefined;
+
+  // Permissions and instances include those granted by the user's groups, so
+  // every authorization check downstream sees the effective access.
+  if (!user.groups?.length) return user;
+  const { permissions, instances } = await resolveEffectiveAccess(user);
+  return { ...user, permissions, instances };
 };

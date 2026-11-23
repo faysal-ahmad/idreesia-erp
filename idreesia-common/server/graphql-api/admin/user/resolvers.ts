@@ -13,6 +13,7 @@ import {
   disableTwoFactor,
   enableTwoFactor,
   findOneUser,
+  resolveEffectiveAccess,
   getLoginBlockStatus,
   recordUserLogin,
   registerUser,
@@ -115,6 +116,11 @@ export default {
       const _user = await findOneUser(user._id);
       if (isSuperAdmin(_user)) {
         _user.permissions = values(PermissionConstants);
+      } else {
+        // Includes the access granted by the user's groups.
+        const { permissions, instances } = await resolveEffectiveAccess(_user);
+        _user.permissions = permissions;
+        _user.instances = instances;
       }
 
       return _user;

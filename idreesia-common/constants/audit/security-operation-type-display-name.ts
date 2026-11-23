@@ -15,6 +15,9 @@ const SecurityOperationTypeDisplayName = {
   [SecurityOperationType.SUPER_ADMIN_GRANTED]: 'Super Admin Granted',
   [SecurityOperationType.SUPER_ADMIN_REVOKED]: 'Super Admin Revoked',
   [SecurityOperationType.LOGIN_BLOCKS_CLEARED]: 'Login Blocks Cleared',
+  [SecurityOperationType.TRUSTED_DEVICE_ENROLLED]: 'Trusted Device Enrolled',
+  [SecurityOperationType.TRUSTED_DEVICE_REMOVED]: 'Trusted Device Removed',
+  [SecurityOperationType.TRUSTED_DEVICE_REVOKED]: 'Trusted Device Revoked',
   [SecurityOperationType.INVALID_LOGIN_ATTEMPT]: 'Invalid Login Attempt',
   [SecurityOperationType.LOGIN]: 'Login to System',
 };

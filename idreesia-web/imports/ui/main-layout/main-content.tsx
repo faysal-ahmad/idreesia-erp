@@ -30,6 +30,9 @@ const routersMap: Record<
   [ModuleNames.correspondence]: React.lazy(
     () => import('/imports/ui/modules/correspondence/router')
   ),
+  [ModuleNames.purchasing]: React.lazy(
+    () => import('/imports/ui/modules/purchasing/router')
+  ),
   [ModuleNames.workspaces]: React.lazy(
     () => import('/imports/ui/modules/workspaces/router')
   ),

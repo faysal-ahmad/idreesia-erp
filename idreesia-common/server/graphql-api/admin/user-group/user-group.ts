@@ -1,6 +1,15 @@
 import gql from 'graphql-tag';
 
 export default gql`
+type UserGroupMemberType {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+  # The karkun the user account belongs to, if any.
+  karkun: PersonType
+}
+
 type UserGroupType {
   _id: String
   name: String
@@ -8,6 +17,7 @@ type UserGroupType {
   description: String
   permissions: [String]
   instances: [String]
+  users: [UserGroupMemberType]
 }
 
 type PagedUserGroupType {
@@ -26,13 +36,14 @@ extend type Query {
 extend type Mutation {
   createUserGroup(
     name: String!
-    moduleName: String!
+    moduleName: String
     description: String
   ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   updateUserGroup(
     _id: String!
     name: String
+    moduleName: String
     description: String
   ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 

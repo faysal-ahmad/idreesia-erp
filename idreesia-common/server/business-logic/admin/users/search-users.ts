@@ -3,7 +3,7 @@ import {
   Users,
   type AppUser,
 } from 'meteor/idreesia-common/server/collections/admin';
-import { get, kebabCase } from 'meteor/idreesia-common/utilities/lodash';
+import { escapeRegExp, get, kebabCase } from 'meteor/idreesia-common/utilities/lodash';
 
 import { mapUser, type MappedUser } from './map-user';
 
@@ -34,6 +34,7 @@ export function buildUserSearchPipeline(
     showInactive,
     moduleAccess,
     serviceAccounts,
+    name,
   } = params;
 
   // Service accounts are listed on their own page and kept off the Users page.
@@ -84,12 +85,35 @@ export function buildUserSearchPipeline(
 
   if (moduleAccess) {
     const lcModuleName = kebabCase(moduleAccess);
-    pipeline.push({
-      $match: {
-        permissions: {
-          $elemMatch: { $regex: `^${lcModuleName}` },
+    const hasModulePermission = {
+      $elemMatch: { $regex: `^${lcModuleName}` },
+    };
+    // Access comes from the user's own permissions or from their groups.
+    pipeline.push(
+      {
+        $lookup: {
+          from: 'user-groups',
+          localField: 'groups',
+          foreignField: '_id',
+          as: 'groupDocs',
         },
       },
+      {
+        $match: {
+          $or: [
+            { permissions: hasModulePermission },
+            { 'groupDocs.permissions': hasModulePermission },
+          ],
+        },
+      },
+      { $project: { groupDocs: 0 } }
+    );
+  }
+
+  if (name) {
+    const regex = new RegExp(escapeRegExp(String(name).trim()), 'i');
+    pipeline.push({
+      $match: { $or: [{ username: regex }, { 'profile.name': regex }] },
     });
   }
 

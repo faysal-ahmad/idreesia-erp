@@ -13,6 +13,9 @@ const SecurityOperationType = {
   SUPER_ADMIN_GRANTED: 'super-admin-granted',
   SUPER_ADMIN_REVOKED: 'super-admin-revoked',
   LOGIN_BLOCKS_CLEARED: 'login-blocks-cleared',
+  TRUSTED_DEVICE_ENROLLED: 'trusted-device-enrolled',
+  TRUSTED_DEVICE_REMOVED: 'trusted-device-removed',
+  TRUSTED_DEVICE_REVOKED: 'trusted-device-revoked',
 
   LOGIN: 'login',
   INVALID_LOGIN_ATTEMPT: 'invalid-login-attempt',

@@ -19,6 +19,7 @@ export const ModulePaths = {
   stores: '/stores',
   hr: '/hr',
   security: '/security',
+  purchasing: '/purchasing',
 } as const;
 
 export const AdminPaths = {
@@ -55,8 +56,8 @@ export const SecurityPaths = {
   visitorCardVerification: `${ModulePaths.security}/visitor-card-verification`,
   visitorStayReport: `${ModulePaths.security}/visitor-stay-report`,
   visitorRegistrationList: `${ModulePaths.security}/visitor-registration/list`,
-  securityUsers: `${ModulePaths.security}/security-users`,
   auditLogs: `${ModulePaths.security}/audit-logs`,
+  permissions: `${ModulePaths.security}/permissions`,
 } as const;
 
 /**
@@ -69,3 +70,16 @@ export const AdminCredentials = {
 };
 
 export const AUTH_STORAGE_STATE = 'e2e/.auth/admin.json';
+
+export const PurchasingPaths = {
+  dashboard: `${ModulePaths.purchasing}/dashboard`,
+  requisitions: `${ModulePaths.purchasing}/requisitions`,
+  quotes: `${ModulePaths.purchasing}/quotes`,
+  orders: `${ModulePaths.purchasing}/orders`,
+  receipts: `${ModulePaths.purchasing}/receipts`,
+  invoices: `${ModulePaths.purchasing}/invoices`,
+  payments: `${ModulePaths.purchasing}/payments`,
+  vendors: `${ModulePaths.purchasing}/vendors`,
+  catalog: `${ModulePaths.purchasing}/catalog`,
+  reports: `${ModulePaths.purchasing}/reports`,
+} as const;

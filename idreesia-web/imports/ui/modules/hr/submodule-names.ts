@@ -9,6 +9,7 @@ const SubModuleNames = {
   dutyAttendance: 'Duty Attendance',
   salarySheets: 'Salary Sheets',
   auditLogs: 'Audit Logs',
+  permissions: 'Permissions',
 };
 
 export default SubModuleNames;

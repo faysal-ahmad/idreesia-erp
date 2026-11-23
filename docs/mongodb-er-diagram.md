@@ -382,6 +382,50 @@ Line items on purchase/issuance forms are **embedded arrays** (`items[]`), not s
 
 ---
 
+## Purchasing
+
+Independent of Inventory: its own vendors and item catalog, and no link to stock items or store vendors. Lines carry a snapshot of the description and unit, with an optional `catalogItemId`. Document numbers (`PR-2026-0001`...) come from `purchasing-counters`. See [Purchasing design doc](purchasing-module/design.md).
+
+```mermaid
+erDiagram
+  PURCHASING_VENDORS ||--o{ PURCHASING_QUOTES : "vendorId"
+  PURCHASING_VENDORS ||--o{ PURCHASING_ORDERS : "vendorId"
+  PURCHASING_VENDORS ||--o{ PURCHASING_RECEIPTS : "vendorId"
+  PURCHASING_VENDORS ||--o{ PURCHASING_INVOICES : "vendorId"
+  PURCHASING_VENDORS ||--o{ PURCHASING_PAYMENTS : "vendorId"
+  PURCHASING_CATALOG_ITEMS ||--o{ PURCHASING_REQUISITIONS : "lines[].catalogItemId"
+  PURCHASING_CATALOG_ITEMS ||--o{ PURCHASING_QUOTES : "lines[].catalogItemId"
+  PURCHASING_CATALOG_ITEMS ||--o{ PURCHASING_ORDERS : "lines[].catalogItemId"
+  PURCHASING_CATALOG_ITEMS ||--o{ PURCHASING_INVOICES : "lines[].catalogItemId"
+  PURCHASING_REQUISITIONS ||--o{ PURCHASING_QUOTES : "requisitionId"
+  PURCHASING_REQUISITIONS ||--o{ PURCHASING_ORDERS : "requisitionId"
+  PURCHASING_QUOTES ||--o{ PURCHASING_ORDERS : "quoteId"
+  PURCHASING_ORDERS ||--o{ PURCHASING_RECEIPTS : "orderId"
+  PURCHASING_ORDERS ||--o{ PURCHASING_INVOICES : "orderId"
+  PURCHASING_INVOICES }o--o{ PURCHASING_PAYMENTS : "allocations[].invoiceId"
+  PURCHASING_ATTACHMENTS }o--|| PURCHASING_REQUISITIONS : "ownerType / ownerId"
+  PEOPLE ||--o{ PURCHASING_REQUISITIONS : "requestedBy"
+  PEOPLE ||--o{ PURCHASING_RECEIPTS : "receivedBy"
+
+  PURCHASING_ORDERS {
+    string number
+    string vendorId
+    string status
+    number total
+    array lines "receivedQuantity, invoicedQuantity"
+  }
+  PURCHASING_INVOICES {
+    string number
+    string vendorInvoiceNo
+    number total
+    number paidAmount
+    string status
+    bool isDisputed
+  }
+```
+
+---
+
 ## Security
 
 ```mermaid
@@ -478,6 +522,16 @@ erDiagram
 | Security | `security-mehfil-langar-locations` | `MehfilLangarLocations` |
 | Security | `security-mehfil-langar-details` | `MehfilLangarDetails` |
 | Security | `security-visitor-stays` | `VisitorStays` |
+| Purchasing | `purchasing-vendors` | `PurchasingVendors` |
+| Purchasing | `purchasing-catalog-items` | `PurchasingCatalogItems` |
+| Purchasing | `purchasing-requisitions` | `PurchasingRequisitions` |
+| Purchasing | `purchasing-quotes` | `PurchasingQuotes` |
+| Purchasing | `purchasing-orders` | `PurchasingOrders` |
+| Purchasing | `purchasing-receipts` | `PurchasingReceipts` |
+| Purchasing | `purchasing-invoices` | `PurchasingInvoices` |
+| Purchasing | `purchasing-payments` | `PurchasingPayments` |
+| Purchasing | `purchasing-attachments` | `PurchasingAttachments` |
+| Purchasing | `purchasing-counters` | `PurchasingCounters` |
 
 ---
 

@@ -35,8 +35,8 @@ const pages: Array<{ path: string; breadcrumbs: string[] }> = [
   { path: SecurityPaths.mehfilLangarLocations, breadcrumbs: ['Security', 'Langar Locations'] },
   { path: SecurityPaths.visitorRegistrationList, breadcrumbs: ['Security', 'Visitor Registration', 'List'] },
   { path: SecurityPaths.visitorStayReport, breadcrumbs: ['Security', "Visitor's Stay Report"] },
-  { path: SecurityPaths.securityUsers, breadcrumbs: ['Security', 'User Accounts', 'List'] },
   { path: SecurityPaths.auditLogs, breadcrumbs: ['Security', 'Audit Logs', 'List'] },
+  { path: SecurityPaths.permissions, breadcrumbs: ['Security', 'Administration', 'Permissions'] },
 ];
 
 test.describe('Navigation smoke test', () => {

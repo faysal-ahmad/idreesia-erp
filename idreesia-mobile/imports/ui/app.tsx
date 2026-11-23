@@ -8,6 +8,7 @@ import {
   AccountScreen,
   ChangePasswordScreen,
   OfflineFilesScreen,
+  QuickLoginScreen,
   TwoFactorScreen,
 } from './account';
 import { ForgotPasswordScreen, LoginScreen, RegisterScreen } from './auth/screens';
@@ -48,6 +49,7 @@ const SignedInRoutes = () => {
           <Route exact path={AccountPaths.changePassword} component={ChangePasswordScreen} />
           <Route exact path={AccountPaths.offlineFiles} component={OfflineFilesScreen} />
           <Route exact path={AccountPaths.twoFactor} component={TwoFactorScreen} />
+          <Route exact path={AccountPaths.quickLogin} component={QuickLoginScreen} />
           {renderModuleRoutes()}
           <Redirect to={HomePaths.home} />
         </Switch>

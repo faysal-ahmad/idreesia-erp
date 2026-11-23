@@ -12,11 +12,18 @@ const UPDATE_USER_GROUP: TypedDocumentNode<
   mutation updateUserGroup(
     $_id: String!
     $name: String!
+    $moduleName: String
     $description: String
   ) {
-    updateUserGroup(_id: $_id, name: $name, description: $description) {
+    updateUserGroup(
+      _id: $_id
+      name: $name
+      moduleName: $moduleName
+      description: $description
+    ) {
       _id
       name
+      moduleName
       description
     }
   }

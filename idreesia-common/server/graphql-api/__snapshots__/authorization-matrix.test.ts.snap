@@ -2,6 +2,20 @@
 
 exports[`authorization matrix > pins every field → access declaration 1`] = `
 {
+  "Mutation.abortPurchasingAttachmentUpload": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_REQUISITIONS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_MANAGE_RECEIPTS",
+          "PURCHASING_MANAGE_INVOICES",
+          "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.addCommitteeMember": [
     {
       "args": {
@@ -12,11 +26,41 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.addHrGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.addHrKarkunAttachment": [
     {
       "args": {
         "permissions": [
           "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addHrPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addHrPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -82,6 +126,66 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "instanceIdArgName": "physicalStoreId",
       },
       "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.addPurchasingGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addPurchasingPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addPurchasingPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addSecurityGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addSecurityPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addSecurityPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
     },
   ],
   "Mutation.addSecurityServerProfileImage": [
@@ -157,6 +261,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkInstanceAccess",
     },
   ],
+  "Mutation.approvePurchasingOrder": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_APPROVE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.approvePurchasingRequisition": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_APPROVE_REQUISITIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.approveStockAdjustments": [
     {
       "args": {
@@ -171,6 +295,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "instanceIdArgName": "physicalStoreId",
       },
       "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.cancelPurchasingOrder": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.cancelPurchasingRequisition": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_REQUISITIONS",
+        ],
+      },
+      "directive": "checkPermissions",
     },
   ],
   "Mutation.cancelVisitorStay": [
@@ -198,6 +342,30 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.closePurchasingOrder": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.completePurchasingAttachmentUpload": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_REQUISITIONS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_MANAGE_RECEIPTS",
+          "PURCHASING_MANAGE_INVOICES",
+          "PURCHASING_MANAGE_PAYMENTS",
         ],
       },
       "directive": "checkPermissions",
@@ -279,6 +447,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_MANAGE_KARKUNS",
           "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createHrUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -438,12 +616,115 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkInstanceAccess",
     },
   ],
+  "Mutation.createPurchasingAttachmentUpload": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_REQUISITIONS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_MANAGE_RECEIPTS",
+          "PURCHASING_MANAGE_INVOICES",
+          "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchasingCatalogItem": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_CATALOG",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchasingInvoice": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_INVOICES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchasingOrder": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchasingOrderFromQuote": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchasingOrderFromRequisition": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchasingQuote": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchasingRequisition": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_REQUISITIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchasingUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchasingVendor": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_VENDORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.createSalaries": [
     {
       "args": {
         "permissions": [
           "HR_MANAGE_EMPLOYEES",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -494,6 +775,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createSecurityUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -609,13 +900,8 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   ],
   "Mutation.deleteAllSalaries": [
     {
-      "args": {
-        "permissions": [
-          "HR_MANAGE_EMPLOYEES",
-          "HR_DELETE_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
+      "args": {},
+      "directive": "superAdminOnly",
     },
   ],
   "Mutation.deleteDuplicatePeople": [
@@ -630,9 +916,15 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   ],
   "Mutation.deleteHrKarkun": [
     {
+      "args": {},
+      "directive": "superAdminOnly",
+    },
+  ],
+  "Mutation.deleteHrUserGroup": [
+    {
       "args": {
         "permissions": [
-          "HR_DELETE_DATA",
+          "HR_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -658,15 +950,64 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.deleteSalaries": [
+  "Mutation.deletePurchasingAttachment": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_EMPLOYEES",
-          "HR_DELETE_DATA",
+          "PURCHASING_MANAGE_REQUISITIONS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_MANAGE_RECEIPTS",
+          "PURCHASING_MANAGE_INVOICES",
+          "PURCHASING_MANAGE_PAYMENTS",
         ],
       },
       "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deletePurchasingOrder": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deletePurchasingQuote": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deletePurchasingRequisition": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_REQUISITIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deletePurchasingUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deleteSalaries": [
+    {
+      "args": {},
+      "directive": "superAdminOnly",
     },
   ],
   "Mutation.deleteSecurityServerChannel": [
@@ -689,14 +1030,20 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.deleteSecurityVisitor": [
+  "Mutation.deleteSecurityUserGroup": [
     {
       "args": {
         "permissions": [
-          "SECURITY_DELETE_DATA",
+          "SECURITY_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deleteSecurityVisitor": [
+    {
+      "args": {},
+      "directive": "superAdminOnly",
     },
   ],
   "Mutation.deleteUserGroup": [
@@ -769,6 +1116,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.markPurchasingOrderSent": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.mergeStockItems": [
     {
       "args": {
@@ -790,6 +1147,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_MANAGE_COMMITTEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.postPurchasingPayment": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.postPurchasingReceipt": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_RECEIPTS",
         ],
       },
       "directive": "checkPermissions",
@@ -819,6 +1196,36 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "instanceIdArgName": "physicalStoreId",
       },
       "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.rejectPurchasingOrder": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_APPROVE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.rejectPurchasingQuote": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.rejectPurchasingRequisition": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_APPROVE_REQUISITIONS",
+        ],
+      },
+      "directive": "checkPermissions",
     },
   ],
   "Mutation.removeCity": [
@@ -891,11 +1298,41 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.removeHrGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.removeHrKarkunAttachment": [
     {
       "args": {
         "permissions": [
           "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeHrPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeHrPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1047,6 +1484,76 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkInstanceAccess",
     },
   ],
+  "Mutation.removePurchasingCatalogItem": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_CATALOG",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removePurchasingCatalogItemImage": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_CATALOG",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removePurchasingGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removePurchasingPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removePurchasingPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removePurchasingVendor": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_VENDORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.removeSecurityMehfilDuty": [
     {
       "args": {
@@ -1072,6 +1579,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1196,6 +1723,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.reopenPurchasingRequisition": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_REQUISITIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.resetJobDefinitionSchedule": [
     {
       "args": {
@@ -1248,11 +1785,31 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.revokeUserTrustedDevices": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.runScheduledJobNow": [
     {
       "args": {
         "permissions": [
           "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.selectPurchasingQuote": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
         ],
       },
       "directive": "checkPermissions",
@@ -1388,6 +1945,46 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.setPurchasingCatalogItemActive": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_CATALOG",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setPurchasingCatalogItemImage": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_CATALOG",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setPurchasingInvoiceDisputed": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_INVOICES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setPurchasingVendorActive": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_VENDORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.setScheduledJobEnabled": [
     {
       "args": {
@@ -1413,16 +2010,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_SECURITY_SERVER_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Mutation.setSecurityUserPermissions": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_USERS",
         ],
       },
       "directive": "checkPermissions",
@@ -1475,6 +2062,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.submitPurchasingOrder": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.submitPurchasingRequisition": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_REQUISITIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1566,6 +2173,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_MANAGE_KARKUNS",
           "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateHrUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1705,12 +2322,81 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkInstanceAccess",
     },
   ],
+  "Mutation.updatePurchasingCatalogItem": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_CATALOG",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updatePurchasingInvoice": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_INVOICES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updatePurchasingOrder": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updatePurchasingQuote": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updatePurchasingRequisition": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_REQUISITIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updatePurchasingUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updatePurchasingVendor": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_VENDORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.updateSalary": [
     {
       "args": {
         "permissions": [
           "HR_MANAGE_EMPLOYEES",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -1761,6 +2447,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateSecurityUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1909,6 +2605,36 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "instanceIdArgName": "physicalStoreId",
       },
       "directive": "checkInstanceAccess",
+    },
+  ],
+  "Mutation.voidPurchasingInvoice": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_INVOICES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.voidPurchasingPayment": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.voidPurchasingReceipt": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_RECEIPTS",
+        ],
+      },
+      "directive": "checkPermissions",
     },
   ],
   "Mutation.workspaceAbortDocumentUpload": [
@@ -2862,7 +3588,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "HR_VIEW_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES_SETUP_DATA",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3075,7 +3800,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_KARKUNS",
           "HR_MANAGE_KARKUNS",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3087,7 +3811,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_KARKUNS",
           "HR_MANAGE_KARKUNS",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3146,6 +3869,36 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "HR_MANAGE_KARKUNS",
           "HR_VIEW_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrPermissionAssignments": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrPermissionKarkunSearch": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrUserGroups": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -3270,7 +4023,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "HR_VIEW_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES_SETUP_DATA",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3282,7 +4034,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_KARKUNS",
           "HR_MANAGE_KARKUNS",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3547,6 +4298,129 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkInstanceAccess",
     },
   ],
+  "Query.pagedPurchasingAuditLogs": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_AUDIT_LOGS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingCatalogItems": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_CATALOG",
+          "PURCHASING_VIEW_REQUISITIONS",
+          "PURCHASING_MANAGE_REQUISITIONS",
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_VIEW_INVOICES",
+          "PURCHASING_MANAGE_INVOICES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingInvoices": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_INVOICES",
+          "PURCHASING_MANAGE_INVOICES",
+          "PURCHASING_VIEW_PAYMENTS",
+          "PURCHASING_MANAGE_PAYMENTS",
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingOrders": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_APPROVE_ORDERS",
+          "PURCHASING_VIEW_RECEIPTS",
+          "PURCHASING_MANAGE_RECEIPTS",
+          "PURCHASING_VIEW_INVOICES",
+          "PURCHASING_MANAGE_INVOICES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingPayments": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_PAYMENTS",
+          "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingQuotes": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_APPROVE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingReceipts": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_RECEIPTS",
+          "PURCHASING_MANAGE_RECEIPTS",
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingRequisitions": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_REQUISITIONS",
+          "PURCHASING_MANAGE_REQUISITIONS",
+          "PURCHASING_APPROVE_REQUISITIONS",
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingVendors": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_VENDORS",
+          "PURCHASING_MANAGE_VENDORS",
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_VIEW_INVOICES",
+          "PURCHASING_MANAGE_INVOICES",
+          "PURCHASING_VIEW_PAYMENTS",
+          "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.pagedSalariesByKarkun": [
     {
       "args": {
@@ -3554,7 +4428,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3625,17 +4498,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_VIEW_SECURITY_SERVER_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.pagedSecurityUsers": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_VIEW_USERS",
-          "SECURITY_MANAGE_USERS",
         ],
       },
       "directive": "checkPermissions",
@@ -3825,6 +4687,252 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkInstanceAccess",
     },
   ],
+  "Query.purchasingAttachmentDownload": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_REQUISITIONS",
+          "PURCHASING_MANAGE_REQUISITIONS",
+          "PURCHASING_APPROVE_REQUISITIONS",
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_APPROVE_ORDERS",
+          "PURCHASING_VIEW_RECEIPTS",
+          "PURCHASING_MANAGE_RECEIPTS",
+          "PURCHASING_VIEW_INVOICES",
+          "PURCHASING_MANAGE_INVOICES",
+          "PURCHASING_VIEW_PAYMENTS",
+          "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingAttachments": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_REQUISITIONS",
+          "PURCHASING_MANAGE_REQUISITIONS",
+          "PURCHASING_APPROVE_REQUISITIONS",
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_APPROVE_ORDERS",
+          "PURCHASING_VIEW_RECEIPTS",
+          "PURCHASING_MANAGE_RECEIPTS",
+          "PURCHASING_VIEW_INVOICES",
+          "PURCHASING_MANAGE_INVOICES",
+          "PURCHASING_VIEW_PAYMENTS",
+          "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingCatalogItemById": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_CATALOG",
+          "PURCHASING_VIEW_REQUISITIONS",
+          "PURCHASING_MANAGE_REQUISITIONS",
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_VIEW_INVOICES",
+          "PURCHASING_MANAGE_INVOICES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingDashboard": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_REPORTS",
+          "PURCHASING_APPROVE_REQUISITIONS",
+          "PURCHASING_APPROVE_ORDERS",
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_VIEW_INVOICES",
+          "PURCHASING_VIEW_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingInvoiceById": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_INVOICES",
+          "PURCHASING_MANAGE_INVOICES",
+          "PURCHASING_VIEW_PAYMENTS",
+          "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingKarkunSearch": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingOpenOrders": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_REPORTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingOrderById": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_APPROVE_ORDERS",
+          "PURCHASING_VIEW_RECEIPTS",
+          "PURCHASING_MANAGE_RECEIPTS",
+          "PURCHASING_VIEW_INVOICES",
+          "PURCHASING_MANAGE_INVOICES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingPayablesAging": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_REPORTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingPaymentById": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_PAYMENTS",
+          "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingPermissionAssignments": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingQuoteById": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_APPROVE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingReceiptById": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_RECEIPTS",
+          "PURCHASING_MANAGE_RECEIPTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingRequisitionById": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_REQUISITIONS",
+          "PURCHASING_MANAGE_REQUISITIONS",
+          "PURCHASING_APPROVE_REQUISITIONS",
+          "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingSpendingByMonth": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_REPORTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingSpendingByVendor": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_REPORTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingUserGroups": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingVendorById": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_VENDORS",
+          "PURCHASING_MANAGE_VENDORS",
+          "PURCHASING_VIEW_ORDERS",
+          "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_VIEW_INVOICES",
+          "PURCHASING_MANAGE_INVOICES",
+          "PURCHASING_VIEW_PAYMENTS",
+          "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingVendorLedger": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_REPORTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.referenceCityMehfilLocations": [
     {
       "args": {
@@ -3888,7 +4996,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_KARKUNS",
           "HR_MANAGE_KARKUNS",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3900,7 +5007,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES",
-          "HR_DELETE_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3959,6 +5065,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.securityPermissionAssignments": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityPermissionKarkunSearch": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.securityServerAlertById": [
     {
       "args": {
@@ -4004,6 +5130,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_VIEW_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityUserGroups": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -4154,6 +5290,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Query.userGroupById": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.userTrustedDevices": [
     {
       "args": {
         "permissions": [

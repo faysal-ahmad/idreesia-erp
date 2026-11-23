@@ -1,7 +1,9 @@
 import { UserGroups } from 'meteor/idreesia-common/server/collections/admin';
+import { People } from 'meteor/idreesia-common/server/collections/common';
 import { DataSource } from 'meteor/idreesia-common/constants';
 import {
   createUserGroup,
+  listUserGroupMembers,
   removeUserGroup,
   searchUserGroups,
   setUserGroupInstanceAccess,
@@ -21,13 +23,22 @@ interface UserGroupArgs {
   _id: string;
   queryString: string;
   name: string;
-  moduleName: string;
+  moduleName?: string;
   description?: string;
   permissions: string[];
   instances: string[];
 }
 
 export default {
+  UserGroupMemberType: {
+    karkun: async ({ personId }: { personId?: string }) =>
+      personId ? People.findOneAsync(personId) : null,
+  },
+
+  UserGroupType: {
+    users: async ({ _id }: { _id: string }) => listUserGroupMembers(_id),
+  },
+
   Query: {
     pagedUserGroups: async (
       _obj: unknown,

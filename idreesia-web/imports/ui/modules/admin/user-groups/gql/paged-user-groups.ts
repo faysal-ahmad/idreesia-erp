@@ -15,7 +15,25 @@ const PAGED_USER_GROUPS: TypedDocumentNode<
       data {
         _id
         name
+        moduleName
         description
+        users {
+          userId
+          personId
+          username
+          displayName
+          karkun {
+            _id
+            sharedData {
+              name
+              imageUrl
+              imageThumbnailUrl
+              cnicNumber
+              contactNumber1
+              contactNumber2
+            }
+          }
+        }
       }
     }
   }

@@ -50,6 +50,7 @@ import '../imports/ui/modules/common/documents/document-library.styles.css';
 import '../imports/ui/modules/common/meetings/meetings.styles.css';
 import '../imports/ui/modules/common/polls/polls.styles.css';
 import '../imports/ui/modules/common/projects/projects.styles.css';
+import '../imports/ui/modules/purchasing/purchasing.styles.css';
 
 import App from '../imports/ui/app';
 import { AntdFeedbackBridge } from '../imports/ui/antd-feedback';

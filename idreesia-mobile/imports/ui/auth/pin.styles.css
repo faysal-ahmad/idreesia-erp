@@ -1,0 +1,20 @@
+/* PIN entry (components/pin-input.tsx) on the PIN sign-in screen and the Quick login screen. Loaded from client/main.tsx. */
+
+.pin-login-input,
+.pin-setup-input {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0 8px;
+}
+
+.pin-input {
+  --cell-size: 52px;
+  --cell-gap: 12px;
+  --border-radius: var(--app-radius-medium);
+}
+
+.pin-setup-label {
+  margin: 16px 12px 0;
+  color: var(--app-color-text-secondary);
+  text-align: center;
+}

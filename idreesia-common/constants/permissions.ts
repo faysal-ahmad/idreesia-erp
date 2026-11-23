@@ -25,8 +25,8 @@ const Permissions = {
   // HR Module
   // ****************************************************************************************
   HR_MANAGE_KARKUNS_SETUP_DATA: 'hr-manage-karkuns-setup-data',
-  HR_DELETE_DATA: 'hr-delete-data',
   HR_VIEW_AUDIT_LOGS: 'hr-view-audit-logs',
+  HR_MANAGE_PERMISSIONS: 'hr-manage-permissions',
 
   HR_VIEW_KARKUNS: 'hr-view-karkuns',
   HR_MANAGE_KARKUNS: 'hr-manage-karkuns',
@@ -38,13 +38,10 @@ const Permissions = {
   // ****************************************************************************************
   // Security Module
   // ****************************************************************************************
-  SECURITY_DELETE_DATA: 'security-delete-data',
   SECURITY_MANAGE_SETUP_DATA: 'security-manage-setup-data',
   SECURITY_VIEW_AUDIT_LOGS: 'security-view-audit-logs',
-  SECURITY_VIEW_USERS: 'security-view-users',
-  SECURITY_MANAGE_USERS: 'security-manage-users',
+  SECURITY_MANAGE_PERMISSIONS: 'security-manage-permissions',
 
-  SECURITY_VIEW_KARKUN_VERIFICATION: 'security-view-karkun-verification',
   SECURITY_VIEW_VISITORS: 'security-view-visitors',
   SECURITY_MANAGE_VISITORS: 'security-manage-visitors',
 
@@ -61,6 +58,34 @@ const Permissions = {
   CORRESPONDENCE_INBOX_VIEW_MESSAGES: 'correspondence-inbox-view-messages',
   CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES:
     'correspondence-inbox-reply-to-messages',
+
+  // ****************************************************************************************
+  // Purchasing Module
+  // ****************************************************************************************
+  PURCHASING_VIEW_VENDORS: 'purchasing-view-vendors',
+  PURCHASING_MANAGE_VENDORS: 'purchasing-manage-vendors',
+  PURCHASING_MANAGE_CATALOG: 'purchasing-manage-catalog',
+
+  PURCHASING_VIEW_REQUISITIONS: 'purchasing-view-requisitions',
+  PURCHASING_MANAGE_REQUISITIONS: 'purchasing-manage-requisitions',
+  PURCHASING_APPROVE_REQUISITIONS: 'purchasing-approve-requisitions',
+
+  PURCHASING_VIEW_ORDERS: 'purchasing-view-orders',
+  PURCHASING_MANAGE_ORDERS: 'purchasing-manage-orders',
+  PURCHASING_APPROVE_ORDERS: 'purchasing-approve-orders',
+
+  PURCHASING_VIEW_RECEIPTS: 'purchasing-view-receipts',
+  PURCHASING_MANAGE_RECEIPTS: 'purchasing-manage-receipts',
+
+  PURCHASING_VIEW_INVOICES: 'purchasing-view-invoices',
+  PURCHASING_MANAGE_INVOICES: 'purchasing-manage-invoices',
+
+  PURCHASING_VIEW_PAYMENTS: 'purchasing-view-payments',
+  PURCHASING_MANAGE_PAYMENTS: 'purchasing-manage-payments',
+
+  PURCHASING_VIEW_REPORTS: 'purchasing-view-reports',
+  PURCHASING_VIEW_AUDIT_LOGS: 'purchasing-view-audit-logs',
+  PURCHASING_MANAGE_PERMISSIONS: 'purchasing-manage-permissions',
 
   // ****************************************************************************************
   // Stores Module

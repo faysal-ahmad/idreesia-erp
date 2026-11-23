@@ -86,8 +86,8 @@ enum Permission {
   ADMIN_MANAGE_ORG_LOCATIONS
 
   HR_MANAGE_KARKUNS_SETUP_DATA
-  HR_DELETE_DATA
   HR_VIEW_AUDIT_LOGS
+  HR_MANAGE_PERMISSIONS
   HR_VIEW_KARKUNS
   HR_MANAGE_KARKUNS
   HR_VIEW_EMPLOYEES
@@ -106,12 +106,9 @@ enum Permission {
   IN_MANAGE_STOCK_ADJUSTMENTS
   IN_APPROVE_STOCK_ADJUSTMENTS
 
-  SECURITY_DELETE_DATA
   SECURITY_MANAGE_SETUP_DATA
   SECURITY_VIEW_AUDIT_LOGS
-  SECURITY_VIEW_USERS
-  SECURITY_MANAGE_USERS
-  SECURITY_VIEW_KARKUN_VERIFICATION
+  SECURITY_MANAGE_PERMISSIONS
   SECURITY_VIEW_VISITORS
   SECURITY_MANAGE_VISITORS
   SECURITY_VIEW_MEHFILS
@@ -122,6 +119,25 @@ enum Permission {
 
   CORRESPONDENCE_INBOX_VIEW_MESSAGES
   CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES
+
+  PURCHASING_VIEW_VENDORS
+  PURCHASING_MANAGE_VENDORS
+  PURCHASING_MANAGE_CATALOG
+  PURCHASING_VIEW_REQUISITIONS
+  PURCHASING_MANAGE_REQUISITIONS
+  PURCHASING_APPROVE_REQUISITIONS
+  PURCHASING_VIEW_ORDERS
+  PURCHASING_MANAGE_ORDERS
+  PURCHASING_APPROVE_ORDERS
+  PURCHASING_VIEW_RECEIPTS
+  PURCHASING_MANAGE_RECEIPTS
+  PURCHASING_VIEW_INVOICES
+  PURCHASING_MANAGE_INVOICES
+  PURCHASING_VIEW_PAYMENTS
+  PURCHASING_MANAGE_PAYMENTS
+  PURCHASING_VIEW_REPORTS
+  PURCHASING_VIEW_AUDIT_LOGS
+  PURCHASING_MANAGE_PERMISSIONS
 }
 
 directive @superAdminOnly on FIELD_DEFINITION
@@ -651,6 +667,59 @@ extend type Query {
     @checkPermissions(permissions: [ADMIN_VIEW_SECURITY_LOGS])
 }
 
+type TrustedDeviceType {
+  _id: String
+  name: String
+  createdAt: String
+  lastUsedAt: String
+  expiresAt: String
+}
+
+type EnrolledTrustedDeviceType {
+  deviceId: String!
+  # Shown once. The app keeps it in secure storage.
+  deviceSecret: String!
+}
+
+extend type Query {
+  # The caller's own trusted (PIN login) devices.
+  myTrustedDevices: [TrustedDeviceType]
+
+  userTrustedDevices(
+    userId: String!
+  ): [TrustedDeviceType]
+    @checkPermissions(permissions: [ADMIN_VIEW_USERS_AND_GROUPS, ADMIN_MANAGE_USERS_AND_GROUPS])
+}
+
+extend type Mutation {
+  # Trusts the caller's device for PIN login. Passing replaceDeviceId swaps an
+  # earlier enrollment of the same device out (changing the PIN). A user with
+  # two-factor on must also pass a fresh code.
+  enrollTrustedDevice(
+    pin: String!
+    name: String
+    code: String
+    replaceDeviceId: String
+  ): EnrolledTrustedDeviceType
+
+  # The caller stops trusting one of their devices.
+  removeTrustedDevice(deviceId: String!): Boolean
+
+  # Stops trusting every device of the user; returns how many were revoked.
+  revokeUserTrustedDevices(
+    userId: String!
+  ): Int @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
+}
+
+type UserGroupMemberType {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+  # The karkun the user account belongs to, if any.
+  karkun: PersonType
+}
+
 type UserGroupType {
   _id: String
   name: String
@@ -658,6 +727,7 @@ type UserGroupType {
   description: String
   permissions: [String]
   instances: [String]
+  users: [UserGroupMemberType]
 }
 
 type PagedUserGroupType {
@@ -676,13 +746,14 @@ extend type Query {
 extend type Mutation {
   createUserGroup(
     name: String!
-    moduleName: String!
+    moduleName: String
     description: String
   ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   updateUserGroup(
     _id: String!
     name: String
+    moduleName: String
     description: String
   ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
@@ -756,6 +827,8 @@ input UserFilter {
   moduleAccess: String
   # 'true': only service accounts; otherwise only regular users.
   serviceAccounts: String
+  # Part of the user name or display name.
+  name: String
   pageIndex: String
   pageSize: String
 }
@@ -1272,9 +1345,9 @@ extend type Query {
     locationId: String
     shiftId: String
   ): [DutyAttendanceSheetRowType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
   karkunDutyAttendanceSheet(karkunId: String!): [DutyAttendanceSheetRowType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
   dutyAttendanceCards(
     month: String!
     dutyId: String!
@@ -1282,7 +1355,7 @@ extend type Query {
     shiftId: String
     karkunIds: [String!]!
   ): [DutyAttendanceCardType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
 }
 
 extend type Mutation {
@@ -1402,9 +1475,9 @@ type JobType {
 
 extend type Query {
   allJobs: [JobType]
-    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA])
   jobById(id: String!): JobType
-    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA])
 }
 
 extend type Mutation {
@@ -1482,7 +1555,7 @@ extend type Mutation {
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
   deleteHrKarkun(_id: String!): Int
-  @checkPermissions(permissions: [HR_DELETE_DATA])
+  @superAdminOnly
 
   setHrKarkunEmploymentInfo(
     _id: String!
@@ -1502,6 +1575,76 @@ extend type Mutation {
 
   removeHrKarkunAttachment(_id: String!, attachmentId: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+}
+
+type HrPermissionHolder {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type HrPermissionGroupHolder {
+  groupId: String!
+  name: String!
+}
+
+type HrPermissionAssignment {
+  key: String!
+  name: String!
+  description: String
+  users: [HrPermissionHolder]
+  groups: [HrPermissionGroupHolder]
+}
+
+type HrPermissionGroup {
+  featureKey: String!
+  featureName: String!
+  permissions: [HrPermissionAssignment]
+}
+
+type HrPermissionKarkunType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PagedHrPermissionKarkunType {
+  data: [HrPermissionKarkunType]
+  totalResults: Int
+}
+
+extend type Query {
+  hrPermissionAssignments: [HrPermissionGroup]
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  # Karkuns to choose from when giving a permission or adding to a group.
+  hrPermissionKarkunSearch(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedHrPermissionKarkunType
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+}
+
+extend type Mutation {
+  addHrPermissionUser(permissionKey: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  addHrPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  removeHrPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  removeHrPermissionUser(permissionKey: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 }
 
 type SalaryType {
@@ -1537,23 +1680,23 @@ type PagedSalaryType {
 extend type Query {
   pagedSalariesByKarkun(queryString: String): PagedSalaryType
     @checkPermissions(
-      permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_DELETE_DATA]
+      permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES]
       dataFieldName: "salaries"
     )
   salariesByMonth(
     month: String!
     jobId: String
   ): [SalaryType]
-    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
   salariesByIds(ids: String!): [SalaryType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
 }
 
 extend type Mutation {
   createSalaries(
     month: String!
   ): Int
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
   updateSalary(
     _id: String!
@@ -1565,12 +1708,12 @@ extend type Mutation {
     arrears: Int
     rashanMadad: Int
   ): SalaryType
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
   deleteSalaries(month: String!, ids: [String]!): Int
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @superAdminOnly
   deleteAllSalaries(month: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES, HR_DELETE_DATA])
+    @superAdminOnly
 }
 
 type TeamMemberType {
@@ -1618,6 +1761,42 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
   removeTeamCoordinator(teamId: String!, karkunId: String!): TeamType
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
+}
+
+type HrGroupMember {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type HrUserGroup {
+  _id: String!
+  name: String!
+  description: String
+  users: [HrGroupMember]
+}
+
+extend type Query {
+  hrUserGroups: [HrUserGroup]
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+}
+
+extend type Mutation {
+  createHrUserGroup(name: String!, description: String): HrUserGroup
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  updateHrUserGroup(_id: String!, name: String!, description: String): HrUserGroup
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  deleteHrUserGroup(_id: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  addHrGroupMember(groupId: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  removeHrGroupMember(groupId: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 }
 
 type ItemWithQuantity {
@@ -2434,6 +2613,1003 @@ extend type Mutation {
   @checkPermissions(permissions: [ADMIN_MANAGE_CITIES])
 }
 
+type PurchasingAttachment {
+  _id: String
+  ownerType: String
+  ownerId: String
+  name: String
+  fileName: String
+  mimeType: String
+  size: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PurchasingAttachmentUpload {
+  uploadId: String
+  # PUT the file here with the Content-Type below.
+  url: String
+  contentType: String
+}
+
+type PurchasingAttachmentDownload {
+  url: String
+  fileName: String
+  mimeType: String
+}
+
+extend type Query {
+  # ownerType is requisition, quote, order, receipt, invoice or payment. The
+  # permission of that kind of document is checked in the resolver.
+  purchasingAttachments(ownerType: String!, ownerId: String!): [PurchasingAttachment]
+    @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS])
+
+  purchasingAttachmentDownload(_id: String!, inline: Boolean): PurchasingAttachmentDownload
+    @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS])
+}
+
+extend type Mutation {
+  # Step 1 of an upload: get a URL, PUT the file to it, then complete.
+  createPurchasingAttachmentUpload(
+    ownerType: String!
+    ownerId: String!
+    fileName: String!
+    mimeType: String!
+    size: Int!
+    name: String
+  ): PurchasingAttachmentUpload
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
+
+  completePurchasingAttachmentUpload(uploadId: String!): PurchasingAttachment
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
+
+  abortPurchasingAttachmentUpload(uploadId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
+
+  deletePurchasingAttachment(_id: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
+}
+
+input PurchasingAuditLogFilter {
+  entityId: String
+  # Limits the result to these document types (e.g. "purchasing-order").
+  entityTypes: [String]
+  # Milliseconds since the epoch, as a string.
+  fromDate: String
+  toDate: String
+  pageIndex: String
+  pageSize: String
+}
+
+extend type Query {
+  pagedPurchasingAuditLogs(filter: PurchasingAuditLogFilter): PagedAuditLogType
+    @checkPermissions(permissions: [PURCHASING_VIEW_AUDIT_LOGS])
+}
+
+type PurchasingCatalogItem {
+  _id: String
+  name: String
+  unit: String
+  category: String
+  company: String
+  imageUrl: String
+  description: String
+  defaultUnitPrice: Float
+  lastUnitPrice: Float
+  lastVendorId: String
+  isActive: Boolean
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingCatalogItems {
+  totalResults: Int
+  data: [PurchasingCatalogItem]
+}
+
+extend type Query {
+  purchasingCatalogItemById(_id: String!): PurchasingCatalogItem
+    @checkPermissions(permissions: [PURCHASING_MANAGE_CATALOG, PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES])
+
+  pagedPurchasingCatalogItems(
+    search: String
+    isActive: Boolean
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingCatalogItems
+    @checkPermissions(permissions: [PURCHASING_MANAGE_CATALOG, PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES])
+}
+
+extend type Mutation {
+  createPurchasingCatalogItem(
+    name: String!
+    unit: String!
+    category: String
+    company: String
+    description: String
+    defaultUnitPrice: Float
+  ): PurchasingCatalogItem
+    @checkPermissions(permissions: [PURCHASING_MANAGE_CATALOG])
+
+  # Optional fields left out are cleared.
+  updatePurchasingCatalogItem(
+    _id: String!
+    name: String!
+    unit: String!
+    category: String
+    company: String
+    description: String
+    defaultUnitPrice: Float
+  ): PurchasingCatalogItem
+    @checkPermissions(permissions: [PURCHASING_MANAGE_CATALOG])
+
+  # imageData is base64 (with or without a data: URL prefix).
+  setPurchasingCatalogItemImage(_id: String!, imageData: String!): PurchasingCatalogItem
+    @checkPermissions(permissions: [PURCHASING_MANAGE_CATALOG])
+
+  removePurchasingCatalogItemImage(_id: String!): PurchasingCatalogItem
+    @checkPermissions(permissions: [PURCHASING_MANAGE_CATALOG])
+
+  setPurchasingCatalogItemActive(
+    _id: String!
+    isActive: Boolean!
+  ): PurchasingCatalogItem
+    @checkPermissions(permissions: [PURCHASING_MANAGE_CATALOG])
+
+  removePurchasingCatalogItem(_id: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_CATALOG])
+}
+
+type PurchasingInvoiceLine {
+  _id: String
+  catalogItemId: String
+  orderLineId: String
+  description: String
+  unit: String
+  quantity: Float
+  unitPrice: Float
+  taxRate: Float
+}
+
+type PurchasingInvoice {
+  _id: String
+  number: String
+  vendorInvoiceNo: String
+  vendorId: String
+  vendor: PurchasingVendor
+  orderId: String
+  order: PurchasingOrder
+  invoiceDate: String
+  dueDate: String
+  notes: String
+  lines: [PurchasingInvoiceLine]
+  subtotal: Float
+  taxTotal: Float
+  total: Float
+  paidAmount: Float
+  # What is still owed: total minus what was paid.
+  balance: Float
+  status: String
+  isDisputed: Boolean
+  voidedAt: String
+  voidedBy: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingInvoices {
+  totalResults: Int
+  data: [PurchasingInvoice]
+}
+
+extend type Query {
+  purchasingInvoiceById(_id: String!): PurchasingInvoice
+    @checkPermissions(permissions: [PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS])
+
+  pagedPurchasingInvoices(
+    search: String
+    status: String
+    vendorId: String
+    orderId: String
+    isDisputed: Boolean
+    overdue: Boolean
+    fromDate: String
+    toDate: String
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingInvoices
+    @checkPermissions(permissions: [PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS])
+}
+
+extend type Mutation {
+  # Billing for more than was received fails unless allowOverBilling is set;
+  # the invoice is then marked disputed.
+  createPurchasingInvoice(
+    vendorId: String!
+    orderId: String
+    vendorInvoiceNo: String!
+    invoiceDate: String!
+    dueDate: String
+    notes: String
+    allowOverBilling: Boolean
+    lines: [PurchasingPricedLineInput!]!
+  ): PurchasingInvoice
+    @checkPermissions(permissions: [PURCHASING_MANAGE_INVOICES])
+
+  updatePurchasingInvoice(
+    _id: String!
+    vendorInvoiceNo: String!
+    dueDate: String!
+    notes: String
+  ): PurchasingInvoice
+    @checkPermissions(permissions: [PURCHASING_MANAGE_INVOICES])
+
+  setPurchasingInvoiceDisputed(_id: String!, isDisputed: Boolean!): PurchasingInvoice
+    @checkPermissions(permissions: [PURCHASING_MANAGE_INVOICES])
+
+  voidPurchasingInvoice(_id: String!): PurchasingInvoice
+    @checkPermissions(permissions: [PURCHASING_MANAGE_INVOICES])
+}
+
+type PurchasingOrderLine {
+  _id: String
+  catalogItemId: String
+  description: String
+  unit: String
+  quantity: Float
+  unitPrice: Float
+  taxRate: Float
+  receivedQuantity: Float
+  invoicedQuantity: Float
+}
+
+type PurchasingOrder {
+  _id: String
+  number: String
+  vendorId: String
+  vendor: PurchasingVendor
+  requisitionId: String
+  quoteId: String
+  orderDate: String
+  expectedDeliveryDate: String
+  deliveryAddress: String
+  paymentTermsDays: Int
+  notes: String
+  lines: [PurchasingOrderLine]
+  subtotal: Float
+  taxTotal: Float
+  discount: Float
+  shipping: Float
+  total: Float
+  status: String
+  version: Int
+  submittedAt: String
+  submittedBy: String
+  approvedAt: String
+  approvedBy: String
+  rejectionReason: String
+  sentAt: String
+  sentBy: String
+  closedAt: String
+  closedBy: String
+  cancelledAt: String
+  cancelledBy: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingOrders {
+  totalResults: Int
+  data: [PurchasingOrder]
+}
+
+extend type Query {
+  purchasingOrderById(_id: String!): PurchasingOrder
+    @checkPermissions(permissions: [PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES])
+
+  pagedPurchasingOrders(
+    search: String
+    status: String
+    # Any of these statuses; ignored when status is given.
+    statuses: [String]
+    vendorId: String
+    requisitionId: String
+    fromDate: String
+    toDate: String
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingOrders
+    @checkPermissions(permissions: [PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES])
+}
+
+extend type Mutation {
+  createPurchasingOrder(
+    vendorId: String!
+    orderDate: String!
+    expectedDeliveryDate: String
+    deliveryAddress: String
+    paymentTermsDays: Int
+    notes: String
+    discount: Float
+    shipping: Float
+    lines: [PurchasingPricedLineInput!]!
+  ): PurchasingOrder
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  # Only a draft can be edited. version is the version that was loaded.
+  updatePurchasingOrder(
+    _id: String!
+    version: Int!
+    vendorId: String!
+    orderDate: String!
+    expectedDeliveryDate: String
+    deliveryAddress: String
+    paymentTermsDays: Int
+    notes: String
+    discount: Float
+    shipping: Float
+    lines: [PurchasingPricedLineInput!]!
+  ): PurchasingOrder
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  createPurchasingOrderFromRequisition(requisitionId: String!, vendorId: String!): PurchasingOrder
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  createPurchasingOrderFromQuote(quoteId: String!): PurchasingOrder
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  submitPurchasingOrder(_id: String!): PurchasingOrder
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  markPurchasingOrderSent(_id: String!): PurchasingOrder
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  closePurchasingOrder(_id: String!): PurchasingOrder
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  cancelPurchasingOrder(_id: String!): PurchasingOrder
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  deletePurchasingOrder(_id: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  approvePurchasingOrder(_id: String!): PurchasingOrder
+    @checkPermissions(permissions: [PURCHASING_APPROVE_ORDERS])
+
+  # Sends a submitted order back to a draft.
+  rejectPurchasingOrder(_id: String!, reason: String!): PurchasingOrder
+    @checkPermissions(permissions: [PURCHASING_APPROVE_ORDERS])
+}
+
+type PurchasingPaymentAllocation {
+  invoiceId: String
+  invoice: PurchasingInvoice
+  amount: Float
+}
+
+input PurchasingPaymentAllocationInput {
+  invoiceId: String!
+  amount: Float!
+}
+
+type PurchasingPayment {
+  _id: String
+  number: String
+  vendorId: String
+  vendor: PurchasingVendor
+  paymentDate: String
+  method: String
+  reference: String
+  notes: String
+  amount: Float
+  allocations: [PurchasingPaymentAllocation]
+  status: String
+  voidedAt: String
+  voidedBy: String
+  voidReason: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingPayments {
+  totalResults: Int
+  data: [PurchasingPayment]
+}
+
+extend type Query {
+  purchasingPaymentById(_id: String!): PurchasingPayment
+    @checkPermissions(permissions: [PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS])
+
+  pagedPurchasingPayments(
+    search: String
+    status: String
+    vendorId: String
+    fromDate: String
+    toDate: String
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingPayments
+    @checkPermissions(permissions: [PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS])
+}
+
+extend type Mutation {
+  postPurchasingPayment(
+    vendorId: String!
+    paymentDate: String!
+    method: String!
+    reference: String
+    notes: String
+    allocations: [PurchasingPaymentAllocationInput!]!
+  ): PurchasingPayment
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PAYMENTS])
+
+  voidPurchasingPayment(_id: String!, reason: String!): PurchasingPayment
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PAYMENTS])
+}
+
+type PurchasingPermissionHolder {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type PurchasingPermissionGroupHolder {
+  groupId: String!
+  name: String!
+}
+
+type PurchasingPermissionAssignment {
+  key: String!
+  name: String!
+  description: String
+  users: [PurchasingPermissionHolder]
+  groups: [PurchasingPermissionGroupHolder]
+}
+
+type PurchasingPermissionGroup {
+  featureKey: String!
+  featureName: String!
+  permissions: [PurchasingPermissionAssignment]
+}
+
+type PurchasingKarkunType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PagedPurchasingKarkunType {
+  data: [PurchasingKarkunType]
+  totalResults: Int
+}
+
+extend type Query {
+  purchasingPermissionAssignments: [PurchasingPermissionGroup]
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  # Karkuns to choose from when giving a permission or adding to a group.
+  purchasingKarkunSearch(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPurchasingKarkunType
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+}
+
+extend type Mutation {
+  addPurchasingPermissionUser(permissionKey: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  addPurchasingPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  removePurchasingPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  removePurchasingPermissionUser(permissionKey: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+}
+
+# A line of a quote, order or invoice that has a price.
+input PurchasingPricedLineInput {
+  _id: String
+  catalogItemId: String
+  description: String
+  unit: String
+  quantity: Float!
+  unitPrice: Float!
+  taxRate: Float
+  # Invoices only: the order line being billed.
+  orderLineId: String
+}
+
+type PurchasingQuoteLine {
+  _id: String
+  catalogItemId: String
+  description: String
+  unit: String
+  quantity: Float
+  unitPrice: Float
+}
+
+type PurchasingQuote {
+  _id: String
+  requisitionId: String
+  vendorId: String
+  vendor: PurchasingVendor
+  reference: String
+  quoteDate: String
+  validUntil: String
+  lines: [PurchasingQuoteLine]
+  total: Float
+  status: String
+  notes: String
+  version: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingQuotes {
+  totalResults: Int
+  data: [PurchasingQuote]
+}
+
+extend type Query {
+  purchasingQuoteById(_id: String!): PurchasingQuote
+    @checkPermissions(permissions: [PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS])
+
+  pagedPurchasingQuotes(
+    search: String
+    status: String
+    vendorId: String
+    requisitionId: String
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingQuotes
+    @checkPermissions(permissions: [PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS])
+}
+
+extend type Mutation {
+  createPurchasingQuote(
+    requisitionId: String
+    vendorId: String!
+    reference: String
+    quoteDate: String!
+    validUntil: String
+    notes: String
+    lines: [PurchasingPricedLineInput!]!
+  ): PurchasingQuote
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  updatePurchasingQuote(
+    _id: String!
+    version: Int!
+    requisitionId: String
+    vendorId: String!
+    reference: String
+    quoteDate: String!
+    validUntil: String
+    notes: String
+    lines: [PurchasingPricedLineInput!]!
+  ): PurchasingQuote
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  selectPurchasingQuote(_id: String!): PurchasingQuote
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  rejectPurchasingQuote(_id: String!): PurchasingQuote
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+
+  deletePurchasingQuote(_id: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
+}
+
+type PurchasingReceiptLine {
+  _id: String
+  orderLineId: String
+  description: String
+  unit: String
+  receivedQuantity: Float
+  rejectedQuantity: Float
+  remarks: String
+}
+
+input PurchasingReceiptLineInput {
+  orderLineId: String!
+  receivedQuantity: Float!
+  rejectedQuantity: Float
+  remarks: String
+}
+
+type PurchasingReceipt {
+  _id: String
+  number: String
+  orderId: String
+  order: PurchasingOrder
+  vendorId: String
+  vendor: PurchasingVendor
+  receivedDate: String
+  receivedBy: String
+  receivedByPerson: PersonBasicType
+  deliveryNoteNo: String
+  notes: String
+  lines: [PurchasingReceiptLine]
+  status: String
+  voidedAt: String
+  voidedBy: String
+  voidReason: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingReceipts {
+  totalResults: Int
+  data: [PurchasingReceipt]
+}
+
+extend type Query {
+  purchasingReceiptById(_id: String!): PurchasingReceipt
+    @checkPermissions(permissions: [PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS])
+
+  pagedPurchasingReceipts(
+    search: String
+    status: String
+    vendorId: String
+    orderId: String
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingReceipts
+    @checkPermissions(permissions: [PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS])
+}
+
+extend type Mutation {
+  postPurchasingReceipt(
+    orderId: String!
+    receivedDate: String!
+    receivedBy: String
+    deliveryNoteNo: String
+    notes: String
+    lines: [PurchasingReceiptLineInput!]!
+  ): PurchasingReceipt
+    @checkPermissions(permissions: [PURCHASING_MANAGE_RECEIPTS])
+
+  voidPurchasingReceipt(_id: String!, reason: String!): PurchasingReceipt
+    @checkPermissions(permissions: [PURCHASING_MANAGE_RECEIPTS])
+}
+
+type PurchasingDashboard {
+  requisitionsAwaitingApproval: Int
+  ordersAwaitingApproval: Int
+  openOrders: Int
+  overdueInvoices: Int
+  totalPayable: Float
+  overdueAmount: Float
+}
+
+type PurchasingVendorSpending {
+  vendorId: String
+  vendor: PurchasingVendor
+  invoiceCount: Int
+  total: Float
+  paidAmount: Float
+}
+
+type PurchasingMonthlySpending {
+  month: String
+  invoiceCount: Int
+  total: Float
+}
+
+type PurchasingOpenOrder {
+  orderId: String
+  number: String
+  vendorId: String
+  vendor: PurchasingVendor
+  status: String
+  orderDate: String
+  expectedDeliveryDate: String
+  total: Float
+  outstandingValue: Float
+  isOverdue: Boolean
+}
+
+type PurchasingPayablesAgingRow {
+  vendorId: String
+  vendor: PurchasingVendor
+  current: Float
+  days1To30: Float
+  days31To60: Float
+  days61Plus: Float
+  total: Float
+}
+
+type PurchasingLedgerEntry {
+  date: String
+  # invoice or payment
+  type: String
+  documentId: String
+  number: String
+  reference: String
+  # Positive for an invoice, negative for a payment.
+  amount: Float
+  balance: Float
+}
+
+type PurchasingVendorLedger {
+  openingBalance: Float
+  closingBalance: Float
+  entries: [PurchasingLedgerEntry]
+}
+
+extend type Query {
+  purchasingDashboard: PurchasingDashboard
+    @checkPermissions(permissions: [PURCHASING_VIEW_REPORTS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_ORDERS, PURCHASING_VIEW_INVOICES, PURCHASING_VIEW_PAYMENTS])
+
+  purchasingSpendingByVendor(fromDate: String, toDate: String): [PurchasingVendorSpending]
+    @checkPermissions(permissions: [PURCHASING_VIEW_REPORTS])
+
+  purchasingSpendingByMonth(fromDate: String, toDate: String): [PurchasingMonthlySpending]
+    @checkPermissions(permissions: [PURCHASING_VIEW_REPORTS])
+
+  purchasingOpenOrders: [PurchasingOpenOrder]
+    @checkPermissions(permissions: [PURCHASING_VIEW_REPORTS])
+
+  purchasingPayablesAging: [PurchasingPayablesAgingRow]
+    @checkPermissions(permissions: [PURCHASING_VIEW_REPORTS])
+
+  purchasingVendorLedger(vendorId: String!, fromDate: String, toDate: String): PurchasingVendorLedger
+    @checkPermissions(permissions: [PURCHASING_VIEW_REPORTS])
+}
+
+type PurchasingRequisitionLine {
+  _id: String
+  catalogItemId: String
+  description: String
+  unit: String
+  quantity: Float
+  estimatedUnitPrice: Float
+}
+
+input PurchasingRequisitionLineInput {
+  _id: String
+  catalogItemId: String
+  description: String
+  unit: String
+  quantity: Float!
+  estimatedUnitPrice: Float
+}
+
+type PurchasingRequisition {
+  _id: String
+  number: String
+  title: String
+  purpose: String
+  requestedBy: String
+  requestedByPerson: PersonBasicType
+  neededBy: String
+  lines: [PurchasingRequisitionLine]
+  estimatedTotal: Float
+  status: String
+  version: Int
+  submittedAt: String
+  submittedBy: String
+  approvedAt: String
+  approvedBy: String
+  rejectedAt: String
+  rejectedBy: String
+  rejectionReason: String
+  cancelledAt: String
+  cancelledBy: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingRequisitions {
+  totalResults: Int
+  data: [PurchasingRequisition]
+}
+
+extend type Query {
+  purchasingRequisitionById(_id: String!): PurchasingRequisition
+    @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_MANAGE_ORDERS])
+
+  pagedPurchasingRequisitions(
+    search: String
+    status: String
+    requestedBy: String
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingRequisitions
+    @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_MANAGE_ORDERS])
+}
+
+extend type Mutation {
+  createPurchasingRequisition(
+    title: String!
+    purpose: String
+    requestedBy: String
+    neededBy: String
+    lines: [PurchasingRequisitionLineInput!]!
+  ): PurchasingRequisition
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
+
+  # Only a draft can be edited. version is the version that was loaded.
+  updatePurchasingRequisition(
+    _id: String!
+    version: Int!
+    title: String!
+    purpose: String
+    requestedBy: String
+    neededBy: String
+    lines: [PurchasingRequisitionLineInput!]!
+  ): PurchasingRequisition
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
+
+  submitPurchasingRequisition(_id: String!): PurchasingRequisition
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
+
+  reopenPurchasingRequisition(_id: String!): PurchasingRequisition
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
+
+  cancelPurchasingRequisition(_id: String!): PurchasingRequisition
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
+
+  deletePurchasingRequisition(_id: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
+
+  approvePurchasingRequisition(_id: String!): PurchasingRequisition
+    @checkPermissions(permissions: [PURCHASING_APPROVE_REQUISITIONS])
+
+  rejectPurchasingRequisition(_id: String!, reason: String!): PurchasingRequisition
+    @checkPermissions(permissions: [PURCHASING_APPROVE_REQUISITIONS])
+}
+
+type PurchasingGroupMember {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type PurchasingUserGroup {
+  _id: String!
+  name: String!
+  description: String
+  users: [PurchasingGroupMember]
+}
+
+extend type Query {
+  purchasingUserGroups: [PurchasingUserGroup]
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+}
+
+extend type Mutation {
+  createPurchasingUserGroup(name: String!, description: String): PurchasingUserGroup
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  updatePurchasingUserGroup(_id: String!, name: String!, description: String): PurchasingUserGroup
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  deletePurchasingUserGroup(_id: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  addPurchasingGroupMember(groupId: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  removePurchasingGroupMember(groupId: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+}
+
+type PurchasingVendor {
+  _id: String
+  name: String
+  contactPerson: String
+  phone: String
+  email: String
+  address: String
+  taxId: String
+  paymentTermsDays: Int
+  bankName: String
+  bankAccountTitle: String
+  bankAccountNumber: String
+  notes: String
+  isActive: Boolean
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingVendors {
+  totalResults: Int
+  data: [PurchasingVendor]
+}
+
+extend type Query {
+  purchasingVendorById(_id: String!): PurchasingVendor
+    @checkPermissions(permissions: [PURCHASING_VIEW_VENDORS, PURCHASING_MANAGE_VENDORS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS])
+
+  pagedPurchasingVendors(
+    search: String
+    isActive: Boolean
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingVendors
+    @checkPermissions(permissions: [PURCHASING_VIEW_VENDORS, PURCHASING_MANAGE_VENDORS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS])
+}
+
+extend type Mutation {
+  createPurchasingVendor(
+    name: String!
+    contactPerson: String
+    phone: String
+    email: String
+    address: String
+    taxId: String
+    paymentTermsDays: Int
+    bankName: String
+    bankAccountTitle: String
+    bankAccountNumber: String
+    notes: String
+  ): PurchasingVendor
+    @checkPermissions(permissions: [PURCHASING_MANAGE_VENDORS])
+
+  # Optional fields left out are cleared.
+  updatePurchasingVendor(
+    _id: String!
+    name: String!
+    contactPerson: String
+    phone: String
+    email: String
+    address: String
+    taxId: String
+    paymentTermsDays: Int
+    bankName: String
+    bankAccountTitle: String
+    bankAccountNumber: String
+    notes: String
+  ): PurchasingVendor
+    @checkPermissions(permissions: [PURCHASING_MANAGE_VENDORS])
+
+  setPurchasingVendorActive(_id: String!, isActive: Boolean!): PurchasingVendor
+    @checkPermissions(permissions: [PURCHASING_MANAGE_VENDORS])
+
+  removePurchasingVendor(_id: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_VENDORS])
+}
+
 type ReferenceDutyType {
   _id: String
   name: String
@@ -2668,6 +3844,76 @@ extend type Mutation {
 
   removeMehfil(_id: String!): Int
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
+}
+
+type SecurityPermissionHolder {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type SecurityPermissionGroupHolder {
+  groupId: String!
+  name: String!
+}
+
+type SecurityPermissionAssignment {
+  key: String!
+  name: String!
+  description: String
+  users: [SecurityPermissionHolder]
+  groups: [SecurityPermissionGroupHolder]
+}
+
+type SecurityPermissionGroup {
+  featureKey: String!
+  featureName: String!
+  permissions: [SecurityPermissionAssignment]
+}
+
+type SecurityPermissionKarkunType {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PagedSecurityPermissionKarkunType {
+  data: [SecurityPermissionKarkunType]
+  totalResults: Int
+}
+
+extend type Query {
+  securityPermissionAssignments: [SecurityPermissionGroup]
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  # Karkuns to choose from when giving a permission or adding to a group.
+  securityPermissionKarkunSearch(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedSecurityPermissionKarkunType
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+}
+
+extend type Mutation {
+  addSecurityPermissionUser(permissionKey: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  addSecurityPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  removeSecurityPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  removeSecurityPermissionUser(permissionKey: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 }
 
 type SecurityServerAlertType {
@@ -2986,16 +4232,40 @@ type SecurityServerProfileImageType {
       @checkPermissions(permissions: [SECURITY_VIEW_SECURITY_SERVER_DATA])
   }
 
+type SecurityGroupMember {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type SecurityUserGroup {
+  _id: String!
+  name: String!
+  description: String
+  users: [SecurityGroupMember]
+}
+
 extend type Query {
-  pagedSecurityUsers(filter: UserFilter): PagedUserType
-    @checkPermissions(permissions: [SECURITY_VIEW_USERS, SECURITY_MANAGE_USERS])
+  securityUserGroups: [SecurityUserGroup]
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 }
 
 extend type Mutation {
-  setSecurityUserPermissions(
-    userId: String!
-    permissions: [String]!
-  ): UserType @checkPermissions(permissions: [SECURITY_MANAGE_USERS])
+  createSecurityUserGroup(name: String!, description: String): SecurityUserGroup
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  updateSecurityUserGroup(_id: String!, name: String!, description: String): SecurityUserGroup
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  deleteSecurityUserGroup(_id: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  addSecurityGroupMember(groupId: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  removeSecurityGroupMember(groupId: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 }
 
 type VisitorStayType {
@@ -3167,7 +4437,7 @@ extend type Mutation {
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
 
   deleteSecurityVisitor(_id: String!): Int
-  @checkPermissions(permissions: [SECURITY_DELETE_DATA])
+  @superAdminOnly
 
   setSecurityVisitorImage(_id: String!, imageData: String!): PersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])

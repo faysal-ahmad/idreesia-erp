@@ -8,6 +8,7 @@ export default new SimpleSchema({
   },
   moduleName: {
     type: String,
+    optional: true,
   },
   description: {
     type: String,

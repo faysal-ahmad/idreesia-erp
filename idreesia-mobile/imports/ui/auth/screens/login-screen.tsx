@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Form, Input } from 'antd-mobile';
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Input, SpinLoading } from 'antd-mobile';
 import { useMutation } from '@apollo/client/react';
 import { TwoFactorErrorCode } from 'meteor/idreesia-common/constants';
 import { showError } from '../../layout';
@@ -9,6 +9,8 @@ import { ChatPaths } from '../../chat';
 import { AuthLayout, PasswordInput } from '../../components';
 import { MOBILE_UPDATE_LOGIN_TIME } from '../../gql';
 import { getErrorCode, loginWithPassword } from '../accounts';
+import { loadStoredDevice, type StoredDevice } from '../device-store';
+import { PinLoginScreen } from './pin-login-screen';
 
 interface LoginFormValues {
   userName: string;
@@ -26,6 +28,16 @@ export const LoginScreen = () => {
   const [credentials, setCredentials] = useState<LoginFormValues | null>(null);
   const [codeForm] = Form.useForm<CodeFormValues>();
   const [updateLoginTime] = useMutation(MOBILE_UPDATE_LOGIN_TIME);
+  // The device's quick-login credential: undefined while it loads, null when
+  // there is none. With one, the PIN screen comes first.
+  const [device, setDevice] = useState<StoredDevice | null | undefined>(undefined);
+  const [usePassword, setUsePassword] = useState(false);
+
+  useEffect(() => {
+    loadStoredDevice()
+      .then(setDevice)
+      .catch(() => setDevice(null));
+  }, []);
 
   const signIn = async (values: LoginFormValues, code?: string) => {
     const { userName, password } = values;
@@ -57,10 +69,33 @@ export const LoginScreen = () => {
     setCredentials(null);
   };
 
+  if (device === undefined) {
+    return (
+      <div className="app-center">
+        <SpinLoading color="primary" style={{ '--size': '40px' }} />
+      </div>
+    );
+  }
+
+  if (device && !usePassword) {
+    return (
+      <PinLoginScreen
+        device={device}
+        onDeviceLost={() => setDevice(null)}
+        onUsePassword={() => setUsePassword(true)}
+      />
+    );
+  }
+
   return (
     <AuthLayout
       footer={
         <>
+          {device && (
+            <Button fill="none" onClick={() => setUsePassword(false)}>
+              Use PIN instead
+            </Button>
+          )}
           <Link to="/forgot-password">Forgot password?</Link>
           <span>
             Don&apos;t have an account? <Link to="/register">Register</Link>

@@ -504,6 +504,12 @@ export type DutyType = {
   usedCount?: Maybe<Scalars['Int']['output']>;
 };
 
+export type EnrolledTrustedDeviceType = {
+  __typename?: 'EnrolledTrustedDeviceType';
+  deviceId: Scalars['String']['output'];
+  deviceSecret: Scalars['String']['output'];
+};
+
 export type FaceVectorResultType = {
   __typename?: 'FaceVectorResultType';
   status?: Maybe<Scalars['String']['output']>;
@@ -960,6 +966,7 @@ export type Mutation = {
   disableTwoFactor?: Maybe<UserType>;
   enableCommitteeFeature: Scalars['Boolean']['output'];
   enableTwoFactor?: Maybe<UserType>;
+  enrollTrustedDevice?: Maybe<EnrolledTrustedDeviceType>;
   fixNameSpelling?: Maybe<Scalars['Int']['output']>;
   hardDeletePeople?: Maybe<Scalars['Int']['output']>;
   importSecurityVisitorsCsvData?: Maybe<Scalars['String']['output']>;
@@ -1010,6 +1017,7 @@ export type Mutation = {
   removeTeam?: Maybe<Scalars['Int']['output']>;
   removeTeamCoordinator?: Maybe<TeamType>;
   removeTeamMember?: Maybe<TeamType>;
+  removeTrustedDevice?: Maybe<Scalars['Boolean']['output']>;
   removeVendor?: Maybe<Scalars['Int']['output']>;
   removeWorkspaceMonitoringProfilePhoto?: Maybe<WorkspaceMonitoringProfileType>;
   renameFreeFormCity?: Maybe<Scalars['Int']['output']>;
@@ -1021,6 +1029,7 @@ export type Mutation = {
   resetUserPassword?: Maybe<UserType>;
   restorePerson?: Maybe<Scalars['Int']['output']>;
   retryFailedJob?: Maybe<Scalars['Boolean']['output']>;
+  revokeUserTrustedDevices?: Maybe<Scalars['Int']['output']>;
   runScheduledJobNow?: Maybe<Scalars['Boolean']['output']>;
   selectPurchasingQuote?: Maybe<PurchasingQuote>;
   sendInboxMessage?: Maybe<InboxMessageType>;
@@ -1841,6 +1850,14 @@ export type MutationEnableTwoFactorArgs = {
 };
 
 
+export type MutationEnrollTrustedDeviceArgs = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pin: Scalars['String']['input'];
+  replaceDeviceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationFixNameSpellingArgs = {
   existingSpelling: Scalars['String']['input'];
   newSpelling: Scalars['String']['input'];
@@ -2133,6 +2150,11 @@ export type MutationRemoveTeamMemberArgs = {
 };
 
 
+export type MutationRemoveTrustedDeviceArgs = {
+  deviceId: Scalars['String']['input'];
+};
+
+
 export type MutationRemoveVendorArgs = {
   _id: Scalars['String']['input'];
   physicalStoreId: Scalars['String']['input'];
@@ -2193,6 +2215,11 @@ export type MutationRestorePersonArgs = {
 
 export type MutationRetryFailedJobArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type MutationRevokeUserTrustedDevicesArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -4634,6 +4661,7 @@ export type Query = {
   myMehfilPermissionsLocations: Array<Maybe<MyMehfilPermissionsLocationType>>;
   myNotificationCounts?: Maybe<Array<Maybe<NotificationCountType>>>;
   myNotifications?: Maybe<Array<Maybe<NotificationType>>>;
+  myTrustedDevices?: Maybe<Array<Maybe<TrustedDeviceType>>>;
   orgLocationById?: Maybe<OrgLocationType>;
   orgLocationFeaturePermissions?: Maybe<Array<Maybe<OrgLocationFeaturePermissionsType>>>;
   pagedCities?: Maybe<PagedCityType>;
@@ -4726,6 +4754,7 @@ export type Query = {
   userById?: Maybe<UserType>;
   userGroupById?: Maybe<UserGroupType>;
   userNames?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  userTrustedDevices?: Maybe<Array<Maybe<TrustedDeviceType>>>;
   vendorById?: Maybe<Vendor>;
   vendorsByPhysicalStoreId?: Maybe<Array<Maybe<Vendor>>>;
   visitorStayById?: Maybe<VisitorStayType>;
@@ -5465,6 +5494,11 @@ export type QueryUserGroupByIdArgs = {
 
 export type QueryUserNamesArgs = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type QueryUserTrustedDevicesArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -6210,6 +6244,15 @@ export type TeamType = {
   name?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type TrustedDeviceType = {
+  __typename?: 'TrustedDeviceType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  expiresAt?: Maybe<Scalars['String']['output']>;
+  lastUsedAt?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type TwoFactorSetupType = {

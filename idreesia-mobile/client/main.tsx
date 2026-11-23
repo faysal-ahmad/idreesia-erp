@@ -13,6 +13,7 @@ import './main.css';
 import 'leaflet/dist/leaflet.css';
 import '../imports/ui/account/account-screen.styles.css';
 import '../imports/ui/account/two-factor.styles.css';
+import '../imports/ui/auth/pin.styles.css';
 import '../imports/ui/chat/chat-screen.styles.css';
 import '../imports/ui/components/message-composer/message-composer.styles.css';
 import '../imports/ui/components/collapsible-section.styles.css';

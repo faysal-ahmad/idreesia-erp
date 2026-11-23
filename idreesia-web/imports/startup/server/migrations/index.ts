@@ -76,6 +76,7 @@ import './72-create-city-location-mapping-indexes';
 import './73-location-is-the-duties-attendance-workspace';
 import './74-attendance-geofence-meters';
 import './75-create-purchasing-indexes';
+import './76-create-trusted-device-indexes';
 
 Migrations.config({
   log: true,

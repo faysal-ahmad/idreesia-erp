@@ -688,6 +688,28 @@ export type MobileRegisterUserMutationVariables = Exact<{
 
 export type MobileRegisterUserMutation = { registerUser: number | null };
 
+export type MobileMyTrustedDevicesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MobileMyTrustedDevicesQuery = { myTrustedDevices: Array<{ _id: string | null, name: string | null, createdAt: string | null, lastUsedAt: string | null } | null> | null };
+
+export type MobileEnrollTrustedDeviceMutationVariables = Exact<{
+  pin: string;
+  name?: string | null | undefined;
+  code?: string | null | undefined;
+  replaceDeviceId?: string | null | undefined;
+}>;
+
+
+export type MobileEnrollTrustedDeviceMutation = { enrollTrustedDevice: { deviceId: string, deviceSecret: string } | null };
+
+export type MobileRemoveTrustedDeviceMutationVariables = Exact<{
+  deviceId: string;
+}>;
+
+
+export type MobileRemoveTrustedDeviceMutation = { removeTrustedDevice: boolean | null };
+
 export type MobileStartTwoFactorSetupMutationVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2907,6 +2929,13 @@ export type ResetUserPasswordMutationVariables = Exact<{
 
 export type ResetUserPasswordMutation = { resetUserPassword: { _id: string | null } | null };
 
+export type RevokeUserTrustedDevicesMutationVariables = Exact<{
+  userId: string;
+}>;
+
+
+export type RevokeUserTrustedDevicesMutation = { revokeUserTrustedDevices: number | null };
+
 export type SetInstanceAccessMutationVariables = Exact<{
   userId: string;
   instances: Array<string | null | undefined> | string;
@@ -2948,6 +2977,13 @@ export type AdminUserByIdQueryVariables = Exact<{
 
 
 export type AdminUserByIdQuery = { userById: { _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, hasChatAccount: boolean | null, chatUserId: string | null, twoFactorEnabled: boolean | null, isSuperAdmin: boolean | null, isServiceAccount: boolean | null, loginBlockedAddresses: number | null, untrustedLoginAddressesBlocked: boolean | null, instances: Array<string | null> | null, permissions: Array<string | null> | null, personId: string | null, karkun: { _id: string | null, sharedData: { name: string | null } | null } | null } | null };
+
+export type UserTrustedDevicesQueryVariables = Exact<{
+  userId: string;
+}>;
+
+
+export type UserTrustedDevicesQuery = { userTrustedDevices: Array<{ _id: string | null, name: string | null, createdAt: string | null, lastUsedAt: string | null } | null> | null };
 
 export type UserNamesQueryVariables = Exact<{
   ids?: Array<string | null | undefined> | string | null | undefined;

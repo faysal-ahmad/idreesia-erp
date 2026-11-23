@@ -127,6 +127,7 @@ export type ResolversTypes = ResolversObject<{
   DutyShiftType: ResolverTypeWrapper<Types.DutyShiftType>;
   DutyType: ResolverTypeWrapper<Types.DutyType>;
   EmailAddress: ResolverTypeWrapper<Types.Scalars['EmailAddress']['output']>;
+  EnrolledTrustedDeviceType: ResolverTypeWrapper<Types.EnrolledTrustedDeviceType>;
   FaceVectorResultType: ResolverTypeWrapper<Types.FaceVectorResultType>;
   Float: ResolverTypeWrapper<Types.Scalars['Float']['output']>;
   FreeFormCityType: ResolverTypeWrapper<Types.FreeFormCityType>;
@@ -310,6 +311,7 @@ export type ResolversTypes = ResolversObject<{
   TeamType: ResolverTypeWrapper<Types.TeamType>;
   Time: ResolverTypeWrapper<Types.Scalars['Time']['output']>;
   Timestamp: ResolverTypeWrapper<Types.Scalars['Timestamp']['output']>;
+  TrustedDeviceType: ResolverTypeWrapper<Types.TrustedDeviceType>;
   TwoFactorSetupType: ResolverTypeWrapper<Types.TwoFactorSetupType>;
   URL: ResolverTypeWrapper<Types.Scalars['URL']['output']>;
   UserAccountAvailabilityType: ResolverTypeWrapper<Types.UserAccountAvailabilityType>;
@@ -434,6 +436,7 @@ export type ResolversParentTypes = ResolversObject<{
   DutyShiftType: Types.DutyShiftType;
   DutyType: Types.DutyType;
   EmailAddress: Types.Scalars['EmailAddress']['output'];
+  EnrolledTrustedDeviceType: Types.EnrolledTrustedDeviceType;
   FaceVectorResultType: Types.FaceVectorResultType;
   Float: Types.Scalars['Float']['output'];
   FreeFormCityType: Types.FreeFormCityType;
@@ -613,6 +616,7 @@ export type ResolversParentTypes = ResolversObject<{
   TeamType: Types.TeamType;
   Time: Types.Scalars['Time']['output'];
   Timestamp: Types.Scalars['Timestamp']['output'];
+  TrustedDeviceType: Types.TrustedDeviceType;
   TwoFactorSetupType: Types.TwoFactorSetupType;
   URL: Types.Scalars['URL']['output'];
   UserAccountAvailabilityType: Types.UserAccountAvailabilityType;
@@ -1165,6 +1169,11 @@ export interface EmailAddressScalarConfig extends GraphQLScalarTypeConfig<Resolv
   name: 'EmailAddress';
 }
 
+export type EnrolledTrustedDeviceTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['EnrolledTrustedDeviceType'] = ResolversParentTypes['EnrolledTrustedDeviceType']> = ResolversObject<{
+  deviceId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  deviceSecret?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+}>;
+
 export type FaceVectorResultTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['FaceVectorResultType'] = ResolversParentTypes['FaceVectorResultType']> = ResolversObject<{
   status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   vector?: Resolver<Types.Maybe<Array<ResolversTypes['Float']>>, ParentType, ContextType>;
@@ -1535,6 +1544,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   disableTwoFactor?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationDisableTwoFactorArgs, 'code'>>;
   enableCommitteeFeature?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationEnableCommitteeFeatureArgs, 'committeeId' | 'featureKey'>>;
   enableTwoFactor?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationEnableTwoFactorArgs, 'code'>>;
+  enrollTrustedDevice?: Resolver<Types.Maybe<ResolversTypes['EnrolledTrustedDeviceType']>, ParentType, ContextType, RequireFields<Types.MutationEnrollTrustedDeviceArgs, 'pin'>>;
   fixNameSpelling?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationFixNameSpellingArgs, 'existingSpelling' | 'newSpelling'>>;
   hardDeletePeople?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationHardDeletePeopleArgs, '_ids'>>;
   importSecurityVisitorsCsvData?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<Types.MutationImportSecurityVisitorsCsvDataArgs, 'csvData'>>;
@@ -1585,6 +1595,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeTeam?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveTeamArgs, '_id'>>;
   removeTeamCoordinator?: Resolver<Types.Maybe<ResolversTypes['TeamType']>, ParentType, ContextType, RequireFields<Types.MutationRemoveTeamCoordinatorArgs, 'karkunId' | 'teamId'>>;
   removeTeamMember?: Resolver<Types.Maybe<ResolversTypes['TeamType']>, ParentType, ContextType, RequireFields<Types.MutationRemoveTeamMemberArgs, 'karkunId' | 'teamId'>>;
+  removeTrustedDevice?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemoveTrustedDeviceArgs, 'deviceId'>>;
   removeVendor?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveVendorArgs, '_id' | 'physicalStoreId'>>;
   removeWorkspaceMonitoringProfilePhoto?: Resolver<Types.Maybe<ResolversTypes['WorkspaceMonitoringProfileType']>, ParentType, ContextType, RequireFields<Types.MutationRemoveWorkspaceMonitoringProfilePhotoArgs, 'committeeId' | 'photoId' | 'profileId'>>;
   renameFreeFormCity?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRenameFreeFormCityArgs, 'existingSpelling' | 'newSpelling'>>;
@@ -1596,6 +1607,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   resetUserPassword?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationResetUserPasswordArgs, 'password' | 'userId'>>;
   restorePerson?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRestorePersonArgs, '_id'>>;
   retryFailedJob?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRetryFailedJobArgs, '_id'>>;
+  revokeUserTrustedDevices?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRevokeUserTrustedDevicesArgs, 'userId'>>;
   runScheduledJobNow?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRunScheduledJobNowArgs, 'name'>>;
   selectPurchasingQuote?: Resolver<Types.Maybe<ResolversTypes['PurchasingQuote']>, ParentType, ContextType, RequireFields<Types.MutationSelectPurchasingQuoteArgs, '_id'>>;
   sendInboxMessage?: Resolver<Types.Maybe<ResolversTypes['InboxMessageType']>, ParentType, ContextType, RequireFields<Types.MutationSendInboxMessageArgs, 'roomId' | 'text'>>;
@@ -2716,6 +2728,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   myMehfilPermissionsLocations?: Resolver<Array<Types.Maybe<ResolversTypes['MyMehfilPermissionsLocationType']>>, ParentType, ContextType>;
   myNotificationCounts?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['NotificationCountType']>>>, ParentType, ContextType>;
   myNotifications?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['NotificationType']>>>, ParentType, ContextType, Partial<Types.QueryMyNotificationsArgs>>;
+  myTrustedDevices?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['TrustedDeviceType']>>>, ParentType, ContextType>;
   orgLocationById?: Resolver<Types.Maybe<ResolversTypes['OrgLocationType']>, ParentType, ContextType, RequireFields<Types.QueryOrgLocationByIdArgs, '_id'>>;
   orgLocationFeaturePermissions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['OrgLocationFeaturePermissionsType']>>>, ParentType, ContextType, RequireFields<Types.QueryOrgLocationFeaturePermissionsArgs, 'locationId'>>;
   pagedCities?: Resolver<Types.Maybe<ResolversTypes['PagedCityType']>, ParentType, ContextType, Partial<Types.QueryPagedCitiesArgs>>;
@@ -2808,6 +2821,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   userById?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, Partial<Types.QueryUserByIdArgs>>;
   userGroupById?: Resolver<Types.Maybe<ResolversTypes['UserGroupType']>, ParentType, ContextType, RequireFields<Types.QueryUserGroupByIdArgs, '_id'>>;
   userNames?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType, Partial<Types.QueryUserNamesArgs>>;
+  userTrustedDevices?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['TrustedDeviceType']>>>, ParentType, ContextType, RequireFields<Types.QueryUserTrustedDevicesArgs, 'userId'>>;
   vendorById?: Resolver<Types.Maybe<ResolversTypes['Vendor']>, ParentType, ContextType, RequireFields<Types.QueryVendorByIdArgs, '_id' | 'physicalStoreId'>>;
   vendorsByPhysicalStoreId?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['Vendor']>>>, ParentType, ContextType, RequireFields<Types.QueryVendorsByPhysicalStoreIdArgs, 'physicalStoreId'>>;
   visitorStayById?: Resolver<Types.Maybe<ResolversTypes['VisitorStayType']>, ParentType, ContextType, RequireFields<Types.QueryVisitorStayByIdArgs, '_id'>>;
@@ -3161,6 +3175,14 @@ export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
   name: 'Timestamp';
 }
+
+export type TrustedDeviceTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['TrustedDeviceType'] = ResolversParentTypes['TrustedDeviceType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  expiresAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lastUsedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
 
 export type TwoFactorSetupTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['TwoFactorSetupType'] = ResolversParentTypes['TwoFactorSetupType']> = ResolversObject<{
   qrCodeSvg?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3816,6 +3838,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   DutyShiftType?: DutyShiftTypeResolvers<ContextType>;
   DutyType?: DutyTypeResolvers<ContextType>;
   EmailAddress?: GraphQLScalarType;
+  EnrolledTrustedDeviceType?: EnrolledTrustedDeviceTypeResolvers<ContextType>;
   FaceVectorResultType?: FaceVectorResultTypeResolvers<ContextType>;
   FreeFormCityType?: FreeFormCityTypeResolvers<ContextType>;
   FreeFormValueType?: FreeFormValueTypeResolvers<ContextType>;
@@ -3975,6 +3998,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   TeamType?: TeamTypeResolvers<ContextType>;
   Time?: GraphQLScalarType;
   Timestamp?: GraphQLScalarType;
+  TrustedDeviceType?: TrustedDeviceTypeResolvers<ContextType>;
   TwoFactorSetupType?: TwoFactorSetupTypeResolvers<ContextType>;
   URL?: GraphQLScalarType;
   UserAccountAvailabilityType?: UserAccountAvailabilityTypeResolvers<ContextType>;

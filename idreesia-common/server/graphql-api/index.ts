@@ -39,6 +39,9 @@ import KarkunSchema from './common/karkun/karkun';
 import UserSchema from './admin/user/user';
 import UserResolvers from './admin/user/resolvers';
 
+import TrustedDeviceSchema from './admin/trusted-device/trusted-device';
+import TrustedDeviceResolvers from './admin/trusted-device/resolvers';
+
 import UserGroupSchema from './admin/user-group/user-group';
 import UserGroupResolvers from './admin/user-group/resolvers';
 
@@ -273,6 +276,7 @@ const typeDefs = [
   KarkunSchema,
   PersonSchema,
   UserSchema,
+  TrustedDeviceSchema,
   UserGroupSchema,
   ScheduledJobSchema,
   JobDefinitionSchema,
@@ -364,6 +368,7 @@ const resolvers = merge(
   SecurityLogResolvers,
   PersonResolvers,
   UserResolvers,
+  TrustedDeviceResolvers,
   UserGroupResolvers,
   ScheduledJobResolvers,
   JobDefinitionResolvers,

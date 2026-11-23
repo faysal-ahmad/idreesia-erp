@@ -35,6 +35,14 @@ export {
 } from './two-factor';
 export { isTwoFactorEnabled } from './two-factor-status';
 export {
+  enrollTrustedDevice,
+  getPasswordFingerprint,
+  loginWithTrustedDevice,
+  removeTrustedDevice,
+  revokeUserTrustedDevices,
+  type EnrolledTrustedDevice,
+} from './trusted-devices';
+export {
   resolveEffectiveAccess,
   type EffectiveAccess,
 } from './effective-access';

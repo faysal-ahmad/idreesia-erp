@@ -18,8 +18,8 @@ const VECTOR_DIMENSIONS = 128;
 // Worth re-measuring against the full collection: the best impostor score creeps up with gallery
 // size, and that sample was 578 people against a real population of ~38k. Genuine-match scores do
 // not move with gallery size, so the risk of raising this is losing true matches, not gaining noise.
-const RAW_COSINE_THRESHOLD = 0.5;
-const MIN_SEARCH_SCORE = (1 + RAW_COSINE_THRESHOLD) / 2;
+export const RAW_COSINE_THRESHOLD = 0.5;
+const toSearchScore = (rawCosine: number) => (1 + rawCosine) / 2;
 
 const toRawCosine = (score: number) => 2 * score - 1;
 
@@ -41,8 +41,19 @@ interface ScoredPerson {
 
 export async function searchPeopleByFaceVector(
   vector: number[],
-  limit = 5
+  limit = 5,
+  // Callers with their own tuning (the attendance kiosk) override the default threshold.
+  {
+    minRawCosine = RAW_COSINE_THRESHOLD,
+    minMargin = 0,
+  }: {
+    minRawCosine?: number;
+    // How far the best match must be ahead of the next-best different person. When it is not,
+    // the result is ambiguous and nothing is returned. 0 turns the check off.
+    minMargin?: number;
+  } = {}
 ): Promise<FaceMatch[]> {
+  const minSearchScore = toSearchScore(minRawCosine);
   // This vector arrives from the browser rather than being computed in the same call, so it is
   // untrusted input. A wrong-length or non-numeric array would otherwise reach $vectorSearch and
   // surface as a server error instead of an empty result.
@@ -80,10 +91,18 @@ export async function searchPeopleByFaceVector(
     },
   ]);
 
-  return results
-    .filter(person => person.score >= MIN_SEARCH_SCORE)
+  const matches = results
+    .filter(person => person.score >= minSearchScore)
     .map(({ score, ...person }) => ({
       person,
       score: toRawCosine(score),
     }));
+
+  if (minMargin > 0 && matches.length > 0) {
+    const [best] = matches;
+    const runnerUp = matches.find(({ person }) => person._id !== best.person._id);
+    if (runnerUp && best.score - runnerUp.score < minMargin) return [];
+  }
+
+  return matches;
 }

@@ -4,6 +4,8 @@ import { ImageVectorStatus } from 'meteor/idreesia-common/constants';
 import { getFile } from 'meteor/idreesia-common/server/file-storage';
 
 import { detectFaces } from './face-detection';
+import { faceFrontalScore } from './face-pose';
+import { faceSharpnessScore } from './face-sharpness';
 import { alignFace, embedFace } from './face-recognition';
 
 // Tags every computed/attempted vector with the pipeline that produced it, so a future model
@@ -33,6 +35,16 @@ const HARD_REJECT_MIN_PX = 40;
 // enrol or search with are still well above HARD_REJECT_MIN_PX at that size.
 const MAX_IMAGE_SIDE = 1280;
 
+export interface ComputeOptions {
+  useLargestFace?: boolean;
+  // Quality gate overrides; the defaults are what enrolment and every other caller use.
+  minDetectionScore?: number;
+  minFacePixels?: number;
+  // 0-100 scores (see face-sharpness.ts and face-pose.ts); 0, the default, turns the check off.
+  minSharpness?: number;
+  minFacePose?: number;
+}
+
 export interface ImageVectorData {
   vector?: number[];
   status: string;
@@ -49,7 +61,13 @@ export interface ImageVectorData {
 // frame (the public attendance kiosk): the most prominent - largest - face is used instead.
 export function computeVectorFromImageBuffer(
   buffer: Buffer,
-  { useLargestFace = false }: { useLargestFace?: boolean } = {}
+  {
+    useLargestFace = false,
+    minDetectionScore = DETECTION_SCORE_THRESHOLD,
+    minFacePixels = HARD_REJECT_MIN_PX,
+    minSharpness = 0,
+    minFacePose = 0,
+  }: ComputeOptions = {}
 ): ImageVectorData {
   const computedAt = new Date();
   let image: cv.Mat | undefined;
@@ -62,7 +80,7 @@ export function computeVectorFromImageBuffer(
       original.release();
     }
 
-    const faces = detectFaces(image, DETECTION_SCORE_THRESHOLD);
+    const faces = detectFaces(image, minDetectionScore);
 
     if (faces.length === 0) {
       return { status: ImageVectorStatus.NO_FACE, computedAt, modelVersion: MODEL_VERSION };
@@ -77,12 +95,19 @@ export function computeVectorFromImageBuffer(
         : largest
     );
     const minDimension = Math.min(face.box.width, face.box.height);
-    if (minDimension < HARD_REJECT_MIN_PX) {
+    if (minDimension < minFacePixels) {
       return { status: ImageVectorStatus.TOO_SMALL, computedAt, modelVersion: MODEL_VERSION };
+    }
+
+    if (minFacePose > 0 && faceFrontalScore(face.landmarks) < minFacePose) {
+      return { status: ImageVectorStatus.FACE_TURNED, computedAt, modelVersion: MODEL_VERSION };
     }
 
     const aligned = alignFace(image, face.landmarks);
     try {
+      if (minSharpness > 0 && faceSharpnessScore(aligned) < minSharpness) {
+        return { status: ImageVectorStatus.BLURRY, computedAt, modelVersion: MODEL_VERSION };
+      }
       const vector = embedFace(aligned);
       return { vector, status: ImageVectorStatus.COMPUTED, computedAt, modelVersion: MODEL_VERSION };
     } finally {
@@ -104,15 +129,14 @@ const errorResult = (): ImageVectorData => ({
 });
 
 /** Computes the vector of a person's stored photo in object storage. */
-export async function computeImageVectorData({
-  imageKey,
-}: {
-  imageKey?: string | null;
-}): Promise<ImageVectorData> {
+export async function computeImageVectorData(
+  { imageKey }: { imageKey?: string | null },
+  options: ComputeOptions = {}
+): Promise<ImageVectorData> {
   if (!imageKey) return errorResult();
   try {
     const { body } = await getFile(imageKey);
-    return computeVectorFromImageBuffer(body);
+    return computeVectorFromImageBuffer(body, options);
   } catch (error) {
     // Callers store this result on the person rather than handling a throw.
     // eslint-disable-next-line no-console

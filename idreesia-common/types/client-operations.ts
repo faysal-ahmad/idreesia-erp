@@ -2385,6 +2385,55 @@ export type DuplicatePhoneNumbersQueryVariables = Exact<{ [key: string]: never; 
 
 export type DuplicatePhoneNumbersQuery = { duplicatePhoneNumbers: Array<{ value: string | null, count: number | null, people: Array<{ _id: string | null, name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, updatedAt: string | null } | null> | null } | null> | null };
 
+export type AdminFaceRecognitionSettingsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AdminFaceRecognitionSettingsQuery = { adminFaceRecognitionSettings: { matchThreshold: number | null, minMatchMargin: number | null, minDetectionScore: number | null, minFacePixels: number | null, minSharpness: number | null, minFacePose: number | null, updatedAt: unknown, updatedBy: string | null, defaults: { matchThreshold: number | null, minMatchMargin: number | null, minDetectionScore: number | null, minFacePixels: number | null, minSharpness: number | null, minFacePose: number | null } | null } | null };
+
+export type AdminPeopleRegistrationImageSettingsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AdminPeopleRegistrationImageSettingsQuery = { adminPeopleRegistrationImageSettings: { minDetectionScore: number | null, minFacePixels: number | null, minSharpness: number | null, minFacePose: number | null, updatedAt: unknown, updatedBy: string | null, defaults: { minDetectionScore: number | null, minFacePixels: number | null, minSharpness: number | null, minFacePose: number | null } | null } | null };
+
+export type AdminPeopleSearchFaceSettingsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AdminPeopleSearchFaceSettingsQuery = { adminPeopleSearchFaceSettings: { matchThreshold: number | null, minMatchMargin: number | null, minDetectionScore: number | null, minFacePixels: number | null, minSharpness: number | null, minFacePose: number | null, updatedAt: unknown, updatedBy: string | null, defaults: { matchThreshold: number | null, minMatchMargin: number | null, minDetectionScore: number | null, minFacePixels: number | null, minSharpness: number | null, minFacePose: number | null } | null } | null };
+
+export type UpdateAdminFaceRecognitionSettingsMutationVariables = Exact<{
+  matchThreshold: number;
+  minMatchMargin: number;
+  minDetectionScore: number;
+  minFacePixels: number;
+  minSharpness: number;
+  minFacePose: number;
+}>;
+
+
+export type UpdateAdminFaceRecognitionSettingsMutation = { updateAdminFaceRecognitionSettings: { matchThreshold: number | null, minMatchMargin: number | null, minDetectionScore: number | null, minFacePixels: number | null, minSharpness: number | null, minFacePose: number | null, updatedAt: unknown, updatedBy: string | null } | null };
+
+export type UpdateAdminPeopleRegistrationImageSettingsMutationVariables = Exact<{
+  minDetectionScore: number;
+  minFacePixels: number;
+  minSharpness: number;
+  minFacePose: number;
+}>;
+
+
+export type UpdateAdminPeopleRegistrationImageSettingsMutation = { updateAdminPeopleRegistrationImageSettings: { minDetectionScore: number | null, minFacePixels: number | null, minSharpness: number | null, minFacePose: number | null, updatedAt: unknown, updatedBy: string | null } | null };
+
+export type UpdateAdminPeopleSearchFaceSettingsMutationVariables = Exact<{
+  matchThreshold: number;
+  minMatchMargin: number;
+  minDetectionScore: number;
+  minFacePixels: number;
+  minSharpness: number;
+  minFacePose: number;
+}>;
+
+
+export type UpdateAdminPeopleSearchFaceSettingsMutation = { updateAdminPeopleSearchFaceSettings: { matchThreshold: number | null, minMatchMargin: number | null, minDetectionScore: number | null, minFacePixels: number | null, minSharpness: number | null, minFacePose: number | null, updatedAt: unknown, updatedBy: string | null } | null };
+
 export type PagedFreeFormCitiesQueryVariables = Exact<{
   pageIndex: number;
   pageSize: number;

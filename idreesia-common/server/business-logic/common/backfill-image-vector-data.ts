@@ -1,5 +1,6 @@
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import type { ProgressReporter } from 'meteor/idreesia-common/server/business-logic/jobs/report-progress';
+import { getPeopleRegistrationImageSettings } from '../admin/system-settings';
 import {
   computeImageVectorData,
   MODEL_VERSION,
@@ -42,9 +43,18 @@ export async function backfillImageVectorData(
     { fields: { 'sharedData.imageKey': 1 } }
   ).fetchAsync();
 
+  // The same quality gates a photo is checked against when it is saved (People Registration).
+  const { minDetectionScore, minFacePixels, minSharpness, minFacePose } =
+    await getPeopleRegistrationImageSettings();
+
   try {
     for (const { _id, sharedData } of people) {
-      const imageVectorData = await computeImageVectorData(sharedData);
+      const imageVectorData = await computeImageVectorData(sharedData, {
+        minDetectionScore,
+        minFacePixels,
+        minSharpness,
+        minFacePose,
+      });
       await People.updateAsync(_id, {
         $set: { 'sharedData.imageVectorData': imageVectorData },
       });

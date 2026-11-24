@@ -5,7 +5,7 @@ export {
   computeImageVectorData,
   computeVectorFromImageBuffer,
 } from './compute-image-vector-data';
-export type { ImageVectorData } from './compute-image-vector-data';
+export type { ComputeOptions, ImageVectorData } from './compute-image-vector-data';
 export {
   searchPeopleByFaceVector,
   PEOPLE_IMAGE_VECTOR_SEARCH_INDEX,

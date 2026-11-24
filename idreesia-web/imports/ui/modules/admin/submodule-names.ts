@@ -14,6 +14,7 @@ const SubModuleNames = {
   duplicatePeople: 'Duplicate People',
   orgLocations: 'Locations',
   mehfilTemplates: 'Mehfil Templates',
+  facialRecognition: 'Facial Recognition',
 };
 
 export default SubModuleNames;

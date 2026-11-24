@@ -13,6 +13,7 @@ import {
   putFile,
 } from 'meteor/idreesia-common/server/file-storage';
 
+import { updatePeopleRegistrationImageSettings } from '../admin/system-settings';
 import { PHOTO_AUDIT_FIELD, PHOTO_AUDIT_VALUE } from './people/people-mutations';
 import { setPersonImage } from './set-person-image';
 
@@ -24,10 +25,16 @@ vi.mock('meteor/idreesia-common/server/file-storage', async () =>
 // installed for the web app): neither is under test here.
 const vector = vi.hoisted(() => ({
   data: { status: 'computed', modelVersion: 'test', computedAt: new Date(0) },
+  lastOptions: undefined as unknown,
 }));
 vi.mock(
   'meteor/idreesia-common/server/business-logic/common/compute-image-vector-data',
-  () => ({ computeVectorFromImageBuffer: () => vector.data })
+  () => ({
+    computeVectorFromImageBuffer: (_buffer: Buffer, options: unknown) => {
+      vector.lastOptions = options;
+      return vector.data;
+    },
+  })
 );
 
 const sharpState = vi.hoisted(() => ({ thumbnailFails: false }));
@@ -81,6 +88,21 @@ describe('setPersonImage', () => {
     expect(person?.sharedData.imageThumbnailKey).toMatch(/\.thumb\.jpg$/);
     expect(person?.sharedData.imageVectorData).toEqual(vector.data);
     expect(person?.updatedBy).toBe('u1');
+  });
+
+  it('checks the photo against the People Registration settings', async () => {
+    await addPerson();
+    await updatePeopleRegistrationImageSettings(
+      { minDetectionScore: 0.8, minFacePixels: 120, minSharpness: 45, minFacePose: 55 },
+      user
+    );
+    await setPersonImage(user, 'p1', imageData);
+    expect(vector.lastOptions).toEqual({
+      minDetectionScore: 0.8,
+      minFacePixels: 120,
+      minSharpness: 45,
+      minFacePose: 55,
+    });
   });
 
   it('audits the photo change without naming the files', async () => {

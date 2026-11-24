@@ -165,7 +165,7 @@ export default class KarkunsList extends Component<Props, State> {
             imageUrl: record.sharedData.imageUrl ?? undefined,
             imageThumbnailUrl: record.sharedData.imageThumbnailUrl ?? undefined,
           }}
-          onPersonNameClicked={this.props.handleSelectItem as Parameters<typeof PersonName>[0]['onPersonNameClicked']}
+          onPersonNameClicked={() => this.props.handleSelectItem?.(record)}
         />
       );
     },

@@ -36,6 +36,11 @@ declare module '@u4/opencv4nodejs' {
     resize(rows: number, cols: number): Mat;
     resizeToMax(maxRowsOrCols: number): Mat;
     getDataAsArray(): number[][];
+    bgrToGray(): Mat;
+    laplacian(ddepth: number): Mat;
+    // Per-channel mean and standard deviation; read a channel with at(0, 0).
+    meanStdDev(): { mean: Mat; stddev: Mat };
+    at(row: number, col: number): number;
     // Frees the native buffer immediately instead of waiting for the GC to finalize the wrapper.
     release(): void;
   }
@@ -70,4 +75,5 @@ declare module '@u4/opencv4nodejs' {
   export const BORDER_CONSTANT: number;
   export const INTER_LINEAR: number;
   export const CV_64FC1: number;
+  export const CV_64F: number;
 }

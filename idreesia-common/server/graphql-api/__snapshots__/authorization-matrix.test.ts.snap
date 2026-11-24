@@ -2097,6 +2097,24 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.updateAdminFaceRecognitionSettings": [
+    {
+      "args": {},
+      "directive": "superAdminOnly",
+    },
+  ],
+  "Mutation.updateAdminPeopleRegistrationImageSettings": [
+    {
+      "args": {},
+      "directive": "superAdminOnly",
+    },
+  ],
+  "Mutation.updateAdminPeopleSearchFaceSettings": [
+    {
+      "args": {},
+      "directive": "superAdminOnly",
+    },
+  ],
   "Mutation.updateCity": [
     {
       "args": {

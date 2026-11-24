@@ -39,6 +39,11 @@ const menuItems = [
     ],
   },
   {
+    key: 'configuration',
+    label: 'Configuration',
+    children: [{ key: 'facial-recognition', label: 'Facial Recognition' }],
+  },
+  {
     key: 'deleted-data',
     label: 'Data Management',
     children: [
@@ -135,6 +140,12 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['locations'],
     subModuleName: SubModuleNames.freeFormData,
     matches: (pathname) => isPath(pathname, paths.freeFormDataPath),
+  },
+  {
+    key: 'facial-recognition',
+    openKeys: ['configuration'],
+    subModuleName: SubModuleNames.facialRecognition,
+    matches: (pathname) => isPath(pathname, paths.facialRecognitionPath),
   },
   {
     key: 'deleted-people',
@@ -267,6 +278,10 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'job-logs':
         history.push(paths.jobLogsPath);
+        break;
+
+      case 'facial-recognition':
+        history.push(paths.facialRecognitionPath);
         break;
 
       case 'job-definitions':

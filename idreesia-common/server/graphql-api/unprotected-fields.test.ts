@@ -28,6 +28,12 @@ const ALLOWED: Record<string, string> = {
   'Query.currentUser': 'returns the caller, or null before sign-in',
   'Mutation.registerUser': 'sign-up, before there is a user',
   'Query.allPeopleTags': 'open lookup',
+  'Query.adminPeopleRegistrationImageSettings':
+    'read-only, non-sensitive settings; anyone may view',
+  'Query.adminPeopleSearchFaceSettings':
+    'read-only, non-sensitive settings; anyone may view',
+  'Query.adminFaceRecognitionSettings':
+    'read-only, non-sensitive settings; anyone may view',
   'Query.userNames': 'open lookup',
   'Query.distinctCities': 'open lookup',
   'Query.distinctCountries': 'open lookup',

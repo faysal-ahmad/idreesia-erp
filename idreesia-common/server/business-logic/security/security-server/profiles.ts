@@ -66,6 +66,8 @@ const REJECTION_MESSAGES: Record<string, string> = {
   [ImageVectorStatus.MULTIPLE_FACES]:
     'More than one face found. Use a photo of just one person.',
   [ImageVectorStatus.TOO_SMALL]: 'The face is too small. Use a closer photo.',
+  [ImageVectorStatus.BLURRY]: 'The photo is blurry. Use a sharper photo.',
+  [ImageVectorStatus.FACE_TURNED]: 'The face is turned away. Use a photo facing the camera.',
   [ImageVectorStatus.ERROR]:
     'The image could not be processed. Try a different photo.',
 };

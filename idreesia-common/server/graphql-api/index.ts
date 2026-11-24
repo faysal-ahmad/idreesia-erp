@@ -53,6 +53,8 @@ import JobDefinitionResolvers from './admin/job-definition/resolvers';
 
 import PeopleTagSchema from './admin/people-tag/people-tag';
 import PeopleTagResolvers from './admin/people-tag/resolvers';
+import SystemSettingsSchema from './admin/system-settings/system-settings';
+import SystemSettingsResolvers from './admin/system-settings/resolvers';
 import FreeFormDataSchema from './admin/free-form-data/free-form-data';
 import FreeFormDataResolvers from './admin/free-form-data/resolvers';
 import OrgLocationSchema from './admin/org-location/org-location';
@@ -287,6 +289,7 @@ const typeDefs = [
   ScheduledJobSchema,
   JobDefinitionSchema,
   PeopleTagSchema,
+  SystemSettingsSchema,
   FreeFormDataSchema,
   OrgLocationSchema,
   MehfilTemplateSchema,
@@ -382,6 +385,7 @@ const resolvers = merge(
   ScheduledJobResolvers,
   JobDefinitionResolvers,
   PeopleTagResolvers,
+  SystemSettingsResolvers,
   FreeFormDataResolvers,
   OrgLocationResolvers,
   MehfilTemplateResolvers,

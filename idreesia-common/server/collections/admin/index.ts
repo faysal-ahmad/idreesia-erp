@@ -9,6 +9,10 @@ export {
   type TrustedDeviceDocument,
 } from './trusted-devices';
 export {
+  default as SystemSettings,
+  type SystemSettingsDocument,
+} from './system-settings';
+export {
   default as JobDefinitions,
   type JobDefinitionDocument,
 } from './job-definitions';

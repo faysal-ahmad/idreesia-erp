@@ -27,6 +27,7 @@ import {
   OrgLocationsList,
 } from './org-locations';
 import { MehfilTemplatesList } from './mehfil-templates';
+import { FacialRecognitionSettings } from './facial-recognition';
 
 const Router = () => (
   <Switch>
@@ -79,6 +80,11 @@ const Router = () => (
     <Route path={paths.orgLocationsPath} component={OrgLocationsList} />
 
     <Route path={paths.mehfilTemplatesPath} component={MehfilTemplatesList} />
+
+    <Route
+      path={paths.facialRecognitionPath}
+      component={FacialRecognitionSettings}
+    />
 
     <Route
       path={paths.deletedPersonEditFormPath()}

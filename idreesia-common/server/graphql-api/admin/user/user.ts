@@ -59,6 +59,9 @@ input UserFilter {
   serviceAccounts: String
   # Part of the user name or display name.
   name: String
+  # The city or mehfil location of the karkun the user is linked to.
+  cityLocationId: String
+  mehfilLocationId: String
   pageIndex: String
   pageSize: String
 }

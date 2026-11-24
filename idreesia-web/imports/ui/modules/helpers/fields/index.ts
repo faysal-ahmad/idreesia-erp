@@ -34,6 +34,7 @@ export { default as RadioGroupField } from './radio-group-field';
 export { default as SelectField } from './select-field';
 export { default as SwitchField } from './switch-field';
 export { default as TimeField } from './time-field';
+export { default as OrgLocationSelectField } from './org-location-select-field';
 export { default as TreeSelectField } from './tree-select-field';
 export { default as TreeMultiSelectField } from './tree-multi-select-field';
 export { default as WeekDaysField } from './weekdays-field';

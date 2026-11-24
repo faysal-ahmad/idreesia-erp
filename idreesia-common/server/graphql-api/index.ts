@@ -64,6 +64,8 @@ import MehfilTemplateResolvers from './admin/mehfil-template/resolvers';
 
 import DeletedPeopleSchema from './admin/deleted-people/deleted-people';
 import DeletedPeopleResolvers from './admin/deleted-people/resolvers';
+import UserKarkunSchema from './admin/user-karkun/user-karkun';
+import UserKarkunResolvers from './admin/user-karkun/resolvers';
 
 import DuplicatePeopleSchema from './admin/duplicate-people/duplicate-people';
 import DuplicatePeopleResolvers from './admin/duplicate-people/resolvers';
@@ -294,6 +296,7 @@ const typeDefs = [
   OrgLocationSchema,
   MehfilTemplateSchema,
   DeletedPeopleSchema,
+  UserKarkunSchema,
   DuplicatePeopleSchema,
   AdminSecurityLogSchema,
 
@@ -390,6 +393,7 @@ const resolvers = merge(
   OrgLocationResolvers,
   MehfilTemplateResolvers,
   DeletedPeopleResolvers,
+  UserKarkunResolvers,
   DuplicatePeopleResolvers,
   AdminSecurityLogResolvers,
 

@@ -3554,6 +3554,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkCommitteeAccess",
     },
   ],
+  "Query.adminKarkunLocations": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_VIEW_USERS_AND_GROUPS",
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.allCommitteeFeatures": [
     {
       "args": {
@@ -4156,6 +4167,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_VIEW_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedAdminKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_USERS_AND_GROUPS",
         ],
       },
       "directive": "checkPermissions",

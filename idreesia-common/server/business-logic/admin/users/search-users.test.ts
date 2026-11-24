@@ -6,6 +6,8 @@ import {
   Users,
 } from 'meteor/idreesia-common/server/collections/admin';
 
+import { People } from 'meteor/idreesia-common/server/collections/common';
+
 import { findUsersByPersonIds, mapUser } from './map-user';
 import { buildUserSearchPipeline, searchUsers } from './search-users';
 
@@ -131,6 +133,22 @@ describe('searchUsers', () => {
     expect(await names({ name: 'ALI' })).toEqual(['ali.khan']);
     expect(await names({ name: 'aslam' })).toEqual(['bo']);
     expect(await names({ name: 'a.b' })).toEqual([]); // Not a pattern.
+  });
+
+  it('filters by the city or mehfil of the person the user is linked to', async () => {
+    const insertPerson = (_id: string, karkunData: Record<string, unknown>) =>
+      People.insertAsync({ _id, isKarkun: true, karkunData } as never);
+    await insertPerson('p1', { cityLocationId: 'c1', mehfilLocationId: 'm1' });
+    await insertPerson('p2', { cityLocationId: 'c1', mehfilLocationId: 'm2' });
+    await insertPerson('p3', { cityLocationId: 'c2' });
+    await insertUser('u1', { personId: 'p1' });
+    await insertUser('u2', { personId: 'p2' });
+    await insertUser('u3', { personId: 'p3' });
+    await insertUser('unlinked');
+
+    expect((await names({ cityLocationId: 'c1' })).sort()).toEqual(['u1', 'u2']);
+    expect(await names({ mehfilLocationId: 'm2' })).toEqual(['u2']);
+    expect(await names({ cityLocationId: 'c2' })).toEqual(['u3']);
   });
 
   it('pages users sorted by user name, with a total count', async () => {

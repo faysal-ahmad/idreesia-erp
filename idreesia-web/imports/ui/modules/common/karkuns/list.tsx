@@ -13,16 +13,16 @@ import {
 } from '@ant-design/icons';
 
 import { noop } from 'meteor/idreesia-common/utilities/lodash';
-import type { HelperPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
+import type { HelperPagedAdminKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
-type HrKarkunRow = NonNullable<
+type KarkunRow = NonNullable<
   NonNullable<
-    NonNullable<HelperPagedHrKarkunsQuery['pagedHrKarkuns']>['data']
+    NonNullable<HelperPagedAdminKarkunsQuery['pagedAdminKarkuns']>['data']
   >[number]
 >;
 
-interface KarkunListItem extends HrKarkunRow {
+interface KarkunListItem extends KarkunRow {
   city?: { name?: string | null; country?: string | null } | null;
   cityMehfil?: { name?: string | null } | null;
 }

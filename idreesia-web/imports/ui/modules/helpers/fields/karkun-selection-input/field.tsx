@@ -17,7 +17,6 @@ interface Props {
   required?: boolean;
   requiredMessage?: string;
   disabled?: boolean;
-  showMsKarkunsList?: boolean;
 }
 
 const Field = ({
@@ -29,7 +28,6 @@ const Field = ({
   required,
   requiredMessage,
   disabled,
-  showMsKarkunsList = false,
 }: Props) => {
   const rules = [
     {
@@ -43,7 +41,6 @@ const Field = ({
       <CustomInput
         placeholder={placeholder}
         disabled={disabled}
-        showMsKarkunsList={showMsKarkunsList}
       />
     </Form.Item>
   );

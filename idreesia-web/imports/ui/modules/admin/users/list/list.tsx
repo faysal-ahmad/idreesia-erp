@@ -21,6 +21,7 @@ import type { PagedUsersQuery } from 'meteor/idreesia-common/types/client-operat
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
+import { ADMIN_KARKUN_LOCATIONS } from '/imports/ui/modules/helpers/fields/karkun-selection-input/gql';
 import ListFilter, { UserFilterChips } from './list-filter';
 import { PAGED_USERS } from '../gql';
 
@@ -115,6 +116,8 @@ const List = ({ history, location }: Props) => {
       'showActive',
       'showInactive',
       'moduleAccess',
+      'cityLocationId',
+      'mehfilLocationId',
       'pageIndex',
       'pageSize',
     ],
@@ -127,6 +130,11 @@ const List = ({ history, location }: Props) => {
   });
 
   useBreadcrumbs(['Admin', 'Users', 'List']);
+
+  const { data: locationsData } = useQuery(ADMIN_KARKUN_LOCATIONS);
+  const orgLocations = (locationsData?.adminKarkunLocations ?? []).filter(
+    location => location != null
+  );
 
   const { data, loading, refetch } = useQuery(PAGED_USERS, {
     variables: {
@@ -208,6 +216,8 @@ const List = ({ history, location }: Props) => {
     showActive,
     showInactive,
     moduleAccess,
+    cityLocationId,
+    mehfilLocationId,
     pageIndex,
     pageSize,
   } = queryParams;
@@ -222,6 +232,9 @@ const List = ({ history, location }: Props) => {
     showActive: asString(showActive),
     showInactive: asString(showInactive),
     moduleAccess: asString(moduleAccess),
+    cityLocationId: asString(cityLocationId),
+    mehfilLocationId: asString(mehfilLocationId),
+    orgLocations,
     setPageParams,
     refreshData: handleRefresh,
   };

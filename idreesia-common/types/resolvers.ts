@@ -76,6 +76,8 @@ export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = 
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  AdminKarkunFilter: Types.AdminKarkunFilter;
+  AdminKarkunLocationType: ResolverTypeWrapper<Types.AdminKarkunLocationType>;
   Attachment: ResolverTypeWrapper<Types.Attachment>;
   AuditLogFilter: Types.AuditLogFilter;
   AuditLogType: ResolverTypeWrapper<Types.AuditLogType>;
@@ -409,6 +411,8 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  AdminKarkunFilter: Types.AdminKarkunFilter;
+  AdminKarkunLocationType: Types.AdminKarkunLocationType;
   Attachment: Types.Attachment;
   AuditLogFilter: Types.AuditLogFilter;
   AuditLogType: Types.AuditLogType;
@@ -787,6 +791,13 @@ export type CheckPermissionsDirectiveResolver<Result, Parent, ContextType = any,
 export type SuperAdminOnlyDirectiveArgs = { };
 
 export type SuperAdminOnlyDirectiveResolver<Result, Parent, ContextType = any, Args = SuperAdminOnlyDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type AdminKarkunLocationTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['AdminKarkunLocationType'] = ResolversParentTypes['AdminKarkunLocationType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  parentId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
 
 export type AttachmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Attachment'] = ResolversParentTypes['Attachment']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2847,6 +2858,7 @@ export type PurchasingVendorSpendingResolvers<ContextType = any, ParentType exte
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   adminFaceRecognitionSettings?: Resolver<Types.Maybe<ResolversTypes['FaceRecognitionSettingsType']>, ParentType, ContextType>;
+  adminKarkunLocations?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['AdminKarkunLocationType']>>>, ParentType, ContextType>;
   adminPeopleRegistrationImageSettings?: Resolver<Types.Maybe<ResolversTypes['PeopleRegistrationImageSettingsType']>, ParentType, ContextType>;
   adminPeopleSearchFaceSettings?: Resolver<Types.Maybe<ResolversTypes['PeopleSearchFaceSettingsType']>, ParentType, ContextType>;
   allAccessiblePhysicalStores?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PhysicalStore']>>>, ParentType, ContextType>;
@@ -2920,6 +2932,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   myTrustedDevices?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['TrustedDeviceType']>>>, ParentType, ContextType>;
   orgLocationById?: Resolver<Types.Maybe<ResolversTypes['OrgLocationType']>, ParentType, ContextType, RequireFields<Types.QueryOrgLocationByIdArgs, '_id'>>;
   orgLocationFeaturePermissions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['OrgLocationFeaturePermissionsType']>>>, ParentType, ContextType, RequireFields<Types.QueryOrgLocationFeaturePermissionsArgs, 'locationId'>>;
+  pagedAdminKarkuns?: Resolver<Types.Maybe<ResolversTypes['PagedKarkunType']>, ParentType, ContextType, Partial<Types.QueryPagedAdminKarkunsArgs>>;
   pagedCities?: Resolver<Types.Maybe<ResolversTypes['PagedCityType']>, ParentType, ContextType, Partial<Types.QueryPagedCitiesArgs>>;
   pagedDeletedPeople?: Resolver<Types.Maybe<ResolversTypes['PagedPeopleType']>, ParentType, ContextType, Partial<Types.QueryPagedDeletedPeopleArgs>>;
   pagedFreeFormCities?: Resolver<Types.Maybe<ResolversTypes['PagedFreeFormCity']>, ParentType, ContextType, RequireFields<Types.QueryPagedFreeFormCitiesArgs, 'pageIndex' | 'pageSize'>>;
@@ -4034,6 +4047,7 @@ export type WorkspaceTaskTypeResolvers<ContextType = any, ParentType extends Res
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  AdminKarkunLocationType?: AdminKarkunLocationTypeResolvers<ContextType>;
   Attachment?: AttachmentResolvers<ContextType>;
   AuditLogType?: AuditLogTypeResolvers<ContextType>;
   CityMehfilType?: CityMehfilTypeResolvers<ContextType>;

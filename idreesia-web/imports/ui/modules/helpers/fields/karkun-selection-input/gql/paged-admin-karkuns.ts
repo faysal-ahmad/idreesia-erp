@@ -1,16 +1,16 @@
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import type {
-  HelperPagedHrKarkunsQuery,
-  HelperPagedHrKarkunsQueryVariables,
+  HelperPagedAdminKarkunsQuery,
+  HelperPagedAdminKarkunsQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 
-const PAGED_HR_KARKUNS: TypedDocumentNode<
-  HelperPagedHrKarkunsQuery,
-  HelperPagedHrKarkunsQueryVariables
+const PAGED_ADMIN_KARKUNS: TypedDocumentNode<
+  HelperPagedAdminKarkunsQuery,
+  HelperPagedAdminKarkunsQueryVariables
 > = gql`
-  query helperPagedHrKarkuns($filter: KarkunFilter) {
-    pagedHrKarkuns(filter: $filter) {
+  query helperPagedAdminKarkuns($filter: AdminKarkunFilter) {
+    pagedAdminKarkuns(filter: $filter) {
       totalResults
       data {
         _id
@@ -44,4 +44,4 @@ const PAGED_HR_KARKUNS: TypedDocumentNode<
   }
 `;
 
-export default PAGED_HR_KARKUNS;
+export default PAGED_ADMIN_KARKUNS;

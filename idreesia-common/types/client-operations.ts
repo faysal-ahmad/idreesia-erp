@@ -4,6 +4,16 @@ type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 import type * as Types from './graphql';
 
+export type AdminKarkunFilter = {
+  cityLocationId?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  mehfilLocationId?: string | null | undefined;
+  name?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+};
+
 export type AuditLogFilter = {
   entityId?: string | null | undefined;
   operationBy?: string | null | undefined;
@@ -189,6 +199,8 @@ export type SecurityServerProfileFilter = {
 };
 
 export type UserFilter = {
+  cityLocationId?: string | null | undefined;
+  mehfilLocationId?: string | null | undefined;
   moduleAccess?: string | null | undefined;
   name?: string | null | undefined;
   pageIndex?: string | null | undefined;
@@ -3072,12 +3084,17 @@ export type UpdateAttachmentMutationVariables = Exact<{
 
 export type UpdateAttachmentMutation = { updateAttachment: { _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null };
 
-export type HelperPagedHrKarkunsQueryVariables = Exact<{
-  filter?: Types.KarkunFilter | null | undefined;
+export type HelperAdminKarkunLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HelperAdminKarkunLocationsQuery = { adminKarkunLocations: Array<{ _id: string | null, name: string | null, type: string | null, parentId: string | null } | null> | null };
+
+export type HelperPagedAdminKarkunsQueryVariables = Exact<{
+  filter?: Types.AdminKarkunFilter | null | undefined;
 }>;
 
 
-export type HelperPagedHrKarkunsQuery = { pagedHrKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null, karkunData: { lastTarteebDate: string | null, teams: Array<{ _id: string | null, name: string | null, duty: { _id: string | null, name: string | null } | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
+export type HelperPagedAdminKarkunsQuery = { pagedAdminKarkuns: { totalResults: number | null, data: Array<{ _id: string | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null, karkunData: { lastTarteebDate: string | null, teams: Array<{ _id: string | null, name: string | null, duty: { _id: string | null, name: string | null } | null } | null> | null } | null, employeeData: { job: { _id: string | null, name: string | null } | null } | null } | null> | null } | null };
 
 export type DutyAttendanceCardsQueryVariables = Exact<{
   month: string;

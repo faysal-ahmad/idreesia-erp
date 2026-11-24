@@ -21,6 +21,24 @@ export type Scalars = {
   UtcOffset: { input: unknown; output: unknown; }
 };
 
+export type AdminKarkunFilter = {
+  cityLocationId?: InputMaybe<Scalars['String']['input']>;
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  mehfilLocationId?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AdminKarkunLocationType = {
+  __typename?: 'AdminKarkunLocationType';
+  _id?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  parentId?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
+};
+
 export type Attachment = {
   __typename?: 'Attachment';
   _id?: Maybe<Scalars['String']['output']>;
@@ -4878,6 +4896,7 @@ export type PurchasingVendorSpending = {
 export type Query = {
   __typename?: 'Query';
   adminFaceRecognitionSettings?: Maybe<FaceRecognitionSettingsType>;
+  adminKarkunLocations?: Maybe<Array<Maybe<AdminKarkunLocationType>>>;
   adminPeopleRegistrationImageSettings?: Maybe<PeopleRegistrationImageSettingsType>;
   adminPeopleSearchFaceSettings?: Maybe<PeopleSearchFaceSettingsType>;
   allAccessiblePhysicalStores?: Maybe<Array<Maybe<PhysicalStore>>>;
@@ -4951,6 +4970,7 @@ export type Query = {
   myTrustedDevices?: Maybe<Array<Maybe<TrustedDeviceType>>>;
   orgLocationById?: Maybe<OrgLocationType>;
   orgLocationFeaturePermissions?: Maybe<Array<Maybe<OrgLocationFeaturePermissionsType>>>;
+  pagedAdminKarkuns?: Maybe<PagedKarkunType>;
   pagedCities?: Maybe<PagedCityType>;
   pagedDeletedPeople?: Maybe<PagedPeopleType>;
   pagedFreeFormCities?: Maybe<PagedFreeFormCity>;
@@ -5308,6 +5328,11 @@ export type QueryOrgLocationByIdArgs = {
 
 export type QueryOrgLocationFeaturePermissionsArgs = {
   locationId: Scalars['String']['input'];
+};
+
+
+export type QueryPagedAdminKarkunsArgs = {
+  filter?: InputMaybe<AdminKarkunFilter>;
 };
 
 
@@ -6628,6 +6653,8 @@ export type UserAccountAvailabilityType = {
 };
 
 export type UserFilter = {
+  cityLocationId?: InputMaybe<Scalars['String']['input']>;
+  mehfilLocationId?: InputMaybe<Scalars['String']['input']>;
   moduleAccess?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;

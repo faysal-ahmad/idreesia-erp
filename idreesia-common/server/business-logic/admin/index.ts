@@ -82,3 +82,17 @@ export {
   type CreateMehfilDutyInput,
   type UpdateMehfilDutyInput,
 } from './mehfil-template-duties';
+export {
+  getSelfAttendanceFaceSettings,
+  updateSelfAttendanceFaceSettings,
+  SELF_ATTENDANCE_FACE_DEFAULTS,
+  type SelfAttendanceFaceSettings,
+  getPeopleRegistrationImageSettings,
+  updatePeopleRegistrationImageSettings,
+  PEOPLE_REGISTRATION_IMAGE_DEFAULTS,
+  type PeopleRegistrationImageSettings,
+  getPeopleSearchFaceSettings,
+  updatePeopleSearchFaceSettings,
+  PEOPLE_SEARCH_FACE_DEFAULTS,
+  type PeopleSearchFaceSettings,
+} from './system-settings';

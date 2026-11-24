@@ -16,6 +16,9 @@ const StatusMessages: Record<string, string> = {
     'More than one face in this photo — retake with only the visitor in frame.',
   [ImageVectorStatus.TOO_SMALL]:
     'The face is too small — move closer or zoom in.',
+  [ImageVectorStatus.BLURRY]: 'The photo is blurry — hold the camera steady and retake.',
+  [ImageVectorStatus.FACE_TURNED]:
+    'The face is turned away — the visitor should look straight at the camera.',
   [ImageVectorStatus.ERROR]: 'This photo could not be processed. Try another.',
 };
 

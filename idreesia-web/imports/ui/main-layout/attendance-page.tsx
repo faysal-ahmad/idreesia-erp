@@ -13,7 +13,7 @@ const PageStyle: CSSProperties = {
   alignItems: 'center',
   justifyContent: 'center',
   boxSizing: 'border-box',
-  padding: '0 48px',
+  padding: '32px 48px',
   position: 'relative',
 };
 
@@ -25,34 +25,41 @@ const CameraViewStyle: CSSProperties = {
   gap: '16px',
 };
 
-// Result view: image and name on the left, additional data on the right.
+// Result view (portrait): a single column. Image and name, then the tables, then the buttons.
 const ResultViewStyle: CSSProperties = {
   display: 'flex',
-  // Shrinks with the screen (the page's padding stays), up to two camera-sized columns.
   width: '100%',
-  maxWidth: CameraWidth * 2 + 32,
-  flexFlow: 'row nowrap',
-  alignItems: 'flex-start',
-  gap: '32px',
+  maxWidth: CameraWidth * 1.5,
+  height: '100%',
+  flexFlow: 'column nowrap',
+  alignItems: 'stretch',
+  gap: '12px',
 };
 
-// As wide as the image, so the controls align to its left edge.
-const LeftColumnStyle: CSSProperties = {
-  display: 'flex',
-  flex: '1 1 0',
-  minWidth: 0,
-  flexFlow: 'column nowrap',
-  alignItems: 'flex-start',
-  gap: '16px',
+// The result view fits the screen (an iPad in portrait) without page scrolling.
+const ResultPageStyle: CSSProperties = {
+  ...PageStyle,
+  height: '100dvh',
+  minHeight: 0,
+  overflow: 'hidden',
+  padding: '16px 24px',
+};
+
+// Duty tables: take their natural height, and only scroll if there are too many duties to fit.
+const TablesStyle: CSSProperties = {
+  flex: '0 1 auto',
+  minHeight: 0,
+  overflowY: 'auto',
 };
 
 const TableTitleStyle: CSSProperties = {
   textAlign: 'center',
+  margin: '0 0 8px',
 };
 
 const SectionTitleStyle: CSSProperties = {
   ...TableTitleStyle,
-  marginTop: '32px',
+  marginTop: '12px',
 };
 
 // Messages are read from a distance at the kiosk.
@@ -78,34 +85,32 @@ const TopNoticeStyle: CSSProperties = {
 
 const ActionMessageStyle: CSSProperties = {
   ...MessageStyle,
-  marginTop: '24px',
+  marginTop: '12px',
 };
 
 const ActionsStyle: CSSProperties = {
   display: 'flex',
   flexFlow: 'column nowrap',
-  gap: '16px',
-  marginTop: '24px',
+  gap: '12px',
+  marginTop: '4px',
 };
 
 // Big, full-width touch targets: the check in / out and fetch buttons.
 const ActionButtonStyle: CSSProperties = {
-  height: '72px',
-  fontSize: '28px',
-};
-
-const RightColumnStyle: CSSProperties = {
-  flex: '1 1 0',
-  minWidth: 0,
+  height: '64px',
+  fontSize: '26px',
 };
 
 // Read from a distance at the kiosk, so larger than the default table text.
 const TableTheme = {
   components: {
     Table: {
-      cellFontSize: 22,
-      cellFontSizeMD: 22,
-      cellFontSizeSM: 22,
+      cellFontSize: 20,
+      cellFontSizeMD: 20,
+      cellFontSizeSM: 20,
+      cellPaddingBlock: 8,
+      cellPaddingBlockMD: 8,
+      cellPaddingBlockSM: 8,
       // Darker than the default so the grid is visible from a distance.
       borderColor: '#8c8c8c',
       headerBorderRadius: 0,
@@ -123,8 +128,9 @@ const NameStyle: CSSProperties = {
 // when the karkun has no photo.
 const ImageFrameStyle: CSSProperties = {
   width: '100%',
-  // Same proportions as the camera.
-  aspectRatio: `${CameraWidth} / ${CameraHeight}`,
+  // Takes whatever height the rest of the screen leaves over.
+  flex: '1 1 0',
+  minHeight: '96px',
   boxSizing: 'border-box',
   border: '1px solid #d9d9d9',
   background: '#fafafa',
@@ -143,6 +149,8 @@ const StatusMessages: Record<string, string> = {
   [ImageVectorStatus.NO_FACE]: 'No face was detected. Please look at the camera.',
   [ImageVectorStatus.MULTIPLE_FACES]: 'More than one face was detected. Please stand alone in front of the camera.',
   [ImageVectorStatus.TOO_SMALL]: 'Your face is too small. Please move closer.',
+  [ImageVectorStatus.BLURRY]: 'The picture is blurry. Please hold still and try again.',
+  [ImageVectorStatus.FACE_TURNED]: 'Please look straight at the camera.',
 };
 // How long a record stays on screen untouched, and how long the check in / out confirmation shows.
 const ResultTimeoutSeconds = 30;
@@ -380,34 +388,21 @@ export const AttendancePage = () => {
 
   if (match) {
     return (
-      <div style={PageStyle}>
+      <div style={ResultPageStyle}>
         <div style={ResultViewStyle}>
-          <div style={LeftColumnStyle}>
-            <div style={ImageFrameStyle}>
-              {match.imageUrl ? (
-                <img src={match.imageUrl} alt={match.name ?? ''} style={ImageStyle} />
-              ) : null}
-            </div>
-            <Typography.Title level={2} style={NameStyle}>
-              {match.name}
-            </Typography.Title>
-            <Button
-              type="primary"
-              danger
-              size="large"
-              block
-              style={ActionButtonStyle}
-              onClick={reset}
-            >
-              Go back
-              <span style={CountdownStyle}>({Math.max(secondsLeft, 0)})</span>
-            </Button>
+          <div style={ImageFrameStyle}>
+            {match.imageUrl ? (
+              <img src={match.imageUrl} alt={match.name ?? ''} style={ImageStyle} />
+            ) : null}
           </div>
-          <div style={RightColumnStyle}>
-            <Typography.Title level={2} style={TableTitleStyle}>{match.monthName} Attendance</Typography.Title>
+          <Typography.Title level={3} style={NameStyle}>
+            {match.name}
+          </Typography.Title>
+          <div style={TablesStyle}>
+            <Typography.Title level={3} style={TableTitleStyle}>{match.monthName} Attendance</Typography.Title>
             <ConfigProvider theme={TableTheme}>
               <Table
-                size="large"
+                size="middle"
                 bordered
                 rowKey="key"
                 pagination={false}
@@ -415,11 +410,11 @@ export const AttendancePage = () => {
                 dataSource={match.attendance}
                 locale={{ emptyText: 'No duties assigned this month.' }}
               />
-              <Typography.Title level={2} style={SectionTitleStyle}>
+              <Typography.Title level={3} style={SectionTitleStyle}>
                 Next Duty Today
               </Typography.Title>
               <Table
-                size="large"
+                size="middle"
                 bordered
                 rowKey="key"
                 pagination={false}
@@ -429,6 +424,7 @@ export const AttendancePage = () => {
                 locale={{ emptyText: 'No more duties today.' }}
               />
             </ConfigProvider>
+          </div>
             {actionMessage ? (
               <Alert
                 style={ActionMessageStyle}
@@ -464,8 +460,18 @@ export const AttendancePage = () => {
                   Check In
                 </Button>
               ) : null}
+              <Button
+                type="primary"
+                danger
+                size="large"
+                block
+                style={ActionButtonStyle}
+                onClick={reset}
+              >
+                Go back
+                <span style={CountdownStyle}>({Math.max(secondsLeft, 0)})</span>
+              </Button>
             </div>
-          </div>
         </div>
       </div>
     );

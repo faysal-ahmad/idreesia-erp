@@ -6,6 +6,7 @@ import {
 } from 'meteor/idreesia-common/constants/audit';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 
+import { getPeopleRegistrationImageSettings } from '../admin/system-settings';
 import { createAuditLog } from './audit-logs';
 import {
   computeVectorFromImageBuffer,
@@ -95,7 +96,16 @@ export async function setPersonImage(
     console.error(`Thumbnail failed for person '${personId}':`, error);
   }
 
-  const imageVectorData = computeVectorFromImageBuffer(image);
+  // Visitors and karkuns alike: the People Registration settings decide whether the photo is
+  // usable for face recognition.
+  const { minDetectionScore, minFacePixels, minSharpness, minFacePose } =
+    await getPeopleRegistrationImageSettings();
+  const imageVectorData = computeVectorFromImageBuffer(image, {
+    minDetectionScore,
+    minFacePixels,
+    minSharpness,
+    minFacePose,
+  });
   const { imageKey, imageThumbnailKey } = await storePersonImage(
     personId,
     image,

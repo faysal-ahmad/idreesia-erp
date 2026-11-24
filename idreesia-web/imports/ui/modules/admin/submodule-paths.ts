@@ -81,6 +81,11 @@ export default class SubModulePaths {
   static mehfilTemplatesPath = `${ModulePaths.admin}/mehfil-templates`;
 
   // *************************************************************************************
+  // Configuration Routes
+  // *************************************************************************************
+  static facialRecognitionPath = `${ModulePaths.admin}/facial-recognition`;
+
+  // *************************************************************************************
   // Deleted Data Routes
   // *************************************************************************************
   static deletedPeoplePath = `${ModulePaths.admin}/deleted-people`;

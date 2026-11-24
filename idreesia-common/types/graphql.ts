@@ -510,6 +510,29 @@ export type EnrolledTrustedDeviceType = {
   deviceSecret: Scalars['String']['output'];
 };
 
+export type FaceRecognitionSettingsType = {
+  __typename?: 'FaceRecognitionSettingsType';
+  defaults?: Maybe<FaceRecognitionSettingsValuesType>;
+  matchThreshold?: Maybe<Scalars['Float']['output']>;
+  minDetectionScore?: Maybe<Scalars['Float']['output']>;
+  minFacePixels?: Maybe<Scalars['Int']['output']>;
+  minFacePose?: Maybe<Scalars['Int']['output']>;
+  minMatchMargin?: Maybe<Scalars['Float']['output']>;
+  minSharpness?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type FaceRecognitionSettingsValuesType = {
+  __typename?: 'FaceRecognitionSettingsValuesType';
+  matchThreshold?: Maybe<Scalars['Float']['output']>;
+  minDetectionScore?: Maybe<Scalars['Float']['output']>;
+  minFacePixels?: Maybe<Scalars['Int']['output']>;
+  minFacePose?: Maybe<Scalars['Int']['output']>;
+  minMatchMargin?: Maybe<Scalars['Float']['output']>;
+  minSharpness?: Maybe<Scalars['Int']['output']>;
+};
+
 export type FaceVectorResultType = {
   __typename?: 'FaceVectorResultType';
   status?: Maybe<Scalars['String']['output']>;
@@ -1134,6 +1157,9 @@ export type Mutation = {
   submitPurchasingOrder?: Maybe<PurchasingOrder>;
   submitPurchasingRequisition?: Maybe<PurchasingRequisition>;
   syncOrgLocationObservers?: Maybe<SyncOrgLocationObserversResult>;
+  updateAdminFaceRecognitionSettings?: Maybe<FaceRecognitionSettingsType>;
+  updateAdminPeopleRegistrationImageSettings?: Maybe<PeopleRegistrationImageSettingsType>;
+  updateAdminPeopleSearchFaceSettings?: Maybe<PeopleSearchFaceSettingsType>;
   updateAttachment?: Maybe<Attachment>;
   updateCity?: Maybe<CityType>;
   updateCityLocationMappings?: Maybe<Scalars['Int']['output']>;
@@ -2581,6 +2607,34 @@ export type MutationSubmitPurchasingRequisitionArgs = {
 
 export type MutationSyncOrgLocationObserversArgs = {
   locationId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateAdminFaceRecognitionSettingsArgs = {
+  matchThreshold: Scalars['Float']['input'];
+  minDetectionScore: Scalars['Float']['input'];
+  minFacePixels: Scalars['Int']['input'];
+  minFacePose: Scalars['Int']['input'];
+  minMatchMargin: Scalars['Float']['input'];
+  minSharpness: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateAdminPeopleRegistrationImageSettingsArgs = {
+  minDetectionScore: Scalars['Float']['input'];
+  minFacePixels: Scalars['Int']['input'];
+  minFacePose: Scalars['Int']['input'];
+  minSharpness: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateAdminPeopleSearchFaceSettingsArgs = {
+  matchThreshold: Scalars['Float']['input'];
+  minDetectionScore: Scalars['Float']['input'];
+  minFacePixels: Scalars['Int']['input'];
+  minFacePose: Scalars['Int']['input'];
+  minMatchMargin: Scalars['Float']['input'];
+  minSharpness: Scalars['Int']['input'];
 };
 
 
@@ -4081,6 +4135,48 @@ export type PagedWorkspaceTaskType = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PeopleRegistrationImageSettingsType = {
+  __typename?: 'PeopleRegistrationImageSettingsType';
+  defaults?: Maybe<PeopleRegistrationImageSettingsValuesType>;
+  minDetectionScore?: Maybe<Scalars['Float']['output']>;
+  minFacePixels?: Maybe<Scalars['Int']['output']>;
+  minFacePose?: Maybe<Scalars['Int']['output']>;
+  minSharpness?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type PeopleRegistrationImageSettingsValuesType = {
+  __typename?: 'PeopleRegistrationImageSettingsValuesType';
+  minDetectionScore?: Maybe<Scalars['Float']['output']>;
+  minFacePixels?: Maybe<Scalars['Int']['output']>;
+  minFacePose?: Maybe<Scalars['Int']['output']>;
+  minSharpness?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PeopleSearchFaceSettingsType = {
+  __typename?: 'PeopleSearchFaceSettingsType';
+  defaults?: Maybe<PeopleSearchFaceSettingsValuesType>;
+  matchThreshold?: Maybe<Scalars['Float']['output']>;
+  minDetectionScore?: Maybe<Scalars['Float']['output']>;
+  minFacePixels?: Maybe<Scalars['Int']['output']>;
+  minFacePose?: Maybe<Scalars['Int']['output']>;
+  minMatchMargin?: Maybe<Scalars['Float']['output']>;
+  minSharpness?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type PeopleSearchFaceSettingsValuesType = {
+  __typename?: 'PeopleSearchFaceSettingsValuesType';
+  matchThreshold?: Maybe<Scalars['Float']['output']>;
+  minDetectionScore?: Maybe<Scalars['Float']['output']>;
+  minFacePixels?: Maybe<Scalars['Int']['output']>;
+  minFacePose?: Maybe<Scalars['Int']['output']>;
+  minMatchMargin?: Maybe<Scalars['Float']['output']>;
+  minSharpness?: Maybe<Scalars['Int']['output']>;
+};
+
 export type PeopleTagType = {
   __typename?: 'PeopleTagType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -4781,6 +4877,9 @@ export type PurchasingVendorSpending = {
 
 export type Query = {
   __typename?: 'Query';
+  adminFaceRecognitionSettings?: Maybe<FaceRecognitionSettingsType>;
+  adminPeopleRegistrationImageSettings?: Maybe<PeopleRegistrationImageSettingsType>;
+  adminPeopleSearchFaceSettings?: Maybe<PeopleSearchFaceSettingsType>;
   allAccessiblePhysicalStores?: Maybe<Array<Maybe<PhysicalStore>>>;
   allCities?: Maybe<Array<Maybe<CityType>>>;
   allCityMehfils?: Maybe<Array<Maybe<CityMehfilType>>>;

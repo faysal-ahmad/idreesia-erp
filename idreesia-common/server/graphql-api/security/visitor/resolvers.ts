@@ -11,6 +11,7 @@ import {
   visitorToPerson,
 } from 'meteor/idreesia-common/server/business-logic/common';
 
+import { getPeopleSearchFaceSettings } from 'meteor/idreesia-common/server/business-logic/admin';
 import { processCsvData } from 'meteor/idreesia-common/server/business-logic/security/visitor-csv-import';
 
 // The capture control sends a canvas data URL; tolerate it with or without the prefix.
@@ -45,8 +46,15 @@ const resolvers: ResolverMap = {
     },
 
     securityFaceVectorFromImage: async (obj, { imageData }) => {
+      const settings = await getPeopleSearchFaceSettings();
       const { vector, status } = computeVectorFromImageBuffer(
-        Buffer.from(stripDataUrlPrefix(imageData), 'base64')
+        Buffer.from(stripDataUrlPrefix(imageData), 'base64'),
+        {
+          minDetectionScore: settings.minDetectionScore,
+          minFacePixels: settings.minFacePixels,
+          minSharpness: settings.minSharpness,
+          minFacePose: settings.minFacePose,
+        }
       );
 
       // Only hand back a vector the caller can actually search with - every other status is a
@@ -57,8 +65,13 @@ const resolvers: ResolverMap = {
       };
     },
 
-    securityVisitorsByFaceVector: async (obj, { vector, limit }) =>
-      searchPeopleByFaceVector(vector, limit ?? DEFAULT_FACE_SEARCH_LIMIT),
+    securityVisitorsByFaceVector: async (obj, { vector, limit }) => {
+      const settings = await getPeopleSearchFaceSettings();
+      return searchPeopleByFaceVector(vector, limit ?? DEFAULT_FACE_SEARCH_LIMIT, {
+        minRawCosine: settings.matchThreshold,
+        minMargin: settings.minMatchMargin,
+      });
+    },
   },
 
   Mutation: {

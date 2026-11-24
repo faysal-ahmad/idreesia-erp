@@ -2,8 +2,6 @@
 
 This manual explains how to use **Purchasing**, found under **381-A Operations** in the top menu. Purchasing helps you ask for something, get it approved, order it, check what arrived, record the vendor's bill, and pay it, all with a record of who did what.
 
-Purchasing is separate from Stores. It does not change stock levels.
-
 ## Contents
 
 1. [Before you start](#1-before-you-start)
@@ -21,12 +19,13 @@ Purchasing is separate from Stores. It does not change stock levels.
 13. [Attachments](#13-attachments)
 14. [History](#14-history)
 15. [Dashboard and reports](#15-dashboard-and-reports)
-16. [Who can do what](#16-who-can-do-what)
-17. [Common questions](#17-common-questions)
+16. [Using Purchasing on the mobile app](#16-using-purchasing-on-the-mobile-app)
+17. [Who can do what](#17-who-can-do-what)
+18. [Common questions](#18-common-questions)
 
 ## 1. Before you start
 
-You see **Purchasing** in the 381-A Operations menu only if an administrator has given you at least one Purchasing permission. Inside Purchasing, you see only the pages and buttons your permissions allow. If something is missing, ask your administrator (see [Who can do what](#16-who-can-do-what)).
+You see **Purchasing** in the 381-A Operations menu only if an administrator has given you at least one Purchasing permission. Inside Purchasing, you see only the pages and buttons your permissions allow. If something is missing, ask your administrator (see [Who can do what](#17-who-can-do-what)).
 
 ## 2. The big picture
 
@@ -226,7 +225,43 @@ To review changes across all documents, open **Administration > Audit Logs**. It
 
 Use the filters on each tab (vendor, dates) and the results update.
 
-## 16. Who can do what
+## 16. Using Purchasing on the mobile app
+
+Purchasing is also available in the mobile app, under the same Purchasing entry. It is meant for people on the move: approving, receiving deliveries, requesting items and looking things up. It is not a full replacement for the web version. Which tiles you see depends on your permissions, exactly as on the web.
+
+**What you can do on mobile**
+
+| Area | What you can do |
+|---|---|
+| Home / Dashboard | See counters (requisitions and orders awaiting approval, open orders, overdue invoices, total payable, overdue amount) and payables aging. Needs the reports permission. Tapping a counter opens the matching list. |
+| Approvals | One place listing requisitions and orders waiting for your decision. Open one and **Approve** or **Reject** a requisition, or **Approve** or **Return to draft** an order. A reason is asked for when rejecting or returning. Tabs appear only for the approval permissions you hold. |
+| Receiving | Lists orders that are approved, sent or partly received. Open one and record a delivery: received date, delivery note number, notes, and for each line the quantity **received now**, **rejected** and remarks. Take photos of the delivery note and goods with the camera; they are attached to the receipt once it is saved. |
+| Requisitions | Create a requisition (title, purpose, needed-by date, items typed freely or picked from the catalog). Edit a draft, **Submit for approval**, **Reopen as draft** after a rejection, and **Cancel**. Approvers can also approve or reject here. |
+| Purchase orders | View orders, their items, totals and the vendor's phone number. Approvers can approve or return an order; people who can receive goods can start **Receive goods**. |
+| Goods receipts, Invoices, Payments | View lists and details, search and filter by status. Read only. |
+| Vendors | Look up a vendor and call or email them with one tap. Read only. |
+| Catalog | Browse items and view their pictures. People who manage the catalog can **take, replace or remove** an item's picture with the camera. |
+| Attachments | On requisitions, orders, receipts, invoices and payments you can open attached files. People who manage that kind of document can add a photo (camera) or a file, and delete files. |
+
+**What you cannot do on mobile**
+
+- Create or edit purchase orders, or create orders from requisitions or quotes. Orders can only be viewed, approved, returned to draft, and received against.
+- Work with quotes at all (they do not appear on mobile).
+- Submit, mark as sent, close, cancel or delete purchase orders.
+- Void a goods receipt.
+- Record, edit, dispute or void invoices.
+- Record or void payments.
+- Add, edit or deactivate vendors, or add or edit catalog items (only their pictures can be changed).
+- Print purchase orders.
+- Use the Reports and their Excel downloads, the Audit Logs, the History tab, or the Permissions and User Groups pages.
+
+**Good to know**
+
+- Mobile needs an internet connection for anything that changes data. When you are offline, the action buttons are disabled.
+- The same permissions and the same rules apply as on the web. If a button is missing on mobile, check the web version and your permissions first.
+- Use the web version for everything in the "cannot do" list above.
+
+## 17. Who can do what
 
 Purchasing has no fixed roles. What you can do depends only on the **permissions** your administrator gives you or your group. This lets each organization split duties as it likes, for example one group that creates orders and a different one that approves them.
 
@@ -256,11 +291,11 @@ The same permission is needed to see the page and to make changes. Permissions c
 - **New Group** creates a group with a name and an optional description. Use the pencil icon to rename it and the bin icon to delete it. A group that still has people in it cannot be deleted; remove them first.
 - Click the add-user icon on a group. The same panel of Multan karkuns opens; search and click **Add**. Karkuns already in the group show as **Member**. Click the **x** on a person's tag and confirm to take them out.
 
-Groups are for organising only: belonging to a group, or a group being listed on a permission, does not give anyone access yet. Access comes from the permissions given to people themselves on the **Permissions** tab.
+Groups grant access. Anyone in a group has every permission that group holds, in addition to any permissions given to them directly. Under a permission on the **Permissions** tab, a person is listed whether they hold it directly or through a group. Removing someone's tag removes only a permission given to them directly; to take away a group's permission, remove the group's tag, or take the person out of the group.
 
 Important: the system does **not** stop someone who holds the approve permission from approving a document they created themselves. If your organization wants separation, the administrator should give create and approve permissions to different people.
 
-## 17. Common questions
+## 18. Common questions
 
 **I don't see Purchasing in the menu.** You have no Purchasing permission. Ask your administrator.
 

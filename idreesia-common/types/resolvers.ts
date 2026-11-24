@@ -128,6 +128,8 @@ export type ResolversTypes = ResolversObject<{
   DutyType: ResolverTypeWrapper<Types.DutyType>;
   EmailAddress: ResolverTypeWrapper<Types.Scalars['EmailAddress']['output']>;
   EnrolledTrustedDeviceType: ResolverTypeWrapper<Types.EnrolledTrustedDeviceType>;
+  FaceRecognitionSettingsType: ResolverTypeWrapper<Types.FaceRecognitionSettingsType>;
+  FaceRecognitionSettingsValuesType: ResolverTypeWrapper<Types.FaceRecognitionSettingsValuesType>;
   FaceVectorResultType: ResolverTypeWrapper<Types.FaceVectorResultType>;
   Float: ResolverTypeWrapper<Types.Scalars['Float']['output']>;
   FreeFormCityType: ResolverTypeWrapper<Types.FreeFormCityType>;
@@ -235,6 +237,10 @@ export type ResolversTypes = ResolversObject<{
   PagedWorkspaceProjectType: ResolverTypeWrapper<Types.PagedWorkspaceProjectType>;
   PagedWorkspaceTaskCommentType: ResolverTypeWrapper<Types.PagedWorkspaceTaskCommentType>;
   PagedWorkspaceTaskType: ResolverTypeWrapper<Types.PagedWorkspaceTaskType>;
+  PeopleRegistrationImageSettingsType: ResolverTypeWrapper<Types.PeopleRegistrationImageSettingsType>;
+  PeopleRegistrationImageSettingsValuesType: ResolverTypeWrapper<Types.PeopleRegistrationImageSettingsValuesType>;
+  PeopleSearchFaceSettingsType: ResolverTypeWrapper<Types.PeopleSearchFaceSettingsType>;
+  PeopleSearchFaceSettingsValuesType: ResolverTypeWrapper<Types.PeopleSearchFaceSettingsValuesType>;
   PeopleTagType: ResolverTypeWrapper<Types.PeopleTagType>;
   Permission: Types.Permission;
   PersonBasicSharedDataType: ResolverTypeWrapper<Types.PersonBasicSharedDataType>;
@@ -453,6 +459,8 @@ export type ResolversParentTypes = ResolversObject<{
   DutyType: Types.DutyType;
   EmailAddress: Types.Scalars['EmailAddress']['output'];
   EnrolledTrustedDeviceType: Types.EnrolledTrustedDeviceType;
+  FaceRecognitionSettingsType: Types.FaceRecognitionSettingsType;
+  FaceRecognitionSettingsValuesType: Types.FaceRecognitionSettingsValuesType;
   FaceVectorResultType: Types.FaceVectorResultType;
   Float: Types.Scalars['Float']['output'];
   FreeFormCityType: Types.FreeFormCityType;
@@ -557,6 +565,10 @@ export type ResolversParentTypes = ResolversObject<{
   PagedWorkspaceProjectType: Types.PagedWorkspaceProjectType;
   PagedWorkspaceTaskCommentType: Types.PagedWorkspaceTaskCommentType;
   PagedWorkspaceTaskType: Types.PagedWorkspaceTaskType;
+  PeopleRegistrationImageSettingsType: Types.PeopleRegistrationImageSettingsType;
+  PeopleRegistrationImageSettingsValuesType: Types.PeopleRegistrationImageSettingsValuesType;
+  PeopleSearchFaceSettingsType: Types.PeopleSearchFaceSettingsType;
+  PeopleSearchFaceSettingsValuesType: Types.PeopleSearchFaceSettingsValuesType;
   PeopleTagType: Types.PeopleTagType;
   PersonBasicSharedDataType: Types.PersonBasicSharedDataType;
   PersonBasicType: Types.PersonBasicType;
@@ -1206,6 +1218,27 @@ export type EnrolledTrustedDeviceTypeResolvers<ContextType = any, ParentType ext
   deviceSecret?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
+export type FaceRecognitionSettingsTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['FaceRecognitionSettingsType'] = ResolversParentTypes['FaceRecognitionSettingsType']> = ResolversObject<{
+  defaults?: Resolver<Types.Maybe<ResolversTypes['FaceRecognitionSettingsValuesType']>, ParentType, ContextType>;
+  matchThreshold?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minDetectionScore?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minFacePixels?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minFacePose?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minMatchMargin?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minSharpness?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Types.Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type FaceRecognitionSettingsValuesTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['FaceRecognitionSettingsValuesType'] = ResolversParentTypes['FaceRecognitionSettingsValuesType']> = ResolversObject<{
+  matchThreshold?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minDetectionScore?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minFacePixels?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minFacePose?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minMatchMargin?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minSharpness?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
 export type FaceVectorResultTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['FaceVectorResultType'] = ResolversParentTypes['FaceVectorResultType']> = ResolversObject<{
   status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   vector?: Resolver<Types.Maybe<Array<ResolversTypes['Float']>>, ParentType, ContextType>;
@@ -1737,6 +1770,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   submitPurchasingOrder?: Resolver<Types.Maybe<ResolversTypes['PurchasingOrder']>, ParentType, ContextType, RequireFields<Types.MutationSubmitPurchasingOrderArgs, '_id'>>;
   submitPurchasingRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.MutationSubmitPurchasingRequisitionArgs, '_id'>>;
   syncOrgLocationObservers?: Resolver<Types.Maybe<ResolversTypes['SyncOrgLocationObserversResult']>, ParentType, ContextType, RequireFields<Types.MutationSyncOrgLocationObserversArgs, 'locationId'>>;
+  updateAdminFaceRecognitionSettings?: Resolver<Types.Maybe<ResolversTypes['FaceRecognitionSettingsType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateAdminFaceRecognitionSettingsArgs, 'matchThreshold' | 'minDetectionScore' | 'minFacePixels' | 'minFacePose' | 'minMatchMargin' | 'minSharpness'>>;
+  updateAdminPeopleRegistrationImageSettings?: Resolver<Types.Maybe<ResolversTypes['PeopleRegistrationImageSettingsType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateAdminPeopleRegistrationImageSettingsArgs, 'minDetectionScore' | 'minFacePixels' | 'minFacePose' | 'minSharpness'>>;
+  updateAdminPeopleSearchFaceSettings?: Resolver<Types.Maybe<ResolversTypes['PeopleSearchFaceSettingsType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateAdminPeopleSearchFaceSettingsArgs, 'matchThreshold' | 'minDetectionScore' | 'minFacePixels' | 'minFacePose' | 'minMatchMargin' | 'minSharpness'>>;
   updateAttachment?: Resolver<Types.Maybe<ResolversTypes['Attachment']>, ParentType, ContextType, RequireFields<Types.MutationUpdateAttachmentArgs, '_id'>>;
   updateCity?: Resolver<Types.Maybe<ResolversTypes['CityType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateCityArgs, '_id' | 'country' | 'name'>>;
   updateCityLocationMappings?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -2229,6 +2265,44 @@ export type PagedWorkspaceTaskCommentTypeResolvers<ContextType = any, ParentType
 export type PagedWorkspaceTaskTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedWorkspaceTaskType'] = ResolversParentTypes['PagedWorkspaceTaskType']> = ResolversObject<{
   data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['WorkspaceTaskType']>>>, ParentType, ContextType>;
   totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type PeopleRegistrationImageSettingsTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PeopleRegistrationImageSettingsType'] = ResolversParentTypes['PeopleRegistrationImageSettingsType']> = ResolversObject<{
+  defaults?: Resolver<Types.Maybe<ResolversTypes['PeopleRegistrationImageSettingsValuesType']>, ParentType, ContextType>;
+  minDetectionScore?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minFacePixels?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minFacePose?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minSharpness?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Types.Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type PeopleRegistrationImageSettingsValuesTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PeopleRegistrationImageSettingsValuesType'] = ResolversParentTypes['PeopleRegistrationImageSettingsValuesType']> = ResolversObject<{
+  minDetectionScore?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minFacePixels?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minFacePose?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minSharpness?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type PeopleSearchFaceSettingsTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PeopleSearchFaceSettingsType'] = ResolversParentTypes['PeopleSearchFaceSettingsType']> = ResolversObject<{
+  defaults?: Resolver<Types.Maybe<ResolversTypes['PeopleSearchFaceSettingsValuesType']>, ParentType, ContextType>;
+  matchThreshold?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minDetectionScore?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minFacePixels?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minFacePose?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minMatchMargin?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minSharpness?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Types.Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type PeopleSearchFaceSettingsValuesTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PeopleSearchFaceSettingsValuesType'] = ResolversParentTypes['PeopleSearchFaceSettingsValuesType']> = ResolversObject<{
+  matchThreshold?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minDetectionScore?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minFacePixels?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minFacePose?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minMatchMargin?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minSharpness?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
 export type PeopleTagTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PeopleTagType'] = ResolversParentTypes['PeopleTagType']> = ResolversObject<{
@@ -2772,6 +2846,9 @@ export type PurchasingVendorSpendingResolvers<ContextType = any, ParentType exte
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  adminFaceRecognitionSettings?: Resolver<Types.Maybe<ResolversTypes['FaceRecognitionSettingsType']>, ParentType, ContextType>;
+  adminPeopleRegistrationImageSettings?: Resolver<Types.Maybe<ResolversTypes['PeopleRegistrationImageSettingsType']>, ParentType, ContextType>;
+  adminPeopleSearchFaceSettings?: Resolver<Types.Maybe<ResolversTypes['PeopleSearchFaceSettingsType']>, ParentType, ContextType>;
   allAccessiblePhysicalStores?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PhysicalStore']>>>, ParentType, ContextType>;
   allCities?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CityType']>>>, ParentType, ContextType>;
   allCityMehfils?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['CityMehfilType']>>>, ParentType, ContextType>;
@@ -4003,6 +4080,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   DutyType?: DutyTypeResolvers<ContextType>;
   EmailAddress?: GraphQLScalarType;
   EnrolledTrustedDeviceType?: EnrolledTrustedDeviceTypeResolvers<ContextType>;
+  FaceRecognitionSettingsType?: FaceRecognitionSettingsTypeResolvers<ContextType>;
+  FaceRecognitionSettingsValuesType?: FaceRecognitionSettingsValuesTypeResolvers<ContextType>;
   FaceVectorResultType?: FaceVectorResultTypeResolvers<ContextType>;
   FreeFormCityType?: FreeFormCityTypeResolvers<ContextType>;
   FreeFormValueType?: FreeFormValueTypeResolvers<ContextType>;
@@ -4099,6 +4178,10 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PagedWorkspaceProjectType?: PagedWorkspaceProjectTypeResolvers<ContextType>;
   PagedWorkspaceTaskCommentType?: PagedWorkspaceTaskCommentTypeResolvers<ContextType>;
   PagedWorkspaceTaskType?: PagedWorkspaceTaskTypeResolvers<ContextType>;
+  PeopleRegistrationImageSettingsType?: PeopleRegistrationImageSettingsTypeResolvers<ContextType>;
+  PeopleRegistrationImageSettingsValuesType?: PeopleRegistrationImageSettingsValuesTypeResolvers<ContextType>;
+  PeopleSearchFaceSettingsType?: PeopleSearchFaceSettingsTypeResolvers<ContextType>;
+  PeopleSearchFaceSettingsValuesType?: PeopleSearchFaceSettingsValuesTypeResolvers<ContextType>;
   PeopleTagType?: PeopleTagTypeResolvers<ContextType>;
   PersonBasicSharedDataType?: PersonBasicSharedDataTypeResolvers<ContextType>;
   PersonBasicType?: PersonBasicTypeResolvers<ContextType>;

@@ -80,8 +80,12 @@ const modulePathsMapping: Record<string, string> = {
 };
 
 const isModuleAccessible = (user: User, moduleName: string) => {
-  // For a module to be accessible to the user, the user needs to have at least
-  // one permission for that module.
+  // Store permissions are held on a store, not globally: the Stores module is
+  // open to anyone with a permission on at least one store.
+  if (moduleName === ModuleNames.stores) return !!user.hasStoreAccess;
+
+  // For any other module to be accessible to the user, the user needs to have
+  // at least one permission for that module.
   const { permissions = [] } = user;
   const lcModuleName = kebabCase(moduleName);
   let isAccessible = false;

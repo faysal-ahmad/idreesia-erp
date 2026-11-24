@@ -1,5 +1,15 @@
+import { UserGroups } from 'meteor/idreesia-common/server/collections/admin';
 import { PhysicalStores } from 'meteor/idreesia-common/server/collections/inventory';
-import { filterByInstanceAccess } from 'meteor/idreesia-common/server/graphql-api/security';
+import { DataSource } from 'meteor/idreesia-common/constants';
+import {
+  addPhysicalStoreAccessGroup,
+  addPhysicalStoreAccessUser,
+  filterAccessibleStores,
+  listPhysicalStoreAccess,
+  removePhysicalStoreAccessGroup,
+  removePhysicalStoreAccessUser,
+  searchStoreAccessKarkuns,
+} from 'meteor/idreesia-common/server/business-logic/inventory/store-access';
 
 interface PhysicalStore {
   _id: string;
@@ -13,7 +23,8 @@ interface ResolverContext {
     _id: string;
     username?: string;
     locked?: boolean;
-    instances?: string[];
+    isSuperAdmin?: boolean;
+    groups?: string[];
   };
 }
 
@@ -25,12 +36,31 @@ export default {
       { user }: ResolverContext
     ) => {
       const physicalStores = await PhysicalStores.find({}).fetchAsync();
-      const filteredPhysicalStores = filterByInstanceAccess(
-        user,
-        physicalStores as Array<{ _id: string; [key: string]: unknown }>
-      );
-      return filteredPhysicalStores;
+      const accessible = await filterAccessibleStores(user, physicalStores);
+      return accessible.map(({ store, permissions }) => ({
+        ...store,
+        permissions,
+      }));
     },
+
+    physicalStoreAccess: async (
+      _obj: unknown,
+      { physicalStoreId }: { physicalStoreId: string }
+    ) => listPhysicalStoreAccess(physicalStoreId),
+
+    storeAccessKarkunSearch: async (
+      _obj: unknown,
+      args: {
+        name?: string;
+        cnicNumber?: string;
+        phoneNumber?: string;
+        pageIndex?: string;
+        pageSize?: string;
+      }
+    ) => searchStoreAccessKarkuns(args),
+
+    storeAccessUserGroups: async () =>
+      UserGroups.find({}, { sort: { name: 1 } }).fetchAsync(),
 
     physicalStoreById: async (
       _obj: unknown,
@@ -76,5 +106,29 @@ export default {
 
       return PhysicalStores.findOneAsync(id);
     },
+
+    addPhysicalStoreAccessUser: async (
+      _obj: unknown,
+      values: { physicalStoreId: string; permission: string; karkunId: string },
+      { user }: ResolverContext
+    ) => addPhysicalStoreAccessUser(values, user, DataSource.ADMIN),
+
+    removePhysicalStoreAccessUser: async (
+      _obj: unknown,
+      values: { physicalStoreId: string; permission: string; userId: string },
+      { user }: ResolverContext
+    ) => removePhysicalStoreAccessUser(values, user, DataSource.ADMIN),
+
+    addPhysicalStoreAccessGroup: async (
+      _obj: unknown,
+      values: { physicalStoreId: string; permission: string; groupId: string },
+      { user }: ResolverContext
+    ) => addPhysicalStoreAccessGroup(values, user, DataSource.ADMIN),
+
+    removePhysicalStoreAccessGroup: async (
+      _obj: unknown,
+      values: { physicalStoreId: string; permission: string; groupId: string },
+      { user }: ResolverContext
+    ) => removePhysicalStoreAccessGroup(values, user, DataSource.ADMIN),
   },
 };

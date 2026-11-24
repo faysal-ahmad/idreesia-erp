@@ -6,7 +6,6 @@ import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 
 import { resetTwoFactor } from './two-factor';
 import {
-  setUserInstanceAccess,
   setUserPermissions,
   updateUser,
 } from './user-mutations';
@@ -133,9 +132,6 @@ describe('super admin accounts', () => {
     ).rejects.toThrow('Only a super admin');
     await expect(
       setUserPermissions({ userId: 'admin', permissions: [] }, manager, 'test')
-    ).rejects.toThrow('Only a super admin');
-    await expect(
-      setUserInstanceAccess({ userId: 'admin', instances: [] }, manager, 'test')
     ).rejects.toThrow('Only a super admin');
 
     expect(

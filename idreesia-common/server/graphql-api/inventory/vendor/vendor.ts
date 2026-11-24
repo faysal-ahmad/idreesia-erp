@@ -20,12 +20,10 @@ type Vendor {
 
 extend type Query {
   vendorById(_id: String!, physicalStoreId: String!): Vendor
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   vendorsByPhysicalStoreId(physicalStoreId: String!): [Vendor]
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 }
 
 extend type Mutation {
@@ -37,8 +35,7 @@ extend type Mutation {
     address: String
     notes: String
   ): Vendor
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
 
   updateVendor(
     _id: String!
@@ -49,11 +46,9 @@ extend type Mutation {
     address: String
     notes: String
   ): Vendor
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
 
   removeVendor(_id: String!, physicalStoreId: String!): Int
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
 }
 `;

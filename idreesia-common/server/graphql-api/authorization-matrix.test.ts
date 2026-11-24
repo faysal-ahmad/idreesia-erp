@@ -6,6 +6,7 @@ import { graphql, parse, valueFromASTUntyped } from 'graphql';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
+import { PhysicalStoreAccess } from 'meteor/idreesia-common/server/collections/inventory';
 import {
   gqlContext,
   makeLockedUser,
@@ -14,12 +15,12 @@ import {
 } from 'meteor/idreesia-common/server/test-utils/fixtures';
 
 import CheckPermissionsSchema from './_directives/check-permissions';
-import CheckInstanceAccessSchema from './_directives/check-instance-access';
+import CheckStoreAccessSchema from './_directives/check-store-access';
 import SuperAdminOnlySchema from './_directives/super-admin-only';
 import PermissionSchema from './_directives/permission';
 import {
-  CheckInstanceAccessDirective,
   CheckPermissionsDirective,
+  CheckStoreAccessDirective,
   SuperAdminOnlyDirective,
 } from './_directives';
 
@@ -46,7 +47,7 @@ const WORKSPACE_DIRECTIVES = [
 
 const PROTECTION = [
   'checkPermissions',
-  'checkInstanceAccess',
+  'checkStoreAccess',
   'checkCommitteeAccess',
   'checkDutiesAttendanceAccess',
   'checkMehfilDetailsAccess',
@@ -89,8 +90,10 @@ for (const def of document.definitions) {
 }
 
 const protectedFields = fields.filter(f => f.declarations.length > 0);
+// The directives that carry a list of permissions to hold.
+const PERMISSION_DIRECTIVES = ['checkPermissions', 'checkStoreAccess'];
 const permissionFields = protectedFields.filter(f =>
-  f.declarations.some(d => d.directive === 'checkPermissions')
+  f.declarations.some(d => PERMISSION_DIRECTIVES.includes(d.directive))
 );
 
 const perm = (name: string) => (Permissions as Record<string, string>)[name];
@@ -104,7 +107,7 @@ const probe = (info: FieldInfo) => {
       if (d.directive === 'superAdminOnly') return '@superAdminOnly';
       const args = Object.entries(d.args)
         .map(([k, v]) =>
-          k === 'permissions'
+          k === 'permissions' || k === 'anyStorePermissions'
             ? `${k}: [${(v as string[]).join(', ')}]`
             : `${k}: ${JSON.stringify(v)}`
         )
@@ -113,14 +116,14 @@ const probe = (info: FieldInfo) => {
     })
     .join(' ');
   const instanceArg = info.declarations.find(
-    d => d.directive === 'checkInstanceAccess'
-  )?.args.instanceIdArgName as string | undefined;
+    d => d.directive === 'checkStoreAccess'
+  )?.args.physicalStoreIdArgName as string | undefined;
   const argList = instanceArg ? `(${instanceArg}: String)` : '';
   const returnType =
     info.field.split('.')[1].startsWith('paged') ||
     info.declarations.some(
       d =>
-        d.directive === 'checkInstanceAccess' &&
+        d.directive === 'checkStoreAccess' &&
         d.args.returnType === 'paged-list'
     )
       ? 'Page'
@@ -128,7 +131,7 @@ const probe = (info: FieldInfo) => {
   const root = isMutation ? 'Mutation' : 'Query';
   const typeDefs = [
     CheckPermissionsSchema,
-    CheckInstanceAccessSchema,
+    CheckStoreAccessSchema,
     SuperAdminOnlySchema,
     PermissionSchema,
     `type Page { data: [String!]!, totalResults: Int! }
@@ -138,7 +141,7 @@ const probe = (info: FieldInfo) => {
   ];
   const resolved = returnType === 'Page' ? { data: [], totalResults: 1 } : 'RAN';
   const schema = SuperAdminOnlyDirective(
-    CheckInstanceAccessDirective(
+    CheckStoreAccessDirective(
       CheckPermissionsDirective(
         makeExecutableSchema({
           typeDefs,
@@ -174,8 +177,8 @@ describe('authorization matrix', () => {
 
   it('every @checkPermissions list is non-empty and uses known permissions', () => {
     for (const f of permissionFields) {
-      for (const d of f.declarations.filter(
-        x => x.directive === 'checkPermissions'
+      for (const d of f.declarations.filter(x =>
+        PERMISSION_DIRECTIVES.includes(x.directive)
       )) {
         const list = d.args.permissions as string[] | undefined;
         expect(list?.length, f.field).toBeGreaterThan(0);
@@ -184,30 +187,14 @@ describe('authorization matrix', () => {
     }
   });
 
-  it('every @checkInstanceAccess field names an instance argument', () => {
+  it('every @checkStoreAccess field names a store argument', () => {
     for (const f of protectedFields) {
       for (const d of f.declarations.filter(
-        x => x.directive === 'checkInstanceAccess'
+        x => x.directive === 'checkStoreAccess'
       )) {
-        expect(d.args.instanceIdArgName, f.field).toBeTruthy();
+        expect(d.args.physicalStoreIdArgName, f.field).toBeTruthy();
       }
     }
-  });
-
-  // Fields that check the instance but carry no permission check; the
-  // permission, if any, is enforced elsewhere. Adding to this list is a
-  // conscious decision.
-  const INSTANCE_ONLY_QUERIES = protectedFields
-    .filter(
-      f =>
-        f.declarations.some(d => d.directive === 'checkInstanceAccess') &&
-        !f.declarations.some(d => d.directive === 'checkPermissions')
-    )
-    .map(f => f.field)
-    .sort();
-
-  it('pins the fields that check instance access without a permission', () => {
-    expect(INSTANCE_ONLY_QUERIES).toMatchSnapshot();
   });
 
   describe.each(protectedFields.filter(f =>
@@ -215,31 +202,39 @@ describe('authorization matrix', () => {
   ).map(f => [f.field, f] as const))('%s', (_name, info) => {
     const run = probe(info);
     const perms = (
-      info.declarations.find(d => d.directive === 'checkPermissions')?.args
-        .permissions as string[] | undefined
+      info.declarations.find(d => PERMISSION_DIRECTIVES.includes(d.directive))
+        ?.args.permissions as string[] | undefined
     )?.map(perm);
     const instance = info.declarations.some(
-      d => d.directive === 'checkInstanceAccess'
+      d => d.directive === 'checkStoreAccess'
     );
+    // The store permissions are held on a store (per user), not globally.
+    const grantOnStore = (userId: string, store: string, held: string[]) =>
+      PhysicalStoreAccess.insertAsync({
+        physicalStoreId: store,
+        subjectType: 'user',
+        subjectId: userId,
+        permissions: held,
+      });
     const superOnly = info.declarations.some(d => d.directive === 'superAdminOnly');
 
     it('denies anonymous and locked callers', async () => {
+      if (instance) await grantOnStore('u1', 'instance-1', perms ?? []);
       for (const user of [
         undefined,
         makeLockedUser({
-          permissions: perms ?? [],
-          instances: ['instance-1'],
+          permissions: instance ? [] : (perms ?? []),
           isSuperAdmin: true,
         }),
+        makeLockedUser({ permissions: instance ? [] : (perms ?? []) }),
       ]) {
         expect(ran(await run(user))).toBe(false);
       }
     });
 
     it('denies a caller with no matching grant', async () => {
-      expect(
-        ran(await run(makeUser({ permissions: ['UNRELATED'], instances: ['other'] })))
-      ).toBe(false);
+      if (instance) await grantOnStore('u1', 'other', perms ?? []);
+      expect(ran(await run(makeUser({ permissions: ['UNRELATED'] })))).toBe(false);
     });
 
     it('allows a super-admin', async () => {
@@ -248,18 +243,20 @@ describe('authorization matrix', () => {
 
     if (perms) {
       it.each(perms)('allows holder of %s', async p => {
-        const user = makeUser({
-          permissions: [p],
-          instances: instance ? ['instance-1'] : [],
-        });
+        if (instance) await grantOnStore('u1', 'instance-1', [p]);
+        const user = makeUser({ permissions: instance ? [] : [p] });
         expect(ran(await run(user))).toBe(true);
       });
     }
 
     if (instance && !superOnly) {
-      it('denies a permitted caller without the instance', async () => {
-        const user = makeUser({ permissions: perms ?? [], instances: ['other'] });
-        expect(ran(await run(user))).toBe(false);
+      it('denies a permitted caller without the store', async () => {
+        await grantOnStore('u1', 'other', perms ?? []);
+        expect(ran(await run(makeUser()))).toBe(false);
+      });
+
+      it('denies a caller who holds the permission only globally', async () => {
+        expect(ran(await run(makeUser({ permissions: perms ?? [] })))).toBe(false);
       });
     }
 

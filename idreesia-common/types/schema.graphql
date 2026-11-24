@@ -29,12 +29,6 @@ directive @checkDutiesAttendanceAccess(
   locationIdArgName: String,
 ) on FIELD_DEFINITION
 
-directive @checkInstanceAccess(
-  instanceIdArgName: String!,
-  returnType: String,
-  dataFieldName: String,
-) on FIELD_DEFINITION
-
 enum MehfilDetailsPermission {
   VIEW
   UPDATE
@@ -66,6 +60,16 @@ directive @checkMehfilPermissionsAccess(
 
 directive @checkPermissions(
   permissions: [Permission!],
+  # Store permissions that also let the caller in when they hold one of them on
+  # any store (for fields that are not about one particular store).
+  anyStorePermissions: [Permission!],
+  dataFieldName: String,
+) on FIELD_DEFINITION
+
+directive @checkStoreAccess(
+  permissions: [Permission]!,
+  physicalStoreIdArgName: String!,
+  returnType: String,
   dataFieldName: String,
 ) on FIELD_DEFINITION
 
@@ -818,7 +822,6 @@ type UserGroupType {
   moduleName: String
   description: String
   permissions: [String]
-  instances: [String]
   users: [UserGroupMemberType]
 }
 
@@ -855,11 +858,6 @@ extend type Mutation {
   setUserGroupPermissions(
     _id: String!
     permissions: [String]!
-  ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
-
-  setUserGroupInstanceAccess(
-    _id: String!
-    instances: [String]!
   ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 }
 
@@ -902,7 +900,8 @@ type UserType {
   lastLoggedInAt: String
   lastActiveAt: String
   permissions: [String]
-  instances: [String]
+  # Whether the user holds a permission on at least one store (Stores module).
+  hasStoreAccess: Boolean
   groups: [String]
   hasChatAccount: Boolean
   # The user's id on the chat server, once a chat account is created.
@@ -1005,11 +1004,6 @@ extend type Mutation {
   setPermissions(
     userId: String!
     permissions: [String]!
-  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
-
-  setInstanceAccess(
-    userId: String!
-    instances: [String]!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   createChatAccount(
@@ -1622,12 +1616,14 @@ extend type Query {
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 
   pagedHrKarkuns(filter: KarkunFilter): PagedKarkunType
-  @checkPermissions(permissions: [
-    HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES,
-    IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS,
-    IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS,
-    IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS
-  ])
+  @checkPermissions(
+    permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES]
+    anyStorePermissions: [
+      IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS,
+      IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS,
+      IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS
+    ]
+  )
 }
 
 extend type Mutation {
@@ -1987,29 +1983,25 @@ extend type Query {
     _id: String!
     physicalStoreId: String!
   ): IssuanceForm
-  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   issuanceFormsByStockItem(
     physicalStoreId: String!
     stockItemId: String!
   ): [IssuanceForm]
-  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 
   issuanceFormsByMonth(
     physicalStoreId: String!
     month: String!
   ): [IssuanceForm]
-  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 
   pagedIssuanceForms(
     physicalStoreId: String!
     queryString: String
   ): PagedIssuanceForm
-  @checkPermissions(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+  @checkStoreAccess(permissions: [IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "paged-list")
 }
 
 extend type Mutation {
@@ -2023,8 +2015,7 @@ extend type Mutation {
     items: [ItemWithQuantityInput]
     notes: String
   ): IssuanceForm
-  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_ISSUANCE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   updateIssuanceForm(
     _id: String!
@@ -2037,32 +2028,27 @@ extend type Mutation {
     items: [ItemWithQuantityInput]
     notes: String
   ): IssuanceForm
-  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_ISSUANCE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   approveIssuanceForms(physicalStoreId: String!, _ids: [String]!): [IssuanceForm]
-  @checkPermissions(permissions: [IN_APPROVE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_APPROVE_ISSUANCE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   addIssuanceFormAttachment(
     _id: String!
     physicalStoreId: String!
     attachmentId: String!
   ): IssuanceForm
-  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_ISSUANCE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   removeIssuanceFormAttachment(
     _id: String!
     physicalStoreId: String!
     attachmentId: String!
   ): IssuanceForm
-  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_ISSUANCE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   removeIssuanceForms(physicalStoreId: String!, _ids: [String]!): Int
-  @checkPermissions(permissions: [IN_MANAGE_ISSUANCE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_ISSUANCE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 }
 
 type ItemCategory {
@@ -2079,26 +2065,21 @@ type ItemCategory {
 
 extend type Query {
   itemCategoryById(_id: String!, physicalStoreId: String!): ItemCategory
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   itemCategoriesByPhysicalStoreId(physicalStoreId: String!): [ItemCategory]
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA, IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 }
 
 extend type Mutation {
   createItemCategory(name: String!, physicalStoreId: String!): ItemCategory
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
   
   updateItemCategory(_id: String!, physicalStoreId: String!, name: String!): ItemCategory
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
   
   removeItemCategory(_id: String!, physicalStoreId: String!): Int
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
 }
 
 type Location {
@@ -2119,12 +2100,10 @@ type Location {
 
 extend type Query {
   locationById(_id: String!, physicalStoreId: String!): Location
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   locationsByPhysicalStoreId(physicalStoreId: String!): [Location]
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 }
 
 extend type Mutation {
@@ -2134,8 +2113,7 @@ extend type Mutation {
     parentId: String
     description: String
   ): Location
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
 
   updateLocation(
     _id: String!
@@ -2144,12 +2122,10 @@ extend type Mutation {
     parentId: String
     description: String
   ): Location
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
 
   removeLocation(_id: String!, physicalStoreId: String!): Int
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
 }
 
 type PhysicalStore {
@@ -2160,13 +2136,69 @@ type PhysicalStore {
   createdBy: String
   updatedAt: String
   updatedBy: String
+  # What the caller may do on the store. Only set by allAccessiblePhysicalStores.
+  permissions: [String]
+}
+
+type StorePermissionUserHolder {
+  userId: String
+  personId: String
+  username: String
+  displayName: String
+}
+
+type StorePermissionGroupHolder {
+  groupId: String
+  name: String
+}
+
+type StorePermissionHolders {
+  key: String
+  name: String
+  groupName: String
+  users: [StorePermissionUserHolder]
+  groups: [StorePermissionGroupHolder]
+}
+
+type StoreAccessKarkun {
+  _id: String
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageUrl: String
+  imageThumbnailUrl: String
+}
+
+type PagedStoreAccessKarkun {
+  data: [StoreAccessKarkun]
+  totalResults: Int
+}
+
+type StoreAccessUserGroup {
+  _id: String
+  name: String
+  description: String
 }
 
 extend type Query {
   allAccessiblePhysicalStores: [PhysicalStore]
+  physicalStoreAccess(physicalStoreId: String!): [StorePermissionHolders]
+    @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+
+  # Karkuns (with a user account) and user groups to give store permissions to.
+  storeAccessKarkunSearch(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedStoreAccessKarkun
+    @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+  storeAccessUserGroups: [StoreAccessUserGroup]
+    @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
   physicalStoreById(id: String!): PhysicalStore
-    @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-    @checkInstanceAccess(instanceIdArgName: "id", returnType: "object")
+    @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA, IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "id", returnType: "object")
 }
 
 extend type Mutation {
@@ -2174,6 +2206,18 @@ extend type Mutation {
   @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
 
   updatePhysicalStore(id: String!, name: String!, address: String): PhysicalStore
+  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+
+  addPhysicalStoreAccessUser(physicalStoreId: String!, permission: String!, karkunId: String!): Boolean
+  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+
+  removePhysicalStoreAccessUser(physicalStoreId: String!, permission: String!, userId: String!): Boolean
+  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+
+  addPhysicalStoreAccessGroup(physicalStoreId: String!, permission: String!, groupId: String!): Boolean
+  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+
+  removePhysicalStoreAccessGroup(physicalStoreId: String!, permission: String!, groupId: String!): Boolean
   @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
 }
 
@@ -2214,29 +2258,25 @@ extend type Query {
     _id: String!
     physicalStoreId: String!
   ): PurchaseForm
-  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   purchaseFormsByStockItem(
     physicalStoreId: String!
     stockItemId: String!
   ): [PurchaseForm]
-  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 
   purchaseFormsByMonth(
     physicalStoreId: String!
     month: String!
   ): [PurchaseForm]
-  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 
   pagedPurchaseForms(
     physicalStoreId: String!
     queryString: String
   ): PagedPurchaseForm
-  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+  @checkStoreAccess(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "paged-list")
 }
 
 extend type Mutation {
@@ -2250,8 +2290,7 @@ extend type Mutation {
     items: [ItemWithQuantityAndPriceInput]
     notes: String
   ): PurchaseForm
-  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   updatePurchaseForm(
     _id: String!
@@ -2264,32 +2303,27 @@ extend type Mutation {
     items: [ItemWithQuantityAndPriceInput]
     notes: String
   ): PurchaseForm
-  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   approvePurchaseForms(physicalStoreId: String!, _ids: [String]!): [PurchaseForm]
-  @checkPermissions(permissions: [IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   addPurchaseFormAttachment(
     _id: String!
     physicalStoreId: String!
     attachmentId: String!
   ): PurchaseForm
-  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   removePurchaseFormAttachment(
     _id: String!
     physicalStoreId: String!
     attachmentId: String!
   ): PurchaseForm
-  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   removePurchaseForms(physicalStoreId: String!, _ids: [String]!): Int
-  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 }
 
 type StockAdjustment {
@@ -2321,22 +2355,19 @@ type PagedStockAdjustment {
 
 extend type Query {
   stockAdjustmentById(_id: String!, physicalStoreId: String!): StockAdjustment
-  @checkPermissions(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   stockAdjustmentsByStockItem(
     physicalStoreId: String!
     stockItemId: String!
   ): [StockAdjustment]
-  @checkPermissions(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 
   pagedStockAdjustments(
     physicalStoreId: String!
     queryString: String
   ): PagedStockAdjustment
-  @checkPermissions(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+  @checkStoreAccess(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId", returnType: "paged-list")
 }
 
 extend type Mutation {
@@ -2349,8 +2380,7 @@ extend type Mutation {
     isInflow: Boolean!
     adjustmentReason: String
   ): StockAdjustment
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId")
 
   updateStockAdjustment(
     _id: String!
@@ -2361,16 +2391,13 @@ extend type Mutation {
     isInflow: Boolean!
     adjustmentReason: String
   ): StockAdjustment
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId")
 
   approveStockAdjustments(physicalStoreId: String!, _ids: [String]!): [StockAdjustment]
-  @checkPermissions(permissions: [IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId")
 
   removeStockAdjustments(physicalStoreId: String!, _ids: [String]!): Int
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId")
 }
 
 type StockItem {
@@ -2409,16 +2436,13 @@ type PagedStockItem {
 
 extend type Query {
   pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId", returnType: "paged-list")
 
   stockItemById(_id: String!, physicalStoreId: String!): StockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   stockItemsById(_ids: [String]!, physicalStoreId: String!): [StockItem]
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 }
 
 extend type Mutation {
@@ -2432,8 +2456,7 @@ extend type Mutation {
     minStockLevel: Float
     currentStockLevel: Float
   ): StockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 
   updateStockItem(
     _id: String!
@@ -2445,28 +2468,22 @@ extend type Mutation {
     categoryId: String!
     minStockLevel: Float
   ): StockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 
   verifyStockItemLevel(_id: String!, physicalStoreId: String!): StockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 
   removeStockItem(_id: String!, physicalStoreId: String!): Int
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 
   setStockItemImage(_id: String!, physicalStoreId: String!, imageData: String!): StockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 
   mergeStockItems(_idToKeep: String!, _idsToMerge: [String]!, physicalStoreId: String!): StockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 
   recalculateStockLevels(_ids: [String]!, physicalStoreId: String!): [StockItem]
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 }
 
 type Vendor {
@@ -2488,12 +2505,10 @@ type Vendor {
 
 extend type Query {
   vendorById(_id: String!, physicalStoreId: String!): Vendor
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   vendorsByPhysicalStoreId(physicalStoreId: String!): [Vendor]
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 }
 
 extend type Mutation {
@@ -2505,8 +2520,7 @@ extend type Mutation {
     address: String
     notes: String
   ): Vendor
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
 
   updateVendor(
     _id: String!
@@ -2517,12 +2531,10 @@ extend type Mutation {
     address: String
     notes: String
   ): Vendor
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
 
   removeVendor(_id: String!, physicalStoreId: String!): Int
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
 }
 
 type CommitteeMemberType {

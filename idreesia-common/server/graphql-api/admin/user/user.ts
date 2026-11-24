@@ -13,7 +13,8 @@ type UserType {
   lastLoggedInAt: String
   lastActiveAt: String
   permissions: [String]
-  instances: [String]
+  # Whether the user holds a permission on at least one store (Stores module).
+  hasStoreAccess: Boolean
   groups: [String]
   hasChatAccount: Boolean
   # The user's id on the chat server, once a chat account is created.
@@ -116,11 +117,6 @@ extend type Mutation {
   setPermissions(
     userId: String!
     permissions: [String]!
-  ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
-
-  setInstanceAccess(
-    userId: String!
-    instances: [String]!
   ): UserType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   createChatAccount(

@@ -12,7 +12,6 @@ export interface AppUser extends LooseRecord {
   lastLoggedInAt?: Date;
   lastActiveAt?: Date;
   permissions?: string[];
-  instances?: string[];
   groups?: string[];
   chatUserId?: string;
   isSuperAdmin?: boolean;

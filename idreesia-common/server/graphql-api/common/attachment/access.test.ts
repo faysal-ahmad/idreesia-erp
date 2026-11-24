@@ -4,6 +4,7 @@ import { Permissions } from 'meteor/idreesia-common/constants';
 import { Attachments } from 'meteor/idreesia-common/server/collections/common';
 import {
   IssuanceForms,
+  PhysicalStoreAccess,
   PurchaseForms,
 } from 'meteor/idreesia-common/server/collections/inventory';
 import {
@@ -26,9 +27,25 @@ vi.mock('meteor/idreesia-common/server/file-storage', () =>
 const user = (overrides: Partial<AttachmentUser> = {}): AttachmentUser => ({
   _id: 'u1',
   permissions: [],
-  instances: [],
   ...overrides,
 });
+
+// A user holding the permission on the store (store permissions are held per
+// store, not globally).
+let nextUser = 0;
+const storeUser = async (
+  permission: string,
+  store: string,
+  _id = `store-user-${(nextUser += 1)}`
+) => {
+  await PhysicalStoreAccess.insertAsync({
+    physicalStoreId: store,
+    subjectType: 'user',
+    subjectId: _id,
+    permissions: [permission],
+  });
+  return user({ _id });
+};
 
 const upload = (category: 'purchase-form' | 'issuance-form' | 'profile', createdBy = 'uploader') =>
   createStoredAttachment({
@@ -102,25 +119,34 @@ describe('canUploadAttachment', () => {
   it.each([
     ['purchase-form', Permissions.IN_MANAGE_PURCHASE_FORMS],
     ['issuance-form', Permissions.IN_MANAGE_ISSUANCE_FORMS],
-    ['profile', Permissions.HR_MANAGE_KARKUNS],
-    ['profile', Permissions.HR_MANAGE_EMPLOYEES],
-  ] as const)('%s needs %s', (category, permission) => {
-    expect(canUploadAttachment(user({ permissions: [permission] }), category)).toBe(true);
-    expect(canUploadAttachment(user(), category)).toBe(false);
+  ] as const)('%s needs %s on a store', async (category, permission) => {
+    expect(await canUploadAttachment(await storeUser(permission, 's1'), category)).toBe(true);
+    expect(await canUploadAttachment(user(), category)).toBe(false);
+    // Holding it globally, not on a store, is not enough.
+    expect(await canUploadAttachment(user({ permissions: [permission] }), category)).toBe(false);
   });
 
-  it('is not allowed by the view permission alone', () => {
+  it.each([
+    ['profile', Permissions.HR_MANAGE_KARKUNS],
+    ['profile', Permissions.HR_MANAGE_EMPLOYEES],
+  ] as const)('%s needs %s', async (category, permission) => {
+    expect(await canUploadAttachment(user({ permissions: [permission] }), category)).toBe(true);
+    expect(await canUploadAttachment(user(), category)).toBe(false);
+  });
+
+  it('is not allowed by the view permission alone', async () => {
     expect(
-      canUploadAttachment(
-        user({ permissions: [Permissions.IN_VIEW_PURCHASE_FORMS] }),
+      await canUploadAttachment(
+        await storeUser(Permissions.IN_VIEW_PURCHASE_FORMS, 's1'),
         'purchase-form'
       )
     ).toBe(false);
   });
 
-  it('lets a super-admin in and a locked one out', () => {
-    expect(canUploadAttachment({ isSuperAdmin: true }, 'profile')).toBe(true);
-    expect(canUploadAttachment({ isSuperAdmin: true, locked: true }, 'profile')).toBe(false);
+  it('lets a super-admin in and a locked one out', async () => {
+    expect(await canUploadAttachment({ isSuperAdmin: true }, 'profile')).toBe(true);
+    expect(await canUploadAttachment({ _id: 'a', isSuperAdmin: true }, 'purchase-form')).toBe(true);
+    expect(await canUploadAttachment({ isSuperAdmin: true, locked: true }, 'profile')).toBe(false);
   });
 });
 
@@ -128,7 +154,7 @@ describe('form attachments', () => {
   it('lets someone with the view permission open an attachment of a form in their store', async () => {
     const id = await upload('purchase-form');
     await insertForm(PurchaseForms, id, 's1');
-    const viewer = user({ permissions: [Permissions.IN_VIEW_PURCHASE_FORMS], instances: ['s1'] });
+    const viewer = (await storeUser(Permissions.IN_VIEW_PURCHASE_FORMS, 's1'));
 
     await expect(assertCanViewAttachment(viewer, id)).resolves.toMatchObject({ _id: id });
   });
@@ -136,7 +162,7 @@ describe('form attachments', () => {
   it('refuses an attachment of a form in another store', async () => {
     const id = await upload('purchase-form');
     await insertForm(PurchaseForms, id, 's2');
-    const viewer = user({ permissions: [Permissions.IN_VIEW_PURCHASE_FORMS], instances: ['s1'] });
+    const viewer = (await storeUser(Permissions.IN_VIEW_PURCHASE_FORMS, 's1'));
 
     expect(await code(assertCanViewAttachment(viewer, id))).toBe('FORBIDDEN');
   });
@@ -144,7 +170,7 @@ describe('form attachments', () => {
   it('refuses the wrong feature permission, even for the right store', async () => {
     const id = await upload('purchase-form');
     await insertForm(PurchaseForms, id, 's1');
-    const viewer = user({ permissions: [Permissions.IN_VIEW_ISSUANCE_FORMS], instances: ['s1'] });
+    const viewer = (await storeUser(Permissions.IN_VIEW_ISSUANCE_FORMS, 's1'));
 
     expect(await code(assertCanViewAttachment(viewer, id))).toBe('FORBIDDEN');
   });
@@ -152,8 +178,8 @@ describe('form attachments', () => {
   it('checks issuance form attachments against issuance forms', async () => {
     const id = await upload('issuance-form');
     await insertForm(IssuanceForms, id, 's1');
-    const viewer = user({ permissions: [Permissions.IN_VIEW_ISSUANCE_FORMS], instances: ['s1'] });
-    const other = user({ permissions: [Permissions.IN_VIEW_ISSUANCE_FORMS], instances: ['s9'] });
+    const viewer = (await storeUser(Permissions.IN_VIEW_ISSUANCE_FORMS, 's1'));
+    const other = (await storeUser(Permissions.IN_VIEW_ISSUANCE_FORMS, 's9'));
 
     await expect(assertCanViewAttachment(viewer, id)).resolves.toMatchObject({ _id: id });
     expect(await code(assertCanViewAttachment(other, id))).toBe('FORBIDDEN');
@@ -162,9 +188,9 @@ describe('form attachments', () => {
   it('needs the manage permission to rename, plus the store', async () => {
     const id = await upload('purchase-form');
     await insertForm(PurchaseForms, id, 's1');
-    const viewer = user({ permissions: [Permissions.IN_VIEW_PURCHASE_FORMS], instances: ['s1'] });
-    const manager = user({ permissions: [Permissions.IN_MANAGE_PURCHASE_FORMS], instances: ['s1'] });
-    const elsewhere = user({ permissions: [Permissions.IN_MANAGE_PURCHASE_FORMS], instances: ['s2'] });
+    const viewer = (await storeUser(Permissions.IN_VIEW_PURCHASE_FORMS, 's1'));
+    const manager = (await storeUser(Permissions.IN_MANAGE_PURCHASE_FORMS, 's1'));
+    const elsewhere = (await storeUser(Permissions.IN_MANAGE_PURCHASE_FORMS, 's2'));
 
     expect(await code(assertCanManageAttachment(viewer, id))).toBe('FORBIDDEN');
     expect(await code(assertCanManageAttachment(elsewhere, id))).toBe('FORBIDDEN');
@@ -185,7 +211,7 @@ describe('form attachments', () => {
 describe('attachments not yet on a form', () => {
   it('can be used by whoever uploaded them', async () => {
     const id = await upload('purchase-form', 'u1');
-    const uploader = user({ _id: 'u1', permissions: [Permissions.IN_MANAGE_PURCHASE_FORMS], instances: ['s1'] });
+    const uploader = (await storeUser(Permissions.IN_MANAGE_PURCHASE_FORMS, 's1', 'u1'));
 
     expect(await code(assertCanViewAttachment(uploader, id))).toBe('ok');
     expect(await code(assertCanManageAttachment(uploader, id))).toBe('ok');
@@ -193,7 +219,7 @@ describe('attachments not yet on a form', () => {
 
   it('cannot be used by anyone else with the permission', async () => {
     const id = await upload('purchase-form', 'u1');
-    const other = user({ _id: 'u2', permissions: [Permissions.IN_MANAGE_PURCHASE_FORMS], instances: ['s1'] });
+    const other = (await storeUser(Permissions.IN_MANAGE_PURCHASE_FORMS, 's1', 'u2'));
 
     expect(await code(assertCanViewAttachment(other, id))).toBe('FORBIDDEN');
   });
@@ -213,7 +239,7 @@ describe('attachments not yet on a form', () => {
   it('is not usable when an old attachment has no uploader recorded', async () => {
     const id = await upload('purchase-form', 'u1');
     await raw(Attachments).updateOne({ _id: id }, { $unset: { createdBy: '' } });
-    const viewer = user({ _id: 'u1', permissions: [Permissions.IN_VIEW_PURCHASE_FORMS], instances: ['s1'] });
+    const viewer = (await storeUser(Permissions.IN_VIEW_PURCHASE_FORMS, 's1', 'u1'));
 
     expect(await code(assertCanViewAttachment(viewer, id))).toBe('FORBIDDEN');
   });

@@ -5,7 +5,7 @@ import { merge } from 'meteor/idreesia-common/utilities/lodash';
  */
 import Permission from './_directives/permission';
 import CheckPermissionsDirective from './_directives/check-permissions';
-import CheckInstanceAccessDirective from './_directives/check-instance-access';
+import CheckStoreAccessDirective from './_directives/check-store-access';
 import CheckCommitteeAccessDirective from './_directives/check-committee-access';
 import CheckDutiesAttendanceAccessDirective from './_directives/check-duties-attendance-access';
 import CheckMehfilDetailsAccessDirective from './_directives/check-mehfil-details-access';
@@ -270,7 +270,7 @@ import StockAdjustmentResolvers from './inventory/stock-adjustment/resolvers';
 const typeDefs = [
   Permission,
   CheckPermissionsDirective,
-  CheckInstanceAccessDirective,
+  CheckStoreAccessDirective,
   CheckCommitteeAccessDirective,
   CheckDutiesAttendanceAccessDirective,
   CheckMehfilDetailsAccessDirective,

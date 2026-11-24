@@ -1,23 +1,29 @@
 import { Permissions } from 'meteor/idreesia-common/constants';
 import {
-  hasInstanceAccess,
-  hasOnePermission,
-} from 'meteor/idreesia-common/server/graphql-api/security';
+  hasAnyStorePermission,
+  hasStorePermission,
+  type StoreAccessUser,
+} from 'meteor/idreesia-common/server/business-logic/inventory/store-access';
+import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 
-type ReportUser = Parameters<typeof hasOnePermission>[0];
+type ReportUser = Parameters<typeof hasOnePermission>[0] & StoreAccessUser;
 
 export interface ReportAccessRule {
   // Same permissions as the GraphQL list query behind the page the report is
   // downloaded from.
   permissions: string[];
-  // Reports whose argument is a physical store id also need access to that
-  // store, like @checkInstanceAccess on the store's GraphQL queries.
+  // The permissions are store permissions: held on a physical store rather
+  // than globally, like @checkStoreAccess on the store's GraphQL queries.
+  storePermissions?: boolean;
+  // Reports whose argument is a physical store id need the permissions on
+  // that store.
   argIsPhysicalStoreId?: boolean;
 }
 
 /** Who may download each report from /generate-report. */
 export const REPORT_ACCESS = {
   IssuanceForms: {
+    storePermissions: true,
     permissions: [
       Permissions.IN_VIEW_ISSUANCE_FORMS,
       Permissions.IN_MANAGE_ISSUANCE_FORMS,
@@ -25,6 +31,7 @@ export const REPORT_ACCESS = {
     ],
   },
   PurchaseForms: {
+    storePermissions: true,
     permissions: [
       Permissions.IN_VIEW_PURCHASE_FORMS,
       Permissions.IN_MANAGE_PURCHASE_FORMS,
@@ -32,6 +39,7 @@ export const REPORT_ACCESS = {
     ],
   },
   StockAdjustments: {
+    storePermissions: true,
     permissions: [
       Permissions.IN_VIEW_STOCK_ADJUSTMENTS,
       Permissions.IN_MANAGE_STOCK_ADJUSTMENTS,
@@ -39,6 +47,7 @@ export const REPORT_ACCESS = {
     ],
   },
   StockItems: {
+    storePermissions: true,
     permissions: [Permissions.IN_MANAGE_STOCK_ITEMS],
     argIsPhysicalStoreId: true,
   },
@@ -83,20 +92,26 @@ export const asReportName = (name: unknown): ReportName | undefined =>
     : undefined;
 
 /**
- * Whether the user may download the report: the permission, access to the
- * store when the argument is one, and access to the store of every form the
- * report covers (`formStoreIds`).
+ * Whether the user may download the report: the permission (on the report's
+ * store when the argument is one, else on every store of the forms the report
+ * covers, `formStoreIds`; on any store when there is no store to name).
  */
-export const canDownloadReport = (
+export const canDownloadReport = async (
   user: ReportUser,
   reportName: ReportName,
   reportArgs: string,
   formStoreIds: string[] = []
-) => {
+): Promise<boolean> => {
   const rule: ReportAccessRule = REPORT_ACCESS[reportName];
-  return (
-    hasOnePermission(user, rule.permissions) &&
-    (!rule.argIsPhysicalStoreId || hasInstanceAccess(user, reportArgs)) &&
-    formStoreIds.every(storeId => hasInstanceAccess(user, storeId))
+  if (!rule.storePermissions) return hasOnePermission(user, rule.permissions);
+
+  const storeIds = [
+    ...(rule.argIsPhysicalStoreId ? [reportArgs] : []),
+    ...formStoreIds,
+  ];
+  if (storeIds.length === 0) return hasAnyStorePermission(user, rule.permissions);
+  const results = await Promise.all(
+    storeIds.map(storeId => hasStorePermission(user, storeId, rule.permissions))
   );
+  return results.every(Boolean);
 };

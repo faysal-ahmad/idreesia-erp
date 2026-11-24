@@ -324,7 +324,7 @@ export type CommonAllCityMehfilsQuery = { allCityMehfils: Array<{ _id: string | 
 export type CommonCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CommonCurrentUserQuery = { currentUser: { _id: string | null, username: string | null, displayName: string | null, isSuperAdmin: boolean | null, permissions: Array<string | null> | null, instances: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null } | null } | null } | null };
+export type CommonCurrentUserQuery = { currentUser: { _id: string | null, username: string | null, displayName: string | null, isSuperAdmin: boolean | null, permissions: Array<string | null> | null, hasStoreAccess: boolean | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null } | null } | null } | null };
 
 export type ReferenceDutyShiftsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -690,7 +690,7 @@ export type MobileVisitorStaysByVisitorIdQuery = { pagedVisitorStaysByVisitorId:
 export type MobileCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MobileCurrentUserQuery = { currentUser: { _id: string | null, username: string | null, displayName: string | null, email: string | null, twoFactorEnabled: boolean | null, permissions: Array<string | null> | null, instances: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null } | null } | null } | null };
+export type MobileCurrentUserQuery = { currentUser: { _id: string | null, username: string | null, displayName: string | null, email: string | null, twoFactorEnabled: boolean | null, permissions: Array<string | null> | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null } | null } | null } | null };
 
 export type MobileRegisterUserMutationVariables = Exact<{
   displayName: string;
@@ -2826,6 +2826,24 @@ export type UpdatePeopleTagMutationVariables = Exact<{
 
 export type UpdatePeopleTagMutation = { updatePeopleTag: { _id: string | null, name: string | null, color: string | null, textColor: string | null, moduleNames: Array<string | null> | null } | null };
 
+export type AddPhysicalStoreAccessGroupMutationVariables = Exact<{
+  physicalStoreId: string;
+  permission: string;
+  groupId: string;
+}>;
+
+
+export type AddPhysicalStoreAccessGroupMutation = { addPhysicalStoreAccessGroup: boolean | null };
+
+export type AddPhysicalStoreAccessUserMutationVariables = Exact<{
+  physicalStoreId: string;
+  permission: string;
+  karkunId: string;
+}>;
+
+
+export type AddPhysicalStoreAccessUserMutation = { addPhysicalStoreAccessUser: boolean | null };
+
 export type AdminPhysicalStoreByIdQueryVariables = Exact<{
   id: string;
 }>;
@@ -2840,6 +2858,47 @@ export type CreatePhysicalStoreMutationVariables = Exact<{
 
 
 export type CreatePhysicalStoreMutation = { createPhysicalStore: { _id: string | null, name: string | null, address: string | null } | null };
+
+export type PhysicalStoreAccessQueryVariables = Exact<{
+  physicalStoreId: string;
+}>;
+
+
+export type PhysicalStoreAccessQuery = { physicalStoreAccess: Array<{ key: string | null, name: string | null, groupName: string | null, users: Array<{ userId: string | null, personId: string | null, username: string | null, displayName: string | null } | null> | null, groups: Array<{ groupId: string | null, name: string | null } | null> | null } | null> | null };
+
+export type RemovePhysicalStoreAccessGroupMutationVariables = Exact<{
+  physicalStoreId: string;
+  permission: string;
+  groupId: string;
+}>;
+
+
+export type RemovePhysicalStoreAccessGroupMutation = { removePhysicalStoreAccessGroup: boolean | null };
+
+export type RemovePhysicalStoreAccessUserMutationVariables = Exact<{
+  physicalStoreId: string;
+  permission: string;
+  userId: string;
+}>;
+
+
+export type RemovePhysicalStoreAccessUserMutation = { removePhysicalStoreAccessUser: boolean | null };
+
+export type StoreAccessKarkunSearchQueryVariables = Exact<{
+  name?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type StoreAccessKarkunSearchQuery = { storeAccessKarkunSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
+
+export type StoreAccessUserGroupsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type StoreAccessUserGroupsQuery = { storeAccessUserGroups: Array<{ _id: string | null, name: string | null, description: string | null } | null> | null };
 
 export type UpdatePhysicalStoreMutationVariables = Exact<{
   id: string;
@@ -2888,14 +2947,6 @@ export type PagedUserGroupsQueryVariables = Exact<{
 
 export type PagedUserGroupsQuery = { pagedUserGroups: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, moduleName: string | null, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null } | null } | null> | null } | null> | null } | null };
 
-export type SetUserGroupInstanceAccessMutationVariables = Exact<{
-  _id: string;
-  instances: Array<string | null | undefined> | string;
-}>;
-
-
-export type SetUserGroupInstanceAccessMutation = { setUserGroupInstanceAccess: { _id: string | null, instances: Array<string | null> | null } | null };
-
 export type SetUserGroupPermissionsMutationVariables = Exact<{
   _id: string;
   permissions: Array<string | null | undefined> | string;
@@ -2920,13 +2971,6 @@ export type UserGroupGeneralInfoByIdQueryVariables = Exact<{
 
 
 export type UserGroupGeneralInfoByIdQuery = { userGroupById: { _id: string | null, name: string | null, moduleName: string | null, description: string | null } | null };
-
-export type UserGroupInstanceAccessByIdQueryVariables = Exact<{
-  _id: string;
-}>;
-
-
-export type UserGroupInstanceAccessByIdQuery = { userGroupById: { _id: string | null, instances: Array<string | null> | null } | null };
 
 export type UserGroupPermissionsByIdQueryVariables = Exact<{
   _id: string;
@@ -2997,14 +3041,6 @@ export type RevokeUserTrustedDevicesMutationVariables = Exact<{
 
 export type RevokeUserTrustedDevicesMutation = { revokeUserTrustedDevices: number | null };
 
-export type SetInstanceAccessMutationVariables = Exact<{
-  userId: string;
-  instances: Array<string | null | undefined> | string;
-}>;
-
-
-export type SetInstanceAccessMutation = { setInstanceAccess: { _id: string | null, instances: Array<string | null> | null } | null };
-
 export type SetPermissionsMutationVariables = Exact<{
   userId: string;
   permissions: Array<string | null | undefined> | string;
@@ -3037,7 +3073,7 @@ export type AdminUserByIdQueryVariables = Exact<{
 }>;
 
 
-export type AdminUserByIdQuery = { userById: { _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, hasChatAccount: boolean | null, chatUserId: string | null, twoFactorEnabled: boolean | null, isSuperAdmin: boolean | null, isServiceAccount: boolean | null, loginBlockedAddresses: number | null, untrustedLoginAddressesBlocked: boolean | null, instances: Array<string | null> | null, permissions: Array<string | null> | null, personId: string | null, karkun: { _id: string | null, sharedData: { name: string | null } | null } | null } | null };
+export type AdminUserByIdQuery = { userById: { _id: string | null, username: string | null, email: string | null, displayName: string | null, locked: boolean | null, hasChatAccount: boolean | null, chatUserId: string | null, twoFactorEnabled: boolean | null, isSuperAdmin: boolean | null, isServiceAccount: boolean | null, loginBlockedAddresses: number | null, untrustedLoginAddressesBlocked: boolean | null, permissions: Array<string | null> | null, personId: string | null, karkun: { _id: string | null, sharedData: { name: string | null } | null } | null } | null };
 
 export type UserTrustedDevicesQueryVariables = Exact<{
   userId: string;
@@ -5384,7 +5420,7 @@ export type PurchaseFormsByMonthQuery = { purchaseFormsByMonth: Array<{ _id: str
 export type AllAccessiblePhysicalStoresQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllAccessiblePhysicalStoresQuery = { allAccessiblePhysicalStores: Array<{ _id: string | null, name: string | null } | null> | null };
+export type AllAccessiblePhysicalStoresQuery = { allAccessiblePhysicalStores: Array<{ _id: string | null, name: string | null, permissions: Array<string | null> | null } | null> | null };
 
 export type ApproveStockAdjustmentsMutationVariables = Exact<{
   physicalStoreId: string;

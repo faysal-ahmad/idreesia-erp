@@ -79,13 +79,13 @@ describe('getUser', () => {
     const groupId = await UserGroups.insertAsync({
       name: 'g',
       permissions: ['b'],
-      instances: ['i2'],
     } as never);
     returning(
-      userWithToken('t', new Date(), { permissions: ['a'], instances: ['i1'], groups: [groupId] })
+      userWithToken('t', new Date(), { permissions: ['a'], groups: [groupId] })
     );
     const user = await getUser('t');
     expect(user?.permissions?.sort()).toEqual(['a', 'b']);
-    expect(user?.instances?.sort()).toEqual(['i1', 'i2']);
+    // Store access is not merged in: it is looked up per store.
+    expect(user).not.toHaveProperty('instances');
   });
 });

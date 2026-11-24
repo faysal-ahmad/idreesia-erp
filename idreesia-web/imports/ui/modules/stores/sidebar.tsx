@@ -15,6 +15,7 @@ import {
   TagsOutlined,
 } from '@ant-design/icons';
 
+import { Permissions } from 'meteor/idreesia-common/constants';
 import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
 import type {
   AllAccessiblePhysicalStoresQuery,
@@ -36,9 +37,35 @@ const ALL_ACCESSIBLE_PHYSICAL_STORES: TypedDocumentNode<
     allAccessiblePhysicalStores {
       _id
       name
+      permissions
     }
   }
 `;
+
+// Which store permissions open each part of a store's menu: the same ones the
+// server requires for the pages behind it.
+const ISSUANCE = [
+  Permissions.IN_VIEW_ISSUANCE_FORMS,
+  Permissions.IN_MANAGE_ISSUANCE_FORMS,
+  Permissions.IN_APPROVE_ISSUANCE_FORMS,
+];
+const PURCHASE = [
+  Permissions.IN_VIEW_PURCHASE_FORMS,
+  Permissions.IN_MANAGE_PURCHASE_FORMS,
+  Permissions.IN_APPROVE_PURCHASE_FORMS,
+];
+const ADJUSTMENTS = [
+  Permissions.IN_VIEW_STOCK_ADJUSTMENTS,
+  Permissions.IN_MANAGE_STOCK_ADJUSTMENTS,
+  Permissions.IN_APPROVE_STOCK_ADJUSTMENTS,
+];
+const STOCK_ITEMS = [
+  Permissions.IN_MANAGE_STOCK_ITEMS,
+  ...ISSUANCE,
+  ...PURCHASE,
+  ...ADJUSTMENTS,
+];
+const SETUP = [Permissions.IN_MANAGE_SETUP_DATA];
 
 interface SidebarProps {
   history: History;
@@ -93,79 +120,112 @@ const Sidebar = ({ history }: SidebarProps) => {
     (row): row is PhysicalStore => row != null && row._id != null
   );
 
-  const menuItems = allAccessiblePhysicalStores.map((physicalStore) => ({
-    key: physicalStore._id!,
-    icon: <AppstoreOutlined style={IconStyle} />,
-    label: physicalStore.name,
-    children: [
-      {
-        key: `stock-items-${physicalStore._id}`,
-        icon: <DatabaseOutlined style={IconStyle} />,
-        label: 'Stock Items',
-      },
-      {
-        key: `forms-${physicalStore._id}`,
-        icon: <FolderOpenOutlined style={IconStyle} />,
-        label: 'Data Entry',
-        children: [
-          {
-            key: `issuance-forms-${physicalStore._id}`,
-            icon: <FormOutlined style={IconStyle} />,
-            label: 'Issuance Forms',
-          },
-          {
-            key: `purchase-forms-${physicalStore._id}`,
-            icon: <FormOutlined style={IconStyle} />,
-            label: 'Purchase Forms',
-          },
-          {
-            key: `stock-adjustments-${physicalStore._id}`,
-            icon: <FormOutlined style={IconStyle} />,
-            label: 'Stock Adjustments',
-          },
-        ],
-      },
-      {
-        key: `reports-${physicalStore._id}`,
-        icon: <FolderOpenOutlined style={IconStyle} />,
-        label: 'Reports',
-        children: [
-          {
-            key: `issuance-report-${physicalStore._id}`,
-            icon: <BookOutlined style={IconStyle} />,
-            label: 'Issuance Report',
-          },
-          {
-            key: `purchasing-report-${physicalStore._id}`,
-            icon: <BookOutlined style={IconStyle} />,
-            label: 'Purchase Report',
-          },
-        ],
-      },
-      {
-        key: `setup-${physicalStore._id}`,
-        icon: <LaptopOutlined style={IconStyle} />,
-        label: 'Setup',
-        children: [
-          {
-            key: `vendors-${physicalStore._id}`,
-            icon: <ShopOutlined style={IconStyle} />,
-            label: 'Vendors',
-          },
-          {
-            key: `item-categories-${physicalStore._id}`,
-            icon: <TagsOutlined style={IconStyle} />,
-            label: 'Item Categories',
-          },
-          {
-            key: `locations-${physicalStore._id}`,
-            icon: <EnvironmentOutlined style={IconStyle} />,
-            label: 'Locations',
-          },
-        ],
-      },
-    ],
-  }));
+  const menuItems = allAccessiblePhysicalStores.map((physicalStore) => {
+    // What the caller may do on this store (it differs from store to store).
+    const held = physicalStore.permissions ?? [];
+    const can = (permissions: string[]) =>
+      permissions.some((permission) => held.includes(permission));
+
+    // Each group of the menu, with only the entries the caller may open; a
+    // group with none left is left out.
+    const group = (
+      key: string,
+      icon: React.ReactNode,
+      label: string,
+      children: Array<{ show: boolean; key: string; icon: React.ReactNode; label: string }>
+    ) => {
+      const shown = children
+        .filter((child) => child.show)
+        .map(({ show, ...child }) => child);
+      return shown.length > 0 ? [{ key, icon, label, children: shown }] : [];
+    };
+
+    return {
+      key: physicalStore._id!,
+      icon: <AppstoreOutlined style={IconStyle} />,
+      label: physicalStore.name,
+      children: [
+        ...(can(STOCK_ITEMS)
+          ? [
+              {
+                key: `stock-items-${physicalStore._id}`,
+                icon: <DatabaseOutlined style={IconStyle} />,
+                label: 'Stock Items',
+              },
+            ]
+          : []),
+        ...group(
+          `forms-${physicalStore._id}`,
+          <FolderOpenOutlined style={IconStyle} />,
+          'Data Entry',
+          [
+            {
+              show: can(ISSUANCE),
+              key: `issuance-forms-${physicalStore._id}`,
+              icon: <FormOutlined style={IconStyle} />,
+              label: 'Issuance Forms',
+            },
+            {
+              show: can(PURCHASE),
+              key: `purchase-forms-${physicalStore._id}`,
+              icon: <FormOutlined style={IconStyle} />,
+              label: 'Purchase Forms',
+            },
+            {
+              show: can(ADJUSTMENTS),
+              key: `stock-adjustments-${physicalStore._id}`,
+              icon: <FormOutlined style={IconStyle} />,
+              label: 'Stock Adjustments',
+            },
+          ]
+        ),
+        ...group(
+          `reports-${physicalStore._id}`,
+          <FolderOpenOutlined style={IconStyle} />,
+          'Reports',
+          [
+            {
+              show: can(ISSUANCE),
+              key: `issuance-report-${physicalStore._id}`,
+              icon: <BookOutlined style={IconStyle} />,
+              label: 'Issuance Report',
+            },
+            {
+              show: can(PURCHASE),
+              key: `purchasing-report-${physicalStore._id}`,
+              icon: <BookOutlined style={IconStyle} />,
+              label: 'Purchase Report',
+            },
+          ]
+        ),
+        ...group(
+          `setup-${physicalStore._id}`,
+          <LaptopOutlined style={IconStyle} />,
+          'Setup',
+          [
+            {
+              show: can(SETUP),
+              key: `vendors-${physicalStore._id}`,
+              icon: <ShopOutlined style={IconStyle} />,
+              label: 'Vendors',
+            },
+            {
+              show: can(SETUP),
+              key: `item-categories-${physicalStore._id}`,
+              icon: <TagsOutlined style={IconStyle} />,
+              label: 'Item Categories',
+            },
+            {
+              show: can(SETUP),
+              key: `locations-${physicalStore._id}`,
+              icon: <EnvironmentOutlined style={IconStyle} />,
+              label: 'Locations',
+            },
+          ]
+        ),
+      ],
+    };
+  });
 
   return (
     <Menu

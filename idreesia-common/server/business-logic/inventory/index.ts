@@ -17,3 +17,4 @@ export {
   setStockItemImage,
 } from './stock-item-images';
 export { decrementStockLevel, incrementStockLevel } from './stock-levels';
+export * from './store-access';

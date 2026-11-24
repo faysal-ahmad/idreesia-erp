@@ -982,6 +982,8 @@ export type Mutation = {
   addMehfilKarkun?: Maybe<MehfilKarkunType>;
   addOrgLocationFeatureUser?: Maybe<Scalars['Boolean']['output']>;
   addOrgLocationObserver?: Maybe<OrgLocationType>;
+  addPhysicalStoreAccessGroup?: Maybe<Scalars['Boolean']['output']>;
+  addPhysicalStoreAccessUser?: Maybe<Scalars['Boolean']['output']>;
   addPurchaseFormAttachment?: Maybe<PurchaseForm>;
   addPurchasingGroupMember?: Maybe<Scalars['Boolean']['output']>;
   addPurchasingPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
@@ -1111,6 +1113,8 @@ export type Mutation = {
   removeMehfilKarkun?: Maybe<Scalars['Int']['output']>;
   removeOrgLocationFeatureUser?: Maybe<Scalars['Boolean']['output']>;
   removeOrgLocationObserver?: Maybe<OrgLocationType>;
+  removePhysicalStoreAccessGroup?: Maybe<Scalars['Boolean']['output']>;
+  removePhysicalStoreAccessUser?: Maybe<Scalars['Boolean']['output']>;
   removePurchaseFormAttachment?: Maybe<PurchaseForm>;
   removePurchaseForms?: Maybe<Scalars['Int']['output']>;
   removePurchasingCatalogItem?: Maybe<Scalars['Boolean']['output']>;
@@ -1155,7 +1159,6 @@ export type Mutation = {
   setDutyShiftTeam?: Maybe<Scalars['Boolean']['output']>;
   setHrKarkunEmploymentInfo?: Maybe<PersonType>;
   setHrKarkunProfileImage?: Maybe<PersonType>;
-  setInstanceAccess?: Maybe<UserType>;
   setJobDefinitionEnabled?: Maybe<JobDefinitionType>;
   setOrgLocationUserLocked?: Maybe<UserType>;
   setPermissions?: Maybe<UserType>;
@@ -1169,7 +1172,6 @@ export type Mutation = {
   setSecurityVisitorImage?: Maybe<PersonType>;
   setStockItemImage?: Maybe<StockItem>;
   setSuperAdmin?: Maybe<UserType>;
-  setUserGroupInstanceAccess?: Maybe<UserGroupType>;
   setUserGroupPermissions?: Maybe<UserGroupType>;
   startTwoFactorSetup?: Maybe<TwoFactorSetupType>;
   submitPurchasingOrder?: Maybe<PurchasingOrder>;
@@ -1382,6 +1384,20 @@ export type MutationAddOrgLocationFeatureUserArgs = {
 export type MutationAddOrgLocationObserverArgs = {
   karkunId: Scalars['String']['input'];
   locationId: Scalars['String']['input'];
+};
+
+
+export type MutationAddPhysicalStoreAccessGroupArgs = {
+  groupId: Scalars['String']['input'];
+  permission: Scalars['String']['input'];
+  physicalStoreId: Scalars['String']['input'];
+};
+
+
+export type MutationAddPhysicalStoreAccessUserArgs = {
+  karkunId: Scalars['String']['input'];
+  permission: Scalars['String']['input'];
+  physicalStoreId: Scalars['String']['input'];
 };
 
 
@@ -2248,6 +2264,20 @@ export type MutationRemoveOrgLocationObserverArgs = {
 };
 
 
+export type MutationRemovePhysicalStoreAccessGroupArgs = {
+  groupId: Scalars['String']['input'];
+  permission: Scalars['String']['input'];
+  physicalStoreId: Scalars['String']['input'];
+};
+
+
+export type MutationRemovePhysicalStoreAccessUserArgs = {
+  permission: Scalars['String']['input'];
+  physicalStoreId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+
 export type MutationRemovePurchaseFormAttachmentArgs = {
   _id: Scalars['String']['input'];
   attachmentId: Scalars['String']['input'];
@@ -2515,12 +2545,6 @@ export type MutationSetHrKarkunProfileImageArgs = {
 };
 
 
-export type MutationSetInstanceAccessArgs = {
-  instances: Array<InputMaybe<Scalars['String']['input']>>;
-  userId: Scalars['String']['input'];
-};
-
-
 export type MutationSetJobDefinitionEnabledArgs = {
   _id: Scalars['String']['input'];
   enabled: Scalars['Boolean']['input'];
@@ -2598,12 +2622,6 @@ export type MutationSetStockItemImageArgs = {
 export type MutationSetSuperAdminArgs = {
   isSuperAdmin: Scalars['Boolean']['input'];
   userId: Scalars['String']['input'];
-};
-
-
-export type MutationSetUserGroupInstanceAccessArgs = {
-  _id: Scalars['String']['input'];
-  instances: Array<InputMaybe<Scalars['String']['input']>>;
 };
 
 
@@ -4063,6 +4081,12 @@ export type PagedStockItem = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PagedStoreAccessKarkun = {
+  __typename?: 'PagedStoreAccessKarkun';
+  data?: Maybe<Array<Maybe<StoreAccessKarkun>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
 export type PagedUserGroupType = {
   __typename?: 'PagedUserGroupType';
   data?: Maybe<Array<Maybe<UserGroupType>>>;
@@ -4404,6 +4428,7 @@ export type PhysicalStore = {
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  permissions?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
@@ -5009,6 +5034,7 @@ export type Query = {
   pagedUsers?: Maybe<PagedUserType>;
   pagedVisitorStays?: Maybe<PagedVisitorStayType>;
   pagedVisitorStaysByVisitorId?: Maybe<PagedVisitorStayType>;
+  physicalStoreAccess?: Maybe<Array<Maybe<StorePermissionHolders>>>;
   physicalStoreById?: Maybe<PhysicalStore>;
   purchaseFormById?: Maybe<PurchaseForm>;
   purchaseFormsByMonth?: Maybe<Array<Maybe<PurchaseForm>>>;
@@ -5059,6 +5085,8 @@ export type Query = {
   stockAdjustmentsByStockItem?: Maybe<Array<Maybe<StockAdjustment>>>;
   stockItemById?: Maybe<StockItem>;
   stockItemsById?: Maybe<Array<Maybe<StockItem>>>;
+  storeAccessKarkunSearch?: Maybe<PagedStoreAccessKarkun>;
+  storeAccessUserGroups?: Maybe<Array<Maybe<StoreAccessUserGroup>>>;
   userAccountAvailability: UserAccountAvailabilityType;
   userById?: Maybe<UserType>;
   userGroupById?: Maybe<UserGroupType>;
@@ -5589,6 +5617,11 @@ export type QueryPagedVisitorStaysByVisitorIdArgs = {
 };
 
 
+export type QueryPhysicalStoreAccessArgs = {
+  physicalStoreId: Scalars['String']['input'];
+};
+
+
 export type QueryPhysicalStoreByIdArgs = {
   id: Scalars['String']['input'];
 };
@@ -5800,6 +5833,15 @@ export type QueryStockItemByIdArgs = {
 export type QueryStockItemsByIdArgs = {
   _ids: Array<InputMaybe<Scalars['String']['input']>>;
   physicalStoreId: Scalars['String']['input'];
+};
+
+
+export type QueryStoreAccessKarkunSearchArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6600,6 +6642,47 @@ export type StockItem = {
   verifiedOn?: Maybe<Scalars['String']['output']>;
 };
 
+export type StoreAccessKarkun = {
+  __typename?: 'StoreAccessKarkun';
+  _id?: Maybe<Scalars['String']['output']>;
+  cnicNumber?: Maybe<Scalars['String']['output']>;
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  parentName?: Maybe<Scalars['String']['output']>;
+};
+
+export type StoreAccessUserGroup = {
+  __typename?: 'StoreAccessUserGroup';
+  _id?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type StorePermissionGroupHolder = {
+  __typename?: 'StorePermissionGroupHolder';
+  groupId?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type StorePermissionHolders = {
+  __typename?: 'StorePermissionHolders';
+  groupName?: Maybe<Scalars['String']['output']>;
+  groups?: Maybe<Array<Maybe<StorePermissionGroupHolder>>>;
+  key?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  users?: Maybe<Array<Maybe<StorePermissionUserHolder>>>;
+};
+
+export type StorePermissionUserHolder = {
+  __typename?: 'StorePermissionUserHolder';
+  displayName?: Maybe<Scalars['String']['output']>;
+  personId?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['String']['output']>;
+  username?: Maybe<Scalars['String']['output']>;
+};
+
 export type SyncOrgLocationObserversResult = {
   __typename?: 'SyncOrgLocationObserversResult';
   addedCount?: Maybe<Scalars['Int']['output']>;
@@ -6679,7 +6762,6 @@ export type UserGroupType = {
   __typename?: 'UserGroupType';
   _id?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
-  instances?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   moduleName?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   permissions?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -6695,7 +6777,7 @@ export type UserType = {
   emailVerified?: Maybe<Scalars['Boolean']['output']>;
   groups?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   hasChatAccount?: Maybe<Scalars['Boolean']['output']>;
-  instances?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  hasStoreAccess?: Maybe<Scalars['Boolean']['output']>;
   isServiceAccount?: Maybe<Scalars['Boolean']['output']>;
   isSuperAdmin?: Maybe<Scalars['Boolean']['output']>;
   karkun?: Maybe<PersonType>;

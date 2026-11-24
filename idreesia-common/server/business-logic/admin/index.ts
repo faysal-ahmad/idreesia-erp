@@ -12,7 +12,6 @@ export {
   listUserGroupMembers,
   removeUserGroup,
   searchUserGroups,
-  setUserGroupInstanceAccess,
   setUserGroupPermissions,
   updateUserGroup,
 } from './user-groups';

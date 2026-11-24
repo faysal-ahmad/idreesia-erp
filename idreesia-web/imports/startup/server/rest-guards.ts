@@ -25,7 +25,7 @@ export interface RestUser {
   locked?: boolean;
   isSuperAdmin?: boolean;
   permissions?: string[];
-  instances?: string[];
+  groups?: string[];
   chatUserId?: string | null;
 }
 

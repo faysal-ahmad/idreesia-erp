@@ -171,7 +171,6 @@ describe('searchUsers', () => {
       emailVerified: true,
       displayName: 'Ali',
       permissions: [],
-      instances: [],
       groups: [],
       twoFactorEnabled: false,
       isSuperAdmin: false,

@@ -5,6 +5,8 @@ import { type History, type Location } from 'history';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/client/react';
 
+import { useHasWorkspacesAccess } from '/imports/ui/modules/workspaces/hooks/use-has-workspaces-access';
+
 import {
   kebabCase,
   keys,
@@ -95,6 +97,7 @@ const isModuleAccessible = (user: User, moduleName: string) => {
 const HeaderContent = ({ history, location, user }: Props) => {
   const dispatch = useDispatch();
   const [updateLastActiveTime] = useMutation(UPDATE_LAST_ACTIVE_TIME);
+  const { hasAccess: hasWorkspacesAccess } = useHasWorkspacesAccess();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -165,10 +168,10 @@ const HeaderContent = ({ history, location, user }: Props) => {
       });
     }
 
-    // Add the workspaces node if the user is linked to a person (or is a
-    // super-admin). Access to workspaces is based on committee membership, not
-    // permissions.
-    if (user.karkun?._id || user.isSuperAdmin) {
+    // Add the workspaces node for super-admins (access to everything), or
+    // if the user can open at least one workspace. Access is based on
+    // committee membership / location assignments, not permissions.
+    if (user.isSuperAdmin || hasWorkspacesAccess) {
       menuItems.push({
         key: ModuleNames.workspaces,
         label: ModuleNames.workspaces,

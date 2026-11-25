@@ -491,6 +491,7 @@ export const AttendancePage = () => {
           }}
           width={CameraWidth}
           height={CameraHeight}
+          facingMode="user"
         />
         {error ? <Alert style={MessageStyle} type="warning" showIcon message={error} /> : null}
         <Button

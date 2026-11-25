@@ -30,7 +30,7 @@ import { getDataLoaders } from 'meteor/idreesia-common/server/data-loaders';
 import { runWithRequestHost } from 'meteor/idreesia-common/server/file-storage';
 import {
   CheckPermissionsDirective,
-  CheckInstanceAccessDirective,
+  CheckStoreAccessDirective,
   CheckCommitteeAccessDirective,
   CheckDutiesAttendanceAccessDirective,
   CheckMehfilDetailsAccessDirective,
@@ -67,7 +67,7 @@ if (webServerEnabled) {
   });
 
   schema = CheckPermissionsDirective(schema) as any;
-  schema = CheckInstanceAccessDirective(schema) as any;
+  schema = CheckStoreAccessDirective(schema) as any;
   schema = CheckCommitteeAccessDirective(schema) as any;
   schema = CheckDutiesAttendanceAccessDirective(schema) as any;
   schema = CheckMehfilDetailsAccessDirective(schema) as any;

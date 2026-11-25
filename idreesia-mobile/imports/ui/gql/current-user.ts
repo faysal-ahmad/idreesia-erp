@@ -17,7 +17,6 @@ export const MOBILE_CURRENT_USER: TypedDocumentNode<
       email
       twoFactorEnabled
       permissions
-      instances
       karkun {
         _id
         sharedData {

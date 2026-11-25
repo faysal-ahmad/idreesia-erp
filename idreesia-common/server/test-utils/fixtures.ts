@@ -6,7 +6,7 @@ export interface TestUser {
   locked?: boolean;
   isSuperAdmin?: boolean;
   permissions?: string[];
-  instances?: string[];
+  groups?: string[];
   personId?: string;
 }
 
@@ -14,7 +14,6 @@ export const makeUser = (overrides: Partial<TestUser> = {}): TestUser => ({
   _id: 'u1',
   username: 'user1',
   permissions: [],
-  instances: [],
   ...overrides,
 });
 

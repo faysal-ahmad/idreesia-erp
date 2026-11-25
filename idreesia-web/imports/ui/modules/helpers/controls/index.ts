@@ -1,7 +1,4 @@
 export {
-  default as InstanceSelection,
-} from './access-management/instance-selection';
-export {
   default as PermissionSelection,
 } from './access-management/permission-selection';
 

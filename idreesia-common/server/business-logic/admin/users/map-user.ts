@@ -9,7 +9,6 @@ import { isTwoFactorEnabled } from './two-factor-status';
 export interface MappedUser extends Record<string, any> {
   _id: string;
   permissions: string[];
-  instances: string[];
   groups: string[];
   locked?: boolean;
   isSuperAdmin: boolean;
@@ -28,7 +27,6 @@ export const mapUser = (user: AppUser): MappedUser => ({
   lastLoggedInAt: user.lastLoggedInAt,
   lastActiveAt: user.lastActiveAt,
   permissions: user.permissions || [],
-  instances: user.instances || [],
   groups: user.groups || [],
   chatUserId: user.chatUserId,
   twoFactorEnabled: isTwoFactorEnabled(user),

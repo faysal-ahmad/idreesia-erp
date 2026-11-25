@@ -3,25 +3,21 @@ import dayjs from 'dayjs';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import {
-  CascaderField,
+  OrgLocationSelectField,
   DateRangeField,
   InputCnicField,
   InputTextField,
   SelectField,
   LastTarteebFilterField,
 } from '/imports/ui/modules/helpers/fields';
+import type { OrgLocationItem } from '/imports/ui/modules/helpers/fields/org-location-select-field';
 
-import { getCityMehfilCascaderData } from './utilities';
 
 export type FieldValue = string | string[] | null | undefined;
 interface LabelValue { label: string; value: string; }
 export interface LookupItem {
   _id?: string | null;
   name?: string | null;
-}
-export interface CityLookupItem extends LookupItem {}
-export interface MehfilLookupItem extends LookupItem {
-  cityId?: string | null;
 }
 
 const formItemLayout = {
@@ -153,19 +149,18 @@ export function getMehfilDutyFilterField(fieldValue: FieldValue, duties: LookupI
   );
 }
 
-export function getCityMehfilFilterField(
-  fieldValue: FieldValue,
-  cities: CityLookupItem[],
-  cityMehfils: MehfilLookupItem[]
+export function getOrgLocationFilterField(
+  fieldValue: string | null | undefined,
+  locations: OrgLocationItem[],
+  fieldLayout: Record<string, unknown> = formItemLayout
 ) {
-  const cityMehfilCascaderData = getCityMehfilCascaderData(cities, cityMehfils);
-
   return (
-    <CascaderField
-      data={cityMehfilCascaderData ?? undefined}
-      fieldName="cityMehfilLocationIds"
-      fieldLabel="City/Mehfil"
-      fieldLayout={formItemLayout}
+    <OrgLocationSelectField
+      locations={locations}
+      fieldName="orgLocationId"
+      fieldLabel="Location"
+      placeholder="City or mehfil"
+      fieldLayout={fieldLayout}
       initialValue={fieldValue}
     />
   );

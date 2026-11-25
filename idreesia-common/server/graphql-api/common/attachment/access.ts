@@ -12,7 +12,10 @@ import {
   PurchaseForms,
 } from 'meteor/idreesia-common/server/collections/inventory';
 import {
-  hasInstanceAccess,
+  hasAnyStorePermission,
+  hasStorePermission,
+} from 'meteor/idreesia-common/server/business-logic/inventory/store-access';
+import {
   hasOnePermission,
   isSuperAdmin,
 } from 'meteor/idreesia-common/server/graphql-api/security';
@@ -24,20 +27,22 @@ export interface AttachmentUser {
   locked?: boolean;
   isSuperAdmin?: boolean;
   permissions?: string[];
-  instances?: string[];
+  groups?: string[];
 }
 
 /*
  * Attachments carry no owner. What one belongs to is the category it was
  * uploaded under (read from its file key), and these are the permissions of
- * the feature behind each category. Seeing a purchase or issuance form's
- * attachment also needs access to the form's physical store.
+ * the feature behind each category. The permissions of a purchase or issuance
+ * form's attachment are store permissions: they are held on the form's
+ * physical store (`store: true`), not globally.
  */
 const CATEGORY_PERMISSIONS: Record<
   AttachmentCategoryValue,
-  { view: string[]; manage: string[] }
+  { view: string[]; manage: string[]; store?: boolean }
 > = {
   [AttachmentCategory.PURCHASE_FORM]: {
+    store: true,
     view: [
       Permissions.IN_VIEW_PURCHASE_FORMS,
       Permissions.IN_MANAGE_PURCHASE_FORMS,
@@ -46,6 +51,7 @@ const CATEGORY_PERMISSIONS: Record<
     manage: [Permissions.IN_MANAGE_PURCHASE_FORMS],
   },
   [AttachmentCategory.ISSUANCE_FORM]: {
+    store: true,
     view: [
       Permissions.IN_VIEW_ISSUANCE_FORMS,
       Permissions.IN_MANAGE_ISSUANCE_FORMS,
@@ -69,11 +75,20 @@ const forbidden = () =>
     extensions: { code: 'FORBIDDEN' },
   });
 
-/** Whether the user may add files of this category. */
-export const canUploadAttachment = (
+/**
+ * Whether the user may add files of this category. For the form categories the
+ * form is not saved yet, so holding the manage permission on any store is
+ * enough.
+ */
+export const canUploadAttachment = async (
   user: AttachmentUser | null | undefined,
   category: AttachmentCategoryValue
-) => hasOnePermission(user, CATEGORY_PERMISSIONS[category].manage);
+): Promise<boolean> => {
+  const { manage, store } = CATEGORY_PERMISSIONS[category];
+  return store
+    ? hasAnyStorePermission(user, manage)
+    : hasOnePermission(user, manage);
+};
 
 /** The physical store of the form that holds the attachment, if one does. */
 const findHoldingFormStore = async (
@@ -103,21 +118,30 @@ const assertCanUse = async (
   }
 
   const category = attachmentCategoryOf(attachment.fileKey);
-  if (
-    !category ||
-    !hasOnePermission(user, CATEGORY_PERMISSIONS[category][action])
-  ) {
-    throw forbidden();
+  if (!category) throw forbidden();
+  const permissions = CATEGORY_PERMISSIONS[category][action];
+
+  if (!CATEGORY_PERMISSIONS[category].store) {
+    if (!hasOnePermission(user, permissions)) throw forbidden();
+    return attachment;
   }
 
   const store = await findHoldingFormStore(category, attachmentId);
   if (store) {
-    // Attached to a form: whoever may see that form's store.
-    if (!hasInstanceAccess(user, store.physicalStoreId)) throw forbidden();
-  } else if (store === null) {
-    // Not attached to any form yet: only the uploader (and a super-admin).
+    // Attached to a form: whoever holds the permission on that form's store.
+    if (!(await hasStorePermission(user, store.physicalStoreId, permissions))) {
+      throw forbidden();
+    }
+  } else {
+    // Not attached to any form yet: only the uploader (and a super-admin),
+    // who must hold the permission on some store.
     const uploaded = !!user?._id && attachment.createdBy === user._id;
-    if (!uploaded && !isSuperAdmin(user)) throw forbidden();
+    if (
+      !(await hasAnyStorePermission(user, permissions)) ||
+      (!uploaded && !isSuperAdmin(user))
+    ) {
+      throw forbidden();
+    }
   }
 
   return attachment;

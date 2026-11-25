@@ -155,4 +155,47 @@ export default class SubModulePaths {
       physicalStoreId
     )}/view/${formId}`;
   }
+
+  // *************************************************************************************
+  // Purchasing Routes (requisitions, incoming orders and goods receipts)
+  // *************************************************************************************
+  static requisitionsPath(physicalStoreId = ':physicalStoreId') {
+    return `${ModulePaths.stores}/${physicalStoreId}/requisitions`;
+  }
+  static requisitionsNewFormPath(physicalStoreId = ':physicalStoreId') {
+    return `${SubModulePaths.requisitionsPath(physicalStoreId)}/new`;
+  }
+  static requisitionsEditFormPath(
+    physicalStoreId = ':physicalStoreId',
+    requisitionId = ':requisitionId'
+  ) {
+    return `${SubModulePaths.requisitionsPath(physicalStoreId)}/${requisitionId}`;
+  }
+
+  static incomingOrdersPath(physicalStoreId = ':physicalStoreId') {
+    return `${ModulePaths.stores}/${physicalStoreId}/incoming-orders`;
+  }
+  static incomingOrdersViewPath(
+    physicalStoreId = ':physicalStoreId',
+    orderId = ':orderId'
+  ) {
+    return `${SubModulePaths.incomingOrdersPath(physicalStoreId)}/${orderId}`;
+  }
+
+  static goodsReceiptsPath(physicalStoreId = ':physicalStoreId') {
+    return `${ModulePaths.stores}/${physicalStoreId}/goods-receipts`;
+  }
+  // Receiving the goods of an order.
+  static goodsReceiptsNewFormPath(
+    physicalStoreId = ':physicalStoreId',
+    orderId = ':orderId'
+  ) {
+    return `${SubModulePaths.goodsReceiptsPath(physicalStoreId)}/new/${orderId}`;
+  }
+  static goodsReceiptsViewPath(
+    physicalStoreId = ':physicalStoreId',
+    receiptId = ':receiptId'
+  ) {
+    return `${SubModulePaths.goodsReceiptsPath(physicalStoreId)}/${receiptId}`;
+  }
 }

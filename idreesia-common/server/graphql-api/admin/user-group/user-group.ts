@@ -16,7 +16,6 @@ type UserGroupType {
   moduleName: String
   description: String
   permissions: [String]
-  instances: [String]
   users: [UserGroupMemberType]
 }
 
@@ -53,11 +52,6 @@ extend type Mutation {
   setUserGroupPermissions(
     _id: String!
     permissions: [String]!
-  ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
-
-  setUserGroupInstanceAccess(
-    _id: String!
-    instances: [String]!
   ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 }
 `;

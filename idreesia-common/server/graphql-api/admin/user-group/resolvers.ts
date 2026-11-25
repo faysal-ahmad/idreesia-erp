@@ -6,7 +6,6 @@ import {
   listUserGroupMembers,
   removeUserGroup,
   searchUserGroups,
-  setUserGroupInstanceAccess,
   setUserGroupPermissions,
   updateUserGroup,
 } from 'meteor/idreesia-common/server/business-logic/admin';
@@ -26,7 +25,6 @@ interface UserGroupArgs {
   moduleName?: string;
   description?: string;
   permissions: string[];
-  instances: string[];
 }
 
 export default {
@@ -76,12 +74,5 @@ export default {
       { user }: ResolverContext
     ) =>
       setUserGroupPermissions(params, user, DataSource.ADMIN),
-
-    setUserGroupInstanceAccess: async (
-      _obj: unknown,
-      params: UserGroupArgs,
-      { user }: ResolverContext
-    ) =>
-      setUserGroupInstanceAccess(params, user, DataSource.ADMIN),
   },
 };

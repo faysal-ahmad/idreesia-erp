@@ -7,6 +7,9 @@ export default new SimpleSchema({
   number: { type: String },
   orderId: { type: String },
   vendorId: { type: String },
+  // Only stored for store-raised documents (see RequisitionSource).
+  source: { type: String, optional: true, allowedValues: ['store'] },
+  externalSourceId: { type: String, optional: true },
   receivedDate: { type: Date },
   receivedBy: { type: String, optional: true },
   deliveryNoteNo: { type: String, optional: true },

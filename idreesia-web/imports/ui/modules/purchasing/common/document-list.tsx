@@ -24,6 +24,8 @@ interface DocumentListProps extends RouteComponentProps {
   newButton?: { label: string; onClick: () => void };
   statuses?: string[];
   showVendorFilter?: boolean;
+  // Purchasing's own documents or the ones raised for a store.
+  showSourceFilter?: boolean;
   showDateRange?: boolean;
   // A yes/no filter, e.g. { name: 'overdue', label: 'Overdue only' }. The
   // name is both the URL parameter and the query variable.
@@ -47,6 +49,7 @@ const DocumentList = ({
   newButton,
   statuses,
   showVendorFilter = false,
+  showSourceFilter = false,
   showDateRange = false,
   toggle,
 }: DocumentListProps) => {
@@ -55,12 +58,13 @@ const DocumentList = ({
   const { queryParams, setPageParams } = useQueryParams({
     history,
     location,
-    paramNames: ['search', 'status', 'vendorId', 'fromDate', 'toDate', 'toggle', 'pageIndex', 'pageSize'],
-    paramDefaultValues: { status: 'all' },
+    paramNames: ['search', 'status', 'vendorId', 'source', 'fromDate', 'toDate', 'toggle', 'pageIndex', 'pageSize'],
+    paramDefaultValues: { status: 'all', source: 'all' },
   });
   const search = String(queryParams.search ?? '');
   const status = String(queryParams.status ?? 'all');
   const vendorId = String(queryParams.vendorId ?? '');
+  const source = String(queryParams.source ?? 'all');
   const fromDate = String(queryParams.fromDate ?? '');
   const toDate = String(queryParams.toDate ?? '');
   const toggled = String(queryParams.toggle ?? '') === '1';
@@ -76,6 +80,7 @@ const DocumentList = ({
     pageSize,
   };
   if (showVendorFilter) variables.vendorId = vendorId || undefined;
+  if (showSourceFilter) variables.source = source === 'all' ? undefined : source;
   if (showDateRange) {
     variables.fromDate = fromDate || undefined;
     variables.toDate = toDate || undefined;
@@ -98,6 +103,7 @@ const DocumentList = ({
     search,
     status,
     vendorId,
+    source,
     fromDate,
     toDate,
     toggled,
@@ -107,6 +113,7 @@ const DocumentList = ({
     searchPlaceholder,
     statuses,
     showVendorFilter,
+    showSourceFilter,
     showDateRange,
     toggle,
     onApply: (next: Partial<DocumentFilterValues>) => {

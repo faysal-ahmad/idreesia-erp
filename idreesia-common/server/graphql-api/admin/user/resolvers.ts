@@ -3,6 +3,8 @@ import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 import { DataSource } from 'meteor/idreesia-common/constants';
+import { StorePermissionValues } from 'meteor/idreesia-common/constants/stores-permissions';
+import { hasAnyStorePermission } from 'meteor/idreesia-common/server/business-logic/inventory/store-access';
 import { ChatError } from 'meteor/idreesia-common/server/chat';
 import {
   checkUserAccountAvailability,
@@ -20,7 +22,6 @@ import {
   resetTwoFactor,
   resetUserPassword,
   searchUsers,
-  setUserInstanceAccess,
   setSuperAdmin,
   setUserPermissions,
   startTwoFactorSetup,
@@ -118,12 +119,19 @@ export default {
         _user.permissions = values(PermissionConstants);
       } else {
         // Includes the access granted by the user's groups.
-        const { permissions, instances } = await resolveEffectiveAccess(_user);
+        const { permissions } = await resolveEffectiveAccess(_user);
         _user.permissions = permissions;
-        _user.instances = instances;
       }
 
-      return _user;
+      // Whether the Stores module is open to them: they hold a permission on
+      // at least one store.
+      return {
+        ..._user,
+        hasStoreAccess: await hasAnyStorePermission(
+          _user,
+          StorePermissionValues
+        ),
+      };
     },
 
     userAccountAvailability: async (
@@ -194,12 +202,6 @@ export default {
       params: { userId: string; permissions: string[] },
       { user }: ResolverContext
     ) => setUserPermissions(params, requireUser(user), DataSource.ADMIN),
-
-    setInstanceAccess: async (
-      _obj: unknown,
-      params: { userId: string; instances: string[] },
-      { user }: ResolverContext
-    ) => setUserInstanceAccess(params, requireUser(user), DataSource.ADMIN),
 
     createChatAccount: async (
       _obj: unknown,

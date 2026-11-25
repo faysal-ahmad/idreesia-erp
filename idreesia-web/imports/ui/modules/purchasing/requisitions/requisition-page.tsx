@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, type RouteComponentProps } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Button, Collapse, Empty, Form, Modal, Popconfirm, Space, Spin, Tabs } from 'antd';
+import { Button, Collapse, Empty, Form, Modal, Popconfirm, Space, Spin, Tabs, Tag } from 'antd';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
 import { useDynamicBreadcrumbs, useLoggedInUser } from 'meteor/idreesia-common/hooks/common';
@@ -36,6 +36,7 @@ import { default as paths } from '../submodule-paths';
 import {
   APPROVE_PURCHASING_REQUISITION,
   CANCEL_PURCHASING_REQUISITION,
+  CLOSE_PURCHASING_REQUISITION,
   CREATE_PURCHASING_REQUISITION,
   DELETE_PURCHASING_REQUISITION,
   PURCHASING_REQUISITION_BY_ID,
@@ -87,6 +88,7 @@ const RequisitionPage = ({ match, history }: RouteComponentProps<{ requisitionId
   const [rejectRequisition] = useMutation(REJECT_PURCHASING_REQUISITION, { refetchQueries: REFETCH });
   const [reopenRequisition] = useMutation(REOPEN_PURCHASING_REQUISITION, { refetchQueries: REFETCH });
   const [cancelRequisition] = useMutation(CANCEL_PURCHASING_REQUISITION, { refetchQueries: REFETCH });
+  const [closeRequisition] = useMutation(CLOSE_PURCHASING_REQUISITION, { refetchQueries: REFETCH });
   const [deleteRequisition] = useMutation(DELETE_PURCHASING_REQUISITION, { refetchQueries: REFETCH });
   const [createOrder, { loading: creatingOrder }] = useMutation(CREATE_PURCHASING_ORDER_FROM_REQUISITION, {
     refetchQueries: [...REFETCH, 'pagedPurchasingOrders'],
@@ -106,7 +108,9 @@ const RequisitionPage = ({ match, history }: RouteComponentProps<{ requisitionId
   }
 
   const status = requisition?.status;
-  const editable = isNew || status === 'draft';
+  // A store's requisition is only worked on by the store; purchasing approves, rejects, cancels, closes and orders it.
+  const isStore = requisition?.source === 'store';
+  const editable = isNew || (status === 'draft' && !isStore);
   const canManage = can(P.PURCHASING_MANAGE_REQUISITIONS);
   const canApprove = can(P.PURCHASING_APPROVE_REQUISITIONS);
 
@@ -235,7 +239,7 @@ const RequisitionPage = ({ match, history }: RouteComponentProps<{ requisitionId
   const actions = !requisition ? null : (
     <div className="purchasing-actions-bar">
       <Space wrap>
-        {status === 'draft' && canManage ? (
+        {status === 'draft' && canManage && !isStore ? (
           <Button type="primary" onClick={() => runAction(submitRequisition({ variables: { _id: requisition._id! } }), 'Requisition submitted')}>
             Submit for Approval
           </Button>
@@ -248,18 +252,28 @@ const RequisitionPage = ({ match, history }: RouteComponentProps<{ requisitionId
             <Button danger onClick={() => setRejecting(true)}>Reject</Button>
           </>
         ) : null}
-        {status === 'rejected' && canManage ? (
+        {status === 'rejected' && canManage && !isStore ? (
           <Button onClick={() => runAction(reopenRequisition({ variables: { _id: requisition._id! } }), 'Requisition reopened as a draft')}>
             Reopen as Draft
           </Button>
         ) : null}
-        {(status === 'approved' || status === 'ordered') && can(P.PURCHASING_MANAGE_ORDERS) ? (
+        {['approved', 'ordered', 'closed'].includes(status ?? '') && can(P.PURCHASING_MANAGE_ORDERS) ? (
           <>
             <Button onClick={() => history.push(`${paths.quoteNewPath}?requisitionId=${requisition._id}`)}>
               Add Quote
             </Button>
             <Button type="primary" onClick={() => setOrdering(true)}>Create Purchase Order</Button>
           </>
+        ) : null}
+        {status === 'ordered' && canManage ? (
+          <Popconfirm
+            title="Close this requisition? Nothing more will be ordered for it."
+            okText="Yes"
+            cancelText="No"
+            onConfirm={() => runAction(closeRequisition({ variables: { _id: requisition._id! } }), 'Requisition closed')}
+          >
+            <Button>Close Requisition</Button>
+          </Popconfirm>
         ) : null}
         {['draft', 'submitted', 'approved'].includes(status ?? '') && canManage ? (
           <Popconfirm
@@ -271,7 +285,7 @@ const RequisitionPage = ({ match, history }: RouteComponentProps<{ requisitionId
             <Button danger>Cancel Requisition</Button>
           </Popconfirm>
         ) : null}
-        {status === 'draft' && canManage ? (
+        {status === 'draft' && canManage && !isStore ? (
           <Popconfirm
             title="Delete this draft?"
             okText="Yes"
@@ -354,6 +368,7 @@ const RequisitionPage = ({ match, history }: RouteComponentProps<{ requisitionId
         <Space style={{ marginBottom: 12 }} size={12}>
           <strong>{requisition.number}</strong>
           <StatusTag status={status} />
+          {isStore ? <Tag color="blue">Store requisition</Tag> : null}
           <span style={{ color: '#667085' }}>Needed by {formatDate(requisition.neededBy) || '-'}</span>
         </Space>
       ) : null}

@@ -76,6 +76,8 @@ export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = 
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  AdminKarkunFilter: Types.AdminKarkunFilter;
+  AdminKarkunLocationType: ResolverTypeWrapper<Types.AdminKarkunLocationType>;
   Attachment: ResolverTypeWrapper<Types.Attachment>;
   AuditLogFilter: Types.AuditLogFilter;
   AuditLogType: ResolverTypeWrapper<Types.AuditLogType>;
@@ -222,6 +224,9 @@ export type ResolversTypes = ResolversObject<{
   PagedSecurityServerProfileType: ResolverTypeWrapper<Types.PagedSecurityServerProfileType>;
   PagedStockAdjustment: ResolverTypeWrapper<Types.PagedStockAdjustment>;
   PagedStockItem: ResolverTypeWrapper<Types.PagedStockItem>;
+  PagedStoreAccessKarkun: ResolverTypeWrapper<Types.PagedStoreAccessKarkun>;
+  PagedStoreOrders: ResolverTypeWrapper<Types.PagedStoreOrders>;
+  PagedStoreReceipts: ResolverTypeWrapper<Types.PagedStoreReceipts>;
   PagedUserGroupType: ResolverTypeWrapper<Types.PagedUserGroupType>;
   PagedUserType: ResolverTypeWrapper<Types.PagedUserType>;
   PagedVisitorStayType: ResolverTypeWrapper<Types.PagedVisitorStayType>;
@@ -327,6 +332,15 @@ export type ResolversTypes = ResolversObject<{
   SecurityUserGroup: ResolverTypeWrapper<Types.SecurityUserGroup>;
   StockAdjustment: ResolverTypeWrapper<Types.StockAdjustment>;
   StockItem: ResolverTypeWrapper<Types.StockItem>;
+  StoreAccessKarkun: ResolverTypeWrapper<Types.StoreAccessKarkun>;
+  StoreAccessUserGroup: ResolverTypeWrapper<Types.StoreAccessUserGroup>;
+  StoreOrder: ResolverTypeWrapper<Types.StoreOrder>;
+  StoreOrderLine: ResolverTypeWrapper<Types.StoreOrderLine>;
+  StorePermissionGroupHolder: ResolverTypeWrapper<Types.StorePermissionGroupHolder>;
+  StorePermissionHolders: ResolverTypeWrapper<Types.StorePermissionHolders>;
+  StorePermissionUserHolder: ResolverTypeWrapper<Types.StorePermissionUserHolder>;
+  StoreReceipt: ResolverTypeWrapper<Types.StoreReceipt>;
+  StoreReceiptLine: ResolverTypeWrapper<Types.StoreReceiptLine>;
   String: ResolverTypeWrapper<Types.Scalars['String']['output']>;
   SyncOrgLocationObserversResult: ResolverTypeWrapper<Types.SyncOrgLocationObserversResult>;
   TeamMemberType: ResolverTypeWrapper<Types.TeamMemberType>;
@@ -409,6 +423,8 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  AdminKarkunFilter: Types.AdminKarkunFilter;
+  AdminKarkunLocationType: Types.AdminKarkunLocationType;
   Attachment: Types.Attachment;
   AuditLogFilter: Types.AuditLogFilter;
   AuditLogType: Types.AuditLogType;
@@ -550,6 +566,9 @@ export type ResolversParentTypes = ResolversObject<{
   PagedSecurityServerProfileType: Types.PagedSecurityServerProfileType;
   PagedStockAdjustment: Types.PagedStockAdjustment;
   PagedStockItem: Types.PagedStockItem;
+  PagedStoreAccessKarkun: Types.PagedStoreAccessKarkun;
+  PagedStoreOrders: Types.PagedStoreOrders;
+  PagedStoreReceipts: Types.PagedStoreReceipts;
   PagedUserGroupType: Types.PagedUserGroupType;
   PagedUserType: Types.PagedUserType;
   PagedVisitorStayType: Types.PagedVisitorStayType;
@@ -654,6 +673,15 @@ export type ResolversParentTypes = ResolversObject<{
   SecurityUserGroup: Types.SecurityUserGroup;
   StockAdjustment: Types.StockAdjustment;
   StockItem: Types.StockItem;
+  StoreAccessKarkun: Types.StoreAccessKarkun;
+  StoreAccessUserGroup: Types.StoreAccessUserGroup;
+  StoreOrder: Types.StoreOrder;
+  StoreOrderLine: Types.StoreOrderLine;
+  StorePermissionGroupHolder: Types.StorePermissionGroupHolder;
+  StorePermissionHolders: Types.StorePermissionHolders;
+  StorePermissionUserHolder: Types.StorePermissionUserHolder;
+  StoreReceipt: Types.StoreReceipt;
+  StoreReceiptLine: Types.StoreReceiptLine;
   String: Types.Scalars['String']['output'];
   SyncOrgLocationObserversResult: Types.SyncOrgLocationObserversResult;
   TeamMemberType: Types.TeamMemberType;
@@ -749,9 +777,7 @@ export type CheckDutiesAttendanceAccessDirectiveArgs = {
 export type CheckDutiesAttendanceAccessDirectiveResolver<Result, Parent, ContextType = any, Args = CheckDutiesAttendanceAccessDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type CheckInstanceAccessDirectiveArgs = {
-  dataFieldName?: Types.Maybe<Types.Scalars['String']['input']>;
   instanceIdArgName?: Types.Maybe<Types.Scalars['String']['input']>;
-  returnType?: Types.Maybe<Types.Scalars['String']['input']>;
 };
 
 export type CheckInstanceAccessDirectiveResolver<Result, Parent, ContextType = any, Args = CheckInstanceAccessDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
@@ -778,15 +804,32 @@ export type CheckMehfilPermissionsAccessDirectiveArgs = {
 export type CheckMehfilPermissionsAccessDirectiveResolver<Result, Parent, ContextType = any, Args = CheckMehfilPermissionsAccessDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type CheckPermissionsDirectiveArgs = {
+  anyStorePermissions?: Types.Maybe<Array<Types.Permission>>;
   dataFieldName?: Types.Maybe<Types.Scalars['String']['input']>;
   permissions?: Types.Maybe<Array<Types.Maybe<Types.Scalars['String']['input']>>>;
 };
 
 export type CheckPermissionsDirectiveResolver<Result, Parent, ContextType = any, Args = CheckPermissionsDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
+export type CheckStoreAccessDirectiveArgs = {
+  dataFieldName?: Types.Maybe<Types.Scalars['String']['input']>;
+  permissions: Array<Types.Maybe<Types.Permission>>;
+  physicalStoreIdArgName: Types.Scalars['String']['input'];
+  returnType?: Types.Maybe<Types.Scalars['String']['input']>;
+};
+
+export type CheckStoreAccessDirectiveResolver<Result, Parent, ContextType = any, Args = CheckStoreAccessDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type SuperAdminOnlyDirectiveArgs = { };
 
 export type SuperAdminOnlyDirectiveResolver<Result, Parent, ContextType = any, Args = SuperAdminOnlyDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type AdminKarkunLocationTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['AdminKarkunLocationType'] = ResolversParentTypes['AdminKarkunLocationType']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  parentId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
 
 export type AttachmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Attachment'] = ResolversParentTypes['Attachment']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1577,6 +1620,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   addMehfilKarkun?: Resolver<Types.Maybe<ResolversTypes['MehfilKarkunType']>, ParentType, ContextType, RequireFields<Types.MutationAddMehfilKarkunArgs, 'dutyId' | 'karkunId' | 'mehfilId'>>;
   addOrgLocationFeatureUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddOrgLocationFeatureUserArgs, 'featureKey' | 'karkunId' | 'locationId' | 'permissionKey'>>;
   addOrgLocationObserver?: Resolver<Types.Maybe<ResolversTypes['OrgLocationType']>, ParentType, ContextType, RequireFields<Types.MutationAddOrgLocationObserverArgs, 'karkunId' | 'locationId'>>;
+  addPhysicalStoreAccessGroup?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddPhysicalStoreAccessGroupArgs, 'groupId' | 'permission' | 'physicalStoreId'>>;
+  addPhysicalStoreAccessUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddPhysicalStoreAccessUserArgs, 'karkunId' | 'permission' | 'physicalStoreId'>>;
   addPurchaseFormAttachment?: Resolver<Types.Maybe<ResolversTypes['PurchaseForm']>, ParentType, ContextType, RequireFields<Types.MutationAddPurchaseFormAttachmentArgs, '_id' | 'attachmentId' | 'physicalStoreId'>>;
   addPurchasingGroupMember?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddPurchasingGroupMemberArgs, 'groupId' | 'karkunId'>>;
   addPurchasingPermissionGroup?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddPurchasingPermissionGroupArgs, 'groupId' | 'permissionKey'>>;
@@ -1595,10 +1640,12 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   approveStockAdjustments?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StockAdjustment']>>>, ParentType, ContextType, RequireFields<Types.MutationApproveStockAdjustmentsArgs, '_ids' | 'physicalStoreId'>>;
   cancelPurchasingOrder?: Resolver<Types.Maybe<ResolversTypes['PurchasingOrder']>, ParentType, ContextType, RequireFields<Types.MutationCancelPurchasingOrderArgs, '_id'>>;
   cancelPurchasingRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.MutationCancelPurchasingRequisitionArgs, '_id'>>;
+  cancelStoreRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.MutationCancelStoreRequisitionArgs, '_id' | 'physicalStoreId'>>;
   cancelVisitorStay?: Resolver<Types.Maybe<ResolversTypes['VisitorStayType']>, ParentType, ContextType, RequireFields<Types.MutationCancelVisitorStayArgs, '_id'>>;
   clearJobDefinitionSchedule?: Resolver<Types.Maybe<ResolversTypes['JobDefinitionType']>, ParentType, ContextType, RequireFields<Types.MutationClearJobDefinitionScheduleArgs, '_id'>>;
   clearLoginBlocks?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationClearLoginBlocksArgs, 'userId'>>;
   closePurchasingOrder?: Resolver<Types.Maybe<ResolversTypes['PurchasingOrder']>, ParentType, ContextType, RequireFields<Types.MutationClosePurchasingOrderArgs, '_id'>>;
+  closePurchasingRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.MutationClosePurchasingRequisitionArgs, '_id'>>;
   completePurchasingAttachmentUpload?: Resolver<Types.Maybe<ResolversTypes['PurchasingAttachment']>, ParentType, ContextType, RequireFields<Types.MutationCompletePurchasingAttachmentUploadArgs, 'uploadId'>>;
   createChatAccount?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationCreateChatAccountArgs, 'userId'>>;
   createCity?: Resolver<Types.Maybe<ResolversTypes['CityType']>, ParentType, ContextType, RequireFields<Types.MutationCreateCityArgs, 'country' | 'name'>>;
@@ -1625,10 +1672,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createPurchasingAttachmentUpload?: Resolver<Types.Maybe<ResolversTypes['PurchasingAttachmentUpload']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchasingAttachmentUploadArgs, 'fileName' | 'mimeType' | 'ownerId' | 'ownerType' | 'size'>>;
   createPurchasingCatalogItem?: Resolver<Types.Maybe<ResolversTypes['PurchasingCatalogItem']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchasingCatalogItemArgs, 'name' | 'unit'>>;
   createPurchasingInvoice?: Resolver<Types.Maybe<ResolversTypes['PurchasingInvoice']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchasingInvoiceArgs, 'invoiceDate' | 'lines' | 'vendorId' | 'vendorInvoiceNo'>>;
-  createPurchasingOrder?: Resolver<Types.Maybe<ResolversTypes['PurchasingOrder']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchasingOrderArgs, 'lines' | 'orderDate' | 'vendorId'>>;
   createPurchasingOrderFromQuote?: Resolver<Types.Maybe<ResolversTypes['PurchasingOrder']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchasingOrderFromQuoteArgs, 'quoteId'>>;
   createPurchasingOrderFromRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingOrder']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchasingOrderFromRequisitionArgs, 'requisitionId' | 'vendorId'>>;
-  createPurchasingQuote?: Resolver<Types.Maybe<ResolversTypes['PurchasingQuote']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchasingQuoteArgs, 'lines' | 'quoteDate' | 'vendorId'>>;
+  createPurchasingQuote?: Resolver<Types.Maybe<ResolversTypes['PurchasingQuote']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchasingQuoteArgs, 'lines' | 'quoteDate' | 'requisitionId' | 'vendorId'>>;
   createPurchasingRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchasingRequisitionArgs, 'lines' | 'title'>>;
   createPurchasingUserGroup?: Resolver<Types.Maybe<ResolversTypes['PurchasingUserGroup']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchasingUserGroupArgs, 'name'>>;
   createPurchasingVendor?: Resolver<Types.Maybe<ResolversTypes['PurchasingVendor']>, ParentType, ContextType, RequireFields<Types.MutationCreatePurchasingVendorArgs, 'name'>>;
@@ -1643,6 +1689,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createServiceAccount?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationCreateServiceAccountArgs, 'userName'>>;
   createStockAdjustment?: Resolver<Types.Maybe<ResolversTypes['StockAdjustment']>, ParentType, ContextType, RequireFields<Types.MutationCreateStockAdjustmentArgs, 'adjustedBy' | 'adjustmentDate' | 'isInflow' | 'physicalStoreId' | 'quantity' | 'stockItemId'>>;
   createStockItem?: Resolver<Types.Maybe<ResolversTypes['StockItem']>, ParentType, ContextType, RequireFields<Types.MutationCreateStockItemArgs, 'categoryId' | 'name' | 'physicalStoreId' | 'unitOfMeasurement'>>;
+  createStoreRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.MutationCreateStoreRequisitionArgs, 'lines' | 'physicalStoreId' | 'title'>>;
   createTeam?: Resolver<Types.Maybe<ResolversTypes['TeamType']>, ParentType, ContextType, RequireFields<Types.MutationCreateTeamArgs, 'dutyId' | 'name'>>;
   createUser?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, Partial<Types.MutationCreateUserArgs>>;
   createUserGroup?: Resolver<Types.Maybe<ResolversTypes['UserGroupType']>, ParentType, ContextType, RequireFields<Types.MutationCreateUserGroupArgs, 'name'>>;
@@ -1664,6 +1711,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteSecurityServerProfile?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteSecurityServerProfileArgs, '_id'>>;
   deleteSecurityUserGroup?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationDeleteSecurityUserGroupArgs, '_id'>>;
   deleteSecurityVisitor?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteSecurityVisitorArgs, '_id'>>;
+  deleteStoreRequisition?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationDeleteStoreRequisitionArgs, '_id' | 'physicalStoreId'>>;
   deleteUserGroup?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationDeleteUserGroupArgs, '_id'>>;
   disableCommitteeFeature?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<Types.MutationDisableCommitteeFeatureArgs, 'committeeId' | 'featureKey'>>;
   disableTwoFactor?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationDisableTwoFactorArgs, 'code'>>;
@@ -1680,6 +1728,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   moveCommittee?: Resolver<Types.Maybe<ResolversTypes['CommitteeType']>, ParentType, ContextType, RequireFields<Types.MutationMoveCommitteeArgs, 'committeeId' | 'locationId'>>;
   postPurchasingPayment?: Resolver<Types.Maybe<ResolversTypes['PurchasingPayment']>, ParentType, ContextType, RequireFields<Types.MutationPostPurchasingPaymentArgs, 'allocations' | 'method' | 'paymentDate' | 'vendorId'>>;
   postPurchasingReceipt?: Resolver<Types.Maybe<ResolversTypes['PurchasingReceipt']>, ParentType, ContextType, RequireFields<Types.MutationPostPurchasingReceiptArgs, 'lines' | 'orderId' | 'receivedDate'>>;
+  postStoreReceipt?: Resolver<Types.Maybe<ResolversTypes['StoreReceipt']>, ParentType, ContextType, RequireFields<Types.MutationPostStoreReceiptArgs, 'lines' | 'orderId' | 'physicalStoreId' | 'receivedDate'>>;
   promoteHrKarkun?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.MutationPromoteHrKarkunArgs, '_id'>>;
   recalculateStockLevels?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StockItem']>>>, ParentType, ContextType, RequireFields<Types.MutationRecalculateStockLevelsArgs, '_ids' | 'physicalStoreId'>>;
   registerUser?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRegisterUserArgs, 'displayName' | 'email'>>;
@@ -1706,6 +1755,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeMehfilKarkun?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveMehfilKarkunArgs, '_id'>>;
   removeOrgLocationFeatureUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemoveOrgLocationFeatureUserArgs, 'featureKey' | 'locationId' | 'permissionKey' | 'userId'>>;
   removeOrgLocationObserver?: Resolver<Types.Maybe<ResolversTypes['OrgLocationType']>, ParentType, ContextType, RequireFields<Types.MutationRemoveOrgLocationObserverArgs, 'karkunId' | 'locationId'>>;
+  removePhysicalStoreAccessGroup?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePhysicalStoreAccessGroupArgs, 'groupId' | 'permission' | 'physicalStoreId'>>;
+  removePhysicalStoreAccessUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePhysicalStoreAccessUserArgs, 'permission' | 'physicalStoreId' | 'userId'>>;
   removePurchaseFormAttachment?: Resolver<Types.Maybe<ResolversTypes['PurchaseForm']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchaseFormAttachmentArgs, '_id' | 'attachmentId' | 'physicalStoreId'>>;
   removePurchaseForms?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchaseFormsArgs, '_ids' | 'physicalStoreId'>>;
   removePurchasingCatalogItem?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingCatalogItemArgs, '_id'>>;
@@ -1732,6 +1783,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   renameFreeFormCity?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRenameFreeFormCityArgs, 'existingSpelling' | 'newSpelling'>>;
   renameFreeFormCountry?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRenameFreeFormCountryArgs, 'existingSpelling' | 'newSpelling'>>;
   reopenPurchasingRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.MutationReopenPurchasingRequisitionArgs, '_id'>>;
+  reopenStoreRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.MutationReopenStoreRequisitionArgs, '_id' | 'physicalStoreId'>>;
   resetJobDefinitionSchedule?: Resolver<Types.Maybe<ResolversTypes['JobDefinitionType']>, ParentType, ContextType, RequireFields<Types.MutationResetJobDefinitionScheduleArgs, '_id'>>;
   resetOrgLocationUserPassword?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationResetOrgLocationUserPasswordArgs, 'locationId' | 'password' | 'userId'>>;
   resetTwoFactor?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationResetTwoFactorArgs, 'userId'>>;
@@ -1750,7 +1802,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   setDutyShiftTeam?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationSetDutyShiftTeamArgs, 'dutyId' | 'locationId' | 'shiftId'>>;
   setHrKarkunEmploymentInfo?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.MutationSetHrKarkunEmploymentInfoArgs, '_id' | 'isEmployee'>>;
   setHrKarkunProfileImage?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.MutationSetHrKarkunProfileImageArgs, '_id' | 'imageData'>>;
-  setInstanceAccess?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationSetInstanceAccessArgs, 'instances' | 'userId'>>;
   setJobDefinitionEnabled?: Resolver<Types.Maybe<ResolversTypes['JobDefinitionType']>, ParentType, ContextType, RequireFields<Types.MutationSetJobDefinitionEnabledArgs, '_id' | 'enabled'>>;
   setOrgLocationUserLocked?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationSetOrgLocationUserLockedArgs, 'locationId' | 'locked' | 'userId'>>;
   setPermissions?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationSetPermissionsArgs, 'permissions' | 'userId'>>;
@@ -1764,11 +1815,11 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   setSecurityVisitorImage?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.MutationSetSecurityVisitorImageArgs, '_id' | 'imageData'>>;
   setStockItemImage?: Resolver<Types.Maybe<ResolversTypes['StockItem']>, ParentType, ContextType, RequireFields<Types.MutationSetStockItemImageArgs, '_id' | 'imageData' | 'physicalStoreId'>>;
   setSuperAdmin?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationSetSuperAdminArgs, 'isSuperAdmin' | 'userId'>>;
-  setUserGroupInstanceAccess?: Resolver<Types.Maybe<ResolversTypes['UserGroupType']>, ParentType, ContextType, RequireFields<Types.MutationSetUserGroupInstanceAccessArgs, '_id' | 'instances'>>;
   setUserGroupPermissions?: Resolver<Types.Maybe<ResolversTypes['UserGroupType']>, ParentType, ContextType, RequireFields<Types.MutationSetUserGroupPermissionsArgs, '_id' | 'permissions'>>;
   startTwoFactorSetup?: Resolver<Types.Maybe<ResolversTypes['TwoFactorSetupType']>, ParentType, ContextType>;
   submitPurchasingOrder?: Resolver<Types.Maybe<ResolversTypes['PurchasingOrder']>, ParentType, ContextType, RequireFields<Types.MutationSubmitPurchasingOrderArgs, '_id'>>;
   submitPurchasingRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.MutationSubmitPurchasingRequisitionArgs, '_id'>>;
+  submitStoreRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.MutationSubmitStoreRequisitionArgs, '_id' | 'physicalStoreId'>>;
   syncOrgLocationObservers?: Resolver<Types.Maybe<ResolversTypes['SyncOrgLocationObserversResult']>, ParentType, ContextType, RequireFields<Types.MutationSyncOrgLocationObserversArgs, 'locationId'>>;
   updateAdminFaceRecognitionSettings?: Resolver<Types.Maybe<ResolversTypes['FaceRecognitionSettingsType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateAdminFaceRecognitionSettingsArgs, 'matchThreshold' | 'minDetectionScore' | 'minFacePixels' | 'minFacePose' | 'minMatchMargin' | 'minSharpness'>>;
   updateAdminPeopleRegistrationImageSettings?: Resolver<Types.Maybe<ResolversTypes['PeopleRegistrationImageSettingsType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateAdminPeopleRegistrationImageSettingsArgs, 'minDetectionScore' | 'minFacePixels' | 'minFacePose' | 'minSharpness'>>;
@@ -1799,7 +1850,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updatePurchasingCatalogItem?: Resolver<Types.Maybe<ResolversTypes['PurchasingCatalogItem']>, ParentType, ContextType, RequireFields<Types.MutationUpdatePurchasingCatalogItemArgs, '_id' | 'name' | 'unit'>>;
   updatePurchasingInvoice?: Resolver<Types.Maybe<ResolversTypes['PurchasingInvoice']>, ParentType, ContextType, RequireFields<Types.MutationUpdatePurchasingInvoiceArgs, '_id' | 'dueDate' | 'vendorInvoiceNo'>>;
   updatePurchasingOrder?: Resolver<Types.Maybe<ResolversTypes['PurchasingOrder']>, ParentType, ContextType, RequireFields<Types.MutationUpdatePurchasingOrderArgs, '_id' | 'lines' | 'orderDate' | 'vendorId' | 'version'>>;
-  updatePurchasingQuote?: Resolver<Types.Maybe<ResolversTypes['PurchasingQuote']>, ParentType, ContextType, RequireFields<Types.MutationUpdatePurchasingQuoteArgs, '_id' | 'lines' | 'quoteDate' | 'vendorId' | 'version'>>;
+  updatePurchasingQuote?: Resolver<Types.Maybe<ResolversTypes['PurchasingQuote']>, ParentType, ContextType, RequireFields<Types.MutationUpdatePurchasingQuoteArgs, '_id' | 'lines' | 'quoteDate' | 'requisitionId' | 'vendorId' | 'version'>>;
   updatePurchasingRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.MutationUpdatePurchasingRequisitionArgs, '_id' | 'lines' | 'title' | 'version'>>;
   updatePurchasingUserGroup?: Resolver<Types.Maybe<ResolversTypes['PurchasingUserGroup']>, ParentType, ContextType, RequireFields<Types.MutationUpdatePurchasingUserGroupArgs, '_id' | 'name'>>;
   updatePurchasingVendor?: Resolver<Types.Maybe<ResolversTypes['PurchasingVendor']>, ParentType, ContextType, RequireFields<Types.MutationUpdatePurchasingVendorArgs, '_id' | 'name'>>;
@@ -1814,6 +1865,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateSecurityVisitorNotes?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateSecurityVisitorNotesArgs, '_id'>>;
   updateStockAdjustment?: Resolver<Types.Maybe<ResolversTypes['StockAdjustment']>, ParentType, ContextType, RequireFields<Types.MutationUpdateStockAdjustmentArgs, '_id' | 'adjustedBy' | 'adjustmentDate' | 'isInflow' | 'physicalStoreId' | 'quantity'>>;
   updateStockItem?: Resolver<Types.Maybe<ResolversTypes['StockItem']>, ParentType, ContextType, RequireFields<Types.MutationUpdateStockItemArgs, '_id' | 'categoryId' | 'name' | 'physicalStoreId' | 'unitOfMeasurement'>>;
+  updateStoreRequisition?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.MutationUpdateStoreRequisitionArgs, '_id' | 'lines' | 'physicalStoreId' | 'title' | 'version'>>;
   updateTeam?: Resolver<Types.Maybe<ResolversTypes['TeamType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateTeamArgs, 'dutyId' | 'id' | 'name'>>;
   updateTeamMemberDays?: Resolver<Types.Maybe<ResolversTypes['TeamType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateTeamMemberDaysArgs, 'daysOfWeek' | 'karkunId' | 'teamId'>>;
   updateUser?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, RequireFields<Types.MutationUpdateUserArgs, 'userId'>>;
@@ -1825,6 +1877,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   voidPurchasingInvoice?: Resolver<Types.Maybe<ResolversTypes['PurchasingInvoice']>, ParentType, ContextType, RequireFields<Types.MutationVoidPurchasingInvoiceArgs, '_id'>>;
   voidPurchasingPayment?: Resolver<Types.Maybe<ResolversTypes['PurchasingPayment']>, ParentType, ContextType, RequireFields<Types.MutationVoidPurchasingPaymentArgs, '_id' | 'reason'>>;
   voidPurchasingReceipt?: Resolver<Types.Maybe<ResolversTypes['PurchasingReceipt']>, ParentType, ContextType, RequireFields<Types.MutationVoidPurchasingReceiptArgs, '_id' | 'reason'>>;
+  voidStoreReceipt?: Resolver<Types.Maybe<ResolversTypes['StoreReceipt']>, ParentType, ContextType, RequireFields<Types.MutationVoidStoreReceiptArgs, '_id' | 'physicalStoreId' | 'reason'>>;
   workspaceAbortDocumentUpload?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAbortDocumentUploadArgs, 'committeeId' | 'uploadId'>>;
   workspaceAbortMeetingAttachmentUpload?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAbortMeetingAttachmentUploadArgs, 'committeeId' | 'uploadId'>>;
   workspaceAddCommitteeMember?: Resolver<Types.Maybe<ResolversTypes['WorkspaceCommitteeType']>, ParentType, ContextType, RequireFields<Types.MutationWorkspaceAddCommitteeMemberArgs, 'committeeId' | 'karkunId'>>;
@@ -2192,6 +2245,21 @@ export type PagedStockItemResolvers<ContextType = any, ParentType extends Resolv
   totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
+export type PagedStoreAccessKarkunResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedStoreAccessKarkun'] = ResolversParentTypes['PagedStoreAccessKarkun']> = ResolversObject<{
+  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StoreAccessKarkun']>>>, ParentType, ContextType>;
+  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type PagedStoreOrdersResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedStoreOrders'] = ResolversParentTypes['PagedStoreOrders']> = ResolversObject<{
+  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StoreOrder']>>>, ParentType, ContextType>;
+  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
+export type PagedStoreReceiptsResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedStoreReceipts'] = ResolversParentTypes['PagedStoreReceipts']> = ResolversObject<{
+  data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StoreReceipt']>>>, ParentType, ContextType>;
+  totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+}>;
+
 export type PagedUserGroupTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PagedUserGroupType'] = ResolversParentTypes['PagedUserGroupType']> = ResolversObject<{
   data?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['UserGroupType']>>>, ParentType, ContextType>;
   totalResults?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -2425,6 +2493,7 @@ export type PhysicalStoreResolvers<ContextType = any, ParentType extends Resolve
   createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  permissions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
@@ -2529,8 +2598,9 @@ export type PurchasingInvoiceResolvers<ContextType = any, ParentType extends Res
   lines?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchasingInvoiceLine']>>>, ParentType, ContextType>;
   notes?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   number?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  order?: Resolver<Types.Maybe<ResolversTypes['PurchasingOrder']>, ParentType, ContextType>;
   orderId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  orderIds?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  orders?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchasingOrder']>>>, ParentType, ContextType>;
   paidAmount?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subtotal?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -2547,8 +2617,10 @@ export type PurchasingInvoiceResolvers<ContextType = any, ParentType extends Res
 
 export type PurchasingInvoiceLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchasingInvoiceLine'] = ResolversParentTypes['PurchasingInvoiceLine']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  catalogItemId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  externalCatalogId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  internalCatalogId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  orderId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   orderLineId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   quantity?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   taxRate?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -2608,6 +2680,7 @@ export type PurchasingOrderResolvers<ContextType = any, ParentType extends Resol
   deliveryAddress?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   discount?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   expectedDeliveryDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  externalSourceId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lines?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchasingOrderLine']>>>, ParentType, ContextType>;
   notes?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   number?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2619,6 +2692,7 @@ export type PurchasingOrderResolvers<ContextType = any, ParentType extends Resol
   sentAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sentBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   shipping?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  source?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   submittedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   submittedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2634,11 +2708,13 @@ export type PurchasingOrderResolvers<ContextType = any, ParentType extends Resol
 
 export type PurchasingOrderLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchasingOrderLine'] = ResolversParentTypes['PurchasingOrderLine']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  catalogItemId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  externalCatalogId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  internalCatalogId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   invoicedQuantity?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   quantity?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   receivedQuantity?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  requisitionLineId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   taxRate?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   unit?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   unitPrice?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -2728,9 +2804,11 @@ export type PurchasingQuoteResolvers<ContextType = any, ParentType extends Resol
 
 export type PurchasingQuoteLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchasingQuoteLine'] = ResolversParentTypes['PurchasingQuoteLine']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  catalogItemId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  externalCatalogId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  internalCatalogId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   quantity?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  requisitionLineId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   unit?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   unitPrice?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
 }>;
@@ -2740,6 +2818,7 @@ export type PurchasingReceiptResolvers<ContextType = any, ParentType extends Res
   createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   deliveryNoteNo?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  externalSourceId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lines?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchasingReceiptLine']>>>, ParentType, ContextType>;
   notes?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   number?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2748,6 +2827,7 @@ export type PurchasingReceiptResolvers<ContextType = any, ParentType extends Res
   receivedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   receivedByPerson?: Resolver<Types.Maybe<ResolversTypes['PersonBasicType']>, ParentType, ContextType>;
   receivedDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  source?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2761,6 +2841,7 @@ export type PurchasingReceiptResolvers<ContextType = any, ParentType extends Res
 export type PurchasingReceiptLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchasingReceiptLine'] = ResolversParentTypes['PurchasingReceiptLine']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  externalCatalogId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   orderLineId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   receivedQuantity?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   rejectedQuantity?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -2777,6 +2858,7 @@ export type PurchasingRequisitionResolvers<ContextType = any, ParentType extends
   createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   estimatedTotal?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  externalSourceId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lines?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchasingRequisitionLine']>>>, ParentType, ContextType>;
   neededBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   number?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2786,6 +2868,7 @@ export type PurchasingRequisitionResolvers<ContextType = any, ParentType extends
   rejectionReason?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   requestedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   requestedByPerson?: Resolver<Types.Maybe<ResolversTypes['PersonBasicType']>, ParentType, ContextType>;
+  source?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   submittedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   submittedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2797,9 +2880,10 @@ export type PurchasingRequisitionResolvers<ContextType = any, ParentType extends
 
 export type PurchasingRequisitionLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchasingRequisitionLine'] = ResolversParentTypes['PurchasingRequisitionLine']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  catalogItemId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   estimatedUnitPrice?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  externalCatalogId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  internalCatalogId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   quantity?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   unit?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
@@ -2847,6 +2931,7 @@ export type PurchasingVendorSpendingResolvers<ContextType = any, ParentType exte
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   adminFaceRecognitionSettings?: Resolver<Types.Maybe<ResolversTypes['FaceRecognitionSettingsType']>, ParentType, ContextType>;
+  adminKarkunLocations?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['AdminKarkunLocationType']>>>, ParentType, ContextType>;
   adminPeopleRegistrationImageSettings?: Resolver<Types.Maybe<ResolversTypes['PeopleRegistrationImageSettingsType']>, ParentType, ContextType>;
   adminPeopleSearchFaceSettings?: Resolver<Types.Maybe<ResolversTypes['PeopleSearchFaceSettingsType']>, ParentType, ContextType>;
   allAccessiblePhysicalStores?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PhysicalStore']>>>, ParentType, ContextType>;
@@ -2920,6 +3005,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   myTrustedDevices?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['TrustedDeviceType']>>>, ParentType, ContextType>;
   orgLocationById?: Resolver<Types.Maybe<ResolversTypes['OrgLocationType']>, ParentType, ContextType, RequireFields<Types.QueryOrgLocationByIdArgs, '_id'>>;
   orgLocationFeaturePermissions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['OrgLocationFeaturePermissionsType']>>>, ParentType, ContextType, RequireFields<Types.QueryOrgLocationFeaturePermissionsArgs, 'locationId'>>;
+  pagedAdminKarkuns?: Resolver<Types.Maybe<ResolversTypes['PagedKarkunType']>, ParentType, ContextType, Partial<Types.QueryPagedAdminKarkunsArgs>>;
   pagedCities?: Resolver<Types.Maybe<ResolversTypes['PagedCityType']>, ParentType, ContextType, Partial<Types.QueryPagedCitiesArgs>>;
   pagedDeletedPeople?: Resolver<Types.Maybe<ResolversTypes['PagedPeopleType']>, ParentType, ContextType, Partial<Types.QueryPagedDeletedPeopleArgs>>;
   pagedFreeFormCities?: Resolver<Types.Maybe<ResolversTypes['PagedFreeFormCity']>, ParentType, ContextType, RequireFields<Types.QueryPagedFreeFormCitiesArgs, 'pageIndex' | 'pageSize'>>;
@@ -2954,10 +3040,14 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   pagedSecurityVisitors?: Resolver<Types.Maybe<ResolversTypes['PagedVisitorType']>, ParentType, ContextType, Partial<Types.QueryPagedSecurityVisitorsArgs>>;
   pagedStockAdjustments?: Resolver<Types.Maybe<ResolversTypes['PagedStockAdjustment']>, ParentType, ContextType, RequireFields<Types.QueryPagedStockAdjustmentsArgs, 'physicalStoreId'>>;
   pagedStockItems?: Resolver<Types.Maybe<ResolversTypes['PagedStockItem']>, ParentType, ContextType, RequireFields<Types.QueryPagedStockItemsArgs, 'physicalStoreId'>>;
+  pagedStoreOrders?: Resolver<Types.Maybe<ResolversTypes['PagedStoreOrders']>, ParentType, ContextType, RequireFields<Types.QueryPagedStoreOrdersArgs, 'physicalStoreId'>>;
+  pagedStoreReceipts?: Resolver<Types.Maybe<ResolversTypes['PagedStoreReceipts']>, ParentType, ContextType, RequireFields<Types.QueryPagedStoreReceiptsArgs, 'physicalStoreId'>>;
+  pagedStoreRequisitions?: Resolver<Types.Maybe<ResolversTypes['PagedPurchasingRequisitions']>, ParentType, ContextType, RequireFields<Types.QueryPagedStoreRequisitionsArgs, 'physicalStoreId'>>;
   pagedUserGroups?: Resolver<Types.Maybe<ResolversTypes['PagedUserGroupType']>, ParentType, ContextType, Partial<Types.QueryPagedUserGroupsArgs>>;
   pagedUsers?: Resolver<Types.Maybe<ResolversTypes['PagedUserType']>, ParentType, ContextType, Partial<Types.QueryPagedUsersArgs>>;
   pagedVisitorStays?: Resolver<Types.Maybe<ResolversTypes['PagedVisitorStayType']>, ParentType, ContextType, RequireFields<Types.QueryPagedVisitorStaysArgs, 'queryString'>>;
   pagedVisitorStaysByVisitorId?: Resolver<Types.Maybe<ResolversTypes['PagedVisitorStayType']>, ParentType, ContextType, RequireFields<Types.QueryPagedVisitorStaysByVisitorIdArgs, 'visitorId'>>;
+  physicalStoreAccess?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StorePermissionHolders']>>>, ParentType, ContextType, RequireFields<Types.QueryPhysicalStoreAccessArgs, 'physicalStoreId'>>;
   physicalStoreById?: Resolver<Types.Maybe<ResolversTypes['PhysicalStore']>, ParentType, ContextType, RequireFields<Types.QueryPhysicalStoreByIdArgs, 'id'>>;
   purchaseFormById?: Resolver<Types.Maybe<ResolversTypes['PurchaseForm']>, ParentType, ContextType, RequireFields<Types.QueryPurchaseFormByIdArgs, '_id' | 'physicalStoreId'>>;
   purchaseFormsByMonth?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchaseForm']>>>, ParentType, ContextType, RequireFields<Types.QueryPurchaseFormsByMonthArgs, 'month' | 'physicalStoreId'>>;
@@ -3008,6 +3098,11 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   stockAdjustmentsByStockItem?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StockAdjustment']>>>, ParentType, ContextType, RequireFields<Types.QueryStockAdjustmentsByStockItemArgs, 'physicalStoreId' | 'stockItemId'>>;
   stockItemById?: Resolver<Types.Maybe<ResolversTypes['StockItem']>, ParentType, ContextType, RequireFields<Types.QueryStockItemByIdArgs, '_id' | 'physicalStoreId'>>;
   stockItemsById?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StockItem']>>>, ParentType, ContextType, RequireFields<Types.QueryStockItemsByIdArgs, '_ids' | 'physicalStoreId'>>;
+  storeAccessKarkunSearch?: Resolver<Types.Maybe<ResolversTypes['PagedStoreAccessKarkun']>, ParentType, ContextType, Partial<Types.QueryStoreAccessKarkunSearchArgs>>;
+  storeAccessUserGroups?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StoreAccessUserGroup']>>>, ParentType, ContextType>;
+  storeOrderById?: Resolver<Types.Maybe<ResolversTypes['StoreOrder']>, ParentType, ContextType, RequireFields<Types.QueryStoreOrderByIdArgs, '_id' | 'physicalStoreId'>>;
+  storeReceiptById?: Resolver<Types.Maybe<ResolversTypes['StoreReceipt']>, ParentType, ContextType, RequireFields<Types.QueryStoreReceiptByIdArgs, '_id' | 'physicalStoreId'>>;
+  storeRequisitionById?: Resolver<Types.Maybe<ResolversTypes['PurchasingRequisition']>, ParentType, ContextType, RequireFields<Types.QueryStoreRequisitionByIdArgs, '_id' | 'physicalStoreId'>>;
   userAccountAvailability?: Resolver<ResolversTypes['UserAccountAvailabilityType'], ParentType, ContextType, Partial<Types.QueryUserAccountAvailabilityArgs>>;
   userById?: Resolver<Types.Maybe<ResolversTypes['UserType']>, ParentType, ContextType, Partial<Types.QueryUserByIdArgs>>;
   userGroupById?: Resolver<Types.Maybe<ResolversTypes['UserGroupType']>, ParentType, ContextType, RequireFields<Types.QueryUserGroupByIdArgs, '_id'>>;
@@ -3382,6 +3477,91 @@ export type StockItemResolvers<ContextType = any, ParentType extends ResolversPa
   verifiedOn?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
+export type StoreAccessKarkunResolvers<ContextType = any, ParentType extends ResolversParentTypes['StoreAccessKarkun'] = ResolversParentTypes['StoreAccessKarkun']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cnicNumber?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  contactNumber1?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  imageThumbnailUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  imageUrl?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  parentName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type StoreAccessUserGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['StoreAccessUserGroup'] = ResolversParentTypes['StoreAccessUserGroup']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type StoreOrderResolvers<ContextType = any, ParentType extends ResolversParentTypes['StoreOrder'] = ResolversParentTypes['StoreOrder']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  expectedDeliveryDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lines?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StoreOrderLine']>>>, ParentType, ContextType>;
+  number?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  orderDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  requisitionId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  requisitionNumber?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  vendorName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type StoreOrderLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['StoreOrderLine'] = ResolversParentTypes['StoreOrderLine']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  externalCatalogId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  quantity?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  receivedQuantity?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  unit?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type StorePermissionGroupHolderResolvers<ContextType = any, ParentType extends ResolversParentTypes['StorePermissionGroupHolder'] = ResolversParentTypes['StorePermissionGroupHolder']> = ResolversObject<{
+  groupId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type StorePermissionHoldersResolvers<ContextType = any, ParentType extends ResolversParentTypes['StorePermissionHolders'] = ResolversParentTypes['StorePermissionHolders']> = ResolversObject<{
+  groupName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  groups?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StorePermissionGroupHolder']>>>, ParentType, ContextType>;
+  key?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  users?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StorePermissionUserHolder']>>>, ParentType, ContextType>;
+}>;
+
+export type StorePermissionUserHolderResolvers<ContextType = any, ParentType extends ResolversParentTypes['StorePermissionUserHolder'] = ResolversParentTypes['StorePermissionUserHolder']> = ResolversObject<{
+  displayName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  personId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  username?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type StoreReceiptResolvers<ContextType = any, ParentType extends ResolversParentTypes['StoreReceipt'] = ResolversParentTypes['StoreReceipt']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  deliveryNoteNo?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lines?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['StoreReceiptLine']>>>, ParentType, ContextType>;
+  notes?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  number?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  orderId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  orderNumber?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  receivedBy?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  receivedByPerson?: Resolver<Types.Maybe<ResolversTypes['PersonBasicType']>, ParentType, ContextType>;
+  receivedDate?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  voidReason?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  voidedAt?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type StoreReceiptLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['StoreReceiptLine'] = ResolversParentTypes['StoreReceiptLine']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  externalCatalogId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  orderLineId?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  receivedQuantity?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  rejectedQuantity?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  remarks?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  unit?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
 export type SyncOrgLocationObserversResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['SyncOrgLocationObserversResult'] = ResolversParentTypes['SyncOrgLocationObserversResult']> = ResolversObject<{
   addedCount?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   committeesChecked?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -3451,7 +3631,6 @@ export type UserGroupMemberTypeResolvers<ContextType = any, ParentType extends R
 export type UserGroupTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserGroupType'] = ResolversParentTypes['UserGroupType']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  instances?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   moduleName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   permissions?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
@@ -3466,7 +3645,7 @@ export type UserTypeResolvers<ContextType = any, ParentType extends ResolversPar
   emailVerified?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   groups?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   hasChatAccount?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  instances?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  hasStoreAccess?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isServiceAccount?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isSuperAdmin?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   karkun?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType>;
@@ -4034,6 +4213,7 @@ export type WorkspaceTaskTypeResolvers<ContextType = any, ParentType extends Res
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  AdminKarkunLocationType?: AdminKarkunLocationTypeResolvers<ContextType>;
   Attachment?: AttachmentResolvers<ContextType>;
   AuditLogType?: AuditLogTypeResolvers<ContextType>;
   CityMehfilType?: CityMehfilTypeResolvers<ContextType>;
@@ -4163,6 +4343,9 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PagedSecurityServerProfileType?: PagedSecurityServerProfileTypeResolvers<ContextType>;
   PagedStockAdjustment?: PagedStockAdjustmentResolvers<ContextType>;
   PagedStockItem?: PagedStockItemResolvers<ContextType>;
+  PagedStoreAccessKarkun?: PagedStoreAccessKarkunResolvers<ContextType>;
+  PagedStoreOrders?: PagedStoreOrdersResolvers<ContextType>;
+  PagedStoreReceipts?: PagedStoreReceiptsResolvers<ContextType>;
   PagedUserGroupType?: PagedUserGroupTypeResolvers<ContextType>;
   PagedUserType?: PagedUserTypeResolvers<ContextType>;
   PagedVisitorStayType?: PagedVisitorStayTypeResolvers<ContextType>;
@@ -4256,6 +4439,15 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   SecurityUserGroup?: SecurityUserGroupResolvers<ContextType>;
   StockAdjustment?: StockAdjustmentResolvers<ContextType>;
   StockItem?: StockItemResolvers<ContextType>;
+  StoreAccessKarkun?: StoreAccessKarkunResolvers<ContextType>;
+  StoreAccessUserGroup?: StoreAccessUserGroupResolvers<ContextType>;
+  StoreOrder?: StoreOrderResolvers<ContextType>;
+  StoreOrderLine?: StoreOrderLineResolvers<ContextType>;
+  StorePermissionGroupHolder?: StorePermissionGroupHolderResolvers<ContextType>;
+  StorePermissionHolders?: StorePermissionHoldersResolvers<ContextType>;
+  StorePermissionUserHolder?: StorePermissionUserHolderResolvers<ContextType>;
+  StoreReceipt?: StoreReceiptResolvers<ContextType>;
+  StoreReceiptLine?: StoreReceiptLineResolvers<ContextType>;
   SyncOrgLocationObserversResult?: SyncOrgLocationObserversResultResolvers<ContextType>;
   TeamMemberType?: TeamMemberTypeResolvers<ContextType>;
   TeamType?: TeamTypeResolvers<ContextType>;
@@ -4331,5 +4523,6 @@ export type DirectiveResolvers<ContextType = any> = ResolversObject<{
   checkMehfilKarkunsAccess?: CheckMehfilKarkunsAccessDirectiveResolver<any, any, ContextType>;
   checkMehfilPermissionsAccess?: CheckMehfilPermissionsAccessDirectiveResolver<any, any, ContextType>;
   checkPermissions?: CheckPermissionsDirectiveResolver<any, any, ContextType>;
+  checkStoreAccess?: CheckStoreAccessDirectiveResolver<any, any, ContextType>;
   superAdminOnly?: SuperAdminOnlyDirectiveResolver<any, any, ContextType>;
 }>;

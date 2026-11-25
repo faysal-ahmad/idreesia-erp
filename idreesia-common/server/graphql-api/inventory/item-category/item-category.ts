@@ -15,25 +15,20 @@ type ItemCategory {
 
 extend type Query {
   itemCategoryById(_id: String!, physicalStoreId: String!): ItemCategory
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   itemCategoriesByPhysicalStoreId(physicalStoreId: String!): [ItemCategory]
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA, IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA, IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 }
 
 extend type Mutation {
   createItemCategory(name: String!, physicalStoreId: String!): ItemCategory
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
   
   updateItemCategory(_id: String!, physicalStoreId: String!, name: String!): ItemCategory
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
   
   removeItemCategory(_id: String!, physicalStoreId: String!): Int
-  @checkPermissions(permissions: [IN_MANAGE_SETUP_DATA])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
 }
 `;

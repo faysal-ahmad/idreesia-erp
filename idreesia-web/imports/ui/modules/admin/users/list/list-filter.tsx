@@ -4,8 +4,11 @@ import { message } from '/imports/ui/antd-feedback';
 import { FilterOutlined, SyncOutlined } from '@ant-design/icons';
 
 import { ModuleNames } from 'meteor/idreesia-common/constants';
+import { OrgLocationTypes } from 'meteor/idreesia-common/constants/organization';
 import { values } from 'meteor/idreesia-common/utilities/lodash';
 import { CheckboxGroupField, SelectField } from '/imports/ui/modules/helpers/fields';
+import type { OrgLocationItem } from '/imports/ui/modules/helpers/fields/org-location-select-field';
+import { getOrgLocationFilterField } from '/imports/ui/modules/common/field-helpers';
 
 export interface PageParams {
   showLocked?: string;
@@ -13,6 +16,8 @@ export interface PageParams {
   showActive?: string;
   showInactive?: string;
   moduleAccess?: string;
+  cityLocationId?: string;
+  mehfilLocationId?: string;
   pageIndex?: string | number;
   pageSize?: string | number;
 }
@@ -23,6 +28,9 @@ export interface UserListFilterProps {
   showActive?: string;
   showInactive?: string;
   moduleAccess?: string;
+  cityLocationId?: string;
+  mehfilLocationId?: string;
+  orgLocations?: OrgLocationItem[];
   setPageParams(params: PageParams): void;
   refreshData?: () => void;
 }
@@ -30,6 +38,7 @@ export interface UserListFilterProps {
 interface FormValues {
   status?: string[];
   moduleAccess?: string;
+  orgLocationId?: string;
 }
 
 interface ModuleNameOption {
@@ -38,7 +47,7 @@ interface ModuleNameOption {
 }
 
 interface FilterChip {
-  key: 'status' | 'moduleAccess';
+  key: 'status' | 'moduleAccess' | 'location';
   label: string;
   value: string;
 }
@@ -90,7 +99,14 @@ const sameStatus = (a: string[], b: string[]) =>
 export const getUserFilterChips = (
   props: Pick<
     UserListFilterProps,
-    'showLocked' | 'showUnlocked' | 'showActive' | 'showInactive' | 'moduleAccess'
+    | 'showLocked'
+    | 'showUnlocked'
+    | 'showActive'
+    | 'showInactive'
+    | 'moduleAccess'
+    | 'cityLocationId'
+    | 'mehfilLocationId'
+    | 'orgLocations'
   >
 ): FilterChip[] => {
   const chips: FilterChip[] = [];
@@ -114,14 +130,54 @@ export const getUserFilterChips = (
     });
   }
 
+  const locationId = props.mehfilLocationId || props.cityLocationId;
+  if (locationId) {
+    chips.push({
+      key: 'location',
+      label: 'Location',
+      value:
+        (props.orgLocations ?? []).find(location => location._id === locationId)
+          ?.name || locationId,
+    });
+  }
+
   return chips;
 };
 
 export const UserFilterChips = (props: UserListFilterProps) => {
-  const { setPageParams, showLocked, showUnlocked, showActive, showInactive, moduleAccess } = props;
+  const {
+    setPageParams,
+    showLocked,
+    showUnlocked,
+    showActive,
+    showInactive,
+    moduleAccess,
+    cityLocationId,
+    mehfilLocationId,
+    orgLocations,
+  } = props;
   const chips = useMemo(
-    () => getUserFilterChips({ showLocked, showUnlocked, showActive, showInactive, moduleAccess }),
-    [showLocked, showUnlocked, showActive, showInactive, moduleAccess]
+    () =>
+      getUserFilterChips({
+        showLocked,
+        showUnlocked,
+        showActive,
+        showInactive,
+        moduleAccess,
+        cityLocationId,
+        mehfilLocationId,
+        orgLocations,
+      }),
+    [
+      showLocked,
+      showUnlocked,
+      showActive,
+      showInactive,
+      moduleAccess,
+      cityLocationId,
+      mehfilLocationId,
+      orgLocations,
+    ]
   );
 
   if (chips.length === 0) return null;
@@ -138,6 +194,11 @@ export const UserFilterChips = (props: UserListFilterProps) => {
       return;
     }
 
+    if (key === 'location') {
+      setPageParams({ pageIndex: '0', cityLocationId: '', mehfilLocationId: '' });
+      return;
+    }
+
     setPageParams({ pageIndex: '0', moduleAccess: '' });
   };
 
@@ -149,6 +210,8 @@ export const UserFilterChips = (props: UserListFilterProps) => {
       showActive: 'true',
       showInactive: 'true',
       moduleAccess: '',
+      cityLocationId: '',
+      mehfilLocationId: '',
     });
   };
 
@@ -182,7 +245,18 @@ export const UserFilterChips = (props: UserListFilterProps) => {
 };
 
 const ListFilter = (props: UserListFilterProps) => {
-  const { setPageParams, refreshData, showLocked, showUnlocked, showActive, showInactive, moduleAccess } = props;
+  const {
+    setPageParams,
+    refreshData,
+    showLocked,
+    showUnlocked,
+    showActive,
+    showInactive,
+    moduleAccess,
+    cityLocationId,
+    mehfilLocationId,
+    orgLocations = [],
+  } = props;
   const [form] = Form.useForm<FormValues>();
   const [open, setOpen] = useState(false);
 
@@ -193,19 +267,37 @@ const ListFilter = (props: UserListFilterProps) => {
     showActive,
     showInactive,
     moduleAccess,
+    cityLocationId,
+    mehfilLocationId,
+    orgLocations,
   }).length;
 
   const syncFormValues = () => {
-    form.setFieldsValue({ status, moduleAccess });
+    form.setFieldsValue({
+      status,
+      moduleAccess,
+      orgLocationId: mehfilLocationId || cityLocationId || undefined,
+    });
   };
 
-  const handleFinish = ({ status: nextStatus = [], moduleAccess: nextModuleAccess = '' }: FormValues) => {
+  const handleFinish = ({
+    status: nextStatus = [],
+    moduleAccess: nextModuleAccess = '',
+    orgLocationId,
+  }: FormValues) => {
+    const selectedLocation = orgLocations.find(
+      location => location._id === orgLocationId
+    );
     setPageParams({
       showLocked: nextStatus.indexOf('locked') !== -1 ? 'true' : 'false',
       showUnlocked: nextStatus.indexOf('unlocked') !== -1 ? 'true' : 'false',
       showActive: nextStatus.indexOf('active') !== -1 ? 'true' : 'false',
       showInactive: nextStatus.indexOf('inactive') !== -1 ? 'true' : 'false',
       moduleAccess: nextModuleAccess,
+      cityLocationId:
+        selectedLocation?.type === OrgLocationTypes.CITY ? selectedLocation._id ?? '' : '',
+      mehfilLocationId:
+        selectedLocation?.type === OrgLocationTypes.MEHFIL ? selectedLocation._id ?? '' : '',
       pageIndex: '0',
     });
     setOpen(false);
@@ -252,6 +344,11 @@ const ListFilter = (props: UserListFilterProps) => {
           fieldLabel="Module Access"
           fieldLayout={formItemLayout}
         />
+        {getOrgLocationFilterField(
+          mehfilLocationId || cityLocationId,
+          orgLocations,
+          formItemLayout
+        )}
         <Form.Item style={{ marginBottom: 0 }}>
           <Flex justify="flex-end">
             <Button type="primary" htmlType="submit">

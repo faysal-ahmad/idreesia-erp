@@ -104,6 +104,12 @@ const Permissions = {
   IN_VIEW_PURCHASE_FORMS: 'stores-view-purchase-forms',
   IN_MANAGE_PURCHASE_FORMS: 'stores-manage-purchase-forms',
   IN_APPROVE_PURCHASE_FORMS: 'stores-approve-purchase-forms',
+
+  // Raising requisitions with, and receiving goods from, Purchasing.
+  IN_VIEW_REQUISITIONS: 'stores-view-requisitions',
+  IN_MANAGE_REQUISITIONS: 'stores-manage-requisitions',
+  IN_VIEW_RECEIPTS: 'stores-view-receipts',
+  IN_MANAGE_RECEIPTS: 'stores-manage-receipts',
 };
 
 export default Permissions;

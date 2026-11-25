@@ -15,7 +15,6 @@ import {
   listUserGroupMembers,
   removeUserGroup,
   searchUserGroups,
-  setUserGroupInstanceAccess,
   setUserGroupPermissions,
   updateUserGroup,
 } from './user-groups';
@@ -136,53 +135,6 @@ describe('setUserGroupPermissions', () => {
       'a',
     ]);
     expect(await SecurityLogs.find().countAsync()).toBe(1);
-  });
-});
-
-describe('setUserGroupInstanceAccess', () => {
-  it('saves the instances and logs what was added and removed', async () => {
-    const group = await createUserGroup({ name: 'G' }, user);
-    await setUserGroupInstanceAccess(
-      { _id: group!._id!, instances: ['i1', 'i2'] },
-      user,
-      'test'
-    );
-    const updated = await setUserGroupInstanceAccess(
-      { _id: group!._id!, instances: ['i2', 'i3'] },
-      user,
-      'test'
-    );
-    expect(updated?.instances).toEqual(['i2', 'i3']);
-
-    const logs = await SecurityLogs.find(
-      { groupId: group!._id! },
-      { sort: { operationTime: 1 } }
-    ).fetchAsync();
-    expect(logs.map(log => log.operationType)).toEqual([
-      SecurityOperationType.INSTANCE_ACCESS_CHANGED,
-      SecurityOperationType.INSTANCE_ACCESS_CHANGED,
-    ]);
-    expect(logs[1].operationDetails).toEqual({
-      instancesAdded: ['i3'],
-      instancesRemoved: ['i1'],
-    });
-  });
-
-  it('rolls the instances back when the security log cannot be written', async () => {
-    const group = await createUserGroup({ name: 'G' }, user);
-    vi.spyOn(SecurityLogs, 'insertAsync').mockRejectedValueOnce(
-      new Error('boom')
-    );
-    await expect(
-      setUserGroupInstanceAccess(
-        { _id: group!._id!, instances: ['i1'] },
-        user,
-        'test'
-      )
-    ).rejects.toThrow('boom');
-    expect(
-      (await UserGroups.findOneAsync(group!._id!))?.instances
-    ).toBeUndefined();
   });
 });
 

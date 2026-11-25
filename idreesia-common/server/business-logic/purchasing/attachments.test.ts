@@ -8,6 +8,7 @@ import {
   completeAttachmentUpload,
   createAttachmentUpload,
   createQuote,
+  createRequisition,
   createVendor,
   deleteAttachment,
   deleteQuote,
@@ -28,12 +29,17 @@ beforeEach(async () => {
   vi.clearAllMocks();
   storage.fileInfo.size = 5;
   const vendor = await createVendor({ name: `Attach Co ${Math.random()}` }, user);
+  const requisition = await createRequisition(
+    { title: 'For a quote', lines: [{ description: 'Item', unit: 'pc', quantity: 1 }] },
+    user
+  );
   quoteId = (
     await createQuote(
       {
+        requisitionId: requisition._id,
         vendorId: vendor._id,
         quoteDate: new Date(),
-        lines: [{ description: 'Item', unit: 'pc', quantity: 1, unitPrice: 5 }],
+        lines: [{ requisitionLineId: requisition.lines[0]._id, quantity: 1, unitPrice: 5 }],
       },
       user
     )

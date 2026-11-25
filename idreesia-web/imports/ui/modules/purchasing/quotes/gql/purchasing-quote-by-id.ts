@@ -27,7 +27,8 @@ const PURCHASING_QUOTE_BY_ID: TypedDocumentNode<
       notes
       lines {
         _id
-        catalogItemId
+        requisitionLineId
+        internalCatalogId
         description
         unit
         quantity

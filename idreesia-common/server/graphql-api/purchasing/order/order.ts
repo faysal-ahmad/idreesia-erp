@@ -3,7 +3,9 @@ import gql from 'graphql-tag';
 export default gql`
 type PurchasingOrderLine {
   _id: String
-  catalogItemId: String
+  internalCatalogId: String
+  externalCatalogId: String
+  requisitionLineId: String
   description: String
   unit: String
   quantity: Float
@@ -20,6 +22,9 @@ type PurchasingOrder {
   vendor: PurchasingVendor
   requisitionId: String
   quoteId: String
+  # 'purchasing' or 'store' (the store of its requisition).
+  source: String
+  externalSourceId: String
   orderDate: String
   expectedDeliveryDate: String
   deliveryAddress: String
@@ -67,6 +72,8 @@ extend type Query {
     statuses: [String]
     vendorId: String
     requisitionId: String
+    # 'purchasing' or 'store'
+    source: String
     fromDate: String
     toDate: String
     pageIndex: Int
@@ -76,20 +83,10 @@ extend type Query {
 }
 
 extend type Mutation {
-  createPurchasingOrder(
-    vendorId: String!
-    orderDate: String!
-    expectedDeliveryDate: String
-    deliveryAddress: String
-    paymentTermsDays: Int
-    notes: String
-    discount: Float
-    shipping: Float
-    lines: [PurchasingPricedLineInput!]!
-  ): PurchasingOrder
-    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
-
+  # Orders are only made from a requisition (or a quote for one).
   # Only a draft can be edited. version is the version that was loaded.
+  # The lines can't be added, removed or changed to another item; the price,
+  # tax and (downwards) quantity can change.
   updatePurchasingOrder(
     _id: String!
     version: Int!

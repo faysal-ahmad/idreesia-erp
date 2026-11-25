@@ -1,1 +1,2 @@
-export { default as PAGED_HR_KARKUNS } from './paged-hr-karkuns';
+export { default as PAGED_ADMIN_KARKUNS } from './paged-admin-karkuns';
+export { default as ADMIN_KARKUN_LOCATIONS } from './admin-karkun-locations';

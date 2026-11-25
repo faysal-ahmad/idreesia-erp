@@ -37,16 +37,13 @@ type PagedStockItem {
 
 extend type Query {
   pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS, IN_VIEW_REQUISITIONS, IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId", returnType: "paged-list")
 
   stockItemById(_id: String!, physicalStoreId: String!): StockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS, IN_VIEW_REQUISITIONS, IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   stockItemsById(_ids: [String]!, physicalStoreId: String!): [StockItem]
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS, IN_VIEW_REQUISITIONS, IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 }
 
 extend type Mutation {
@@ -60,8 +57,7 @@ extend type Mutation {
     minStockLevel: Float
     currentStockLevel: Float
   ): StockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 
   updateStockItem(
     _id: String!
@@ -73,27 +69,21 @@ extend type Mutation {
     categoryId: String!
     minStockLevel: Float
   ): StockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 
   verifyStockItemLevel(_id: String!, physicalStoreId: String!): StockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 
   removeStockItem(_id: String!, physicalStoreId: String!): Int
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 
   setStockItemImage(_id: String!, physicalStoreId: String!, imageData: String!): StockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 
   mergeStockItems(_idToKeep: String!, _idsToMerge: [String]!, physicalStoreId: String!): StockItem
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 
   recalculateStockLevels(_ids: [String]!, physicalStoreId: String!): [StockItem]
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ITEMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
 }
 `;

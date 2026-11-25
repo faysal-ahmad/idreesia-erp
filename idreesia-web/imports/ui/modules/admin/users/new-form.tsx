@@ -116,7 +116,6 @@ const NewForm = ({ history }: Props) => {
         <KarkunSelectionInputField
           fieldName="karkun"
           fieldLabel="Karkun Name"
-          showMsKarkunsList
         />
       </>
     ),

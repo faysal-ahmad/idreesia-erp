@@ -6,3 +6,5 @@ export { default as PhysicalStores } from "./physical-stores";
 export { default as PurchaseForms } from "./purchase-forms";
 export { default as StockItems } from "./stock-items";
 export { default as StockAdjustments } from "./stock-adjustments";
+export { default as PhysicalStoreAccess } from "./physical-store-access";
+export type { PhysicalStoreAccessDocument } from "./physical-store-access";

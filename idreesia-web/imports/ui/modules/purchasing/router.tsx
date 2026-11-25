@@ -29,7 +29,6 @@ const Router = () => (
     <Route path={paths.quoteEditPath()} component={QuotePage} />
     <Route path={paths.quotesPath} component={QuotesList} />
 
-    <Route path={paths.orderNewPath} component={OrderPage} />
     <Route path={paths.orderPrintPath()} component={OrderPrint} />
     <Route path={paths.orderEditPath()} component={OrderPage} />
     <Route path={paths.ordersPath} component={OrdersList} />

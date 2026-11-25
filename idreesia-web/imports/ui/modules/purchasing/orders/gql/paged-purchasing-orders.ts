@@ -9,8 +9,8 @@ const PAGED_PURCHASING_ORDERS: TypedDocumentNode<
   PagedPurchasingOrdersQuery,
   PagedPurchasingOrdersQueryVariables
 > = gql`
-  query pagedPurchasingOrders($search: String, $status: String, $vendorId: String, $requisitionId: String, $fromDate: String, $toDate: String, $pageIndex: Int, $pageSize: Int) {
-    pagedPurchasingOrders(search: $search, status: $status, vendorId: $vendorId, requisitionId: $requisitionId, fromDate: $fromDate, toDate: $toDate, pageIndex: $pageIndex, pageSize: $pageSize) {
+  query pagedPurchasingOrders($search: String, $status: String, $vendorId: String, $requisitionId: String, $source: String, $fromDate: String, $toDate: String, $pageIndex: Int, $pageSize: Int) {
+    pagedPurchasingOrders(search: $search, status: $status, vendorId: $vendorId, requisitionId: $requisitionId, source: $source, fromDate: $fromDate, toDate: $toDate, pageIndex: $pageIndex, pageSize: $pageSize) {
       totalResults
       data {
         _id
@@ -25,6 +25,8 @@ const PAGED_PURCHASING_ORDERS: TypedDocumentNode<
         total
         status
         requisitionId
+        source
+        externalSourceId
         version
       }
     }

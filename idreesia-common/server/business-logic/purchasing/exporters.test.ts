@@ -22,7 +22,11 @@ import {
 import {
   approveOrder,
   createInvoice,
-  createOrder,
+  createOrderFromRequisition,
+  createRequisition,
+  approveRequisition,
+  submitRequisition,
+  updateOrder,
   createVendor,
   getOrder,
   postPayment,
@@ -52,8 +56,17 @@ beforeEach(async () => {
   await PurchasingOrders.removeAsync({});
 
   vendorId = (await createVendor({ name: `Export Co ${Math.random()}` }, user))._id;
-  const order = await createOrder(
-    { vendorId, orderDate: day(2041, 1, 1), lines: [{ description: 'Item', unit: 'pc', quantity: 10, unitPrice: 10 }] },
+  const requisition = await createRequisition(
+    { title: 'R', lines: [{ description: 'Item', unit: 'pc', quantity: 10, estimatedUnitPrice: 10 }] },
+    user
+  );
+  await submitRequisition(requisition._id, user);
+  await approveRequisition(requisition._id, user);
+  const draft = await createOrderFromRequisition(requisition._id, vendorId, user);
+  const order = await updateOrder(
+    draft._id,
+    draft.version,
+    { vendorId, orderDate: day(2041, 1, 1), lines: draft.lines },
     user
   );
   await submitOrder(order._id, user);
@@ -64,11 +77,10 @@ beforeEach(async () => {
     await createInvoice(
       {
         vendorId,
-        orderId: order._id,
         vendorInvoiceNo: 'X-1',
         invoiceDate: day(2041, 1, 5),
         dueDate: day(2041, 2, 5),
-        lines: [{ orderLineId: approved.lines[0]._id, description: 'Item', unit: 'pc', quantity: 10, unitPrice: 10 }],
+        lines: [{ orderId: order._id, orderLineId: approved.lines[0]._id, description: 'Item', unit: 'pc', quantity: 10, unitPrice: 10 }],
       },
       user
     )

@@ -12,7 +12,6 @@ import {
   createUser,
   recordUserLogin,
   resetUserPassword,
-  setUserInstanceAccess,
   setUserPermissions,
   updateUser,
 } from './user-mutations';
@@ -400,33 +399,6 @@ describe('setUserPermissions', () => {
       setUserPermissions({ userId: 'target', permissions: ['b'] }, caller, 'test')
     ).rejects.toThrow('boom');
     expect((await Users.findOneAsync('target'))?.permissions).toEqual(['a']);
-  });
-});
-
-describe('setUserInstanceAccess', () => {
-  it('saves the instances and logs what was added and removed', async () => {
-    await Users.insertAsync({ _id: 'target', instances: ['i1', 'i2'] });
-    const updated = await setUserInstanceAccess(
-      { userId: 'target', instances: ['i2', 'i3'] },
-      caller,
-      'test'
-    );
-    expect(updated.instances).toEqual(['i2', 'i3']);
-    expect((await logsOf('target'))[0]).toMatchObject({
-      operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
-      operationDetails: { instancesAdded: ['i3'], instancesRemoved: ['i1'] },
-    });
-  });
-
-  it('rolls the instances back when the security log cannot be written', async () => {
-    await Users.insertAsync({ _id: 'target', instances: ['i1'] });
-    vi.spyOn(SecurityLogs, 'insertAsync').mockRejectedValueOnce(
-      new Error('boom')
-    );
-    await expect(
-      setUserInstanceAccess({ userId: 'target', instances: [] }, caller, 'test')
-    ).rejects.toThrow('boom');
-    expect((await Users.findOneAsync('target'))?.instances).toEqual(['i1']);
   });
 });
 

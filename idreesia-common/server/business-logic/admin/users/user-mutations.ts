@@ -442,38 +442,6 @@ export async function setUserPermissions(
   });
 }
 
-export async function setUserInstanceAccess(
-  { userId, instances }: { userId: string; instances: string[] },
-  user: UserRef,
-  dataSource: string,
-  dataSourceDetail: string | null = null
-): Promise<MappedUser> {
-  return runInTransaction(async () => {
-    await assertCanManageUser(userId, user);
-    const existingUser = await findOneUser(userId);
-    await Users.updateAsync(userId, { $set: { instances } });
-
-    // Create a security log
-    const instancesAdded = difference(instances, existingUser.instances || []);
-    const instancesRemoved = difference(existingUser.instances || [], instances);
-
-    await SecurityLogs.insertAsync({
-      userId,
-      operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
-      operationBy: user._id,
-      operationTime: new Date(),
-      operationDetails: {
-        instancesAdded,
-        instancesRemoved,
-      },
-      dataSource,
-      dataSourceDetail,
-    });
-
-    return findOneUser(userId);
-  });
-}
-
 /**
  * Creates (or links) the chat account for an ERP user. Needs a saved user
  * name and display name: the user name becomes the chat user name and the

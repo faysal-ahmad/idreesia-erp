@@ -26,7 +26,7 @@ import {
 } from '../layout';
 import { AccountPaths } from './paths';
 
-type Step = 'idle' | 'enter' | 'confirm';
+type Step = 'idle' | 'code' | 'enter' | 'confirm';
 
 interface CodeFormValues {
   code: string;
@@ -80,16 +80,14 @@ export const QuickLoginScreen = () => {
     form.resetFields();
   };
 
+  const handleStart = () => setStep(twoFactor ? 'code' : 'enter');
+
+  const handleCodeFinish = ({ code: entered }: CodeFormValues) => {
+    setCode(entered.trim());
+    setStep('enter');
+  };
+
   const handleEnterFilled = (value: string) => {
-    if (twoFactor) {
-      const entered = String(form.getFieldValue('code') ?? '').trim();
-      if (!entered) {
-        showWarning('Enter the code from your authenticator app first.');
-        setPin('');
-        return;
-      }
-      setCode(entered);
-    }
     setFirstPin(value);
     setPin('');
     setStep('confirm');
@@ -173,17 +171,39 @@ export const QuickLoginScreen = () => {
   } else if (step !== 'idle') {
     content = (
       <>
-        {twoFactor && step === 'enter' && (
-          <Form form={form} layout="vertical" mode="card">
-            <Form.Item
-              label="Verification code"
-              name="code"
-              rules={[{ required: true, message: 'Please enter the code from your authenticator app.' }]}
+        {step === 'code' ? (
+          <>
+            <Form
+              form={form}
+              layout="vertical"
+              mode="card"
+              onFinish={handleCodeFinish}
+              footer={
+                <Button block color="primary" size="large" type="submit">
+                  Continue
+                </Button>
+              }
             >
-              <Input autoComplete="one-time-code" inputMode="numeric" maxLength={6} clearable />
-            </Form.Item>
-          </Form>
-        )}
+              <Form.Header>
+                Enter the current 6-digit code from your authenticator app. Wait for a
+                new code if you just used one to sign in.
+              </Form.Header>
+              <Form.Item
+                label="Verification code"
+                name="code"
+                rules={[{ required: true, message: 'Please enter the verification code.' }]}
+              >
+                <Input autoFocus autoComplete="one-time-code" inputMode="numeric" maxLength={6} clearable />
+              </Form.Item>
+            </Form>
+            <div className="two-factor-actions">
+              <Button block fill="none" onClick={reset}>
+                Cancel
+              </Button>
+            </div>
+          </>
+        ) : (
+        <>
         <p className="pin-setup-label">
           {step === 'enter'
             ? `Choose a ${TRUSTED_DEVICE_PIN_LENGTH}-digit PIN.`
@@ -203,6 +223,8 @@ export const QuickLoginScreen = () => {
             Cancel
           </Button>
         </div>
+        </>
+        )}
       </>
     );
   } else {
@@ -218,7 +240,7 @@ export const QuickLoginScreen = () => {
             block
             color="primary"
             size="large"
-            onClick={() => setStep('enter')}
+            onClick={handleStart}
           >
             {isThisDeviceTrusted ? 'Change PIN' : 'Turn on quick login'}
           </Button>

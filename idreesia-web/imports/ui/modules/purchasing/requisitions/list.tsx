@@ -3,6 +3,8 @@ import { Link, type RouteComponentProps } from 'react-router-dom';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
 
+import useReferencePhysicalStores from 'meteor/idreesia-common/hooks/reference-data/use-reference-physical-stores';
+
 import { default as paths } from '../submodule-paths';
 import DocumentList from '../common/document-list';
 import { formatDate, formatMoney } from '../common/format';
@@ -16,11 +18,15 @@ export const REQUISITION_STATUSES = [
   'approved',
   'rejected',
   'ordered',
+  'closed',
   'cancelled',
 ];
 
 const List = (props: RouteComponentProps) => {
   const { can } = usePurchasingAccess();
+  const { referencePhysicalStores } = useReferencePhysicalStores();
+  const storeName = (id?: string | null) =>
+    referencePhysicalStores?.find(store => store?._id === id)?.name ?? 'Store';
 
   const columns = [
     {
@@ -55,6 +61,14 @@ const List = (props: RouteComponentProps) => {
       render: formatMoney,
     },
     {
+      title: 'Source',
+      dataIndex: 'source',
+      key: 'source',
+      width: 110,
+      render: (source: string, record: { externalSourceId?: string | null }) =>
+        source === 'store' ? storeName(record.externalSourceId) : 'Purchasing',
+    },
+    {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
@@ -73,6 +87,7 @@ const List = (props: RouteComponentProps) => {
       noun="requisitions"
       searchPlaceholder="Search number or title"
       statuses={REQUISITION_STATUSES}
+      showSourceFilter
       newButton={
         can(Permissions.PURCHASING_MANAGE_REQUISITIONS)
           ? {

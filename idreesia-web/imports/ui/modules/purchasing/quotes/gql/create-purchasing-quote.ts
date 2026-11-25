@@ -9,7 +9,7 @@ const CREATE_PURCHASING_QUOTE: TypedDocumentNode<
   CreatePurchasingQuoteMutation,
   CreatePurchasingQuoteMutationVariables
 > = gql`
-  mutation createPurchasingQuote($requisitionId: String, $vendorId: String!, $reference: String, $quoteDate: String!, $validUntil: String, $notes: String, $lines: [PurchasingPricedLineInput!]!) {
+  mutation createPurchasingQuote($requisitionId: String!, $vendorId: String!, $reference: String, $quoteDate: String!, $validUntil: String, $notes: String, $lines: [PurchasingPricedLineInput!]!) {
     createPurchasingQuote(requisitionId: $requisitionId, vendorId: $vendorId, reference: $reference, quoteDate: $quoteDate, validUntil: $validUntil, notes: $notes, lines: $lines) {
       _id
     }

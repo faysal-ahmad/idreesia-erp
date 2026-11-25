@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { type RouteComponentProps } from 'react-router-dom';
 import { parse } from 'query-string';
 import { useMutation, useQuery } from '@apollo/client/react';
@@ -32,7 +32,7 @@ import TotalsSummary from '../common/totals-summary';
 import usePurchasingAccess from '../common/use-purchasing-access';
 import VendorSelect from '../common/vendor-select';
 import { CREATE_PURCHASING_ORDER_FROM_QUOTE } from '../orders/gql';
-import { PAGED_PURCHASING_REQUISITIONS } from '../requisitions/gql';
+import { PAGED_PURCHASING_REQUISITIONS, PURCHASING_REQUISITION_BY_ID } from '../requisitions/gql';
 import { default as paths } from '../submodule-paths';
 import {
   CREATE_PURCHASING_QUOTE,
@@ -62,12 +62,36 @@ const QuotePage = ({ match, history, location }: RouteComponentProps<{ quoteId?:
   const presetRequisitionId = String(parse(location.search).requisitionId ?? '') || undefined;
   const { can } = usePurchasingAccess();
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
+  const [quoteForm] = Form.useForm<FormValues>();
+  const chosenRequisitionId = Form.useWatch('requisitionId', quoteForm);
+  const requisitionId = (isNew ? chosenRequisitionId : undefined) ?? undefined;
 
   const { data, loading } = useQuery(PURCHASING_QUOTE_BY_ID, {
     variables: { _id: id ?? '' },
     skip: isNew,
   });
   const quote = data?.purchasingQuoteById;
+  // A quote prices lines of its requisition.
+  const requisitionData = useQuery(PURCHASING_REQUISITION_BY_ID, {
+    variables: { _id: (isNew ? requisitionId : quote?.requisitionId) ?? '' },
+    skip: !(isNew ? requisitionId : quote?.requisitionId),
+  });
+  const requisition = requisitionData.data?.purchasingRequisitionById;
+  const requisitionLines = (requisition?.lines ?? []).filter((l) => l?._id);
+
+  // A new quote starts with every line of the chosen requisition to be priced.
+  useEffect(() => {
+    if (!isNew || !requisition?._id) return;
+    quoteForm.setFieldValue(
+      'lines',
+      requisitionLines.map((l) => ({
+        requisitionLineId: l!._id,
+        description: l!.description,
+        unit: l!.unit,
+        quantity: l!.quantity,
+      }))
+    );
+  }, [isNew, requisition?._id]);
 
   const [createQuote] = useMutation(CREATE_PURCHASING_QUOTE, { refetchQueries: REFETCH });
   const [updateQuote] = useMutation(UPDATE_PURCHASING_QUOTE, { refetchQueries: REFETCH });
@@ -97,7 +121,7 @@ const QuotePage = ({ match, history, location }: RouteComponentProps<{ quoteId?:
 
   const handleFinish = async (values: FormValues) => {
     const common = {
-      requisitionId: values.requisitionId,
+      requisitionId: values.requisitionId!,
       vendorId: values.vendorId!,
       reference: values.reference,
       quoteDate: toDateInput(values.quoteDate)!,
@@ -125,10 +149,11 @@ const QuotePage = ({ match, history, location }: RouteComponentProps<{ quoteId?:
 
   const form = (
     <Form
+      form={quoteForm}
       key={`${id ?? 'new'}-${quote?.version ?? 0}`}
       layout="horizontal"
       initialValues={{
-        lines: isNew ? [{ quantity: 1 }] : toLineFormValues(quote?.lines),
+        lines: isNew ? [] : toLineFormValues(quote?.lines),
         vendorId: quote?.vendorId,
         requisitionId: quote?.requisitionId ?? (isNew ? presetRequisitionId : undefined),
       }}
@@ -154,14 +179,22 @@ const QuotePage = ({ match, history, location }: RouteComponentProps<{ quoteId?:
                 >
                   <VendorSelect selected={quote?.vendor} disabled={!editable} allowClear={false} />
                 </Form.Item>
-                <Form.Item name="requisitionId" label="Requisition" labelCol={{ span: 6 }} wrapperCol={{ span: 14 }}>
+                <Form.Item
+                  name="requisitionId"
+                  label="Requisition"
+                  rules={[{ required: true, message: 'Please choose the requisition this quote is for.' }]}
+                  labelCol={{ span: 6 }}
+                  wrapperCol={{ span: 14 }}
+                >
                   <RecordSelect
                     query={PAGED_PURCHASING_REQUISITIONS}
                     dataKey="pagedPurchasingRequisitions"
-                    filterRow={(r) => r.status !== 'cancelled'}
+                    selected={requisition}
+                    filterRow={(r) => r.status === 'approved' || r.status === 'ordered'}
                     labelOf={(r) => (r.number ? `${r.number} - ${r.title}` : '')}
-                    placeholder="Optional: the requisition this quote is for"
-                    disabled={!editable}
+                    placeholder="The approved requisition this quote is for"
+                    disabled={!isNew}
+                    allowClear={false}
                   />
                 </Form.Item>
                 <InputTextField
@@ -195,7 +228,7 @@ const QuotePage = ({ match, history, location }: RouteComponentProps<{ quoteId?:
             forceRender: true,
             children: editable ? (
               <>
-                <LineItemsEditor variant="priced" />
+                <LineItemsEditor variant="priced" requisitionLines={requisitionLines as any[]} />
                 <Form.Item noStyle shouldUpdate>
                   {({ getFieldValue }) => (
                     <TotalsSummary

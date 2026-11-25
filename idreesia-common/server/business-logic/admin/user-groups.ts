@@ -32,11 +32,6 @@ interface PermissionsValues {
   permissions: string[];
 }
 
-interface InstanceAccessValues {
-  _id: string;
-  instances: string[];
-}
-
 export async function searchUserGroups(queryString: string) {
   const params = parse(queryString);
   const pipeline: Record<string, unknown>[] = [];
@@ -202,40 +197,6 @@ export async function setUserGroupPermissions(
       operationDetails: {
         permissionsAdded,
         permissionsRemoved,
-      },
-      dataSource,
-      dataSourceDetail,
-    });
-
-    return UserGroups.findOneAsync(_id);
-  });
-}
-
-export async function setUserGroupInstanceAccess(
-  { _id, instances }: InstanceAccessValues,
-  user: UserRef,
-  dataSource: string,
-  dataSourceDetail: string | null = null
-) {
-  return runInTransaction(async () => {
-    const existingGroup = await UserGroups.findOneAsync(_id);
-    await UserGroups.updateAsync(_id, { $set: { instances } });
-
-    // Create a security log
-    const instancesAdded = difference(instances, existingGroup?.instances || []);
-    const instancesRemoved = difference(
-      existingGroup?.instances || [],
-      instances
-    );
-
-    await SecurityLogs.insertAsync({
-      groupId: _id,
-      operationType: SecurityOperationType.INSTANCE_ACCESS_CHANGED,
-      operationBy: user._id,
-      operationTime: new Date(),
-      operationDetails: {
-        instancesAdded,
-        instancesRemoved,
       },
       dataSource,
       dataSourceDetail,

@@ -7,17 +7,20 @@ import type {
   GraphQLResolveInfo,
 } from 'graphql';
 
+import { hasAnyStorePermission } from 'meteor/idreesia-common/server/business-logic/inventory/store-access';
 import { hasOnePermission } from 'meteor/idreesia-common/server/graphql-api/security';
 import { Permissions as PermissionConstants } from 'meteor/idreesia-common/constants';
 
 type DirectiveSchema = Parameters<typeof mapSchema>[0];
 
 interface ResolverContext {
-  user?: Parameters<typeof hasOnePermission>[0];
+  user?: Parameters<typeof hasOnePermission>[0] &
+    Parameters<typeof hasAnyStorePermission>[0];
 }
 
 interface CheckPermissionsDirectiveArgs {
   permissions?: string[];
+  anyStorePermissions?: string[];
   dataFieldName?: string;
 }
 
@@ -37,7 +40,11 @@ export default function CheckPermissionsDirective(schema: DirectiveSchema) {
           unknown,
           ResolverContext
         >;
-        const { permissions = [], dataFieldName = 'data' } = directive;
+        const {
+          permissions = [],
+          anyStorePermissions = [],
+          dataFieldName = 'data',
+        } = directive;
 
         fieldConfig.resolve = async (
           source: unknown,
@@ -47,20 +54,27 @@ export default function CheckPermissionsDirective(schema: DirectiveSchema) {
         ) => {
           const { user } = context;
 
-          const permissionValues = permissions.map(permission => {
-            const permissionValue = (
-              PermissionConstants as Record<string, string>
-            )[permission];
-            if (!permissionValue) {
-              throw new Error(
-                `Invalid permission ${permission} specified for ${info.fieldName}`
-              );
-            }
+          const toValues = (names: string[]) =>
+            names.map(permission => {
+              const permissionValue = (
+                PermissionConstants as Record<string, string>
+              )[permission];
+              if (!permissionValue) {
+                throw new Error(
+                  `Invalid permission ${permission} specified for ${info.fieldName}`
+                );
+              }
 
-            return permissionValue;
-          });
+              return permissionValue;
+            });
+          const permissionValues = toValues(permissions);
+          const storePermissionValues = toValues(anyStorePermissions);
 
-          if (hasOnePermission(user, permissionValues) === false) {
+          const allowed =
+            hasOnePermission(user, permissionValues) ||
+            (storePermissionValues.length > 0 &&
+              (await hasAnyStorePermission(user, storePermissionValues)));
+          if (!allowed) {
             if (info.parentType.name === 'Query') {
               if (info.fieldName.startsWith('paged')) {
                 return {

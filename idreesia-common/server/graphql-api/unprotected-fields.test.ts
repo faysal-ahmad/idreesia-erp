@@ -14,7 +14,7 @@ import { parse } from 'graphql';
 
 const PROTECTION_DIRECTIVES = [
   'checkPermissions',
-  'checkInstanceAccess',
+  'checkStoreAccess',
   'checkCommitteeAccess',
   'checkDutiesAttendanceAccess',
   'checkMehfilDetailsAccess',
@@ -123,7 +123,7 @@ describe('unprotected Query and Mutation fields', () => {
     const unlisted = [...unprotected].filter(key => !(key in ALLOWED)).sort();
     expect(
       unlisted,
-      `These fields have no directive. Add @checkPermissions, @checkInstanceAccess, @checkCommitteeAccess or @superAdminOnly, or add the field to ALLOWED with the reason it is open: ${unlisted.join(', ')}`
+      `These fields have no directive. Add @checkPermissions, @checkStoreAccess, @checkCommitteeAccess or @superAdminOnly, or add the field to ALLOWED with the reason it is open: ${unlisted.join(', ')}`
     ).toEqual([]);
   });
 

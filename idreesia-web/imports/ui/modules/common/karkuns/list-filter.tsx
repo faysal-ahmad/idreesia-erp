@@ -13,6 +13,7 @@ import { message } from '/imports/ui/antd-feedback';
 import { FilterOutlined, SyncOutlined } from '@ant-design/icons';
 
 import { Formats } from 'meteor/idreesia-common/constants';
+import { OrgLocationTypes } from 'meteor/idreesia-common/constants/organization';
 import { startCase } from 'meteor/idreesia-common/utilities/lodash';
 
 import {
@@ -22,16 +23,14 @@ import {
   getBloodGroupFilterField,
   getLastTarteebFilterField,
   getMehfilDutyFilterField,
-  getCityMehfilFilterField,
+  getOrgLocationFilterField,
   getEhadKarkunFilterField,
   getUserAccountFilterField,
   getRegionFilterField,
   getUpdatedBetweenFilterField,
-  type CityLookupItem,
-  type FieldValue,
   type LookupItem,
-  type MehfilLookupItem,
 } from '../field-helpers';
+import type { OrgLocationItem } from '/imports/ui/modules/helpers/fields/org-location-select-field';
 
 export interface PageParams {
   pageIndex: string;
@@ -62,7 +61,7 @@ interface FilterFormValues {
   dutyShiftId?: string;
   userAccount?: string;
   ehadKarkun?: string;
-  cityMehfilLocationIds?: [string, string] | null;
+  orgLocationId?: string | null;
   region?: string;
   updatedBetween?: [dayjs.Dayjs | null, dayjs.Dayjs | null] | null;
 }
@@ -71,8 +70,7 @@ export interface Props {
   setPageParams(params: PageParams): void;
   refreshData?: () => Promise<unknown>;
   mehfilDuties?: LookupItem[];
-  cities?: CityLookupItem[];
-  cityMehfils?: MehfilLookupItem[];
+  orgLocations?: OrgLocationItem[];
   regions?: string[];
   name?: string | null;
   cnicNumber?: string;
@@ -188,8 +186,7 @@ type ChipInputs = Pick<
   | 'region'
   | 'updatedBetween'
   | 'mehfilDuties'
-  | 'cities'
-  | 'cityMehfils'
+  | 'orgLocations'
 >;
 
 export const getKarkunsFilterChips = ({
@@ -206,8 +203,7 @@ export const getKarkunsFilterChips = ({
   region,
   updatedBetween,
   mehfilDuties = [],
-  cities = [],
-  cityMehfils = [],
+  orgLocations = [],
 }: ChipInputs): FilterChip[] => {
   const chips: FilterChip[] = [];
 
@@ -251,16 +247,14 @@ export const getKarkunsFilterChips = ({
     });
   }
   if (hasFilterValue(cityLocationId) || hasFilterValue(mehfilLocationId)) {
-    const cityName = cities.find(city => city._id === cityLocationId)?.name;
-    const mehfilName = cityMehfils.find(
-      mehfil => mehfil._id === mehfilLocationId
+    const locationId = mehfilLocationId || cityLocationId;
+    const locationName = orgLocations.find(
+      location => location._id === locationId
     )?.name;
     chips.push({
       key: 'cityMehfil',
-      label: 'City/Mehfil',
-      value:
-        [cityName, mehfilName].filter(Boolean).join(' / ') ||
-        [cityLocationId, mehfilLocationId].filter(Boolean).join(' / '),
+      label: 'Location',
+      value: locationName || String(locationId),
     });
   }
   if (hasFilterValue(region)) {
@@ -290,8 +284,7 @@ export const KarkunsFilterChips = (props: Props) => {
     region,
     updatedBetween,
     mehfilDuties,
-    cities,
-    cityMehfils,
+    orgLocations,
   } = props;
 
   const chips = useMemo(
@@ -310,8 +303,7 @@ export const KarkunsFilterChips = (props: Props) => {
         region,
         updatedBetween,
         mehfilDuties,
-        cities,
-        cityMehfils,
+        orgLocations,
       }),
     [
       name,
@@ -327,8 +319,7 @@ export const KarkunsFilterChips = (props: Props) => {
       region,
       updatedBetween,
       mehfilDuties,
-      cities,
-      cityMehfils,
+      orgLocations,
     ]
   );
 
@@ -432,8 +423,7 @@ const ListFilter = ({
   showUpdatedBetweenFilter = true,
 
   mehfilDuties = [],
-  cities = [],
-  cityMehfils = [],
+  orgLocations = [],
   regions = [],
 }: Props) => {
   const [form] = Form.useForm<FilterFormValues>();
@@ -453,8 +443,7 @@ const ListFilter = ({
     region,
     updatedBetween,
     mehfilDuties,
-    cities,
-    cityMehfils,
+    orgLocations,
   }).length;
 
   const syncFormValues = () => {
@@ -476,16 +465,16 @@ const ListFilter = ({
       dutyId: dutyId ?? undefined,
       userAccount: userAccount ?? undefined,
       ehadKarkun: ehadKarkun ?? undefined,
-      cityMehfilLocationIds:
-        cityLocationId || mehfilLocationId
-          ? ([cityLocationId, mehfilLocationId].filter(Boolean) as [string, string])
-          : null,
+      orgLocationId: mehfilLocationId || cityLocationId || undefined,
       region: region ?? undefined,
       updatedBetween: updatedBetweenValue,
     });
   };
 
   const handleFinish = (values: FilterFormValues) => {
+    const selectedLocation = orgLocations.find(
+      location => location._id === values.orgLocationId
+    );
     setPageParams({
       pageIndex: '0',
       name: values.name,
@@ -498,8 +487,14 @@ const ListFilter = ({
       dutyShiftId: values.dutyShiftId,
       userAccount: values.userAccount,
       ehadKarkun: values.ehadKarkun,
-      cityLocationId: values.cityMehfilLocationIds ? values.cityMehfilLocationIds[0] : null,
-      mehfilLocationId: values.cityMehfilLocationIds ? values.cityMehfilLocationIds[1] : null,
+      cityLocationId:
+        selectedLocation?.type === OrgLocationTypes.CITY
+          ? selectedLocation._id
+          : null,
+      mehfilLocationId:
+        selectedLocation?.type === OrgLocationTypes.MEHFIL
+          ? selectedLocation._id
+          : null,
       region: values.region,
       updatedBetween: JSON.stringify([
         values.updatedBetween?.[0]
@@ -539,10 +534,9 @@ const ListFilter = ({
           : null}
         {showEhadKarkunFilter ? getEhadKarkunFilterField(ehadKarkun) : null}
         {showCityMehfilFilter
-          ? getCityMehfilFilterField(
-              [cityLocationId, mehfilLocationId] as FieldValue,
-              cities,
-              cityMehfils
+          ? getOrgLocationFilterField(
+              mehfilLocationId || cityLocationId,
+              orgLocations
             )
           : null}
         {showRegionFilter ? getRegionFilterField(region, regions) : null}

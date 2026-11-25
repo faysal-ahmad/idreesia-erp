@@ -35,6 +35,8 @@ export function buildUserSearchPipeline(
     moduleAccess,
     serviceAccounts,
     name,
+    cityLocationId,
+    mehfilLocationId,
   } = params;
 
   // Service accounts are listed on their own page and kept off the Users page.
@@ -115,6 +117,31 @@ export function buildUserSearchPipeline(
     pipeline.push({
       $match: { $or: [{ username: regex }, { 'profile.name': regex }] },
     });
+  }
+
+  // The location is the one of the karkun or employee the user is linked to.
+  if (cityLocationId || mehfilLocationId) {
+    const personMatch: LooseRecord = {};
+    if (cityLocationId) {
+      personMatch['person.karkunData.cityLocationId'] = { $eq: cityLocationId };
+    }
+    if (mehfilLocationId) {
+      personMatch['person.karkunData.mehfilLocationId'] = {
+        $eq: mehfilLocationId,
+      };
+    }
+    pipeline.push(
+      {
+        $lookup: {
+          from: 'common-people',
+          localField: 'personId',
+          foreignField: '_id',
+          as: 'person',
+        },
+      },
+      { $match: personMatch },
+      { $project: { person: 0 } }
+    );
   }
 
   return pipeline;

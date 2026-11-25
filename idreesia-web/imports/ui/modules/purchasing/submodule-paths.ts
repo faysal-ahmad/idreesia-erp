@@ -19,7 +19,6 @@ export default class SubModulePaths {
   }
 
   static ordersPath = `${ModulePaths.purchasing}/orders`;
-  static orderNewPath = `${SubModulePaths.ordersPath}/new`;
   static orderEditPath(id = ':orderId') {
     return `${SubModulePaths.ordersPath}/${id}`;
   }

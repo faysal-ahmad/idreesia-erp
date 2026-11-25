@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { type RouteComponentProps } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Form } from 'antd';
+import { Form, Tabs } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
-import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
+import { useBreadcrumbs, useQueryParams } from 'meteor/idreesia-common/hooks/common';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import {
   InputTextField,
@@ -11,6 +11,7 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 
+import AccessTab from './access-tab';
 import {
   ADMIN_PHYSICAL_STORE_BY_ID,
   UPDATE_PHYSICAL_STORE,
@@ -23,10 +24,21 @@ interface FormValues {
 
 type Props = RouteComponentProps<{ physicalStoreId: string }>;
 
-const EditForm = ({ match, history }: Props) => {
+const TAB_GENERAL = 'general';
+const TAB_ACCESS = 'access';
+
+const EditForm = ({ match, location, history }: Props) => {
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const { physicalStoreId } = match.params;
   useBreadcrumbs(['Admin', 'Setup', 'Physical Stores', 'Edit']);
+  const { queryParams, setPageParams } = useQueryParams({
+    history,
+    location,
+    paramNames: ['active-tab'],
+    paramDefaultValues: { 'active-tab': TAB_GENERAL },
+  });
+  const activeKey =
+    queryParams['active-tab'] === TAB_ACCESS ? TAB_ACCESS : TAB_GENERAL;
   const { data, loading } = useQuery(ADMIN_PHYSICAL_STORE_BY_ID, {
     variables: { id: physicalStoreId },
   });
@@ -61,7 +73,7 @@ const EditForm = ({ match, history }: Props) => {
 
   if (loading) return null;
 
-  return (
+  const generalForm = (
     <Form layout="horizontal" onFinish={handleFinish} onFieldsChange={handleFieldsChange}>
       <InputTextField
         fieldName="name"
@@ -81,6 +93,23 @@ const EditForm = ({ match, history }: Props) => {
         isFieldsTouched={isFieldsTouched}
       />
     </Form>
+  );
+
+  return (
+    <Tabs
+      activeKey={activeKey}
+      onChange={(key) => {
+        setPageParams({ 'active-tab': key });
+      }}
+      items={[
+        { key: TAB_GENERAL, label: 'General Info', children: generalForm },
+        {
+          key: TAB_ACCESS,
+          label: 'Access',
+          children: <AccessTab physicalStoreId={physicalStoreId} />,
+        },
+      ]}
+    />
   );
 };
 

@@ -36,6 +36,18 @@ import {
   StockAdjustmentsList,
 } from './stock-adjustments';
 
+import {
+  RequisitionsEditForm,
+  RequisitionsList,
+  RequisitionsNewForm,
+} from './requisitions';
+import { IncomingOrdersList, IncomingOrdersView } from './incoming-orders';
+import {
+  GoodsReceiptsList,
+  GoodsReceiptsNewForm,
+  GoodsReceiptsView,
+} from './receipts';
+
 const Router = () => (
   <Switch>
     <Route path={paths.issuanceReportPath()} component={IssuanceReport} />
@@ -112,6 +124,29 @@ const Router = () => (
       path={paths.stockAdjustmentsPath()}
       component={StockAdjustmentsList}
     />
+
+    <Route
+      path={paths.requisitionsNewFormPath()}
+      component={RequisitionsNewForm}
+    />
+    <Route
+      path={paths.requisitionsEditFormPath()}
+      component={RequisitionsEditForm}
+    />
+    <Route path={paths.requisitionsPath()} component={RequisitionsList} />
+
+    <Route
+      path={paths.incomingOrdersViewPath()}
+      component={IncomingOrdersView}
+    />
+    <Route path={paths.incomingOrdersPath()} component={IncomingOrdersList} />
+
+    <Route
+      path={paths.goodsReceiptsNewFormPath()}
+      component={GoodsReceiptsNewForm}
+    />
+    <Route path={paths.goodsReceiptsViewPath()} component={GoodsReceiptsView} />
+    <Route path={paths.goodsReceiptsPath()} component={GoodsReceiptsList} />
   </Switch>
 );
 

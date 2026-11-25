@@ -18,7 +18,7 @@ interface ResolverContext {
 }
 
 interface QuoteArgs {
-  requisitionId?: string;
+  requisitionId: string;
   vendorId: string;
   reference?: string;
   quoteDate: string;

@@ -15,6 +15,7 @@ export interface DocumentFilterValues {
   search: string;
   status: string;
   vendorId: string;
+  source: string;
   fromDate: string;
   toDate: string;
   toggled: boolean;
@@ -24,6 +25,7 @@ export interface DocumentFilterOptions {
   searchPlaceholder: string;
   statuses?: string[];
   showVendorFilter?: boolean;
+  showSourceFilter?: boolean;
   showDateRange?: boolean;
   toggle?: { name: string; label: string };
 }
@@ -38,6 +40,7 @@ interface FormValues {
   search?: string;
   status?: string;
   vendorId?: string;
+  source?: string;
   range?: [Dayjs | null, Dayjs | null] | null;
   toggled?: boolean;
 }
@@ -49,8 +52,10 @@ interface Chip {
   clear: Partial<DocumentFilterValues>;
 }
 
+export const SOURCE_LABELS: Record<string, string> = { purchasing: 'Purchasing', store: 'Store' };
+
 const useChips = (
-  { values, statuses, showVendorFilter, showDateRange, toggle }: DocumentFilterOptions & {
+  { values, statuses, showVendorFilter, showSourceFilter, showDateRange, toggle }: DocumentFilterOptions & {
     values: DocumentFilterValues;
   }
 ): Chip[] => {
@@ -79,6 +84,14 @@ const useChips = (
       clear: { vendorId: '' },
     });
   }
+  if (showSourceFilter && values.source !== 'all') {
+    chips.push({
+      key: 'source',
+      label: 'Source',
+      value: SOURCE_LABELS[values.source] ?? values.source,
+      clear: { source: 'all' },
+    });
+  }
   if (showDateRange && values.fromDate) {
     chips.push({ key: 'fromDate', label: 'From', value: formatDate(values.fromDate), clear: { fromDate: '' } });
   }
@@ -93,7 +106,7 @@ const useChips = (
 
 /** The Filter popover and Reload button, in the style of the Stores lists. */
 export const DocumentListFilter = (props: DocumentListFilterProps) => {
-  const { values, onApply, onRefresh, searchPlaceholder, statuses, showVendorFilter, showDateRange, toggle } = props;
+  const { values, onApply, onRefresh, searchPlaceholder, statuses, showVendorFilter, showSourceFilter, showDateRange, toggle } = props;
   const [form] = Form.useForm<FormValues>();
   const [open, setOpen] = useState(false);
   const activeCount = useChips(props).length;
@@ -103,6 +116,7 @@ export const DocumentListFilter = (props: DocumentListFilterProps) => {
       search: values.search,
       status: values.status,
       vendorId: values.vendorId || undefined,
+      source: values.source,
       range: [toDayjs(values.fromDate), toDayjs(values.toDate)],
       toggled: values.toggled,
     });
@@ -112,6 +126,7 @@ export const DocumentListFilter = (props: DocumentListFilterProps) => {
       search: (next.search ?? '').trim(),
       status: next.status ?? 'all',
       vendorId: next.vendorId ?? '',
+      source: next.source ?? 'all',
       fromDate: next.range?.[0] ? String(next.range[0].startOf('day').valueOf()) : '',
       toDate: next.range?.[1] ? String(next.range[1].endOf('day').valueOf()) : '',
       toggled: !!next.toggled,
@@ -135,6 +150,17 @@ export const DocumentListFilter = (props: DocumentListFilterProps) => {
         {showVendorFilter ? (
           <Form.Item name="vendorId" label="Vendor" {...layout}>
             <VendorSelect includeInactive placeholder="All vendors" style={{ width: '100%' }} />
+          </Form.Item>
+        ) : null}
+        {showSourceFilter ? (
+          <Form.Item name="source" label="Source" {...layout}>
+            <Select
+              options={[
+                { value: 'all', label: 'All sources' },
+                { value: 'purchasing', label: 'Purchasing' },
+                { value: 'store', label: 'Stores' },
+              ]}
+            />
           </Form.Item>
         ) : null}
         {showDateRange ? (

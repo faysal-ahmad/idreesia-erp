@@ -7,6 +7,7 @@ import type {
   PaymentStatusValue,
   QuoteStatusValue,
   ReceiptStatusValue,
+  RequisitionSourceValue,
   RequisitionStatusValue,
 } from 'meteor/idreesia-common/constants/purchasing';
 
@@ -56,7 +57,8 @@ export interface PurchasingCounterDocument {
 
 export interface RequisitionLine {
   _id: string;
-  catalogItemId?: string;
+  internalCatalogId?: string;
+  externalCatalogId?: string;
   description: string;
   unit: string;
   quantity: number;
@@ -70,6 +72,10 @@ export interface PurchasingRequisitionDocument extends Timestamps {
   purpose?: string;
   requestedBy?: string;
   neededBy?: Date;
+  /** Only set for store-raised documents; absent means purchasing. */
+  source?: RequisitionSourceValue;
+  /** The physical store id when `source` is 'store'. */
+  externalSourceId?: string;
   lines: RequisitionLine[];
   estimatedTotal: number;
   status: RequisitionStatusValue;
@@ -87,7 +93,10 @@ export interface PurchasingRequisitionDocument extends Timestamps {
 
 export interface QuoteLine {
   _id: string;
-  catalogItemId?: string;
+  /** The requisition line this prices. Missing on legacy quotes. */
+  requisitionLineId?: string;
+  internalCatalogId?: string;
+  externalCatalogId?: string;
   description: string;
   unit: string;
   quantity: number;
@@ -110,7 +119,10 @@ export interface PurchasingQuoteDocument extends Timestamps {
 
 export interface OrderLine {
   _id: string;
-  catalogItemId?: string;
+  /** The requisition line this was copied from. Missing on legacy orders. */
+  requisitionLineId?: string;
+  internalCatalogId?: string;
+  externalCatalogId?: string;
   description: string;
   unit: string;
   quantity: number;
@@ -126,6 +138,10 @@ export interface PurchasingOrderDocument extends Timestamps {
   vendorId: string;
   requisitionId?: string;
   quoteId?: string;
+  /** Only set for store-raised documents; absent means purchasing. */
+  source?: RequisitionSourceValue;
+  /** The physical store id when `source` is 'store'. */
+  externalSourceId?: string;
   orderDate: Date;
   expectedDeliveryDate?: Date;
   deliveryAddress?: string;
@@ -155,6 +171,8 @@ export interface PurchasingOrderDocument extends Timestamps {
 export interface ReceiptLine {
   _id: string;
   orderLineId: string;
+  /** The store stock item this adds to, copied from the order line. */
+  externalCatalogId?: string;
   description: string;
   unit: string;
   receivedQuantity: number;
@@ -167,6 +185,10 @@ export interface PurchasingReceiptDocument extends Timestamps {
   number: string;
   orderId: string;
   vendorId: string;
+  /** Only set for store-raised documents; absent means purchasing. */
+  source?: RequisitionSourceValue;
+  /** The physical store id when `source` is 'store'. */
+  externalSourceId?: string;
   receivedDate: Date;
   receivedBy?: string;
   deliveryNoteNo?: string;
@@ -180,7 +202,10 @@ export interface PurchasingReceiptDocument extends Timestamps {
 
 export interface InvoiceLine {
   _id: string;
-  catalogItemId?: string;
+  internalCatalogId?: string;
+  externalCatalogId?: string;
+  /** Missing on legacy invoices. */
+  orderId?: string;
   orderLineId?: string;
   description: string;
   unit: string;
@@ -194,7 +219,10 @@ export interface PurchasingInvoiceDocument extends Timestamps {
   number: string;
   vendorInvoiceNo: string;
   vendorId: string;
+  /** Legacy: set on invoices made before lines were billed per order. */
   orderId?: string;
+  /** Every order the lines are billed against. */
+  orderIds?: string[];
   invoiceDate: Date;
   dueDate: Date;
   notes?: string;

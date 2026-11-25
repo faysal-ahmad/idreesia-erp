@@ -3,7 +3,9 @@ import gql from 'graphql-tag';
 export default gql`
 type PurchasingInvoiceLine {
   _id: String
-  catalogItemId: String
+  internalCatalogId: String
+  externalCatalogId: String
+  orderId: String
   orderLineId: String
   description: String
   unit: String
@@ -18,8 +20,11 @@ type PurchasingInvoice {
   vendorInvoiceNo: String
   vendorId: String
   vendor: PurchasingVendor
+  # Legacy invoices were for a single order.
   orderId: String
-  order: PurchasingOrder
+  # Every order the lines are billed against.
+  orderIds: [String]
+  orders: [PurchasingOrder]
   invoiceDate: String
   dueDate: String
   notes: String
@@ -70,7 +75,6 @@ extend type Mutation {
   # the invoice is then marked disputed.
   createPurchasingInvoice(
     vendorId: String!
-    orderId: String
     vendorInvoiceNo: String!
     invoiceDate: String!
     dueDate: String

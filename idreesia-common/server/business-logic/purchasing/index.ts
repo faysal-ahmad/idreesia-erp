@@ -45,6 +45,7 @@ export {
   rejectRequisition,
   reopenRequisition,
   cancelRequisition,
+  closeRequisition,
   deleteRequisition,
   getRequisition,
   listRequisitions,
@@ -53,6 +54,7 @@ export type {
   RequisitionValues,
   RequisitionLineInput,
   ListRequisitionsOptions,
+  RequisitionOrigin,
 } from './requisitions';
 
 export {
@@ -67,7 +69,6 @@ export {
 export type { QuoteValues, QuoteLineInput, ListQuotesOptions } from './quotes';
 
 export {
-  createOrder,
   createOrderFromRequisition,
   createOrderFromQuote,
   updateOrder,
@@ -79,7 +80,9 @@ export {
   cancelOrder,
   deleteOrder,
   getOrder,
+  getStoreOrder,
   listOrders,
+  listStoreOrders,
 } from './orders';
 export type { OrderValues, OrderLineInput, ListOrdersOptions } from './orders';
 
@@ -88,6 +91,7 @@ export type {
   ReceiptValues,
   ReceiptLineInput,
   ListReceiptsOptions,
+  ReceiptOrigin,
 } from './receipts';
 
 export {

@@ -41,7 +41,7 @@ const REQUISITION_FIELDS = gql`
     }
     lines {
       _id
-      catalogItemId
+      internalCatalogId
       description
       unit
       quantity

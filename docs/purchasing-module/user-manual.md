@@ -40,7 +40,7 @@ Requisition → (Quotes) → Purchase Order → Goods Receipt → Invoice → Pa
 5. **Invoice**: record the vendor's bill.
 6. **Payment**: pay one or more invoices.
 
-You don't have to start with a requisition. You can create a purchase order directly.
+**Everything starts with a requisition.** A purchase order can only be made from a requisition (or from a quote for one). A store can raise its own requisitions for its own stock items; see [Requisitions from stores](#requisitions-from-stores).
 
 Each document gets a number automatically, such as `PR-2026-0001` (requisition), `PO-2026-0001` (order), `GRN-…` (receipt), `INV-…` (invoice) and `PAY-…` (payment). Numbers start again each year.
 
@@ -113,21 +113,25 @@ A requisition is an internal request: what you need, why, and by when.
 | Cancel Requisition | Requester | Cancels it. |
 | Delete | Requester | Removes a draft completely. |
 
-Once a purchase order has been made from it, the requisition shows as **Ordered**.
+Once a purchase order has been made from it, the requisition shows as **Ordered**. When every order made from it has been received (or closed) it becomes **Closed** by itself. If a receipt is voided, or another order is made from it, it goes back to Ordered. If the rest of it will never be bought, an order person can click **Close Requisition**.
+
+### Requisitions from stores
+
+A store can raise a requisition for its own stock items (the store's own screens, under **Stores > Purchasing**). Its lines are always the store's items. Purchasing sees these in the Requisitions list with the store's name in the **Source** column, and approves or rejects them like any other; only the store can edit, submit or delete its own draft. Purchasing makes the order. The **store** then records the goods when they arrive (**Stores > Purchasing > Goods Receipts**), and its stock goes up by the accepted quantity. Purchasing can't receive goods for a store.
 
 ## 8. Quotes
 
 A quote records a price offer from a vendor. Quotes are optional but handy for comparing vendors.
 
-1. Open an approved requisition and click **Add Quote** (or use **Quotes > new**).
-2. Choose the vendor, enter the quote date, how long it is valid, the vendor's reference, and the items with prices. Attach the vendor's document if you have it.
+1. Open an approved requisition and click **Add Quote**. A quote is always for a requisition.
+2. Choose the vendor, enter the quote date, how long it is valid and the vendor's reference. The requisition's items are listed; give each its price (and a smaller quantity if the vendor offers less). You can drop items the vendor didn't quote. Attach the vendor's document if you have it.
 3. Add one quote per vendor.
 
 On a quote page, **Select This Quote** picks the winner. The other open quotes for the same requisition are rejected automatically. **Reject** turns one down. From the selected quote, **Create Purchase Order** creates an order with that vendor's prices.
 
 ## 9. Purchase orders
 
-**Create one** from **Purchase Orders > new**, from a requisition, or from a quote. Choose the vendor, order date, expected delivery date, delivery address and payment terms, add items with prices and tax, and optionally a discount and shipping. The total is calculated for you.
+**Create one** from a requisition (**Create Purchase Order**) or from a quote. The requisition's items are copied in. In the draft, enter the order date, expected delivery date, delivery address and payment terms, give each item its price and tax, and optionally a discount and shipping. You can't add or remove items or change which item a line is; the quantity can only go down, never above what was requested. The total is calculated for you.
 
 **Move it along**
 
@@ -146,7 +150,7 @@ On a quote page, **Select This Quote** picks the winner. The other open quotes f
 
 Statuses in order: Draft, Pending Approval, Approved, Sent, Partially Received, Received, Closed (or Cancelled). Receiving goods moves the status along on its own.
 
-**Need to change an approved order?** Its items are locked. Cancel it and create a new one.
+**Need to change an approved order?** Its items are locked. Cancel it and make a new one from the requisition. Orders for a store are received by the store, so **Receive Goods** isn't offered on them.
 
 ## 10. Goods receipts
 
@@ -167,12 +171,12 @@ Things to know:
 Record the bill you get from a vendor.
 
 1. On the purchase order click **Record Invoice**, or use **Invoices > new**.
-2. Enter the vendor's **invoice number** exactly as printed, the invoice date and due date, and the items. If the invoice is linked to an order, the lines can be filled from it.
+2. Enter the vendor's **invoice number** exactly as printed, the invoice date and due date. Choose the order (or several orders, if one invoice from the vendor covers more than one); each order's items are filled in with what has been received and not yet invoiced. Every invoice line bills an order line.
 3. Save. The invoice starts as **Unpaid**.
 
 Things to know:
 - A vendor's invoice number can be entered only once per vendor, which catches duplicates.
-- An invoice linked to an order can bill only what has been **received and not yet invoiced**. If the vendor billed for more, you get a warning titled "Billed for more than was received". You can still save it if you confirm; the invoice is then marked **Disputed**.
+- An invoice line can bill only what has been **received and not yet invoiced**. If the vendor billed for more, you get a warning titled "Billed for more than was received". You can still save it if you confirm; the invoice is then marked **Disputed**.
 - **Mark as Disputed** / **Clear Dispute** flags an invoice that you are querying with the vendor. It is a flag; the invoice stays payable.
 - **Edit Invoice Details** changes details of an unpaid invoice.
 - **Void Invoice** cancels a wrong invoice (not possible if payments are recorded against it; void those first).

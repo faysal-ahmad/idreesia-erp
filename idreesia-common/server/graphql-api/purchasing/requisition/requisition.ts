@@ -3,7 +3,9 @@ import gql from 'graphql-tag';
 export default gql`
 type PurchasingRequisitionLine {
   _id: String
-  catalogItemId: String
+  internalCatalogId: String
+  # A store's stock item, for requisitions raised by a store.
+  externalCatalogId: String
   description: String
   unit: String
   quantity: Float
@@ -12,7 +14,7 @@ type PurchasingRequisitionLine {
 
 input PurchasingRequisitionLineInput {
   _id: String
-  catalogItemId: String
+  internalCatalogId: String
   description: String
   unit: String
   quantity: Float!
@@ -27,6 +29,9 @@ type PurchasingRequisition {
   requestedBy: String
   requestedByPerson: PersonBasicType
   neededBy: String
+  # 'purchasing' or 'store'. For a store, externalSourceId is its physical store id.
+  source: String
+  externalSourceId: String
   lines: [PurchasingRequisitionLine]
   estimatedTotal: Float
   status: String
@@ -60,6 +65,8 @@ extend type Query {
     search: String
     status: String
     requestedBy: String
+    # 'purchasing' or 'store'
+    source: String
     pageIndex: Int
     pageSize: Int
   ): PagedPurchasingRequisitions
@@ -95,6 +102,11 @@ extend type Mutation {
     @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
 
   cancelPurchasingRequisition(_id: String!): PurchasingRequisition
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
+
+  # Closes an ordered requisition by hand (it also closes by itself once every
+  # order made from it is received).
+  closePurchasingRequisition(_id: String!): PurchasingRequisition
     @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
 
   deletePurchasingRequisition(_id: String!): Boolean

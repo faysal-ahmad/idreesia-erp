@@ -10,7 +10,9 @@ import {
   EnvironmentOutlined,
   FolderOpenOutlined,
   FormOutlined,
+  InboxOutlined,
   LaptopOutlined,
+  ShoppingCartOutlined,
   ShopOutlined,
   TagsOutlined,
 } from '@ant-design/icons';
@@ -59,6 +61,14 @@ const ADJUSTMENTS = [
   Permissions.IN_MANAGE_STOCK_ADJUSTMENTS,
   Permissions.IN_APPROVE_STOCK_ADJUSTMENTS,
 ];
+const REQUISITIONS = [
+  Permissions.IN_VIEW_REQUISITIONS,
+  Permissions.IN_MANAGE_REQUISITIONS,
+];
+const RECEIPTS = [
+  Permissions.IN_VIEW_RECEIPTS,
+  Permissions.IN_MANAGE_RECEIPTS,
+];
 const STOCK_ITEMS = [
   Permissions.IN_MANAGE_STOCK_ITEMS,
   ...ISSUANCE,
@@ -93,6 +103,13 @@ const KeyPrefixHandlers: KeyPrefixHandler[] = [
     SubModuleNames.purchasingReport,
     paths.purchasingReportPath,
   ],
+  ['requisitions', SubModuleNames.requisitions, paths.requisitionsPath],
+  [
+    'incoming-orders',
+    SubModuleNames.incomingOrders,
+    paths.incomingOrdersPath,
+  ],
+  ['goods-receipts', SubModuleNames.goodsReceipts, paths.goodsReceiptsPath],
   ['vendors', SubModuleNames.vendors, paths.vendorsPath],
   ['item-categories', SubModuleNames.itemCategories, paths.itemCategoriesPath],
   ['locations', SubModuleNames.locations, paths.locationsPath],
@@ -176,6 +193,31 @@ const Sidebar = ({ history }: SidebarProps) => {
               key: `stock-adjustments-${physicalStore._id}`,
               icon: <FormOutlined style={IconStyle} />,
               label: 'Stock Adjustments',
+            },
+          ]
+        ),
+        ...group(
+          `purchasing-${physicalStore._id}`,
+          <ShoppingCartOutlined style={IconStyle} />,
+          'Purchasing',
+          [
+            {
+              show: can(REQUISITIONS),
+              key: `requisitions-${physicalStore._id}`,
+              icon: <FormOutlined style={IconStyle} />,
+              label: 'Requisitions',
+            },
+            {
+              show: can([...REQUISITIONS, ...RECEIPTS]),
+              key: `incoming-orders-${physicalStore._id}`,
+              icon: <InboxOutlined style={IconStyle} />,
+              label: 'Incoming Orders',
+            },
+            {
+              show: can(RECEIPTS),
+              key: `goods-receipts-${physicalStore._id}`,
+              icon: <FormOutlined style={IconStyle} />,
+              label: 'Goods Receipts',
             },
           ]
         ),

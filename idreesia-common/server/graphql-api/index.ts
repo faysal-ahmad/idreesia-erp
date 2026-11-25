@@ -139,6 +139,16 @@ import PurchasingPermissionSchema from './purchasing/permission/permission';
 import PurchasingPermissionResolvers from './purchasing/permission/resolvers';
 import PurchasingUserGroupSchema from './purchasing/user-group/user-group';
 import PurchasingUserGroupResolvers from './purchasing/user-group/resolvers';
+
+/**
+ * Schema and Resolvers for the Stores module's use of Purchasing
+ */
+import StoreRequisitionSchema from './stores/purchasing/store-requisition/store-requisition';
+import StoreRequisitionResolvers from './stores/purchasing/store-requisition/resolvers';
+import StoreOrderSchema from './stores/purchasing/store-order/store-order';
+import StoreOrderResolvers from './stores/purchasing/store-order/resolvers';
+import StoreReceiptSchema from './stores/purchasing/store-receipt/store-receipt';
+import StoreReceiptResolvers from './stores/purchasing/store-receipt/resolvers';
 import InboxSchema from './correspondence/inbox/inbox';
 import InboxResolvers from './correspondence/inbox/resolvers';
 import SecurityServerUsageSchema from './security/security-server-usage/security-server-usage';
@@ -364,6 +374,9 @@ const typeDefs = [
   PurchasingAuditLogSchema,
   PurchasingPermissionSchema,
   PurchasingUserGroupSchema,
+  StoreRequisitionSchema,
+  StoreOrderSchema,
+  StoreReceiptSchema,
   PurchasingAttachmentSchema,
   PhysicalStoreSchema,
   ReferenceDutySchema,
@@ -461,6 +474,9 @@ const resolvers = merge(
   PurchasingAuditLogResolvers,
   PurchasingPermissionResolvers,
   PurchasingUserGroupResolvers,
+  StoreRequisitionResolvers,
+  StoreOrderResolvers,
+  StoreReceiptResolvers,
   PurchasingAttachmentResolvers,
   PhysicalStoreResolvers,
   ReferenceDutyResolvers,

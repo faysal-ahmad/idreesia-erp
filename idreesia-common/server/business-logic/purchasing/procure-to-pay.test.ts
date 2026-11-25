@@ -14,7 +14,6 @@ import {
   closeOrder,
   createCatalogItem,
   createInvoice,
-  createOrder,
   createOrderFromQuote,
   createOrderFromRequisition,
   createQuote,
@@ -71,20 +70,50 @@ const approvedRequisition = async () => {
   return requisition;
 };
 
-/** A priced, approved, sent order for 10 paper at 100 and 5 pens at 50. */
-const approvedOrder = async (vendorName: string) => {
-  const vendor = await newVendor(vendorName, 30);
-  const order = await createOrder(
+interface DraftLine {
+  description: string;
+  unit: string;
+  quantity: number;
+  unitPrice: number;
+  taxRate?: number;
+  internalCatalogId?: string;
+}
+
+/**
+ * Orders only come from a requisition: makes an approved requisition for the
+ * lines and a draft order from it, then sets the tax rates.
+ */
+const draftOrder = async (vendorId: string, lines: DraftLine[]) => {
+  const requisition = await createRequisition(
     {
-      vendorId: vendor._id,
-      orderDate: today,
-      lines: [
-        { description: 'Paper', unit: 'ream', quantity: 10, unitPrice: 100, taxRate: 10 },
-        { description: 'Pens', unit: 'box', quantity: 5, unitPrice: 50 },
-      ],
+      title: 'For an order',
+      lines: lines.map(({ taxRate: _taxRate, unitPrice, ...l }) => ({ ...l, estimatedUnitPrice: unitPrice })),
     },
     user
   );
+  await submitRequisition(requisition._id, user);
+  await approveRequisition(requisition._id, user);
+  const order = await createOrderFromRequisition(requisition._id, vendorId, user);
+  if (!lines.some((l) => l.taxRate)) return order;
+  return updateOrder(
+    order._id,
+    order.version,
+    {
+      vendorId,
+      orderDate: order.orderDate,
+      lines: order.lines.map((l, i) => ({ ...l, taxRate: lines[i].taxRate })),
+    },
+    user
+  );
+};
+
+/** A priced, approved, sent order for 10 paper at 100 and 5 pens at 50. */
+const approvedOrder = async (vendorName: string) => {
+  const vendor = await newVendor(vendorName, 30);
+  const order = await draftOrder(vendor._id, [
+    { description: 'Paper', unit: 'ream', quantity: 10, unitPrice: 100, taxRate: 10 },
+    { description: 'Pens', unit: 'box', quantity: 5, unitPrice: 50 },
+  ]);
   await submitOrder(order._id, user);
   await approveOrder(order._id, user);
   return { vendor, order: await getOrder(order._id) };
@@ -158,10 +187,10 @@ describe('requisitions', () => {
 
     const item = await createCatalogItem({ name: 'Cat Rice', unit: 'kg' }, user);
     const requisition = await createRequisition(
-      { title: 'Rice', lines: [{ catalogItemId: item._id, quantity: 20 }] },
+      { title: 'Rice', lines: [{ internalCatalogId: item._id, quantity: 20 }] },
       user
     );
-    expect(requisition.lines[0]).toMatchObject({ description: 'Cat Rice', unit: 'kg', catalogItemId: item._id });
+    expect(requisition.lines[0]).toMatchObject({ description: 'Cat Rice', unit: 'kg', internalCatalogId: item._id });
   });
 });
 
@@ -170,7 +199,7 @@ describe('quotes and orders from them', () => {
     const requisition = await approvedRequisition();
     const a = await newVendor('Quote A');
     const b = await newVendor('Quote B');
-    const lines = [{ description: 'Paper', unit: 'ream', quantity: 10, unitPrice: 90 }];
+    const lines = [{ requisitionLineId: requisition.lines[0]._id, quantity: 10, unitPrice: 90 }];
     const qa = await createQuote({ requisitionId: requisition._id, vendorId: a._id, quoteDate: today, lines }, user);
     const qb = await createQuote({ requisitionId: requisition._id, vendorId: b._id, quoteDate: today, lines }, user);
 
@@ -188,12 +217,13 @@ describe('quotes and orders from them', () => {
         requisitionId: requisition._id,
         vendorId: vendor._id,
         quoteDate: today,
-        lines: [{ description: 'Paper', unit: 'ream', quantity: 10, unitPrice: 90 }],
+        lines: [{ requisitionLineId: requisition.lines[0]._id, quantity: 10, unitPrice: 90 }],
       },
       user
     );
     const order = await createOrderFromQuote(quote._id, user);
     expect(order).toMatchObject({ status: 'draft', quoteId: quote._id, requisitionId: requisition._id, total: 900 });
+    expect(order.lines[0]).toMatchObject({ requisitionLineId: requisition.lines[0]._id, description: 'Paper' });
     expect((await getQuote(quote._id)).status).toBe('selected');
     expect((await getRequisition(requisition._id)).status).toBe('ordered');
   });
@@ -225,32 +255,38 @@ describe('purchase orders', () => {
 
   it('computes tax, discount and shipping, and refuses a discount above the total', async () => {
     const vendor = await newVendor('Totals Co');
-    const base = {
+    const order = await draftOrder(vendor._id, [
+      { description: 'Paper', unit: 'ream', quantity: 10, unitPrice: 100, taxRate: 10 },
+    ]);
+    const values = (extra: { discount?: number; shipping?: number }) => ({
       vendorId: vendor._id,
       orderDate: today,
-      lines: [{ description: 'Paper', unit: 'ream', quantity: 10, unitPrice: 100, taxRate: 10 }],
-    };
-    const order = await createOrder({ ...base, discount: 50, shipping: 20 }, user);
-    expect(order).toMatchObject({ subtotal: 1000, taxTotal: 100, total: 1070 });
-    await expect(createOrder({ ...base, discount: 5000 }, user)).rejects.toMatchObject({
-      extensions: { code: 'BAD_USER_INPUT' },
+      lines: order.lines,
+      ...extra,
     });
+    const updated = await updateOrder(order._id, order.version, values({ discount: 50, shipping: 20 }), user);
+    expect(updated).toMatchObject({ subtotal: 1000, taxTotal: 100, total: 1070 });
+    await expect(
+      updateOrder(order._id, updated.version, values({ discount: 5000 }), user)
+    ).rejects.toMatchObject({ extensions: { code: 'BAD_USER_INPUT' } });
   });
 
   it('follows draft → pending → approved → sent, and a returned order can be edited again', async () => {
     const vendor = await newVendor('Flow Co');
-    const order = await createOrder(
-      { vendorId: vendor._id, orderDate: today, lines: [{ description: 'A', unit: 'pc', quantity: 1, unitPrice: 10 }] },
-      user
-    );
+    const order = await draftOrder(vendor._id, [{ description: 'A', unit: 'pc', quantity: 2, unitPrice: 10 }]);
+    const withQuantity = (quantity: number, unitPrice: number) => ({
+      vendorId: vendor._id,
+      orderDate: today,
+      lines: order.lines.map((l) => ({ ...l, quantity, unitPrice })),
+    });
     await submitOrder(order._id, user);
     await expect(
-      updateOrder(order._id, order.version + 1, { vendorId: vendor._id, orderDate: today, lines: [{ description: 'A', unit: 'pc', quantity: 2, unitPrice: 10 }] }, user)
+      updateOrder(order._id, order.version + 1, withQuantity(1, 10), user)
     ).rejects.toMatchObject({ extensions: { code: 'CONFLICT' } });
 
     const returned = await rejectOrder(order._id, 'Wrong price', user);
     expect(returned).toMatchObject({ status: 'draft', rejectionReason: 'Wrong price' });
-    const edited = await updateOrder(order._id, returned.version, { vendorId: vendor._id, orderDate: today, lines: [{ description: 'A', unit: 'pc', quantity: 2, unitPrice: 12 }] }, user);
+    const edited = await updateOrder(order._id, returned.version, withQuantity(2, 12), user);
     expect(edited.total).toBe(24);
 
     await submitOrder(order._id, user);
@@ -261,20 +297,16 @@ describe('purchase orders', () => {
 
   it('will not submit an order with an unpriced line', async () => {
     const vendor = await newVendor('Unpriced Co');
-    const order = await createOrder(
-      { vendorId: vendor._id, orderDate: today, lines: [{ description: 'A', unit: 'pc', quantity: 1, unitPrice: 0 }] },
-      user
-    );
+    const order = await draftOrder(vendor._id, [{ description: 'A', unit: 'pc', quantity: 1, unitPrice: 0 }]);
     await expect(submitOrder(order._id, user)).rejects.toMatchObject({ extensions: { code: 'BAD_USER_INPUT' } });
   });
 
   it('remembers the catalog price and vendor when an order is approved', async () => {
     const item = await createCatalogItem({ name: 'Cat Stapler', unit: 'pc' }, user);
     const vendor = await newVendor('Price Memory Co');
-    const order = await createOrder(
-      { vendorId: vendor._id, orderDate: today, lines: [{ catalogItemId: item._id, quantity: 2, unitPrice: 75 }] },
-      user
-    );
+    const order = await draftOrder(vendor._id, [
+      { internalCatalogId: item._id, description: 'Cat Stapler', unit: 'pc', quantity: 2, unitPrice: 75 },
+    ]);
     await submitOrder(order._id, user);
     await approveOrder(order._id, user);
     const updated = await PurchasingCatalogItems.findOneAsync(item._id);
@@ -285,9 +317,10 @@ describe('purchase orders', () => {
     const vendor = await newVendor('Inactive Order Co');
     const { setVendorActive } = await import('./index');
     await setVendorActive(vendor._id, false, user);
-    await expect(
-      createOrder({ vendorId: vendor._id, orderDate: today, lines: [{ description: 'A', unit: 'pc', quantity: 1, unitPrice: 1 }] }, user)
-    ).rejects.toMatchObject({ extensions: { code: 'BAD_USER_INPUT' } });
+    const requisition = await approvedRequisition();
+    await expect(createOrderFromRequisition(requisition._id, vendor._id, user)).rejects.toMatchObject({
+      extensions: { code: 'BAD_USER_INPUT' },
+    });
   });
 });
 
@@ -335,10 +368,7 @@ describe('receipts', () => {
     ).rejects.toMatchObject({ extensions: { code: 'BAD_USER_INPUT' } });
 
     const vendor = await newVendor('Draft Receipt Co');
-    const draft = await createOrder(
-      { vendorId: vendor._id, orderDate: today, lines: [{ description: 'A', unit: 'pc', quantity: 1, unitPrice: 1 }] },
-      user
-    );
+    const draft = await draftOrder(vendor._id, [{ description: 'A', unit: 'pc', quantity: 1, unitPrice: 1 }]);
     await expect(
       postReceipt({ orderId: draft._id, receivedDate: today, lines: [{ orderLineId: draft.lines[0]._id, receivedQuantity: 1 }] }, user)
     ).rejects.toMatchObject({ extensions: { code: 'CONFLICT' } });
@@ -354,10 +384,9 @@ describe('receipts', () => {
     await createInvoice(
       {
         vendorId: vendor._id,
-        orderId: order._id,
         vendorInvoiceNo: 'V-1',
         invoiceDate: today,
-        lines: [{ orderLineId: paper._id, description: 'Paper', unit: 'ream', quantity: 10, unitPrice: 100, taxRate: 10 }],
+        lines: [{ orderId: order._id, orderLineId: paper._id, description: 'Paper', unit: 'ream', quantity: 10, unitPrice: 100, taxRate: 10 }],
       },
       user
     );
@@ -406,6 +435,7 @@ describe('invoices and payments', () => {
 
   const fullInvoiceLines = (order: Awaited<ReturnType<typeof getOrder>>) =>
     order.lines.map((l) => ({
+      orderId: order._id,
       orderLineId: l._id,
       description: l.description,
       unit: l.unit,
@@ -417,7 +447,7 @@ describe('invoices and payments', () => {
   it('invoices received goods, derives the due date from the terms and totals', async () => {
     const { vendor, order } = await receivedOrder('Invoice Co');
     const invoice = await createInvoice(
-      { vendorId: vendor._id, orderId: order._id, vendorInvoiceNo: 'INV-77', invoiceDate: today, lines: fullInvoiceLines(order) },
+      { vendorId: vendor._id, vendorInvoiceNo: 'INV-77', invoiceDate: today, lines: fullInvoiceLines(order) },
       user
     );
     expect(invoice).toMatchObject({ subtotal: 1250, taxTotal: 100, total: 1350, status: 'unpaid', isDisputed: false });
@@ -434,10 +464,9 @@ describe('invoices and payments', () => {
     );
     const values = {
       vendorId: vendor._id,
-      orderId: order._id,
       vendorInvoiceNo: 'OB-1',
       invoiceDate: today,
-      lines: [{ orderLineId: paper._id, description: 'Paper', unit: 'ream', quantity: 6, unitPrice: 100, taxRate: 10 }],
+      lines: [{ orderId: order._id, orderLineId: paper._id, description: 'Paper', unit: 'ream', quantity: 6, unitPrice: 100, taxRate: 10 }],
     };
     await expect(createInvoice(values, user)).rejects.toMatchObject({ extensions: { code: 'CONFLICT' } });
     expect((await getOrder(order._id)).lines[0].invoicedQuantity).toBe(0);
@@ -450,7 +479,7 @@ describe('invoices and payments', () => {
   it('refuses a duplicate vendor invoice number but allows it after a void', async () => {
     const { vendor, order } = await receivedOrder('Dup Invoice Co');
     const lines = fullInvoiceLines(order).slice(0, 1).map((l) => ({ ...l, quantity: 1 }));
-    const values = { vendorId: vendor._id, orderId: order._id, vendorInvoiceNo: 'D-1', invoiceDate: today, lines };
+    const values = { vendorId: vendor._id, vendorInvoiceNo: 'D-1', invoiceDate: today, lines };
     const first = await createInvoice(values, user);
     await expect(createInvoice({ ...values, vendorInvoiceNo: 'd-1' }, user)).rejects.toMatchObject({
       extensions: { code: 'CONFLICT' },
@@ -462,7 +491,7 @@ describe('invoices and payments', () => {
   it('pays in parts, then fully, and refuses overpaying', async () => {
     const { vendor, order } = await receivedOrder('Pay Co');
     const invoice = await createInvoice(
-      { vendorId: vendor._id, orderId: order._id, vendorInvoiceNo: 'P-1', invoiceDate: today, lines: fullInvoiceLines(order) },
+      { vendorId: vendor._id, vendorInvoiceNo: 'P-1', invoiceDate: today, lines: fullInvoiceLines(order) },
       user
     );
     const part = await postPayment(
@@ -489,8 +518,8 @@ describe('invoices and payments', () => {
   it('pays several invoices at once, only of the named vendor', async () => {
     const { vendor, order } = await receivedOrder('Multi Pay Co');
     const [l1, l2] = fullInvoiceLines(order);
-    const i1 = await createInvoice({ vendorId: vendor._id, orderId: order._id, vendorInvoiceNo: 'M-1', invoiceDate: today, lines: [l1] }, user);
-    const i2 = await createInvoice({ vendorId: vendor._id, orderId: order._id, vendorInvoiceNo: 'M-2', invoiceDate: today, lines: [l2] }, user);
+    const i1 = await createInvoice({ vendorId: vendor._id, vendorInvoiceNo: 'M-1', invoiceDate: today, lines: [l1] }, user);
+    const i2 = await createInvoice({ vendorId: vendor._id, vendorInvoiceNo: 'M-2', invoiceDate: today, lines: [l2] }, user);
     const other = await newVendor('Other Pay Co');
     await expect(
       postPayment({ vendorId: other._id, paymentDate: today, method: 'cash', allocations: [{ invoiceId: i1._id, amount: 10 }] }, user)
@@ -516,7 +545,7 @@ describe('invoices and payments', () => {
   it('voiding a payment owes it again; an invoice with payments cannot be voided', async () => {
     const { vendor, order } = await receivedOrder('Void Pay Co');
     const invoice = await createInvoice(
-      { vendorId: vendor._id, orderId: order._id, vendorInvoiceNo: 'VP-1', invoiceDate: today, lines: fullInvoiceLines(order) },
+      { vendorId: vendor._id, vendorInvoiceNo: 'VP-1', invoiceDate: today, lines: fullInvoiceLines(order) },
       user
     );
     const payment = await postPayment(
@@ -536,8 +565,8 @@ describe('invoices and payments', () => {
   it('leaves every invoice unchanged when one allocation in a payment fails', async () => {
     const { vendor, order } = await receivedOrder('Atomic Pay Co');
     const [l1, l2] = fullInvoiceLines(order);
-    const i1 = await createInvoice({ vendorId: vendor._id, orderId: order._id, vendorInvoiceNo: 'A-1', invoiceDate: today, lines: [l1] }, user);
-    const i2 = await createInvoice({ vendorId: vendor._id, orderId: order._id, vendorInvoiceNo: 'A-2', invoiceDate: today, lines: [l2] }, user);
+    const i1 = await createInvoice({ vendorId: vendor._id, vendorInvoiceNo: 'A-1', invoiceDate: today, lines: [l1] }, user);
+    const i2 = await createInvoice({ vendorId: vendor._id, vendorInvoiceNo: 'A-2', invoiceDate: today, lines: [l2] }, user);
     await expect(
       postPayment(
         {
@@ -559,7 +588,7 @@ describe('invoices and payments', () => {
     const { vendor, order } = await receivedOrder('Overdue Co');
     const lines = fullInvoiceLines(order).slice(0, 1);
     const late = await createInvoice(
-      { vendorId: vendor._id, orderId: order._id, vendorInvoiceNo: 'OD-1', invoiceDate: new Date(2000, 0, 1), dueDate: new Date(2000, 1, 1), lines },
+      { vendorId: vendor._id, vendorInvoiceNo: 'OD-1', invoiceDate: new Date(2000, 0, 1), dueDate: new Date(2000, 1, 1), lines },
       user
     );
     const overdue = await listInvoices({ overdue: true, vendorId: vendor._id });
@@ -590,10 +619,9 @@ describe('deleting records that are in use', () => {
   it('blocks deleting a vendor and a catalog item that documents refer to', async () => {
     const item = await createCatalogItem({ name: 'Cat In Use', unit: 'pc' }, user);
     const vendor = await newVendor('In Use Co');
-    await createOrder(
-      { vendorId: vendor._id, orderDate: today, lines: [{ catalogItemId: item._id, quantity: 1, unitPrice: 5 }] },
-      user
-    );
+    await draftOrder(vendor._id, [
+      { internalCatalogId: item._id, description: 'Cat In Use', unit: 'pc', quantity: 1, unitPrice: 5 },
+    ]);
     await expect(deleteVendor(vendor._id, user)).rejects.toMatchObject({ extensions: { code: 'CONFLICT' } });
     await expect(deleteCatalogItem(item._id, user)).rejects.toMatchObject({ extensions: { code: 'CONFLICT' } });
   });

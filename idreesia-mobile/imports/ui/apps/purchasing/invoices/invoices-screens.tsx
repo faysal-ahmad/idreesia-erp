@@ -113,7 +113,7 @@ export const InvoiceDetailScreen = () => {
           <DetailFields
             fields={[
               { label: 'Vendor invoice no.', value: invoice.vendorInvoiceNo },
-              { label: 'Order', value: invoice.order?.number },
+              { label: 'Orders', value: invoice.orders?.map((order) => order?.number).filter(Boolean).join(', ') },
               { label: 'Invoice date', value: formatDate(invoice.invoiceDate) },
               { label: 'Due date', value: formatDate(invoice.dueDate) },
               { label: 'Disputed', value: invoice.isDisputed ? 'Yes' : null },

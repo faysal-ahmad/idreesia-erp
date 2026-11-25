@@ -1,6 +1,5 @@
 export { default as PAGED_PURCHASING_ORDERS } from './paged-purchasing-orders';
 export { default as PURCHASING_ORDER_BY_ID } from './purchasing-order-by-id';
-export { default as CREATE_PURCHASING_ORDER } from './create-purchasing-order';
 export { default as UPDATE_PURCHASING_ORDER } from './update-purchasing-order';
 export { default as CREATE_PURCHASING_ORDER_FROM_REQUISITION } from './create-purchasing-order-from-requisition';
 export { default as CREATE_PURCHASING_ORDER_FROM_QUOTE } from './create-purchasing-order-from-quote';

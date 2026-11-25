@@ -25,10 +25,22 @@ export const RequisitionStatus = {
   REJECTED: 'rejected',
   // An approved requisition that a purchase order was made from.
   ORDERED: 'ordered',
+  // Every order made from the requisition has been received (or closed).
+  CLOSED: 'closed',
   CANCELLED: 'cancelled',
 } as const;
 export type RequisitionStatusValue =
   (typeof RequisitionStatus)[keyof typeof RequisitionStatus];
+
+/**
+ * Who raised a requisition. Purchasing's own requisitions have no source
+ * field at all, so only the store value is ever stored.
+ */
+export const RequisitionSource = {
+  STORE: 'store',
+} as const;
+export type RequisitionSourceValue =
+  (typeof RequisitionSource)[keyof typeof RequisitionSource];
 
 export const QuoteStatus = {
   RECEIVED: 'received',
@@ -54,6 +66,15 @@ export const ReceivableOrderStatuses: OrderStatusValue[] = [
   OrderStatus.APPROVED,
   OrderStatus.SENT,
   OrderStatus.PARTIALLY_RECEIVED,
+];
+
+/** Order states a store can see: from approved on, never a draft or one awaiting approval. */
+export const StoreVisibleOrderStatuses: OrderStatusValue[] = [
+  OrderStatus.APPROVED,
+  OrderStatus.SENT,
+  OrderStatus.PARTIALLY_RECEIVED,
+  OrderStatus.RECEIVED,
+  OrderStatus.CLOSED,
 ];
 
 /** Order states that can be invoiced. */

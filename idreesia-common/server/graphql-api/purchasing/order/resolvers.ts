@@ -3,7 +3,6 @@ import {
   approveOrder,
   cancelOrder,
   closeOrder,
-  createOrder,
   createOrderFromQuote,
   createOrderFromRequisition,
   deleteOrder,
@@ -45,6 +44,7 @@ type IdArgs = { _id: string };
 
 export default {
   PurchasingOrder: {
+    source: (order: { source?: string }) => order.source ?? 'purchasing',
     vendor: async (order: { vendorId: string }, _args: unknown, { loaders }: ResolverContext) =>
       loaders.purchasing.vendors.load(order.vendorId),
   },
@@ -65,6 +65,7 @@ export default {
         statuses?: OrderStatusValue[];
         vendorId?: string;
         requisitionId?: string;
+        source?: 'purchasing' | 'store';
         fromDate?: string;
         toDate?: string;
         pageIndex?: number;
@@ -79,9 +80,6 @@ export default {
   },
 
   Mutation: {
-    createPurchasingOrder: async (_obj: unknown, args: OrderArgs, { user }: ResolverContext) =>
-      createOrder(toValues(args), user),
-
     updatePurchasingOrder: async (
       _obj: unknown,
       { _id, version, ...rest }: OrderArgs & IdArgs & { version: number },

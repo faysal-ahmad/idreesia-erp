@@ -4,11 +4,12 @@ Audience: developers and maintainers. End users should read the [user manual](us
 
 The Purchasing module (menu: **381-A Operations > Purchasing**) covers the whole cycle from asking for something to paying for it: requisition, approval, optional quotes, purchase order, goods receipt, vendor invoice, payment, and reports.
 
-It is **independent of Stores**. It has its own vendors and item catalog, never changes stock, and uses no Stores code, data or permission. Stores' purchase forms are untouched.
+It is **joined to Stores through requisitions**. Everything bought starts from a requisition. A store can raise requisitions for its own stock items and is the one that receives the goods (which raises its stock), through the store-facing API and screens described under [Stores integration](#stores-integration). Purchasing otherwise has its own vendors and item catalog. Stores' older direct-purchasing forms are unchanged and still work.
 
 ## Contents
 
 - [Design principles](#design-principles)
+- [Stores integration](#stores-integration)
 - [The cycle and document states](#the-cycle-and-document-states)
 - [Data model](#data-model)
 - [Business rules](#business-rules)
@@ -25,11 +26,21 @@ It is **independent of Stores**. It has its own vendors and item catalog, never 
 
 ## Design principles
 
-1. **Independent of Stores.** Own collections (`purchasing-*`), own vendors, own catalog. No imports from Stores code.
+1. **Own data, narrow seam to Stores.** Own collections (`purchasing-*`), own vendors, own catalog. The only Stores contact points are the receipt stock movement (`business-logic/inventory/stock-levels`), the stock item check in `requisitions.ts`/`receipts.ts`, and the store-facing API in `graphql-api/stores/purchasing/`.
 2. **Permissions decide who; business logic decides what is valid.** Business logic enforces data integrity only (legal state transitions, quantity and amount limits, uniqueness). It never contains a "who" rule such as "the creator cannot approve". Duties are separated by assigning permissions to different users and groups. This is a deliberate decision; do not add hard-coded role rules.
 3. **Free text first, catalog optional.** Every line can be typed freely. A catalog item is an optional convenience that grows over time.
 4. **Snapshots, not live references.** Line description and unit are copied onto each document, so catalog edits never rewrite history.
 5. **Layering follows `docs/api-design-guidelines.md`.** Collections, then business logic (plain functions, throw `GraphQLError`), then thin resolvers that only check access and delegate.
+
+## Stores integration
+
+A store raises requisitions for its own stock items and receives the goods, with purchasing doing everything in between (approval, quotes, orders, invoices, payments).
+
+**Data.** Requisitions, orders and receipts raised for a store have `source: 'store'` and `externalSourceId` (the physical store id). Purchasing's own documents have neither field: absence means purchasing, and `'purchasing'` is never stored (the GraphQL `source` field maps it). Order and receipt copy both fields from the requisition. A store requisition's lines carry `externalCatalogId` (the stock item id), so receiving can map goods back to stock. A store order holds exactly one store's requisition.
+
+**Store API** (`graphql-api/stores/purchasing/`, `@checkStoreAccess` per store): `store-requisition` (create, update, submit, reopen, cancel, delete, list, by id), `store-order` (read-only; approved orders only, no prices, a slim type) and `store-receipt` (post, void, list, by id). Permissions are per store: `stores-view-requisitions`, `stores-manage-requisitions`, `stores-view-receipts`, `stores-manage-receipts`. By-id reads are scoped to the store. Resolvers are thin; the origin (`{ physicalStoreId }`) is passed into `requisitions.ts` and `receipts.ts`, which enforce ownership: a store can touch only its own documents, purchasing can't edit or submit a store's draft, and purchasing can't receive or void goods for a store.
+
+**Receiving.** `postReceipt` on a store order adds the accepted quantity (never the rejected) to each stock item's `currentStockLevel` in the same transaction (`applyStockMovements`). `voidReceipt` takes it back, and is refused when the stock was already issued below that amount. Order status, requisition closure and stock all move together or not at all.
 
 ## The cycle and document states
 
@@ -60,16 +71,16 @@ All collections extend `AggregatableCollection` with SimpleSchema and the `ident
 |---|---|
 | `purchasing-vendors` | name, contact, phone, email, address, tax id, payment terms (days), bank details, notes, `isActive`. |
 | `purchasing-catalog-items` | name (unique, case-insensitive), unit, category, optional company (brand or maker), optional picture (`imageKey`), default price, last price and last vendor (set when an order is approved), `isActive`. |
-| `purchasing-requisitions` | number, title, purpose, requester, needed-by date, lines, estimated total, status, submit/approve/reject audit fields, `version`. |
-| `purchasing-quotes` | vendor, optional requisition, quote and valid-until dates, lines, total, status. |
-| `purchasing-orders` | number, vendor, optional requisition and quote, dates, delivery address, payment terms, lines (with `receivedQuantity` and `invoicedQuantity`), subtotal, tax, discount, shipping, total, status, approval fields, `version`. |
-| `purchasing-receipts` | number, order, vendor, received date and by, delivery note, lines `{orderLineId, receivedQuantity, rejectedQuantity, remarks}`, status. |
-| `purchasing-invoices` | number, vendor invoice no (unique per vendor), vendor, optional order, dates, lines, total, `paidAmount`, status, `isDisputed`. |
+| `purchasing-requisitions` | number, title, purpose, requester, needed-by date, optional `source` + `externalSourceId` (store requisitions only), lines, estimated total, status, submit/approve/reject audit fields, `version`. |
+| `purchasing-quotes` | vendor, requisition (required for new quotes), quote and valid-until dates, lines (each prices a requisition line), total, status. |
+| `purchasing-orders` | number, vendor, requisition (always set on new orders) and optional quote, optional `source` + `externalSourceId` (copied from the requisition), dates, delivery address, payment terms, lines (with `receivedQuantity` and `invoicedQuantity`), subtotal, tax, discount, shipping, total, status, approval fields, `version`. |
+| `purchasing-receipts` | number, order, vendor, optional `source` + `externalSourceId` (store receipts), received date and by, delivery note, lines `{orderLineId, externalCatalogId?, receivedQuantity, rejectedQuantity, remarks}`, status. |
+| `purchasing-invoices` | number, vendor invoice no (unique per vendor), vendor, `orderIds` (legacy invoices may have a single `orderId` or none), dates, lines (each billed against `{orderId, orderLineId}`), total, `paidAmount`, status, `isDisputed`. |
 | `purchasing-payments` | number, vendor, date, method (`cash` / `bank-transfer` / `cheque`), reference, amount, `allocations[{invoiceId, amount}]`, status. |
 | `purchasing-counters` | `{type, year, seq}`, atomic `$inc` for numbering. |
 | `purchasing-attachments` | owner type and id, storage key, sha256, size, mime type, status. |
 
-A **line** (shared schema `schemas/purchasing/lines.ts`) has `_id`, optional `catalogItemId`, `description`, `unit`, `quantity`, and where it applies a price and tax rate. Money is rounded to two decimals, quantities to three (`roundMoney`, `roundQuantity` in `internal.ts`). Single currency.
+A **line** (shared schema `schemas/purchasing/lines.ts`) has `_id`, optional `internalCatalogId` (a purchasing catalog item) or `externalCatalogId` (a store's stock item; never both), `description`, `unit`, `quantity`, and where it applies a price and tax rate. Money is rounded to two decimals, quantities to three (`roundMoney`, `roundQuantity` in `internal.ts`). Single currency.
 
 ## Business rules
 
@@ -85,8 +96,10 @@ Shared helpers in `internal.ts`: `roundMoney`, `normalizeBaseLine`, `totalsOf`, 
 
 **Documents**
 - Only drafts are edited. An approved order's lines are locked; to change one, cancel it and make a new one.
+- **Everything starts from a requisition.** There is no direct order creation. Orders are made from a requisition (`createOrderFromRequisition`) or from a quote for one (`createOrderFromQuote`, which needs the quote's requisition). Order and quote lines keep a `requisitionLineId`. A draft order's lines can't be added, removed or swapped: only price, tax and a lower quantity (never above the requested) change. Orders and quotes made before this rule may have no requisition.
+- **Requisition `closed`:** an ordered requisition closes by itself once it has orders and every non-cancelled order is `received` or `closed` (`syncRequisitionClosure`, called inside the receipt, order close/cancel/delete and order creation transactions). It goes back to `ordered` when a receipt is voided or another order is made. Purchasing can also close one by hand (`closeRequisition`).
 - **Receipt:** posting adds accepted quantities to the order lines and moves the order status (`approved`/`sent` → `partially-received` → `received`) in one transaction. Receiving more than ordered is refused. Voiding puts the quantities back, unless an invoice already bills them.
-- **Invoice:** one linked to an order can bill at most what was received and not yet invoiced. Billing more is refused unless the caller passes the accept flag, which sets `isDisputed`. The vendor invoice number is unique per vendor.
+- **Invoice:** every line is billed against an order line, and one invoice may cover several orders of the same vendor (they can come from different requisitions and stores). Each line can bill at most what was received and not yet invoiced on its own order line. Billing more is refused unless the caller passes the accept flag, which sets `isDisputed`. The vendor invoice number is unique per vendor.
 - **Payment:** pays one vendor's invoices. Each allocation is at most what is still owed, and allocations sum to the amount. Invoice `paidAmount` and status change in the same transaction. Voiding reverses it.
 - An order with receipts or invoices cannot be cancelled; void those first.
 - A vendor or catalog item referenced by any document cannot be deleted, only deactivated. Inactive vendors are rejected on new documents.
@@ -204,7 +217,7 @@ Excel downloads go through `/generate-report` with generators `PurchasingSpendin
 
 ## Migration and indexes
 
-`idreesia-web/imports/startup/server/migrations/75-create-purchasing-indexes.ts`, registered in `migrations/index.ts`. Creates unique document numbers per collection, a case-insensitive unique catalog name, a unique `(type, year)` on counters, a unique vendor invoice number per vendor, and lookup indexes on `status`, `vendorId`, `orderId`, `requisitionId`, `dueDate`, `lines.catalogItemId` and `(ownerType, ownerId)`. It runs on the first start after deploy.
+`idreesia-web/imports/startup/server/migrations/75-create-purchasing-indexes.ts`, registered in `migrations/index.ts`. Creates unique document numbers per collection, a case-insensitive unique catalog name, a unique `(type, year)` on counters, a unique vendor invoice number per vendor, and lookup indexes on `status`, `vendorId`, `orderId`, `requisitionId`, `dueDate`, `lines.catalogItemId` and `(ownerType, ownerId)`. It runs on the first start after deploy. `78-purchasing-store-integration.ts` renames `lines.catalogItemId` to `lines.internalCatalogId` (and its index), fills `orderIds` on invoices that had an `orderId`, and adds `(source, externalSourceId, status)` and `orderIds` indexes.
 
 ## Testing
 
@@ -231,6 +244,6 @@ Excel downloads go through `/generate-report` with generators `PurchasingSpendin
 
 - An approved order's lines are locked. To change one, cancel it and make a new order.
 - One approval step. No amount thresholds or multi-level approval.
-- No stock updates and no link to Stores; no multi-currency; no vendor portal; no notifications (push or otherwise); the mobile app covers only the workflows listed under [Mobile app](#mobile-app).
+- Stock only changes for store-source orders (see [Stores integration](#stores-integration)); no multi-currency; no vendor portal; no notifications (push or otherwise); the mobile app covers only the workflows listed under [Mobile app](#mobile-app).
 - Payments must be allocated to invoices; advance payments are not supported.
 - The catalog has no merge or de-duplicate tool.

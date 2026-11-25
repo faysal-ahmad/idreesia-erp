@@ -91,7 +91,9 @@ const NewReceipt = ({ history, location }: RouteComponentProps) => {
           onChange={setOrderId}
           query={PAGED_PURCHASING_ORDERS}
           dataKey="pagedPurchasingOrders"
-          filterRow={(o) => RECEIVABLE.includes(o.status)}
+          // Goods for a store are received by the store, not by purchasing.
+          variables={{ source: 'purchasing' }}
+          filterRow={(o) => RECEIVABLE.includes(o.status) && o.source !== 'store'}
           labelOf={(o) => (o.number ? `${o.number} - ${o.vendor?.name ?? ''}` : '')}
           selected={order}
           placeholder="Choose the order the goods are for"
@@ -104,7 +106,9 @@ const NewReceipt = ({ history, location }: RouteComponentProps) => {
   if (orderId && loading) {
     body = <Spin />;
   } else if (orderId && order) {
-    if (!RECEIVABLE.includes(order.status ?? '')) {
+    if (order.source === 'store') {
+      body = <Empty description="Goods for a store are received by the store." />;
+    } else if (!RECEIVABLE.includes(order.status ?? '')) {
       body = <Empty description="Goods can't be received against this order." />;
     } else if (dueLines.length === 0) {
       body = <Empty description="Everything on this order has been received." />;

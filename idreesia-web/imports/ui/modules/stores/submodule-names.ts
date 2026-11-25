@@ -4,6 +4,10 @@ const SubModuleNames = {
   purchaseForms: 'Purchase Forms',
   stockAdjustments: 'Stock Adjustments',
 
+  requisitions: 'Requisitions',
+  incomingOrders: 'Incoming Orders',
+  goodsReceipts: 'Goods Receipts',
+
   purchasingReport: 'Purchasing Report',
   issuanceReport: 'Issuance Report',
 

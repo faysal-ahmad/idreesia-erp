@@ -30,11 +30,16 @@ const List = (props: RouteComponentProps) => {
     { title: 'Vendor Invoice', dataIndex: 'vendorInvoiceNo', key: 'vendorInvoiceNo', width: 160 },
     { title: 'Vendor', key: 'vendor', render: (_: unknown, record: any) => record.vendor?.name ?? '' },
     {
-      title: 'Order',
-      key: 'order',
-      width: 140,
+      title: 'Orders',
+      key: 'orders',
+      width: 180,
       render: (_: unknown, record: any) =>
-        record.order?._id ? <Link to={paths.orderEditPath(record.order._id)}>{record.order.number}</Link> : '',
+        (record.orders ?? []).filter((o: any) => o?._id).map((o: any, index: number) => (
+          <React.Fragment key={o._id}>
+            {index > 0 ? ', ' : null}
+            <Link to={paths.orderEditPath(o._id)}>{o.number}</Link>
+          </React.Fragment>
+        )),
     },
     { title: 'Date', dataIndex: 'invoiceDate', key: 'invoiceDate', width: 130, render: formatDate },
     {

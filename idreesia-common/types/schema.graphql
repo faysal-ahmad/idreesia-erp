@@ -106,6 +106,10 @@ enum Permission {
   IN_VIEW_PURCHASE_FORMS
   IN_MANAGE_PURCHASE_FORMS
   IN_APPROVE_PURCHASE_FORMS
+  IN_VIEW_REQUISITIONS
+  IN_MANAGE_REQUISITIONS
+  IN_VIEW_RECEIPTS
+  IN_MANAGE_RECEIPTS
   IN_VIEW_STOCK_ADJUSTMENTS
   IN_MANAGE_STOCK_ADJUSTMENTS
   IN_APPROVE_STOCK_ADJUSTMENTS
@@ -2436,13 +2440,13 @@ type PagedStockItem {
 
 extend type Query {
   pagedStockItems(physicalStoreId: String!, queryString: String): PagedStockItem
-  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId", returnType: "paged-list")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS, IN_VIEW_REQUISITIONS, IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId", returnType: "paged-list")
 
   stockItemById(_id: String!, physicalStoreId: String!): StockItem
-  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS, IN_VIEW_REQUISITIONS, IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   stockItemsById(_ids: [String]!, physicalStoreId: String!): [StockItem]
-  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS, IN_VIEW_REQUISITIONS, IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 }
 
 extend type Mutation {
@@ -2902,7 +2906,9 @@ extend type Mutation {
 
 type PurchasingInvoiceLine {
   _id: String
-  catalogItemId: String
+  internalCatalogId: String
+  externalCatalogId: String
+  orderId: String
   orderLineId: String
   description: String
   unit: String
@@ -2917,8 +2923,11 @@ type PurchasingInvoice {
   vendorInvoiceNo: String
   vendorId: String
   vendor: PurchasingVendor
+  # Legacy invoices were for a single order.
   orderId: String
-  order: PurchasingOrder
+  # Every order the lines are billed against.
+  orderIds: [String]
+  orders: [PurchasingOrder]
   invoiceDate: String
   dueDate: String
   notes: String
@@ -2969,7 +2978,6 @@ extend type Mutation {
   # the invoice is then marked disputed.
   createPurchasingInvoice(
     vendorId: String!
-    orderId: String
     vendorInvoiceNo: String!
     invoiceDate: String!
     dueDate: String
@@ -2996,7 +3004,9 @@ extend type Mutation {
 
 type PurchasingOrderLine {
   _id: String
-  catalogItemId: String
+  internalCatalogId: String
+  externalCatalogId: String
+  requisitionLineId: String
   description: String
   unit: String
   quantity: Float
@@ -3013,6 +3023,9 @@ type PurchasingOrder {
   vendor: PurchasingVendor
   requisitionId: String
   quoteId: String
+  # 'purchasing' or 'store' (the store of its requisition).
+  source: String
+  externalSourceId: String
   orderDate: String
   expectedDeliveryDate: String
   deliveryAddress: String
@@ -3060,6 +3073,8 @@ extend type Query {
     statuses: [String]
     vendorId: String
     requisitionId: String
+    # 'purchasing' or 'store'
+    source: String
     fromDate: String
     toDate: String
     pageIndex: Int
@@ -3069,20 +3084,10 @@ extend type Query {
 }
 
 extend type Mutation {
-  createPurchasingOrder(
-    vendorId: String!
-    orderDate: String!
-    expectedDeliveryDate: String
-    deliveryAddress: String
-    paymentTermsDays: Int
-    notes: String
-    discount: Float
-    shipping: Float
-    lines: [PurchasingPricedLineInput!]!
-  ): PurchasingOrder
-    @checkPermissions(permissions: [PURCHASING_MANAGE_ORDERS])
-
+  # Orders are only made from a requisition (or a quote for one).
   # Only a draft can be edited. version is the version that was loaded.
+  # The lines can't be added, removed or changed to another item; the price,
+  # tax and (downwards) quantity can change.
   updatePurchasingOrder(
     _id: String!
     version: Int!
@@ -3269,19 +3274,24 @@ extend type Mutation {
 # A line of a quote, order or invoice that has a price.
 input PurchasingPricedLineInput {
   _id: String
-  catalogItemId: String
+  internalCatalogId: String
   description: String
   unit: String
   quantity: Float!
   unitPrice: Float!
   taxRate: Float
-  # Invoices only: the order line being billed.
+  # Quotes only: the requisition line being priced.
+  requisitionLineId: String
+  # Invoices only: the order (and its line) being billed.
+  orderId: String
   orderLineId: String
 }
 
 type PurchasingQuoteLine {
   _id: String
-  catalogItemId: String
+  requisitionLineId: String
+  internalCatalogId: String
+  externalCatalogId: String
   description: String
   unit: String
   quantity: Float
@@ -3330,7 +3340,7 @@ extend type Query {
 
 extend type Mutation {
   createPurchasingQuote(
-    requisitionId: String
+    requisitionId: String!
     vendorId: String!
     reference: String
     quoteDate: String!
@@ -3343,7 +3353,7 @@ extend type Mutation {
   updatePurchasingQuote(
     _id: String!
     version: Int!
-    requisitionId: String
+    requisitionId: String!
     vendorId: String!
     reference: String
     quoteDate: String!
@@ -3366,6 +3376,7 @@ extend type Mutation {
 type PurchasingReceiptLine {
   _id: String
   orderLineId: String
+  externalCatalogId: String
   description: String
   unit: String
   receivedQuantity: Float
@@ -3387,6 +3398,9 @@ type PurchasingReceipt {
   order: PurchasingOrder
   vendorId: String
   vendor: PurchasingVendor
+  # 'purchasing' or 'store' (the store of its order).
+  source: String
+  externalSourceId: String
   receivedDate: String
   receivedBy: String
   receivedByPerson: PersonBasicType
@@ -3525,7 +3539,9 @@ extend type Query {
 
 type PurchasingRequisitionLine {
   _id: String
-  catalogItemId: String
+  internalCatalogId: String
+  # A store's stock item, for requisitions raised by a store.
+  externalCatalogId: String
   description: String
   unit: String
   quantity: Float
@@ -3534,7 +3550,7 @@ type PurchasingRequisitionLine {
 
 input PurchasingRequisitionLineInput {
   _id: String
-  catalogItemId: String
+  internalCatalogId: String
   description: String
   unit: String
   quantity: Float!
@@ -3549,6 +3565,9 @@ type PurchasingRequisition {
   requestedBy: String
   requestedByPerson: PersonBasicType
   neededBy: String
+  # 'purchasing' or 'store'. For a store, externalSourceId is its physical store id.
+  source: String
+  externalSourceId: String
   lines: [PurchasingRequisitionLine]
   estimatedTotal: Float
   status: String
@@ -3582,6 +3601,8 @@ extend type Query {
     search: String
     status: String
     requestedBy: String
+    # 'purchasing' or 'store'
+    source: String
     pageIndex: Int
     pageSize: Int
   ): PagedPurchasingRequisitions
@@ -3617,6 +3638,11 @@ extend type Mutation {
     @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
 
   cancelPurchasingRequisition(_id: String!): PurchasingRequisition
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
+
+  # Closes an ordered requisition by hand (it also closes by itself once every
+  # order made from it is received).
+  closePurchasingRequisition(_id: String!): PurchasingRequisition
     @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
 
   deletePurchasingRequisition(_id: String!): Boolean
@@ -3800,6 +3826,11 @@ extend type Query {
         ADMIN_VIEW_USERS_AND_GROUPS
         ADMIN_MANAGE_USERS_AND_GROUPS
         ADMIN_MANAGE_PHYSICAL_STORES
+        PURCHASING_VIEW_REQUISITIONS
+        PURCHASING_MANAGE_REQUISITIONS
+        PURCHASING_APPROVE_REQUISITIONS
+        PURCHASING_VIEW_ORDERS
+        PURCHASING_MANAGE_ORDERS
       ]
     )
   referencePhysicalStoreById(id: String!): ReferencePhysicalStoreType
@@ -4587,6 +4618,171 @@ extend type Mutation {
     csvData: String!
   ): String
   @checkPermissions(permissions: [SECURITY_MANAGE_VISITORS])
+}
+
+type StoreOrderLine {
+  _id: String
+  # The store's stock item.
+  externalCatalogId: String
+  description: String
+  unit: String
+  quantity: Float
+  receivedQuantity: Float
+}
+
+type StoreOrder {
+  _id: String
+  number: String
+  requisitionId: String
+  requisitionNumber: String
+  vendorName: String
+  orderDate: String
+  expectedDeliveryDate: String
+  status: String
+  lines: [StoreOrderLine]
+}
+
+type PagedStoreOrders {
+  totalResults: Int
+  data: [StoreOrder]
+}
+
+extend type Query {
+  storeOrderById(physicalStoreId: String!, _id: String!): StoreOrder
+    @checkStoreAccess(permissions: [IN_VIEW_RECEIPTS, IN_MANAGE_RECEIPTS, IN_VIEW_REQUISITIONS, IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
+
+  # statuses limits the orders to those states (e.g. the ones goods can still
+  # be received in). Orders that are still drafts or awaiting approval are
+  # never listed.
+  pagedStoreOrders(
+    physicalStoreId: String!
+    search: String
+    requisitionId: String
+    statuses: [String]
+    pageIndex: Int
+    pageSize: Int
+  ): PagedStoreOrders
+    @checkStoreAccess(permissions: [IN_VIEW_RECEIPTS, IN_MANAGE_RECEIPTS, IN_VIEW_REQUISITIONS, IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId", returnType: "paged-list")
+}
+
+type StoreReceiptLine {
+  _id: String
+  orderLineId: String
+  externalCatalogId: String
+  description: String
+  unit: String
+  receivedQuantity: Float
+  rejectedQuantity: Float
+  remarks: String
+}
+
+type StoreReceipt {
+  _id: String
+  number: String
+  orderId: String
+  orderNumber: String
+  receivedDate: String
+  receivedBy: String
+  receivedByPerson: PersonBasicType
+  deliveryNoteNo: String
+  notes: String
+  lines: [StoreReceiptLine]
+  status: String
+  voidedAt: String
+  voidReason: String
+  createdAt: String
+}
+
+type PagedStoreReceipts {
+  totalResults: Int
+  data: [StoreReceipt]
+}
+
+extend type Query {
+  storeReceiptById(physicalStoreId: String!, _id: String!): StoreReceipt
+    @checkStoreAccess(permissions: [IN_VIEW_RECEIPTS, IN_MANAGE_RECEIPTS], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
+
+  pagedStoreReceipts(
+    physicalStoreId: String!
+    search: String
+    status: String
+    orderId: String
+    pageIndex: Int
+    pageSize: Int
+  ): PagedStoreReceipts
+    @checkStoreAccess(permissions: [IN_VIEW_RECEIPTS, IN_MANAGE_RECEIPTS], physicalStoreIdArgName: "physicalStoreId", returnType: "paged-list")
+}
+
+extend type Mutation {
+  # received is what is accepted into the store (it adds to the stock levels);
+  # rejected is only recorded.
+  postStoreReceipt(
+    physicalStoreId: String!
+    orderId: String!
+    receivedDate: String!
+    receivedBy: String
+    deliveryNoteNo: String
+    notes: String
+    lines: [PurchasingReceiptLineInput!]!
+  ): StoreReceipt
+    @checkStoreAccess(permissions: [IN_MANAGE_RECEIPTS], physicalStoreIdArgName: "physicalStoreId")
+
+  # Refused when the goods were already issued from the store.
+  voidStoreReceipt(physicalStoreId: String!, _id: String!, reason: String!): StoreReceipt
+    @checkStoreAccess(permissions: [IN_MANAGE_RECEIPTS], physicalStoreIdArgName: "physicalStoreId")
+}
+
+extend type Query {
+  storeRequisitionById(physicalStoreId: String!, _id: String!): PurchasingRequisition
+    @checkStoreAccess(permissions: [IN_VIEW_REQUISITIONS, IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
+
+  pagedStoreRequisitions(
+    physicalStoreId: String!
+    search: String
+    status: String
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingRequisitions
+    @checkStoreAccess(permissions: [IN_VIEW_REQUISITIONS, IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId", returnType: "paged-list")
+}
+
+extend type Mutation {
+  # Every line is one of the store's stock items (externalCatalogId).
+  createStoreRequisition(
+    physicalStoreId: String!
+    title: String!
+    purpose: String
+    requestedBy: String
+    neededBy: String
+    lines: [PurchasingRequisitionLineInput!]!
+  ): PurchasingRequisition
+    @checkStoreAccess(permissions: [IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId")
+
+  # Only a draft can be edited. version is the version that was loaded.
+  updateStoreRequisition(
+    physicalStoreId: String!
+    _id: String!
+    version: Int!
+    title: String!
+    purpose: String
+    requestedBy: String
+    neededBy: String
+    lines: [PurchasingRequisitionLineInput!]!
+  ): PurchasingRequisition
+    @checkStoreAccess(permissions: [IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId")
+
+  submitStoreRequisition(physicalStoreId: String!, _id: String!): PurchasingRequisition
+    @checkStoreAccess(permissions: [IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId")
+
+  # A rejected requisition goes back to a draft so it can be fixed and resubmitted.
+  reopenStoreRequisition(physicalStoreId: String!, _id: String!): PurchasingRequisition
+    @checkStoreAccess(permissions: [IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId")
+
+  cancelStoreRequisition(physicalStoreId: String!, _id: String!): PurchasingRequisition
+    @checkStoreAccess(permissions: [IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId")
+
+  deleteStoreRequisition(physicalStoreId: String!, _id: String!): Boolean
+    @checkStoreAccess(permissions: [IN_MANAGE_REQUISITIONS], physicalStoreIdArgName: "physicalStoreId")
 }
 
 type WorkspaceCommitteeMemberType {

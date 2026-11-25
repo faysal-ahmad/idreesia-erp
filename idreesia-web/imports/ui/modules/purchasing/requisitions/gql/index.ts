@@ -7,4 +7,5 @@ export { default as APPROVE_PURCHASING_REQUISITION } from './approve-purchasing-
 export { default as REJECT_PURCHASING_REQUISITION } from './reject-purchasing-requisition';
 export { default as REOPEN_PURCHASING_REQUISITION } from './reopen-purchasing-requisition';
 export { default as CANCEL_PURCHASING_REQUISITION } from './cancel-purchasing-requisition';
+export { default as CLOSE_PURCHASING_REQUISITION } from './close-purchasing-requisition';
 export { default as DELETE_PURCHASING_REQUISITION } from './delete-purchasing-requisition';

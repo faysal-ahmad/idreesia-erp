@@ -68,7 +68,7 @@ export const MOBILE_PURCHASING_INVOICE_BY_ID: TypedDocumentNode<
         _id
         name
       }
-      order {
+      orders {
         _id
         number
       }

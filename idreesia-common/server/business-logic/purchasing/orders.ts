@@ -2,7 +2,9 @@ import {
   NumberedDocument,
   OrderStatus,
   QuoteStatus,
+  RequisitionSource,
   RequisitionStatus,
+  StoreVisibleOrderStatuses,
   type OrderStatusValue,
 } from 'meteor/idreesia-common/constants/purchasing';
 import { runInTransaction } from 'meteor/idreesia-common/server/collections';
@@ -11,8 +13,10 @@ import {
   PurchasingInvoices,
   PurchasingOrders,
   PurchasingReceipts,
+  PurchasingRequisitions,
   type OrderLine,
   type PurchasingOrderDocument,
+  type PurchasingRequisitionDocument,
 } from 'meteor/idreesia-common/server/collections/purchasing';
 import { escapeRegExp } from 'meteor/idreesia-common/utilities/lodash';
 
@@ -40,12 +44,14 @@ import {
 } from './internal';
 import { nextDocumentNumber } from './numbering';
 import { getQuote, selectQuote } from './quotes';
-import { getRequisition, setRequisitionOrdered } from './requisitions';
+import { getRequisition, setRequisitionOrdered, syncRequisitionClosure } from './requisitions';
 import { getUsableVendor, getVendor } from './vendors';
 
 export interface OrderLineInput extends LineInput {
   unitPrice: number;
   taxRate?: number | null;
+  /** Set by this module (never by a client) for lines copied from a requisition. */
+  requisitionLineId?: string | null;
 }
 
 export interface OrderValues {
@@ -67,6 +73,10 @@ export interface ListOrdersOptions extends PageOptions {
   statuses?: OrderStatusValue[];
   vendorId?: string;
   requisitionId?: string;
+  /** Only orders made for purchasing's own requisitions, or only a store's. */
+  source?: 'purchasing' | 'store';
+  /** Only the orders made for this store's requisitions. */
+  physicalStoreId?: string;
   fromDate?: Date;
   toDate?: Date;
 }
@@ -108,6 +118,9 @@ async function normalize(values: OrderValues) {
     const base = await normalizeBaseLine(input, i);
     lines.push({
       ...base,
+      ...(cleanText(input.requisitionLineId)
+        ? { requisitionLineId: cleanText(input.requisitionLineId) }
+        : {}),
       unitPrice: roundMoney(requireNonNegative(input.unitPrice, `Line ${i + 1}: price`)),
       taxRate: requireTaxRate(input.taxRate),
       receivedQuantity: 0,
@@ -153,9 +166,13 @@ export function receivingStatus(
 const withoutUndefined = <T extends object>(value: T): T =>
   Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined)) as T;
 
+/** An order belongs to the store its requisition was raised by, if any. */
+const sourceOf = ({ source, externalSourceId }: PurchasingRequisitionDocument) =>
+  source && externalSourceId ? { source, externalSourceId } : {};
+
 async function insertOrder(
   data: Awaited<ReturnType<typeof normalize>>,
-  links: { requisitionId?: string; quoteId?: string },
+  links: { requisitionId: string; quoteId?: string } & ReturnType<typeof sourceOf>,
   user: ActingUser
 ) {
   const now = new Date();
@@ -175,22 +192,27 @@ async function insertOrder(
   return _id;
 }
 
-/** Marks the requisition as ordered when a first order is made from it. */
+/**
+ * Marks the requisition as ordered when a first order is made from it, and
+ * reopens one that was closed. Returns it, for the order's store link.
+ */
 async function linkRequisition(requisitionId: string, user: ActingUser) {
   const requisition = await getRequisition(requisitionId);
   if (requisition.status === RequisitionStatus.APPROVED) {
     await setRequisitionOrdered(requisitionId, true, user);
+  } else if (requisition.status === RequisitionStatus.CLOSED) {
+    await moveStatus(
+      PurchasingRequisitions,
+      requisitionId,
+      [RequisitionStatus.CLOSED],
+      { status: RequisitionStatus.ORDERED },
+      user,
+      'This requisition'
+    );
   } else if (requisition.status !== RequisitionStatus.ORDERED) {
     throw purchasingError('BAD_USER_INPUT', 'Only an approved requisition can be ordered.');
   }
-}
-
-export async function createOrder(values: OrderValues, user: ActingUser) {
-  const data = await normalize(values);
-  return runInTransaction(async () => {
-    const _id = await insertOrder(data, {}, user);
-    return getOrder(_id);
-  });
+  return requisition;
 }
 
 export async function createOrderFromRequisition(
@@ -206,7 +228,9 @@ export async function createOrderFromRequisition(
       orderDate: new Date(),
       paymentTermsDays: vendor.paymentTermsDays,
       lines: requisition.lines.map((l) => ({
-        catalogItemId: l.catalogItemId,
+        internalCatalogId: l.internalCatalogId,
+        externalCatalogId: l.externalCatalogId,
+        requisitionLineId: l._id,
         description: l.description,
         unit: l.unit,
         quantity: l.quantity,
@@ -214,7 +238,7 @@ export async function createOrderFromRequisition(
       })),
     });
     await linkRequisition(requisitionId, user);
-    const _id = await insertOrder(data, { requisitionId }, user);
+    const _id = await insertOrder(data, { requisitionId, ...sourceOf(requisition) }, user);
     return getOrder(_id);
   });
 }
@@ -225,11 +249,16 @@ export async function createOrderFromQuote(quoteId: string, user: ActingUser) {
     if (quote.status === QuoteStatus.REJECTED) {
       throw purchasingError('BAD_USER_INPUT', 'This quote was rejected.');
     }
+    if (!quote.requisitionId) {
+      throw purchasingError('BAD_USER_INPUT', 'This quote is not linked to a requisition, so no order can be made from it.');
+    }
     const data = await normalize({
       vendorId: quote.vendorId,
       orderDate: new Date(),
       lines: quote.lines.map((l) => ({
-        catalogItemId: l.catalogItemId,
+        internalCatalogId: l.internalCatalogId,
+        externalCatalogId: l.externalCatalogId,
+        requisitionLineId: l.requisitionLineId,
         description: l.description,
         unit: l.unit,
         quantity: l.quantity,
@@ -237,24 +266,68 @@ export async function createOrderFromQuote(quoteId: string, user: ActingUser) {
       })),
     });
     if (quote.status === QuoteStatus.RECEIVED) await selectQuote(quoteId, user);
-    if (quote.requisitionId) await linkRequisition(quote.requisitionId, user);
+    const requisition = await linkRequisition(quote.requisitionId, user);
     const _id = await insertOrder(
       data,
-      { quoteId, ...(quote.requisitionId ? { requisitionId: quote.requisitionId } : {}) },
+      { quoteId, requisitionId: quote.requisitionId, ...sourceOf(requisition) },
       user
     );
     return getOrder(_id);
   });
 }
 
+/**
+ * The lines of a draft order made from a requisition stay the requisition's:
+ * none can be added or removed or changed to another item. Only the price and
+ * tax can change, and the quantity can go down but never above what was
+ * requested.
+ */
+async function requisitionLineInputs(
+  existing: PurchasingOrderDocument,
+  inputs: OrderLineInput[]
+): Promise<OrderLineInput[]> {
+  // A legacy order's lines are free-form, and a client can't make them requisition lines.
+  if (!existing.lines.some((l) => l.requisitionLineId)) {
+    return inputs.map((input) => ({ ...input, requisitionLineId: undefined }));
+  }
+  if (inputs.length !== existing.lines.length) {
+    throw purchasingError('BAD_USER_INPUT', 'Lines can not be added to or removed from an order made from a requisition.');
+  }
+  const requisition = existing.requisitionId ? await getRequisition(existing.requisitionId) : null;
+  const seen = new Set<string>();
+  return inputs.map((input, i) => {
+    const current = existing.lines.find((l) => l._id === cleanText(input._id));
+    if (!current || seen.has(current._id)) {
+      throw purchasingError('BAD_USER_INPUT', `Line ${i + 1} is not a line of this order.`);
+    }
+    seen.add(current._id);
+    const requested = requisition?.lines.find((l) => l._id === current.requisitionLineId)?.quantity;
+    if (requested == null) {
+      throw purchasingError('BAD_USER_INPUT', `Line ${i + 1} is not on the requisition any more.`);
+    }
+    if (input.quantity > requested) {
+      throw purchasingError('BAD_USER_INPUT', `Line ${i + 1}: only ${requested} ${current.unit} was requested.`);
+    }
+    return {
+      ...input,
+      _id: current._id,
+      description: current.description,
+      unit: current.unit,
+      internalCatalogId: current.internalCatalogId,
+      externalCatalogId: current.externalCatalogId,
+      requisitionLineId: current.requisitionLineId,
+    };
+  });
+}
+
 /** Only a draft can be edited. The requisition and quote links stay as they are. */
 export async function updateOrder(_id: string, version: number, values: OrderValues, user: ActingUser) {
-  const data = await normalize(values);
   return runInTransaction(async () => {
     const existing = await getOrder(_id);
     if (existing.status !== DRAFT) {
       throw purchasingError('CONFLICT', 'Only a draft order can be edited.');
     }
+    const data = await normalize({ ...values, lines: await requisitionLineInputs(existing, values.lines) });
     const { expectedDeliveryDate, deliveryAddress, paymentTermsDays, notes, ...always } = data;
     const optional = { expectedDeliveryDate, deliveryAddress, paymentTermsDays, notes };
     const set: Record<string, unknown> = { ...always };
@@ -304,9 +377,9 @@ export const approveOrder = (_id: string, user: ActingUser) =>
     user,
     async (order) => {
       for (const line of order.lines) {
-        if (!line.catalogItemId) continue;
+        if (!line.internalCatalogId) continue;
         await PurchasingCatalogItems.updateAsync(
-          { _id: { $eq: line.catalogItemId } },
+          { _id: { $eq: line.internalCatalogId } },
           { $set: { lastUnitPrice: line.unitPrice, lastVendorId: order.vendorId } }
         );
       }
@@ -323,7 +396,16 @@ export const markOrderSent = (_id: string, user: ActingUser) =>
   transition(_id, [APPROVED], SENT, { sentAt: new Date(), sentBy: user._id }, user);
 
 export const closeOrder = (_id: string, user: ActingUser) =>
-  transition(_id, [PARTIALLY_RECEIVED, RECEIVED], CLOSED, { closedAt: new Date(), closedBy: user._id }, user);
+  transition(
+    _id,
+    [PARTIALLY_RECEIVED, RECEIVED],
+    CLOSED,
+    { closedAt: new Date(), closedBy: user._id },
+    user,
+    async (order) => {
+      if (order.requisitionId) await syncRequisitionClosure(order.requisitionId, user);
+    }
+  );
 
 /** Lets the requisition be ordered again once none of its orders are live. */
 async function releaseRequisition(order: PurchasingOrderDocument, user: ActingUser) {
@@ -333,7 +415,11 @@ async function releaseRequisition(order: PurchasingOrderDocument, user: ActingUs
     _id: { $ne: order._id },
     status: { $ne: CANCELLED },
   }).countAsync();
-  if (live > 0) return;
+  if (live > 0) {
+    // The orders that are left may all be done by now.
+    await syncRequisitionClosure(order.requisitionId, user);
+    return;
+  }
   const requisition = await getRequisition(order.requisitionId);
   if (requisition.status === RequisitionStatus.ORDERED) {
     await setRequisitionOrdered(order.requisitionId, false, user);
@@ -378,6 +464,8 @@ export async function listOrders({
   statuses,
   vendorId,
   requisitionId,
+  source,
+  physicalStoreId,
   fromDate,
   toDate,
   ...paging
@@ -389,6 +477,14 @@ export async function listOrders({
   else if (statuses?.length) selector.status = { $in: statuses };
   if (vendorId) selector.vendorId = vendorId;
   if (requisitionId) selector.requisitionId = requisitionId;
+  if (physicalStoreId) {
+    selector.source = RequisitionSource.STORE;
+    selector.externalSourceId = physicalStoreId;
+  } else if (source === 'store') {
+    selector.source = RequisitionSource.STORE;
+  } else if (source === 'purchasing') {
+    selector.source = { $exists: false };
+  }
   if (fromDate || toDate) {
     selector.orderDate = {
       ...(fromDate ? { $gte: fromDate } : {}),
@@ -401,4 +497,31 @@ export async function listOrders({
     PurchasingOrders.find(selector, { sort: { orderDate: -1, createdAt: -1 }, skip, limit }).fetchAsync(),
   ]);
   return { totalResults, data };
+}
+
+/** A store's own order, once it is approved. */
+export async function getStoreOrder(
+  _id: string,
+  physicalStoreId: string
+): Promise<PurchasingOrderDocument | null> {
+  return (await PurchasingOrders.findOneAsync({
+    _id: { $eq: _id },
+    source: RequisitionSource.STORE,
+    externalSourceId: { $eq: physicalStoreId },
+    status: { $in: StoreVisibleOrderStatuses },
+  })) ?? null;
+}
+
+/** The approved orders made for a store's requisitions, optionally only in some states. */
+export async function listStoreOrders({
+  physicalStoreId,
+  statuses,
+  ...rest
+}: Omit<ListOrdersOptions, 'source' | 'status' | 'vendorId' | 'fromDate' | 'toDate'> & {
+  physicalStoreId: string;
+}): Promise<Page<PurchasingOrderDocument>> {
+  const visible = statuses?.length
+    ? statuses.filter((status) => StoreVisibleOrderStatuses.includes(status))
+    : StoreVisibleOrderStatuses;
+  return listOrders({ ...rest, physicalStoreId, statuses: visible });
 }

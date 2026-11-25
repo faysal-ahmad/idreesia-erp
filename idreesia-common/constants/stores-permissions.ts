@@ -55,6 +55,26 @@ export const StorePermissionInfos: StorePermissionInfo[] = [
     name: 'Approve Purchase Forms',
   },
   {
+    key: Permissions.IN_VIEW_REQUISITIONS,
+    groupName: 'Requisitions',
+    name: 'View Requisitions',
+  },
+  {
+    key: Permissions.IN_MANAGE_REQUISITIONS,
+    groupName: 'Requisitions',
+    name: 'Manage Requisitions',
+  },
+  {
+    key: Permissions.IN_VIEW_RECEIPTS,
+    groupName: 'Goods Receipts',
+    name: 'View Goods Receipts',
+  },
+  {
+    key: Permissions.IN_MANAGE_RECEIPTS,
+    groupName: 'Goods Receipts',
+    name: 'Receive Goods',
+  },
+  {
     key: Permissions.IN_VIEW_STOCK_ADJUSTMENTS,
     groupName: 'Stock Adjustments',
     name: 'View Stock Adjustments',

@@ -21,10 +21,10 @@ const PAGED_PURCHASING_INVOICES: TypedDocumentNode<
           _id
           name
         }
-        orderId
-        order {
+        orders {
           _id
           number
+          requisitionId
         }
         invoiceDate
         dueDate

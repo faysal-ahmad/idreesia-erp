@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, type RouteComponentProps } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Button, Collapse, Descriptions, Empty, Form, Modal, Popconfirm, Space, Spin, Table, Tabs } from 'antd';
+import { Button, Collapse, Descriptions, Empty, Form, Popconfirm, Space, Spin, Table, Tabs, Tag } from 'antd';
 import dayjs from 'dayjs';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
@@ -37,7 +37,6 @@ import {
   APPROVE_PURCHASING_ORDER,
   CANCEL_PURCHASING_ORDER,
   CLOSE_PURCHASING_ORDER,
-  CREATE_PURCHASING_ORDER,
   DELETE_PURCHASING_ORDER,
   MARK_PURCHASING_ORDER_SENT,
   PURCHASING_ORDER_BY_ID,
@@ -65,27 +64,26 @@ const RECEIVING = ['approved', 'sent', 'partially-received'];
 const INVOICING = ['approved', 'sent', 'partially-received', 'received'];
 
 const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>) => {
-  const id = match.params.orderId;
-  const isNew = !id;
+  // Orders are only ever made from a requisition (or a quote for one), so
+  // there is no "new order" page.
+  const id = match.params.orderId ?? '';
   const { can } = usePurchasingAccess();
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
   const [rejecting, setRejecting] = useState(false);
 
   const { data, loading } = useQuery(PURCHASING_ORDER_BY_ID, {
-    variables: { _id: id ?? '' },
-    skip: isNew,
+    variables: { _id: id },
   });
   const order = data?.purchasingOrderById;
   const receipts = useQuery(PAGED_PURCHASING_RECEIPTS, {
     variables: { orderId: id, pageIndex: 0, pageSize: 50 },
-    skip: isNew || !can(P.PURCHASING_VIEW_RECEIPTS, P.PURCHASING_MANAGE_RECEIPTS),
+    skip: !can(P.PURCHASING_VIEW_RECEIPTS, P.PURCHASING_MANAGE_RECEIPTS),
   });
   const invoices = useQuery(PAGED_PURCHASING_INVOICES, {
     variables: { orderId: id, pageIndex: 0, pageSize: 50 },
-    skip: isNew || !can(P.PURCHASING_VIEW_INVOICES, P.PURCHASING_MANAGE_INVOICES),
+    skip: !can(P.PURCHASING_VIEW_INVOICES, P.PURCHASING_MANAGE_INVOICES),
   });
 
-  const [createOrder] = useMutation(CREATE_PURCHASING_ORDER, { refetchQueries: REFETCH });
   const [updateOrder] = useMutation(UPDATE_PURCHASING_ORDER, { refetchQueries: REFETCH });
   const [submitOrder] = useMutation(SUBMIT_PURCHASING_ORDER, { refetchQueries: REFETCH });
   const [approveOrder] = useMutation(APPROVE_PURCHASING_ORDER, { refetchQueries: REFETCH });
@@ -95,21 +93,22 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
   const [cancelOrder] = useMutation(CANCEL_PURCHASING_ORDER, { refetchQueries: REFETCH });
   const [deleteOrder] = useMutation(DELETE_PURCHASING_ORDER, { refetchQueries: REFETCH });
 
-  useDynamicBreadcrumbs(['Purchasing', 'Purchase Orders', isNew ? 'New' : order?.number || '']);
+  useDynamicBreadcrumbs(['Purchasing', 'Purchase Orders', order?.number || '']);
 
-  if (!isNew && loading) {
+  if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 0' }}>
         <Spin size="large" />
       </div>
     );
   }
-  if (!isNew && !order?._id) {
+  if (!order?._id) {
     return <Empty description="Purchase order not found" style={{ padding: '80px 0' }} />;
   }
 
   const status = order?.status ?? '';
-  const editable = isNew || status === 'draft';
+  const editable = status === 'draft';
+  const isStore = order?.source === 'store';
   const canManage = can(P.PURCHASING_MANAGE_ORDERS);
   const canApprove = can(P.PURCHASING_APPROVE_ORDERS);
 
@@ -125,17 +124,8 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
       shipping: values.shipping ?? undefined,
       lines: toPricedLineInput(values.lines),
     };
-    if (isNew) {
-      const result = await createOrder({ variables: common }).catch((error: Error) => {
-        Modal.error({ title: 'Could not save', content: error.message });
-        return null;
-      });
-      const newId = result?.data?.createPurchasingOrder?._id;
-      if (newId) history.replace(paths.orderEditPath(newId));
-      return;
-    }
     const ok = await runAction(
-      updateOrder({ variables: { _id: order!._id!, version: order!.version!, ...common } }),
+      updateOrder({ variables: { _id: order._id!, version: order.version!, ...common } }),
       'Order saved'
     );
     if (ok) setIsFieldsTouched(false);
@@ -156,10 +146,10 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
 
   const editableForm = (
     <Form
-      key={`${id ?? 'new'}-${order?.version ?? 0}`}
+      key={`${id}-${order?.version ?? 0}`}
       layout="horizontal"
       initialValues={{
-        lines: isNew ? [{ quantity: 1, taxRate: 0 }] : toLineFormValues(order?.lines),
+        lines: toLineFormValues(order?.lines),
         vendorId: order?.vendorId,
         discount: order?.discount ?? 0,
         shipping: order?.shipping ?? 0,
@@ -189,7 +179,7 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
                 <DateField
                   fieldName="orderDate"
                   fieldLabel="Order Date"
-                  initialValue={toDayjs(order?.orderDate) ?? (isNew ? dayjs() : null)}
+                  initialValue={toDayjs(order?.orderDate)}
                   required
                   requiredMessage="Please choose the order date."
                 />
@@ -221,7 +211,8 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
             forceRender: true,
             children: (
               <>
-                <LineItemsEditor variant="priced" showTax />
+                {/* The lines are the requisition's: only quantity (down), price and tax change. */}
+                <LineItemsEditor variant="priced" showTax fixedLines />
                 <div style={{ height: 12 }} />
                 <Space size={24} wrap>
                   <InputNumberField
@@ -251,7 +242,7 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
         <FormButtonsSaveCancel
           fullWidth
           handleCancel={() => history.push(paths.ordersPath)}
-          isFieldsTouched={isFieldsTouched || isNew}
+          isFieldsTouched={isFieldsTouched}
         />
       ) : null}
     </Form>
@@ -313,7 +304,7 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
         </div>
       ),
     },
-    ...(!isNew && can(P.PURCHASING_VIEW_RECEIPTS, P.PURCHASING_MANAGE_RECEIPTS)
+    ...(can(P.PURCHASING_VIEW_RECEIPTS, P.PURCHASING_MANAGE_RECEIPTS)
       ? [
           {
             key: 'receipts',
@@ -341,7 +332,7 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
           },
         ]
       : []),
-    ...(!isNew && can(P.PURCHASING_VIEW_INVOICES, P.PURCHASING_MANAGE_INVOICES)
+    ...(can(P.PURCHASING_VIEW_INVOICES, P.PURCHASING_MANAGE_INVOICES)
       ? [
           {
             key: 'invoices',
@@ -371,17 +362,13 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
           },
         ]
       : []),
-    ...(!isNew
-      ? [
-          {
-            key: 'attachments',
-            label: 'Attachments',
-            children: <AttachmentsTab ownerType="order" ownerId={order!._id!} canManage={canManage} />,
-          },
-        ]
-      : []),
-    ...(!isNew && can(P.PURCHASING_VIEW_AUDIT_LOGS)
-      ? [{ key: 'history', label: 'History', children: <HistoryTab entityId={order!._id!} /> }]
+    {
+      key: 'attachments',
+      label: 'Attachments',
+      children: <AttachmentsTab ownerType="order" ownerId={order._id!} canManage={canManage} />,
+    },
+    ...(can(P.PURCHASING_VIEW_AUDIT_LOGS)
+      ? [{ key: 'history', label: 'History', children: <HistoryTab entityId={order._id!} /> }]
       : []),
   ];
 
@@ -410,7 +397,7 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
             Mark as Sent
           </Button>
         ) : null}
-        {RECEIVING.includes(status) && can(P.PURCHASING_MANAGE_RECEIPTS) ? (
+        {RECEIVING.includes(status) && !isStore && can(P.PURCHASING_MANAGE_RECEIPTS) ? (
           <Button type="primary" onClick={() => history.push(`${paths.receiptNewPath}?orderId=${orderId}`)}>
             Receive Goods
           </Button>
@@ -461,6 +448,7 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
         <Space style={{ marginBottom: 12 }} size={12}>
           <strong>{order.number}</strong>
           <StatusTag status={status} />
+          {isStore ? <Tag color="blue">Store order</Tag> : null}
           <span>{order.vendor?.name}</span>
           <span style={{ color: '#667085' }}>{formatMoney(order.total)}</span>
         </Space>

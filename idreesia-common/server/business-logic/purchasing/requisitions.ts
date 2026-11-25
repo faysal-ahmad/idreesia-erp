@@ -1,6 +1,14 @@
-import { RequisitionStatus, NumberedDocument, type RequisitionStatusValue } from 'meteor/idreesia-common/constants/purchasing';
-import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import {
+  NumberedDocument,
+  OrderStatus,
+  RequisitionSource,
+  RequisitionStatus,
+  type RequisitionStatusValue,
+} from 'meteor/idreesia-common/constants/purchasing';
+import { runInTransaction } from 'meteor/idreesia-common/server/collections';
+import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
+import {
+  PurchasingOrders,
   PurchasingRequisitions,
   type PurchasingRequisitionDocument,
   type RequisitionLine,
@@ -45,15 +53,64 @@ export interface ListRequisitionsOptions extends PageOptions {
   search?: string;
   status?: RequisitionStatusValue;
   requestedBy?: string;
+  /** Only requisitions raised by purchasing, or only those raised by a store. */
+  source?: 'purchasing' | 'store';
+  /** Only the requisitions this store raised. */
+  physicalStoreId?: string;
 }
 
-const { DRAFT, SUBMITTED, APPROVED, REJECTED, ORDERED, CANCELLED } = RequisitionStatus;
+/**
+ * Set when a store raises (or works on) a requisition. Purchasing passes no
+ * origin. A store's requisitions only ever hold that store's stock items.
+ */
+export interface RequisitionOrigin {
+  physicalStoreId: string;
+}
 
-async function normalize(values: RequisitionValues) {
+const { DRAFT, SUBMITTED, APPROVED, REJECTED, ORDERED, CLOSED, CANCELLED } = RequisitionStatus;
+
+/** A stock item's unit of measurement, as the text a line carries. */
+const UNIT_TEXT: Record<string, string> = {
+  quantity: 'unit',
+  ft: 'ft',
+  m: 'm',
+  kg: 'kg',
+  lbs: 'lbs',
+  l: 'l',
+};
+
+/** A store line is always one of the store's own stock items, snapshotted. */
+async function storeLineInput(input: RequisitionLineInput, position: number, origin: RequisitionOrigin) {
+  const where = `Line ${position + 1}`;
+  const stockItemId = cleanText(input.externalCatalogId);
+  if (!stockItemId || cleanText(input.internalCatalogId)) {
+    throw purchasingError('BAD_USER_INPUT', `${where}: pick one of the store's items.`);
+  }
+  const item = await StockItems.findOneAsync({
+    _id: { $eq: stockItemId },
+    physicalStoreId: { $eq: origin.physicalStoreId },
+  });
+  if (!item) {
+    throw purchasingError('BAD_USER_INPUT', `${where}: item not found in this store.`);
+  }
+  return {
+    ...input,
+    externalCatalogId: stockItemId,
+    description: [item.name, item.company].filter(Boolean).join(' - '),
+    unit: UNIT_TEXT[item.unitOfMeasurement as string] ?? 'unit',
+  } as RequisitionLineInput;
+}
+
+async function normalize(values: RequisitionValues, origin?: RequisitionOrigin) {
   assertLineCount(values.lines);
   const lines: RequisitionLine[] = [];
   for (let i = 0; i < values.lines.length; i += 1) {
-    const input = values.lines[i];
+    let input = values.lines[i];
+    if (origin) {
+      input = await storeLineInput(input, i, origin);
+    } else if (cleanText(input.externalCatalogId)) {
+      throw purchasingError('BAD_USER_INPUT', `Line ${i + 1}: store items are only for store requisitions.`);
+    }
     const base = await normalizeBaseLine(input, i);
     const price = input.estimatedUnitPrice;
     lines.push({
@@ -76,19 +133,42 @@ async function normalize(values: RequisitionValues) {
   };
 }
 
-export async function getRequisition(_id: string): Promise<PurchasingRequisitionDocument> {
+/** Whether the requisition was raised by this store. */
+const isOwnedBy = (doc: PurchasingRequisitionDocument, origin: RequisitionOrigin) =>
+  doc.source === RequisitionSource.STORE && doc.externalSourceId === origin.physicalStoreId;
+
+/** With an origin, only that store's own requisition is found. */
+export async function getRequisition(
+  _id: string,
+  origin?: RequisitionOrigin
+): Promise<PurchasingRequisitionDocument> {
   const doc = await PurchasingRequisitions.findOneAsync({ _id: { $eq: _id } });
-  if (!doc) throw purchasingError('NOT_FOUND', 'Requisition not found.');
+  if (!doc || (origin && !isOwnedBy(doc, origin))) {
+    throw purchasingError('NOT_FOUND', 'Requisition not found.');
+  }
   return doc;
+}
+
+/**
+ * Drafts are worked on only by whoever raised them: a store's draft by that
+ * store, purchasing's own by purchasing.
+ */
+function assertDraftOwner(doc: PurchasingRequisitionDocument, origin?: RequisitionOrigin) {
+  if (origin) {
+    if (!isOwnedBy(doc, origin)) throw purchasingError('NOT_FOUND', 'Requisition not found.');
+  } else if (doc.source === RequisitionSource.STORE) {
+    throw purchasingError('CONFLICT', 'A store requisition can only be changed by the store that raised it.');
+  }
 }
 
 const optionalFields = ['purpose', 'requestedBy', 'neededBy'] as const;
 
 export async function createRequisition(
   values: RequisitionValues,
-  user: ActingUser
+  user: ActingUser,
+  origin?: RequisitionOrigin
 ): Promise<PurchasingRequisitionDocument> {
-  const data = await normalize(values);
+  const data = await normalize(values, origin);
   return runInTransaction(async () => {
     const now = new Date();
     const number = await nextDocumentNumber(NumberedDocument.REQUISITION, now);
@@ -97,6 +177,9 @@ export async function createRequisition(
     ) as typeof data;
     const _id = await PurchasingRequisitions.insertAsync({
       ...clean,
+      ...(origin
+        ? { source: RequisitionSource.STORE, externalSourceId: origin.physicalStoreId }
+        : {}),
       number,
       status: DRAFT,
       version: 1,
@@ -115,14 +198,16 @@ export async function updateRequisition(
   _id: string,
   version: number,
   values: RequisitionValues,
-  user: ActingUser
+  user: ActingUser,
+  origin?: RequisitionOrigin
 ): Promise<PurchasingRequisitionDocument> {
-  const data = await normalize(values);
   return runInTransaction(async () => {
     const existing = await getRequisition(_id);
+    assertDraftOwner(existing, origin);
     if (existing.status !== DRAFT) {
       throw purchasingError('CONFLICT', 'Only a draft requisition can be edited.');
     }
+    const data = await normalize(values, origin);
     const { purpose, requestedBy, neededBy, ...always } = data;
     const optional = { purpose, requestedBy, neededBy };
     const set: Record<string, unknown> = { ...always };
@@ -152,8 +237,9 @@ async function transition(
   });
 }
 
-export async function submitRequisition(_id: string, user: ActingUser) {
+export async function submitRequisition(_id: string, user: ActingUser, origin?: RequisitionOrigin) {
   const existing = await getRequisition(_id);
+  assertDraftOwner(existing, origin);
   if (existing.lines.length === 0) {
     throw purchasingError('BAD_USER_INPUT', 'Add at least one line before submitting.');
   }
@@ -175,11 +261,16 @@ export async function rejectRequisition(_id: string, reason: string, user: Actin
 }
 
 /** A rejected requisition goes back to a draft so it can be fixed and resubmitted. */
-export const reopenRequisition = (_id: string, user: ActingUser) =>
-  transition(_id, [REJECTED], DRAFT, {}, user);
+export async function reopenRequisition(_id: string, user: ActingUser, origin?: RequisitionOrigin) {
+  assertDraftOwner(await getRequisition(_id), origin);
+  return transition(_id, [REJECTED], DRAFT, {}, user);
+}
 
-export const cancelRequisition = (_id: string, user: ActingUser) =>
-  transition(_id, [DRAFT, SUBMITTED, APPROVED], CANCELLED, { cancelledAt: new Date(), cancelledBy: user._id }, user);
+/** A store can only cancel its own requisitions; purchasing can cancel any. */
+export async function cancelRequisition(_id: string, user: ActingUser, origin?: RequisitionOrigin) {
+  if (origin) await getRequisition(_id, origin);
+  return transition(_id, [DRAFT, SUBMITTED, APPROVED], CANCELLED, { cancelledAt: new Date(), cancelledBy: user._id }, user);
+}
 
 /** Called by the orders module when an order is made from, or released from, a requisition. */
 export async function setRequisitionOrdered(_id: string, ordered: boolean, user: ActingUser) {
@@ -195,10 +286,36 @@ export async function setRequisitionOrdered(_id: string, ordered: boolean, user:
   await audit(EntityType.PURCHASING_REQUISITION, _id, OperationType.UPDATE, { status: ordered ? ORDERED : APPROVED }, user, existing);
 }
 
+/**
+ * Keeps an ordered requisition's status in step with its orders: it closes
+ * once it has orders and every order that isn't cancelled is received or
+ * closed, and goes back to ordered when that stops being true. Called by the
+ * orders and receipts modules inside their own transactions.
+ */
+export async function syncRequisitionClosure(_id: string, user: ActingUser) {
+  const existing = await getRequisition(_id);
+  if (existing.status !== ORDERED && existing.status !== CLOSED) return;
+  const orders = await PurchasingOrders.find(
+    { requisitionId: { $eq: _id }, status: { $ne: OrderStatus.CANCELLED } },
+    { fields: { status: 1 } }
+  ).fetchAsync();
+  const done: string[] = [OrderStatus.RECEIVED, OrderStatus.CLOSED];
+  const allDone = orders.length > 0 && orders.every((o) => done.includes(o.status));
+  const target = allDone ? CLOSED : ORDERED;
+  if (target === existing.status) return;
+  await moveStatus(PurchasingRequisitions, _id, [existing.status], { status: target }, user, 'This requisition');
+  await audit(EntityType.PURCHASING_REQUISITION, _id, OperationType.UPDATE, { status: target }, user, existing);
+}
+
+/** Purchasing can close an ordered requisition by hand, e.g. when the rest won't be bought. */
+export const closeRequisition = (_id: string, user: ActingUser) =>
+  transition(_id, [ORDERED], CLOSED, {}, user);
+
 /** Only a draft that nothing refers to can be deleted. */
-export async function deleteRequisition(_id: string, user: ActingUser) {
+export async function deleteRequisition(_id: string, user: ActingUser, origin?: RequisitionOrigin) {
   await runInTransaction(async () => {
     const existing = await getRequisition(_id);
+    assertDraftOwner(existing, origin);
     if (existing.status !== DRAFT) {
       throw purchasingError('CONFLICT', 'Only a draft requisition can be deleted. Cancel it instead.');
     }
@@ -212,6 +329,8 @@ export async function listRequisitions({
   search,
   status,
   requestedBy,
+  source,
+  physicalStoreId,
   ...paging
 }: ListRequisitionsOptions = {}): Promise<Page<PurchasingRequisitionDocument>> {
   const selector: Record<string, unknown> = {};
@@ -222,6 +341,14 @@ export async function listRequisitions({
   }
   if (status) selector.status = status;
   if (requestedBy) selector.requestedBy = requestedBy;
+  if (physicalStoreId) {
+    selector.source = RequisitionSource.STORE;
+    selector.externalSourceId = physicalStoreId;
+  } else if (source === 'store') {
+    selector.source = RequisitionSource.STORE;
+  } else if (source === 'purchasing') {
+    selector.source = { $exists: false };
+  }
   const { skip, limit } = pageWindow(paging);
   const [totalResults, data] = await Promise.all([
     PurchasingRequisitions.find(selector).countAsync(),

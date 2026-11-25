@@ -21,8 +21,10 @@ export default {
   PurchasingInvoice: {
     vendor: async (invoice: { vendorId: string }, _args: unknown, { loaders }: ResolverContext) =>
       loaders.purchasing.vendors.load(invoice.vendorId),
-    order: async (invoice: { orderId?: string }, _args: unknown, { loaders }: ResolverContext) =>
-      invoice.orderId ? loaders.purchasing.orders.load(invoice.orderId) : null,
+    orders: async (invoice: { orderId?: string; orderIds?: string[] }, _args: unknown, { loaders }: ResolverContext) => {
+      const ids = invoice.orderIds ?? (invoice.orderId ? [invoice.orderId] : []);
+      return Promise.all(ids.map((id) => loaders.purchasing.orders.load(id)));
+    },
     balance: (invoice: { total: number; paidAmount: number }) =>
       Math.round((invoice.total - invoice.paidAmount) * 100) / 100,
   },
@@ -66,7 +68,6 @@ export default {
         ...rest
       }: {
         vendorId: string;
-        orderId?: string;
         vendorInvoiceNo: string;
         invoiceDate: string;
         dueDate?: string;

@@ -4,19 +4,24 @@ export default gql`
 # A line of a quote, order or invoice that has a price.
 input PurchasingPricedLineInput {
   _id: String
-  catalogItemId: String
+  internalCatalogId: String
   description: String
   unit: String
   quantity: Float!
   unitPrice: Float!
   taxRate: Float
-  # Invoices only: the order line being billed.
+  # Quotes only: the requisition line being priced.
+  requisitionLineId: String
+  # Invoices only: the order (and its line) being billed.
+  orderId: String
   orderLineId: String
 }
 
 type PurchasingQuoteLine {
   _id: String
-  catalogItemId: String
+  requisitionLineId: String
+  internalCatalogId: String
+  externalCatalogId: String
   description: String
   unit: String
   quantity: Float
@@ -65,7 +70,7 @@ extend type Query {
 
 extend type Mutation {
   createPurchasingQuote(
-    requisitionId: String
+    requisitionId: String!
     vendorId: String!
     reference: String
     quoteDate: String!
@@ -78,7 +83,7 @@ extend type Mutation {
   updatePurchasingQuote(
     _id: String!
     version: Int!
-    requisitionId: String
+    requisitionId: String!
     vendorId: String!
     reference: String
     quoteDate: String!

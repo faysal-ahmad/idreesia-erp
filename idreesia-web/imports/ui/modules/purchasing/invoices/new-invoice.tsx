@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { type RouteComponentProps } from 'react-router-dom';
 import { parse } from 'query-string';
 import { CombinedGraphQLErrors } from '@apollo/client';
-import { useMutation, useQuery } from '@apollo/client/react';
-import { Collapse, Form, Modal } from 'antd';
+import { useApolloClient, useMutation, useQuery } from '@apollo/client/react';
+import { Collapse, Form, Modal, Select } from 'antd';
 import dayjs from 'dayjs';
 
 import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
@@ -20,7 +20,6 @@ import LineItemsEditor, {
   toPricedLineInput,
   type LineFormValue,
 } from '../common/line-items-editor';
-import RecordSelect from '../common/record-select';
 import TotalsSummary from '../common/totals-summary';
 import VendorSelect from '../common/vendor-select';
 import { PAGED_PURCHASING_ORDERS, PURCHASING_ORDER_BY_ID } from '../orders/gql';
@@ -31,7 +30,7 @@ const BILLABLE = ['approved', 'sent', 'partially-received', 'received'];
 
 interface FormValues {
   vendorId?: string;
-  orderId?: string;
+  orderIds?: string[];
   vendorInvoiceNo?: string;
   invoiceDate?: dayjs.Dayjs | null;
   dueDate?: dayjs.Dayjs | null;
@@ -45,59 +44,100 @@ const isOverBilled = (error: unknown) =>
 const NewInvoice = ({ history, location }: RouteComponentProps) => {
   useDynamicBreadcrumbs(['Purchasing', 'Invoices', 'New']);
   const presetOrderId = String(parse(location.search).orderId ?? '') || undefined;
+  const client = useApolloClient();
   const [form] = Form.useForm<FormValues>();
-  const [orderId, setOrderId] = useState<string | undefined>(presetOrderId);
-  const [vendorId, setVendorId] = useState<string | undefined>();
+  const vendorId = Form.useWatch('vendorId', form);
+  const orderIds: string[] = Form.useWatch('orderIds', form) ?? [];
+  // The orders whose lines were already added, so choosing another one only adds its lines.
+  const [presetVendor, setPresetVendor] = useState<{ _id?: string | null; name?: string | null } | null>(null);
+  const [loadedOrders, setLoadedOrders] = useState<Record<string, string>>({});
 
-  const { data } = useQuery(PURCHASING_ORDER_BY_ID, {
-    variables: { _id: orderId ?? '' },
-    skip: !orderId,
+  // One vendor bill can cover several of the vendor's orders.
+  const orders = useQuery(PAGED_PURCHASING_ORDERS, {
+    variables: { vendorId, pageIndex: 0, pageSize: 100 },
+    skip: !vendorId,
   });
-  const order = data?.purchasingOrderById;
+  const billable = (orders.data?.pagedPurchasingOrders?.data ?? []).filter(
+    (o) => o?._id && BILLABLE.includes(o.status ?? '')
+  );
+
   const [createInvoice, { loading }] = useMutation(CREATE_PURCHASING_INVOICE, {
     refetchQueries: ['pagedPurchasingInvoices', 'purchasingOrderById', 'purchasingDashboard'],
   });
 
-  // When an order is chosen, bill what was received and not yet invoiced.
+  // From the order's page ("Record Invoice"): start with that order.
   useEffect(() => {
-    if (!order) return;
-    setVendorId(order.vendorId ?? undefined);
-    const lines = (order.lines ?? [])
-      .filter((l): l is NonNullable<typeof l> => l != null)
-      .map((l) => ({
-        l,
-        quantity: Math.round(((l.receivedQuantity ?? 0) - (l.invoicedQuantity ?? 0)) * 1000) / 1000,
-      }))
-      .filter(({ quantity }) => quantity > 0)
-      .map(({ l, quantity }) => ({
-        orderLineId: l._id,
-        catalogItemId: l.catalogItemId,
-        catalogItemName: l.catalogItemId ? l.description : undefined,
-        description: l.description,
-        unit: l.unit,
-        quantity,
-        unitPrice: l.unitPrice,
-        taxRate: l.taxRate,
-      }));
-    form.setFieldsValue({
-      vendorId: order.vendorId ?? undefined,
-      orderId: order._id ?? undefined,
-      lines: lines.length > 0 ? lines : [{ quantity: 1, taxRate: 0 }],
+    if (!presetOrderId) return;
+    client.query({ query: PURCHASING_ORDER_BY_ID, variables: { _id: presetOrderId } }).then((result) => {
+      const order = result.data?.purchasingOrderById;
+      if (order?._id) setPresetVendor(order.vendor ?? null);
+      if (order?._id) form.setFieldsValue({ vendorId: order.vendorId ?? undefined, orderIds: [order._id] });
     });
-    // Only when a different order is loaded.
-  }, [order?._id]);
+    // Only once.
+  }, []);
+
+  // Keep the lines in step with the chosen orders: a newly chosen order brings
+  // what was received and not yet invoiced; an order taken out drops its lines.
+  const orderKey = orderIds.join(',');
+  useEffect(() => {
+    let cancelled = false;
+    const sync = async () => {
+      const current = (form.getFieldValue('lines') ?? []) as LineFormValue[];
+      let lines = current.filter((l) => !l.orderId || orderIds.includes(l.orderId));
+      const names = { ...loadedOrders };
+      let changed = lines.length !== current.length;
+      for (const id of orderIds) {
+        if (names[id]) continue;
+        const result = await client.query({ query: PURCHASING_ORDER_BY_ID, variables: { _id: id } });
+        const order = result.data?.purchasingOrderById;
+        if (cancelled || !order) return;
+        const orderLines = (order.lines ?? []).filter((l): l is NonNullable<typeof l> => l != null);
+        const due = orderLines.filter((l) => (l.receivedQuantity ?? 0) - (l.invoicedQuantity ?? 0) > 0);
+        const toBill = due.length > 0 ? due : orderLines;
+        lines = [
+          ...lines,
+          ...toBill.map((l) => ({
+            orderId: order._id,
+            orderLineId: l._id,
+            internalCatalogId: l.internalCatalogId,
+            description: `${order.number}: ${l.description}`,
+            unit: l.unit,
+            quantity:
+              due.length > 0
+                ? Math.round(((l.receivedQuantity ?? 0) - (l.invoicedQuantity ?? 0)) * 1000) / 1000
+                : l.quantity,
+            unitPrice: l.unitPrice,
+            taxRate: l.taxRate,
+          })),
+        ];
+        names[id] = order.number ?? id;
+        changed = true;
+      }
+      if (cancelled || !changed) return;
+      setLoadedOrders(names);
+      form.setFieldValue('lines', lines);
+    };
+    sync();
+    return () => {
+      cancelled = true;
+    };
+  }, [orderKey]);
 
   const submit = async (values: FormValues, allowOverBilling: boolean) => {
     const result = await createInvoice({
       variables: {
         vendorId: values.vendorId!,
-        orderId: values.orderId,
         vendorInvoiceNo: values.vendorInvoiceNo!,
         invoiceDate: toDateInput(values.invoiceDate)!,
         dueDate: toDateInput(values.dueDate),
         notes: values.notes,
         allowOverBilling: allowOverBilling || undefined,
-        lines: toPricedLineInput(values.lines),
+        // The item and unit come from the order line (the form shows the order number too).
+        lines: toPricedLineInput(values.lines).map((l) => ({
+          ...l,
+          description: undefined,
+          unit: undefined,
+        })),
       },
     }).catch((error: Error) => {
       if (!allowOverBilling && isOverBilled(error)) {
@@ -123,7 +163,7 @@ const NewInvoice = ({ history, location }: RouteComponentProps) => {
       <Form
         form={form}
         layout="horizontal"
-        initialValues={{ lines: [{ quantity: 1, taxRate: 0 }], orderId: presetOrderId }}
+        initialValues={{ lines: [] }}
         onFinish={(values) => submit(values, false)}
       >
         <Collapse
@@ -145,28 +185,27 @@ const NewInvoice = ({ history, location }: RouteComponentProps) => {
                   >
                     <VendorSelect
                       allowClear={false}
-                      disabled={!!order}
-                      selected={order?.vendor}
-                      onChange={(value) => {
-                        setVendorId(value);
-                        form.setFieldValue('orderId', undefined);
-                        setOrderId(undefined);
+                      selected={presetVendor}
+                      onChange={() => {
+                        form.setFieldsValue({ orderIds: [], lines: [] });
+                        setLoadedOrders({});
                       }}
                     />
                   </Form.Item>
-                  <Form.Item name="orderId" label="Purchase Order" labelCol={{ span: 6 }} wrapperCol={{ span: 14 }}>
-                    <RecordSelect
-                      query={PAGED_PURCHASING_ORDERS}
-                      dataKey="pagedPurchasingOrders"
-                      variables={{ vendorId }}
-                      filterRow={(o) => BILLABLE.includes(o.status)}
-                      labelOf={(o) => (o.number ? `${o.number} - ${o.vendor?.name ?? ''}` : '')}
-                      selected={order}
-                      placeholder="Optional: the order this invoice bills"
-                      onChange={(value) => {
-                        setOrderId(value);
-                        if (!value) form.setFieldValue('orderId', undefined);
-                      }}
+                  <Form.Item
+                    name="orderIds"
+                    label="Purchase Orders"
+                    rules={[{ required: true, message: 'Choose the orders this invoice bills.' }]}
+                    labelCol={{ span: 6 }}
+                    wrapperCol={{ span: 14 }}
+                  >
+                    <Select
+                      mode="multiple"
+                      disabled={!vendorId}
+                      loading={orders.loading}
+                      placeholder="The vendor's orders this invoice bills"
+                      optionFilterProp="label"
+                      options={billable.map((o) => ({ value: o!._id as string, label: o!.number ?? '' }))}
                     />
                   </Form.Item>
                   <InputTextField
@@ -193,7 +232,7 @@ const NewInvoice = ({ history, location }: RouteComponentProps) => {
               forceRender: true,
               children: (
                 <>
-                  <LineItemsEditor variant="priced" showTax />
+                  <LineItemsEditor variant="priced" showTax fixedLines allowRemove />
                   <Form.Item noStyle shouldUpdate>
                     {({ getFieldValue }) => {
                       const totals = totalOf(getFieldValue('lines'));

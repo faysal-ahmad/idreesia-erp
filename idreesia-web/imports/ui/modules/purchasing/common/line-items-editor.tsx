@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { DeleteOutlined, PlusOutlined, TagsOutlined } from '@ant-design/icons';
-import { AutoComplete, Button, Form, Input, InputNumber, Tooltip } from 'antd';
+import { AutoComplete, Button, Form, Input, InputNumber, Select, Tooltip } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
@@ -18,10 +18,14 @@ export type LineVariant = 'requisition' | 'priced';
 /** A line as the form holds it. */
 export interface LineFormValue {
   _id?: string | null;
-  catalogItemId?: string | null;
+  internalCatalogId?: string | null;
   // The name the catalog item had when it was picked. Typing a different
   // description turns the line back into a free-text line.
   catalogItemName?: string | null;
+  // Quotes: the requisition line being priced.
+  requisitionLineId?: string | null;
+  // Invoices: the order, and its line, being billed.
+  orderId?: string | null;
   orderLineId?: string | null;
   description?: string | null;
   unit?: string | null;
@@ -33,7 +37,9 @@ export interface LineFormValue {
 
 interface ServerLine {
   _id?: string | null;
-  catalogItemId?: string | null;
+  internalCatalogId?: string | null;
+  requisitionLineId?: string | null;
+  orderId?: string | null;
   orderLineId?: string | null;
   description?: string | null;
   unit?: string | null;
@@ -49,8 +55,10 @@ export const toLineFormValues = (
 ): LineFormValue[] =>
   (lines ?? []).filter((l): l is ServerLine => l != null).map((l) => ({
     _id: l._id,
-    catalogItemId: l.catalogItemId,
-    catalogItemName: l.catalogItemId ? l.description : undefined,
+    internalCatalogId: l.internalCatalogId,
+    catalogItemName: l.internalCatalogId ? l.description : undefined,
+    requisitionLineId: l.requisitionLineId,
+    orderId: l.orderId,
     orderLineId: l.orderLineId,
     description: l.description,
     unit: l.unit,
@@ -62,7 +70,7 @@ export const toLineFormValues = (
 
 const baseLineInput = (l: LineFormValue) => ({
   _id: l._id ?? undefined,
-  catalogItemId: l.catalogItemId ?? undefined,
+  internalCatalogId: l.internalCatalogId ?? undefined,
   description: l.description ?? undefined,
   unit: l.unit ?? undefined,
   quantity: l.quantity ?? 0,
@@ -79,6 +87,8 @@ export const toRequisitionLineInput = (lines: LineFormValue[] | undefined) =>
 export const toPricedLineInput = (lines: LineFormValue[] | undefined) =>
   (lines ?? []).map((l) => ({
     ...baseLineInput(l),
+    requisitionLineId: l.requisitionLineId ?? undefined,
+    orderId: l.orderId ?? undefined,
     orderLineId: l.orderLineId ?? undefined,
     unitPrice: l.unitPrice ?? 0,
     taxRate: l.taxRate ?? undefined,
@@ -138,7 +148,7 @@ const ItemCell = ({ value, onChange, rowIndex, priceField, disabled }: ItemCellP
   const handleSelect = (_: string, option: { itemId?: string }) => {
     const item = items.find((i) => i._id === option.itemId);
     if (!item) return;
-    setField('catalogItemId', item._id);
+    setField('internalCatalogId', item._id);
     setField('catalogItemName', item.name);
     setField('unit', item.unit);
     const price = item.lastUnitPrice ?? item.defaultUnitPrice;
@@ -150,7 +160,7 @@ const ItemCell = ({ value, onChange, rowIndex, priceField, disabled }: ItemCellP
     onChange?.(next);
     setSearch(next);
     const pickedName = form.getFieldValue(['lines', rowIndex, 'catalogItemName']);
-    if (next !== pickedName) setField('catalogItemId', undefined);
+    if (next !== pickedName) setField('internalCatalogId', undefined);
   };
 
   return (
@@ -165,6 +175,32 @@ const ItemCell = ({ value, onChange, rowIndex, priceField, disabled }: ItemCellP
   );
 };
 
+interface QuantityCellProps {
+  value?: number | null;
+  onChange?: (value: number | null) => void;
+  rowIndex: number;
+  requisitionLines?: RequisitionLineOption[];
+  disabled?: boolean;
+}
+
+/** The quantity of a line; never more than the requisition line asked for. */
+const QuantityCell = ({ value, onChange, rowIndex, requisitionLines, disabled }: QuantityCellProps) => {
+  const form = Form.useFormInstance();
+  const lineId = Form.useWatch(['lines', rowIndex, 'requisitionLineId'], form);
+  const requested = requisitionLines?.find((l) => l._id === lineId)?.quantity;
+  return (
+    <InputNumber
+      value={value}
+      onChange={onChange}
+      min={0}
+      max={requested ?? undefined}
+      precision={3}
+      disabled={disabled}
+      style={{ width: '100%' }}
+    />
+  );
+};
+
 interface LineItemsEditorProps {
   variant: LineVariant;
   /** Show a tax-rate column (orders and invoices). */
@@ -172,6 +208,21 @@ interface LineItemsEditorProps {
   disabled?: boolean;
   /** Lines come from elsewhere (e.g. an order): no adding or removing. */
   fixedLines?: boolean;
+  /** With fixedLines: a line can still be dropped (e.g. an order line not billed yet). */
+  allowRemove?: boolean;
+  /**
+   * Lines are chosen from a requisition's (a quote): the item can't change,
+   * the quantity can't go above what was requested, and lines can be removed
+   * and added back from the ones that are left.
+   */
+  requisitionLines?: RequisitionLineOption[];
+}
+
+export interface RequisitionLineOption {
+  _id?: string | null;
+  description?: string | null;
+  unit?: string | null;
+  quantity?: number | null;
 }
 
 /**
@@ -184,6 +235,8 @@ const LineItemsEditor = ({
   showTax = false,
   disabled = false,
   fixedLines = false,
+  allowRemove = false,
+  requisitionLines,
 }: LineItemsEditorProps) => {
   const form = Form.useFormInstance();
   const { can } = usePurchasingAccess();
@@ -209,7 +262,7 @@ const LineItemsEditor = ({
       },
     })
       .then((result) => {
-        form.setFieldValue(['lines', rowIndex, 'catalogItemId'], result.data?.createPurchasingCatalogItem?._id);
+        form.setFieldValue(['lines', rowIndex, 'internalCatalogId'], result.data?.createPurchasingCatalogItem?._id);
         form.setFieldValue(['lines', rowIndex, 'catalogItemName'], name);
         message.success(`"${name}" added to the catalog`, 2);
       })
@@ -218,6 +271,8 @@ const LineItemsEditor = ({
       });
   };
 
+  const fromRequisition = requisitionLines != null;
+  const itemLocked = disabled || fixedLines || fromRequisition;
   const gridTemplateColumns = `minmax(220px, 3fr) 90px 110px 130px ${showTax ? '90px ' : ''}120px 72px`;
 
   return (
@@ -241,8 +296,10 @@ const LineItemsEditor = ({
               style={{ gridTemplateColumns }}
             >
               <Form.Item name={[name, '_id']} hidden noStyle><Input /></Form.Item>
-              <Form.Item name={[name, 'catalogItemId']} hidden noStyle><Input /></Form.Item>
+              <Form.Item name={[name, 'internalCatalogId']} hidden noStyle><Input /></Form.Item>
               <Form.Item name={[name, 'catalogItemName']} hidden noStyle><Input /></Form.Item>
+              <Form.Item name={[name, 'requisitionLineId']} hidden noStyle><Input /></Form.Item>
+              <Form.Item name={[name, 'orderId']} hidden noStyle><Input /></Form.Item>
               <Form.Item name={[name, 'orderLineId']} hidden noStyle><Input /></Form.Item>
 
               <Form.Item
@@ -252,17 +309,17 @@ const LineItemsEditor = ({
                 <ItemCell
                   rowIndex={name}
                   priceField={priceField}
-                  disabled={disabled || fixedLines}
+                  disabled={itemLocked}
                 />
               </Form.Item>
               <Form.Item name={[name, 'unit']} rules={[{ required: true, message: 'Unit' }]}>
-                <Input disabled={disabled || fixedLines} />
+                <Input disabled={itemLocked} />
               </Form.Item>
               <Form.Item
                 name={[name, 'quantity']}
                 rules={[{ required: true, message: 'Quantity' }]}
               >
-                <InputNumber min={0} precision={3} disabled={disabled} style={{ width: '100%' }} />
+                <QuantityCell rowIndex={name} requisitionLines={requisitionLines} disabled={disabled} />
               </Form.Item>
               <Form.Item name={[name, priceField]}>
                 <InputNumber min={0} precision={2} disabled={disabled} style={{ width: '100%' }} />
@@ -284,10 +341,10 @@ const LineItemsEditor = ({
                 }}
               </Form.Item>
               <span className="purchasing-lines-actions">
-                {!disabled && !fixedLines && canAddToCatalog ? (
+                {!disabled && !fixedLines && !fromRequisition && canAddToCatalog ? (
                   <Form.Item noStyle shouldUpdate>
                     {() =>
-                      form.getFieldValue(['lines', name, 'catalogItemId']) ? null : (
+                      form.getFieldValue(['lines', name, 'internalCatalogId']) ? null : (
                         <Tooltip title="Add to catalog">
                           <TagsOutlined
                             className="list-actions-icon"
@@ -298,7 +355,7 @@ const LineItemsEditor = ({
                     }
                   </Form.Item>
                 ) : null}
-                {!disabled && !fixedLines ? (
+                {!disabled && (!fixedLines || allowRemove) ? (
                   <Tooltip title="Remove line">
                     <DeleteOutlined className="list-actions-icon" onClick={() => remove(name)} />
                   </Tooltip>
@@ -307,7 +364,40 @@ const LineItemsEditor = ({
             </div>
           ))}
 
-          {!disabled && !fixedLines ? (
+          {!disabled && fromRequisition ? (
+            <Form.Item noStyle shouldUpdate>
+              {() => {
+                const used = new Set(
+                  ((form.getFieldValue('lines') ?? []) as LineFormValue[]).map((l) => l.requisitionLineId)
+                );
+                const left = (requisitionLines ?? []).filter((l) => l._id && !used.has(l._id));
+                if (left.length === 0) return null;
+                return (
+                  <Select
+                    placeholder="Add a line of the requisition"
+                    value={null}
+                    style={{ minWidth: 320 }}
+                    options={left.map((l) => ({
+                      value: l._id as string,
+                      label: `${l.description} (${l.quantity} ${l.unit})`,
+                    }))}
+                    onChange={(lineId: string) => {
+                      const line = left.find((l) => l._id === lineId);
+                      if (line) {
+                        add({
+                          requisitionLineId: line._id,
+                          description: line.description,
+                          unit: line.unit,
+                          quantity: line.quantity,
+                        });
+                      }
+                    }}
+                  />
+                );
+              }}
+            </Form.Item>
+          ) : null}
+          {!disabled && !fixedLines && !fromRequisition ? (
             <Button
               type="dashed"
               icon={<PlusOutlined />}

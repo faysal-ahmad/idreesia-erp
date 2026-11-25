@@ -23,7 +23,7 @@ const formQuery: TypedDocumentNode<
       displayName
       isSuperAdmin
       permissions
-      instances
+      hasStoreAccess
       karkun {
         _id
         sharedData {

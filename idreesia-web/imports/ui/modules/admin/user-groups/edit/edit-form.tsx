@@ -5,7 +5,6 @@ import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import { Tabs } from 'antd';
 import GeneralInfo from './general-info';
 import Permissions from './permissions';
-import InstanceAccess from './instance-access';
 
 type Props = RouteComponentProps<{ groupId: string }>;
 
@@ -26,11 +25,6 @@ const EditForm = ({ match, history }: Props) => {
           key: '2',
           label: 'Permissions',
           children: <Permissions groupId={groupId} history={history} />,
-        },
-        {
-          key: '3',
-          label: 'Instance Access',
-          children: <InstanceAccess groupId={groupId} history={history} />,
         },
       ]}
     />

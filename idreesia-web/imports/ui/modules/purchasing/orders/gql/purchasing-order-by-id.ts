@@ -23,6 +23,8 @@ const PURCHASING_ORDER_BY_ID: TypedDocumentNode<
       total
       status
       requisitionId
+      source
+      externalSourceId
       version
       quoteId
       deliveryAddress
@@ -34,7 +36,9 @@ const PURCHASING_ORDER_BY_ID: TypedDocumentNode<
       taxTotal
       lines {
         _id
-        catalogItemId
+        internalCatalogId
+        externalCatalogId
+        requisitionLineId
         description
         unit
         quantity

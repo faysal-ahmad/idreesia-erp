@@ -19,10 +19,10 @@ const PURCHASING_INVOICE_BY_ID: TypedDocumentNode<
         _id
         name
       }
-      orderId
-      order {
+      orders {
         _id
         number
+        requisitionId
       }
       invoiceDate
       dueDate
@@ -36,7 +36,8 @@ const PURCHASING_INVOICE_BY_ID: TypedDocumentNode<
       taxTotal
       lines {
         _id
-        catalogItemId
+        internalCatalogId
+        orderId
         orderLineId
         description
         unit

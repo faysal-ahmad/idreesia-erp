@@ -65,8 +65,13 @@ const InvoicePage = ({ match, history }: RouteComponentProps<{ invoiceId: string
             <Descriptions.Item label="Vendor Invoice No.">{invoice.vendorInvoiceNo}</Descriptions.Item>
             <Descriptions.Item label="Invoice Date">{formatDate(invoice.invoiceDate)}</Descriptions.Item>
             <Descriptions.Item label="Due Date">{formatDate(invoice.dueDate)}</Descriptions.Item>
-            <Descriptions.Item label="Order">
-              {invoice.order?._id ? <Link to={paths.orderEditPath(invoice.order._id)}>{invoice.order.number}</Link> : ''}
+            <Descriptions.Item label="Orders">
+              {(invoice.orders ?? []).filter((o) => o?._id).map((o, index) => (
+                <React.Fragment key={o!._id}>
+                  {index > 0 ? ', ' : null}
+                  <Link to={paths.orderEditPath(o!._id!)}>{o!.number}</Link>
+                </React.Fragment>
+              ))}
             </Descriptions.Item>
             <Descriptions.Item label="Paid">
               {formatMoney(invoice.paidAmount)} (balance {formatMoney(invoice.balance)})

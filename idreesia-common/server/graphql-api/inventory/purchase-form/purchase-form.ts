@@ -38,29 +38,25 @@ extend type Query {
     _id: String!
     physicalStoreId: String!
   ): PurchaseForm
-  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   purchaseFormsByStockItem(
     physicalStoreId: String!
     stockItemId: String!
   ): [PurchaseForm]
-  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 
   purchaseFormsByMonth(
     physicalStoreId: String!
     month: String!
   ): [PurchaseForm]
-  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 
   pagedPurchaseForms(
     physicalStoreId: String!
     queryString: String
   ): PagedPurchaseForm
-  @checkPermissions(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+  @checkStoreAccess(permissions: [IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId", returnType: "paged-list")
 }
 
 extend type Mutation {
@@ -74,8 +70,7 @@ extend type Mutation {
     items: [ItemWithQuantityAndPriceInput]
     notes: String
   ): PurchaseForm
-  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   updatePurchaseForm(
     _id: String!
@@ -88,31 +83,26 @@ extend type Mutation {
     items: [ItemWithQuantityAndPriceInput]
     notes: String
   ): PurchaseForm
-  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   approvePurchaseForms(physicalStoreId: String!, _ids: [String]!): [PurchaseForm]
-  @checkPermissions(permissions: [IN_APPROVE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_APPROVE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   addPurchaseFormAttachment(
     _id: String!
     physicalStoreId: String!
     attachmentId: String!
   ): PurchaseForm
-  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   removePurchaseFormAttachment(
     _id: String!
     physicalStoreId: String!
     attachmentId: String!
   ): PurchaseForm
-  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 
   removePurchaseForms(physicalStoreId: String!, _ids: [String]!): Int
-  @checkPermissions(permissions: [IN_MANAGE_PURCHASE_FORMS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_PURCHASE_FORMS], physicalStoreIdArgName: "physicalStoreId")
 }
 `;

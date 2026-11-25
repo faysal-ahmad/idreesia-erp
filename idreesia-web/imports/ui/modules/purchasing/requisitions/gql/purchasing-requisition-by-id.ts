@@ -16,6 +16,8 @@ const PURCHASING_REQUISITION_BY_ID: TypedDocumentNode<
       title
       purpose
       status
+      source
+      externalSourceId
       estimatedTotal
       neededBy
       requestedBy
@@ -28,7 +30,7 @@ const PURCHASING_REQUISITION_BY_ID: TypedDocumentNode<
       version
       lines {
         _id
-        catalogItemId
+        internalCatalogId
         description
         unit
         quantity

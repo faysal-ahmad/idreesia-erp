@@ -19,6 +19,7 @@ interface ResolverContext {
 
 export default {
   PurchasingReceipt: {
+    source: (receipt: { source?: string }) => receipt.source ?? 'purchasing',
     order: async (receipt: { orderId: string }, _args: unknown, { loaders }: ResolverContext) =>
       loaders.purchasing.orders.load(receipt.orderId),
     vendor: async (receipt: { vendorId: string }, _args: unknown, { loaders }: ResolverContext) =>

@@ -82,7 +82,8 @@ export function requireNonNegative(value: number | null | undefined, what: strin
 
 export interface LineInput {
   _id?: string | null;
-  catalogItemId?: string | null;
+  internalCatalogId?: string | null;
+  externalCatalogId?: string | null;
   description?: string | null;
   unit?: string | null;
   quantity: number;
@@ -90,15 +91,17 @@ export interface LineInput {
 
 export interface BaseLine {
   _id: string;
-  catalogItemId?: string;
+  internalCatalogId?: string;
+  externalCatalogId?: string;
   description: string;
   unit: string;
   quantity: number;
 }
 
 /**
- * Validates the part of a line every document shares. When the line names a
- * catalog item, a blank description or unit is filled in from the item;
+ * Validates the part of a line every document shares. An external (store
+ * stock) item is only passed through here; the caller checks it belongs to
+ * the right store. When the line names a purchasing catalog item, a blank description or unit is filled in from the item;
  * free-text lines (no catalog item) need both.
  */
 export async function normalizeBaseLine(
@@ -106,13 +109,20 @@ export async function normalizeBaseLine(
   position: number
 ): Promise<BaseLine> {
   const where = `Line ${position + 1}`;
-  const catalogItemId = cleanText(input.catalogItemId);
+  const internalCatalogId = cleanText(input.internalCatalogId);
+  const externalCatalogId = cleanText(input.externalCatalogId);
+  if (internalCatalogId && externalCatalogId) {
+    throw purchasingError(
+      'BAD_USER_INPUT',
+      `${where}: a line can't be both a purchasing catalog item and a store item.`
+    );
+  }
   let description = cleanText(input.description);
   let unit = cleanText(input.unit);
 
-  if (catalogItemId) {
+  if (internalCatalogId) {
     const item = await PurchasingCatalogItems.findOneAsync({
-      _id: { $eq: catalogItemId },
+      _id: { $eq: internalCatalogId },
     });
     if (!item) {
       throw purchasingError('BAD_USER_INPUT', `${where}: catalog item not found.`);
@@ -131,7 +141,8 @@ export async function normalizeBaseLine(
 
   return {
     _id: cleanText(input._id) ?? Random.id(),
-    ...(catalogItemId ? { catalogItemId } : {}),
+    ...(internalCatalogId ? { internalCatalogId } : {}),
+    ...(externalCatalogId ? { externalCatalogId } : {}),
     description: requireText(description, `${where}: description`),
     unit: requireText(unit, `${where}: unit`, 50),
     quantity: roundQuantity(quantity),

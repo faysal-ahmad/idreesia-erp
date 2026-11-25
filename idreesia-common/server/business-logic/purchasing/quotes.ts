@@ -30,11 +30,13 @@ import {
 import { getUsableVendor } from './vendors';
 
 export interface QuoteLineInput extends LineInput {
+  /** The requisition line being priced. */
+  requisitionLineId?: string | null;
   unitPrice: number;
 }
 
 export interface QuoteValues {
-  requisitionId?: string | null;
+  requisitionId: string;
   vendorId: string;
   reference?: string | null;
   quoteDate: Date;
@@ -55,20 +57,43 @@ async function normalize(values: QuoteValues) {
   await getUsableVendor(values.vendorId);
 
   const requisitionId = cleanText(values.requisitionId);
-  if (requisitionId) {
-    const requisition = await PurchasingRequisitions.findOneAsync({ _id: { $eq: requisitionId } });
-    if (!requisition) throw purchasingError('BAD_USER_INPUT', 'Requisition not found.');
-    if (requisition.status === RequisitionStatus.CANCELLED) {
-      throw purchasingError('BAD_USER_INPUT', 'This requisition is cancelled.');
-    }
+  if (!requisitionId) {
+    throw purchasingError('BAD_USER_INPUT', 'A quote must be for a requisition.');
+  }
+  const requisition = await PurchasingRequisitions.findOneAsync({ _id: { $eq: requisitionId } });
+  if (!requisition) throw purchasingError('BAD_USER_INPUT', 'Requisition not found.');
+  if (requisition.status === RequisitionStatus.CANCELLED) {
+    throw purchasingError('BAD_USER_INPUT', 'This requisition is cancelled.');
   }
 
+  // A quote prices (some of) the requisition's own lines: the item stays the
+  // requisition's, only the quantity (not above what was requested) and the
+  // price are the vendor's.
   const lines: QuoteLine[] = [];
+  const seen = new Set<string>();
   for (let i = 0; i < values.lines.length; i += 1) {
     const input = values.lines[i];
-    const base = await normalizeBaseLine(input, i);
+    const requested = requisition.lines.find((l) => l._id === cleanText(input.requisitionLineId));
+    if (!requested || seen.has(requested._id)) {
+      throw purchasingError('BAD_USER_INPUT', `Line ${i + 1}: pick a line of the requisition, once.`);
+    }
+    seen.add(requested._id);
+    if (input.quantity > requested.quantity) {
+      throw purchasingError('BAD_USER_INPUT', `Line ${i + 1}: only ${requested.quantity} ${requested.unit} was requested.`);
+    }
+    const base = await normalizeBaseLine(
+      {
+        ...input,
+        description: requested.description,
+        unit: requested.unit,
+        internalCatalogId: requested.internalCatalogId,
+        externalCatalogId: requested.externalCatalogId,
+      },
+      i
+    );
     lines.push({
       ...base,
+      requisitionLineId: requested._id,
       unitPrice: roundMoney(requireNonNegative(input.unitPrice, `Line ${i + 1}: price`)),
     });
   }

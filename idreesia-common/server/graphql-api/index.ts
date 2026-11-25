@@ -5,7 +5,7 @@ import { merge } from 'meteor/idreesia-common/utilities/lodash';
  */
 import Permission from './_directives/permission';
 import CheckPermissionsDirective from './_directives/check-permissions';
-import CheckInstanceAccessDirective from './_directives/check-instance-access';
+import CheckStoreAccessDirective from './_directives/check-store-access';
 import CheckCommitteeAccessDirective from './_directives/check-committee-access';
 import CheckDutiesAttendanceAccessDirective from './_directives/check-duties-attendance-access';
 import CheckMehfilDetailsAccessDirective from './_directives/check-mehfil-details-access';
@@ -64,6 +64,8 @@ import MehfilTemplateResolvers from './admin/mehfil-template/resolvers';
 
 import DeletedPeopleSchema from './admin/deleted-people/deleted-people';
 import DeletedPeopleResolvers from './admin/deleted-people/resolvers';
+import UserKarkunSchema from './admin/user-karkun/user-karkun';
+import UserKarkunResolvers from './admin/user-karkun/resolvers';
 
 import DuplicatePeopleSchema from './admin/duplicate-people/duplicate-people';
 import DuplicatePeopleResolvers from './admin/duplicate-people/resolvers';
@@ -137,6 +139,16 @@ import PurchasingPermissionSchema from './purchasing/permission/permission';
 import PurchasingPermissionResolvers from './purchasing/permission/resolvers';
 import PurchasingUserGroupSchema from './purchasing/user-group/user-group';
 import PurchasingUserGroupResolvers from './purchasing/user-group/resolvers';
+
+/**
+ * Schema and Resolvers for the Stores module's use of Purchasing
+ */
+import StoreRequisitionSchema from './stores/purchasing/store-requisition/store-requisition';
+import StoreRequisitionResolvers from './stores/purchasing/store-requisition/resolvers';
+import StoreOrderSchema from './stores/purchasing/store-order/store-order';
+import StoreOrderResolvers from './stores/purchasing/store-order/resolvers';
+import StoreReceiptSchema from './stores/purchasing/store-receipt/store-receipt';
+import StoreReceiptResolvers from './stores/purchasing/store-receipt/resolvers';
 import InboxSchema from './correspondence/inbox/inbox';
 import InboxResolvers from './correspondence/inbox/resolvers';
 import SecurityServerUsageSchema from './security/security-server-usage/security-server-usage';
@@ -268,7 +280,7 @@ import StockAdjustmentResolvers from './inventory/stock-adjustment/resolvers';
 const typeDefs = [
   Permission,
   CheckPermissionsDirective,
-  CheckInstanceAccessDirective,
+  CheckStoreAccessDirective,
   CheckCommitteeAccessDirective,
   CheckDutiesAttendanceAccessDirective,
   CheckMehfilDetailsAccessDirective,
@@ -294,6 +306,7 @@ const typeDefs = [
   OrgLocationSchema,
   MehfilTemplateSchema,
   DeletedPeopleSchema,
+  UserKarkunSchema,
   DuplicatePeopleSchema,
   AdminSecurityLogSchema,
 
@@ -361,6 +374,9 @@ const typeDefs = [
   PurchasingAuditLogSchema,
   PurchasingPermissionSchema,
   PurchasingUserGroupSchema,
+  StoreRequisitionSchema,
+  StoreOrderSchema,
+  StoreReceiptSchema,
   PurchasingAttachmentSchema,
   PhysicalStoreSchema,
   ReferenceDutySchema,
@@ -390,6 +406,7 @@ const resolvers = merge(
   OrgLocationResolvers,
   MehfilTemplateResolvers,
   DeletedPeopleResolvers,
+  UserKarkunResolvers,
   DuplicatePeopleResolvers,
   AdminSecurityLogResolvers,
 
@@ -457,6 +474,9 @@ const resolvers = merge(
   PurchasingAuditLogResolvers,
   PurchasingPermissionResolvers,
   PurchasingUserGroupResolvers,
+  StoreRequisitionResolvers,
+  StoreOrderResolvers,
+  StoreReceiptResolvers,
   PurchasingAttachmentResolvers,
   PhysicalStoreResolvers,
   ReferenceDutyResolvers,

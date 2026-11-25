@@ -201,7 +201,7 @@ export async function countCatalogItemReferences(
       PurchasingInvoices,
     ].map((collection) =>
       collection
-        .find({ lines: { $elemMatch: { catalogItemId: itemId } } })
+        .find({ lines: { $elemMatch: { internalCatalogId: itemId } } })
         .countAsync()
     )
   );

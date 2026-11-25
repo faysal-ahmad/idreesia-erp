@@ -9,14 +9,16 @@ const PAGED_PURCHASING_REQUISITIONS: TypedDocumentNode<
   PagedPurchasingRequisitionsQuery,
   PagedPurchasingRequisitionsQueryVariables
 > = gql`
-  query pagedPurchasingRequisitions($search: String, $status: String, $requestedBy: String, $pageIndex: Int, $pageSize: Int) {
-    pagedPurchasingRequisitions(search: $search, status: $status, requestedBy: $requestedBy, pageIndex: $pageIndex, pageSize: $pageSize) {
+  query pagedPurchasingRequisitions($search: String, $status: String, $requestedBy: String, $source: String, $pageIndex: Int, $pageSize: Int) {
+    pagedPurchasingRequisitions(search: $search, status: $status, requestedBy: $requestedBy, source: $source, pageIndex: $pageIndex, pageSize: $pageSize) {
       totalResults
       data {
         _id
         number
         title
         status
+        source
+        externalSourceId
         estimatedTotal
         neededBy
         requestedBy

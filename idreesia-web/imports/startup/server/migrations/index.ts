@@ -77,6 +77,8 @@ import './73-location-is-the-duties-attendance-workspace';
 import './74-attendance-geofence-meters';
 import './75-create-purchasing-indexes';
 import './76-create-trusted-device-indexes';
+import './77-per-store-access';
+import './78-purchasing-store-integration';
 
 Migrations.config({
   log: true,

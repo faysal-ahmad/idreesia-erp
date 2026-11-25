@@ -17,15 +17,15 @@ export type UploadDecision =
  * payload and a valid category, then the category's manage permission, then a
  * file type a browser won't run as a page (no HTML or SVG).
  */
-export function decideAttachmentUpload(
+export async function decideAttachmentUpload(
   user: AttachmentUser | null | undefined,
   input: { category: unknown; hasContent: boolean; mimeType: string }
-): UploadDecision {
+): Promise<UploadDecision> {
   const { category } = input;
   if (!input.hasContent || !isAttachmentCategory(category)) {
     return { ok: false, reason: 'invalid' };
   }
-  if (!canUploadAttachment(user, category)) {
+  if (!(await canUploadAttachment(user, category))) {
     return { ok: false, reason: 'forbidden' };
   }
   if (!isAllowedAttachmentMimeType(input.mimeType)) {

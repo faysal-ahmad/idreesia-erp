@@ -10,6 +10,7 @@ import {
   PurchasingOrders,
   type InvoiceLine,
   type PurchasingInvoiceDocument,
+  type PurchasingOrderDocument,
 } from 'meteor/idreesia-common/server/collections/purchasing';
 import { escapeRegExp } from 'meteor/idreesia-common/utilities/lodash';
 
@@ -41,14 +42,15 @@ import { getOrder } from './orders';
 import { getUsableVendor } from './vendors';
 
 export interface InvoiceLineInput extends LineInput {
-  orderLineId?: string | null;
+  /** The order and order line this line bills. */
+  orderId: string;
+  orderLineId: string;
   unitPrice: number;
   taxRate?: number | null;
 }
 
 export interface InvoiceValues {
   vendorId: string;
-  orderId?: string | null;
   vendorInvoiceNo: string;
   invoiceDate: Date;
   dueDate?: Date | null;
@@ -94,9 +96,10 @@ async function assertVendorInvoiceNoFree(vendorId: string, vendorInvoiceNo: stri
 }
 
 /**
- * Records a vendor's bill. When it is for an order, the billed quantities
- * are added to the order's lines. Billing more than was received is refused
- * unless `allowOverBilling` is set, which marks the invoice disputed.
+ * Records a vendor's bill. Every line is billed against a line of an order,
+ * and one bill can cover several orders. The billed quantities are added to
+ * those order lines. Billing more than was received is refused unless
+ * `allowOverBilling` is set, which marks the invoice disputed.
  */
 export async function createInvoice(values: InvoiceValues, user: ActingUser) {
   assertLineCount(values.lines);
@@ -106,38 +109,53 @@ export async function createInvoice(values: InvoiceValues, user: ActingUser) {
     const vendor = await getUsableVendor(values.vendorId);
     await assertVendorInvoiceNoFree(values.vendorId, vendorInvoiceNo);
 
-    const orderId = cleanText(values.orderId);
-    const order = orderId ? await getOrder(orderId) : null;
-    if (order) {
+    const orders = new Map<string, PurchasingOrderDocument>();
+    for (const orderId of new Set(values.lines.map((l) => cleanText(l.orderId)))) {
+      if (!orderId) throw purchasingError('BAD_USER_INPUT', 'Every line must be billed against an order.');
+      const order = await getOrder(orderId);
       if (order.vendorId !== values.vendorId) {
-        throw purchasingError('BAD_USER_INPUT', 'The order belongs to a different vendor.');
+        throw purchasingError('BAD_USER_INPUT', 'An order belongs to a different vendor.');
       }
       if (!InvoiceableOrderStatuses.includes(order.status)) {
         throw purchasingError('CONFLICT', 'Only an approved order can be invoiced.');
       }
+      orders.set(orderId, order);
     }
 
     const lines: InvoiceLine[] = [];
-    const billed = new Map<string, number>();
+    // Billed quantity per order, then per order line.
+    const billed = new Map<string, Map<string, number>>();
     let overBilled = false;
     for (let i = 0; i < values.lines.length; i += 1) {
       const input = values.lines[i];
-      const base = await normalizeBaseLine(input, i);
+      const orderId = cleanText(input.orderId) as string;
       const orderLineId = cleanText(input.orderLineId);
-      if (orderLineId) {
-        const orderLine = order?.lines.find((l) => l._id === orderLineId);
-        if (!orderLine) {
-          throw purchasingError('BAD_USER_INPUT', `Line ${i + 1} is not on the order.`);
-        }
-        const total = roundQuantity((billed.get(orderLineId) ?? 0) + base.quantity);
-        billed.set(orderLineId, total);
-        if (roundQuantity(orderLine.invoicedQuantity + total) > orderLine.receivedQuantity) {
-          overBilled = true;
-        }
+      const order = orders.get(orderId) as PurchasingOrderDocument;
+      const orderLine = order.lines.find((l) => l._id === orderLineId);
+      if (!orderLine) {
+        throw purchasingError('BAD_USER_INPUT', `Line ${i + 1} is not on the order.`);
+      }
+      const base = await normalizeBaseLine(
+        {
+          ...input,
+          description: input.description ?? orderLine.description,
+          unit: input.unit ?? orderLine.unit,
+          internalCatalogId: orderLine.internalCatalogId,
+          externalCatalogId: orderLine.externalCatalogId,
+        },
+        i
+      );
+      const perLine = billed.get(orderId) ?? new Map<string, number>();
+      billed.set(orderId, perLine);
+      const total = roundQuantity((perLine.get(orderLine._id) ?? 0) + base.quantity);
+      perLine.set(orderLine._id, total);
+      if (roundQuantity(orderLine.invoicedQuantity + total) > orderLine.receivedQuantity) {
+        overBilled = true;
       }
       lines.push({
         ...base,
-        ...(orderLineId ? { orderLineId } : {}),
+        orderId,
+        orderLineId: orderLine._id,
         unitPrice: roundMoney(requireNonNegative(input.unitPrice, `Line ${i + 1}: price`)),
         taxRate: requireTaxRate(input.taxRate),
       });
@@ -146,26 +164,30 @@ export async function createInvoice(values: InvoiceValues, user: ActingUser) {
       throw purchasingError('CONFLICT', 'The invoice bills more than was received. Receive the goods first, or accept it as disputed.', { code: 'CONFLICT', overBilled: true });
     }
 
-    if (order && billed.size > 0) {
+    for (const [orderId, perLine] of billed) {
+      const order = orders.get(orderId) as PurchasingOrderDocument;
       const newLines = order.lines.map((l) => ({
         ...l,
-        invoicedQuantity: roundQuantity(l.invoicedQuantity + (billed.get(l._id) ?? 0)),
+        invoicedQuantity: roundQuantity(l.invoicedQuantity + (perLine.get(l._id) ?? 0)),
       }));
       await updateIfUnchanged(PurchasingOrders, order._id, order.version, { lines: newLines }, user);
     }
 
     const { subtotal, taxTotal, total } = totalsOf(lines);
     const now = new Date();
+    const terms = [...orders.values()]
+      .map((o) => o.paymentTermsDays)
+      .filter((d): d is number => d != null);
     const dueDate =
       values.dueDate ??
-      addDays(values.invoiceDate, order?.paymentTermsDays ?? vendor.paymentTermsDays ?? 0);
+      addDays(values.invoiceDate, terms.length ? Math.min(...terms) : vendor.paymentTermsDays ?? 0);
     const number = await nextDocumentNumber(NumberedDocument.INVOICE, now);
     const notes = cleanText(values.notes);
     const _id = await PurchasingInvoices.insertAsync({
       number,
       vendorInvoiceNo,
       vendorId: values.vendorId,
-      ...(order ? { orderId: order._id } : {}),
+      orderIds: [...orders.keys()],
       invoiceDate: values.invoiceDate,
       dueDate,
       ...(notes ? { notes } : {}),
@@ -234,19 +256,22 @@ export async function voidInvoice(_id: string, user: ActingUser) {
     if (invoice.paidAmount > 0) {
       throw purchasingError('CONFLICT', 'Payments were made against this invoice. Void them first.');
     }
-    if (invoice.orderId) {
-      const order = await getOrder(invoice.orderId);
-      const back = new Map<string, number>();
-      invoice.lines.forEach((l) => {
-        if (l.orderLineId) back.set(l.orderLineId, (back.get(l.orderLineId) ?? 0) + l.quantity);
-      });
-      if (back.size > 0) {
-        const newLines = order.lines.map((l) => ({
-          ...l,
-          invoicedQuantity: Math.max(0, roundQuantity(l.invoicedQuantity - (back.get(l._id) ?? 0))),
-        }));
-        await updateIfUnchanged(PurchasingOrders, order._id, order.version, { lines: newLines }, user);
-      }
+    // Each line goes back to its own order (legacy invoices had one order).
+    const back = new Map<string, Map<string, number>>();
+    invoice.lines.forEach((l) => {
+      const orderId = l.orderId ?? invoice.orderId;
+      if (!orderId || !l.orderLineId) return;
+      const perLine = back.get(orderId) ?? new Map<string, number>();
+      back.set(orderId, perLine);
+      perLine.set(l.orderLineId, (perLine.get(l.orderLineId) ?? 0) + l.quantity);
+    });
+    for (const [orderId, perLine] of back) {
+      const order = await getOrder(orderId);
+      const newLines = order.lines.map((l) => ({
+        ...l,
+        invoicedQuantity: Math.max(0, roundQuantity(l.invoicedQuantity - (perLine.get(l._id) ?? 0))),
+      }));
+      await updateIfUnchanged(PurchasingOrders, order._id, order.version, { lines: newLines }, user);
     }
     await moveStatus(
       PurchasingInvoices,
@@ -280,7 +305,7 @@ export async function listInvoices({
   }
   if (status) selector.status = status;
   if (vendorId) selector.vendorId = vendorId;
-  if (orderId) selector.orderId = orderId;
+  if (orderId) selector.$and = [{ $or: [{ orderIds: orderId }, { orderId }] }];
   if (isDisputed != null) selector.isDisputed = isDisputed;
   if (overdue) {
     selector.status = { $in: [InvoiceStatus.UNPAID, InvoiceStatus.PARTIALLY_PAID] };

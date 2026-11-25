@@ -40,7 +40,7 @@ beforeEach(() => {
 });
 
 describe('registerUser', () => {
-  it('creates a locked account with no permissions, instances, or super-admin flag', async () => {
+  it('creates a locked account with no permissions or super-admin flag', async () => {
     const result = await registerUser(
       { displayName: 'New Person', email: 'a@b.c' },
       '1.1.1.1'
@@ -50,7 +50,6 @@ describe('registerUser', () => {
     const user = await Users.findOneAsync('new1');
     expect(user?.locked).toBe(true);
     expect(user?.permissions).toBeUndefined();
-    expect(user?.instances).toBeUndefined();
     expect(user?.isSuperAdmin).toBeUndefined();
     expect(accounts.sendEnrollmentEmail).toHaveBeenCalledWith('new1');
   });

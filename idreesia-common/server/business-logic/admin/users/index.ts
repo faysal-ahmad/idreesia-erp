@@ -20,7 +20,6 @@ export {
   createUser,
   recordUserLogin,
   resetUserPassword,
-  setUserInstanceAccess,
   setUserPermissions,
   updateUser,
 } from './user-mutations';

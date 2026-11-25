@@ -197,7 +197,7 @@ export function createRestApp() {
           ? await reportGenerator.storeIdsOf(normalizedReportArgs)
           : [];
         if (
-          !canDownloadReport(user, knownReport, normalizedReportArgs, storeIds)
+          !(await canDownloadReport(user, knownReport, normalizedReportArgs, storeIds))
         ) {
           res.status(403).json({ error: 'Not authorized.' });
           return;
@@ -272,7 +272,7 @@ export function createRestApp() {
         file: Express.Multer.File;
       };
       // Sent as a multipart field (or query param) by UploadAttachment.
-      const decision = decideAttachmentUpload(
+      const decision = await decideAttachmentUpload(
         (req as RequestWithUser).user,
         {
           category: req.body?.category ?? req.query.category,
@@ -354,7 +354,7 @@ export function createRestApp() {
     Meteor.bindEnvironment(async (req: Request, res: Response) => {
       const { name, data, category } = req.body;
       const mimeType = req.body.mimeType || 'image/jpeg';
-      const decision = decideAttachmentUpload(
+      const decision = await decideAttachmentUpload(
         (req as RequestWithUser).user,
         { category, hasContent: typeof data === 'string', mimeType }
       );

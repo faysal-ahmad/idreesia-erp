@@ -11,6 +11,8 @@ interface Props {
   cropHeight?: number;
   width?: number;
   height?: number;
+  // 'user' = front camera, 'environment' = back camera. Unset leaves the choice to the browser.
+  facingMode?: 'user' | 'environment';
   onCropPositionChange?(left: number, top: number): void;
 }
 
@@ -29,9 +31,14 @@ export default class Camera extends Component<Props, State> {
 
   componentDidMount() {
     if (navigator.mediaDevices) {
+      const { facingMode } = this.props;
       navigator.mediaDevices
         .getUserMedia({
-          video: { width: { ideal: 1920 }, height: { ideal: 1080 } },
+          video: {
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+            ...(facingMode ? { facingMode: { ideal: facingMode } } : {}),
+          },
           audio: false,
         })
         .then(mediaStream => {

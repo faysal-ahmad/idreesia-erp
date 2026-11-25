@@ -7,7 +7,6 @@ export interface UserGroupDocument {
   moduleName?: string;
   description?: string;
   permissions?: string[];
-  instances?: string[];
   createdAt?: Date;
   createdBy?: string;
   updatedAt?: Date;

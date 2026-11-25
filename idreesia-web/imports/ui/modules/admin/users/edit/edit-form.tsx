@@ -10,22 +10,19 @@ import {
 
 import GeneralInfo from './general-info';
 import Permissions from './permissions';
-import InstanceAccess from './instance-access';
 import { USER_BY_ID } from '../gql';
 
 type Props = RouteComponentProps<{ userId: string }>;
 
 const TAB_GENERAL = 'general';
 const TAB_PERMISSIONS = 'permissions';
-const TAB_INSTANCE_ACCESS = 'instance-access';
 
-const VALID_TAB_KEYS = new Set([TAB_GENERAL, TAB_PERMISSIONS, TAB_INSTANCE_ACCESS]);
+const VALID_TAB_KEYS = new Set([TAB_GENERAL, TAB_PERMISSIONS]);
 
 const normalizeTabKey = (key: string) => {
   // Legacy numeric keys from the previous tab layout
   if (key === TAB_GENERAL || key === '1') return TAB_GENERAL;
   if (key === TAB_PERMISSIONS || key === '2') return TAB_PERMISSIONS;
-  if (key === TAB_INSTANCE_ACCESS || key === '3') return TAB_INSTANCE_ACCESS;
   return VALID_TAB_KEYS.has(key) ? key : TAB_GENERAL;
 };
 
@@ -83,11 +80,6 @@ const EditForm = ({ match, location, history }: Props) => {
           key: TAB_PERMISSIONS,
           label: 'Permissions',
           children: <Permissions userId={userId} history={history} />,
-        },
-        {
-          key: TAB_INSTANCE_ACCESS,
-          label: 'Instance Access',
-          children: <InstanceAccess userId={userId} history={history} />,
         },
       ]}
     />

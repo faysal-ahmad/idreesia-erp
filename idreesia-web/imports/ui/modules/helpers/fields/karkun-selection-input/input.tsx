@@ -1,10 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import { EditOutlined } from '@ant-design/icons';
 
-import { Tabs, Drawer, Input } from 'antd';
-import type { TabsProps } from 'antd';
-import type { HelperPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
-import MSKarkunsList from './ms-karkuns-list';
+import { Drawer, Input } from 'antd';
+import type { HelperPagedAdminKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
+import KarkunsList from './karkuns-list';
 
 const ContainerStyle: React.CSSProperties = {
   display: 'flex',
@@ -14,9 +13,9 @@ const ContainerStyle: React.CSSProperties = {
   width: '100%',
 };
 
-type HrKarkunRow = NonNullable<
+type KarkunRow = NonNullable<
   NonNullable<
-    NonNullable<HelperPagedHrKarkunsQuery['pagedHrKarkuns']>['data']
+    NonNullable<HelperPagedAdminKarkunsQuery['pagedAdminKarkuns']>['data']
   >[number]
 >;
 
@@ -30,7 +29,6 @@ interface Props {
   disabled?: boolean;
   placeholder?: string;
   onChange?(karkun: KarkunValue): void;
-  showMsKarkunsList?: boolean;
 }
 
 interface State {
@@ -57,7 +55,7 @@ export default class CustomInput extends Component<Props, State> {
     });
   };
 
-  setSelectedValue = (karkun: HrKarkunRow) => {
+  setSelectedValue = (karkun: KarkunRow) => {
     const { onChange } = this.props;
     this.handleClose();
     if (onChange) {
@@ -69,17 +67,7 @@ export default class CustomInput extends Component<Props, State> {
   };
 
   render() {
-    const { placeholder, value, showMsKarkunsList } = this.props;
-
-    const items: TabsProps['items'] = [];
-
-    if (showMsKarkunsList) {
-      items.push({
-        key: '1',
-        label: 'MS Karkuns',
-        children: <MSKarkunsList handleSelectItem={this.setSelectedValue} />,
-      });
-    }
+    const { placeholder, value } = this.props;
 
     return (
       <Fragment>
@@ -89,7 +77,7 @@ export default class CustomInput extends Component<Props, State> {
           onClose={this.handleClose}
           open={this.state.showSelectionForm}
         >
-          <Tabs items={items} />
+          <KarkunsList handleSelectItem={this.setSelectedValue} />
         </Drawer>
         <div style={ContainerStyle}>
           <Input

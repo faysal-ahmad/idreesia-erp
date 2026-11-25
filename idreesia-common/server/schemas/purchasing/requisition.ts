@@ -9,6 +9,9 @@ export default new SimpleSchema({
   purpose: { type: String, optional: true },
   requestedBy: { type: String, optional: true },
   neededBy: { type: Date, optional: true },
+  // Only stored for store-raised documents (see RequisitionSource).
+  source: { type: String, optional: true, allowedValues: ['store'] },
+  externalSourceId: { type: String, optional: true },
   lines: { type: Array },
   'lines.$': { type: RequisitionLine },
   estimatedTotal: { type: Number, min: 0 },

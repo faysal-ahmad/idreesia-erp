@@ -17,7 +17,7 @@ import { usePurchasingAccess } from '../use-purchasing-access';
 import { CatalogPickerPopup } from './catalog-picker-popup';
 
 interface LineValues {
-  catalogItemId?: string;
+  internalCatalogId?: string;
   description?: string;
   unit?: string;
   quantity?: string;
@@ -90,7 +90,7 @@ export const RequisitionFormScreen = () => {
 
   const initialLines: LineValues[] = requisition?.lines?.length
     ? requisition.lines.map(line => ({
-        catalogItemId: line?.catalogItemId ?? undefined,
+        internalCatalogId: line?.internalCatalogId ?? undefined,
         description: line?.description ?? '',
         unit: line?.unit ?? '',
         quantity: String(line?.quantity ?? ''),
@@ -100,7 +100,7 @@ export const RequisitionFormScreen = () => {
 
   const save = async (values: FormValues) => {
     const lines = (values.lines ?? []).map(line => ({
-      catalogItemId: line.catalogItemId || undefined,
+      internalCatalogId: line.internalCatalogId || undefined,
       description: line.description?.trim() || undefined,
       unit: line.unit?.trim() || undefined,
       quantity: toNumber(line.quantity) ?? 0,
@@ -191,7 +191,7 @@ export const RequisitionFormScreen = () => {
           {fields =>
             fields.map(({ index }) => (
               <React.Fragment key={index}>
-                <Form.Item name={[index, 'catalogItemId']} hidden>
+                <Form.Item name={[index, 'internalCatalogId']} hidden>
                   <Input />
                 </Form.Item>
                 <Form.Item
@@ -229,7 +229,7 @@ export const RequisitionFormScreen = () => {
           const lines = form.getFieldValue('lines') as LineValues[];
           const next = lines.map((line, index) =>
             index === pickingLine
-              ? { ...line, catalogItemId: item._id, description: item.name, unit: item.unit }
+              ? { ...line, internalCatalogId: item._id, description: item.name, unit: item.unit }
               : line
           );
           form.setFieldValue('lines', next);

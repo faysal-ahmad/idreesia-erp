@@ -7,7 +7,11 @@ export default new SimpleSchema({
   number: { type: String },
   vendorInvoiceNo: { type: String },
   vendorId: { type: String },
+  // Legacy: invoices made before lines were billed per order.
   orderId: { type: String, optional: true },
+  // Every order the invoice's lines are billed against.
+  orderIds: { type: Array, optional: true },
+  'orderIds.$': { type: String },
   invoiceDate: { type: Date },
   dueDate: { type: Date },
   notes: { type: String, optional: true },

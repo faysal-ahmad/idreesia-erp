@@ -23,7 +23,6 @@ const USER_BY_ID: TypedDocumentNode<
       isServiceAccount
       loginBlockedAddresses
       untrustedLoginAddressesBlocked
-      instances
       permissions
       personId
       karkun {

@@ -2,6 +2,7 @@ import { PurchasingRequisitions } from 'meteor/idreesia-common/server/collection
 import {
   approveRequisition,
   cancelRequisition,
+  closeRequisition,
   createRequisition,
   deleteRequisition,
   listRequisitions,
@@ -34,6 +35,7 @@ const toValues = ({ neededBy, ...rest }: RequisitionArgs) => ({
 
 export default {
   PurchasingRequisition: {
+    source: (requisition: { source?: string }) => requisition.source ?? 'purchasing',
     requestedByPerson: async (
       requisition: { requestedBy?: string },
       _args: unknown,
@@ -54,6 +56,7 @@ export default {
         search?: string;
         status?: RequisitionStatusValue;
         requestedBy?: string;
+        source?: 'purchasing' | 'store';
         pageIndex?: number;
         pageSize?: number;
       }
@@ -81,6 +84,9 @@ export default {
 
     cancelPurchasingRequisition: async (_obj: unknown, { _id }: { _id: string }, { user }: ResolverContext) =>
       cancelRequisition(_id, user),
+
+    closePurchasingRequisition: async (_obj: unknown, { _id }: { _id: string }, { user }: ResolverContext) =>
+      closeRequisition(_id, user),
 
     deletePurchasingRequisition: async (_obj: unknown, { _id }: { _id: string }, { user }: ResolverContext) => {
       await deleteRequisition(_id, user);

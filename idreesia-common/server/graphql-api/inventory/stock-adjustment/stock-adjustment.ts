@@ -30,22 +30,19 @@ type PagedStockAdjustment {
 
 extend type Query {
   stockAdjustmentById(_id: String!, physicalStoreId: String!): StockAdjustment
-  @checkPermissions(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "object")
+  @checkStoreAccess(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId", returnType: "object")
 
   stockAdjustmentsByStockItem(
     physicalStoreId: String!
     stockItemId: String!
   ): [StockAdjustment]
-  @checkPermissions(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "list")
+  @checkStoreAccess(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId", returnType: "list")
 
   pagedStockAdjustments(
     physicalStoreId: String!
     queryString: String
   ): PagedStockAdjustment
-  @checkPermissions(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId", returnType: "paged-list")
+  @checkStoreAccess(permissions: [IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId", returnType: "paged-list")
 }
 
 extend type Mutation {
@@ -58,8 +55,7 @@ extend type Mutation {
     isInflow: Boolean!
     adjustmentReason: String
   ): StockAdjustment
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId")
 
   updateStockAdjustment(
     _id: String!
@@ -70,15 +66,12 @@ extend type Mutation {
     isInflow: Boolean!
     adjustmentReason: String
   ): StockAdjustment
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId")
 
   approveStockAdjustments(physicalStoreId: String!, _ids: [String]!): [StockAdjustment]
-  @checkPermissions(permissions: [IN_APPROVE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId")
 
   removeStockAdjustments(physicalStoreId: String!, _ids: [String]!): Int
-  @checkPermissions(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS])
-  @checkInstanceAccess(instanceIdArgName: "physicalStoreId")
+  @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "physicalStoreId")
 }
 `;

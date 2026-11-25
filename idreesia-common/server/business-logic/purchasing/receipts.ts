@@ -2,10 +2,12 @@ import {
   NumberedDocument,
   OrderStatus,
   ReceiptStatus,
+  RequisitionSource,
   ReceivableOrderStatuses,
   type ReceiptStatusValue,
 } from 'meteor/idreesia-common/constants/purchasing';
 import { runInTransaction } from 'meteor/idreesia-common/server/collections';
+import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
 import {
   PurchasingOrders,
   PurchasingReceipts,
@@ -14,6 +16,12 @@ import {
 } from 'meteor/idreesia-common/server/collections/purchasing';
 import { escapeRegExp } from 'meteor/idreesia-common/utilities/lodash';
 import { Random } from 'meteor/random';
+
+import {
+  applyStockMovements,
+  revertStockMovements,
+  type StockMovement,
+} from 'meteor/idreesia-common/server/business-logic/inventory/stock-levels';
 
 import { purchasingError } from './errors';
 import {
@@ -33,6 +41,7 @@ import {
 } from './internal';
 import { nextDocumentNumber } from './numbering';
 import { getOrder, receivingStatus } from './orders';
+import { syncRequisitionClosure } from './requisitions';
 
 export interface ReceiptLineInput {
   orderLineId: string;
@@ -55,12 +64,45 @@ export interface ListReceiptsOptions extends PageOptions {
   status?: ReceiptStatusValue;
   vendorId?: string;
   orderId?: string;
+  /** Only the receipts this store posted. */
+  physicalStoreId?: string;
 }
 
-export async function getReceipt(_id: string): Promise<PurchasingReceiptDocument> {
+/**
+ * Goods for a store are received by that store, and only by it. Purchasing's
+ * own orders are received without an origin.
+ */
+export interface ReceiptOrigin {
+  physicalStoreId: string;
+}
+
+const isStoreDoc = (doc: { source?: string; externalSourceId?: string }) =>
+  doc.source === RequisitionSource.STORE && !!doc.externalSourceId;
+
+/** Whether the document may be worked on by this origin (a store, or purchasing when none). */
+function inScope(doc: { source?: string; externalSourceId?: string }, origin?: ReceiptOrigin) {
+  return origin
+    ? isStoreDoc(doc) && doc.externalSourceId === origin.physicalStoreId
+    : !isStoreDoc(doc);
+}
+
+export async function getReceipt(
+  _id: string,
+  origin?: ReceiptOrigin
+): Promise<PurchasingReceiptDocument> {
   const doc = await PurchasingReceipts.findOneAsync({ _id: { $eq: _id } });
-  if (!doc) throw purchasingError('NOT_FOUND', 'Receipt not found.');
+  // Purchasing can still read a store's receipt (it isn't the one changing it).
+  if (!doc || (origin && !inScope(doc, origin))) {
+    throw purchasingError('NOT_FOUND', 'Receipt not found.');
+  }
   return doc;
+}
+
+/** What a store receipt adds to (or, voided, takes from) the store's stock. */
+function stockMovementsOf(lines: ReceiptLine[]): StockMovement[] {
+  return lines
+    .filter((l) => l.externalCatalogId && l.receivedQuantity > 0)
+    .map((l) => ({ stockItemId: l.externalCatalogId as string, quantity: l.receivedQuantity, isInflow: true }));
 }
 
 /**
@@ -68,9 +110,15 @@ export async function getReceipt(_id: string): Promise<PurchasingReceiptDocument
  * to the order's lines and the order's status follows, in one transaction.
  * More than was ordered can't be received.
  */
-export async function postReceipt(values: ReceiptValues, user: ActingUser) {
+export async function postReceipt(values: ReceiptValues, user: ActingUser, origin?: ReceiptOrigin) {
   return runInTransaction(async () => {
     const order = await getOrder(values.orderId);
+    if (origin && !inScope(order, origin)) {
+      throw purchasingError('NOT_FOUND', 'Purchase order not found.');
+    }
+    if (!origin && isStoreDoc(order)) {
+      throw purchasingError('CONFLICT', 'Goods for a store are received by the store.');
+    }
     if (!ReceivableOrderStatuses.includes(order.status)) {
       throw purchasingError('CONFLICT', 'Goods can only be received against an approved order that is not yet fully received.');
     }
@@ -100,6 +148,7 @@ export async function postReceipt(values: ReceiptValues, user: ActingUser) {
       lines.push({
         _id: Random.id(),
         orderLineId: orderLine._id,
+        ...(orderLine.externalCatalogId ? { externalCatalogId: orderLine.externalCatalogId } : {}),
         description: orderLine.description,
         unit: orderLine.unit,
         receivedQuantity: accepted,
@@ -121,6 +170,21 @@ export async function postReceipt(values: ReceiptValues, user: ActingUser) {
       await audit(EntityType.PURCHASING_ORDER, order._id, OperationType.UPDATE, { status }, user, order);
     }
 
+    const isStoreOrder = isStoreDoc(order);
+    if (isStoreOrder) {
+      // Every item must still be one of the store's own.
+      const ids = [...new Set(lines.map((l) => l.externalCatalogId).filter(Boolean))] as string[];
+      const found = await StockItems.find({
+        _id: { $in: ids },
+        physicalStoreId: { $eq: order.externalSourceId },
+      }).countAsync();
+      if (found !== ids.length) {
+        throw purchasingError('CONFLICT', 'An item on this order is no longer one of the store\'s items.');
+      }
+      await applyStockMovements(stockMovementsOf(lines));
+    }
+    if (order.requisitionId) await syncRequisitionClosure(order.requisitionId, user);
+
     const now = new Date();
     const number = await nextDocumentNumber(NumberedDocument.RECEIPT, now);
     const optional = {
@@ -132,6 +196,7 @@ export async function postReceipt(values: ReceiptValues, user: ActingUser) {
       number,
       orderId: order._id,
       vendorId: order.vendorId,
+      ...(isStoreOrder ? { source: order.source, externalSourceId: order.externalSourceId } : {}),
       receivedDate: values.receivedDate,
       ...Object.fromEntries(Object.entries(optional).filter(([, v]) => v !== undefined)),
       lines,
@@ -151,10 +216,15 @@ export async function postReceipt(values: ReceiptValues, user: ActingUser) {
  * once the order is closed or cancelled, or when invoices already bill
  * the goods.
  */
-export async function voidReceipt(_id: string, reason: string, user: ActingUser) {
+export async function voidReceipt(_id: string, reason: string, user: ActingUser, origin?: ReceiptOrigin) {
   const voidReason = requireText(reason, 'A reason', 1000);
   return runInTransaction(async () => {
     const receipt = await getReceipt(_id);
+    if (!inScope(receipt, origin)) {
+      throw origin
+        ? purchasingError('NOT_FOUND', 'Receipt not found.')
+        : purchasingError('CONFLICT', 'A store\'s receipt can only be voided by the store.');
+    }
     if (receipt.status !== ReceiptStatus.POSTED) {
       throw purchasingError('CONFLICT', 'This receipt is already voided.');
     }
@@ -179,6 +249,26 @@ export async function voidReceipt(_id: string, reason: string, user: ActingUser)
       await audit(EntityType.PURCHASING_ORDER, order._id, OperationType.UPDATE, { status }, user, order);
     }
 
+    if (isStoreDoc(receipt)) {
+      // Goods already issued from the store can't be taken back out of it.
+      const movements = stockMovementsOf(receipt.lines);
+      const perItem = new Map<string, number>();
+      movements.forEach(({ stockItemId, quantity }) =>
+        perItem.set(stockItemId, (perItem.get(stockItemId) ?? 0) + quantity)
+      );
+      for (const [stockItemId, quantity] of perItem) {
+        const item = await StockItems.findOneAsync({ _id: { $eq: stockItemId } });
+        const line = receipt.lines.find((l) => l.externalCatalogId === stockItemId);
+        if (!item || (item.currentStockLevel ?? 0) < quantity) {
+          throw purchasingError(
+            'CONFLICT',
+            `"${line?.description ?? 'An item'}" has already been issued from the store, so this receipt can no longer be voided.`
+          );
+        }
+      }
+      await revertStockMovements(movements);
+    }
+
     await moveStatus(
       PurchasingReceipts,
       _id,
@@ -187,6 +277,7 @@ export async function voidReceipt(_id: string, reason: string, user: ActingUser)
       user,
       'This receipt'
     );
+    if (order.requisitionId) await syncRequisitionClosure(order.requisitionId, user);
     await audit(EntityType.PURCHASING_RECEIPT, _id, OperationType.UPDATE, { status: ReceiptStatus.VOIDED, voidReason }, user, receipt);
     return getReceipt(_id);
   });
@@ -197,6 +288,7 @@ export async function listReceipts({
   status,
   vendorId,
   orderId,
+  physicalStoreId,
   ...paging
 }: ListReceiptsOptions = {}): Promise<Page<PurchasingReceiptDocument>> {
   const selector: Record<string, unknown> = {};
@@ -208,6 +300,10 @@ export async function listReceipts({
   if (status) selector.status = status;
   if (vendorId) selector.vendorId = vendorId;
   if (orderId) selector.orderId = orderId;
+  if (physicalStoreId) {
+    selector.source = RequisitionSource.STORE;
+    selector.externalSourceId = physicalStoreId;
+  }
   const { skip, limit } = pageWindow(paging);
   const [totalResults, data] = await Promise.all([
     PurchasingReceipts.find(selector).countAsync(),

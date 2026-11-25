@@ -4,6 +4,7 @@ export default gql`
 type PurchasingReceiptLine {
   _id: String
   orderLineId: String
+  externalCatalogId: String
   description: String
   unit: String
   receivedQuantity: Float
@@ -25,6 +26,9 @@ type PurchasingReceipt {
   order: PurchasingOrder
   vendorId: String
   vendor: PurchasingVendor
+  # 'purchasing' or 'store' (the store of its order).
+  source: String
+  externalSourceId: String
   receivedDate: String
   receivedBy: String
   receivedByPerson: PersonBasicType

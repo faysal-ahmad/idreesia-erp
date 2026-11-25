@@ -39,6 +39,9 @@ erDiagram
   PHYSICAL_STORES ||--o{ STOCK_ITEMS : "physicalStoreId"
   PHYSICAL_STORES ||--o{ PURCHASE_FORMS : "physicalStoreId"
   PHYSICAL_STORES ||--o{ ISSUANCE_FORMS : "physicalStoreId"
+  PHYSICAL_STORES ||--o{ PHYSICAL_STORE_ACCESS : "physicalStoreId"
+  USERS ||--o{ PHYSICAL_STORE_ACCESS : "subjectId (user)"
+  USER_GROUPS ||--o{ PHYSICAL_STORE_ACCESS : "subjectId (group)"
 
   MEHFILS ||--o{ MEHFIL_KARKUNS : "mehfilId"
   MEHFILS ||--o{ MEHFIL_LANGAR_DETAILS : "mehfilId"
@@ -76,6 +79,13 @@ erDiagram
     string _id PK
     string name
   }
+  PHYSICAL_STORE_ACCESS {
+    string _id PK
+    string physicalStoreId FK
+    string subjectType "user or group"
+    string subjectId FK
+    string_array permissions "stores-* values held on this store"
+  }
   MEHFILS {
     string _id PK
     string name
@@ -103,7 +113,6 @@ erDiagram
     string personId FK
     string_array permissions
     string_array groups
-    string_array instances
     bool locked
   }
   USER_GROUPS {
@@ -111,7 +120,6 @@ erDiagram
     string name
     string moduleName
     string_array permissions
-    string_array instances
   }
   PEOPLE {
     string _id PK

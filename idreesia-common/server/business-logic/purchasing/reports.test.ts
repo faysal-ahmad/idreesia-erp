@@ -9,7 +9,11 @@ import {
 import {
   approveOrder,
   createInvoice,
-  createOrder,
+  createOrderFromRequisition,
+  createRequisition,
+  approveRequisition,
+  submitRequisition,
+  updateOrder,
   createVendor,
   dashboardCounts,
   markOrderSent,
@@ -35,12 +39,31 @@ const clean = async () => {
   await PurchasingOrders.removeAsync({});
 };
 
-const billedVendor = async (name: string, invoices: { no: string; date: Date; due: Date; qty: number }[]) => {
-  const vendor = await createVendor({ name }, user);
-  const order = await createOrder(
-    { vendorId: vendor._id, orderDate: day(2040, 1, 1), lines: [{ description: 'Item', unit: 'pc', quantity: 1000, unitPrice: 10 }] },
+/** Orders only come from a requisition: makes an approved one and a draft order from it. */
+const draftOrder = async (
+  vendorId: string,
+  orderDate: Date,
+  line: { quantity: number; unitPrice: number },
+  expectedDeliveryDate?: Date
+) => {
+  const requisition = await createRequisition(
+    { title: 'R', lines: [{ description: 'Item', unit: 'pc', quantity: line.quantity, estimatedUnitPrice: line.unitPrice }] },
     user
   );
+  await submitRequisition(requisition._id, user);
+  await approveRequisition(requisition._id, user);
+  const order = await createOrderFromRequisition(requisition._id, vendorId, user);
+  return updateOrder(
+    order._id,
+    order.version,
+    { vendorId, orderDate, expectedDeliveryDate, lines: order.lines },
+    user
+  );
+};
+
+const billedVendor = async (name: string, invoices: { no: string; date: Date; due: Date; qty: number }[]) => {
+  const vendor = await createVendor({ name }, user);
+  const order = await draftOrder(vendor._id, day(2040, 1, 1), { quantity: 1000, unitPrice: 10 });
   await submitOrder(order._id, user);
   await approveOrder(order._id, user);
   const approved = await getOrder(order._id);
@@ -51,11 +74,10 @@ const billedVendor = async (name: string, invoices: { no: string; date: Date; du
       await createInvoice(
         {
           vendorId: vendor._id,
-          orderId: order._id,
           vendorInvoiceNo: inv.no,
           invoiceDate: inv.date,
           dueDate: inv.due,
-          lines: [{ orderLineId: approved.lines[0]._id, description: 'Item', unit: 'pc', quantity: inv.qty, unitPrice: 10 }],
+          lines: [{ orderId: order._id, orderLineId: approved.lines[0]._id, description: 'Item', unit: 'pc', quantity: inv.qty, unitPrice: 10 }],
         },
         user
       )
@@ -135,10 +157,7 @@ describe('purchasing reports', () => {
   it('lists open orders with what is outstanding, and counts the dashboard', async () => {
     await clean();
     const vendor = await createVendor({ name: 'Open Co' }, user);
-    const order = await createOrder(
-      { vendorId: vendor._id, orderDate: day(2020, 1, 1), expectedDeliveryDate: day(2020, 2, 1), lines: [{ description: 'Item', unit: 'pc', quantity: 10, unitPrice: 5 }] },
-      user
-    );
+    const order = await draftOrder(vendor._id, day(2020, 1, 1), { quantity: 10, unitPrice: 5 }, day(2020, 2, 1));
     await submitOrder(order._id, user);
     expect((await dashboardCounts()).ordersAwaitingApproval).toBe(1);
     await approveOrder(order._id, user);

@@ -62,10 +62,9 @@ const holderOf = (user: {
 });
 
 /**
- * Every Purchasing permission with the users who hold it, directly or through a
- * user group. Locked accounts are left out. Super admins hold every permission
+ * Every Purchasing permission with the users it is directly assigned to. Locked accounts are left out. Super admins hold every permission
  * implicitly and are not listed. Purchasing user groups that hold a permission
- * are listed too.
+ * are listed separately; their members are not.
  */
 export async function listPermissionAssignments(): Promise<PermissionAssignmentGroup[]> {
   // Any group can grant a Purchasing permission, whatever its module.
@@ -73,12 +72,11 @@ export async function listPermissionAssignments(): Promise<PermissionAssignmentG
     { permissions: { $in: ALL_KEYS } },
     { sort: { name: 1 } }
   ).fetchAsync();
-  const groupIds = grantingGroups.map((g) => g._id as string);
 
   const holders = await Users.find({
     locked: { $ne: true },
     isSuperAdmin: { $ne: true },
-    $or: [{ permissions: { $in: ALL_KEYS } }, { groups: { $in: groupIds } }],
+    permissions: { $in: ALL_KEYS },
   }).fetchAsync();
 
   const nameOf = await userNameResolver(holders);
@@ -92,21 +90,12 @@ export async function listPermissionAssignments(): Promise<PermissionAssignmentG
     featureKey: group.featureKey,
     featureName: group.featureName,
     permissions: group.permissions.map((permission) => {
-      const grantedBy = new Set(
-        grantingGroups
-          .filter((g) => (g.permissions ?? []).includes(permission.key))
-          .map((g) => g._id as string)
-      );
       return {
         key: permission.key,
         name: permission.name,
         description: permission.description,
         users: holders
-          .filter(
-            (user) =>
-              (user.permissions ?? []).includes(permission.key) ||
-              (user.groups ?? []).some((id) => grantedBy.has(id))
-          )
+          .filter((user) => (user.permissions ?? []).includes(permission.key))
           .map((user) => holderOf(user, nameOf))
           .sort(byName),
         groups: purchasingGroups

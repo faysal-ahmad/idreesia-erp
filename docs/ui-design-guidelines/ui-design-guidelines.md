@@ -237,7 +237,25 @@ When an edit tab embeds a list (e.g. Stay History), apply the same **Part A** li
 
 **Modal create** — for short setup/entity creates, use Part A §5 instead of a `/new` route.
 
-### 8. Edit / new checklist
+### 8. Picking a person (drawer picker)
+
+Every "choose a person" control (fill a field, or click Add against people to add them to a list) uses the shared picker in `helpers/controls/person-picker/`. Only **who is listed** changes between screens, and the server decides that, so a screen passes a **source** and says what happens on a pick:
+
+- **Source** (`PersonSearchSource`) — `{ query, select, variables? }`. `query` is one of the feature's `paged…Karkuns` queries (see the API design guidelines, *Person picker queries*); it selects `totalResults` and `data { ...PickerPersonFields }` (`PICKER_PERSON_FIELDS`). `select` reads the page out of the result. Scope fixed by the screen (`locationId`, `committeeId`, …) goes in `variables`: `{ ...daKarkunSource, variables: { locationId } }`. Export the source next to the query in the feature's `gql`.
+- **Add to a list** — `<PersonPickerDrawer mode="multi" source title open onClose onPick selectedIds selectedLabel addingId />`. The drawer stays open; the screen sets `addingId` while its mutation runs, and `selectedIds` (or `isSelected`) marks people already added.
+- **Fill one field** — `PersonPickerField` (a `Form.Item`) or `PersonPickerInput` (a bare Form control); it holds `{ _id, name }`. A `PersonPickerDrawer` with `mode="single"` closes on pick, for flows that act on the person directly.
+- Optional `tabs` add lists before the main one (e.g. the stores "Recently Used" tab); `onLink`/`linkLabel` add a second row button.
+- The drawer is 900 wide by default and starts a fresh search each time it opens. Don't hold picker filter/page state in the screen, and don't render `PersonPickerList` with your own query unless the drawer really can't be used (then use `usePersonSearch`).
+
+### 8a. Picking a location
+
+Pick an organization location with the shared tree in `helpers/controls/location-picker/`; each row shows its type tag, and ancestors stay in the tree for context but can't be picked.
+
+- **Form field** — `<LocationPickerField types={...} selectableTypes={...} />` holds one location id. It loads `referenceOrgLocations(types)` (the locations of those types plus their ancestors) through `useReferenceLocations`. That reference query is gated by its consumers' permissions; a new screen adds its permission there.
+- **A karkun's city/mehfil** — use `types={CITY_MEHFIL_TYPES}` and split the picked id with `toCityMehfilIds(id, locations)` (a mehfil gives its city too).
+- **Own data** — `LocationTreeSelect` is presentational: pass `locations` plus `selectableTypes` or `isSelectable` (the Workspaces sidebar passes the user's own locations and allows only those with a workspace).
+
+### 9. Edit / new checklist
 
 1. Dynamic breadcrumbs (entity name on edit; "New" on create page)
 2. Spin / Empty instead of blank render
@@ -350,3 +368,4 @@ Reference: `idreesia-web/imports/ui/modules/security/sidebar.tsx`
 - Blank `null` loading states on list/edit shells
 - Calling `resetErrorBoundary()` inside render
 - Inserting GraphQL date strings into SimpleSchema `Date` fields without resolver conversion
+- A hand-built person-picking drawer or table, or a picker reading another module's people query: use the shared person picker with a feature-owned source (Part B §8)

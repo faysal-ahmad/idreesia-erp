@@ -8,14 +8,14 @@ import {
   UserAddOutlined,
   UserDeleteOutlined,
 } from '@ant-design/icons';
-import { Alert, Button, Drawer, Popconfirm, Row, Space, Table, Tooltip } from 'antd';
+import { Alert, Button, Popconfirm, Row, Space, Table, Tooltip } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import type {
   AddOrgLocationObserverMutation,
   AddOrgLocationObserverMutationVariables,
-  HrLocationObserverKarkunSearchQuery,
-  HrLocationObserverKarkunSearchQueryVariables,
+  PagedOrgLocationObserverKarkunsQuery,
+  PagedOrgLocationObserverKarkunsQueryVariables,
   LocationObserversQuery,
   LocationObserversQueryVariables,
   RemoveOrgLocationObserverMutation,
@@ -24,11 +24,11 @@ import type {
   SyncOrgLocationObserversMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 import {
-  KarkunSelectionList,
+  PICKER_PERSON_FIELDS,
   PersonName,
-  type KarkunSelectionFilter,
-  type KarkunSelectionItem,
-  type KarkunSelectionPageParams,
+  PersonPickerDrawer,
+  type PersonSearchSource,
+  type PickerPerson,
 } from '/imports/ui/modules/helpers/controls';
 import ObservedCommitteesDrawer from './observed-committees-drawer';
 
@@ -80,27 +80,38 @@ const REMOVE_ORG_LOCATION_OBSERVER: TypedDocumentNode<
   }
 `;
 
-const HR_LOCATION_OBSERVER_KARKUN_SEARCH: TypedDocumentNode<
-  HrLocationObserverKarkunSearchQuery,
-  HrLocationObserverKarkunSearchQueryVariables
+const PAGED_ORG_LOCATION_OBSERVER_KARKUNS: TypedDocumentNode<
+  PagedOrgLocationObserverKarkunsQuery,
+  PagedOrgLocationObserverKarkunsQueryVariables
 > = gql`
-  query hrLocationObserverKarkunSearch($filter: KarkunFilter) {
-    pagedHrKarkuns(filter: $filter) {
+  query pagedOrgLocationObserverKarkuns(
+    $name: String
+    $cnicNumber: String
+    $phoneNumber: String
+    $pageIndex: String
+    $pageSize: String
+  ) {
+    pagedOrgLocationObserverKarkuns(
+      name: $name
+      cnicNumber: $cnicNumber
+      phoneNumber: $phoneNumber
+      pageIndex: $pageIndex
+      pageSize: $pageSize
+    ) {
       totalResults
       data {
-        _id
-        sharedData {
-          name
-          parentName
-          cnicNumber
-          contactNumber1
-          imageUrl
-          imageThumbnailUrl
-        }
+        ...PickerPersonFields
       }
     }
   }
+  ${PICKER_PERSON_FIELDS}
 `;
+
+const observerKarkunSource: PersonSearchSource<PagedOrgLocationObserverKarkunsQuery> = {
+  query: PAGED_ORG_LOCATION_OBSERVER_KARKUNS,
+  select: data => data.pagedOrgLocationObserverKarkuns,
+  description: 'Showing karkuns of Multan.',
+};
 
 const SYNC_ORG_LOCATION_OBSERVERS: TypedDocumentNode<
   SyncOrgLocationObserversMutation,
@@ -116,7 +127,6 @@ const SYNC_ORG_LOCATION_OBSERVERS: TypedDocumentNode<
 `;
 
 const REFETCH = ['locationObservers', 'orgLocationById'];
-const DEFAULT_PAGE_SIZE = 20;
 
 interface ObserverRow {
   _id: string;
@@ -135,9 +145,6 @@ interface Props {
 
 const LocationObservers = ({ locationId }: Props) => {
   const [showAdd, setShowAdd] = useState(false);
-  const [filter, setFilter] = useState<KarkunSelectionFilter>({});
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [addingId, setAddingId] = useState<string | null>(null);
   const [viewedObserverId, setViewedObserverId] = useState<string | null>(null);
 
@@ -172,42 +179,6 @@ const LocationObservers = ({ locationId }: Props) => {
 
   const viewedObserver = observers.find(o => o._id === viewedObserverId);
 
-  const { data: searchData, loading: searching, refetch: refetchSearch } = useQuery(
-    HR_LOCATION_OBSERVER_KARKUN_SEARCH,
-    {
-      variables: {
-        filter: {
-          name: filter.name || undefined,
-          cnicNumber: filter.cnicNumber || undefined,
-          phoneNumber: filter.phoneNumber || undefined,
-          // Only karkuns can be observers (enforced server-side).
-          isKarkun: true,
-          pageIndex: String(pageIndex),
-          pageSize: String(pageSize),
-        },
-      },
-      skip: !showAdd,
-      fetchPolicy: 'network-only',
-    }
-  );
-  const karkuns: KarkunSelectionItem[] = (
-    searchData?.pagedHrKarkuns?.data ?? []
-  ).flatMap(person =>
-    person?._id
-      ? [
-          {
-            _id: person._id,
-            name: person.sharedData?.name,
-            parentName: person.sharedData?.parentName,
-            cnicNumber: person.sharedData?.cnicNumber,
-            contactNumber1: person.sharedData?.contactNumber1,
-            imageUrl: person.sharedData?.imageUrl,
-            imageThumbnailUrl: person.sharedData?.imageThumbnailUrl,
-          },
-        ]
-      : []
-  );
-
   const [addObserver] = useMutation(ADD_ORG_LOCATION_OBSERVER, {
     refetchQueries: REFETCH,
   });
@@ -241,25 +212,7 @@ const LocationObservers = ({ locationId }: Props) => {
       });
   };
 
-  const setPageParams = ({
-    pageIndex: nextPageIndex,
-    pageSize: nextPageSize,
-    ...filterChanges
-  }: KarkunSelectionPageParams) => {
-    if (nextPageIndex != null) setPageIndex(Number(nextPageIndex));
-    if (nextPageSize != null) setPageSize(Number(nextPageSize));
-    if (Object.keys(filterChanges).length > 0) {
-      setFilter(prev => ({ ...prev, ...filterChanges }));
-    }
-  };
-
-  const handleCloseAdd = () => {
-    setShowAdd(false);
-    setFilter({});
-    setPageIndex(0);
-  };
-
-  const handleAdd = (karkun: KarkunSelectionItem) => {
+  const handleAdd = (karkun: PickerPerson) => {
     setAddingId(karkun._id);
     addObserver({ variables: { locationId, karkunId: karkun._id } })
       .then(() => {
@@ -385,29 +338,17 @@ const LocationObservers = ({ locationId }: Props) => {
         onClose={() => setViewedObserverId(null)}
       />
 
-      <Drawer
+      <PersonPickerDrawer
         title="Add Observer"
-        width={900}
         open={showAdd}
-        onClose={handleCloseAdd}
-        destroyOnHidden
-      >
-        <KarkunSelectionList
-          karkuns={karkuns}
-          totalResults={searchData?.pagedHrKarkuns?.totalResults ?? 0}
-          loading={searching}
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-          filter={filter}
-          selectedIds={observers.map(o => o._id)}
-          selectedLabel="Observer"
-          showParentName={false}
-          addingId={addingId}
-          setPageParams={setPageParams}
-          refreshData={refetchSearch}
-          onAdd={handleAdd}
-        />
-      </Drawer>
+        onClose={() => setShowAdd(false)}
+        source={observerKarkunSource}
+        selectedIds={observers.map(o => o._id)}
+        selectedLabel="Observer"
+        showParentName={false}
+        addingId={addingId}
+        onPick={handleAdd}
+      />
     </>
   );
 };

@@ -7,6 +7,6 @@ export { default as UPDATE_PURCHASING_USER_GROUP } from './update-purchasing-use
 export { default as DELETE_PURCHASING_USER_GROUP } from './delete-purchasing-user-group';
 export { default as ADD_PURCHASING_GROUP_MEMBER } from './add-purchasing-group-member';
 export { default as REMOVE_PURCHASING_GROUP_MEMBER } from './remove-purchasing-group-member';
-export { default as PURCHASING_KARKUN_SEARCH } from './purchasing-karkun-search';
+export { default as PAGED_PURCHASING_PERMISSION_KARKUNS, purchasingPermissionKarkunSource } from './paged-purchasing-permission-karkuns';
 export { default as ADD_PURCHASING_PERMISSION_GROUP } from './add-purchasing-permission-group';
 export { default as REMOVE_PURCHASING_PERMISSION_GROUP } from './remove-purchasing-permission-group';

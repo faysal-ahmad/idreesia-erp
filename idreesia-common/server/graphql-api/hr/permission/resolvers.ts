@@ -30,7 +30,7 @@ export default {
   Query: {
     hrPermissionAssignments: async () => listPermissionAssignments(),
 
-    hrPermissionKarkunSearch: async (
+    pagedHrPermissionKarkuns: async (
       _obj: unknown,
       args: {
         name?: string;

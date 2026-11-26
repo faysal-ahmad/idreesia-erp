@@ -11,18 +11,17 @@ import {
   SyncOutlined,
   UndoOutlined,
 } from '@ant-design/icons';
-import { Alert, Button, DatePicker, Drawer, Empty, Space, Spin } from 'antd';
+import { Alert, Button, DatePicker, Empty, Space, Spin } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import type { WorkspaceDaPlanDaysQuery } from 'meteor/idreesia-common/types/client-operations';
-import type { KarkunSelectionItem } from '/imports/ui/modules/helpers/controls';
+import { PersonPickerDrawer, type PickerPerson } from '/imports/ui/modules/helpers/controls';
 
 import AttendanceMark, { asStatus } from './attendance-mark';
 import { todayInKarachi } from './dates';
 import DutySelect from './duty-select';
-import { WORKSPACE_DA_PLAN_DAYS, WORKSPACE_DA_SET_DAY_OVERRIDE } from './gql';
+import { WORKSPACE_DA_PLAN_DAYS, WORKSPACE_DA_SET_DAY_OVERRIDE, daKarkunSource } from './gql';
 import { useDuties, useDutiesAttendanceAccess } from './hooks';
-import KarkunPicker from './karkun-picker';
 
 const DAY_COUNT = 7;
 
@@ -78,7 +77,7 @@ const PlanningPage = () => {
       });
   };
 
-  const handleAddKarkun = (karkun: KarkunSelectionItem) => {
+  const handleAddKarkun = (karkun: PickerPerson) => {
     const date = addingForDate;
     setAddingForDate(null);
     const day = days.find(item => item.date === date);
@@ -262,26 +261,22 @@ const PlanningPage = () => {
         </>
       )}
 
-      <Drawer
+      <PersonPickerDrawer
         title={
           addingForDate
             ? `Add somebody for ${dayjs(addingForDate).format('DD MMM, YYYY')}`
             : 'Add'
         }
-        width={900}
         open={addingForDate != null}
         onClose={() => setAddingForDate(null)}
-        destroyOnHidden
-      >
-        <KarkunPicker
-          locationId={locationId}
-          selectedIds={(addingDay?.karkuns ?? []).flatMap(karkun =>
-            karkun?.karkunId && !karkun.off ? [karkun.karkunId] : []
-          )}
-          selectedLabel="On duty"
-          onAdd={handleAddKarkun}
-        />
-      </Drawer>
+        source={{ ...daKarkunSource, variables: { locationId } }}
+        selectedIds={(addingDay?.karkuns ?? []).flatMap(karkun =>
+          karkun?.karkunId && !karkun.off ? [karkun.karkunId] : []
+        )}
+        selectedLabel="On duty"
+        mode="single"
+        onPick={handleAddKarkun}
+      />
     </div>
   );
 };

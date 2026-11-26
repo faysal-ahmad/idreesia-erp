@@ -142,14 +142,14 @@ extend type Query {
   ): DaPlanDaysType @checkDutiesAttendanceAccess(permission: VIEW)
 
   # Karkuns to choose from when building a duty roster.
-  workspaceDaKarkunSearch(
+  pagedWorkspaceDaKarkuns(
     locationId: String!
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedWorkspaceKarkunType
+  ): PagedPickerPersonType
     @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
   # month is MM-yyyy; without dutyId, every duty of the workspace.

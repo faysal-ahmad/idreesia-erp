@@ -31,7 +31,14 @@ extend type Query {
 
   # People search behind the "Add Karkuns" picker on the mehfil karkuns page.
   # Searches visitors, karkuns and employees.
-  pagedSecurityPeople(filter: PersonFilter): PagedPeopleType
+  # Anyone who can be put on a mehfil's duty.
+  pagedSecurityMehfilPeople(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
   @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
 }
 

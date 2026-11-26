@@ -21,16 +21,6 @@ export type Scalars = {
   UtcOffset: { input: unknown; output: unknown; }
 };
 
-export type AdminKarkunFilter = {
-  cityLocationId?: InputMaybe<Scalars['String']['input']>;
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  mehfilLocationId?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  pageIndex?: InputMaybe<Scalars['String']['input']>;
-  pageSize?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type AdminKarkunLocationType = {
   __typename?: 'AdminKarkunLocationType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -609,17 +599,6 @@ export type HrPermissionHolder = {
   username?: Maybe<Scalars['String']['output']>;
 };
 
-export type HrPermissionKarkunType = {
-  __typename?: 'HrPermissionKarkunType';
-  _id?: Maybe<Scalars['String']['output']>;
-  cnicNumber?: Maybe<Scalars['String']['output']>;
-  contactNumber1?: Maybe<Scalars['String']['output']>;
-  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  parentName?: Maybe<Scalars['String']['output']>;
-};
-
 export type HrUserGroup = {
   __typename?: 'HrUserGroup';
   _id: Scalars['String']['output'];
@@ -943,17 +922,6 @@ export type MpGroupType = {
   permissions: Array<Maybe<MpPermissionType>>;
 };
 
-export type MpKarkunType = {
-  __typename?: 'MpKarkunType';
-  _id?: Maybe<Scalars['String']['output']>;
-  cnicNumber?: Maybe<Scalars['String']['output']>;
-  contactNumber1?: Maybe<Scalars['String']['output']>;
-  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  parentName?: Maybe<Scalars['String']['output']>;
-};
-
 export type MpPermissionType = {
   __typename?: 'MpPermissionType';
   description: Scalars['String']['output'];
@@ -992,6 +960,7 @@ export type Mutation = {
   addSecurityPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   addSecurityPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   addSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
+  addStoreUserGroupMember?: Maybe<Scalars['Boolean']['output']>;
   addTeamCoordinator?: Maybe<TeamType>;
   addTeamMember?: Maybe<TeamType>;
   addWorkspaceMonitoringProfilePhoto?: Maybe<WorkspaceMonitoringProfileType>;
@@ -1057,6 +1026,7 @@ export type Mutation = {
   createStockAdjustment?: Maybe<StockAdjustment>;
   createStockItem?: Maybe<StockItem>;
   createStoreRequisition?: Maybe<PurchasingRequisition>;
+  createStoreUserGroup?: Maybe<StoreUserGroup>;
   createTeam?: Maybe<TeamType>;
   createUser?: Maybe<UserType>;
   createUserGroup?: Maybe<UserGroupType>;
@@ -1081,6 +1051,7 @@ export type Mutation = {
   deleteSecurityUserGroup?: Maybe<Scalars['Boolean']['output']>;
   deleteSecurityVisitor?: Maybe<Scalars['Int']['output']>;
   deleteStoreRequisition?: Maybe<Scalars['Boolean']['output']>;
+  deleteStoreUserGroup?: Maybe<Scalars['Boolean']['output']>;
   deleteUserGroup?: Maybe<Scalars['Int']['output']>;
   disableCommitteeFeature: Scalars['Boolean']['output'];
   disableTwoFactor?: Maybe<UserType>;
@@ -1145,6 +1116,7 @@ export type Mutation = {
   removeSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
   removeStockAdjustments?: Maybe<Scalars['Int']['output']>;
   removeStockItem?: Maybe<Scalars['Int']['output']>;
+  removeStoreUserGroupMember?: Maybe<Scalars['Boolean']['output']>;
   removeTeam?: Maybe<Scalars['Int']['output']>;
   removeTeamCoordinator?: Maybe<TeamType>;
   removeTeamMember?: Maybe<TeamType>;
@@ -1244,6 +1216,7 @@ export type Mutation = {
   updateStockAdjustment?: Maybe<StockAdjustment>;
   updateStockItem?: Maybe<StockItem>;
   updateStoreRequisition?: Maybe<PurchasingRequisition>;
+  updateStoreUserGroup?: Maybe<StoreUserGroup>;
   updateTeam?: Maybe<TeamType>;
   updateTeamMemberDays?: Maybe<TeamType>;
   updateUser?: Maybe<UserType>;
@@ -1472,6 +1445,12 @@ export type MutationAddSecurityPermissionUserArgs = {
 export type MutationAddSecurityServerProfileImageArgs = {
   imageData: Scalars['String']['input'];
   profileId: Scalars['String']['input'];
+};
+
+
+export type MutationAddStoreUserGroupMemberArgs = {
+  groupId: Scalars['String']['input'];
+  karkunId: Scalars['String']['input'];
 };
 
 
@@ -1958,6 +1937,12 @@ export type MutationCreateStoreRequisitionArgs = {
 };
 
 
+export type MutationCreateStoreUserGroupArgs = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationCreateTeamArgs = {
   color?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -2099,6 +2084,11 @@ export type MutationDeleteStoreRequisitionArgs = {
 };
 
 
+export type MutationDeleteStoreUserGroupArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteUserGroupArgs = {
   _id: Scalars['String']['input'];
 };
@@ -2213,6 +2203,8 @@ export type MutationPostStoreReceiptArgs = {
 
 export type MutationPromoteHrKarkunArgs = {
   _id: Scalars['String']['input'];
+  cityLocationId: Scalars['String']['input'];
+  mehfilLocationId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2479,6 +2471,12 @@ export type MutationRemoveStockAdjustmentsArgs = {
 export type MutationRemoveStockItemArgs = {
   _id: Scalars['String']['input'];
   physicalStoreId: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveStoreUserGroupMemberArgs = {
+  groupId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -3228,6 +3226,13 @@ export type MutationUpdateStoreRequisitionArgs = {
   requestedBy?: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
   version: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateStoreUserGroupArgs = {
+  _id: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
 };
 
 
@@ -4022,19 +4027,6 @@ export type OrgLocationFeaturePermissionsType = {
   permissions: Array<Maybe<OrgLocationFeaturePermissionType>>;
 };
 
-export type OrgLocationKarkunType = {
-  __typename?: 'OrgLocationKarkunType';
-  _id: Scalars['String']['output'];
-  cnicNumber?: Maybe<Scalars['String']['output']>;
-  contactNumber1?: Maybe<Scalars['String']['output']>;
-  contactNumber2?: Maybe<Scalars['String']['output']>;
-  hasUserAccount: Scalars['Boolean']['output'];
-  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  parentName?: Maybe<Scalars['String']['output']>;
-};
-
 export type OrgLocationMehfilDetailsInput = {
   address?: InputMaybe<Scalars['String']['input']>;
   attendanceGeofenceMeters?: InputMaybe<Scalars['Int']['input']>;
@@ -4110,12 +4102,6 @@ export type PagedFreeFormValue = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
-export type PagedHrPermissionKarkunType = {
-  __typename?: 'PagedHrPermissionKarkunType';
-  data?: Maybe<Array<Maybe<HrPermissionKarkunType>>>;
-  totalResults?: Maybe<Scalars['Int']['output']>;
-};
-
 export type PagedInboxConversationType = {
   __typename?: 'PagedInboxConversationType';
   data?: Maybe<Array<Maybe<InboxConversationType>>>;
@@ -4146,21 +4132,15 @@ export type PagedMehfilLocationKarkunType = {
   totalResults: Scalars['Int']['output'];
 };
 
-export type PagedMpKarkunType = {
-  __typename?: 'PagedMpKarkunType';
-  data?: Maybe<Array<Maybe<MpKarkunType>>>;
-  totalResults?: Maybe<Scalars['Int']['output']>;
-};
-
-export type PagedOrgLocationKarkunType = {
-  __typename?: 'PagedOrgLocationKarkunType';
-  data: Array<OrgLocationKarkunType>;
-  totalResults: Scalars['Int']['output'];
-};
-
 export type PagedPeopleType = {
   __typename?: 'PagedPeopleType';
   data?: Maybe<Array<Maybe<PersonType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedPickerPersonType = {
+  __typename?: 'PagedPickerPersonType';
+  data?: Maybe<Array<Maybe<PickerPersonType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -4179,12 +4159,6 @@ export type PagedPurchasingCatalogItems = {
 export type PagedPurchasingInvoices = {
   __typename?: 'PagedPurchasingInvoices';
   data?: Maybe<Array<Maybe<PurchasingInvoice>>>;
-  totalResults?: Maybe<Scalars['Int']['output']>;
-};
-
-export type PagedPurchasingKarkunType = {
-  __typename?: 'PagedPurchasingKarkunType';
-  data?: Maybe<Array<Maybe<PurchasingKarkunType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -4266,12 +4240,6 @@ export type PagedSecurityLogType = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
-export type PagedSecurityPermissionKarkunType = {
-  __typename?: 'PagedSecurityPermissionKarkunType';
-  data?: Maybe<Array<Maybe<SecurityPermissionKarkunType>>>;
-  totalResults?: Maybe<Scalars['Int']['output']>;
-};
-
 export type PagedSecurityServerAlertGroupType = {
   __typename?: 'PagedSecurityServerAlertGroupType';
   data?: Maybe<Array<Maybe<SecurityServerAlertGroupType>>>;
@@ -4299,12 +4267,6 @@ export type PagedStockAdjustment = {
 export type PagedStockItem = {
   __typename?: 'PagedStockItem';
   data?: Maybe<Array<Maybe<StockItem>>>;
-  totalResults?: Maybe<Scalars['Int']['output']>;
-};
-
-export type PagedStoreAccessKarkun = {
-  __typename?: 'PagedStoreAccessKarkun';
-  data?: Maybe<Array<Maybe<StoreAccessKarkun>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -4347,12 +4309,6 @@ export type PagedVisitorType = {
 export type PagedWorkspaceDocumentType = {
   __typename?: 'PagedWorkspaceDocumentType';
   data?: Maybe<Array<Maybe<WorkspaceDocumentType>>>;
-  totalResults?: Maybe<Scalars['Int']['output']>;
-};
-
-export type PagedWorkspaceKarkunType = {
-  __typename?: 'PagedWorkspaceKarkunType';
-  data?: Maybe<Array<Maybe<WorkspaceKarkunType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -4469,7 +4425,6 @@ export enum Permission {
   AdminManageFreeFormData = 'ADMIN_MANAGE_FREE_FORM_DATA',
   AdminManageOrgLocations = 'ADMIN_MANAGE_ORG_LOCATIONS',
   AdminManagePeopleTags = 'ADMIN_MANAGE_PEOPLE_TAGS',
-  AdminManagePhysicalStores = 'ADMIN_MANAGE_PHYSICAL_STORES',
   AdminManageScheduledJobs = 'ADMIN_MANAGE_SCHEDULED_JOBS',
   AdminManageUsersAndGroups = 'ADMIN_MANAGE_USERS_AND_GROUPS',
   AdminViewCommittees = 'ADMIN_VIEW_COMMITTEES',
@@ -4490,6 +4445,8 @@ export enum Permission {
   InApprovePurchaseForms = 'IN_APPROVE_PURCHASE_FORMS',
   InApproveStockAdjustments = 'IN_APPROVE_STOCK_ADJUSTMENTS',
   InManageIssuanceForms = 'IN_MANAGE_ISSUANCE_FORMS',
+  InManagePhysicalStores = 'IN_MANAGE_PHYSICAL_STORES',
+  InManagePhysicalStorePermissions = 'IN_MANAGE_PHYSICAL_STORE_PERMISSIONS',
   InManagePurchaseForms = 'IN_MANAGE_PURCHASE_FORMS',
   InManageReceipts = 'IN_MANAGE_RECEIPTS',
   InManageRequisitions = 'IN_MANAGE_REQUISITIONS',
@@ -4675,6 +4632,18 @@ export type PhysicalStore = {
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
+export type PickerPersonType = {
+  __typename?: 'PickerPersonType';
+  _id: Scalars['String']['output'];
+  cnicNumber?: Maybe<Scalars['String']['output']>;
+  contactNumber1?: Maybe<Scalars['String']['output']>;
+  hasUserAccount?: Maybe<Scalars['Boolean']['output']>;
+  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  parentName?: Maybe<Scalars['String']['output']>;
+};
+
 export type PurchaseForm = {
   __typename?: 'PurchaseForm';
   _id?: Maybe<Scalars['String']['output']>;
@@ -4817,17 +4786,6 @@ export type PurchasingInvoiceLine = {
   taxRate?: Maybe<Scalars['Float']['output']>;
   unit?: Maybe<Scalars['String']['output']>;
   unitPrice?: Maybe<Scalars['Float']['output']>;
-};
-
-export type PurchasingKarkunType = {
-  __typename?: 'PurchasingKarkunType';
-  _id?: Maybe<Scalars['String']['output']>;
-  cnicNumber?: Maybe<Scalars['String']['output']>;
-  contactNumber1?: Maybe<Scalars['String']['output']>;
-  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  parentName?: Maybe<Scalars['String']['output']>;
 };
 
 export type PurchasingLedgerEntry = {
@@ -5339,7 +5297,6 @@ export type Query = {
   hrKarkunById?: Maybe<PersonType>;
   hrKarkunsById?: Maybe<Array<Maybe<PersonType>>>;
   hrPermissionAssignments?: Maybe<Array<Maybe<HrPermissionGroup>>>;
-  hrPermissionKarkunSearch?: Maybe<PagedHrPermissionKarkunType>;
   hrUserGroups?: Maybe<Array<Maybe<HrUserGroup>>>;
   inboxConversation?: Maybe<InboxConversationDetailType>;
   isJobProcessorActive?: Maybe<Scalars['Boolean']['output']>;
@@ -5352,6 +5309,8 @@ export type Query = {
   karkunDutyAttendanceSheet?: Maybe<Array<Maybe<DutyAttendanceSheetRowType>>>;
   locationById?: Maybe<Location>;
   locationsByPhysicalStoreId?: Maybe<Array<Maybe<Location>>>;
+  managedPhysicalStoreById?: Maybe<PhysicalStore>;
+  managedPhysicalStores?: Maybe<Array<Maybe<PhysicalStore>>>;
   mehfilById?: Maybe<MehfilType>;
   mehfilKarkunByBarcodeId?: Maybe<MehfilKarkunType>;
   mehfilKarkunsByIds?: Maybe<Array<Maybe<MehfilKarkunType>>>;
@@ -5368,26 +5327,34 @@ export type Query = {
   myTrustedDevices?: Maybe<Array<Maybe<TrustedDeviceType>>>;
   orgLocationById?: Maybe<OrgLocationType>;
   orgLocationFeaturePermissions?: Maybe<Array<Maybe<OrgLocationFeaturePermissionsType>>>;
-  pagedAdminKarkuns?: Maybe<PagedKarkunType>;
+  pagedAdminUserKarkuns?: Maybe<PagedPickerPersonType>;
   pagedCities?: Maybe<PagedCityType>;
   pagedDeletedPeople?: Maybe<PagedPeopleType>;
   pagedFreeFormCities?: Maybe<PagedFreeFormCity>;
   pagedFreeFormCountries?: Maybe<PagedFreeFormValue>;
   pagedHrAuditLogs?: Maybe<PagedAuditLogType>;
+  pagedHrEmployeeCandidateKarkuns?: Maybe<PagedPickerPersonType>;
+  pagedHrKarkunCandidatePeople?: Maybe<PagedPickerPersonType>;
   pagedHrKarkuns?: Maybe<PagedKarkunType>;
+  pagedHrPermissionKarkuns?: Maybe<PagedPickerPersonType>;
+  pagedHrPickerKarkuns?: Maybe<PagedPickerPersonType>;
   pagedInboxConversations?: Maybe<PagedInboxConversationType>;
   pagedIssuanceForms?: Maybe<PagedIssuanceForm>;
   pagedJobLogs?: Maybe<PagedJobLogsType>;
   pagedLinkableUsers?: Maybe<PagedUserType>;
   pagedMehfilKarkuns: PagedMehfilLocationKarkunType;
-  pagedOrgLocationKarkuns: PagedOrgLocationKarkunType;
+  pagedOrgLocationKarkuns?: Maybe<PagedPickerPersonType>;
+  pagedOrgLocationObserverKarkuns?: Maybe<PagedPickerPersonType>;
   pagedOrgLocationUsers?: Maybe<PagedUserType>;
   pagedPurchaseForms?: Maybe<PagedPurchaseForm>;
   pagedPurchasingAuditLogs?: Maybe<PagedAuditLogType>;
   pagedPurchasingCatalogItems?: Maybe<PagedPurchasingCatalogItems>;
+  pagedPurchasingCustodianKarkuns?: Maybe<PagedPickerPersonType>;
   pagedPurchasingInvoices?: Maybe<PagedPurchasingInvoices>;
+  pagedPurchasingKarkuns?: Maybe<PagedPickerPersonType>;
   pagedPurchasingOrders?: Maybe<PagedPurchasingOrders>;
   pagedPurchasingPayments?: Maybe<PagedPurchasingPayments>;
+  pagedPurchasingPermissionKarkuns?: Maybe<PagedPickerPersonType>;
   pagedPurchasingPettyCashExpenseHeads?: Maybe<PagedPurchasingPettyCashExpenseHeads>;
   pagedPurchasingPettyCashFunds?: Maybe<PagedPurchasingPettyCashFunds>;
   pagedPurchasingPettyCashReplenishments?: Maybe<PagedPurchasingPettyCashReplenishments>;
@@ -5400,20 +5367,26 @@ export type Query = {
   pagedScheduledJobs?: Maybe<PagedScheduledJobsType>;
   pagedSecurityAuditLogs?: Maybe<PagedAuditLogType>;
   pagedSecurityLogs?: Maybe<PagedSecurityLogType>;
-  pagedSecurityPeople?: Maybe<PagedPeopleType>;
+  pagedSecurityMehfilPeople?: Maybe<PagedPickerPersonType>;
+  pagedSecurityPermissionKarkuns?: Maybe<PagedPickerPersonType>;
   pagedSecurityServerAlertGroups?: Maybe<PagedSecurityServerAlertGroupType>;
   pagedSecurityServerAlerts?: Maybe<PagedSecurityServerAlertType>;
   pagedSecurityServerProfiles?: Maybe<PagedSecurityServerProfileType>;
   pagedSecurityVisitors?: Maybe<PagedVisitorType>;
   pagedStockAdjustments?: Maybe<PagedStockAdjustment>;
   pagedStockItems?: Maybe<PagedStockItem>;
+  pagedStoreKarkuns?: Maybe<PagedPickerPersonType>;
   pagedStoreOrders?: Maybe<PagedStoreOrders>;
+  pagedStorePermissionKarkuns?: Maybe<PagedPickerPersonType>;
   pagedStoreReceipts?: Maybe<PagedStoreReceipts>;
   pagedStoreRequisitions?: Maybe<PagedPurchasingRequisitions>;
   pagedUserGroups?: Maybe<PagedUserGroupType>;
   pagedUsers?: Maybe<PagedUserType>;
   pagedVisitorStays?: Maybe<PagedVisitorStayType>;
   pagedVisitorStaysByVisitorId?: Maybe<PagedVisitorStayType>;
+  pagedWorkspaceCommitteeKarkuns?: Maybe<PagedPickerPersonType>;
+  pagedWorkspaceDaKarkuns?: Maybe<PagedPickerPersonType>;
+  pagedWorkspaceMehfilPermissionsKarkuns?: Maybe<PagedPickerPersonType>;
   physicalStoreAccess?: Maybe<Array<Maybe<StorePermissionHolders>>>;
   physicalStoreById?: Maybe<PhysicalStore>;
   purchaseFormById?: Maybe<PurchaseForm>;
@@ -5424,13 +5397,11 @@ export type Query = {
   purchasingCatalogItemById?: Maybe<PurchasingCatalogItem>;
   purchasingDashboard?: Maybe<PurchasingDashboard>;
   purchasingInvoiceById?: Maybe<PurchasingInvoice>;
-  purchasingKarkunSearch?: Maybe<PagedPurchasingKarkunType>;
   purchasingOpenOrders?: Maybe<Array<Maybe<PurchasingOpenOrder>>>;
   purchasingOrderById?: Maybe<PurchasingOrder>;
   purchasingPayablesAging?: Maybe<Array<Maybe<PurchasingPayablesAgingRow>>>;
   purchasingPaymentById?: Maybe<PurchasingPayment>;
   purchasingPermissionAssignments?: Maybe<Array<Maybe<PurchasingPermissionGroup>>>;
-  purchasingPettyCashCustodianSearch?: Maybe<PagedPurchasingKarkunType>;
   purchasingPettyCashExpenseHeadById?: Maybe<PurchasingPettyCashExpenseHead>;
   purchasingPettyCashFundById?: Maybe<PurchasingPettyCashFund>;
   purchasingPettyCashReplenishmentById?: Maybe<PurchasingPettyCashReplenishment>;
@@ -5446,7 +5417,7 @@ export type Query = {
   referenceCityMehfilLocations?: Maybe<Array<Maybe<ReferenceOrgLocationType>>>;
   referenceDutyShifts?: Maybe<Array<Maybe<ReferenceDutyShiftType>>>;
   referenceMsDuties?: Maybe<Array<Maybe<ReferenceDutyType>>>;
-  referencePhysicalStoreById?: Maybe<ReferencePhysicalStoreType>;
+  referenceOrgLocations?: Maybe<Array<Maybe<ReferenceOrgLocationType>>>;
   referencePhysicalStores?: Maybe<Array<Maybe<ReferencePhysicalStoreType>>>;
   referenceStockItems?: Maybe<Array<Maybe<ReferenceStockItemType>>>;
   salariesByIds?: Maybe<Array<Maybe<SalaryType>>>;
@@ -5457,7 +5428,6 @@ export type Query = {
   securityMehfilLangarDishById?: Maybe<MehfilLangarDishType>;
   securityMehfilLangarLocationById?: Maybe<MehfilLangarLocationType>;
   securityPermissionAssignments?: Maybe<Array<Maybe<SecurityPermissionGroup>>>;
-  securityPermissionKarkunSearch?: Maybe<PagedSecurityPermissionKarkunType>;
   securityServerAlertById?: Maybe<SecurityServerAlertType>;
   securityServerAlertSyncStatus?: Maybe<SecurityServerAlertSyncStatusType>;
   securityServerChannelById?: Maybe<SecurityServerChannelType>;
@@ -5471,11 +5441,10 @@ export type Query = {
   stockAdjustmentsByStockItem?: Maybe<Array<Maybe<StockAdjustment>>>;
   stockItemById?: Maybe<StockItem>;
   stockItemsById?: Maybe<Array<Maybe<StockItem>>>;
-  storeAccessKarkunSearch?: Maybe<PagedStoreAccessKarkun>;
-  storeAccessUserGroups?: Maybe<Array<Maybe<StoreAccessUserGroup>>>;
   storeOrderById?: Maybe<StoreOrder>;
   storeReceiptById?: Maybe<StoreReceipt>;
   storeRequisitionById?: Maybe<PurchasingRequisition>;
+  storeUserGroups?: Maybe<Array<Maybe<StoreUserGroup>>>;
   userAccountAvailability: UserAccountAvailabilityType;
   userById?: Maybe<UserType>;
   userGroupById?: Maybe<UserGroupType>;
@@ -5485,12 +5454,10 @@ export type Query = {
   vendorsByPhysicalStoreId?: Maybe<Array<Maybe<Vendor>>>;
   visitorStayById?: Maybe<VisitorStayType>;
   workspaceCommitteeById?: Maybe<WorkspaceCommitteeType>;
-  workspaceCommitteeKarkunSearch?: Maybe<PagedWorkspaceKarkunType>;
   workspaceDaAccess?: Maybe<DaAccessType>;
   workspaceDaAttendanceSheet?: Maybe<Array<Maybe<DaAttendanceSheetRowType>>>;
   workspaceDaDuties?: Maybe<Array<Maybe<DaDutyType>>>;
   workspaceDaDutyById?: Maybe<DaDutyType>;
-  workspaceDaKarkunSearch?: Maybe<PagedWorkspaceKarkunType>;
   workspaceDaMehfilDuties?: Maybe<Array<Maybe<DaMehfilDutyType>>>;
   workspaceDaPlanDays?: Maybe<DaPlanDaysType>;
   workspaceDiscussionInfo?: Maybe<DiscussionInfoType>;
@@ -5520,7 +5487,6 @@ export type Query = {
   workspaceMeetingsInfo?: Maybe<WorkspaceMeetingsInfoType>;
   workspaceMehfilDetails?: Maybe<WorkspaceMehfilDetailsType>;
   workspaceMehfilPermissions?: Maybe<MehfilPermissionsType>;
-  workspaceMehfilPermissionsKarkunSearch?: Maybe<PagedMpKarkunType>;
   workspaceMonitoringAlerts?: Maybe<PagedWorkspaceMonitoringAlertType>;
   workspaceMonitoringProfileById?: Maybe<WorkspaceMonitoringProfileType>;
   workspaceMonitoringProfiles?: Maybe<PagedWorkspaceMonitoringProfileType>;
@@ -5640,15 +5606,6 @@ export type QueryHrKarkunsByIdArgs = {
 };
 
 
-export type QueryHrPermissionKarkunSearchArgs = {
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  pageIndex?: InputMaybe<Scalars['String']['input']>;
-  pageSize?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber?: InputMaybe<Scalars['String']['input']>;
-};
-
-
 export type QueryInboxConversationArgs = {
   roomId: Scalars['String']['input'];
 };
@@ -5704,6 +5661,11 @@ export type QueryLocationsByPhysicalStoreIdArgs = {
 };
 
 
+export type QueryManagedPhysicalStoreByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type QueryMehfilByIdArgs = {
   _id: Scalars['String']['input'];
 };
@@ -5748,8 +5710,12 @@ export type QueryOrgLocationFeaturePermissionsArgs = {
 };
 
 
-export type QueryPagedAdminKarkunsArgs = {
-  filter?: InputMaybe<AdminKarkunFilter>;
+export type QueryPagedAdminUserKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -5780,8 +5746,44 @@ export type QueryPagedHrAuditLogsArgs = {
 };
 
 
+export type QueryPagedHrEmployeeCandidateKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedHrKarkunCandidatePeopleArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryPagedHrKarkunsArgs = {
   filter?: InputMaybe<KarkunFilter>;
+};
+
+
+export type QueryPagedHrPermissionKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedHrPickerKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -5828,6 +5830,15 @@ export type QueryPagedOrgLocationKarkunsArgs = {
 };
 
 
+export type QueryPagedOrgLocationObserverKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryPagedOrgLocationUsersArgs = {
   locationId: Scalars['String']['input'];
   pageIndex?: InputMaybe<Scalars['String']['input']>;
@@ -5854,6 +5865,15 @@ export type QueryPagedPurchasingCatalogItemsArgs = {
 };
 
 
+export type QueryPagedPurchasingCustodianKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryPagedPurchasingInvoicesArgs = {
   fromDate?: InputMaybe<Scalars['String']['input']>;
   isDisputed?: InputMaybe<Scalars['Boolean']['input']>;
@@ -5865,6 +5885,15 @@ export type QueryPagedPurchasingInvoicesArgs = {
   status?: InputMaybe<Scalars['String']['input']>;
   toDate?: InputMaybe<Scalars['String']['input']>;
   vendorId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedPurchasingKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -5890,6 +5919,15 @@ export type QueryPagedPurchasingPaymentsArgs = {
   status?: InputMaybe<Scalars['String']['input']>;
   toDate?: InputMaybe<Scalars['String']['input']>;
   vendorId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedPurchasingPermissionKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -5988,8 +6026,21 @@ export type QueryPagedSecurityLogsArgs = {
 };
 
 
-export type QueryPagedSecurityPeopleArgs = {
-  filter?: InputMaybe<PersonFilter>;
+export type QueryPagedSecurityMehfilPeopleArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedSecurityPermissionKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6025,6 +6076,17 @@ export type QueryPagedStockItemsArgs = {
 };
 
 
+export type QueryPagedStoreKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  predefinedFilterName?: InputMaybe<Scalars['String']['input']>;
+  predefinedFilterStoreId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryPagedStoreOrdersArgs = {
   pageIndex?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
@@ -6032,6 +6094,15 @@ export type QueryPagedStoreOrdersArgs = {
   requisitionId?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   statuses?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type QueryPagedStorePermissionKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6071,6 +6142,36 @@ export type QueryPagedVisitorStaysArgs = {
 
 export type QueryPagedVisitorStaysByVisitorIdArgs = {
   visitorId: Scalars['String']['input'];
+};
+
+
+export type QueryPagedWorkspaceCommitteeKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  committeeId: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedWorkspaceDaKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  locationId: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedWorkspaceMehfilPermissionsKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  locationId: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6124,15 +6225,6 @@ export type QueryPurchasingInvoiceByIdArgs = {
 };
 
 
-export type QueryPurchasingKarkunSearchArgs = {
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  pageIndex?: InputMaybe<Scalars['String']['input']>;
-  pageSize?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber?: InputMaybe<Scalars['String']['input']>;
-};
-
-
 export type QueryPurchasingOrderByIdArgs = {
   _id: Scalars['String']['input'];
 };
@@ -6140,15 +6232,6 @@ export type QueryPurchasingOrderByIdArgs = {
 
 export type QueryPurchasingPaymentByIdArgs = {
   _id: Scalars['String']['input'];
-};
-
-
-export type QueryPurchasingPettyCashCustodianSearchArgs = {
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  pageIndex?: InputMaybe<Scalars['String']['input']>;
-  pageSize?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6211,8 +6294,8 @@ export type QueryPurchasingVendorLedgerArgs = {
 };
 
 
-export type QueryReferencePhysicalStoreByIdArgs = {
-  id: Scalars['String']['input'];
+export type QueryReferenceOrgLocationsArgs = {
+  types?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -6256,15 +6339,6 @@ export type QuerySecurityMehfilLangarDishByIdArgs = {
 
 export type QuerySecurityMehfilLangarLocationByIdArgs = {
   id: Scalars['String']['input'];
-};
-
-
-export type QuerySecurityPermissionKarkunSearchArgs = {
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  pageIndex?: InputMaybe<Scalars['String']['input']>;
-  pageSize?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6325,15 +6399,6 @@ export type QueryStockItemByIdArgs = {
 export type QueryStockItemsByIdArgs = {
   _ids: Array<InputMaybe<Scalars['String']['input']>>;
   physicalStoreId: Scalars['String']['input'];
-};
-
-
-export type QueryStoreAccessKarkunSearchArgs = {
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  pageIndex?: InputMaybe<Scalars['String']['input']>;
-  pageSize?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6402,16 +6467,6 @@ export type QueryWorkspaceCommitteeByIdArgs = {
 };
 
 
-export type QueryWorkspaceCommitteeKarkunSearchArgs = {
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  committeeId: Scalars['String']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  pageIndex?: InputMaybe<Scalars['String']['input']>;
-  pageSize?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber?: InputMaybe<Scalars['String']['input']>;
-};
-
-
 export type QueryWorkspaceDaAccessArgs = {
   locationId: Scalars['String']['input'];
 };
@@ -6432,16 +6487,6 @@ export type QueryWorkspaceDaDutiesArgs = {
 export type QueryWorkspaceDaDutyByIdArgs = {
   dutyId: Scalars['String']['input'];
   locationId: Scalars['String']['input'];
-};
-
-
-export type QueryWorkspaceDaKarkunSearchArgs = {
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  locationId: Scalars['String']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  pageIndex?: InputMaybe<Scalars['String']['input']>;
-  pageSize?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6622,16 +6667,6 @@ export type QueryWorkspaceMehfilDetailsArgs = {
 
 export type QueryWorkspaceMehfilPermissionsArgs = {
   locationId: Scalars['String']['input'];
-};
-
-
-export type QueryWorkspaceMehfilPermissionsKarkunSearchArgs = {
-  cnicNumber?: InputMaybe<Scalars['String']['input']>;
-  locationId: Scalars['String']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  pageIndex?: InputMaybe<Scalars['String']['input']>;
-  pageSize?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6929,17 +6964,6 @@ export type SecurityPermissionHolder = {
   username?: Maybe<Scalars['String']['output']>;
 };
 
-export type SecurityPermissionKarkunType = {
-  __typename?: 'SecurityPermissionKarkunType';
-  _id?: Maybe<Scalars['String']['output']>;
-  cnicNumber?: Maybe<Scalars['String']['output']>;
-  contactNumber1?: Maybe<Scalars['String']['output']>;
-  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  parentName?: Maybe<Scalars['String']['output']>;
-};
-
 export type SecurityServerAlertFilter = {
   channelId?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['String']['input']>;
@@ -7160,24 +7184,6 @@ export type StockItem = {
   verifiedOn?: Maybe<Scalars['String']['output']>;
 };
 
-export type StoreAccessKarkun = {
-  __typename?: 'StoreAccessKarkun';
-  _id?: Maybe<Scalars['String']['output']>;
-  cnicNumber?: Maybe<Scalars['String']['output']>;
-  contactNumber1?: Maybe<Scalars['String']['output']>;
-  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  parentName?: Maybe<Scalars['String']['output']>;
-};
-
-export type StoreAccessUserGroup = {
-  __typename?: 'StoreAccessUserGroup';
-  _id?: Maybe<Scalars['String']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-};
-
 export type StoreOrder = {
   __typename?: 'StoreOrder';
   _id?: Maybe<Scalars['String']['output']>;
@@ -7252,6 +7258,22 @@ export type StoreReceiptLine = {
   rejectedQuantity?: Maybe<Scalars['Float']['output']>;
   remarks?: Maybe<Scalars['String']['output']>;
   unit?: Maybe<Scalars['String']['output']>;
+};
+
+export type StoreUserGroup = {
+  __typename?: 'StoreUserGroup';
+  _id: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  users?: Maybe<Array<Maybe<StoreUserGroupMember>>>;
+};
+
+export type StoreUserGroupMember = {
+  __typename?: 'StoreUserGroupMember';
+  displayName?: Maybe<Scalars['String']['output']>;
+  personId?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['String']['output'];
+  username?: Maybe<Scalars['String']['output']>;
 };
 
 export type SyncOrgLocationObserversResult = {
@@ -7555,17 +7577,6 @@ export type WorkspaceDocumentsInfoType = {
   __typename?: 'WorkspaceDocumentsInfoType';
   canManage?: Maybe<Scalars['Boolean']['output']>;
   maxFileSize?: Maybe<Scalars['Float']['output']>;
-};
-
-export type WorkspaceKarkunType = {
-  __typename?: 'WorkspaceKarkunType';
-  _id?: Maybe<Scalars['String']['output']>;
-  cnicNumber?: Maybe<Scalars['String']['output']>;
-  contactNumber1?: Maybe<Scalars['String']['output']>;
-  imageThumbnailUrl?: Maybe<Scalars['String']['output']>;
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  parentName?: Maybe<Scalars['String']['output']>;
 };
 
 export type WorkspaceLocationType = {

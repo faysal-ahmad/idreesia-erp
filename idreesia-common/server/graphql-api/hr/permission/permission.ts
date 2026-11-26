@@ -27,33 +27,18 @@ type HrPermissionGroup {
   permissions: [HrPermissionAssignment]
 }
 
-type HrPermissionKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedHrPermissionKarkunType {
-  data: [HrPermissionKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   hrPermissionAssignments: [HrPermissionGroup]
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 
   # Karkuns to choose from when giving a permission or adding to a group.
-  hrPermissionKarkunSearch(
+  pagedHrPermissionKarkuns(
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedHrPermissionKarkunType
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 }
 

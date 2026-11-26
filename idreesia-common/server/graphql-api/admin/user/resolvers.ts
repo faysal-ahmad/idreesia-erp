@@ -27,7 +27,10 @@ import {
   startTwoFactorSetup,
   updateUser,
 } from 'meteor/idreesia-common/server/business-logic/admin';
-import { isSuperAdmin } from 'meteor/idreesia-common/server/graphql-api/security';
+import {
+  hasOnePermission,
+  isSuperAdmin,
+} from 'meteor/idreesia-common/server/graphql-api/security';
 
 interface UserType {
   _id: string;
@@ -124,13 +127,14 @@ export default {
       }
 
       // Whether the Stores module is open to them: they hold a permission on
-      // at least one store.
+      // at least one store, or manage the stores or their permissions.
       return {
         ..._user,
-        hasStoreAccess: await hasAnyStorePermission(
-          _user,
-          StorePermissionValues
-        ),
+        hasStoreAccess:
+          hasOnePermission(_user, [
+            PermissionConstants.IN_MANAGE_PHYSICAL_STORES,
+            PermissionConstants.IN_MANAGE_PHYSICAL_STORE_PERMISSIONS,
+          ]) || (await hasAnyStorePermission(_user, StorePermissionValues)),
       };
     },
 

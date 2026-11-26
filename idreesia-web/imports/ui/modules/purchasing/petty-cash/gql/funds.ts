@@ -4,14 +4,19 @@ import type {
   CreatePurchasingPettyCashFundMutation,
   CreatePurchasingPettyCashFundMutationVariables,
   PagedPurchasingPettyCashFundsQuery,
-  PurchasingPettyCashCustodianSearchQuery,
-  PurchasingPettyCashCustodianSearchQueryVariables,
+  PagedPurchasingCustodianKarkunsQuery,
+  PagedPurchasingCustodianKarkunsQueryVariables,
   PagedPurchasingPettyCashFundsQueryVariables,
   SetPurchasingPettyCashFundActiveMutation,
   SetPurchasingPettyCashFundActiveMutationVariables,
   UpdatePurchasingPettyCashFundMutation,
   UpdatePurchasingPettyCashFundMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
+
+import {
+  PICKER_PERSON_FIELDS,
+  type PersonSearchSource,
+} from '/imports/ui/modules/helpers/controls/person-picker';
 
 export const PAGED_PURCHASING_PETTY_CASH_FUNDS: TypedDocumentNode<
   PagedPurchasingPettyCashFundsQuery,
@@ -100,18 +105,18 @@ export const SET_PURCHASING_PETTY_CASH_FUND_ACTIVE: TypedDocumentNode<
   }
 `;
 
-export const PURCHASING_PETTY_CASH_CUSTODIAN_SEARCH: TypedDocumentNode<
-  PurchasingPettyCashCustodianSearchQuery,
-  PurchasingPettyCashCustodianSearchQueryVariables
+export const PAGED_PURCHASING_CUSTODIAN_KARKUNS: TypedDocumentNode<
+  PagedPurchasingCustodianKarkunsQuery,
+  PagedPurchasingCustodianKarkunsQueryVariables
 > = gql`
-  query purchasingPettyCashCustodianSearch(
+  query pagedPurchasingCustodianKarkuns(
     $name: String
     $cnicNumber: String
     $phoneNumber: String
     $pageIndex: String
     $pageSize: String
   ) {
-    purchasingPettyCashCustodianSearch(
+    pagedPurchasingCustodianKarkuns(
       name: $name
       cnicNumber: $cnicNumber
       phoneNumber: $phoneNumber
@@ -120,14 +125,17 @@ export const PURCHASING_PETTY_CASH_CUSTODIAN_SEARCH: TypedDocumentNode<
     ) {
       totalResults
       data {
-        _id
-        name
-        parentName
-        cnicNumber
-        contactNumber1
-        imageUrl
-        imageThumbnailUrl
+        ...PickerPersonFields
       }
     }
   }
+  ${PICKER_PERSON_FIELDS}
 `;
+
+/** The people who may hold a fund: those with a Purchasing permission. */
+export const purchasingCustodianKarkunSource: PersonSearchSource<PagedPurchasingCustodianKarkunsQuery> = {
+  query: PAGED_PURCHASING_CUSTODIAN_KARKUNS,
+  select: data => data.pagedPurchasingCustodianKarkuns,
+  description:
+    'Showing karkuns who hold at least one Purchasing permission, given directly or through a user group. Locked accounts and super admins are left out.',
+};

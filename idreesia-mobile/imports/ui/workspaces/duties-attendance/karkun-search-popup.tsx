@@ -36,7 +36,7 @@ const SearchList = ({ locationId, selectedIds, selectedLabel, onPick }: Omit<Pro
   const paged = usePagedQuery(MOBILE_DA_KARKUN_SEARCH, {
     filter: { locationId, name: isPhone ? undefined : query || undefined, phoneNumber: isPhone ? query : undefined },
     toVariables: (filter, paging) => ({ ...filter, ...paging }),
-    getPage: data => data.workspaceDaKarkunSearch,
+    getPage: data => data.pagedWorkspaceDaKarkuns,
     getKey: karkun => karkun._id,
   });
 

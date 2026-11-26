@@ -1,9 +1,8 @@
 import gql from 'graphql-tag';
 
-// Physical stores are owned by Stores, but Admin manages them and assigns
-// access to them. Stores itself uses allAccessiblePhysicalStores and
-// physicalStoreById. Purchasing shows which store a requisition or order came
-// from.
+// Physical stores are owned by Stores, which uses its own queries
+// (allAccessiblePhysicalStores, physicalStoreById, managedPhysicalStores).
+// Purchasing shows which store a requisition or order came from.
 export default gql`
 type ReferencePhysicalStoreType {
   _id: String
@@ -17,7 +16,6 @@ extend type Query {
       permissions: [
         ADMIN_VIEW_USERS_AND_GROUPS
         ADMIN_MANAGE_USERS_AND_GROUPS
-        ADMIN_MANAGE_PHYSICAL_STORES
         PURCHASING_VIEW_REQUISITIONS
         PURCHASING_MANAGE_REQUISITIONS
         PURCHASING_APPROVE_REQUISITIONS
@@ -27,7 +25,5 @@ extend type Query {
         PURCHASING_MANAGE_PETTY_CASH_VOUCHERS
       ]
     )
-  referencePhysicalStoreById(id: String!): ReferencePhysicalStoreType
-    @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
 }
 `;

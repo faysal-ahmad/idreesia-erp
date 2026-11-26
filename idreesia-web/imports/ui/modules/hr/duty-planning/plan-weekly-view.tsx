@@ -1,7 +1,7 @@
 import React, { useImperativeHandle, useState } from 'react';
 import dayjs from 'dayjs';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Alert, Drawer, Spin } from 'antd';
+import { Alert, Spin } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import type {
@@ -9,7 +9,8 @@ import type {
   DutyPlanTeamsQuery,
   DutyPlanWeekQuery,
 } from 'meteor/idreesia-common/types/client-operations';
-import KarkunsSelectionList from '/imports/ui/modules/hr/karkuns/field/list-container';
+import { PersonPickerDrawer } from '/imports/ui/modules/helpers/controls';
+import { hrPickerKarkunSource } from '/imports/ui/modules/hr/karkuns/gql';
 
 import {
   DUTY_PLAN_DAYS,
@@ -207,38 +208,36 @@ const PlanWeeklyView = React.forwardRef<PlanWeeklyViewHandle, Props>(
           }}
         />
 
-        <Drawer
+        <PersonPickerDrawer
           title="Select a Karkun"
-          width={800}
-          onClose={() => setAddingFor(null)}
           open={addingFor != null}
-          destroyOnHidden
-        >
-          <KarkunsSelectionList
-            setSelectedValue={karkun => {
-              const shiftId = addingFor?.shiftId;
-              const date = addingFor?.date;
-              const karkunId = karkun._id;
-              setAddingFor(null);
-              if (!shiftId || !date || !karkunId) return;
-              const slot = assignmentDays
-                .find(item => item.date === date)
-                ?.slots?.find(item => item?.shiftId === shiftId);
-              const addedKarkunIds = idsOf(slot?.addedKarkunIds);
-              const absentKarkunIds = idsOf(slot?.absentKarkunIds).filter(
-                id => id !== karkunId
-              );
-              saveOverride(
-                shiftId,
-                date,
-                addedKarkunIds.includes(karkunId)
-                  ? addedKarkunIds
-                  : [...addedKarkunIds, karkunId],
-                absentKarkunIds
-              );
-            }}
-          />
-        </Drawer>
+          onClose={() => setAddingFor(null)}
+          source={hrPickerKarkunSource}
+          mode="single"
+          addLabel="Select"
+          onPick={karkun => {
+            const shiftId = addingFor?.shiftId;
+            const date = addingFor?.date;
+            const karkunId = karkun._id;
+            setAddingFor(null);
+            if (!shiftId || !date || !karkunId) return;
+            const slot = assignmentDays
+              .find(item => item.date === date)
+              ?.slots?.find(item => item?.shiftId === shiftId);
+            const addedKarkunIds = idsOf(slot?.addedKarkunIds);
+            const absentKarkunIds = idsOf(slot?.absentKarkunIds).filter(
+              id => id !== karkunId
+            );
+            saveOverride(
+              shiftId,
+              date,
+              addedKarkunIds.includes(karkunId)
+                ? addedKarkunIds
+                : [...addedKarkunIds, karkunId],
+              absentKarkunIds
+            );
+          }}
+        />
       </div>
     );
   }

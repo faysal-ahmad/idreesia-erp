@@ -27,33 +27,18 @@ type SecurityPermissionGroup {
   permissions: [SecurityPermissionAssignment]
 }
 
-type SecurityPermissionKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedSecurityPermissionKarkunType {
-  data: [SecurityPermissionKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   securityPermissionAssignments: [SecurityPermissionGroup]
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 
   # Karkuns to choose from when giving a permission or adding to a group.
-  securityPermissionKarkunSearch(
+  pagedSecurityPermissionKarkuns(
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedSecurityPermissionKarkunType
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 }
 

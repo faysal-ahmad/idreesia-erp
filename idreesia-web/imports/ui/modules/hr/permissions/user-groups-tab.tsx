@@ -7,10 +7,10 @@ import {
   SyncOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
-import { Button, Drawer, Form, Input, Modal, Space, Table, Tag, Tooltip } from 'antd';
+import { Button, Form, Input, Modal, Space, Table, Tag, Tooltip } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
-import type { KarkunSelectionItem } from '/imports/ui/modules/helpers/controls';
+import { PersonPickerDrawer, type PickerPerson } from '/imports/ui/modules/helpers/controls';
 
 import {
   ADD_HR_GROUP_MEMBER,
@@ -19,8 +19,8 @@ import {
   HR_USER_GROUPS,
   REMOVE_HR_GROUP_MEMBER,
   UPDATE_HR_USER_GROUP,
+  hrPermissionKarkunSource,
 } from './gql';
-import KarkunPicker from './karkun-picker';
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -118,7 +118,7 @@ const UserGroupsTab = () => {
     }
   };
 
-  const handleAddMember = (karkun: KarkunSelectionItem) => {
+  const handleAddMember = (karkun: PickerPerson) => {
     if (!addingRow) return;
     setAddingId(karkun._id);
     addMember({ variables: { groupId: addingRow._id, karkunId: karkun._id } })
@@ -262,20 +262,16 @@ const UserGroupsTab = () => {
         </Form>
       </Modal>
 
-      <Drawer
+      <PersonPickerDrawer
         title={addingRow ? `Add User to "${addingRow.name}"` : 'Add User'}
-        width={900}
         open={adding != null}
         onClose={() => setAdding(null)}
-        destroyOnHidden
-      >
-        <KarkunPicker
-          selectedIds={(addingRow?.users ?? []).flatMap((user) => (user.personId ? [user.personId] : []))}
-          selectedLabel="Member"
-          addingId={addingId}
-          onAdd={handleAddMember}
-        />
-      </Drawer>
+        source={hrPermissionKarkunSource}
+        selectedIds={(addingRow?.users ?? []).flatMap((user) => (user.personId ? [user.personId] : []))}
+        selectedLabel="Member"
+        addingId={addingId}
+        onPick={handleAddMember}
+      />
     </>
   );
 };

@@ -29,13 +29,13 @@ extend type Query {
     @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
 
   # People to choose from as a fund's custodian: those who hold a Purchasing permission.
-  purchasingPettyCashCustodianSearch(
+  pagedPurchasingCustodianKarkuns(
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedPurchasingKarkunType
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
 
   pagedPurchasingPettyCashFunds(

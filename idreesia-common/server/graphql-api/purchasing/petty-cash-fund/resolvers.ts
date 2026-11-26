@@ -24,7 +24,7 @@ export default {
     purchasingPettyCashFundById: async (_obj: unknown, { _id }: { _id: string }) =>
       PurchasingPettyCashFunds.findOneAsync({ _id: { $eq: _id } }),
 
-    purchasingPettyCashCustodianSearch: async (
+    pagedPurchasingCustodianKarkuns: async (
       _obj: unknown,
       args: {
         name?: string;

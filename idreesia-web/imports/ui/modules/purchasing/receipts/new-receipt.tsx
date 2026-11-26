@@ -11,8 +11,9 @@ import {
   FormButtonsSaveCancel,
   InputTextAreaField,
   InputTextField,
-  KarkunSelectionInputField,
 } from '/imports/ui/modules/helpers/fields';
+import { PersonPickerField } from '/imports/ui/modules/helpers/controls';
+import { purchasingKarkunSource } from '../common/gql';
 
 import { formatQuantity, toDateInput } from '../common/format';
 import RecordSelect from '../common/record-select';
@@ -143,7 +144,8 @@ const NewReceipt = ({ history, location }: RouteComponentProps) => {
                       required
                       requiredMessage="Please choose the date."
                     />
-                    <KarkunSelectionInputField
+                    <PersonPickerField
+                      source={purchasingKarkunSource}
                       fieldName="receivedBy"
                       fieldLabel="Received By"
                       initialValue={

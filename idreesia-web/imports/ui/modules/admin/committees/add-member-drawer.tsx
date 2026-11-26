@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
-import { useMutation, useQuery } from '@apollo/client/react';
-import { Drawer } from 'antd';
+import { useMutation } from '@apollo/client/react';
 
 import type {
   AddCommitteeMemberMutation,
@@ -11,10 +10,10 @@ import type {
   CommitteeLocationKarkunsQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 import {
-  KarkunSelectionList,
-  type KarkunSelectionFilter,
-  type KarkunSelectionItem,
-  type KarkunSelectionPageParams,
+  PICKER_PERSON_FIELDS,
+  PersonPickerDrawer,
+  type PersonSearchSource,
+  type PickerPerson,
 } from '/imports/ui/modules/helpers/controls';
 import { message } from '/imports/ui/antd-feedback';
 
@@ -42,17 +41,19 @@ const COMMITTEE_LOCATION_KARKUNS: TypedDocumentNode<
     ) {
       totalResults
       data {
-        _id
-        name
-        parentName
-        cnicNumber
-        contactNumber1
-        imageUrl
-        imageThumbnailUrl
+        ...PickerPersonFields
       }
     }
   }
+  ${PICKER_PERSON_FIELDS}
 `;
+
+const committeeLocationKarkunSource: PersonSearchSource<CommitteeLocationKarkunsQuery> = {
+  query: COMMITTEE_LOCATION_KARKUNS,
+  select: data => data.pagedOrgLocationKarkuns,
+  description:
+    "Showing karkuns of the committee's location and of every location below it.",
+};
 
 const ADD_COMMITTEE_MEMBER: TypedDocumentNode<
   AddCommitteeMemberMutation,
@@ -72,8 +73,6 @@ const ADD_COMMITTEE_MEMBER: TypedDocumentNode<
     }
   }
 `;
-
-const DEFAULT_PAGE_SIZE = 20;
 
 interface Props {
   committeeId: string | null;
@@ -95,66 +94,12 @@ const AddMemberDrawer = ({
   title = 'Add Member',
   onClose,
 }: Props) => {
-  const open = committeeId != null;
-  const [filter, setFilter] = useState<KarkunSelectionFilter>({});
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [addingId, setAddingId] = useState<string | null>(null);
-
-  const setPageParams = ({
-    pageIndex: nextPageIndex,
-    pageSize: nextPageSize,
-    ...filterChanges
-  }: KarkunSelectionPageParams) => {
-    if (nextPageIndex != null) setPageIndex(Number(nextPageIndex));
-    if (nextPageSize != null) setPageSize(Number(nextPageSize));
-    if (Object.keys(filterChanges).length > 0) {
-      setFilter(prev => ({ ...prev, ...filterChanges }));
-    }
-  };
-
-  const { data, loading, refetch } = useQuery(COMMITTEE_LOCATION_KARKUNS, {
-    variables: {
-      locationId,
-      name: filter.name || undefined,
-      cnicNumber: filter.cnicNumber || undefined,
-      phoneNumber: filter.phoneNumber || undefined,
-      pageIndex: String(pageIndex),
-      pageSize: String(pageSize),
-    },
-    skip: !open,
-    fetchPolicy: 'network-only',
-  });
   const [addCommitteeMember] = useMutation(ADD_COMMITTEE_MEMBER, {
     refetchQueries: ['committeeById', 'committeeMembers', 'locationCommittees'],
   });
 
-  const karkuns: KarkunSelectionItem[] = (
-    data?.pagedOrgLocationKarkuns?.data ?? []
-  ).flatMap(person =>
-    person?._id
-      ? [
-          {
-            _id: person._id,
-            name: person.name,
-            parentName: person.parentName,
-            cnicNumber: person.cnicNumber,
-            contactNumber1: person.contactNumber1,
-            imageUrl: person.imageUrl,
-            imageThumbnailUrl: person.imageThumbnailUrl,
-          },
-        ]
-      : []
-  );
-  const totalResults = data?.pagedOrgLocationKarkuns?.totalResults ?? 0;
-
-  const handleClose = () => {
-    setFilter({});
-    setPageIndex(0);
-    onClose();
-  };
-
-  const handleAdd = (karkun: KarkunSelectionItem) => {
+  const handleAdd = (karkun: PickerPerson) => {
     if (!committeeId) return;
     setAddingId(karkun._id);
     addCommitteeMember({
@@ -170,27 +115,15 @@ const AddMemberDrawer = ({
   };
 
   return (
-    <Drawer
+    <PersonPickerDrawer
       title={title}
-      width={900}
-      open={open}
-      onClose={handleClose}
-      destroyOnHidden
-    >
-      <KarkunSelectionList
-        karkuns={karkuns}
-        totalResults={totalResults}
-        loading={loading}
-        pageIndex={pageIndex}
-        pageSize={pageSize}
-        filter={filter}
-        selectedIds={memberIds}
-        addingId={addingId}
-        setPageParams={setPageParams}
-        refreshData={refetch}
-        onAdd={handleAdd}
-      />
-    </Drawer>
+      open={committeeId != null}
+      onClose={onClose}
+      source={{ ...committeeLocationKarkunSource, variables: { locationId } }}
+      selectedIds={memberIds}
+      addingId={addingId}
+      onPick={handleAdd}
+    />
   );
 };
 

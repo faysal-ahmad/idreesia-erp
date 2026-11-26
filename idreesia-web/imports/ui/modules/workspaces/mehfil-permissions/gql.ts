@@ -6,13 +6,18 @@ import type {
   MyMehfilPermissionsLocationsQueryVariables,
   WorkspaceAddMehfilPermissionUserMutation,
   WorkspaceAddMehfilPermissionUserMutationVariables,
-  WorkspaceMehfilPermissionsKarkunSearchQuery,
-  WorkspaceMehfilPermissionsKarkunSearchQueryVariables,
+  PagedWorkspaceMehfilPermissionsKarkunsQuery,
+  PagedWorkspaceMehfilPermissionsKarkunsQueryVariables,
   WorkspaceMehfilPermissionsQuery,
   WorkspaceMehfilPermissionsQueryVariables,
   WorkspaceRemoveMehfilPermissionUserMutation,
   WorkspaceRemoveMehfilPermissionUserMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
+
+import {
+  PICKER_PERSON_FIELDS,
+  type PersonSearchSource,
+} from '/imports/ui/modules/helpers/controls/person-picker';
 
 export const MY_MEHFIL_PERMISSIONS_LOCATIONS: TypedDocumentNode<
   MyMehfilPermissionsLocationsQuery,
@@ -57,11 +62,11 @@ export const WORKSPACE_MEHFIL_PERMISSIONS: TypedDocumentNode<
   }
 `;
 
-export const WORKSPACE_MEHFIL_PERMISSIONS_KARKUN_SEARCH: TypedDocumentNode<
-  WorkspaceMehfilPermissionsKarkunSearchQuery,
-  WorkspaceMehfilPermissionsKarkunSearchQueryVariables
+export const PAGED_WORKSPACE_MEHFIL_PERMISSIONS_KARKUNS: TypedDocumentNode<
+  PagedWorkspaceMehfilPermissionsKarkunsQuery,
+  PagedWorkspaceMehfilPermissionsKarkunsQueryVariables
 > = gql`
-  query workspaceMehfilPermissionsKarkunSearch(
+  query pagedWorkspaceMehfilPermissionsKarkuns(
     $locationId: String!
     $name: String
     $cnicNumber: String
@@ -69,7 +74,7 @@ export const WORKSPACE_MEHFIL_PERMISSIONS_KARKUN_SEARCH: TypedDocumentNode<
     $pageIndex: String
     $pageSize: String
   ) {
-    workspaceMehfilPermissionsKarkunSearch(
+    pagedWorkspaceMehfilPermissionsKarkuns(
       locationId: $locationId
       name: $name
       cnicNumber: $cnicNumber
@@ -79,17 +84,20 @@ export const WORKSPACE_MEHFIL_PERMISSIONS_KARKUN_SEARCH: TypedDocumentNode<
     ) {
       totalResults
       data {
-        _id
-        name
-        parentName
-        cnicNumber
-        contactNumber1
-        imageUrl
-        imageThumbnailUrl
+        ...PickerPersonFields
       }
     }
   }
+  ${PICKER_PERSON_FIELDS}
 `;
+
+/** Karkuns of the mehfil with a user account; pass the mehfil as variables.locationId. */
+export const mehfilPermissionsKarkunSource: PersonSearchSource<PagedWorkspaceMehfilPermissionsKarkunsQuery> = {
+  query: PAGED_WORKSPACE_MEHFIL_PERMISSIONS_KARKUNS,
+  select: data => data.pagedWorkspaceMehfilPermissionsKarkuns,
+  description:
+    'Showing karkuns whose mehfil is this location and who have a user account.',
+};
 
 export const WORKSPACE_ADD_MEHFIL_PERMISSION_USER: TypedDocumentNode<
   WorkspaceAddMehfilPermissionUserMutation,

@@ -29,22 +29,6 @@ export const AdminPermissionsData: PermissionNode = {
       ],
     },
     {
-      title: 'Instance Management',
-      key: 'module-admin-instance-management',
-      children: [
-        {
-          title: 'Physical Stores',
-          key: 'module-admin-physical-stores',
-          children: [
-            {
-              title: 'Manage Physical Stores',
-              key: PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
-            },
-          ],
-        },
-      ],
-    },
-    {
       title: 'Reference Data',
       key: 'module-admin-locations-management',
       children: [
@@ -262,6 +246,21 @@ export const CorrespondencePermissionsData: PermissionNode = {
           key: PermissionConstants.CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES,
         },
       ],
+    },
+  ],
+};
+
+export const StoresPermissionsData: PermissionNode = {
+  title: 'Stores',
+  key: 'module-stores',
+  children: [
+    {
+      title: 'Manage Physical Stores',
+      key: PermissionConstants.IN_MANAGE_PHYSICAL_STORES,
+    },
+    {
+      title: 'Manage Physical Store Permissions',
+      key: PermissionConstants.IN_MANAGE_PHYSICAL_STORE_PERMISSIONS,
     },
   ],
 };

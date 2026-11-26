@@ -5,3 +5,4 @@ export { default as COMPLETE_PURCHASING_ATTACHMENT_UPLOAD } from './complete-pur
 export { default as ABORT_PURCHASING_ATTACHMENT_UPLOAD } from './abort-purchasing-attachment-upload';
 export { default as DELETE_PURCHASING_ATTACHMENT } from './delete-purchasing-attachment';
 export { default as PAGED_PURCHASING_AUDIT_LOGS } from './paged-purchasing-audit-logs';
+export { default as PAGED_PURCHASING_KARKUNS, purchasingKarkunSource } from './paged-purchasing-karkuns';

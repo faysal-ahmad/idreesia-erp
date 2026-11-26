@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useApolloClient, useMutation, useQuery } from '@apollo/client/react';
-import { Button, Drawer, Form, Input, Modal, Pagination, Table } from 'antd';
+import { Button, Form, Input, Modal, Pagination, Table } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import type {
@@ -16,10 +16,10 @@ import type {
   UserAccountAvailabilityQueryVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 import {
-  KarkunSelectionList,
-  type KarkunSelectionFilter,
-  type KarkunSelectionItem,
-  type KarkunSelectionPageParams,
+  PICKER_PERSON_FIELDS,
+  PersonPickerDrawer,
+  type PersonSearchSource,
+  type PickerPerson,
 } from '/imports/ui/modules/helpers/controls';
 import { CREATE_USER } from '../users/gql';
 
@@ -45,18 +45,20 @@ const LOCATION_KARKUNS: TypedDocumentNode<
     ) {
       totalResults
       data {
-        _id
-        name
-        parentName
-        cnicNumber
-        contactNumber1
-        imageUrl
-        imageThumbnailUrl
+        ...PickerPersonFields
         hasUserAccount
       }
     }
   }
+  ${PICKER_PERSON_FIELDS}
 `;
+
+const locationKarkunSource: PersonSearchSource<LocationKarkunsQuery> = {
+  query: LOCATION_KARKUNS,
+  select: data => data.pagedOrgLocationKarkuns,
+  description:
+    'Showing karkuns whose mehfil is this location. Those who already have a user account are marked "Has User".',
+};
 
 const USER_ACCOUNT_AVAILABILITY: TypedDocumentNode<
   UserAccountAvailabilityQuery,
@@ -111,7 +113,6 @@ const LINK_ORG_LOCATION_USER: TypedDocumentNode<
 `;
 
 const LINK_PAGE_SIZE = 10;
-const DEFAULT_PAGE_SIZE = 20;
 const FIELD_LAYOUT = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
@@ -133,30 +134,15 @@ interface Props {
 
 // The mehfil's karkuns, to create a user account for those without one.
 const LocationAddUserDrawer = ({ open, locationId, onClose }: Props) => {
-  const [filter, setFilter] = useState<KarkunSelectionFilter>({});
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   // The karkun a user account is being created for.
-  const [creatingFor, setCreatingFor] = useState<KarkunSelectionItem | null>(null);
+  const [creatingFor, setCreatingFor] = useState<PickerPerson | null>(null);
   // The karkun an existing user account is being linked to.
-  const [linkingFor, setLinkingFor] = useState<KarkunSelectionItem | null>(null);
+  const [linkingFor, setLinkingFor] = useState<PickerPerson | null>(null);
   const [linkSearch, setLinkSearch] = useState('');
   const [linkPageIndex, setLinkPageIndex] = useState(0);
   const [form] = Form.useForm<AccountFormValues>();
   const client = useApolloClient();
 
-  const { data, loading, refetch } = useQuery(LOCATION_KARKUNS, {
-    variables: {
-      locationId,
-      name: filter.name || undefined,
-      cnicNumber: filter.cnicNumber || undefined,
-      phoneNumber: filter.phoneNumber || undefined,
-      pageIndex: String(pageIndex),
-      pageSize: String(pageSize),
-    },
-    skip: !open,
-    fetchPolicy: 'network-only',
-  });
   const [createUser, { loading: creating }] = useMutation(CREATE_USER, {
     // Reload the users list behind the drawer, and this list.
     refetchQueries: ['locationUsers', 'locationKarkuns'],
@@ -179,31 +165,6 @@ const LocationAddUserDrawer = ({ open, locationId, onClose }: Props) => {
     { refetchQueries: ['locationUsers', 'locationKarkuns'] }
   );
 
-  const rows = (data?.pagedOrgLocationKarkuns?.data ?? []).filter(
-    (row): row is NonNullable<typeof row> => row != null
-  );
-  const karkuns: KarkunSelectionItem[] = rows.map(row => ({
-    _id: row._id,
-    name: row.name,
-    parentName: row.parentName,
-    cnicNumber: row.cnicNumber,
-    contactNumber1: row.contactNumber1,
-    imageUrl: row.imageUrl,
-    imageThumbnailUrl: row.imageThumbnailUrl,
-  }));
-
-  const setPageParams = ({
-    pageIndex: nextPageIndex,
-    pageSize: nextPageSize,
-    ...filterChanges
-  }: KarkunSelectionPageParams) => {
-    if (nextPageIndex != null) setPageIndex(Number(nextPageIndex));
-    if (nextPageSize != null) setPageSize(Number(nextPageSize));
-    if (Object.keys(filterChanges).length > 0) {
-      setFilter(prev => ({ ...prev, ...filterChanges }));
-    }
-  };
-
   // Fails with the server's reason when another user has the user name or the
   // email. Runs when the field is left, and again on Create.
   const validateAvailable =
@@ -223,18 +184,12 @@ const LocationAddUserDrawer = ({ open, locationId, onClose }: Props) => {
       if (message) throw new Error(message);
     };
 
-  const handleClose = () => {
-    setFilter({});
-    setPageIndex(0);
-    onClose();
-  };
-
-  const handleCreateFor = (karkun: KarkunSelectionItem) => {
+  const handleCreateFor = (karkun: PickerPerson) => {
     form.resetFields();
     setCreatingFor(karkun);
   };
 
-  const handleLinkFor = (karkun: KarkunSelectionItem) => {
+  const handleLinkFor = (karkun: PickerPerson) => {
     setLinkSearch('');
     setLinkPageIndex(0);
     setLinkingFor(karkun);
@@ -284,31 +239,20 @@ const LocationAddUserDrawer = ({ open, locationId, onClose }: Props) => {
 
   return (
     <>
-      <Drawer
+      <PersonPickerDrawer
         title="Add User"
-        width={720}
+        size={720}
         open={open}
-        onClose={handleClose}
-        destroyOnHidden
-      >
-        <KarkunSelectionList
-          karkuns={karkuns}
-          totalResults={data?.pagedOrgLocationKarkuns?.totalResults ?? 0}
-          loading={loading}
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-          filter={filter}
-          selectedIds={rows.filter(row => row.hasUserAccount).map(row => row._id)}
-          selectedLabel="Has User"
-          addLabel="Create User"
-          showParentName={false}
-          setPageParams={setPageParams}
-          refreshData={refetch}
-          onAdd={handleCreateFor}
-          linkLabel="Link User"
-          onLink={handleLinkFor}
-        />
-      </Drawer>
+        onClose={onClose}
+        source={{ ...locationKarkunSource, variables: { locationId } }}
+        isSelected={karkun => karkun.hasUserAccount === true}
+        selectedLabel="Has User"
+        addLabel="Create User"
+        showParentName={false}
+        onPick={handleCreateFor}
+        linkLabel="Link User"
+        onLink={handleLinkFor}
+      />
       <Modal
         title={`Link User to ${linkingFor?.name ?? ''}`}
         open={linkingFor != null}

@@ -19,3 +19,4 @@ export {
 export {
   default as PAGED_SALARIES_BY_KARKUN,
 } from './paged-salaries-by-karkun';
+export { default as PAGED_HR_EMPLOYEE_CANDIDATE_KARKUNS, hrEmployeeCandidateSource } from './paged-hr-employee-candidate-karkuns';

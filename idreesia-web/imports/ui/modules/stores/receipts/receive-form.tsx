@@ -14,7 +14,7 @@ import {
   InputTextAreaField,
   InputTextField,
 } from '/imports/ui/modules/helpers/fields';
-import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+import { StoreKarkunField } from '/imports/ui/modules/stores/common/controls';
 import { StoresSubModulePaths as paths } from '/imports/ui/modules/stores';
 import {
   usePhysicalStore,
@@ -152,7 +152,7 @@ const ReceiveForm = ({ history }: RouteComponentProps<RouteParams>) => {
                     required
                     requiredMessage="Please choose the date the goods arrived."
                   />
-                  <KarkunField
+                  <StoreKarkunField
                     fieldName="receivedBy"
                     fieldLabel="Received By"
                     placeholder="Received By"

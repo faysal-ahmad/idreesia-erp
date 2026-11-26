@@ -747,3 +747,21 @@ describe('attendance sheet', () => {
     expect(rows[2]).toMatchObject({ presentCount: 1, percentage: 100 });
   });
 });
+
+describe('shift order', () => {
+  it('lists shifts by the time of day they start, whatever date was saved', async () => {
+    await seed();
+    // Saved later, on another date, but starts earliest in the day (5am Karachi).
+    await DutyShifts.insertAsync({
+      _id: 'sh0',
+      dutyId: 'd1',
+      name: 'Zz Early',
+      startTime: '2026-06-01T00:00:00Z',
+    } as any);
+    await DutyShifts.insertAsync({ _id: 'sh9', dutyId: 'd1', name: 'Aa No Time' } as any);
+
+    const week = await getDutyPlanWeek('d1', 'l1');
+
+    expect(week.shifts.map(shift => shift._id)).toEqual(['sh0', 'sh1', 'sh2', 'sh9']);
+  });
+});

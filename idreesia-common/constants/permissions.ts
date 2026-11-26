@@ -5,7 +5,6 @@ const Permissions = {
   ADMIN_VIEW_USERS_AND_GROUPS: 'admin-view-users-and-groups',
   ADMIN_MANAGE_USERS_AND_GROUPS: 'admin-manage-users-and-groups',
 
-  ADMIN_MANAGE_PHYSICAL_STORES: 'admin-manage-physical-stores',
   ADMIN_MANAGE_CITIES: 'admin-manage-cities',
   ADMIN_MANAGE_PEOPLE_TAGS: 'admin-manage-people-tags',
   ADMIN_MANAGE_FREE_FORM_DATA: 'admin-manage-free-form-data',
@@ -96,6 +95,11 @@ const Permissions = {
   // ****************************************************************************************
   // Stores Module
   // ****************************************************************************************
+  // Held on the user (or a group), not per store.
+  IN_MANAGE_PHYSICAL_STORES: 'stores-manage-physical-stores',
+  IN_MANAGE_PHYSICAL_STORE_PERMISSIONS: 'stores-manage-physical-store-permissions',
+
+  // Held per store (see stores-permissions.ts).
   IN_MANAGE_SETUP_DATA: 'stores-manage-setup-data',
   IN_MANAGE_STOCK_ITEMS: 'stores-manage-stock-items',
 

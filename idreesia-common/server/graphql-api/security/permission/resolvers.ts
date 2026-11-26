@@ -32,7 +32,7 @@ export default {
   Query: {
     securityPermissionAssignments: async () => listPermissionAssignments(),
 
-    securityPermissionKarkunSearch: async (
+    pagedSecurityPermissionKarkuns: async (
       _obj: unknown,
       args: {
         name?: string;

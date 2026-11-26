@@ -15,5 +15,12 @@ extend type Query {
     @checkPermissions(
       permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES]
     )
+
+  # Locations for a location picker: those of the given types (all when
+  # empty) plus their ancestors, so the tree shows where they sit.
+  referenceOrgLocations(types: [String!]): [ReferenceOrgLocationType]
+    @checkPermissions(
+      permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES]
+    )
 }
 `;

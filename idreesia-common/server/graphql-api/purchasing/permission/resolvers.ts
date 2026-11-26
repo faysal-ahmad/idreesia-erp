@@ -30,7 +30,7 @@ export default {
   Query: {
     purchasingPermissionAssignments: async () => listPermissionAssignments(),
 
-    purchasingKarkunSearch: async (
+    pagedPurchasingPermissionKarkuns: async (
       _obj: unknown,
       args: {
         name?: string;

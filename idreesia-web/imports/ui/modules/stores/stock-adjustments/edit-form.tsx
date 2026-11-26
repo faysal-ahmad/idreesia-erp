@@ -19,7 +19,7 @@ import {
   FormButtonsSaveCancel,
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
-import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+import { StoreKarkunField } from '/imports/ui/modules/stores/common/controls';
 import {
   EDIT_STOCK_ADJUSTMENT_BY_ID,
   UPDATE_STOCK_ADJUSTMENT,
@@ -83,7 +83,7 @@ const EditForm = ({ history }: Props) => {
         <RadioGroupField fieldName="adjustment" fieldLabel="Adjustment" initialValue={stockAdjustmentById.isInflow ? 'inflow' : 'outflow'} options={[{ label: 'Increase by', value: 'inflow' }, { label: 'Decrease by', value: 'outflow' }]} />
         <InputNumberField fieldName="quantity" fieldLabel="Quantity" initialValue={stockAdjustmentById.quantity ?? undefined} required requiredMessage="Please input a value for adjustment quantity." minValue={0} />
         <DateField fieldName="adjustmentDate" fieldLabel="Adjustment Date" initialValue={dayjs(Number(stockAdjustmentById.adjustmentDate))} required requiredMessage="Please input an adjustment date." />
-        <KarkunField fieldName="adjustedBy" fieldLabel="Adjusted By" placeholder="Adjusted By" required requiredMessage="Please select a name for adjusted By." initialValue={stockAdjustmentById.refAdjustedBy ?? undefined} predefinedFilterStoreId={physicalStoreId} predefinedFilterName={PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY} />
+        <StoreKarkunField fieldName="adjustedBy" fieldLabel="Adjusted By" placeholder="Adjusted By" required requiredMessage="Please select a name for adjusted By." initialValue={stockAdjustmentById.refAdjustedBy ?? undefined} predefinedFilterStoreId={physicalStoreId} predefinedFilterName={PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY} />
         <InputTextAreaField fieldName="adjustmentReason" fieldLabel="Adjustment Reason" initialValue={stockAdjustmentById.adjustmentReason ?? undefined} required={false} />
         <FormButtonsSaveCancel handleCancel={() => history.goBack()} isFieldsTouched={isFieldsTouched} />
       </Form>

@@ -16,7 +16,7 @@ import {
   FormButtonsSaveCancel,
   InputTextAreaField,
 } from '/imports/ui/modules/helpers/fields';
-import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+import { StoreKarkunField } from '/imports/ui/modules/stores/common/controls';
 import { StockItemField } from '/imports/ui/modules/stores/stock-items/field';
 import { CREATE_STOCK_ADJUSTMENT } from './gql';
 
@@ -73,7 +73,7 @@ const NewForm = ({ history }: Props) => {
       <RadioGroupField fieldName="adjustment" fieldLabel="Adjustment" required options={[{ label: 'Increase by', value: 'inflow' }, { label: 'Decrease by', value: 'outflow' }]} />
       <InputNumberField fieldName="quantity" fieldLabel="Quantity" required requiredMessage="Please input a value for adjustment quantity." minValue={0} />
       <DateField fieldName="adjustmentDate" fieldLabel="Adjustment Date" required requiredMessage="Please input an adjustment date." />
-      <KarkunField fieldName="adjustedBy" fieldLabel="Adjusted By" placeholder="Adjusted By" required requiredMessage="Please select a name for adjusted By." predefinedFilterStoreId={physicalStoreId} predefinedFilterName={PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY} />
+      <StoreKarkunField fieldName="adjustedBy" fieldLabel="Adjusted By" placeholder="Adjusted By" required requiredMessage="Please select a name for adjusted By." predefinedFilterStoreId={physicalStoreId} predefinedFilterName={PredefinedFilterNames.STOCK_ADJUSTMENTS_ADJUSTED_BY} />
       <InputTextAreaField fieldName="adjustmentReason" fieldLabel="Adjustment Reason" required={false} />
       <FormButtonsSaveCancel handleCancel={() => history.goBack()} isFieldsTouched={isFieldsTouched} />
     </Form>

@@ -145,3 +145,4 @@ export {
   type MyNotification,
   type NotificationUser,
 } from './notifications';
+export { searchCommitteeKarkuns } from './committee-karkuns';

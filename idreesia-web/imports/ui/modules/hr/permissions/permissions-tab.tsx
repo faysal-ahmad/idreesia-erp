@@ -4,7 +4,7 @@ import { SyncOutlined, TeamOutlined, UserAddOutlined } from '@ant-design/icons';
 import { Button, Drawer, Modal, Space, Table, Tag, Tooltip } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
-import type { KarkunSelectionItem } from '/imports/ui/modules/helpers/controls';
+import { PersonPickerDrawer, type PickerPerson } from '/imports/ui/modules/helpers/controls';
 
 import {
   ADD_HR_PERMISSION_GROUP,
@@ -13,8 +13,8 @@ import {
   REMOVE_HR_PERMISSION_GROUP,
   HR_PERMISSION_ASSIGNMENTS,
   REMOVE_HR_PERMISSION_USER,
+  hrPermissionKarkunSource,
 } from './gql';
-import KarkunPicker from './karkun-picker';
 
 const REFETCH = ['hrPermissionAssignments', 'hrUserGroups'];
 
@@ -108,7 +108,7 @@ const PermissionsTab = () => {
   // The permission being added to, as of the latest data.
   const addingRow = rows.flatMap((feature) => feature.children).find((row) => row.key === adding?.key);
 
-  const handleAdd = (karkun: KarkunSelectionItem) => {
+  const handleAdd = (karkun: PickerPerson) => {
     if (!adding) return;
     setAddingId(karkun._id);
     addUser({ variables: { permissionKey: adding.permissionKey, karkunId: karkun._id } })
@@ -251,19 +251,16 @@ const PermissionsTab = () => {
         />
       </div>
 
-      <Drawer
+      <PersonPickerDrawer
         title={adding ? `Add User to "${adding.name}"` : 'Add User'}
-        width={900}
         open={adding != null}
         onClose={() => setAdding(null)}
-        destroyOnHidden
-      >
-        <KarkunPicker
-          selectedIds={(addingRow?.users ?? []).flatMap((user) => (user.personId ? [user.personId] : []))}
-          addingId={addingId}
-          onAdd={handleAdd}
-        />
-      </Drawer>
+        source={hrPermissionKarkunSource}
+        selectedIds={(addingRow?.users ?? []).flatMap((user) => (user.personId ? [user.personId] : []))}
+        addingId={addingId}
+        onPick={handleAdd}
+        selectedLabel="Added"
+      />
 
       <Drawer
         title={addingGroup ? `Add Group to "${addingGroup.name}"` : 'Add Group'}

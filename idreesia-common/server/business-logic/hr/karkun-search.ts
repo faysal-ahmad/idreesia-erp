@@ -17,16 +17,14 @@ interface RawCollectionWithDistinct {
   distinct(fieldName: string, query?: Record<string, unknown>): Promise<string[]>;
 }
 
-export async function getKarkunsByPredefinedFilter(
-  params: Record<string, string | undefined>
-) {
-  const {
-    predefinedFilterName,
-    predefinedFilterStoreId,
-    pageIndex = '0',
-    pageSize = '20',
-  } = params;
-
+/**
+ * The people a predefined filter stands for, e.g. who received goods on the
+ * store's purchase forms before ("recently used" in the store pickers).
+ */
+export async function getPredefinedFilterKarkunIds(
+  predefinedFilterName: string | undefined,
+  predefinedFilterStoreId: string | undefined
+): Promise<string[]> {
   let karkunIds: string[] = [];
   const purchaseFormsRaw =
     PurchaseForms.rawCollection() as unknown as RawCollectionWithDistinct;
@@ -68,6 +66,24 @@ export async function getKarkunsByPredefinedFilter(
       karkunIds = [];
       break;
   }
+
+  return karkunIds;
+}
+
+export async function getKarkunsByPredefinedFilter(
+  params: Record<string, string | undefined>
+) {
+  const {
+    predefinedFilterName,
+    predefinedFilterStoreId,
+    pageIndex = '0',
+    pageSize = '20',
+  } = params;
+
+  const karkunIds = await getPredefinedFilterKarkunIds(
+    predefinedFilterName,
+    predefinedFilterStoreId
+  );
 
   const pipeline: PipelineStage[] = [
     {

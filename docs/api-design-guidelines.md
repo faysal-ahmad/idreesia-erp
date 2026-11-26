@@ -172,6 +172,14 @@ createJob: async (obj, values, { user }) => {
 - **Nested objects** (`refPhysicalStore`, `karkun`, ...) resolve through data loaders, not one query per row.
 - **After any SDL change**, run `yarn codegen` and use the generated types in `idreesia-common/types/`.
 
+### Person picker queries
+
+The UI's person pickers (see the UI design guidelines, Part B §8) all read the same shape, so every query that feeds one:
+
+- is named `paged<Module><Purpose>Karkuns` (or `…People`), lives in the **consumer** module's folder and is gated by the consumer's permission for that use case. A module never picks people through another module's query (`pagedHrKarkuns`, `pagedAdminUserKarkuns`, …).
+- takes flat arguments `name`, `cnicNumber`, `phoneNumber`, `pageIndex`, `pageSize`, plus the scope it needs (`locationId`, `committeeId`, …), and returns `PagedPickerPersonType` (`graphql-api/common/person/person.ts`).
+- resolves with one business-logic call that states the scope and calls `searchPickerPeople(params, scope)` (`business-logic/common/people/picker-people.ts`). The scope is the `searchPeople` filter and flags that decide who may be listed, e.g. `{ filter: { mehfilLocationId }, flags: { includeKarkuns: true } }`; `markUserAccounts` fills `hasUserAccount`. Use `findMultanCityLocation()` for "karkuns of Multan".
+
 ---
 
 ## 6. Authorization
@@ -193,10 +201,10 @@ createJob: async (obj, values, { user }) => {
 
 ### Reference data
 
-Data that one module owns but other modules also read (e.g. HR duties and shifts read by Security and Admin, physical stores read by Admin) is not open. Put it in `graphql-api/reference-data/<entity>/`:
+Data that one module owns but other modules also read (e.g. HR duties and shifts read by Security and Admin, physical stores read by Purchasing) is not open. Put it in `graphql-api/reference-data/<entity>/`:
 
 - **The owner doesn't use it.** The owning module uses the queries in its own folder, and those carry the owner's permissions (e.g. `allMSDuties` needs the HR permissions). Duplicating the find in `reference-data` is fine.
-- **Name it `reference<Entity>`** (`referenceMsDuties`, `referencePhysicalStoreById`).
+- **Name it `reference<Entity>`** (`referenceMsDuties`, `referencePhysicalStores`).
 - **Gate it with the consumers' permissions.** The `@checkPermissions` list holds the permissions of each use case that reads it, and nothing else. A module that starts using a reference query adds its use-case permission to the directive.
 - **Slim types.** Return a dedicated `Reference<Entity>Type` with only what the dropdown or picker needs. No people, committees, contact details or audit fields, and no nested fields that lead to them (see how `DutyType.committee` reached people records).
 

@@ -27,33 +27,18 @@ type PurchasingPermissionGroup {
   permissions: [PurchasingPermissionAssignment]
 }
 
-type PurchasingKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedPurchasingKarkunType {
-  data: [PurchasingKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   purchasingPermissionAssignments: [PurchasingPermissionGroup]
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 
   # Karkuns to choose from when giving a permission or adding to a group.
-  purchasingKarkunSearch(
+  pagedPurchasingPermissionKarkuns(
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedPurchasingKarkunType
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 }
 

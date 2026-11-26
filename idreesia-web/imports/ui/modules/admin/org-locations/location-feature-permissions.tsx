@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import type { TypedDocumentNode } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { SyncOutlined, UserAddOutlined } from '@ant-design/icons';
-import { Button, Drawer, Modal, Space, Table, Tag, Tooltip } from 'antd';
+import { Button, Modal, Space, Table, Tag, Tooltip } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import useListScrollY from '/imports/ui/modules/security/security-server/common/use-list-scroll-y';
@@ -18,10 +18,10 @@ import type {
   RemoveOrgLocationFeatureUserMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
 import {
-  KarkunSelectionList,
-  type KarkunSelectionFilter,
-  type KarkunSelectionItem,
-  type KarkunSelectionPageParams,
+  PICKER_PERSON_FIELDS,
+  PersonPickerDrawer,
+  type PersonSearchSource,
+  type PickerPerson,
 } from '/imports/ui/modules/helpers/controls';
 
 const ORG_LOCATION_FEATURE_PERMISSIONS: TypedDocumentNode<
@@ -70,17 +70,20 @@ const HR_FEATURE_USER_KARKUN_SEARCH: TypedDocumentNode<
     ) {
       totalResults
       data {
-        _id
-        name
-        parentName
-        cnicNumber
-        contactNumber1
-        imageUrl
-        imageThumbnailUrl
+        ...PickerPersonFields
       }
     }
   }
+  ${PICKER_PERSON_FIELDS}
 `;
+
+// The mehfil's karkuns who have a user account; pass variables.locationId.
+const featureUserKarkunSource: PersonSearchSource<HrFeatureUserKarkunSearchQuery> = {
+  query: HR_FEATURE_USER_KARKUN_SEARCH,
+  select: data => data.pagedOrgLocationKarkuns,
+  description:
+    'Showing karkuns whose mehfil is this location and who have a user account.',
+};
 
 const ADD_FEATURE_USER: TypedDocumentNode<
   AddOrgLocationFeatureUserMutation,
@@ -121,7 +124,6 @@ const REMOVE_FEATURE_USER: TypedDocumentNode<
 `;
 
 const REFETCH = ['orgLocationFeaturePermissions', 'myDutiesAttendanceLocations'];
-const DEFAULT_PAGE_SIZE = 20;
 
 interface UserEntry {
   userId: string;
@@ -163,30 +165,11 @@ const userLabel = (user: {
 const LocationFeaturePermissions = ({ locationId }: Props) => {
   const { containerRef, scrollY } = useListScrollY();
   const [adding, setAdding] = useState<PermissionRow | null>(null);
-  const [filter, setFilter] = useState<KarkunSelectionFilter>({});
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [addingId, setAddingId] = useState<string | null>(null);
 
   const { data, loading, refetch } = useQuery(ORG_LOCATION_FEATURE_PERMISSIONS, {
     variables: { locationId },
     fetchPolicy: 'cache-and-network',
-  });
-  const {
-    data: searchData,
-    loading: searching,
-    refetch: refetchSearch,
-  } = useQuery(HR_FEATURE_USER_KARKUN_SEARCH, {
-    variables: {
-      locationId,
-      name: filter.name || undefined,
-      cnicNumber: filter.cnicNumber || undefined,
-      phoneNumber: filter.phoneNumber || undefined,
-      pageIndex: String(pageIndex),
-      pageSize: String(pageSize),
-    },
-    skip: !adding,
-    fetchPolicy: 'network-only',
   });
   const [addUser] = useMutation(ADD_FEATURE_USER, { refetchQueries: REFETCH });
   const [removeUser] = useMutation(REMOVE_FEATURE_USER, {
@@ -231,37 +214,7 @@ const LocationFeaturePermissions = ({ locationId }: Props) => {
     .flatMap(feature => feature.children)
     .find(row => row.key === adding?.key);
 
-  const karkuns: KarkunSelectionItem[] = (
-    searchData?.pagedOrgLocationKarkuns?.data ?? []
-  ).map(person => ({
-    _id: person._id,
-    name: person.name,
-    parentName: person.parentName,
-    cnicNumber: person.cnicNumber,
-    contactNumber1: person.contactNumber1,
-    imageUrl: person.imageUrl,
-    imageThumbnailUrl: person.imageThumbnailUrl,
-  }));
-
-  const setPageParams = ({
-    pageIndex: nextPageIndex,
-    pageSize: nextPageSize,
-    ...filterChanges
-  }: KarkunSelectionPageParams) => {
-    if (nextPageIndex != null) setPageIndex(Number(nextPageIndex));
-    if (nextPageSize != null) setPageSize(Number(nextPageSize));
-    if (Object.keys(filterChanges).length > 0) {
-      setFilter(prev => ({ ...prev, ...filterChanges }));
-    }
-  };
-
-  const handleCloseAdd = () => {
-    setAdding(null);
-    setFilter({});
-    setPageIndex(0);
-  };
-
-  const handleAdd = (karkun: KarkunSelectionItem) => {
+  const handleAdd = (karkun: PickerPerson) => {
     if (!adding) return;
     setAddingId(karkun._id);
     addUser({
@@ -399,30 +352,18 @@ const LocationFeaturePermissions = ({ locationId }: Props) => {
         />
       </div>
 
-      <Drawer
+      <PersonPickerDrawer
         title={adding ? `Add User to "${adding.name}"` : 'Add User'}
-        width={900}
         open={adding != null}
-        onClose={handleCloseAdd}
-        destroyOnHidden
-      >
-        <KarkunSelectionList
-          karkuns={karkuns}
-          totalResults={searchData?.pagedOrgLocationKarkuns?.totalResults ?? 0}
-          loading={searching}
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-          filter={filter}
-          selectedIds={(addingRow?.users ?? []).flatMap(user =>
-            user.personId ? [user.personId] : []
-          )}
-          selectedLabel="Added"
-          addingId={addingId}
-          setPageParams={setPageParams}
-          refreshData={refetchSearch}
-          onAdd={handleAdd}
-        />
-      </Drawer>
+        onClose={() => setAdding(null)}
+        source={{ ...featureUserKarkunSource, variables: { locationId } }}
+        selectedIds={(addingRow?.users ?? []).flatMap(user =>
+          user.personId ? [user.personId] : []
+        )}
+        selectedLabel="Added"
+        addingId={addingId}
+        onPick={handleAdd}
+      />
     </>
   );
 };

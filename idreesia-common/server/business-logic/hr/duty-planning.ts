@@ -15,6 +15,7 @@ import {
   addCalendarDays,
   dayOfWeek,
   isCalendarDate,
+  karachiMinutesOfDay,
   todayInKarachi,
   type DayOfWeek,
 } from './duty-planning-dates';
@@ -228,9 +229,13 @@ function datesBetween(startDate: string, endDate: string): string[] {
 
 async function shiftsForDuty(dutyId: string): Promise<ShiftDocument[]> {
   const shifts = (await DutyShifts.find({ dutyId }).fetchAsync()) as unknown as ShiftDocument[];
+  // By the time of day a shift starts (in Karachi), whatever date its start
+  // time was saved with; shifts with no start time go last, then by name.
+  const startOf = (shift: ShiftDocument) =>
+    karachiMinutesOfDay(shift.startTime) ?? Number.MAX_SAFE_INTEGER;
   return shifts.sort((left, right) => {
-    const leftTime = left.startTime ? Date.parse(left.startTime) : Number.MAX_SAFE_INTEGER;
-    const rightTime = right.startTime ? Date.parse(right.startTime) : Number.MAX_SAFE_INTEGER;
+    const leftTime = startOf(left);
+    const rightTime = startOf(right);
     if (leftTime !== rightTime) return leftTime - rightTime;
     return left.name.localeCompare(right.name);
   });

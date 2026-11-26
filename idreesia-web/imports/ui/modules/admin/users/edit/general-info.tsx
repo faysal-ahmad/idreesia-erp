@@ -19,9 +19,9 @@ import { message, modal } from '/imports/ui/antd-feedback';
 import {
   InputTextField,
   SwitchField,
-  KarkunSelectionInputField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+import { PersonPickerField } from '/imports/ui/modules/helpers/controls';
 
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 import ResetPasswordModal from './reset-password-modal';
@@ -35,6 +35,7 @@ import {
   CLEAR_LOGIN_BLOCKS,
   USER_TRUSTED_DEVICES,
   REVOKE_USER_TRUSTED_DEVICES,
+  adminUserKarkunSource,
 } from '../gql';
 
 interface Props {
@@ -393,7 +394,8 @@ const GeneralInfo = ({ userId, history }: Props) => {
       initialValue={userById.karkun ? userById.karkun.sharedData?.name : ''}
     />
   ) : (
-    <KarkunSelectionInputField
+    <PersonPickerField
+      source={adminUserKarkunSource}
       fieldName="karkun"
       fieldLabel="Karkun Name"
     />

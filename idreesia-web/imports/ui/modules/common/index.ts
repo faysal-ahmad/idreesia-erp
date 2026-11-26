@@ -2,12 +2,6 @@ export { default as AuditInfo } from './audit-info/audit-info';
 export { default as AuditLogsList } from './audit-logs/list';
 export { default as AuditLogsListFilter } from './audit-logs/list-filter';
 
-export { default as KarkunsList } from './karkuns/list';
-export {
-  default as KarkunsListFilter,
-  KarkunsFilterChips,
-} from './karkuns/list-filter';
-
 export { default as PersonGeneralList } from './visitors/list';
 export {
   default as PersonGeneralListFilter,

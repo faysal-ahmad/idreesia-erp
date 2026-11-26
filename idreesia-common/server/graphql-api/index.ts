@@ -144,6 +144,8 @@ import PurchasingAttachmentResolvers from './purchasing/attachment/resolvers';
 import PurchasingAuditLogSchema from './purchasing/audit-log/audit-log';
 import PurchasingAuditLogResolvers from './purchasing/audit-log/resolvers';
 import PurchasingPermissionSchema from './purchasing/permission/permission';
+import PurchasingKarkunSchema from './purchasing/karkun/karkun';
+import PurchasingKarkunResolvers from './purchasing/karkun/resolvers';
 import PurchasingPermissionResolvers from './purchasing/permission/resolvers';
 import PurchasingUserGroupSchema from './purchasing/user-group/user-group';
 import PurchasingUserGroupResolvers from './purchasing/user-group/resolvers';
@@ -247,6 +249,8 @@ import CityMehfilResolvers from './outstation/city-mehfil/resolvers';
  * Schema and Resolvers for the Inventory module
  */
 import CommonSchema from './inventory/common/common';
+import StoreKarkunSchema from './inventory/karkun/karkun';
+import StoreKarkunResolvers from './inventory/karkun/resolvers';
 import CommonResolvers from './inventory/common/resolvers';
 
 import ItemCategorySchema from './inventory/item-category/item-category';
@@ -260,6 +264,8 @@ import VendorResolvers from './inventory/vendor/resolvers';
 
 import PhysicalStoreSchema from './inventory/physical-store/physical-store';
 import PhysicalStoreResolvers from './inventory/physical-store/resolvers';
+import StoreUserGroupSchema from './inventory/store-user-group/store-user-group';
+import StoreUserGroupResolvers from './inventory/store-user-group/resolvers';
 
 /**
  * Reference data: cross-module reads of data owned by another module
@@ -369,6 +375,7 @@ const typeDefs = [
   CityMehfilSchema,
 
   CommonSchema,
+  StoreKarkunSchema,
   ItemCategorySchema,
   LocationSchema,
   VendorSchema,
@@ -387,12 +394,14 @@ const typeDefs = [
   PurchasingReportSchema,
   PurchasingAuditLogSchema,
   PurchasingPermissionSchema,
+  PurchasingKarkunSchema,
   PurchasingUserGroupSchema,
   StoreRequisitionSchema,
   StoreOrderSchema,
   StoreReceiptSchema,
   PurchasingAttachmentSchema,
   PhysicalStoreSchema,
+  StoreUserGroupSchema,
   ReferenceDutySchema,
   ReferenceOrgLocationSchema,
   ReferencePhysicalStoreSchema,
@@ -474,6 +483,7 @@ const resolvers = merge(
   CityMehfilResolvers,
 
   CommonResolvers,
+  StoreKarkunResolvers,
   ItemCategoryResolvers,
   LocationResolvers,
   VendorResolvers,
@@ -492,12 +502,14 @@ const resolvers = merge(
   PurchasingReportResolvers,
   PurchasingAuditLogResolvers,
   PurchasingPermissionResolvers,
+  PurchasingKarkunResolvers,
   PurchasingUserGroupResolvers,
   StoreRequisitionResolvers,
   StoreOrderResolvers,
   StoreReceiptResolvers,
   PurchasingAttachmentResolvers,
   PhysicalStoreResolvers,
+  StoreUserGroupResolvers,
   ReferenceDutyResolvers,
   ReferenceOrgLocationResolvers,
   ReferencePhysicalStoreResolvers,

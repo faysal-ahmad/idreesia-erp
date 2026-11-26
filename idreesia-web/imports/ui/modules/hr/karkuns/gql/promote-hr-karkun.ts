@@ -9,8 +9,16 @@ const PROMOTE_HR_KARKUN: TypedDocumentNode<
   PromoteHrKarkunMutation,
   PromoteHrKarkunMutationVariables
 > = gql`
-  mutation promoteHrKarkun($_id: String!) {
-    promoteHrKarkun(_id: $_id) {
+  mutation promoteHrKarkun(
+    $_id: String!
+    $cityLocationId: String!
+    $mehfilLocationId: String
+  ) {
+    promoteHrKarkun(
+      _id: $_id
+      cityLocationId: $cityLocationId
+      mehfilLocationId: $mehfilLocationId
+    ) {
       _id
       isKarkun
     }

@@ -10,8 +10,9 @@ import {
   FormButtonsSaveCancel,
   InputTextAreaField,
   InputTextField,
-  KarkunSelectionInputField,
 } from '/imports/ui/modules/helpers/fields';
+import { PersonPickerField } from '/imports/ui/modules/helpers/controls';
+import { purchasingKarkunSource } from '../common/gql';
 import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
 import AttachmentsTab from '../common/attachments-tab';
@@ -175,7 +176,8 @@ const RequisitionPage = ({ match, history }: RouteComponentProps<{ requisitionId
                   fieldLabel="Purpose"
                   initialValue={requisition?.purpose}
                 />
-                <KarkunSelectionInputField
+                <PersonPickerField
+                  source={purchasingKarkunSource}
                   fieldName="requestedBy"
                   fieldLabel="Requested By"
                   initialValue={

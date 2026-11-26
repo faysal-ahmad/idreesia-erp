@@ -159,7 +159,7 @@ export const MOBILE_DA_KARKUN_SEARCH: TypedDocumentNode<
     $pageIndex: String
     $pageSize: String
   ) {
-    workspaceDaKarkunSearch(
+    pagedWorkspaceDaKarkuns(
       locationId: $locationId
       name: $name
       phoneNumber: $phoneNumber

@@ -160,7 +160,11 @@ export {
 } from './user-groups';
 export type { PurchasingUserGroup, GroupMember } from './user-groups';
 
-export { searchPurchasingKarkuns, searchPurchasingPermissionHolders } from './karkuns';
+export {
+  searchPurchasingFormKarkuns,
+  searchPurchasingKarkuns,
+  searchPurchasingPermissionHolders,
+} from './karkuns';
 export type { KarkunSearchParams } from './karkuns';
 
 export {

@@ -112,7 +112,8 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permissions": [
-          "ADMIN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -122,7 +123,8 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permissions": [
-          "ADMIN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -204,6 +206,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_SECURITY_SERVER_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addStoreUserGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -617,7 +630,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permissions": [
-          "ADMIN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORES",
         ],
       },
       "directive": "checkPermissions",
@@ -882,6 +895,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkStoreAccess",
     },
   ],
+  "Mutation.createStoreUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.createTeam": [
     {
       "args": {
@@ -1111,6 +1135,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "physicalStoreIdArgName": "physicalStoreId",
       },
       "directive": "checkStoreAccess",
+    },
+  ],
+  "Mutation.deleteStoreUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
     },
   ],
   "Mutation.deleteUserGroup": [
@@ -1524,7 +1559,8 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permissions": [
-          "ADMIN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1534,7 +1570,8 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permissions": [
-          "ADMIN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1712,6 +1749,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "physicalStoreIdArgName": "physicalStoreId",
       },
       "directive": "checkStoreAccess",
+    },
+  ],
+  "Mutation.removeStoreUserGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
     },
   ],
   "Mutation.removeTeam": [
@@ -2403,7 +2451,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permissions": [
-          "ADMIN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORES",
         ],
       },
       "directive": "checkPermissions",
@@ -2641,6 +2689,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "physicalStoreIdArgName": "physicalStoreId",
       },
       "directive": "checkStoreAccess",
+    },
+  ],
+  "Mutation.updateStoreUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
     },
   ],
   "Mutation.updateTeam": [
@@ -4035,16 +4094,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.hrPermissionKarkunSearch": [
-    {
-      "args": {
-        "permissions": [
-          "HR_MANAGE_PERMISSIONS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Query.hrUserGroups": [
     {
       "args": {
@@ -4195,6 +4244,28 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkStoreAccess",
     },
   ],
+  "Query.managedPhysicalStoreById": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.managedPhysicalStores": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.mehfilById": [
     {
       "args": {
@@ -4259,7 +4330,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.pagedAdminKarkuns": [
+  "Query.pagedAdminUserKarkuns": [
     {
       "args": {
         "permissions": [
@@ -4309,6 +4380,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.pagedHrEmployeeCandidateKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedHrKarkunCandidatePeople": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.pagedHrKarkuns": [
     {
       "args": {
@@ -4325,6 +4416,27 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "HR_MANAGE_KARKUNS",
           "HR_VIEW_EMPLOYEES",
           "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedHrPermissionKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedHrPickerKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS",
+          "HR_MANAGE_KARKUNS_SETUP_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -4392,6 +4504,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.pagedOrgLocationObserverKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "ADMIN_MANAGE_ORG_LOCATIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.pagedOrgLocationUsers": [
     {
       "args": {
@@ -4442,6 +4564,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.pagedPurchasingCustodianKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.pagedPurchasingInvoices": [
     {
       "args": {
@@ -4452,6 +4584,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "PURCHASING_MANAGE_PAYMENTS",
           "PURCHASING_VIEW_ORDERS",
           "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_REQUISITIONS",
+          "PURCHASING_MANAGE_RECEIPTS",
         ],
       },
       "directive": "checkPermissions",
@@ -4479,6 +4622,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "PURCHASING_VIEW_PAYMENTS",
           "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingPermissionKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -4631,11 +4784,21 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.pagedSecurityPeople": [
+  "Query.pagedSecurityMehfilPeople": [
     {
       "args": {
         "permissions": [
           "SECURITY_MANAGE_MEHFILS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedSecurityPermissionKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -4719,6 +4882,23 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkStoreAccess",
     },
   ],
+  "Query.pagedStoreKarkuns": [
+    {
+      "args": {
+        "anyStorePermissions": [
+          "IN_VIEW_ISSUANCE_FORMS",
+          "IN_MANAGE_ISSUANCE_FORMS",
+          "IN_VIEW_PURCHASE_FORMS",
+          "IN_MANAGE_PURCHASE_FORMS",
+          "IN_VIEW_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_STOCK_ADJUSTMENTS",
+          "IN_MANAGE_REQUISITIONS",
+          "IN_MANAGE_RECEIPTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.pagedStoreOrders": [
     {
       "args": {
@@ -4732,6 +4912,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "returnType": "paged-list",
       },
       "directive": "checkStoreAccess",
+    },
+  ],
+  "Query.pagedStorePermissionKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
     },
   ],
   "Query.pagedStoreReceipts": [
@@ -4804,11 +4995,38 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.pagedWorkspaceCommitteeKarkuns": [
+    {
+      "args": {
+        "roles": [
+          "COORDINATOR",
+        ],
+      },
+      "directive": "checkCommitteeAccess",
+    },
+  ],
+  "Query.pagedWorkspaceDaKarkuns": [
+    {
+      "args": {
+        "permission": "MANAGE_AND_PLAN_DUTIES",
+      },
+      "directive": "checkDutiesAttendanceAccess",
+    },
+  ],
+  "Query.pagedWorkspaceMehfilPermissionsKarkuns": [
+    {
+      "args": {
+        "permission": "MANAGE",
+      },
+      "directive": "checkMehfilPermissionsAccess",
+    },
+  ],
   "Query.physicalStoreAccess": [
     {
       "args": {
         "permissions": [
-          "ADMIN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -4970,16 +5188,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.purchasingKarkunSearch": [
-    {
-      "args": {
-        "permissions": [
-          "PURCHASING_MANAGE_PERMISSIONS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Query.purchasingOpenOrders": [
     {
       "args": {
@@ -5032,16 +5240,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_MANAGE_PERMISSIONS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.purchasingPettyCashCustodianSearch": [
-    {
-      "args": {
-        "permissions": [
-          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
         ],
       },
       "directive": "checkPermissions",
@@ -5224,11 +5422,12 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.referencePhysicalStoreById": [
+  "Query.referenceOrgLocations": [
     {
       "args": {
         "permissions": [
-          "ADMIN_MANAGE_PHYSICAL_STORES",
+          "HR_MANAGE_KARKUNS",
+          "HR_MANAGE_EMPLOYEES",
         ],
       },
       "directive": "checkPermissions",
@@ -5240,7 +5439,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "ADMIN_VIEW_USERS_AND_GROUPS",
           "ADMIN_MANAGE_USERS_AND_GROUPS",
-          "ADMIN_MANAGE_PHYSICAL_STORES",
           "PURCHASING_VIEW_REQUISITIONS",
           "PURCHASING_MANAGE_REQUISITIONS",
           "PURCHASING_APPROVE_REQUISITIONS",
@@ -5339,16 +5537,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Query.securityPermissionAssignments": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_PERMISSIONS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.securityPermissionKarkunSearch": [
     {
       "args": {
         "permissions": [
@@ -5525,26 +5713,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkStoreAccess",
     },
   ],
-  "Query.storeAccessKarkunSearch": [
-    {
-      "args": {
-        "permissions": [
-          "ADMIN_MANAGE_PHYSICAL_STORES",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.storeAccessUserGroups": [
-    {
-      "args": {
-        "permissions": [
-          "ADMIN_MANAGE_PHYSICAL_STORES",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Query.storeOrderById": [
     {
       "args": {
@@ -5584,6 +5752,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "returnType": "object",
       },
       "directive": "checkStoreAccess",
+    },
+  ],
+  "Query.storeUserGroups": [
+    {
+      "args": {
+        "permissions": [
+          "IN_MANAGE_PHYSICAL_STORES",
+          "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
     },
   ],
   "Query.userAccountAvailability": [
@@ -5680,16 +5859,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkCommitteeAccess",
     },
   ],
-  "Query.workspaceCommitteeKarkunSearch": [
-    {
-      "args": {
-        "roles": [
-          "COORDINATOR",
-        ],
-      },
-      "directive": "checkCommitteeAccess",
-    },
-  ],
   "Query.workspaceDaAccess": [
     {
       "args": {
@@ -5718,14 +5887,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permission": "VIEW",
-      },
-      "directive": "checkDutiesAttendanceAccess",
-    },
-  ],
-  "Query.workspaceDaKarkunSearch": [
-    {
-      "args": {
-        "permission": "MANAGE_AND_PLAN_DUTIES",
       },
       "directive": "checkDutiesAttendanceAccess",
     },
@@ -6062,14 +6223,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permission": "VIEW",
-      },
-      "directive": "checkMehfilPermissionsAccess",
-    },
-  ],
-  "Query.workspaceMehfilPermissionsKarkunSearch": [
-    {
-      "args": {
-        "permission": "MANAGE",
       },
       "directive": "checkMehfilPermissionsAccess",
     },

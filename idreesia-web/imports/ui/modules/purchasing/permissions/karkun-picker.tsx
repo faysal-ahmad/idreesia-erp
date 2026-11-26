@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import type { TypedDocumentNode } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 
 import {
@@ -17,17 +18,29 @@ interface Props {
   selectedIds?: string[];
   addingId?: string | null;
   selectedLabel?: string;
+  addLabel?: string;
+  /** The paged karkun query and the field it returns; defaults to the Permissions page search. */
+  query?: TypedDocumentNode<any, any>;
+  dataKey?: string;
   onAdd: (karkun: KarkunSelectionItem) => void;
 }
 
 // Searches the karkuns (with a user account) of Purchasing's city. Meant to
 // sit inside a Drawer, which is created fresh each time it opens.
-const KarkunPicker = ({ selectedIds, addingId, selectedLabel = 'Added', onAdd }: Props) => {
+const KarkunPicker = ({
+  selectedIds,
+  addingId,
+  selectedLabel = 'Added',
+  addLabel,
+  query = PURCHASING_KARKUN_SEARCH,
+  dataKey = 'purchasingKarkunSearch',
+  onAdd,
+}: Props) => {
   const [filter, setFilter] = useState<KarkunSelectionFilter>({});
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
-  const { data, loading, refetch } = useQuery(PURCHASING_KARKUN_SEARCH, {
+  const { data, loading, refetch } = useQuery(query, {
     variables: {
       name: filter.name || undefined,
       cnicNumber: filter.cnicNumber || undefined,
@@ -38,8 +51,8 @@ const KarkunPicker = ({ selectedIds, addingId, selectedLabel = 'Added', onAdd }:
     fetchPolicy: 'network-only',
   });
 
-  const result = data?.purchasingKarkunSearch;
-  const karkuns: KarkunSelectionItem[] = (result?.data ?? []).flatMap((karkun) =>
+  const result = data?.[dataKey];
+  const karkuns: KarkunSelectionItem[] = ((result?.data ?? []) as KarkunSelectionItem[]).flatMap((karkun) =>
     karkun?._id ? [{ ...karkun, _id: karkun._id }] : []
   );
 
@@ -65,6 +78,7 @@ const KarkunPicker = ({ selectedIds, addingId, selectedLabel = 'Added', onAdd }:
       filter={filter}
       selectedIds={selectedIds}
       selectedLabel={selectedLabel}
+      addLabel={addLabel}
       addingId={addingId}
       setPageParams={setPageParams}
       refreshData={refetch}

@@ -25,6 +25,13 @@ interface QueryData {
   userNames?: string[] | null;
 }
 
+// Timestamps arrive either as epoch millis (number / numeric string) or as ISO date strings.
+const formatDateTime = (value: string | number): string => {
+  const numeric = Number(value);
+  const parsed = Number.isNaN(numeric) ? dayjs(value) : dayjs(numeric);
+  return parsed.format(Formats.DATE_TIME_FORMAT);
+};
+
 const AuditInfo = ({ record, className }: Props) => {
   const { data, loading } = useQuery<QueryData>(userNamesQuery, {
     variables: {
@@ -38,16 +45,16 @@ const AuditInfo = ({ record, className }: Props) => {
   const { createdAt, updatedAt, approvedOn, deletedAt } = record;
 
   const strCreatedAt = createdAt
-    ? dayjs(Number(createdAt)).format(Formats.DATE_TIME_FORMAT)
+    ? formatDateTime(createdAt)
     : null;
   const strUpdatedAt = updatedAt
-    ? dayjs(Number(updatedAt)).format(Formats.DATE_TIME_FORMAT)
+    ? formatDateTime(updatedAt)
     : null;
   const strApprovedOn = approvedOn
-    ? dayjs(Number(approvedOn)).format(Formats.DATE_TIME_FORMAT)
+    ? formatDateTime(approvedOn)
     : null;
   const strDeletedAt = deletedAt
-    ? dayjs(Number(deletedAt)).format(Formats.DATE_TIME_FORMAT)
+    ? formatDateTime(deletedAt)
     : null;
 
   return (

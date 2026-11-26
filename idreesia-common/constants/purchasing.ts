@@ -14,6 +14,8 @@ export const NumberedDocument = {
   RECEIPT: 'GRN',
   INVOICE: 'INV',
   PAYMENT: 'PAY',
+  PETTY_CASH_VOUCHER: 'PCV',
+  PETTY_CASH_REPLENISHMENT: 'PCR',
 } as const;
 export type NumberedDocumentValue =
   (typeof NumberedDocument)[keyof typeof NumberedDocument];
@@ -116,6 +118,24 @@ export const PaymentMethod = {
 export type PaymentMethodValue =
   (typeof PaymentMethod)[keyof typeof PaymentMethod];
 
+export const PettyCashVoucherStatus = {
+  DRAFT: 'draft',
+  SUBMITTED: 'submitted',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+  VOIDED: 'voided',
+} as const;
+export type PettyCashVoucherStatusValue =
+  (typeof PettyCashVoucherStatus)[keyof typeof PettyCashVoucherStatus];
+
+export const PettyCashReplenishmentStatus = {
+  SUBMITTED: 'submitted',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+} as const;
+export type PettyCashReplenishmentStatusValue =
+  (typeof PettyCashReplenishmentStatus)[keyof typeof PettyCashReplenishmentStatus];
+
 /** Most lines a single document can have. */
 export const MAX_LINES = 200;
 
@@ -127,6 +147,7 @@ export const AttachmentOwnerType = {
   RECEIPT: 'receipt',
   INVOICE: 'invoice',
   PAYMENT: 'payment',
+  PETTY_CASH_VOUCHER: 'petty-cash-voucher',
 } as const;
 export type AttachmentOwnerTypeValue =
   (typeof AttachmentOwnerType)[keyof typeof AttachmentOwnerType];
@@ -214,6 +235,17 @@ export const PurchasingPermissionCatalog: PurchasingPermissionGroup[] = [
       { key: Permissions.PURCHASING_MANAGE_INVOICES, name: 'Manage Invoices', description: 'Enter, edit, dispute and void invoices' },
       { key: Permissions.PURCHASING_VIEW_PAYMENTS, name: 'View Payments', description: 'See payments' },
       { key: Permissions.PURCHASING_MANAGE_PAYMENTS, name: 'Manage Payments', description: 'Post and void payments' },
+    ],
+  },
+  {
+    featureKey: 'petty-cash',
+    featureName: 'Petty Cash',
+    permissions: [
+      { key: Permissions.PURCHASING_VIEW_PETTY_CASH, name: 'View Petty Cash', description: 'See petty cash funds, vouchers and replenishments' },
+      { key: Permissions.PURCHASING_MANAGE_PETTY_CASH_FUNDS, name: 'Manage Petty Cash Funds and Expense Heads', description: 'Create and edit funds and expense heads, and deactivate them' },
+      { key: Permissions.PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, name: 'Manage Petty Cash Vouchers', description: 'Create, edit and submit vouchers and request replenishments' },
+      { key: Permissions.PURCHASING_APPROVE_PETTY_CASH_VOUCHERS, name: 'Approve Petty Cash Vouchers', description: 'Approve, reject and void vouchers' },
+      { key: Permissions.PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS, name: 'Approve Petty Cash Replenishments', description: 'Approve and reject replenishment requests' },
     ],
   },
   {

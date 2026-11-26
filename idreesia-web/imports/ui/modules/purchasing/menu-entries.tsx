@@ -1,6 +1,8 @@
 import React, { type CSSProperties } from 'react';
 import {
   BarChartOutlined,
+  BankOutlined,
+  ApartmentOutlined,
   CarOutlined,
   CreditCardOutlined,
   DashboardOutlined,
@@ -12,6 +14,8 @@ import {
   ProfileOutlined,
   SettingOutlined,
   ShopOutlined,
+  SwapOutlined,
+  WalletOutlined,
   TagsOutlined,
   ToolOutlined,
 } from '@ant-design/icons';
@@ -44,6 +48,11 @@ export interface MenuGroup {
 }
 
 export const menuGroups: MenuGroup[] = [
+  {
+    key: 'petty-cash',
+    label: 'Petty Cash',
+    icon: <WalletOutlined style={IconStyle} />,
+  },
   {
     key: 'setup',
     label: 'Setup',
@@ -127,12 +136,56 @@ const entries: MenuEntry[] = [
     permissions: [P.PURCHASING_VIEW_PAYMENTS, P.PURCHASING_MANAGE_PAYMENTS],
   },
   {
+    key: 'petty-cash-vouchers',
+    label: 'Petty Cash Vouchers',
+    subModuleName: SubModuleNames.pettyCashVouchers,
+    basePath: paths.pettyCashVouchersPath,
+    icon: <WalletOutlined style={IconStyle} />,
+    permissions: [
+      P.PURCHASING_VIEW_PETTY_CASH,
+      P.PURCHASING_MANAGE_PETTY_CASH_VOUCHERS,
+      P.PURCHASING_APPROVE_PETTY_CASH_VOUCHERS,
+    ],
+    group: 'petty-cash',
+  },
+  {
+    key: 'petty-cash-replenishments',
+    label: 'Petty Cash Replenishments',
+    subModuleName: SubModuleNames.pettyCashReplenishments,
+    basePath: paths.pettyCashReplenishmentsPath,
+    icon: <SwapOutlined style={IconStyle} />,
+    permissions: [
+      P.PURCHASING_VIEW_PETTY_CASH,
+      P.PURCHASING_MANAGE_PETTY_CASH_VOUCHERS,
+      P.PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS,
+    ],
+    group: 'petty-cash',
+  },
+  {
     key: 'vendors',
     label: 'Vendors',
     subModuleName: SubModuleNames.vendors,
     basePath: paths.vendorsPath,
     icon: <ShopOutlined style={IconStyle} />,
     permissions: [P.PURCHASING_VIEW_VENDORS, P.PURCHASING_MANAGE_VENDORS],
+    group: 'setup',
+  },
+  {
+    key: 'petty-cash-funds',
+    label: 'Petty Cash Funds',
+    subModuleName: SubModuleNames.pettyCashFunds,
+    basePath: paths.pettyCashFundsPath,
+    icon: <BankOutlined style={IconStyle} />,
+    permissions: [P.PURCHASING_VIEW_PETTY_CASH, P.PURCHASING_MANAGE_PETTY_CASH_FUNDS],
+    group: 'setup',
+  },
+  {
+    key: 'petty-cash-expense-heads',
+    label: 'Petty Cash Expense Heads',
+    subModuleName: SubModuleNames.pettyCashExpenseHeads,
+    basePath: paths.pettyCashExpenseHeadsPath,
+    icon: <ApartmentOutlined style={IconStyle} />,
+    permissions: [P.PURCHASING_VIEW_PETTY_CASH, P.PURCHASING_MANAGE_PETTY_CASH_FUNDS],
     group: 'setup',
   },
   {

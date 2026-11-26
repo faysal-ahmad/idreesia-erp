@@ -23,6 +23,8 @@ extend type Query {
         PURCHASING_APPROVE_REQUISITIONS
         PURCHASING_VIEW_ORDERS
         PURCHASING_MANAGE_ORDERS
+        PURCHASING_VIEW_PETTY_CASH
+        PURCHASING_MANAGE_PETTY_CASH_VOUCHERS
       ]
     )
   referencePhysicalStoreById(id: String!): ReferencePhysicalStoreType

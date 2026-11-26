@@ -127,6 +127,16 @@ export type PurchasingPaymentAllocationInput = {
   invoiceId: string;
 };
 
+export type PurchasingPettyCashVoucherLineInput = {
+  _id?: string | null | undefined;
+  description: string;
+  externalCatalogId?: string | null | undefined;
+  physicalStoreId?: string | null | undefined;
+  quantity: number;
+  unit?: string | null | undefined;
+  unitPrice: number;
+};
+
 export type PurchasingPricedLineInput = {
   _id?: string | null | undefined;
   description?: string | null | undefined;
@@ -4167,6 +4177,235 @@ export type UpdatePurchasingUserGroupMutationVariables = Exact<{
 
 
 export type UpdatePurchasingUserGroupMutation = { updatePurchasingUserGroup: { _id: string, name: string, description: string | null } | null };
+
+export type PagedPurchasingPettyCashExpenseHeadsQueryVariables = Exact<{
+  search?: string | null | undefined;
+  isActive?: boolean | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type PagedPurchasingPettyCashExpenseHeadsQuery = { pagedPurchasingPettyCashExpenseHeads: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, description: string | null, isActive: boolean | null, inUse: boolean | null } | null> | null } | null };
+
+export type CreatePurchasingPettyCashExpenseHeadMutationVariables = Exact<{
+  name: string;
+  description?: string | null | undefined;
+}>;
+
+
+export type CreatePurchasingPettyCashExpenseHeadMutation = { createPurchasingPettyCashExpenseHead: { _id: string | null } | null };
+
+export type UpdatePurchasingPettyCashExpenseHeadMutationVariables = Exact<{
+  _id: string;
+  name: string;
+  description?: string | null | undefined;
+}>;
+
+
+export type UpdatePurchasingPettyCashExpenseHeadMutation = { updatePurchasingPettyCashExpenseHead: { _id: string | null } | null };
+
+export type SetPurchasingPettyCashExpenseHeadActiveMutationVariables = Exact<{
+  _id: string;
+  isActive: boolean;
+}>;
+
+
+export type SetPurchasingPettyCashExpenseHeadActiveMutation = { setPurchasingPettyCashExpenseHeadActive: { _id: string | null, isActive: boolean | null } | null };
+
+export type DeletePurchasingPettyCashExpenseHeadMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type DeletePurchasingPettyCashExpenseHeadMutation = { deletePurchasingPettyCashExpenseHead: boolean | null };
+
+export type PagedPurchasingPettyCashFundsQueryVariables = Exact<{
+  search?: string | null | undefined;
+  isActive?: boolean | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type PagedPurchasingPettyCashFundsQuery = { pagedPurchasingPettyCashFunds: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, custodianPersonId: string | null, floatAmount: number | null, perTransactionLimit: number | null, balance: number | null, isActive: boolean | null, notes: string | null, custodian: { _id: string | null, sharedData: { name: string | null } | null } | null } | null> | null } | null };
+
+export type CreatePurchasingPettyCashFundMutationVariables = Exact<{
+  name: string;
+  custodianPersonId: string;
+  floatAmount: number;
+  perTransactionLimit?: number | null | undefined;
+  notes?: string | null | undefined;
+}>;
+
+
+export type CreatePurchasingPettyCashFundMutation = { createPurchasingPettyCashFund: { _id: string | null } | null };
+
+export type UpdatePurchasingPettyCashFundMutationVariables = Exact<{
+  _id: string;
+  name: string;
+  custodianPersonId: string;
+  floatAmount: number;
+  perTransactionLimit?: number | null | undefined;
+  notes?: string | null | undefined;
+}>;
+
+
+export type UpdatePurchasingPettyCashFundMutation = { updatePurchasingPettyCashFund: { _id: string | null } | null };
+
+export type SetPurchasingPettyCashFundActiveMutationVariables = Exact<{
+  _id: string;
+  isActive: boolean;
+}>;
+
+
+export type SetPurchasingPettyCashFundActiveMutation = { setPurchasingPettyCashFundActive: { _id: string | null, isActive: boolean | null } | null };
+
+export type PurchasingPettyCashCustodianSearchQueryVariables = Exact<{
+  name?: string | null | undefined;
+  cnicNumber?: string | null | undefined;
+  phoneNumber?: string | null | undefined;
+  pageIndex?: string | null | undefined;
+  pageSize?: string | null | undefined;
+}>;
+
+
+export type PurchasingPettyCashCustodianSearchQuery = { purchasingPettyCashCustodianSearch: { totalResults: number | null, data: Array<{ _id: string | null, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
+
+export type PagedPurchasingPettyCashReplenishmentsQueryVariables = Exact<{
+  search?: string | null | undefined;
+  status?: string | null | undefined;
+  fundId?: string | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type PagedPurchasingPettyCashReplenishmentsQuery = { pagedPurchasingPettyCashReplenishments: { totalResults: number | null, data: Array<{ _id: string | null, number: string | null, fundId: string | null, amount: number | null, countedCash: number | null, variance: number | null, status: string | null, createdAt: string | null, fund: { _id: string | null, name: string | null } | null } | null> | null } | null };
+
+export type PurchasingPettyCashReplenishmentByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type PurchasingPettyCashReplenishmentByIdQuery = { purchasingPettyCashReplenishmentById: { _id: string | null, number: string | null, fundId: string | null, voucherIds: Array<string | null> | null, amount: number | null, countedCash: number | null, variance: number | null, notes: string | null, status: string | null, approvedAt: string | null, rejectedAt: string | null, rejectionReason: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, fund: { _id: string | null, name: string | null, balance: number | null, floatAmount: number | null } | null } | null };
+
+export type RequestPurchasingPettyCashReplenishmentMutationVariables = Exact<{
+  fundId: string;
+  voucherIds?: Array<string | null | undefined> | string | null | undefined;
+  countedCash?: number | null | undefined;
+  notes?: string | null | undefined;
+}>;
+
+
+export type RequestPurchasingPettyCashReplenishmentMutation = { requestPurchasingPettyCashReplenishment: { _id: string | null } | null };
+
+export type ApprovePurchasingPettyCashReplenishmentMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type ApprovePurchasingPettyCashReplenishmentMutation = { approvePurchasingPettyCashReplenishment: { _id: string | null, status: string | null } | null };
+
+export type RejectPurchasingPettyCashReplenishmentMutationVariables = Exact<{
+  _id: string;
+  reason: string;
+}>;
+
+
+export type RejectPurchasingPettyCashReplenishmentMutation = { rejectPurchasingPettyCashReplenishment: { _id: string | null, status: string | null } | null };
+
+export type PagedPurchasingPettyCashVouchersQueryVariables = Exact<{
+  search?: string | null | undefined;
+  status?: string | null | undefined;
+  fundId?: string | null | undefined;
+  expenseHeadId?: string | null | undefined;
+  replenishmentId?: string | null | undefined;
+  unreplenishedOnly?: boolean | null | undefined;
+  pageIndex?: number | null | undefined;
+  pageSize?: number | null | undefined;
+}>;
+
+
+export type PagedPurchasingPettyCashVouchersQuery = { pagedPurchasingPettyCashVouchers: { totalResults: number | null, data: Array<{ _id: string | null, number: string | null, fundId: string | null, voucherDate: string | null, payee: string | null, purpose: string | null, total: number | null, status: string | null, replenishmentId: string | null, fund: { _id: string | null, name: string | null } | null, expenseHead: { _id: string | null, name: string | null } | null } | null> | null } | null };
+
+export type PurchasingPettyCashVoucherByIdQueryVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type PurchasingPettyCashVoucherByIdQuery = { purchasingPettyCashVoucherById: { _id: string | null, number: string | null, fundId: string | null, expenseHeadId: string | null, voucherDate: string | null, payee: string | null, vendorId: string | null, purpose: string | null, total: number | null, status: string | null, version: number | null, submittedAt: string | null, approvedAt: string | null, rejectedAt: string | null, rejectionReason: string | null, voidedAt: string | null, voidReason: string | null, replenishmentId: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, fund: { _id: string | null, name: string | null, balance: number | null, perTransactionLimit: number | null } | null, expenseHead: { _id: string | null, name: string | null } | null, vendor: { _id: string | null, name: string | null } | null, lines: Array<{ _id: string | null, description: string | null, unit: string | null, quantity: number | null, unitPrice: number | null, amount: number | null, physicalStoreId: string | null, physicalStoreName: string | null, externalCatalogId: string | null, stockItemName: string | null } | null> | null } | null };
+
+export type CreatePurchasingPettyCashVoucherMutationVariables = Exact<{
+  fundId: string;
+  expenseHeadId: string;
+  voucherDate: string;
+  payee?: string | null | undefined;
+  vendorId?: string | null | undefined;
+  purpose?: string | null | undefined;
+  lines: Array<Types.PurchasingPettyCashVoucherLineInput> | Types.PurchasingPettyCashVoucherLineInput;
+}>;
+
+
+export type CreatePurchasingPettyCashVoucherMutation = { createPurchasingPettyCashVoucher: { _id: string | null } | null };
+
+export type UpdatePurchasingPettyCashVoucherMutationVariables = Exact<{
+  _id: string;
+  expenseHeadId: string;
+  voucherDate: string;
+  payee?: string | null | undefined;
+  vendorId?: string | null | undefined;
+  purpose?: string | null | undefined;
+  lines: Array<Types.PurchasingPettyCashVoucherLineInput> | Types.PurchasingPettyCashVoucherLineInput;
+}>;
+
+
+export type UpdatePurchasingPettyCashVoucherMutation = { updatePurchasingPettyCashVoucher: { _id: string | null } | null };
+
+export type SubmitPurchasingPettyCashVoucherMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type SubmitPurchasingPettyCashVoucherMutation = { submitPurchasingPettyCashVoucher: { _id: string | null, status: string | null } | null };
+
+export type DeletePurchasingPettyCashVoucherMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type DeletePurchasingPettyCashVoucherMutation = { deletePurchasingPettyCashVoucher: boolean | null };
+
+export type ApprovePurchasingPettyCashVoucherMutationVariables = Exact<{
+  _id: string;
+}>;
+
+
+export type ApprovePurchasingPettyCashVoucherMutation = { approvePurchasingPettyCashVoucher: { _id: string | null, status: string | null } | null };
+
+export type RejectPurchasingPettyCashVoucherMutationVariables = Exact<{
+  _id: string;
+  reason: string;
+}>;
+
+
+export type RejectPurchasingPettyCashVoucherMutation = { rejectPurchasingPettyCashVoucher: { _id: string | null, status: string | null } | null };
+
+export type VoidPurchasingPettyCashVoucherMutationVariables = Exact<{
+  _id: string;
+  reason: string;
+}>;
+
+
+export type VoidPurchasingPettyCashVoucherMutation = { voidPurchasingPettyCashVoucher: { _id: string | null, status: string | null } | null };
+
+export type ReferenceStockItemsQueryVariables = Exact<{
+  physicalStoreId: string;
+  name?: string | null | undefined;
+}>;
+
+
+export type ReferenceStockItemsQuery = { referenceStockItems: Array<{ _id: string | null, name: string | null, unitOfMeasurement: string | null } | null> | null };
 
 export type CreatePurchasingQuoteMutationVariables = Exact<{
   requisitionId: string;

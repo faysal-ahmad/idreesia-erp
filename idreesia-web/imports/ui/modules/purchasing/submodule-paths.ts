@@ -45,6 +45,23 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
+  // Petty Cash Routes
+  // *************************************************************************************
+  static pettyCashVouchersPath = `${ModulePaths.purchasing}/petty-cash/vouchers`;
+  static pettyCashVoucherNewPath = `${SubModulePaths.pettyCashVouchersPath}/new`;
+  static pettyCashVoucherViewPath(id = ':voucherId') {
+    return `${SubModulePaths.pettyCashVouchersPath}/${id}`;
+  }
+  static pettyCashVoucherEditPath(id = ':voucherId') {
+    return `${SubModulePaths.pettyCashVouchersPath}/${id}/edit`;
+  }
+
+  static pettyCashReplenishmentsPath = `${ModulePaths.purchasing}/petty-cash/replenishments`;
+  static pettyCashReplenishmentViewPath(id = ':replenishmentId') {
+    return `${SubModulePaths.pettyCashReplenishmentsPath}/${id}`;
+  }
+
+  // *************************************************************************************
   // Setup Routes
   // *************************************************************************************
   static vendorsPath = `${ModulePaths.purchasing}/vendors`;
@@ -56,6 +73,9 @@ export default class SubModulePaths {
   static catalogItemEditPath(itemId = ':itemId') {
     return `${SubModulePaths.catalogPath}/${itemId}`;
   }
+
+  static pettyCashExpenseHeadsPath = `${ModulePaths.purchasing}/petty-cash/expense-heads`;
+  static pettyCashFundsPath = `${ModulePaths.purchasing}/petty-cash/funds`;
 
   static reportsPath = `${ModulePaths.purchasing}/reports`;
   static permissionsPath = `${ModulePaths.purchasing}/permissions`;

@@ -11,6 +11,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "PURCHASING_MANAGE_RECEIPTS",
           "PURCHASING_MANAGE_INVOICES",
           "PURCHASING_MANAGE_PAYMENTS",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",
@@ -271,6 +272,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.approvePurchasingPettyCashReplenishment": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.approvePurchasingPettyCashVoucher": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_APPROVE_PETTY_CASH_VOUCHERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.approvePurchasingRequisition": [
     {
       "args": {
@@ -382,6 +403,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "PURCHASING_MANAGE_RECEIPTS",
           "PURCHASING_MANAGE_INVOICES",
           "PURCHASING_MANAGE_PAYMENTS",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",
@@ -621,6 +643,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "PURCHASING_MANAGE_RECEIPTS",
           "PURCHASING_MANAGE_INVOICES",
           "PURCHASING_MANAGE_PAYMENTS",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",
@@ -661,6 +684,36 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchasingPettyCashExpenseHead": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchasingPettyCashFund": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createPurchasingPettyCashVoucher": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",
@@ -941,6 +994,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "PURCHASING_MANAGE_RECEIPTS",
           "PURCHASING_MANAGE_INVOICES",
           "PURCHASING_MANAGE_PAYMENTS",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",
@@ -951,6 +1005,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deletePurchasingPettyCashExpenseHead": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.deletePurchasingPettyCashVoucher": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",
@@ -1197,6 +1271,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_APPROVE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.rejectPurchasingPettyCashReplenishment": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.rejectPurchasingPettyCashVoucher": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_APPROVE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",
@@ -1713,6 +1807,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkStoreAccess",
     },
   ],
+  "Mutation.requestPurchasingPettyCashReplenishment": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.resetJobDefinitionSchedule": [
     {
       "args": {
@@ -1945,6 +2049,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.setPurchasingPettyCashExpenseHeadActive": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setPurchasingPettyCashFundActive": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.setPurchasingVendorActive": [
     {
       "args": {
@@ -2027,6 +2151,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_MANAGE_ORDERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.submitPurchasingPettyCashVoucher": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",
@@ -2316,6 +2450,36 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.updatePurchasingPettyCashExpenseHead": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updatePurchasingPettyCashFund": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updatePurchasingPettyCashVoucher": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.updatePurchasingQuote": [
     {
       "args": {
@@ -2577,6 +2741,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_MANAGE_PAYMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.voidPurchasingPettyCashVoucher": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_APPROVE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",
@@ -4310,6 +4484,56 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.pagedPurchasingPettyCashExpenseHeads": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_PETTY_CASH",
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+          "PURCHASING_APPROVE_PETTY_CASH_VOUCHERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingPettyCashFunds": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_PETTY_CASH",
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingPettyCashReplenishments": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_PETTY_CASH",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+          "PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedPurchasingPettyCashVouchers": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_PETTY_CASH",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+          "PURCHASING_APPROVE_PETTY_CASH_VOUCHERS",
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.pagedPurchasingQuotes": [
     {
       "args": {
@@ -4670,6 +4894,9 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "PURCHASING_MANAGE_INVOICES",
           "PURCHASING_VIEW_PAYMENTS",
           "PURCHASING_MANAGE_PAYMENTS",
+          "PURCHASING_VIEW_PETTY_CASH",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+          "PURCHASING_APPROVE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",
@@ -4691,6 +4918,9 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "PURCHASING_MANAGE_INVOICES",
           "PURCHASING_VIEW_PAYMENTS",
           "PURCHASING_MANAGE_PAYMENTS",
+          "PURCHASING_VIEW_PETTY_CASH",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+          "PURCHASING_APPROVE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",
@@ -4802,6 +5032,65 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingPettyCashCustodianSearch": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingPettyCashExpenseHeadById": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_PETTY_CASH",
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+          "PURCHASING_APPROVE_PETTY_CASH_VOUCHERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingPettyCashFundById": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_PETTY_CASH",
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingPettyCashReplenishmentById": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_PETTY_CASH",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+          "PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.purchasingPettyCashVoucherById": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_PETTY_CASH",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+          "PURCHASING_APPROVE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",
@@ -4957,6 +5246,18 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "PURCHASING_APPROVE_REQUISITIONS",
           "PURCHASING_VIEW_ORDERS",
           "PURCHASING_MANAGE_ORDERS",
+          "PURCHASING_VIEW_PETTY_CASH",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.referenceStockItems": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
         ],
       },
       "directive": "checkPermissions",

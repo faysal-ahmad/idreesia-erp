@@ -129,6 +129,14 @@ import PurchasingInvoiceSchema from './purchasing/invoice/invoice';
 import PurchasingInvoiceResolvers from './purchasing/invoice/resolvers';
 import PurchasingPaymentSchema from './purchasing/payment/payment';
 import PurchasingPaymentResolvers from './purchasing/payment/resolvers';
+import PurchasingPettyCashExpenseHeadSchema from './purchasing/petty-cash-expense-head/petty-cash-expense-head';
+import PurchasingPettyCashExpenseHeadResolvers from './purchasing/petty-cash-expense-head/resolvers';
+import PurchasingPettyCashFundSchema from './purchasing/petty-cash-fund/petty-cash-fund';
+import PurchasingPettyCashFundResolvers from './purchasing/petty-cash-fund/resolvers';
+import PurchasingPettyCashVoucherSchema from './purchasing/petty-cash-voucher/petty-cash-voucher';
+import PurchasingPettyCashVoucherResolvers from './purchasing/petty-cash-voucher/resolvers';
+import PurchasingPettyCashReplenishmentSchema from './purchasing/petty-cash-replenishment/petty-cash-replenishment';
+import PurchasingPettyCashReplenishmentResolvers from './purchasing/petty-cash-replenishment/resolvers';
 import PurchasingReportSchema from './purchasing/report/report';
 import PurchasingReportResolvers from './purchasing/report/resolvers';
 import PurchasingAttachmentSchema from './purchasing/attachment/attachment';
@@ -264,6 +272,8 @@ import ReferenceOrgLocationResolvers from './reference-data/org-location/resolve
 
 import ReferencePhysicalStoreSchema from './reference-data/physical-store/physical-store';
 import ReferencePhysicalStoreResolvers from './reference-data/physical-store/resolvers';
+import ReferenceStockItemSchema from './reference-data/stock-item/stock-item';
+import ReferenceStockItemResolvers from './reference-data/stock-item/resolvers';
 
 import StockItemSchema from './inventory/stock-item/stock-item';
 import StockItemResolvers from './inventory/stock-item/resolvers';
@@ -370,6 +380,10 @@ const typeDefs = [
   PurchasingReceiptSchema,
   PurchasingInvoiceSchema,
   PurchasingPaymentSchema,
+  PurchasingPettyCashExpenseHeadSchema,
+  PurchasingPettyCashFundSchema,
+  PurchasingPettyCashVoucherSchema,
+  PurchasingPettyCashReplenishmentSchema,
   PurchasingReportSchema,
   PurchasingAuditLogSchema,
   PurchasingPermissionSchema,
@@ -382,6 +396,7 @@ const typeDefs = [
   ReferenceDutySchema,
   ReferenceOrgLocationSchema,
   ReferencePhysicalStoreSchema,
+  ReferenceStockItemSchema,
   StockItemSchema,
   IssuanceFormSchema,
   PurchaseFormSchema,
@@ -470,6 +485,10 @@ const resolvers = merge(
   PurchasingReceiptResolvers,
   PurchasingInvoiceResolvers,
   PurchasingPaymentResolvers,
+  PurchasingPettyCashExpenseHeadResolvers,
+  PurchasingPettyCashFundResolvers,
+  PurchasingPettyCashVoucherResolvers,
+  PurchasingPettyCashReplenishmentResolvers,
   PurchasingReportResolvers,
   PurchasingAuditLogResolvers,
   PurchasingPermissionResolvers,
@@ -482,6 +501,7 @@ const resolvers = merge(
   ReferenceDutyResolvers,
   ReferenceOrgLocationResolvers,
   ReferencePhysicalStoreResolvers,
+  ReferenceStockItemResolvers,
   StockItemResolvers,
   IssuanceFormResolvers,
   PurchaseFormResolvers,

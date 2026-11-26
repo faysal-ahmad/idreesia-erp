@@ -13,6 +13,7 @@ It is **joined to Stores through requisitions**. Everything bought starts from a
 - [The cycle and document states](#the-cycle-and-document-states)
 - [Data model](#data-model)
 - [Business rules](#business-rules)
+- [Petty cash](#petty-cash)
 - [Permissions](#permissions)
 - [GraphQL API](#graphql-api)
 - [Attachments](#attachments)
@@ -106,9 +107,31 @@ Shared helpers in `internal.ts`: `roundMoney`, `normalizeBaseLine`, `totalsOf`, 
 - Approving an order stores price and vendor on each catalog-linked line's item as its last purchase.
 - `createCatalogItemFromLine` copies a line into the catalog, links the line, and blocks a near-duplicate name case-insensitively.
 
+## Petty cash
+
+Small purchases paid from a cash float skip requisition, order and receipt. They are three collections and a lifecycle of their own, in the same module and under the same numbering, audit and attachment machinery.
+
+| Collection | Holds |
+|---|---|
+| `purchasing-petty-cash-funds` | A float held by a custodian (a person, not tied to a store): `floatAmount`, optional `perTransactionLimit`, `balance` (cash on the books), `isActive` |
+| `purchasing-petty-cash-expense-heads` | What spending is booked to: `name` (unique ignoring case), optional `description`, `isActive`. Set up under Setup; deactivated rather than deleted once used |
+| `purchasing-petty-cash-vouchers` | One spend, numbered `PCV-<year>-nnnn`, booked to exactly one expense head (`expenseHeadId`, required). Lines carry `amount` and optionally `physicalStoreId` + `externalCatalogId` to put the item in a store's stock. Status `draft`, `submitted`, `approved`, `rejected`, `voided` |
+| `purchasing-petty-cash-replenishments` | A request, numbered `PCR-<year>-nnnn`, bundling approved vouchers: `amount`, optional `countedCash` and `variance`. Status `submitted`, `approved`, `rejected` |
+
+Rules (`business-logic/purchasing/petty-cash-*.ts`):
+- Every voucher needs an active expense head on create. While a voucher is a draft or rejected its head can be changed, but only to an active one; keeping the head it already has is fine even if that head was deactivated since. A head that vouchers use can't be deleted (`deletePettyCashExpenseHead` refuses), only deactivated. Managing heads needs `purchasing-manage-petty-cash-funds`; reading them needs any of the view, manage-funds, manage-vouchers or approve-vouchers petty cash permissions.
+- A new fund starts with `balance = floatAmount`. Funds are not tied to a store; only voucher lines are.
+- Approving a voucher is when the money is spent, in one transaction: the fund balance goes down (a conditional update, so it can never go below zero), and each stock line is received into its store with `applyStockMovements`. Every stock item must belong to the line's store.
+- The per-transaction limit is checked on submit and again on approve.
+- Voiding an approved voucher restores the balance and takes the stock back out. It is refused if the stock was already issued, or once a replenishment holds the voucher.
+- A replenishment reserves its vouchers (`replenishmentId`); approving it adds `amount` to the fund. Rejecting it frees the vouchers. `variance` is the counted cash minus the balance the books expected.
+- No hard-coded separation of duties: who may create, approve or void is decided by permissions only.
+- Receipts are ordinary Purchasing attachments with owner type `petty-cash-voucher`.
+- Purchasing users have no Stores permissions, so the voucher form picks store items through `referenceStockItems` (`graphql-api/reference-data/stock-item/`), gated by `purchasing-manage-petty-cash-vouchers`; `referencePhysicalStores` allows the petty cash view and manage-vouchers permissions too.
+
 ## Permissions
 
-18 permissions, strings prefixed `purchasing-` (the header shows the module to anyone with at least one, through `isModuleAccessible`). Defined in `constants/permissions.ts`, mirrored in the `Permission` enum in `graphql-api/_directives/permission.ts`, and listed in the Admin permission picker through `PurchasingPermissionsData` (`access-management/permissions-data.ts`).
+23 permissions, strings prefixed `purchasing-` (the header shows the module to anyone with at least one, through `isModuleAccessible`). Defined in `constants/permissions.ts`, mirrored in the `Permission` enum in `graphql-api/_directives/permission.ts`, and listed in the Admin permission picker through `PurchasingPermissionsData` (`access-management/permissions-data.ts`).
 
 | Permission | Allows |
 |---|---|
@@ -119,6 +142,11 @@ Shared helpers in `internal.ts`: `roundMoney`, `normalizeBaseLine`, `totalsOf`, 
 | `purchasing-view-receipts` / `-manage-receipts` | See / post and void receipts |
 | `purchasing-view-invoices` / `-manage-invoices` | See / enter, edit, dispute, void invoices |
 | `purchasing-view-payments` / `-manage-payments` | See / post and void payments |
+| `purchasing-view-petty-cash` | See funds, vouchers and replenishments |
+| `purchasing-manage-petty-cash-funds` | Create, edit, deactivate funds; manage expense heads |
+| `purchasing-manage-petty-cash-vouchers` | Create, edit, submit, delete vouchers; request replenishments |
+| `purchasing-approve-petty-cash-vouchers` | Approve, reject, void vouchers |
+| `purchasing-approve-petty-cash-replenishments` | Approve, reject replenishments |
 | `purchasing-view-reports` | Dashboard figures, reports, Excel downloads |
 | `purchasing-view-audit-logs` | The Audit Logs page and the History tab of every document |
 | `purchasing-manage-permissions` | The Permissions page: see who holds each Purchasing permission, add and remove users (one permission covers both viewing and changing) |
@@ -217,11 +245,11 @@ Excel downloads go through `/generate-report` with generators `PurchasingSpendin
 
 ## Migration and indexes
 
-`idreesia-web/imports/startup/server/migrations/75-create-purchasing-indexes.ts`, registered in `migrations/index.ts`. Creates unique document numbers per collection, a case-insensitive unique catalog name, a unique `(type, year)` on counters, a unique vendor invoice number per vendor, and lookup indexes on `status`, `vendorId`, `orderId`, `requisitionId`, `dueDate`, `lines.catalogItemId` and `(ownerType, ownerId)`. It runs on the first start after deploy. `78-purchasing-store-integration.ts` renames `lines.catalogItemId` to `lines.internalCatalogId` (and its index), fills `orderIds` on invoices that had an `orderId`, and adds `(source, externalSourceId, status)` and `orderIds` indexes.
+`idreesia-web/imports/startup/server/migrations/75-create-purchasing-indexes.ts`, registered in `migrations/index.ts`. Creates unique document numbers per collection, a case-insensitive unique catalog name, a unique `(type, year)` on counters, a unique vendor invoice number per vendor, and lookup indexes on `status`, `vendorId`, `orderId`, `requisitionId`, `dueDate`, `lines.catalogItemId` and `(ownerType, ownerId)`. It runs on the first start after deploy. `78-purchasing-store-integration.ts` renames `lines.catalogItemId` to `lines.internalCatalogId` (and its index), fills `orderIds` on invoices that had an `orderId`, and adds `(source, externalSourceId, status)` and `orderIds` indexes. `79-create-petty-cash-indexes.ts` adds the petty cash indexes (a case-insensitive unique expense head name, unique numbers, `expenseHeadId` on vouchers, `(fundId, status, voucherDate)`, `replenishmentId`).
 
 ## Testing
 
-- Vitest with an in-memory Mongo replica set. Business-logic tests: `vendors`, `catalog-items`, `numbering` (including concurrency), `procure-to-pay` (the full cycle, over-receipt, over-billing, over-payment, voids, rollback), `reports`, `exporters`, `attachments`; plus `graphql-api/purchasing/attachment/access.test.ts`.
+- Vitest with an in-memory Mongo replica set. Business-logic tests: `vendors`, `catalog-items`, `numbering` (including concurrency), `procure-to-pay` (the full cycle, over-receipt, over-billing, over-payment, voids, rollback), `reports`, `exporters`, `attachments`, `petty-cash` (fund, voucher and replenishment lifecycles, limits, stock in and out, rollback); plus `graphql-api/purchasing/attachment/access.test.ts`.
 - CI gates: the authorization-matrix snapshot (additive: 69 new entries), `unprotected-fields`, `reference-reads-gated`, `rest-guards-coverage`.
 - E2E: `e2e/tests/purchasing/purchasing.spec.ts` (navigation smoke, vendor and catalog CRUD). Not yet run against a live build.
 - Run `yarn run lint` (full, as CI) and the three typechecks after changes.

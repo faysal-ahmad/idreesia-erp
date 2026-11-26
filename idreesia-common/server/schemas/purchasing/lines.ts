@@ -63,3 +63,15 @@ export const PaymentAllocation = new SimpleSchema({
   invoiceId: { type: String },
   amount: { type: Number, min: 0 },
 });
+
+export const PettyCashVoucherLine = new SimpleSchema({
+  _id: { type: String },
+  description: { type: String },
+  unit: { type: String },
+  quantity: { type: Number, min: 0 },
+  unitPrice: { type: Number, min: 0 },
+  amount: { type: Number, min: 0 },
+  // Set when the item goes into a store's stock.
+  physicalStoreId: { type: String, optional: true },
+  externalCatalogId: { type: String, optional: true },
+});

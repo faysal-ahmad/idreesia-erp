@@ -83,6 +83,12 @@ const Permissions = {
   PURCHASING_VIEW_PAYMENTS: 'purchasing-view-payments',
   PURCHASING_MANAGE_PAYMENTS: 'purchasing-manage-payments',
 
+  PURCHASING_VIEW_PETTY_CASH: 'purchasing-view-petty-cash',
+  PURCHASING_MANAGE_PETTY_CASH_FUNDS: 'purchasing-manage-petty-cash-funds',
+  PURCHASING_MANAGE_PETTY_CASH_VOUCHERS: 'purchasing-manage-petty-cash-vouchers',
+  PURCHASING_APPROVE_PETTY_CASH_VOUCHERS: 'purchasing-approve-petty-cash-vouchers',
+  PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS: 'purchasing-approve-petty-cash-replenishments',
+
   PURCHASING_VIEW_REPORTS: 'purchasing-view-reports',
   PURCHASING_VIEW_AUDIT_LOGS: 'purchasing-view-audit-logs',
   PURCHASING_MANAGE_PERMISSIONS: 'purchasing-manage-permissions',

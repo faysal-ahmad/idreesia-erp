@@ -16,6 +16,7 @@ This manual explains how to use **Purchasing**, found under **381-A Operations**
 10. [Goods receipts](#10-goods-receipts)
 11. [Vendor invoices](#11-vendor-invoices)
 12. [Payments](#12-payments)
+    - [12A. Petty cash purchases](#12a-petty-cash-purchases)
 13. [Attachments](#13-attachments)
 14. [History](#14-history)
 15. [Dashboard and reports](#15-dashboard-and-reports)
@@ -199,9 +200,31 @@ Things to know:
 - Advance payments (paying before there is an invoice) are not supported.
 - A mistake? Open the payment and click **Void Payment**. The amounts become owed again.
 
+## 12A. Petty cash purchases
+
+Small purchases paid in cash do not need a requisition, order or goods receipt. They use petty cash instead.
+
+**Funds.** A *fund* is a cash float held by one person, the custodian, for example Rs 50,000 kept at the office. Open **Setup > Petty Cash Funds**, click **New Fund**, and enter the name, the custodian, the float, and optionally the largest amount allowed on one voucher. The fund starts out holding the whole float.
+
+**Expense heads.** An expense head says what the money was spent on, for example "Refreshments" or "Repairs". Open **Setup > Petty Cash Expense Heads**, click **New Expense Head**, and enter a name and optionally a description. Every voucher is booked to one head. A head you no longer want can be deactivated, so it stops being offered on new vouchers while old vouchers keep it. A head can only be deleted if no voucher is booked to it.
+
+**Vouchers.** Every purchase made from a fund is recorded on a voucher.
+
+1. Go to **Petty Cash Vouchers > New Voucher**. Choose the fund, the expense head, the date, who was paid, and the purpose. All the items on a voucher go to the same expense head.
+2. Add a line for each item bought: what it is, the quantity and the price.
+3. If an item should go into a store's stock (for example a light bulb for the store), tick **Add to a store's stock** on that line and choose the store and the item. Other lines are plain expenses.
+4. Save, then open the voucher's **Receipts** tab and attach a photo or scan of the receipt.
+5. Click **Submit for Approval**.
+
+An approver then clicks **Approve**, which pays the voucher out: the cash is taken from the fund and any stock lines are added to their stores. A rejected voucher comes back to you with the reason; fix it and submit it again. A voucher that has been approved can be **voided** until it is part of a replenishment; the cash goes back into the fund and the stock is taken back out (not possible if the goods have already been issued from the store).
+
+**Replenishments.** When the fund runs low, go to **Petty Cash Replenishments > Request Replenishment**. Choose the fund and the approved vouchers to include (all are ticked to start with), and optionally enter the cash you counted in the fund. The page shows the difference from what the books expected. Once the request is approved, the amount goes back into the fund. If it is rejected, the vouchers are freed and can go into another request.
+
+Petty cash spending has its own list and does not appear under purchase orders, so review the **Petty Cash Vouchers** list when you want the full picture of spending.
+
 ## 13. Attachments
 
-Quotes, orders, receipts, invoices, payments and requisitions each have an **Attachments** tab. Use it to keep the vendor's quote, the delivery note, a scan of the invoice or a payment slip with the document.
+Quotes, orders, receipts, invoices, payments, requisitions and petty cash vouchers each have an **Attachments** tab. Use it to keep the vendor's quote, the delivery note, a scan of the invoice or a payment slip with the document.
 
 - Allowed: PDF, images, Office documents and text files, up to **10 MB** each.
 - Upload by choosing a file; it goes straight to secure storage. Click a file to download it.
@@ -278,6 +301,11 @@ Purchasing has no fixed roles. What you can do depends only on the **permissions
 | View / Manage receipts | See / record and void goods receipts |
 | View / Manage invoices | See / enter, edit, dispute and void invoices |
 | View / Manage payments | See / record and void payments |
+| View petty cash | See funds, vouchers and replenishments |
+| Manage petty cash funds | Create, edit and deactivate funds and expense heads |
+| Manage petty cash vouchers | Create, edit, submit and delete vouchers; request replenishments |
+| Approve petty cash vouchers | Approve, reject and void vouchers |
+| Approve petty cash replenishments | Approve and reject replenishment requests |
 | View reports | Dashboard figures, reports and Excel downloads |
 | View audit logs | The Audit Logs page and the History tab |
 | Manage Purchasing permissions | The Permissions page (see below) |

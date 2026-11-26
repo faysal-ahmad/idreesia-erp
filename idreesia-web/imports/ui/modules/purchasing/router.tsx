@@ -12,6 +12,10 @@ import { OrdersList, OrderPage, OrderPrint } from './orders';
 import { ReceiptsList, NewReceipt, ReceiptPage } from './receipts';
 import { InvoicesList, NewInvoice, InvoicePage } from './invoices';
 import { PaymentsList, NewPayment, PaymentPage } from './payments';
+import { PettyCashExpenseHeadsList } from './petty-cash/expense-heads';
+import { PettyCashFundsList } from './petty-cash/funds';
+import { PettyCashVouchersList, PettyCashVoucherForm, PettyCashVoucherPage } from './petty-cash/vouchers';
+import { PettyCashReplenishmentsList, PettyCashReplenishmentPage } from './petty-cash/replenishments';
 import { VendorsList, VendorsEditForm } from './vendors';
 import { CatalogList, CatalogEditForm } from './catalog';
 
@@ -44,6 +48,16 @@ const Router = () => (
     <Route path={paths.paymentNewPath} component={NewPayment} />
     <Route path={paths.paymentViewPath()} component={PaymentPage} />
     <Route path={paths.paymentsPath} component={PaymentsList} />
+
+    <Route path={paths.pettyCashVoucherNewPath} component={PettyCashVoucherForm} />
+    <Route path={paths.pettyCashVoucherEditPath()} component={PettyCashVoucherForm} />
+    <Route path={paths.pettyCashVoucherViewPath()} component={PettyCashVoucherPage} />
+    <Route path={paths.pettyCashVouchersPath} component={PettyCashVouchersList} />
+
+    <Route path={paths.pettyCashReplenishmentViewPath()} component={PettyCashReplenishmentPage} />
+    <Route path={paths.pettyCashReplenishmentsPath} component={PettyCashReplenishmentsList} />
+    <Route path={paths.pettyCashFundsPath} component={PettyCashFundsList} />
+    <Route path={paths.pettyCashExpenseHeadsPath} component={PettyCashExpenseHeadsList} />
 
     <Route path={paths.vendorEditPath()} component={VendorsEditForm} />
     <Route path={paths.vendorsPath} component={VendorsList} />

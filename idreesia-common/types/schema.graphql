@@ -143,6 +143,11 @@ enum Permission {
   PURCHASING_MANAGE_INVOICES
   PURCHASING_VIEW_PAYMENTS
   PURCHASING_MANAGE_PAYMENTS
+  PURCHASING_VIEW_PETTY_CASH
+  PURCHASING_MANAGE_PETTY_CASH_FUNDS
+  PURCHASING_MANAGE_PETTY_CASH_VOUCHERS
+  PURCHASING_APPROVE_PETTY_CASH_VOUCHERS
+  PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS
   PURCHASING_VIEW_REPORTS
   PURCHASING_VIEW_AUDIT_LOGS
   PURCHASING_MANAGE_PERMISSIONS
@@ -2783,10 +2788,10 @@ extend type Query {
   # ownerType is requisition, quote, order, receipt, invoice or payment. The
   # permission of that kind of document is checked in the resolver.
   purchasingAttachments(ownerType: String!, ownerId: String!): [PurchasingAttachment]
-    @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS])
+    @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS, PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
 
   purchasingAttachmentDownload(_id: String!, inline: Boolean): PurchasingAttachmentDownload
-    @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS])
+    @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS, PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
 }
 
 extend type Mutation {
@@ -2799,16 +2804,16 @@ extend type Mutation {
     size: Int!
     name: String
   ): PurchasingAttachmentUpload
-    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
 
   completePurchasingAttachmentUpload(uploadId: String!): PurchasingAttachment
-    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
 
   abortPurchasingAttachmentUpload(uploadId: String!): Boolean
-    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
 
   deletePurchasingAttachment(_id: String!): Boolean
-    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
 }
 
 input PurchasingAuditLogFilter {
@@ -3269,6 +3274,300 @@ extend type Mutation {
 
   removePurchasingPermissionUser(permissionKey: String!, userId: String!): Boolean
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+}
+
+type PurchasingPettyCashExpenseHead {
+  _id: String
+  name: String
+  description: String
+  isActive: Boolean
+  # Whether any voucher is booked to it; a head in use can only be deactivated.
+  inUse: Boolean
+  version: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingPettyCashExpenseHeads {
+  totalResults: Int
+  data: [PurchasingPettyCashExpenseHead]
+}
+
+extend type Query {
+  purchasingPettyCashExpenseHeadById(_id: String!): PurchasingPettyCashExpenseHead
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
+
+  pagedPurchasingPettyCashExpenseHeads(
+    search: String
+    isActive: Boolean
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingPettyCashExpenseHeads
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
+}
+
+extend type Mutation {
+  createPurchasingPettyCashExpenseHead(name: String!, description: String): PurchasingPettyCashExpenseHead
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+
+  updatePurchasingPettyCashExpenseHead(_id: String!, name: String!, description: String): PurchasingPettyCashExpenseHead
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+
+  setPurchasingPettyCashExpenseHeadActive(_id: String!, isActive: Boolean!): PurchasingPettyCashExpenseHead
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+
+  deletePurchasingPettyCashExpenseHead(_id: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+}
+
+type PurchasingPettyCashFund {
+  _id: String
+  name: String
+  custodianPersonId: String
+  custodian: PersonBasicType
+  floatAmount: Float
+  perTransactionLimit: Float
+  balance: Float
+  isActive: Boolean
+  notes: String
+  version: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingPettyCashFunds {
+  totalResults: Int
+  data: [PurchasingPettyCashFund]
+}
+
+extend type Query {
+  purchasingPettyCashFundById(_id: String!): PurchasingPettyCashFund
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  # People to choose from as a fund's custodian: those who hold a Purchasing permission.
+  purchasingPettyCashCustodianSearch(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPurchasingKarkunType
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+
+  pagedPurchasingPettyCashFunds(
+    search: String
+    isActive: Boolean
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingPettyCashFunds
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+}
+
+extend type Mutation {
+  createPurchasingPettyCashFund(
+    name: String!
+    custodianPersonId: String!
+    floatAmount: Float!
+    perTransactionLimit: Float
+    notes: String
+  ): PurchasingPettyCashFund
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+
+  updatePurchasingPettyCashFund(
+    _id: String!
+    name: String!
+    custodianPersonId: String!
+    floatAmount: Float!
+    perTransactionLimit: Float
+    notes: String
+  ): PurchasingPettyCashFund
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+
+  setPurchasingPettyCashFundActive(_id: String!, isActive: Boolean!): PurchasingPettyCashFund
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+}
+
+type PurchasingPettyCashReplenishment {
+  _id: String
+  number: String
+  fundId: String
+  fund: PurchasingPettyCashFund
+  voucherIds: [String]
+  amount: Float
+  countedCash: Float
+  variance: Float
+  notes: String
+  status: String
+  version: Int
+  approvedAt: String
+  approvedBy: String
+  rejectedAt: String
+  rejectedBy: String
+  rejectionReason: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingPettyCashReplenishments {
+  totalResults: Int
+  data: [PurchasingPettyCashReplenishment]
+}
+
+extend type Query {
+  purchasingPettyCashReplenishmentById(_id: String!): PurchasingPettyCashReplenishment
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS])
+
+  pagedPurchasingPettyCashReplenishments(
+    search: String
+    status: String
+    fundId: String
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingPettyCashReplenishments
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS])
+}
+
+extend type Mutation {
+  requestPurchasingPettyCashReplenishment(
+    fundId: String!
+    voucherIds: [String]
+    countedCash: Float
+    notes: String
+  ): PurchasingPettyCashReplenishment
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  approvePurchasingPettyCashReplenishment(_id: String!): PurchasingPettyCashReplenishment
+    @checkPermissions(permissions: [PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS])
+
+  rejectPurchasingPettyCashReplenishment(_id: String!, reason: String!): PurchasingPettyCashReplenishment
+    @checkPermissions(permissions: [PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS])
+}
+
+type PurchasingPettyCashVoucherLine {
+  _id: String
+  description: String
+  unit: String
+  quantity: Float
+  unitPrice: Float
+  amount: Float
+  physicalStoreId: String
+  physicalStoreName: String
+  externalCatalogId: String
+  stockItemName: String
+}
+
+input PurchasingPettyCashVoucherLineInput {
+  _id: String
+  description: String!
+  unit: String
+  quantity: Float!
+  unitPrice: Float!
+  physicalStoreId: String
+  externalCatalogId: String
+}
+
+type PurchasingPettyCashVoucher {
+  _id: String
+  number: String
+  fundId: String
+  fund: PurchasingPettyCashFund
+  expenseHeadId: String
+  expenseHead: PurchasingPettyCashExpenseHead
+  voucherDate: String
+  payee: String
+  vendorId: String
+  vendor: PurchasingVendor
+  purpose: String
+  lines: [PurchasingPettyCashVoucherLine]
+  total: Float
+  status: String
+  version: Int
+  submittedAt: String
+  submittedBy: String
+  approvedAt: String
+  approvedBy: String
+  rejectedAt: String
+  rejectedBy: String
+  rejectionReason: String
+  voidedAt: String
+  voidedBy: String
+  voidReason: String
+  replenishmentId: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingPettyCashVouchers {
+  totalResults: Int
+  data: [PurchasingPettyCashVoucher]
+}
+
+extend type Query {
+  purchasingPettyCashVoucherById(_id: String!): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
+
+  pagedPurchasingPettyCashVouchers(
+    search: String
+    status: String
+    fundId: String
+    expenseHeadId: String
+    replenishmentId: String
+    unreplenishedOnly: Boolean
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingPettyCashVouchers
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_VOUCHERS, PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+}
+
+extend type Mutation {
+  createPurchasingPettyCashVoucher(
+    fundId: String!
+    expenseHeadId: String!
+    voucherDate: String!
+    payee: String
+    vendorId: String
+    purpose: String
+    lines: [PurchasingPettyCashVoucherLineInput!]!
+  ): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  updatePurchasingPettyCashVoucher(
+    _id: String!
+    expenseHeadId: String!
+    voucherDate: String!
+    payee: String
+    vendorId: String
+    purpose: String
+    lines: [PurchasingPettyCashVoucherLineInput!]!
+  ): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  submitPurchasingPettyCashVoucher(_id: String!): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  deletePurchasingPettyCashVoucher(_id: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  approvePurchasingPettyCashVoucher(_id: String!): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
+
+  rejectPurchasingPettyCashVoucher(_id: String!, reason: String!): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
+
+  voidPurchasingPettyCashVoucher(_id: String!, reason: String!): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
 }
 
 # A line of a quote, order or invoice that has a price.
@@ -3831,10 +4130,25 @@ extend type Query {
         PURCHASING_APPROVE_REQUISITIONS
         PURCHASING_VIEW_ORDERS
         PURCHASING_MANAGE_ORDERS
+        PURCHASING_VIEW_PETTY_CASH
+        PURCHASING_MANAGE_PETTY_CASH_VOUCHERS
       ]
     )
   referencePhysicalStoreById(id: String!): ReferencePhysicalStoreType
     @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+}
+
+type ReferenceStockItemType {
+  _id: String
+  name: String
+  unitOfMeasurement: String
+  physicalStoreId: String
+}
+
+extend type Query {
+  # Consumers: Purchasing petty cash vouchers.
+  referenceStockItems(physicalStoreId: String!, name: String): [ReferenceStockItemType]
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
 }
 
 extend type Query {

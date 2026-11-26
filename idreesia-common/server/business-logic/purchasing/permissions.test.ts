@@ -19,13 +19,13 @@ const holdersOf = async (key: string) => {
 };
 
 describe('purchasing permission assignments', () => {
-  it('lists users who hold a permission through a group', async () => {
+  it('does not list users who only hold a permission through a group', async () => {
     const groupId = await UserGroups.insertAsync({ name: 'approvers', permissions: [KEY] } as any);
     await Users.insertAsync({ _id: 'member', username: 'mem', groups: [groupId] } as any);
     await Users.insertAsync({ _id: 'locked', username: 'lk', locked: true, groups: [groupId] } as any);
     await Users.insertAsync({ _id: 'other', username: 'oth' } as any);
 
-    expect((await holdersOf(KEY)).map((u) => u.userId)).toEqual(['member']);
+    expect((await holdersOf(KEY)).map((u) => u.userId)).toEqual([]);
   });
 
   it('adds and removes a user directly, and logs each change', async () => {

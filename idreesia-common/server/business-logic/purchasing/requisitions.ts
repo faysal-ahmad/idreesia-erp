@@ -107,7 +107,7 @@ async function storeName(origin: RequisitionOrigin) {
     { _id: { $eq: origin.physicalStoreId } },
     { fields: { name: 1 } }
   );
-  return cleanText(store?.name);
+  return cleanText(store?.name as string | undefined);
 }
 
 async function normalize(values: RequisitionValues, origin?: RequisitionOrigin) {

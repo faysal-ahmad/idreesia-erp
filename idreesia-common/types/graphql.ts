@@ -825,27 +825,7 @@ export type MehfilDutyType = {
   createdAt?: Maybe<Scalars['String']['output']>;
   createdBy?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
-  mehfilUsedCount?: Maybe<Scalars['Int']['output']>;
   name: Scalars['String']['output'];
-  overallUsedCount?: Maybe<Scalars['Int']['output']>;
-  updatedAt?: Maybe<Scalars['String']['output']>;
-  updatedBy?: Maybe<Scalars['String']['output']>;
-  urduName?: Maybe<Scalars['String']['output']>;
-};
-
-export type MehfilKarkunType = {
-  __typename?: 'MehfilKarkunType';
-  _id?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['String']['output']>;
-  createdBy?: Maybe<Scalars['String']['output']>;
-  duty?: Maybe<MehfilDutyType>;
-  dutyCardBarcodeId?: Maybe<Scalars['String']['output']>;
-  dutyDetail?: Maybe<Scalars['String']['output']>;
-  dutyId?: Maybe<Scalars['String']['output']>;
-  karkun?: Maybe<PersonType>;
-  karkunId?: Maybe<Scalars['String']['output']>;
-  mehfil?: Maybe<MehfilType>;
-  mehfilId?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
@@ -853,30 +833,6 @@ export type MehfilKarkunType = {
 export enum MehfilKarkunsPermission {
   View = 'VIEW'
 }
-
-export type MehfilLangarDishType = {
-  __typename?: 'MehfilLangarDishType';
-  _id?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['String']['output']>;
-  createdBy?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  overallUsedCount?: Maybe<Scalars['Int']['output']>;
-  updatedAt?: Maybe<Scalars['String']['output']>;
-  updatedBy?: Maybe<Scalars['String']['output']>;
-  urduName?: Maybe<Scalars['String']['output']>;
-};
-
-export type MehfilLangarLocationType = {
-  __typename?: 'MehfilLangarLocationType';
-  _id?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['String']['output']>;
-  createdBy?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  overallUsedCount?: Maybe<Scalars['Int']['output']>;
-  updatedAt?: Maybe<Scalars['String']['output']>;
-  updatedBy?: Maybe<Scalars['String']['output']>;
-  urduName?: Maybe<Scalars['String']['output']>;
-};
 
 export type MehfilLocationKarkunType = {
   __typename?: 'MehfilLocationKarkunType';
@@ -900,19 +856,6 @@ export type MehfilPermissionsType = {
   groups: Array<Maybe<MpGroupType>>;
   locationId: Scalars['String']['output'];
   permissions: Array<Scalars['String']['output']>;
-};
-
-export type MehfilType = {
-  __typename?: 'MehfilType';
-  _id?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['String']['output']>;
-  createdBy?: Maybe<Scalars['String']['output']>;
-  karkunCount?: Maybe<Scalars['Int']['output']>;
-  mehfilDate?: Maybe<Scalars['String']['output']>;
-  mehfilKarkuns?: Maybe<MehfilKarkunType>;
-  name?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['String']['output']>;
-  updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
 export type MpGroupType = {
@@ -947,7 +890,6 @@ export type Mutation = {
   addHrPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   addHrPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   addIssuanceFormAttachment?: Maybe<IssuanceForm>;
-  addMehfilKarkun?: Maybe<MehfilKarkunType>;
   addOrgLocationFeatureUser?: Maybe<Scalars['Boolean']['output']>;
   addOrgLocationObserver?: Maybe<OrgLocationType>;
   addPhysicalStoreAccessGroup?: Maybe<Scalars['Boolean']['output']>;
@@ -956,6 +898,7 @@ export type Mutation = {
   addPurchasingGroupMember?: Maybe<Scalars['Boolean']['output']>;
   addPurchasingPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   addPurchasingPermissionUser?: Maybe<Scalars['Boolean']['output']>;
+  addSecurityEventKarkun?: Maybe<SecurityEventKarkunType>;
   addSecurityGroupMember?: Maybe<Scalars['Boolean']['output']>;
   addSecurityPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   addSecurityPermissionUser?: Maybe<Scalars['Boolean']['output']>;
@@ -993,7 +936,6 @@ export type Mutation = {
   createItemCategory?: Maybe<ItemCategory>;
   createJob?: Maybe<JobType>;
   createLocation?: Maybe<Location>;
-  createMehfil?: Maybe<MehfilType>;
   createMehfilDuty?: Maybe<MehfilDutyType>;
   createMissingSecurityServerAlertThumbnails?: Maybe<Scalars['Int']['output']>;
   createMissingSecurityServerProfileThumbnails?: Maybe<Scalars['Int']['output']>;
@@ -1015,9 +957,10 @@ export type Mutation = {
   createPurchasingUserGroup?: Maybe<PurchasingUserGroup>;
   createPurchasingVendor?: Maybe<PurchasingVendor>;
   createSalaries?: Maybe<Scalars['Int']['output']>;
-  createSecurityMehfilDuty?: Maybe<MehfilDutyType>;
-  createSecurityMehfilLangarDish?: Maybe<MehfilLangarDishType>;
-  createSecurityMehfilLangarLocation?: Maybe<MehfilLangarLocationType>;
+  createSecurityEvent?: Maybe<SecurityEventType>;
+  createSecurityEventDuty?: Maybe<SecurityEventDutyType>;
+  createSecurityEventLangarDish?: Maybe<SecurityEventLangarDishType>;
+  createSecurityEventLangarLocation?: Maybe<SecurityEventLangarLocationType>;
   createSecurityServerChannel?: Maybe<SecurityServerChannelType>;
   createSecurityServerProfile?: Maybe<SecurityServerProfileType>;
   createSecurityUserGroup?: Maybe<SecurityUserGroup>;
@@ -1093,8 +1036,6 @@ export type Mutation = {
   removeItemCategory?: Maybe<Scalars['Int']['output']>;
   removeJob?: Maybe<Scalars['Int']['output']>;
   removeLocation?: Maybe<Scalars['Int']['output']>;
-  removeMehfil?: Maybe<Scalars['Int']['output']>;
-  removeMehfilKarkun?: Maybe<Scalars['Int']['output']>;
   removeOrgLocationFeatureUser?: Maybe<Scalars['Boolean']['output']>;
   removeOrgLocationObserver?: Maybe<OrgLocationType>;
   removePhysicalStoreAccessGroup?: Maybe<Scalars['Boolean']['output']>;
@@ -1107,10 +1048,12 @@ export type Mutation = {
   removePurchasingPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   removePurchasingPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   removePurchasingVendor?: Maybe<Scalars['Boolean']['output']>;
+  removeSecurityEvent?: Maybe<Scalars['Int']['output']>;
+  removeSecurityEventDuty?: Maybe<Scalars['Int']['output']>;
+  removeSecurityEventKarkun?: Maybe<Scalars['Int']['output']>;
+  removeSecurityEventLangarDish?: Maybe<Scalars['Int']['output']>;
+  removeSecurityEventLangarLocation?: Maybe<Scalars['Int']['output']>;
   removeSecurityGroupMember?: Maybe<Scalars['Boolean']['output']>;
-  removeSecurityMehfilDuty?: Maybe<Scalars['Int']['output']>;
-  removeSecurityMehfilLangarDish?: Maybe<Scalars['Int']['output']>;
-  removeSecurityMehfilLangarLocation?: Maybe<Scalars['Int']['output']>;
   removeSecurityPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   removeSecurityPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   removeSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
@@ -1142,7 +1085,7 @@ export type Mutation = {
   setCommitteeMemberRole?: Maybe<CommitteeType>;
   setDutyAttendance?: Maybe<Scalars['Boolean']['output']>;
   setDutyDayOverride?: Maybe<Scalars['Boolean']['output']>;
-  setDutyDetail?: Maybe<Array<Maybe<MehfilKarkunType>>>;
+  setDutyDetail?: Maybe<Array<Maybe<SecurityEventKarkunType>>>;
   setDutyShiftTeam?: Maybe<Scalars['Boolean']['output']>;
   setHrKarkunEmploymentInfo?: Maybe<PersonType>;
   setHrKarkunProfileImage?: Maybe<PersonType>;
@@ -1188,7 +1131,6 @@ export type Mutation = {
   updateLastActiveTime?: Maybe<Scalars['Int']['output']>;
   updateLocation?: Maybe<Location>;
   updateLoginTime?: Maybe<Scalars['Int']['output']>;
-  updateMehfil?: Maybe<MehfilType>;
   updateMehfilDuty?: Maybe<MehfilDutyType>;
   updateOrgLocation?: Maybe<OrgLocationType>;
   updatePeopleTag?: Maybe<PeopleTagType>;
@@ -1205,9 +1147,10 @@ export type Mutation = {
   updatePurchasingUserGroup?: Maybe<PurchasingUserGroup>;
   updatePurchasingVendor?: Maybe<PurchasingVendor>;
   updateSalary?: Maybe<SalaryType>;
-  updateSecurityMehfilDuty?: Maybe<MehfilDutyType>;
-  updateSecurityMehfilLangarDish?: Maybe<MehfilLangarDishType>;
-  updateSecurityMehfilLangarLocation?: Maybe<MehfilLangarLocationType>;
+  updateSecurityEvent?: Maybe<SecurityEventType>;
+  updateSecurityEventDuty?: Maybe<SecurityEventDutyType>;
+  updateSecurityEventLangarDish?: Maybe<SecurityEventLangarDishType>;
+  updateSecurityEventLangarLocation?: Maybe<SecurityEventLangarLocationType>;
   updateSecurityServerChannel?: Maybe<SecurityServerChannelType>;
   updateSecurityServerProfile?: Maybe<SecurityServerProfileType>;
   updateSecurityUserGroup?: Maybe<SecurityUserGroup>;
@@ -1364,13 +1307,6 @@ export type MutationAddIssuanceFormAttachmentArgs = {
 };
 
 
-export type MutationAddMehfilKarkunArgs = {
-  dutyId: Scalars['String']['input'];
-  karkunId: Scalars['String']['input'];
-  mehfilId: Scalars['String']['input'];
-};
-
-
 export type MutationAddOrgLocationFeatureUserArgs = {
   featureKey: Scalars['String']['input'];
   karkunId: Scalars['String']['input'];
@@ -1421,6 +1357,13 @@ export type MutationAddPurchasingPermissionGroupArgs = {
 export type MutationAddPurchasingPermissionUserArgs = {
   karkunId: Scalars['String']['input'];
   permissionKey: Scalars['String']['input'];
+};
+
+
+export type MutationAddSecurityEventKarkunArgs = {
+  dutyId: Scalars['String']['input'];
+  eventId: Scalars['String']['input'];
+  karkunId: Scalars['String']['input'];
 };
 
 
@@ -1671,12 +1614,6 @@ export type MutationCreateLocationArgs = {
 };
 
 
-export type MutationCreateMehfilArgs = {
-  mehfilDate: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-};
-
-
 export type MutationCreateMehfilDutyArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -1837,19 +1774,25 @@ export type MutationCreateSalariesArgs = {
 };
 
 
-export type MutationCreateSecurityMehfilDutyArgs = {
+export type MutationCreateSecurityEventArgs = {
+  eventDate: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationCreateSecurityEventDutyArgs = {
   name: Scalars['String']['input'];
   urduName: Scalars['String']['input'];
 };
 
 
-export type MutationCreateSecurityMehfilLangarDishArgs = {
+export type MutationCreateSecurityEventLangarDishArgs = {
   name: Scalars['String']['input'];
   urduName: Scalars['String']['input'];
 };
 
 
-export type MutationCreateSecurityMehfilLangarLocationArgs = {
+export type MutationCreateSecurityEventLangarLocationArgs = {
   name: Scalars['String']['input'];
   urduName: Scalars['String']['input'];
 };
@@ -2339,16 +2282,6 @@ export type MutationRemoveLocationArgs = {
 };
 
 
-export type MutationRemoveMehfilArgs = {
-  _id: Scalars['String']['input'];
-};
-
-
-export type MutationRemoveMehfilKarkunArgs = {
-  _id: Scalars['String']['input'];
-};
-
-
 export type MutationRemoveOrgLocationFeatureUserArgs = {
   featureKey: Scalars['String']['input'];
   locationId: Scalars['String']['input'];
@@ -2423,24 +2356,34 @@ export type MutationRemovePurchasingVendorArgs = {
 };
 
 
+export type MutationRemoveSecurityEventArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveSecurityEventDutyArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveSecurityEventKarkunArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveSecurityEventLangarDishArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveSecurityEventLangarLocationArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
 export type MutationRemoveSecurityGroupMemberArgs = {
   groupId: Scalars['String']['input'];
   userId: Scalars['String']['input'];
-};
-
-
-export type MutationRemoveSecurityMehfilDutyArgs = {
-  _id: Scalars['String']['input'];
-};
-
-
-export type MutationRemoveSecurityMehfilLangarDishArgs = {
-  _id: Scalars['String']['input'];
-};
-
-
-export type MutationRemoveSecurityMehfilLangarLocationArgs = {
-  _id: Scalars['String']['input'];
 };
 
 
@@ -2948,13 +2891,6 @@ export type MutationUpdateLocationArgs = {
 };
 
 
-export type MutationUpdateMehfilArgs = {
-  _id: Scalars['String']['input'];
-  mehfilDate?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-};
-
-
 export type MutationUpdateMehfilDutyArgs = {
   _id: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
@@ -3120,21 +3056,28 @@ export type MutationUpdateSalaryArgs = {
 };
 
 
-export type MutationUpdateSecurityMehfilDutyArgs = {
+export type MutationUpdateSecurityEventArgs = {
+  _id: Scalars['String']['input'];
+  eventDate?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateSecurityEventDutyArgs = {
   id: Scalars['String']['input'];
   name: Scalars['String']['input'];
   urduName: Scalars['String']['input'];
 };
 
 
-export type MutationUpdateSecurityMehfilLangarDishArgs = {
+export type MutationUpdateSecurityEventLangarDishArgs = {
   id: Scalars['String']['input'];
   name: Scalars['String']['input'];
   urduName: Scalars['String']['input'];
 };
 
 
-export type MutationUpdateSecurityMehfilLangarLocationArgs = {
+export type MutationUpdateSecurityEventLangarLocationArgs = {
   id: Scalars['String']['input'];
   name: Scalars['String']['input'];
   urduName: Scalars['String']['input'];
@@ -4481,14 +4424,14 @@ export enum Permission {
   PurchasingViewReports = 'PURCHASING_VIEW_REPORTS',
   PurchasingViewRequisitions = 'PURCHASING_VIEW_REQUISITIONS',
   PurchasingViewVendors = 'PURCHASING_VIEW_VENDORS',
-  SecurityManageMehfils = 'SECURITY_MANAGE_MEHFILS',
+  SecurityManageEvents = 'SECURITY_MANAGE_EVENTS',
   SecurityManagePermissions = 'SECURITY_MANAGE_PERMISSIONS',
   SecurityManageSecurityServerData = 'SECURITY_MANAGE_SECURITY_SERVER_DATA',
   SecurityManageSetupData = 'SECURITY_MANAGE_SETUP_DATA',
   SecurityManageVisitors = 'SECURITY_MANAGE_VISITORS',
   SecuritySyncSecurityServerData = 'SECURITY_SYNC_SECURITY_SERVER_DATA',
   SecurityViewAuditLogs = 'SECURITY_VIEW_AUDIT_LOGS',
-  SecurityViewMehfils = 'SECURITY_VIEW_MEHFILS',
+  SecurityViewEvents = 'SECURITY_VIEW_EVENTS',
   SecurityViewSecurityServerData = 'SECURITY_VIEW_SECURITY_SERVER_DATA',
   SecurityViewVisitors = 'SECURITY_VIEW_VISITORS'
 }
@@ -5265,12 +5208,12 @@ export type Query = {
   allJobs?: Maybe<Array<Maybe<JobType>>>;
   allMSDuties?: Maybe<Array<Maybe<DutyType>>>;
   allMehfilDuties?: Maybe<Array<Maybe<MehfilDutyType>>>;
-  allMehfils?: Maybe<Array<Maybe<MehfilType>>>;
   allOrgLocations?: Maybe<Array<Maybe<OrgLocationType>>>;
   allPeopleTags?: Maybe<Array<Maybe<PeopleTagType>>>;
-  allSecurityMehfilDuties?: Maybe<Array<Maybe<MehfilDutyType>>>;
-  allSecurityMehfilLangarDishes?: Maybe<Array<Maybe<MehfilLangarDishType>>>;
-  allSecurityMehfilLangarLocations?: Maybe<Array<Maybe<MehfilLangarLocationType>>>;
+  allSecurityEventDuties?: Maybe<Array<Maybe<SecurityEventDutyType>>>;
+  allSecurityEventLangarDishes?: Maybe<Array<Maybe<SecurityEventLangarDishType>>>;
+  allSecurityEventLangarLocations?: Maybe<Array<Maybe<SecurityEventLangarLocationType>>>;
+  allSecurityEvents?: Maybe<Array<Maybe<SecurityEventType>>>;
   allSecurityServerChannels?: Maybe<Array<Maybe<SecurityServerChannelType>>>;
   allTeams?: Maybe<Array<Maybe<TeamType>>>;
   cityById?: Maybe<CityType>;
@@ -5311,10 +5254,6 @@ export type Query = {
   locationsByPhysicalStoreId?: Maybe<Array<Maybe<Location>>>;
   managedPhysicalStoreById?: Maybe<PhysicalStore>;
   managedPhysicalStores?: Maybe<Array<Maybe<PhysicalStore>>>;
-  mehfilById?: Maybe<MehfilType>;
-  mehfilKarkunByBarcodeId?: Maybe<MehfilKarkunType>;
-  mehfilKarkunsByIds?: Maybe<Array<Maybe<MehfilKarkunType>>>;
-  mehfilKarkunsByMehfilId?: Maybe<Array<Maybe<MehfilKarkunType>>>;
   myCommitteeLocations?: Maybe<Array<Maybe<WorkspaceLocationType>>>;
   myCommittees?: Maybe<Array<Maybe<WorkspaceCommitteeType>>>;
   myDuties: Array<Maybe<DaMyDutyType>>;
@@ -5366,8 +5305,8 @@ export type Query = {
   pagedSalariesByKarkun?: Maybe<PagedSalaryType>;
   pagedScheduledJobs?: Maybe<PagedScheduledJobsType>;
   pagedSecurityAuditLogs?: Maybe<PagedAuditLogType>;
+  pagedSecurityEventPeople?: Maybe<PagedPickerPersonType>;
   pagedSecurityLogs?: Maybe<PagedSecurityLogType>;
-  pagedSecurityMehfilPeople?: Maybe<PagedPickerPersonType>;
   pagedSecurityPermissionKarkuns?: Maybe<PagedPickerPersonType>;
   pagedSecurityServerAlertGroups?: Maybe<PagedSecurityServerAlertGroupType>;
   pagedSecurityServerAlerts?: Maybe<PagedSecurityServerAlertType>;
@@ -5422,11 +5361,15 @@ export type Query = {
   referenceStockItems?: Maybe<Array<Maybe<ReferenceStockItemType>>>;
   salariesByIds?: Maybe<Array<Maybe<SalaryType>>>;
   salariesByMonth?: Maybe<Array<Maybe<SalaryType>>>;
+  securityEventById?: Maybe<SecurityEventType>;
+  securityEventDutyById?: Maybe<SecurityEventDutyType>;
+  securityEventKarkunByBarcodeId?: Maybe<SecurityEventKarkunType>;
+  securityEventKarkunsByEventId?: Maybe<Array<Maybe<SecurityEventKarkunType>>>;
+  securityEventKarkunsByIds?: Maybe<Array<Maybe<SecurityEventKarkunType>>>;
+  securityEventLangarDishById?: Maybe<SecurityEventLangarDishType>;
+  securityEventLangarLocationById?: Maybe<SecurityEventLangarLocationType>;
   securityFaceVectorFromImage?: Maybe<FaceVectorResultType>;
   securityLogUsers: Array<SecurityLogUserOption>;
-  securityMehfilDutyById?: Maybe<MehfilDutyType>;
-  securityMehfilLangarDishById?: Maybe<MehfilLangarDishType>;
-  securityMehfilLangarLocationById?: Maybe<MehfilLangarLocationType>;
   securityPermissionAssignments?: Maybe<Array<Maybe<SecurityPermissionGroup>>>;
   securityServerAlertById?: Maybe<SecurityServerAlertType>;
   securityServerAlertSyncStatus?: Maybe<SecurityServerAlertSyncStatusType>;
@@ -5508,8 +5451,8 @@ export type Query = {
 };
 
 
-export type QueryAllSecurityMehfilDutiesArgs = {
-  mehfilId?: InputMaybe<Scalars['String']['input']>;
+export type QueryAllSecurityEventDutiesArgs = {
+  eventId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -5663,27 +5606,6 @@ export type QueryLocationsByPhysicalStoreIdArgs = {
 
 export type QueryManagedPhysicalStoreByIdArgs = {
   id: Scalars['String']['input'];
-};
-
-
-export type QueryMehfilByIdArgs = {
-  _id: Scalars['String']['input'];
-};
-
-
-export type QueryMehfilKarkunByBarcodeIdArgs = {
-  barcode: Scalars['String']['input'];
-};
-
-
-export type QueryMehfilKarkunsByIdsArgs = {
-  ids: Scalars['String']['input'];
-};
-
-
-export type QueryMehfilKarkunsByMehfilIdArgs = {
-  dutyId?: InputMaybe<Scalars['String']['input']>;
-  mehfilId: Scalars['String']['input'];
 };
 
 
@@ -6021,17 +5943,17 @@ export type QueryPagedSecurityAuditLogsArgs = {
 };
 
 
-export type QueryPagedSecurityLogsArgs = {
-  filter?: InputMaybe<SecurityLogFilter>;
-};
-
-
-export type QueryPagedSecurityMehfilPeopleArgs = {
+export type QueryPagedSecurityEventPeopleArgs = {
   cnicNumber?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;
   pageSize?: InputMaybe<Scalars['String']['input']>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedSecurityLogsArgs = {
+  filter?: InputMaybe<SecurityLogFilter>;
 };
 
 
@@ -6316,6 +6238,42 @@ export type QuerySalariesByMonthArgs = {
 };
 
 
+export type QuerySecurityEventByIdArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type QuerySecurityEventDutyByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QuerySecurityEventKarkunByBarcodeIdArgs = {
+  barcode: Scalars['String']['input'];
+};
+
+
+export type QuerySecurityEventKarkunsByEventIdArgs = {
+  dutyId?: InputMaybe<Scalars['String']['input']>;
+  eventId: Scalars['String']['input'];
+};
+
+
+export type QuerySecurityEventKarkunsByIdsArgs = {
+  ids: Scalars['String']['input'];
+};
+
+
+export type QuerySecurityEventLangarDishByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QuerySecurityEventLangarLocationByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type QuerySecurityFaceVectorFromImageArgs = {
   imageData: Scalars['String']['input'];
 };
@@ -6324,21 +6282,6 @@ export type QuerySecurityFaceVectorFromImageArgs = {
 export type QuerySecurityLogUsersArgs = {
   ids?: InputMaybe<Array<Scalars['String']['input']>>;
   search?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerySecurityMehfilDutyByIdArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type QuerySecurityMehfilLangarDishByIdArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type QuerySecurityMehfilLangarLocationByIdArgs = {
-  id: Scalars['String']['input'];
 };
 
 
@@ -6890,6 +6833,73 @@ export type ScheduledJobsFilterType = {
   pageIndex?: InputMaybe<Scalars['String']['input']>;
   pageSize?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SecurityEventDutyType = {
+  __typename?: 'SecurityEventDutyType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  eventUsedCount?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  overallUsedCount?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+  urduName?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityEventKarkunType = {
+  __typename?: 'SecurityEventKarkunType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  duty?: Maybe<SecurityEventDutyType>;
+  dutyCardBarcodeId?: Maybe<Scalars['String']['output']>;
+  dutyDetail?: Maybe<Scalars['String']['output']>;
+  dutyId?: Maybe<Scalars['String']['output']>;
+  event?: Maybe<SecurityEventType>;
+  eventId?: Maybe<Scalars['String']['output']>;
+  karkun?: Maybe<PersonType>;
+  karkunId?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityEventLangarDishType = {
+  __typename?: 'SecurityEventLangarDishType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  overallUsedCount?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+  urduName?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityEventLangarLocationType = {
+  __typename?: 'SecurityEventLangarLocationType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  overallUsedCount?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+  urduName?: Maybe<Scalars['String']['output']>;
+};
+
+export type SecurityEventType = {
+  __typename?: 'SecurityEventType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  eventDate?: Maybe<Scalars['String']['output']>;
+  eventKarkuns?: Maybe<SecurityEventKarkunType>;
+  karkunCount?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
 export type SecurityGroupMember = {

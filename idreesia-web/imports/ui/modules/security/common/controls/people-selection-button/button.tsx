@@ -3,7 +3,7 @@ import { Button } from 'antd';
 
 import { PersonPickerDrawer, type PickerPerson } from '/imports/ui/modules/helpers/controls';
 
-import { securityMehfilPeopleSource } from './paged-security-mehfil-people';
+import { securityEventPeopleSource } from './paged-security-event-people';
 
 interface Props {
   icon?: React.ReactNode;
@@ -13,9 +13,9 @@ interface Props {
 }
 
 /**
- * A button that opens a person picker drawer of anyone who can be put on a
- * mehfil's duty; each person picked is passed to onSelection, and the drawer
- * stays open to pick more.
+ * A button that opens a person picker drawer of the karkuns (from any city)
+ * who can be put on an event's duty; each person picked is passed to
+ * onSelection, and the drawer stays open to pick more.
  */
 const PeopleSelectionButton = ({
   icon,
@@ -31,9 +31,9 @@ const PeopleSelectionButton = ({
         title="Select Karkuns"
         open={open}
         onClose={() => setOpen(false)}
-        source={securityMehfilPeopleSource}
+        source={securityEventPeopleSource}
         showParentName={false}
-        itemsLabel="people"
+        itemsLabel="karkuns"
         onPick={(person: PickerPerson) => onSelection?.({ _id: person._id })}
       />
       <Button onClick={() => setOpen(true)} disabled={disabled} icon={icon}>

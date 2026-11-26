@@ -48,11 +48,11 @@ export const HrPaths = {
 } as const;
 
 export const SecurityPaths = {
-  mehfils: `${ModulePaths.security}/mehfils`,
-  mehfilDuties: `${ModulePaths.security}/mehfil-duties`,
-  mehfilLangarDishes: `${ModulePaths.security}/mehfil-langar-dishes`,
-  mehfilLangarLocations: `${ModulePaths.security}/mehfil-langar-locations`,
-  mehfilCardVerification: `${ModulePaths.security}/mehfil-card-verification`,
+  events: `${ModulePaths.security}/events`,
+  eventDuties: `${ModulePaths.security}/event-duties`,
+  eventLangarDishes: `${ModulePaths.security}/event-langar-dishes`,
+  eventLangarLocations: `${ModulePaths.security}/event-langar-locations`,
+  eventCardVerification: `${ModulePaths.security}/event-card-verification`,
   visitorCardVerification: `${ModulePaths.security}/visitor-card-verification`,
   visitorStayReport: `${ModulePaths.security}/visitor-stay-report`,
   visitorRegistrationList: `${ModulePaths.security}/visitor-registration/list`,

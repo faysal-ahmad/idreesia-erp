@@ -1,7 +1,7 @@
-export { useMehfil } from './use-mehfil';
-export { useMehfilIdParam } from './use-mehfil-id-param';
+export { useEvent } from './use-event';
+export { useEventIdParam } from './use-event-id-param';
 export {
-  useAllSecurityMehfilDuties,
-  type SecurityMehfilDuty,
-} from './use-all-security-mehfil-duties';
-export { useMehfilDuty } from './use-mehfil-duty';
+  useAllSecurityEventDuties,
+  type SecurityEventDuty,
+} from './use-all-security-event-duties';
+export { useEventDuty } from './use-event-duty';

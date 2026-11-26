@@ -13,8 +13,8 @@ Conventions for building list pages and edit/new form pages in `idreesia-web`, s
 | List page wiring | `idreesia-web/imports/ui/modules/security/visitor-registeration/list/list.tsx` |
 | Stay report list (same list guidelines) | `idreesia-web/imports/ui/modules/security/visitor-stay-report/list.tsx` |
 | Simple setup list + modal create | `idreesia-web/imports/ui/modules/security/setup/mehfil-duties/list.tsx` |
-| Entity list + modal create + scroll.y | `idreesia-web/imports/ui/modules/security/mehfils/list.tsx` |
-| Nested list (selection + duty filter) | `idreesia-web/imports/ui/modules/security/mehfil-karkuns/list.tsx` |
+| Entity list + modal create + scroll.y | `idreesia-web/imports/ui/modules/security/events/list.tsx` |
+| Nested list (selection + duty filter) | `idreesia-web/imports/ui/modules/security/event-karkuns/list.tsx` |
 | Shared list table | `idreesia-web/imports/ui/modules/common/visitors/list.tsx` |
 | Shared list filter + chips | `idreesia-web/imports/ui/modules/common/visitors/list-filter.tsx` |
 | Edit shell (tabs, breadcrumbs, loading) | `idreesia-web/imports/ui/modules/security/visitor-registeration/edit/edit-form.tsx` |
@@ -328,7 +328,7 @@ Reuse these so lists and forms feel like one system:
 Module sidebars should derive selection from the current pathname (not only from click handlers):
 
 - `selectedKeys` from a path → menu-key map (most specific routes first)
-- Keep all ancestor groups in `openKeys` when a nested child is active (e.g. Mehfil Management → Setup → Mehfil Duties); still allow manual expand/collapse
+- Keep all ancestor groups in `openKeys` when a nested child is active (e.g. Event Management → Setup → Event Duties); still allow manual expand/collapse
 - When updating `openKeys`, only call `setOpenKeys` if the key **set** actually changed (avoid Menu "Maximum update depth" loops from always returning a new array)
 - Sync `activeSubModuleName` from the URL so refresh / deep links keep the sidebar highlight; stabilize that setter with `useCallback` if it is a `setState` dependency
 - Nested routes (edit/new/upload/karkuns) should highlight the parent list item, not a blank selection
@@ -347,7 +347,7 @@ Reference: `idreesia-web/imports/ui/modules/security/sidebar.tsx`
 
 ## GraphQL / schema pitfalls (when building creates)
 
-- GraphQL `String` date inputs that map to SimpleSchema `Date` fields must be converted with `new Date(...)` in the **resolver** before `insertAsync` / `updateAsync` (e.g. mehfils `mehfilDate`)
+- GraphQL `String` date inputs that map to SimpleSchema `Date` fields must be converted with `new Date(...)` in the **resolver** before `insertAsync` / `updateAsync` (e.g. security events `eventDate`)
 - Prefer returning timestamp strings from Date fields when the UI already does `dayjs(Number(value))`
 
 ---

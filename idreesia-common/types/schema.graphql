@@ -120,8 +120,8 @@ enum Permission {
   SECURITY_MANAGE_PERMISSIONS
   SECURITY_VIEW_VISITORS
   SECURITY_MANAGE_VISITORS
-  SECURITY_VIEW_MEHFILS
-  SECURITY_MANAGE_MEHFILS
+  SECURITY_VIEW_EVENTS
+  SECURITY_MANAGE_EVENTS
   SECURITY_VIEW_SECURITY_SERVER_DATA
   SECURITY_MANAGE_SECURITY_SERVER_DATA
   SECURITY_SYNC_SECURITY_SERVER_DATA
@@ -4229,12 +4229,12 @@ extend type Query {
   @checkPermissions(permissions: [SECURITY_VIEW_AUDIT_LOGS])
 }
 
-type MehfilDutyType {	
+type SecurityEventDutyType {	
   _id: String	
   name: String	
   urduName: String	
   overallUsedCount: Int	
-  mehfilUsedCount: Int	
+  eventUsedCount: Int	
 
   createdAt: String	
   createdBy: String	
@@ -4243,34 +4243,34 @@ type MehfilDutyType {
 }	
 
 extend type Query {	
-  allSecurityMehfilDuties(mehfilId: String): [MehfilDutyType]	
-    @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS, SECURITY_MANAGE_SETUP_DATA])	
-  securityMehfilDutyById(id: String!): MehfilDutyType	
-    @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS, SECURITY_MANAGE_SETUP_DATA])	
+  allSecurityEventDuties(eventId: String): [SecurityEventDutyType]	
+    @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS, SECURITY_MANAGE_SETUP_DATA])	
+  securityEventDutyById(id: String!): SecurityEventDutyType	
+    @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS, SECURITY_MANAGE_SETUP_DATA])	
 }	
 
 extend type Mutation {	
-  createSecurityMehfilDuty(name: String!, urduName: String!): MehfilDutyType	
+  createSecurityEventDuty(name: String!, urduName: String!): SecurityEventDutyType	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  updateSecurityMehfilDuty(id: String!, name: String!, urduName: String!): MehfilDutyType	
+  updateSecurityEventDuty(id: String!, name: String!, urduName: String!): SecurityEventDutyType	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  removeSecurityMehfilDuty(_id: String!): Int	
+  removeSecurityEventDuty(_id: String!): Int	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 }
 
-type MehfilKarkunType {
+type SecurityEventKarkunType {
   _id: String
-  mehfilId: String
+  eventId: String
   karkunId: String
   dutyId: String
   dutyDetail: String
   dutyCardBarcodeId: String
 
   karkun: PersonType
-  mehfil: MehfilType
-  duty: MehfilDutyType
+  event: SecurityEventType
+  duty: SecurityEventDutyType
 
   createdAt: String
   createdBy: String
@@ -4279,40 +4279,40 @@ type MehfilKarkunType {
 }
 
 extend type Query {
-  mehfilKarkunsByMehfilId(mehfilId: String!, dutyId: String): [MehfilKarkunType]
-  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+  securityEventKarkunsByEventId(eventId: String!, dutyId: String): [SecurityEventKarkunType]
+  @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS])
 
-  mehfilKarkunsByIds(ids: String!): [MehfilKarkunType]
-  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+  securityEventKarkunsByIds(ids: String!): [SecurityEventKarkunType]
+  @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS])
 
-  mehfilKarkunByBarcodeId(barcode: String!): MehfilKarkunType
-  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+  securityEventKarkunByBarcodeId(barcode: String!): SecurityEventKarkunType
+  @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS])
 
-  # People search behind the "Add Karkuns" picker on the mehfil karkuns page.
+  # People search behind the "Add Karkuns" picker on the event karkuns page.
   # Searches visitors, karkuns and employees.
-  # Anyone who can be put on a mehfil's duty.
-  pagedSecurityMehfilPeople(
+  # Anyone who can be put on an event's duty.
+  pagedSecurityEventPeople(
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
   ): PagedPickerPersonType
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  @checkPermissions(permissions: [SECURITY_MANAGE_EVENTS])
 }
 
 extend type Mutation {
-  addMehfilKarkun(mehfilId: String!, karkunId: String!, dutyId: String!): MehfilKarkunType
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  addSecurityEventKarkun(eventId: String!, karkunId: String!, dutyId: String!): SecurityEventKarkunType
+  @checkPermissions(permissions: [SECURITY_MANAGE_EVENTS])
 
-  setDutyDetail(ids: [String]!, dutyDetail: String): [MehfilKarkunType]
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  setDutyDetail(ids: [String]!, dutyDetail: String): [SecurityEventKarkunType]
+  @checkPermissions(permissions: [SECURITY_MANAGE_EVENTS])
 
-  removeMehfilKarkun(_id: String!): Int
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  removeSecurityEventKarkun(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_MANAGE_EVENTS])
 }
 
-type MehfilLangarDishType {	
+type SecurityEventLangarDishType {	
   _id: String	
   name: String	
   urduName: String	
@@ -4325,24 +4325,24 @@ type MehfilLangarDishType {
 }	
 
 extend type Query {	
-  allSecurityMehfilLangarDishes: [MehfilLangarDishType]	
+  allSecurityEventLangarDishes: [SecurityEventLangarDishType]	
     @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
-  securityMehfilLangarDishById(id: String!): MehfilLangarDishType	
+  securityEventLangarDishById(id: String!): SecurityEventLangarDishType	
     @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
 }	
 
 extend type Mutation {	
-  createSecurityMehfilLangarDish(name: String!, urduName: String!): MehfilLangarDishType	
+  createSecurityEventLangarDish(name: String!, urduName: String!): SecurityEventLangarDishType	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  updateSecurityMehfilLangarDish(id: String!, name: String!, urduName: String!): MehfilLangarDishType	
+  updateSecurityEventLangarDish(id: String!, name: String!, urduName: String!): SecurityEventLangarDishType	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  removeSecurityMehfilLangarDish(_id: String!): Int	
+  removeSecurityEventLangarDish(_id: String!): Int	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 }
 
-type MehfilLangarLocationType {	
+type SecurityEventLangarLocationType {	
   _id: String	
   name: String	
   urduName: String	
@@ -4355,30 +4355,30 @@ type MehfilLangarLocationType {
 }	
 
 extend type Query {	
-  allSecurityMehfilLangarLocations: [MehfilLangarLocationType]	
+  allSecurityEventLangarLocations: [SecurityEventLangarLocationType]	
     @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
-  securityMehfilLangarLocationById(id: String!): MehfilLangarLocationType	
+  securityEventLangarLocationById(id: String!): SecurityEventLangarLocationType	
     @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
 }	
 
 extend type Mutation {	
-  createSecurityMehfilLangarLocation(name: String!, urduName: String!): MehfilLangarLocationType	
+  createSecurityEventLangarLocation(name: String!, urduName: String!): SecurityEventLangarLocationType	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  updateSecurityMehfilLangarLocation(id: String!, name: String!, urduName: String!): MehfilLangarLocationType	
+  updateSecurityEventLangarLocation(id: String!, name: String!, urduName: String!): SecurityEventLangarLocationType	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  removeSecurityMehfilLangarLocation(_id: String!): Int	
+  removeSecurityEventLangarLocation(_id: String!): Int	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 }
 
-type MehfilType {
+type SecurityEventType {
   _id: String
   name: String
-  mehfilDate: String
+  eventDate: String
 
   karkunCount: Int
-  mehfilKarkuns: MehfilKarkunType
+  eventKarkuns: SecurityEventKarkunType
 
   createdAt: String
   createdBy: String
@@ -4387,21 +4387,21 @@ type MehfilType {
 }
 
 extend type Query {
-  allMehfils: [MehfilType]
-  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+  allSecurityEvents: [SecurityEventType]
+  @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS])
 
-  mehfilById(_id: String!): MehfilType
-  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+  securityEventById(_id: String!): SecurityEventType
+  @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS])
 }
 
 extend type Mutation {
-  createMehfil(name: String!, mehfilDate: String!): MehfilType
+  createSecurityEvent(name: String!, eventDate: String!): SecurityEventType
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  updateMehfil(_id: String!, name: String!, mehfilDate: String): MehfilType
+  updateSecurityEvent(_id: String!, name: String!, eventDate: String): SecurityEventType
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  removeMehfil(_id: String!): Int
+  removeSecurityEvent(_id: String!): Int
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 }
 

@@ -157,16 +157,16 @@ export const SecurityPermissionsData: PermissionNode = {
   key: 'module-security',
   children: [
     {
-      title: 'Mehfils',
-      key: 'module-security-mehfils',
+      title: 'Events',
+      key: 'module-security-events',
       children: [
         {
-          title: 'View Mehfils',
-          key: PermissionConstants.SECURITY_VIEW_MEHFILS,
+          title: 'View Events',
+          key: PermissionConstants.SECURITY_VIEW_EVENTS,
         },
         {
-          title: 'Manage Mehfils',
-          key: PermissionConstants.SECURITY_MANAGE_MEHFILS,
+          title: 'Manage Events',
+          key: PermissionConstants.SECURITY_MANAGE_EVENTS,
         },
       ],
     },

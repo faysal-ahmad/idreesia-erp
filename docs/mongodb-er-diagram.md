@@ -34,7 +34,7 @@ erDiagram
   PEOPLE ||--o{ ATTENDANCES : "karkunId"
   PEOPLE ||--o{ SALARIES : "karkunId"
   PEOPLE ||--o{ VISITOR_STAYS : "visitorId"
-  PEOPLE ||--o{ MEHFIL_KARKUNS : "karkunId"
+  PEOPLE ||--o{ SECURITY_EVENT_KARKUNS : "karkunId"
 
   PHYSICAL_STORES ||--o{ STOCK_ITEMS : "physicalStoreId"
   PHYSICAL_STORES ||--o{ PURCHASE_FORMS : "physicalStoreId"
@@ -43,8 +43,8 @@ erDiagram
   USERS ||--o{ PHYSICAL_STORE_ACCESS : "subjectId (user)"
   USER_GROUPS ||--o{ PHYSICAL_STORE_ACCESS : "subjectId (group)"
 
-  MEHFILS ||--o{ MEHFIL_KARKUNS : "mehfilId"
-  MEHFILS ||--o{ MEHFIL_LANGAR_DETAILS : "mehfilId"
+  SECURITY_EVENTS ||--o{ SECURITY_EVENT_KARKUNS : "eventId"
+  SECURITY_EVENTS ||--o{ SECURITY_EVENT_LANGAR_DETAILS : "eventId"
 
   USERS {
     string _id PK
@@ -86,7 +86,7 @@ erDiagram
     string subjectId FK
     string_array permissions "stores-* values held on this store"
   }
-  MEHFILS {
+  SECURITY_EVENTS {
     string _id PK
     string name
   }
@@ -438,46 +438,46 @@ erDiagram
 
 ```mermaid
 erDiagram
-  MEHFILS ||--o{ MEHFIL_KARKUNS : "mehfilId"
-  MEHFILS ||--o{ MEHFIL_LANGAR_DETAILS : "mehfilId"
-  MEHFIL_DUTIES ||--o{ MEHFIL_KARKUNS : "dutyId"
-  MEHFIL_LANGAR_DISHES ||--o{ MEHFIL_LANGAR_DETAILS : "langarDishId"
-  MEHFIL_LANGAR_LOCATIONS ||--o{ MEHFIL_LANGAR_DETAILS : "langarLocationId"
-  PEOPLE ||--o{ MEHFIL_KARKUNS : "karkunId"
+  SECURITY_EVENTS ||--o{ SECURITY_EVENT_KARKUNS : "eventId"
+  SECURITY_EVENTS ||--o{ SECURITY_EVENT_LANGAR_DETAILS : "eventId"
+  SECURITY_EVENT_DUTIES ||--o{ SECURITY_EVENT_KARKUNS : "dutyId"
+  SECURITY_EVENT_LANGAR_DISHES ||--o{ SECURITY_EVENT_LANGAR_DETAILS : "langarDishId"
+  SECURITY_EVENT_LANGAR_LOCATIONS ||--o{ SECURITY_EVENT_LANGAR_DETAILS : "langarLocationId"
+  PEOPLE ||--o{ SECURITY_EVENT_KARKUNS : "karkunId"
   PEOPLE ||--o{ VISITOR_STAYS : "visitorId"
   DUTIES ||--o{ VISITOR_STAYS : "dutyId"
   DUTY_SHIFTS ||--o{ VISITOR_STAYS : "shiftId"
 
-  MEHFILS {
+  SECURITY_EVENTS {
     string _id PK
     string name
-    date mehfilDate
+    date eventDate
   }
-  MEHFIL_DUTIES {
+  SECURITY_EVENT_DUTIES {
     string _id PK
     string name
     string urduName
   }
-  MEHFIL_KARKUNS {
+  SECURITY_EVENT_KARKUNS {
     string _id PK
-    string mehfilId FK
+    string eventId FK
     string karkunId FK
     string dutyId FK
     string dutyCardBarcodeId
   }
-  MEHFIL_LANGAR_DISHES {
+  SECURITY_EVENT_LANGAR_DISHES {
     string _id PK
     string name
     string urduName
   }
-  MEHFIL_LANGAR_LOCATIONS {
+  SECURITY_EVENT_LANGAR_LOCATIONS {
     string _id PK
     string name
     string urduName
   }
-  MEHFIL_LANGAR_DETAILS {
+  SECURITY_EVENT_LANGAR_DETAILS {
     string _id PK
-    string mehfilId FK
+    string eventId FK
     string langarDishId FK
     string langarLocationId FK
     number quantity
@@ -523,12 +523,12 @@ erDiagram
 | Inventory | `inventory-purchase-forms` | `PurchaseForms` |
 | Inventory | `inventory-issuance-forms` | `IssuanceForms` |
 | Inventory | `inventory-stock-adjustments` | `StockAdjustments` |
-| Security | `security-mehfils` | `Mehfils` |
-| Security | `security-mehfil-duties` | `MehfilDuties` |
-| Security | `security-mehfil-karkuns` | `MehfilKarkuns` |
-| Security | `security-mehfil-langar-dishes` | `MehfilLangarDishes` |
-| Security | `security-mehfil-langar-locations` | `MehfilLangarLocations` |
-| Security | `security-mehfil-langar-details` | `MehfilLangarDetails` |
+| Security | `security-events` | `SecurityEvents` |
+| Security | `security-event-duties` | `SecurityEventDuties` |
+| Security | `security-event-karkuns` | `SecurityEventKarkuns` |
+| Security | `security-event-langar-dishes` | `SecurityEventLangarDishes` |
+| Security | `security-event-langar-locations` | `SecurityEventLangarLocations` |
+| Security | `security-event-langar-details` | `SecurityEventLangarDetails` |
 | Security | `security-visitor-stays` | `VisitorStays` |
 | Purchasing | `purchasing-vendors` | `PurchasingVendors` |
 | Purchasing | `purchasing-catalog-items` | `PurchasingCatalogItems` |

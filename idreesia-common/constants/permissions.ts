@@ -44,8 +44,8 @@ const Permissions = {
   SECURITY_VIEW_VISITORS: 'security-view-visitors',
   SECURITY_MANAGE_VISITORS: 'security-manage-visitors',
 
-  SECURITY_VIEW_MEHFILS: 'security-view-mehfils',
-  SECURITY_MANAGE_MEHFILS: 'security-manage-mehfils',
+  SECURITY_VIEW_EVENTS: 'security-view-events',
+  SECURITY_MANAGE_EVENTS: 'security-manage-events',
 
   SECURITY_VIEW_SECURITY_SERVER_DATA: 'security-view-security-server-data',
   SECURITY_MANAGE_SECURITY_SERVER_DATA: 'security-manage-security-server-data',

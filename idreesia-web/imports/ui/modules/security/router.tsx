@@ -2,24 +2,24 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import { default as paths } from './submodule-paths';
-import { MehfilCardVerificationForm } from './mehfil-card-verification';
-import { MehfilsEditForm, MehfilsList } from './mehfils';
+import { EventCardVerificationForm } from './event-card-verification';
+import { EventsEditForm, EventsList } from './events';
 import {
-  MehfilDutiesEditForm,
-  MehfilDutiesList,
-} from './setup/mehfil-duties';
+  EventDutiesEditForm,
+  EventDutiesList,
+} from './setup/event-duties';
 import {
-  MehfilLangarDishesEditForm,
-  MehfilLangarDishesList,
-} from './setup/mehfil-langar-dishes';
+  EventLangarDishesEditForm,
+  EventLangarDishesList,
+} from './setup/event-langar-dishes';
 import {
-  MehfilLangarLocationsEditForm,
-  MehfilLangarLocationsList,
-} from './setup/mehfil-langar-locations';
+  EventLangarLocationsEditForm,
+  EventLangarLocationsList,
+} from './setup/event-langar-locations';
 import {
-  MehfilKarkunsPrintCards,
-  MehfilKarkunsPrintList,
-} from './mehfil-karkuns';
+  EventKarkunsPrintCards,
+  EventKarkunsPrintList,
+} from './event-karkuns';
 import {
   VisitorRegistrationScanForm,
   VisitorRegistrationNewForm,
@@ -40,23 +40,23 @@ import {
 
 const Router = () => (
   <Switch>
-    <Route path={paths.mehfilsKarkunPrintCardsPath()} component={MehfilKarkunsPrintCards} />
-    <Route path={paths.mehfilsKarkunPrintListPath()} component={MehfilKarkunsPrintList} />
-    <Route path={paths.mehfilsEditFormPath()} component={MehfilsEditForm} />
-    <Route path={paths.mehfilsPath} component={MehfilsList} />
+    <Route path={paths.eventsKarkunPrintCardsPath()} component={EventKarkunsPrintCards} />
+    <Route path={paths.eventsKarkunPrintListPath()} component={EventKarkunsPrintList} />
+    <Route path={paths.eventsEditFormPath()} component={EventsEditForm} />
+    <Route path={paths.eventsPath} component={EventsList} />
 
-    <Route path={paths.mehfilDutiesEditFormPath()} component={MehfilDutiesEditForm} />
-    <Route path={paths.mehfilDutiesPath} component={MehfilDutiesList} />
+    <Route path={paths.eventDutiesEditFormPath()} component={EventDutiesEditForm} />
+    <Route path={paths.eventDutiesPath} component={EventDutiesList} />
 
-    <Route path={paths.mehfilLangarDishesEditFormPath()} component={MehfilLangarDishesEditForm} />
-    <Route path={paths.mehfilLangarDishesPath} component={MehfilLangarDishesList} />
+    <Route path={paths.eventLangarDishesEditFormPath()} component={EventLangarDishesEditForm} />
+    <Route path={paths.eventLangarDishesPath} component={EventLangarDishesList} />
 
-    <Route path={paths.mehfilLangarLocationsEditFormPath()} component={MehfilLangarLocationsEditForm} />
-    <Route path={paths.mehfilLangarLocationsPath} component={MehfilLangarLocationsList} />
+    <Route path={paths.eventLangarLocationsEditFormPath()} component={EventLangarLocationsEditForm} />
+    <Route path={paths.eventLangarLocationsPath} component={EventLangarLocationsList} />
 
     <Route
-      path={paths.mehfilCardVerificationPath}
-      component={MehfilCardVerificationForm}
+      path={paths.eventCardVerificationPath}
+      component={EventCardVerificationForm}
     />
 
     <Route

@@ -78,16 +78,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkStoreAccess",
     },
   ],
-  "Mutation.addMehfilKarkun": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_MEHFILS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Mutation.addOrgLocationFeatureUser": [
     {
       "args": {
@@ -166,6 +156,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addSecurityEventKarkun": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_EVENTS",
         ],
       },
       "directive": "checkPermissions",
@@ -556,16 +556,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkStoreAccess",
     },
   ],
-  "Mutation.createMehfil": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_SETUP_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Mutation.createMehfilDuty": [
     {
       "args": {
@@ -782,7 +772,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.createSecurityMehfilDuty": [
+  "Mutation.createSecurityEvent": [
     {
       "args": {
         "permissions": [
@@ -792,7 +782,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.createSecurityMehfilLangarDish": [
+  "Mutation.createSecurityEventDuty": [
     {
       "args": {
         "permissions": [
@@ -802,7 +792,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.createSecurityMehfilLangarLocation": [
+  "Mutation.createSecurityEventLangarDish": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createSecurityEventLangarLocation": [
     {
       "args": {
         "permissions": [
@@ -1515,26 +1515,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkStoreAccess",
     },
   ],
-  "Mutation.removeMehfil": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_SETUP_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Mutation.removeMehfilKarkun": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_MEHFILS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Mutation.removeOrgLocationFeatureUser": [
     {
       "args": {
@@ -1659,41 +1639,61 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.removeSecurityEvent": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityEventDuty": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityEventKarkun": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_EVENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityEventLangarDish": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityEventLangarLocation": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.removeSecurityGroupMember": [
     {
       "args": {
         "permissions": [
           "SECURITY_MANAGE_PERMISSIONS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Mutation.removeSecurityMehfilDuty": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_SETUP_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Mutation.removeSecurityMehfilLangarDish": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_SETUP_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Mutation.removeSecurityMehfilLangarLocation": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_SETUP_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -2001,7 +2001,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permissions": [
-          "SECURITY_MANAGE_MEHFILS",
+          "SECURITY_MANAGE_EVENTS",
         ],
       },
       "directive": "checkPermissions",
@@ -2407,16 +2407,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkStoreAccess",
     },
   ],
-  "Mutation.updateMehfil": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_SETUP_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Mutation.updateMehfilDuty": [
     {
       "args": {
@@ -2578,7 +2568,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.updateSecurityMehfilDuty": [
+  "Mutation.updateSecurityEvent": [
     {
       "args": {
         "permissions": [
@@ -2588,7 +2578,7 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.updateSecurityMehfilLangarDish": [
+  "Mutation.updateSecurityEventDuty": [
     {
       "args": {
         "permissions": [
@@ -2598,7 +2588,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.updateSecurityMehfilLangarLocation": [
+  "Mutation.updateSecurityEventLangarDish": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateSecurityEventLangarLocation": [
     {
       "args": {
         "permissions": [
@@ -3825,17 +3825,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.allMehfils": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_VIEW_MEHFILS",
-          "SECURITY_MANAGE_MEHFILS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Query.allOrgLocations": [
     {
       "args": {
@@ -3846,19 +3835,19 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.allSecurityMehfilDuties": [
+  "Query.allSecurityEventDuties": [
     {
       "args": {
         "permissions": [
-          "SECURITY_VIEW_MEHFILS",
-          "SECURITY_MANAGE_MEHFILS",
+          "SECURITY_VIEW_EVENTS",
+          "SECURITY_MANAGE_EVENTS",
           "SECURITY_MANAGE_SETUP_DATA",
         ],
       },
       "directive": "checkPermissions",
     },
   ],
-  "Query.allSecurityMehfilLangarDishes": [
+  "Query.allSecurityEventLangarDishes": [
     {
       "args": {
         "permissions": [
@@ -3868,11 +3857,22 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.allSecurityMehfilLangarLocations": [
+  "Query.allSecurityEventLangarLocations": [
     {
       "args": {
         "permissions": [
           "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.allSecurityEvents": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_EVENTS",
+          "SECURITY_MANAGE_EVENTS",
         ],
       },
       "directive": "checkPermissions",
@@ -4261,50 +4261,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "IN_MANAGE_PHYSICAL_STORES",
           "IN_MANAGE_PHYSICAL_STORE_PERMISSIONS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.mehfilById": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_VIEW_MEHFILS",
-          "SECURITY_MANAGE_MEHFILS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.mehfilKarkunByBarcodeId": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_VIEW_MEHFILS",
-          "SECURITY_MANAGE_MEHFILS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.mehfilKarkunsByIds": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_VIEW_MEHFILS",
-          "SECURITY_MANAGE_MEHFILS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.mehfilKarkunsByMehfilId": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_VIEW_MEHFILS",
-          "SECURITY_MANAGE_MEHFILS",
         ],
       },
       "directive": "checkPermissions",
@@ -4774,21 +4730,21 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.pagedSecurityLogs": [
+  "Query.pagedSecurityEventPeople": [
     {
       "args": {
         "permissions": [
-          "ADMIN_VIEW_SECURITY_LOGS",
+          "SECURITY_MANAGE_EVENTS",
         ],
       },
       "directive": "checkPermissions",
     },
   ],
-  "Query.pagedSecurityMehfilPeople": [
+  "Query.pagedSecurityLogs": [
     {
       "args": {
         "permissions": [
-          "SECURITY_MANAGE_MEHFILS",
+          "ADMIN_VIEW_SECURITY_LOGS",
         ],
       },
       "directive": "checkPermissions",
@@ -5483,6 +5439,82 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.securityEventById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_EVENTS",
+          "SECURITY_MANAGE_EVENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityEventDutyById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_EVENTS",
+          "SECURITY_MANAGE_EVENTS",
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityEventKarkunByBarcodeId": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_EVENTS",
+          "SECURITY_MANAGE_EVENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityEventKarkunsByEventId": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_EVENTS",
+          "SECURITY_MANAGE_EVENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityEventKarkunsByIds": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_VIEW_EVENTS",
+          "SECURITY_MANAGE_EVENTS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityEventLangarDishById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.securityEventLangarLocationById": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.securityFaceVectorFromImage": [
     {
       "args": {
@@ -5499,38 +5531,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_VIEW_SECURITY_LOGS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.securityMehfilDutyById": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_VIEW_MEHFILS",
-          "SECURITY_MANAGE_MEHFILS",
-          "SECURITY_MANAGE_SETUP_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.securityMehfilLangarDishById": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_SETUP_DATA",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
-  "Query.securityMehfilLangarLocationById": [
-    {
-      "args": {
-        "permissions": [
-          "SECURITY_MANAGE_SETUP_DATA",
         ],
       },
       "directive": "checkPermissions",

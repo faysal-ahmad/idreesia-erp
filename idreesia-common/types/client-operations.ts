@@ -4691,7 +4691,7 @@ export type PagedSecurityAuditLogsQueryVariables = Exact<{
 
 export type PagedSecurityAuditLogsQuery = { pagedSecurityAuditLogs: { totalResults: number | null, data: Array<{ _id: string | null, entityId: string | null, entityType: string | null, operationType: string | null, auditValues: Array<string | null> | null, operationTime: string | null, operationBy: string | null, operationByName: string | null, operationByImageUrl: string | null, operationByImageThumbnailUrl: string | null } | null> | null } | null };
 
-export type PagedSecurityMehfilPeopleQueryVariables = Exact<{
+export type PagedSecurityEventPeopleQueryVariables = Exact<{
   name?: string | null | undefined;
   cnicNumber?: string | null | undefined;
   phoneNumber?: string | null | undefined;
@@ -4700,66 +4700,66 @@ export type PagedSecurityMehfilPeopleQueryVariables = Exact<{
 }>;
 
 
-export type PagedSecurityMehfilPeopleQuery = { pagedSecurityMehfilPeople: { totalResults: number | null, data: Array<{ _id: string, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
+export type PagedSecurityEventPeopleQuery = { pagedSecurityEventPeople: { totalResults: number | null, data: Array<{ _id: string, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
 
-export type ComposerAllSecurityMehfilDutiesQueryVariables = Exact<{
-  mehfilId?: string | null | undefined;
+export type ComposerAllSecurityEventDutiesQueryVariables = Exact<{
+  eventId?: string | null | undefined;
 }>;
 
 
-export type ComposerAllSecurityMehfilDutiesQuery = { allSecurityMehfilDuties: Array<{ _id: string, name: string, urduName: string | null, overallUsedCount: number | null, mehfilUsedCount: number | null } | null> | null };
+export type ComposerAllSecurityEventDutiesQuery = { allSecurityEventDuties: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null, eventUsedCount: number | null } | null> | null };
 
-export type ComposerSecurityMehfilDutyByIdQueryVariables = Exact<{
+export type ComposerSecurityEventDutyByIdQueryVariables = Exact<{
   id: string;
 }>;
 
 
-export type ComposerSecurityMehfilDutyByIdQuery = { securityMehfilDutyById: { _id: string, name: string, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type ComposerSecurityEventDutyByIdQuery = { securityEventDutyById: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
-export type MehfilByIdQueryVariables = Exact<{
+export type SecurityEventByIdQueryVariables = Exact<{
   _id: string;
 }>;
 
 
-export type MehfilByIdQuery = { mehfilById: { _id: string | null, name: string | null, mehfilDate: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type SecurityEventByIdQuery = { securityEventById: { _id: string | null, name: string | null, eventDate: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
-export type MehfilKarkunByBarcodeIdQueryVariables = Exact<{
+export type SecurityEventKarkunByBarcodeIdQueryVariables = Exact<{
   barcode: string;
 }>;
 
 
-export type MehfilKarkunByBarcodeIdQuery = { mehfilKarkunByBarcodeId: { _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, mehfil: { _id: string | null, name: string | null, mehfilDate: string | null } | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null } | null } | null } | null };
+export type SecurityEventKarkunByBarcodeIdQuery = { securityEventKarkunByBarcodeId: { _id: string | null, eventId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, event: { _id: string | null, name: string | null, eventDate: string | null } | null, karkun: { _id: string | null, sharedData: { name: string | null, imageUrl: string | null } | null } | null } | null };
 
-export type AddMehfilKarkunMutationVariables = Exact<{
-  mehfilId: string;
+export type AddSecurityEventKarkunMutationVariables = Exact<{
+  eventId: string;
   karkunId: string;
   dutyId: string;
 }>;
 
 
-export type AddMehfilKarkunMutation = { addMehfilKarkun: { _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null } | null };
+export type AddSecurityEventKarkunMutation = { addSecurityEventKarkun: { _id: string | null, eventId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null } | null };
 
-export type MehfilKarkunsByIdsQueryVariables = Exact<{
-  ids: string;
-}>;
-
-
-export type MehfilKarkunsByIdsQuery = { mehfilKarkunsByIds: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, duty: { _id: string, name: string, urduName: string | null } | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { cityLocation: { _id: string | null, name: string | null } | null } | null } | null } | null> | null };
-
-export type MehfilKarkunsByMehfilIdQueryVariables = Exact<{
-  mehfilId: string;
-  dutyId?: string | null | undefined;
-}>;
-
-
-export type MehfilKarkunsByMehfilIdQuery = { mehfilKarkunsByMehfilId: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { cityLocation: { _id: string | null, name: string | null } | null } | null } | null } | null> | null };
-
-export type RemoveMehfilKarkunMutationVariables = Exact<{
+export type RemoveSecurityEventKarkunMutationVariables = Exact<{
   _id: string;
 }>;
 
 
-export type RemoveMehfilKarkunMutation = { removeMehfilKarkun: number | null };
+export type RemoveSecurityEventKarkunMutation = { removeSecurityEventKarkun: number | null };
+
+export type SecurityEventKarkunsByEventIdQueryVariables = Exact<{
+  eventId: string;
+  dutyId?: string | null | undefined;
+}>;
+
+
+export type SecurityEventKarkunsByEventIdQuery = { securityEventKarkunsByEventId: Array<{ _id: string | null, eventId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, imageUrl: string | null, imageThumbnailUrl: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { cityLocation: { _id: string | null, name: string | null } | null } | null } | null } | null> | null };
+
+export type SecurityEventKarkunsByIdsQueryVariables = Exact<{
+  ids: string;
+}>;
+
+
+export type SecurityEventKarkunsByIdsQuery = { securityEventKarkunsByIds: Array<{ _id: string | null, eventId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null, duty: { _id: string | null, name: string | null, urduName: string | null } | null, karkun: { _id: string | null, isKarkun: boolean | null, sharedData: { name: string | null, cnicNumber: string | null, contactNumber1: string | null, contactNumber2: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null, visitorData: { city: string | null, country: string | null } | null, karkunData: { cityLocation: { _id: string | null, name: string | null } | null } | null } | null } | null> | null };
 
 export type SetDutyDetailMutationVariables = Exact<{
   ids: Array<string | null | undefined> | string;
@@ -4767,36 +4767,36 @@ export type SetDutyDetailMutationVariables = Exact<{
 }>;
 
 
-export type SetDutyDetailMutation = { setDutyDetail: Array<{ _id: string | null, mehfilId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null } | null> | null };
+export type SetDutyDetailMutation = { setDutyDetail: Array<{ _id: string | null, eventId: string | null, karkunId: string | null, dutyId: string | null, dutyDetail: string | null, dutyCardBarcodeId: string | null } | null> | null };
 
-export type AllMehfilsQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllSecurityEventsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllMehfilsQuery = { allMehfils: Array<{ _id: string | null, name: string | null, mehfilDate: string | null, karkunCount: number | null } | null> | null };
+export type AllSecurityEventsQuery = { allSecurityEvents: Array<{ _id: string | null, name: string | null, eventDate: string | null, karkunCount: number | null } | null> | null };
 
-export type CreateMehfilMutationVariables = Exact<{
+export type CreateSecurityEventMutationVariables = Exact<{
   name: string;
-  mehfilDate: string;
+  eventDate: string;
 }>;
 
 
-export type CreateMehfilMutation = { createMehfil: { _id: string | null, name: string | null, mehfilDate: string | null } | null };
+export type CreateSecurityEventMutation = { createSecurityEvent: { _id: string | null, name: string | null, eventDate: string | null } | null };
 
-export type RemoveMehfilMutationVariables = Exact<{
+export type RemoveSecurityEventMutationVariables = Exact<{
   _id: string;
 }>;
 
 
-export type RemoveMehfilMutation = { removeMehfil: number | null };
+export type RemoveSecurityEventMutation = { removeSecurityEvent: number | null };
 
-export type UpdateMehfilMutationVariables = Exact<{
+export type UpdateSecurityEventMutationVariables = Exact<{
   _id: string;
   name: string;
-  mehfilDate: string;
+  eventDate: string;
 }>;
 
 
-export type UpdateMehfilMutation = { updateMehfil: { _id: string | null, name: string | null, mehfilDate: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type UpdateSecurityEventMutation = { updateSecurityEvent: { _id: string | null, name: string | null, eventDate: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
 export type AddSecurityGroupMemberMutationVariables = Exact<{
   groupId: string;
@@ -5052,113 +5052,113 @@ export type UpdateSecurityServerProfileMutationVariables = Exact<{
 
 export type UpdateSecurityServerProfileMutation = { updateSecurityServerProfile: { _id: string | null, name: string | null, isTest: boolean | null, alertsCount: number | null, deletedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, images: Array<{ _id: string | null, imageUrl: string | null, uploadedAt: string | null } | null> | null } | null };
 
-export type CreateSecurityMehfilDutyMutationVariables = Exact<{
+export type CreateSecurityEventDutyMutationVariables = Exact<{
   name: string;
   urduName: string;
 }>;
 
 
-export type CreateSecurityMehfilDutyMutation = { createSecurityMehfilDuty: { _id: string, name: string, urduName: string | null } | null };
+export type CreateSecurityEventDutyMutation = { createSecurityEventDuty: { _id: string | null, name: string | null, urduName: string | null } | null };
 
-export type RemoveSecurityMehfilDutyMutationVariables = Exact<{
+export type RemoveSecurityEventDutyMutationVariables = Exact<{
   _id: string;
 }>;
 
 
-export type RemoveSecurityMehfilDutyMutation = { removeSecurityMehfilDuty: number | null };
+export type RemoveSecurityEventDutyMutation = { removeSecurityEventDuty: number | null };
 
-export type SetupAllSecurityMehfilDutiesQueryVariables = Exact<{ [key: string]: never; }>;
+export type SetupAllSecurityEventDutiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SetupAllSecurityMehfilDutiesQuery = { allSecurityMehfilDuties: Array<{ _id: string, name: string, urduName: string | null, overallUsedCount: number | null } | null> | null };
+export type SetupAllSecurityEventDutiesQuery = { allSecurityEventDuties: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null } | null> | null };
 
-export type SetupSecurityMehfilDutyByIdQueryVariables = Exact<{
+export type SetupSecurityEventDutyByIdQueryVariables = Exact<{
   id: string;
 }>;
 
 
-export type SetupSecurityMehfilDutyByIdQuery = { securityMehfilDutyById: { _id: string, name: string, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type SetupSecurityEventDutyByIdQuery = { securityEventDutyById: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
-export type UpdateSecurityMehfilDutyMutationVariables = Exact<{
+export type UpdateSecurityEventDutyMutationVariables = Exact<{
   id: string;
   name: string;
   urduName: string;
 }>;
 
 
-export type UpdateSecurityMehfilDutyMutation = { updateSecurityMehfilDuty: { _id: string, name: string, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type UpdateSecurityEventDutyMutation = { updateSecurityEventDuty: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
-export type AllSecurityMehfilLangarDishesQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllSecurityEventLangarDishesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllSecurityMehfilLangarDishesQuery = { allSecurityMehfilLangarDishes: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null } | null> | null };
+export type AllSecurityEventLangarDishesQuery = { allSecurityEventLangarDishes: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null } | null> | null };
 
-export type CreateSecurityMehfilLangarDishMutationVariables = Exact<{
+export type CreateSecurityEventLangarDishMutationVariables = Exact<{
   name: string;
   urduName: string;
 }>;
 
 
-export type CreateSecurityMehfilLangarDishMutation = { createSecurityMehfilLangarDish: { _id: string | null, name: string | null, urduName: string | null } | null };
+export type CreateSecurityEventLangarDishMutation = { createSecurityEventLangarDish: { _id: string | null, name: string | null, urduName: string | null } | null };
 
-export type RemoveSecurityMehfilLangarDishMutationVariables = Exact<{
+export type RemoveSecurityEventLangarDishMutationVariables = Exact<{
   _id: string;
 }>;
 
 
-export type RemoveSecurityMehfilLangarDishMutation = { removeSecurityMehfilLangarDish: number | null };
+export type RemoveSecurityEventLangarDishMutation = { removeSecurityEventLangarDish: number | null };
 
-export type SecurityMehfilLangarDishByIdQueryVariables = Exact<{
+export type SecurityEventLangarDishByIdQueryVariables = Exact<{
   id: string;
 }>;
 
 
-export type SecurityMehfilLangarDishByIdQuery = { securityMehfilLangarDishById: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type SecurityEventLangarDishByIdQuery = { securityEventLangarDishById: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
-export type UpdateSecurityMehfilLangarDishMutationVariables = Exact<{
+export type UpdateSecurityEventLangarDishMutationVariables = Exact<{
   id: string;
   name: string;
   urduName: string;
 }>;
 
 
-export type UpdateSecurityMehfilLangarDishMutation = { updateSecurityMehfilLangarDish: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type UpdateSecurityEventLangarDishMutation = { updateSecurityEventLangarDish: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
-export type AllSecurityMehfilLangarLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllSecurityEventLangarLocationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllSecurityMehfilLangarLocationsQuery = { allSecurityMehfilLangarLocations: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null } | null> | null };
+export type AllSecurityEventLangarLocationsQuery = { allSecurityEventLangarLocations: Array<{ _id: string | null, name: string | null, urduName: string | null, overallUsedCount: number | null } | null> | null };
 
-export type CreateSecurityMehfilLangarLocationMutationVariables = Exact<{
+export type CreateSecurityEventLangarLocationMutationVariables = Exact<{
   name: string;
   urduName: string;
 }>;
 
 
-export type CreateSecurityMehfilLangarLocationMutation = { createSecurityMehfilLangarLocation: { _id: string | null, name: string | null, urduName: string | null } | null };
+export type CreateSecurityEventLangarLocationMutation = { createSecurityEventLangarLocation: { _id: string | null, name: string | null, urduName: string | null } | null };
 
-export type RemoveSecurityMehfilLangarLocationMutationVariables = Exact<{
+export type RemoveSecurityEventLangarLocationMutationVariables = Exact<{
   _id: string;
 }>;
 
 
-export type RemoveSecurityMehfilLangarLocationMutation = { removeSecurityMehfilLangarLocation: number | null };
+export type RemoveSecurityEventLangarLocationMutation = { removeSecurityEventLangarLocation: number | null };
 
-export type SecurityMehfilLangarLocationByIdQueryVariables = Exact<{
+export type SecurityEventLangarLocationByIdQueryVariables = Exact<{
   id: string;
 }>;
 
 
-export type SecurityMehfilLangarLocationByIdQuery = { securityMehfilLangarLocationById: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type SecurityEventLangarLocationByIdQuery = { securityEventLangarLocationById: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
-export type UpdateSecurityMehfilLangarLocationMutationVariables = Exact<{
+export type UpdateSecurityEventLangarLocationMutationVariables = Exact<{
   id: string;
   name: string;
   urduName: string;
 }>;
 
 
-export type UpdateSecurityMehfilLangarLocationMutation = { updateSecurityMehfilLangarLocation: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
+export type UpdateSecurityEventLangarLocationMutation = { updateSecurityEventLangarLocation: { _id: string | null, name: string | null, urduName: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null } | null };
 
 export type CreateSecurityVisitorMutationVariables = Exact<{
   name: string;

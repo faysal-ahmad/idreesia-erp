@@ -83,20 +83,20 @@ import SecurityUserGroupResolvers from './security/user-group/resolvers';
 import SecurityAuditLogSchema from './security/audit-log/audit-log';
 import SecurityAuditLogResolvers from './security/audit-log/resolvers';
 
-import SecurityMehfilSchema from './security/mehfil/mehfil';
-import SecurityMehfilResolvers from './security/mehfil/resolvers';
+import SecurityEventSchema from './security/event/event';
+import SecurityEventResolvers from './security/event/resolvers';
 
-import SecurityMehfilDutySchema from './security/mehfil-duty/mehfil-duty';
-import SecurityMehfilDutyResolvers from './security/mehfil-duty/resolvers';
+import SecurityEventDutySchema from './security/event-duty/event-duty';
+import SecurityEventDutyResolvers from './security/event-duty/resolvers';
 
-import SecurityMehfilKarkunSchema from './security/mehfil-karkun/mehfil-karkun';
-import SecurityMehfilKarkunResolvers from './security/mehfil-karkun/resolvers';
+import SecurityEventKarkunSchema from './security/event-karkun/event-karkun';
+import SecurityEventKarkunResolvers from './security/event-karkun/resolvers';
 
-import SecurityMehfilLangarDishSchema from './security/mehfil-langar-dish/mehfil-langar-dish';
-import SecurityMehfilLangarDishResolvers from './security/mehfil-langar-dish/resolvers';
+import SecurityEventLangarDishSchema from './security/event-langar-dish/event-langar-dish';
+import SecurityEventLangarDishResolvers from './security/event-langar-dish/resolvers';
 
-import SecurityMehfilLangarLocationSchema from './security/mehfil-langar-location/mehfil-langar-location';
-import SecurityMehfilLangarLocationResolvers from './security/mehfil-langar-location/resolvers';
+import SecurityEventLangarLocationSchema from './security/event-langar-location/event-langar-location';
+import SecurityEventLangarLocationResolvers from './security/event-langar-location/resolvers';
 
 import SecurityVisitorSchema from './security/visitor/visitor';
 import SecurityVisitorResolvers from './security/visitor/resolvers';
@@ -327,11 +327,11 @@ const typeDefs = [
   AdminSecurityLogSchema,
 
   SecurityAuditLogSchema,
-  SecurityMehfilSchema,
-  SecurityMehfilDutySchema,
-  SecurityMehfilKarkunSchema,
-  SecurityMehfilLangarDishSchema,
-  SecurityMehfilLangarLocationSchema,
+  SecurityEventSchema,
+  SecurityEventDutySchema,
+  SecurityEventKarkunSchema,
+  SecurityEventLangarDishSchema,
+  SecurityEventLangarLocationSchema,
   SecurityPermissionSchema,
   SecurityUserGroupSchema,
   SecurityVisitorSchema,
@@ -435,11 +435,11 @@ const resolvers = merge(
   AdminSecurityLogResolvers,
 
   SecurityAuditLogResolvers,
-  SecurityMehfilResolvers,
-  SecurityMehfilDutyResolvers,
-  SecurityMehfilKarkunResolvers,
-  SecurityMehfilLangarDishResolvers,
-  SecurityMehfilLangarLocationResolvers,
+  SecurityEventResolvers,
+  SecurityEventDutyResolvers,
+  SecurityEventKarkunResolvers,
+  SecurityEventLangarDishResolvers,
+  SecurityEventLangarLocationResolvers,
   SecurityPermissionResolvers,
   SecurityUserGroupResolvers,
   SecurityVisitorResolvers,

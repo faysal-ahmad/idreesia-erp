@@ -31,17 +31,17 @@ const IconStyle: CSSProperties = {
 
 const menuItems = [
   {
-    key: 'mehfil-management',
+    key: 'event-management',
     icon: <FlagOutlined style={IconStyle} />,
-    label: 'Mehfil Management',
+    label: 'Event Management',
     children: [
       {
-        key: 'mehfils',
+        key: 'events',
         icon: <BarsOutlined style={IconStyle} />,
-        label: 'Mehfils',
+        label: 'Events',
       },
       {
-        key: 'mehfil-card-verification',
+        key: 'event-card-verification',
         icon: <BarcodeOutlined style={IconStyle} />,
         label: 'Scan Karkun Card',
       },
@@ -51,17 +51,17 @@ const menuItems = [
         label: 'Setup',
         children: [
           {
-            key: 'mehfil-duties',
+            key: 'event-duties',
             icon: <TagsOutlined style={IconStyle} />,
-            label: 'Mehfil Duties',
+            label: 'Event Duties',
           },
           {
-            key: 'mehfil-langar-dishes',
+            key: 'event-langar-dishes',
             icon: <TagsOutlined style={IconStyle} />,
             label: 'Langar Dishes',
           },
           {
-            key: 'mehfil-langar-locations',
+            key: 'event-langar-locations',
             icon: <TagsOutlined style={IconStyle} />,
             label: 'Langar Locations',
           },
@@ -162,16 +162,16 @@ const isPath = (pathname: string, basePath: string) =>
 
 const menuRouteMatches: MenuRouteMatch[] = [
   {
-    key: 'mehfils',
-    openKeys: ['mehfil-management'],
-    subModuleName: SubModuleNames.mehfils,
-    matches: (pathname) => isPath(pathname, paths.mehfilsPath),
+    key: 'events',
+    openKeys: ['event-management'],
+    subModuleName: SubModuleNames.events,
+    matches: (pathname) => isPath(pathname, paths.eventsPath),
   },
   {
-    key: 'mehfil-card-verification',
-    openKeys: ['mehfil-management'],
-    subModuleName: SubModuleNames.mehfilCardVerification,
-    matches: (pathname) => isPath(pathname, paths.mehfilCardVerificationPath),
+    key: 'event-card-verification',
+    openKeys: ['event-management'],
+    subModuleName: SubModuleNames.eventCardVerification,
+    matches: (pathname) => isPath(pathname, paths.eventCardVerificationPath),
   },
   {
     key: 'visitor-list',
@@ -203,22 +203,22 @@ const menuRouteMatches: MenuRouteMatch[] = [
     matches: (pathname) => isPath(pathname, paths.visitorStayReportPath),
   },
   {
-    key: 'mehfil-duties',
-    openKeys: ['mehfil-management', 'setup'],
-    subModuleName: SubModuleNames.mehfilDuties,
-    matches: (pathname) => isPath(pathname, paths.mehfilDutiesPath),
+    key: 'event-duties',
+    openKeys: ['event-management', 'setup'],
+    subModuleName: SubModuleNames.eventDuties,
+    matches: (pathname) => isPath(pathname, paths.eventDutiesPath),
   },
   {
-    key: 'mehfil-langar-dishes',
-    openKeys: ['mehfil-management', 'setup'],
-    subModuleName: SubModuleNames.mehfilLangarDishes,
-    matches: (pathname) => isPath(pathname, paths.mehfilLangarDishesPath),
+    key: 'event-langar-dishes',
+    openKeys: ['event-management', 'setup'],
+    subModuleName: SubModuleNames.eventLangarDishes,
+    matches: (pathname) => isPath(pathname, paths.eventLangarDishesPath),
   },
   {
-    key: 'mehfil-langar-locations',
-    openKeys: ['mehfil-management', 'setup'],
-    subModuleName: SubModuleNames.mehfilLangarLocations,
-    matches: (pathname) => isPath(pathname, paths.mehfilLangarLocationsPath),
+    key: 'event-langar-locations',
+    openKeys: ['event-management', 'setup'],
+    subModuleName: SubModuleNames.eventLangarLocations,
+    matches: (pathname) => isPath(pathname, paths.eventLangarLocationsPath),
   },
   {
     key: 'security-server-alerts',
@@ -303,24 +303,24 @@ const Sidebar = ({ history }: SidebarProps) => {
 
   const handleMenuItemSelected = ({ key }: MenuClickInfo) => {
     switch (key) {
-      case 'mehfils':
-        history.push(paths.mehfilsPath);
+      case 'events':
+        history.push(paths.eventsPath);
         break;
 
-      case 'mehfil-duties':
-        history.push(paths.mehfilDutiesPath);
+      case 'event-duties':
+        history.push(paths.eventDutiesPath);
         break;
 
-      case 'mehfil-langar-dishes':
-        history.push(paths.mehfilLangarDishesPath);
+      case 'event-langar-dishes':
+        history.push(paths.eventLangarDishesPath);
         break;
 
-      case 'mehfil-langar-locations':
-        history.push(paths.mehfilLangarLocationsPath);
+      case 'event-langar-locations':
+        history.push(paths.eventLangarLocationsPath);
         break;
 
-      case 'mehfil-card-verification':
-        history.push(paths.mehfilCardVerificationPath);
+      case 'event-card-verification':
+        history.push(paths.eventCardVerificationPath);
         break;
 
       case 'visitor-registration':

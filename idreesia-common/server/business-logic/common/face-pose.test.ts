@@ -3,11 +3,11 @@ import { describe, expect, it } from 'vitest';
 import { faceFrontalScore } from './face-pose';
 
 // Landmarks: right eye, left eye, nose tip, right mouth corner, left mouth corner. A frontal face
-// roughly like SFace's alignment target: eyes level, nose centred, mouth below.
+// as YuNet marks it on a typical registration photo: eyes level, nose centred, mouth below.
 const frontal: [number, number][] = [
   [30, 40],
   [70, 40],
-  [50, 59.6],
+  [50, 62.2],
   [35, 80],
   [65, 80],
 ];

@@ -5,9 +5,11 @@
 
 // Yaw: nose offset from the eye midpoint along the eye line, as a fraction of eye distance.
 const YAW_MAX_RATIO = 0.35;
-// Pitch: (eyes -> nose) / (eyes -> mouth) perpendicular to the eye line. 0.49 is the ratio in
-// SFace's own frontal alignment target.
-const PITCH_FRONTAL_RATIO = 0.49;
+// Pitch: (eyes -> nose) / (eyes -> mouth) perpendicular to the eye line. 0.555 is the median
+// ratio YuNet measured on 299 stored registration photos (middle 90%: 0.50-0.615). SFace's
+// alignment template has 0.49, but YuNet places the nose tip lower on real faces, so that value
+// rejected about a third of frontal photos at a minimum pose of 60.
+const PITCH_FRONTAL_RATIO = 0.555;
 const PITCH_MAX_DEVIATION = 0.2;
 
 const clamp01 = (value: number) => Math.min(Math.max(value, 0), 1);

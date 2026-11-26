@@ -35,7 +35,7 @@ const RequestModal = ({ open, onClose, onRequested }: RequestModalProps) => {
   const { data, loading } = useQuery(PAGED_PURCHASING_PETTY_CASH_VOUCHERS, {
     variables: { fundId, unreplenishedOnly: true, pageIndex: 0, pageSize: 200 },
     skip: !fundId,
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
   });
   const vouchers = (data?.pagedPurchasingPettyCashVouchers?.data ?? []).filter(
     (v): v is NonNullable<typeof v> => v?._id != null

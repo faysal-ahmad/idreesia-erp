@@ -74,7 +74,7 @@ interface ReportTableProps {
 
 /** A report: toolbar with refresh, and a table of what the query returns. */
 const ReportTable = ({ query, variables, dataKey, rowKey, columns, skip, summary, rowsOf, exportAs }: ReportTableProps) => {
-  const { data, loading, refetch } = useQuery(query, { variables, skip });
+  const { data, loading, refetch } = useQuery(query, { variables, skip, fetchPolicy: 'cache-and-network' });
   const { containerRef, scrollY } = useListScrollY();
   const result = data?.[dataKey];
   const rows = ((rowsOf ? rowsOf(result) : result) ?? []).filter((row: any) => row != null);
@@ -239,6 +239,7 @@ const VendorLedger = () => {
   const { data } = useQuery(PURCHASING_VENDOR_LEDGER, {
     variables: { vendorId: vendorId ?? '', ...rangeVariables(range) },
     skip: !vendorId,
+    fetchPolicy: 'cache-and-network',
   });
   const ledger = data?.purchasingVendorLedger;
   const { containerRef, scrollY } = useListScrollY();

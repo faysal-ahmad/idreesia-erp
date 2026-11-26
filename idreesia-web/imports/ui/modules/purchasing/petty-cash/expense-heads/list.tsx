@@ -54,6 +54,7 @@ const ExpenseHeadsList = ({ history, location }: RouteComponentProps) => {
       pageIndex,
       pageSize,
     },
+    fetchPolicy: 'cache-and-network',
   });
   const rows = (data?.pagedPurchasingPettyCashExpenseHeads?.data ?? []).filter((row) => row?._id != null);
   const totalResults = data?.pagedPurchasingPettyCashExpenseHeads?.totalResults ?? 0;

@@ -88,7 +88,7 @@ const DocumentList = ({
 
   if (toggle) variables[toggle.name] = toggled || undefined;
 
-  const { data, loading, refetch } = useQuery(query, { variables });
+  const { data, loading, refetch } = useQuery(query, { variables, fetchPolicy: 'cache-and-network' });
   const paged = data?.[dataKey];
   const rows = (paged?.data ?? []).filter((row: any) => row?._id != null);
   const totalResults = paged?.totalResults ?? 0;

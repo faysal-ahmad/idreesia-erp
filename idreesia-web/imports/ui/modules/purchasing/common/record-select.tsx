@@ -39,6 +39,7 @@ const RecordSelect = ({
   const [search, setSearch] = useState('');
   const { data, loading } = useQuery(query, {
     variables: { search: search || undefined, pageIndex: 0, pageSize: 50, ...variables },
+    fetchPolicy: 'cache-and-network',
   });
 
   const rows = ((data?.[dataKey]?.data ?? []) as any[]).filter(

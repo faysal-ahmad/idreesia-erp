@@ -73,6 +73,8 @@ export interface PurchasingRequisitionDocument extends Timestamps {
   title: string;
   purpose?: string;
   requestedBy?: string;
+  /** Free text: who or what the goods are for. */
+  requestedFor?: string;
   neededBy?: Date;
   /** Only set for store-raised documents; absent means purchasing. */
   source?: RequisitionSourceValue;

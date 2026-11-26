@@ -24,7 +24,7 @@ const PaymentPage = ({ match }: RouteComponentProps<{ paymentId: string }>) => {
   const { paymentId } = match.params;
   const { can } = usePurchasingAccess();
   const [voiding, setVoiding] = useState(false);
-  const { data, loading } = useQuery(PURCHASING_PAYMENT_BY_ID, { variables: { _id: paymentId } });
+  const { data, loading } = useQuery(PURCHASING_PAYMENT_BY_ID, { variables: { _id: paymentId }, fetchPolicy: 'cache-and-network' });
   const payment = data?.purchasingPaymentById;
   const [voidPayment] = useMutation(VOID_PURCHASING_PAYMENT, {
     refetchQueries: ['purchasingPaymentById', 'pagedPurchasingPayments', 'pagedPurchasingInvoices', 'purchasingInvoiceById', 'purchasingDashboard'],

@@ -72,7 +72,7 @@ All collections extend `AggregatableCollection` with SimpleSchema and the `ident
 |---|---|
 | `purchasing-vendors` | name, contact, phone, email, address, tax id, payment terms (days), bank details, notes, `isActive`. |
 | `purchasing-catalog-items` | name (unique, case-insensitive), unit, category, optional company (brand or maker), optional picture (`imageKey`), default price, last price and last vendor (set when an order is approved), `isActive`. |
-| `purchasing-requisitions` | number, title, purpose, requester, needed-by date, optional `source` + `externalSourceId` (store requisitions only), lines, estimated total, status, submit/approve/reject audit fields, `version`. |
+| `purchasing-requisitions` | number, title, purpose, requester, requested-for (free text), needed-by date, optional `source` + `externalSourceId` (store requisitions only), lines, estimated total, status, submit/approve/reject audit fields, `version`. |
 | `purchasing-quotes` | vendor, requisition (required for new quotes), quote and valid-until dates, lines (each prices a requisition line), total, status. |
 | `purchasing-orders` | number, vendor, requisition (always set on new orders) and optional quote, optional `source` + `externalSourceId` (copied from the requisition), dates, delivery address, payment terms, lines (with `receivedQuantity` and `invoicedQuantity`), subtotal, tax, discount, shipping, total, status, approval fields, `version`. |
 | `purchasing-receipts` | number, order, vendor, optional `source` + `externalSourceId` (store receipts), received date and by, delivery note, lines `{orderLineId, externalCatalogId?, receivedQuantity, rejectedQuantity, remarks}`, status. |

@@ -6,6 +6,7 @@ import { Button, Collapse, Empty, Form, Modal, Popconfirm, Space, Spin, Tabs, Ta
 import { Permissions } from 'meteor/idreesia-common/constants';
 import { useDynamicBreadcrumbs, useLoggedInUser } from 'meteor/idreesia-common/hooks/common';
 import {
+  AutoCompleteField,
   DateField,
   FormButtonsSaveCancel,
   InputTextAreaField,
@@ -40,6 +41,7 @@ import {
   CLOSE_PURCHASING_REQUISITION,
   CREATE_PURCHASING_REQUISITION,
   DELETE_PURCHASING_REQUISITION,
+  DISTINCT_PURCHASING_REQUISITION_REQUESTED_FOR,
   PURCHASING_REQUISITION_BY_ID,
   REOPEN_PURCHASING_REQUISITION,
   REJECT_PURCHASING_REQUISITION,
@@ -48,12 +50,18 @@ import {
 } from './gql';
 
 const P = Permissions;
-const REFETCH = ['purchasingRequisitionById', 'pagedPurchasingRequisitions', 'purchasingDashboard'];
+const REFETCH = [
+  'purchasingRequisitionById',
+  'pagedPurchasingRequisitions',
+  'purchasingDashboard',
+  'distinctPurchasingRequisitionRequestedFor',
+];
 
 interface FormValues {
   title: string;
   purpose?: string;
   requestedBy?: { _id?: string } | null;
+  requestedFor?: string | null;
   neededBy?: import('dayjs').Dayjs | null;
   lines: LineFormValue[];
 }
@@ -71,15 +79,21 @@ const RequisitionPage = ({ match, history }: RouteComponentProps<{ requisitionId
   const { data, loading } = useQuery(PURCHASING_REQUISITION_BY_ID, {
     variables: { _id: id ?? '' },
     skip: isNew,
+    fetchPolicy: 'cache-and-network',
   });
   const requisition = data?.purchasingRequisitionById;
   const orders = useQuery(PAGED_PURCHASING_ORDERS, {
     variables: { requisitionId: id, pageIndex: 0, pageSize: 20 },
     skip: isNew,
+    fetchPolicy: 'cache-and-network',
   });
   const quotes = useQuery(PAGED_PURCHASING_QUOTES, {
     variables: { requisitionId: id, pageIndex: 0, pageSize: 20 },
     skip: isNew,
+    fetchPolicy: 'cache-and-network',
+  });
+  const requestedForOptions = useQuery(DISTINCT_PURCHASING_REQUISITION_REQUESTED_FOR, {
+    fetchPolicy: 'cache-and-network',
   });
 
   const [createRequisition, { loading: creating }] = useMutation(CREATE_PURCHASING_REQUISITION, { refetchQueries: REFETCH });
@@ -120,6 +134,7 @@ const RequisitionPage = ({ match, history }: RouteComponentProps<{ requisitionId
       title: values.title,
       purpose: values.purpose,
       requestedBy: values.requestedBy?._id,
+      requestedFor: values.requestedFor,
       neededBy: toDateInput(values.neededBy),
       lines: toRequisitionLineInput(values.lines),
     };
@@ -182,6 +197,17 @@ const RequisitionPage = ({ match, history }: RouteComponentProps<{ requisitionId
                   fieldLabel="Requested By"
                   initialValue={
                     person?._id ? { _id: person._id, name: person.sharedData?.name } : null
+                  }
+                  disabled={!editable}
+                />
+                <AutoCompleteField
+                  fieldName="requestedFor"
+                  fieldLabel="Requested For"
+                  initialValue={requisition?.requestedFor}
+                  options={
+                    requestedForOptions.data?.distinctPurchasingRequisitionRequestedFor?.filter(
+                      (value): value is string => !!value
+                    ) ?? undefined
                   }
                   disabled={!editable}
                 />

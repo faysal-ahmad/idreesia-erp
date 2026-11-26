@@ -1744,6 +1744,7 @@ export type MutationCreatePurchasingRequisitionArgs = {
   neededBy?: InputMaybe<Scalars['String']['input']>;
   purpose?: InputMaybe<Scalars['String']['input']>;
   requestedBy?: InputMaybe<Scalars['String']['input']>;
+  requestedFor?: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
 };
 
@@ -3016,6 +3017,7 @@ export type MutationUpdatePurchasingRequisitionArgs = {
   neededBy?: InputMaybe<Scalars['String']['input']>;
   purpose?: InputMaybe<Scalars['String']['input']>;
   requestedBy?: InputMaybe<Scalars['String']['input']>;
+  requestedFor?: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
   version: Scalars['Int']['input'];
 };
@@ -5117,6 +5119,7 @@ export type PurchasingRequisition = {
   rejectionReason?: Maybe<Scalars['String']['output']>;
   requestedBy?: Maybe<Scalars['String']['output']>;
   requestedByPerson?: Maybe<PersonBasicType>;
+  requestedFor?: Maybe<Scalars['String']['output']>;
   source?: Maybe<Scalars['String']['output']>;
   status?: Maybe<Scalars['String']['output']>;
   submittedAt?: Maybe<Scalars['String']['output']>;
@@ -5226,6 +5229,7 @@ export type Query = {
   deletedPersonRelationCounts?: Maybe<Array<PersonRelationCounts>>;
   distinctCities?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctCountries?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  distinctPurchasingRequisitionRequestedFor?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctRegions?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   distinctStayAllowedBy?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   duplicateCnics?: Maybe<Array<Maybe<DuplicatePersonGroupType>>>;
@@ -5816,6 +5820,7 @@ export type QueryPagedPurchasingKarkunsArgs = {
   pageIndex?: InputMaybe<Scalars['String']['input']>;
   pageSize?: InputMaybe<Scalars['String']['input']>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  withUserAccount?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 

@@ -69,12 +69,14 @@ const QuotePage = ({ match, history, location }: RouteComponentProps<{ quoteId?:
   const { data, loading } = useQuery(PURCHASING_QUOTE_BY_ID, {
     variables: { _id: id ?? '' },
     skip: isNew,
+    fetchPolicy: 'cache-and-network',
   });
   const quote = data?.purchasingQuoteById;
   // A quote prices lines of its requisition.
   const requisitionData = useQuery(PURCHASING_REQUISITION_BY_ID, {
     variables: { _id: (isNew ? requisitionId : quote?.requisitionId) ?? '' },
     skip: !(isNew ? requisitionId : quote?.requisitionId),
+    fetchPolicy: 'cache-and-network',
   });
   const requisition = requisitionData.data?.purchasingRequisitionById;
   const requisitionLines = (requisition?.lines ?? []).filter((l) => l?._id);

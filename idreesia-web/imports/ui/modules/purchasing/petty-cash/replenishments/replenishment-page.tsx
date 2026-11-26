@@ -29,11 +29,13 @@ const ReplenishmentPage = ({ match }: RouteComponentProps<{ replenishmentId: str
   const [rejecting, setRejecting] = useState(false);
   const { data, loading } = useQuery(PURCHASING_PETTY_CASH_REPLENISHMENT_BY_ID, {
     variables: { _id: replenishmentId },
+    fetchPolicy: 'cache-and-network',
   });
   const replenishment = data?.purchasingPettyCashReplenishmentById;
   const { data: voucherData } = useQuery(PAGED_PURCHASING_PETTY_CASH_VOUCHERS, {
     variables: { replenishmentId, pageIndex: 0, pageSize: 200 },
     skip: !replenishment?._id,
+    fetchPolicy: 'cache-and-network',
   });
   const vouchers = (voucherData?.pagedPurchasingPettyCashVouchers?.data ?? []).filter((v) => v != null);
 

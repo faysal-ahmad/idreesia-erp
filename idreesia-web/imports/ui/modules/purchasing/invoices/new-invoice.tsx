@@ -3,7 +3,7 @@ import { type RouteComponentProps } from 'react-router-dom';
 import { parse } from 'query-string';
 import { CombinedGraphQLErrors } from '@apollo/client';
 import { useApolloClient, useMutation, useQuery } from '@apollo/client/react';
-import { Collapse, Form, Modal, Select } from 'antd';
+import { Alert, Collapse, Form, Modal, Select } from 'antd';
 import dayjs from 'dayjs';
 
 import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
@@ -16,6 +16,7 @@ import {
 
 import { toDateInput } from '../common/format';
 import LineItemsEditor, {
+  anyDiffersFromOrder,
   computeLineTotals,
   toPricedLineInput,
   type LineFormValue,
@@ -56,6 +57,7 @@ const NewInvoice = ({ history, location }: RouteComponentProps) => {
   const orders = useQuery(PAGED_PURCHASING_ORDERS, {
     variables: { vendorId, pageIndex: 0, pageSize: 100 },
     skip: !vendorId,
+    fetchPolicy: 'cache-and-network',
   });
   const billable = (orders.data?.pagedPurchasingOrders?.data ?? []).filter(
     (o) => o?._id && BILLABLE.includes(o.status ?? '')
@@ -108,6 +110,8 @@ const NewInvoice = ({ history, location }: RouteComponentProps) => {
                 : l.quantity,
             unitPrice: l.unitPrice,
             taxRate: l.taxRate,
+            orderUnitPrice: l.unitPrice,
+            orderTaxRate: l.taxRate,
           })),
         ];
         names[id] = order.number ?? id;
@@ -235,8 +239,21 @@ const NewInvoice = ({ history, location }: RouteComponentProps) => {
                   <LineItemsEditor variant="priced" showTax fixedLines allowRemove />
                   <Form.Item noStyle shouldUpdate>
                     {({ getFieldValue }) => {
-                      const totals = totalOf(getFieldValue('lines'));
-                      return <TotalsSummary subtotal={totals.subtotal} taxTotal={totals.taxTotal} total={totals.total} />;
+                      const lines = getFieldValue('lines') as LineFormValue[] | undefined;
+                      const totals = totalOf(lines);
+                      return (
+                        <>
+                          {anyDiffersFromOrder(lines) ? (
+                            <Alert
+                              type="warning"
+                              showIcon
+                              style={{ margin: '8px 0' }}
+                              message="Some prices or tax rates differ from the purchase order (highlighted). The invoice can still be saved; mark it as disputed if the difference isn't agreed."
+                            />
+                          ) : null}
+                          <TotalsSummary subtotal={totals.subtotal} taxTotal={totals.taxTotal} total={totals.total} />
+                        </>
+                      );
                     }}
                   </Form.Item>
                 </>

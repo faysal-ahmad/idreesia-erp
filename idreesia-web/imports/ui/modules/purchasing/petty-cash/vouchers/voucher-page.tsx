@@ -32,7 +32,7 @@ const VoucherPage = ({ match, history }: RouteComponentProps<{ voucherId: string
   const { voucherId } = match.params;
   const { can } = usePurchasingAccess();
   const [asking, setAsking] = useState<Asking>(null);
-  const { data, loading } = useQuery(PURCHASING_PETTY_CASH_VOUCHER_BY_ID, { variables: { _id: voucherId } });
+  const { data, loading } = useQuery(PURCHASING_PETTY_CASH_VOUCHER_BY_ID, { variables: { _id: voucherId }, fetchPolicy: 'cache-and-network' });
   const voucher = data?.purchasingPettyCashVoucherById;
 
   const refetchQueries = [

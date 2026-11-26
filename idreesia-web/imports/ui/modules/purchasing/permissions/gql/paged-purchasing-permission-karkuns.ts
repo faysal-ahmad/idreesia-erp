@@ -42,7 +42,7 @@ export const purchasingPermissionKarkunSource: PersonSearchSource<PagedPurchasin
   query: PAGED_PURCHASING_PERMISSION_KARKUNS,
   select: data => data.pagedPurchasingPermissionKarkuns,
   description:
-    'Showing karkuns of Multan (the Purchasing city) who have an active, unlocked user account.',
+    'Showing karkuns of Multan who have an active, unlocked user account.',
 };
 
 export default PAGED_PURCHASING_PERMISSION_KARKUNS;

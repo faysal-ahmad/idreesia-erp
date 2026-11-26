@@ -13,6 +13,11 @@ import { escapeRegExp } from 'meteor/idreesia-common/utilities/lodash';
 
 export type KarkunSearchParams = PickerPeopleParams;
 
+export interface FormKarkunSearchParams extends PickerPeopleParams {
+  /** Only karkuns with an unlocked user account. */
+  withUserAccount?: boolean | null;
+}
+
 async function findPurchasingCity() {
   return OrgLocations.findOneAsync({
     type: OrgLocationTypes.CITY,
@@ -36,16 +41,23 @@ export async function searchPurchasingKarkuns(params: KarkunSearchParams) {
 }
 
 /**
- * The karkuns of the Purchasing city, with or without a user account, to name
- * who requested or received goods on a form. Nobody is found when the city
+ * The karkuns of the Purchasing city, to name who requested or received goods on
+ * a form. With `withUserAccount`, only those with an unlocked user account are
+ * found; otherwise everyone, with or without one. Nobody is found when the city
  * location does not exist.
  */
-export async function searchPurchasingFormKarkuns(params: KarkunSearchParams) {
+export async function searchPurchasingFormKarkuns({
+  withUserAccount,
+  ...params
+}: FormKarkunSearchParams) {
   const city = await findPurchasingCity();
   if (!city) return NO_PICKER_PEOPLE;
 
   return searchPickerPeople(params, {
-    filter: { cityLocationId: city._id as string },
+    filter: {
+      cityLocationId: city._id as string,
+      ...(withUserAccount ? { userAccount: 'active' as const } : {}),
+    },
     flags: { includeKarkuns: true },
   });
 }

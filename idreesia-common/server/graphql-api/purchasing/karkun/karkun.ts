@@ -3,7 +3,9 @@ import gql from 'graphql-tag';
 export default gql`
 extend type Query {
   # Karkuns of the Purchasing city, to name who requested or received goods.
+  # withUserAccount limits them to karkuns with an unlocked user account.
   pagedPurchasingKarkuns(
+    withUserAccount: Boolean
     name: String
     cnicNumber: String
     phoneNumber: String

@@ -41,6 +41,7 @@ const EditForm = ({
 
   const { data, loading } = useQuery(PURCHASING_VENDOR_BY_ID, {
     variables: { _id: vendorId },
+    fetchPolicy: 'cache-and-network',
   });
   const [updateVendor] = useMutation(UPDATE_PURCHASING_VENDOR, {
     refetchQueries: ['pagedPurchasingVendors'],

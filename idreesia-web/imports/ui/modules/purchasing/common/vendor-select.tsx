@@ -36,6 +36,7 @@ const VendorSelect = ({
       pageIndex: 0,
       pageSize: 50,
     },
+    fetchPolicy: 'cache-and-network',
   });
 
   const options = (data?.pagedPurchasingVendors?.data ?? [])

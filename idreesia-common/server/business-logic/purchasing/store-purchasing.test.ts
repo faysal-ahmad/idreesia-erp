@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
+import { PhysicalStores, StockItems } from 'meteor/idreesia-common/server/collections/inventory';
 import {
   PurchasingOrders,
   PurchasingReceipts,
@@ -25,6 +25,7 @@ import {
   getOrder,
   getReceipt,
   getRequisition,
+  listRequestedForValues,
   postReceipt,
   submitOrder,
   submitRequisition,
@@ -179,6 +180,26 @@ describe('store requisitions', () => {
     expect((await submitRequisition(draft._id, user, storeA)).status).toBe('submitted');
     // ...and purchasing approves it.
     expect((await approveRequisition(draft._id, user)).status).toBe('approved');
+  });
+
+  it('is requested for the store, by name, whatever the store sends', async () => {
+    const physicalStoreId = (await PhysicalStores.insertAsync({ name: 'Langar Store' } as never)) as string;
+    const origin = { physicalStoreId };
+    const item = await newStockItem(physicalStoreId, 'Salt');
+    const lines = [{ externalCatalogId: item, quantity: 1 }];
+
+    const draft = await createRequisition({ title: 'Salt', requestedFor: 'Someone else', lines }, user, origin);
+    expect(draft.requestedFor).toBe('Langar Store');
+    const updated = await updateRequisition(draft._id, draft.version, { title: 'Salt', lines }, user, origin);
+    expect(updated.requestedFor).toBe('Langar Store');
+
+    // Purchasing types its own, and both are suggested.
+    const own = await createRequisition(
+      { title: 'P', requestedFor: '  Kitchen  ', lines: [{ description: 'A', unit: 'pc', quantity: 1 }] },
+      user
+    );
+    expect(own.requestedFor).toBe('Kitchen');
+    expect(await listRequestedForValues()).toEqual(expect.arrayContaining(['Kitchen', 'Langar Store']));
   });
 
   it('a store can\'t update a purchasing draft', async () => {

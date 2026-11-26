@@ -42,7 +42,7 @@ export const securityPermissionKarkunSource: PersonSearchSource<PagedSecurityPer
   query: PAGED_SECURITY_PERMISSION_KARKUNS,
   select: data => data.pagedSecurityPermissionKarkuns,
   description:
-    'Showing karkuns from any city who have an active, unlocked user account.',
+    'Showing karkuns from Multan who have an active, unlocked user account.',
 };
 
 export default PAGED_SECURITY_PERMISSION_KARKUNS;

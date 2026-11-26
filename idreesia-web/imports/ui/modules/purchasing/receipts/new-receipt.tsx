@@ -47,6 +47,7 @@ const NewReceipt = ({ history, location }: RouteComponentProps) => {
   const { data, loading } = useQuery(PURCHASING_ORDER_BY_ID, {
     variables: { _id: orderId ?? '' },
     skip: !orderId,
+    fetchPolicy: 'cache-and-network',
   });
   const order = data?.purchasingOrderById;
   const [postReceipt, { loading: saving }] = useMutation(POST_PURCHASING_RECEIPT, {

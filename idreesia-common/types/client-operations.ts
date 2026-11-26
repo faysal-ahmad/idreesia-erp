@@ -3824,6 +3824,7 @@ export type PagedPurchasingAuditLogsQueryVariables = Exact<{
 export type PagedPurchasingAuditLogsQuery = { pagedPurchasingAuditLogs: { totalResults: number | null, data: Array<{ _id: string | null, entityId: string | null, entityType: string | null, operationType: string | null, auditValues: Array<string | null> | null, operationTime: string | null, operationBy: string | null, operationByName: string | null, operationByImageUrl: string | null, operationByImageThumbnailUrl: string | null } | null> | null } | null };
 
 export type PagedPurchasingKarkunsQueryVariables = Exact<{
+  withUserAccount?: boolean | null | undefined;
   name?: string | null | undefined;
   cnicNumber?: string | null | undefined;
   phoneNumber?: string | null | undefined;
@@ -3884,7 +3885,7 @@ export type PurchasingInvoiceByIdQueryVariables = Exact<{
 }>;
 
 
-export type PurchasingInvoiceByIdQuery = { purchasingInvoiceById: { _id: string | null, number: string | null, vendorInvoiceNo: string | null, vendorId: string | null, invoiceDate: string | null, dueDate: string | null, total: number | null, paidAmount: number | null, balance: number | null, status: string | null, isDisputed: boolean | null, notes: string | null, subtotal: number | null, taxTotal: number | null, voidedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, vendor: { _id: string | null, name: string | null } | null, orders: Array<{ _id: string | null, number: string | null, requisitionId: string | null } | null> | null, lines: Array<{ _id: string | null, internalCatalogId: string | null, orderId: string | null, orderLineId: string | null, description: string | null, unit: string | null, quantity: number | null, unitPrice: number | null, taxRate: number | null } | null> | null } | null };
+export type PurchasingInvoiceByIdQuery = { purchasingInvoiceById: { _id: string | null, number: string | null, vendorInvoiceNo: string | null, vendorId: string | null, invoiceDate: string | null, dueDate: string | null, total: number | null, paidAmount: number | null, balance: number | null, status: string | null, isDisputed: boolean | null, notes: string | null, subtotal: number | null, taxTotal: number | null, voidedAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, vendor: { _id: string | null, name: string | null } | null, orders: Array<{ _id: string | null, number: string | null, requisitionId: string | null, lines: Array<{ _id: string | null, unitPrice: number | null, taxRate: number | null } | null> | null } | null> | null, lines: Array<{ _id: string | null, internalCatalogId: string | null, orderId: string | null, orderLineId: string | null, description: string | null, unit: string | null, quantity: number | null, unitPrice: number | null, taxRate: number | null } | null> | null } | null };
 
 export type SetPurchasingInvoiceDisputedMutationVariables = Exact<{
   _id: string;
@@ -4549,6 +4550,7 @@ export type CreatePurchasingRequisitionMutationVariables = Exact<{
   title: string;
   purpose?: string | null | undefined;
   requestedBy?: string | null | undefined;
+  requestedFor?: string | null | undefined;
   neededBy?: string | null | undefined;
   lines: Array<Types.PurchasingRequisitionLineInput> | Types.PurchasingRequisitionLineInput;
 }>;
@@ -4563,6 +4565,11 @@ export type DeletePurchasingRequisitionMutationVariables = Exact<{
 
 export type DeletePurchasingRequisitionMutation = { deletePurchasingRequisition: boolean | null };
 
+export type DistinctPurchasingRequisitionRequestedForQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DistinctPurchasingRequisitionRequestedForQuery = { distinctPurchasingRequisitionRequestedFor: Array<string | null> | null };
+
 export type PagedPurchasingRequisitionsQueryVariables = Exact<{
   search?: string | null | undefined;
   status?: string | null | undefined;
@@ -4573,14 +4580,14 @@ export type PagedPurchasingRequisitionsQueryVariables = Exact<{
 }>;
 
 
-export type PagedPurchasingRequisitionsQuery = { pagedPurchasingRequisitions: { totalResults: number | null, data: Array<{ _id: string | null, number: string | null, title: string | null, status: string | null, source: string | null, externalSourceId: string | null, estimatedTotal: number | null, neededBy: string | null, requestedBy: string | null, version: number | null, createdAt: string | null, requestedByPerson: { _id: string | null, sharedData: { name: string | null } | null } | null } | null> | null } | null };
+export type PagedPurchasingRequisitionsQuery = { pagedPurchasingRequisitions: { totalResults: number | null, data: Array<{ _id: string | null, number: string | null, title: string | null, status: string | null, estimatedTotal: number | null, neededBy: string | null, requestedBy: string | null, version: number | null, createdAt: string | null, requestedByPerson: { _id: string | null, sharedData: { name: string | null } | null } | null } | null> | null } | null };
 
 export type PurchasingRequisitionByIdQueryVariables = Exact<{
   _id: string;
 }>;
 
 
-export type PurchasingRequisitionByIdQuery = { purchasingRequisitionById: { _id: string | null, number: string | null, title: string | null, purpose: string | null, status: string | null, source: string | null, externalSourceId: string | null, estimatedTotal: number | null, neededBy: string | null, requestedBy: string | null, version: number | null, submittedAt: string | null, approvedAt: string | null, approvedBy: string | null, rejectedAt: string | null, rejectionReason: string | null, cancelledAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, requestedByPerson: { _id: string | null, sharedData: { name: string | null } | null } | null, lines: Array<{ _id: string | null, internalCatalogId: string | null, description: string | null, unit: string | null, quantity: number | null, estimatedUnitPrice: number | null } | null> | null } | null };
+export type PurchasingRequisitionByIdQuery = { purchasingRequisitionById: { _id: string | null, number: string | null, title: string | null, purpose: string | null, status: string | null, source: string | null, externalSourceId: string | null, estimatedTotal: number | null, neededBy: string | null, requestedBy: string | null, requestedFor: string | null, version: number | null, submittedAt: string | null, approvedAt: string | null, approvedBy: string | null, rejectedAt: string | null, rejectionReason: string | null, cancelledAt: string | null, createdAt: string | null, createdBy: string | null, updatedAt: string | null, updatedBy: string | null, requestedByPerson: { _id: string | null, sharedData: { name: string | null } | null } | null, lines: Array<{ _id: string | null, internalCatalogId: string | null, description: string | null, unit: string | null, quantity: number | null, estimatedUnitPrice: number | null } | null> | null } | null };
 
 export type RejectPurchasingRequisitionMutationVariables = Exact<{
   _id: string;
@@ -4610,6 +4617,7 @@ export type UpdatePurchasingRequisitionMutationVariables = Exact<{
   title: string;
   purpose?: string | null | undefined;
   requestedBy?: string | null | undefined;
+  requestedFor?: string | null | undefined;
   neededBy?: string | null | undefined;
   lines: Array<Types.PurchasingRequisitionLineInput> | Types.PurchasingRequisitionLineInput;
 }>;

@@ -8,6 +8,7 @@ export default new SimpleSchema({
   title: { type: String },
   purpose: { type: String, optional: true },
   requestedBy: { type: String, optional: true },
+  requestedFor: { type: String, optional: true },
   neededBy: { type: Date, optional: true },
   // Only stored for store-raised documents (see RequisitionSource).
   source: { type: String, optional: true, allowedValues: ['store'] },

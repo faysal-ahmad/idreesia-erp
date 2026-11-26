@@ -15,6 +15,7 @@ const PAGED_PURCHASING_KARKUNS: TypedDocumentNode<
   PagedPurchasingKarkunsQueryVariables
 > = gql`
   query pagedPurchasingKarkuns(
+    $withUserAccount: Boolean
     $name: String
     $cnicNumber: String
     $phoneNumber: String
@@ -22,6 +23,7 @@ const PAGED_PURCHASING_KARKUNS: TypedDocumentNode<
     $pageSize: String
   ) {
     pagedPurchasingKarkuns(
+      withUserAccount: $withUserAccount
       name: $name
       cnicNumber: $cnicNumber
       phoneNumber: $phoneNumber
@@ -40,9 +42,10 @@ const PAGED_PURCHASING_KARKUNS: TypedDocumentNode<
 /** Karkuns of the Purchasing city, to name who requested or received goods. */
 export const purchasingKarkunSource: PersonSearchSource<PagedPurchasingKarkunsQuery> = {
   query: PAGED_PURCHASING_KARKUNS,
+  variables: { withUserAccount: false },
   select: data => data.pagedPurchasingKarkuns,
   description:
-    'Showing karkuns of Multan (the Purchasing city), with or without a user account.',
+    'Showing karkuns of Multan, with or without a user account.',
 };
 
 export default PAGED_PURCHASING_KARKUNS;

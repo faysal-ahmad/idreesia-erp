@@ -3953,6 +3953,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.distinctPurchasingRequisitionRequestedFor": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_REQUISITIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.distinctStayAllowedBy": [
     {
       "args": {

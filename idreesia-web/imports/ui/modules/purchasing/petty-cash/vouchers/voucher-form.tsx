@@ -63,6 +63,7 @@ const StockTarget = ({ rowIndex }: { rowIndex: number }) => {
   const { data, loading } = useQuery(REFERENCE_STOCK_ITEMS, {
     variables: { physicalStoreId: storeId ?? '', name: search || undefined },
     skip: !storeId,
+    fetchPolicy: 'cache-and-network',
   });
 
   const setField = (field: string, value: unknown) => form.setFieldValue(['lines', rowIndex, field], value);
@@ -193,7 +194,7 @@ const VoucherForm = ({ history, match }: RouteComponentProps<{ voucherId?: strin
   const { data, loading } = useQuery(PURCHASING_PETTY_CASH_VOUCHER_BY_ID, {
     variables: { _id: voucherId ?? '' },
     skip: !isEdit,
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
   });
   const voucher = data?.purchasingPettyCashVoucherById;
   const refetchQueries = ['pagedPurchasingPettyCashVouchers', 'purchasingPettyCashVoucherById'];

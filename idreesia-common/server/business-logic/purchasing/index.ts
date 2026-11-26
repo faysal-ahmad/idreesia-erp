@@ -48,6 +48,7 @@ export {
   closeRequisition,
   deleteRequisition,
   getRequisition,
+  listRequestedForValues,
   listRequisitions,
 } from './requisitions';
 export type {
@@ -165,7 +166,7 @@ export {
   searchPurchasingKarkuns,
   searchPurchasingPermissionHolders,
 } from './karkuns';
-export type { KarkunSearchParams } from './karkuns';
+export type { FormKarkunSearchParams, KarkunSearchParams } from './karkuns';
 
 export {
   getCatalogItemImageUrl,

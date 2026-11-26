@@ -31,7 +31,7 @@ extend type Query {
   securityPermissionAssignments: [SecurityPermissionGroup]
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 
-  # Karkuns to choose from when giving a permission or adding to a group.
+  # Karkuns of Multan (with an unlocked user account) to choose from when giving a permission or adding to a group.
   pagedSecurityPermissionKarkuns(
     name: String
     cnicNumber: String

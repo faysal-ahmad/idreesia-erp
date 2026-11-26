@@ -10,3 +10,5 @@ export { default as REMOVE_PURCHASING_GROUP_MEMBER } from './remove-purchasing-g
 export { default as PAGED_PURCHASING_PERMISSION_KARKUNS, purchasingPermissionKarkunSource } from './paged-purchasing-permission-karkuns';
 export { default as ADD_PURCHASING_PERMISSION_GROUP } from './add-purchasing-permission-group';
 export { default as REMOVE_PURCHASING_PERMISSION_GROUP } from './remove-purchasing-permission-group';
+export { default as ADD_PURCHASING_PERMISSION_COMMITTEE } from './add-purchasing-permission-committee';
+export { default as REMOVE_PURCHASING_PERMISSION_COMMITTEE } from './remove-purchasing-permission-committee';

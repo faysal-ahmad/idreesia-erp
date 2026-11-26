@@ -10,3 +10,5 @@ export { default as REMOVE_HR_GROUP_MEMBER } from './remove-hr-group-member';
 export { default as PAGED_HR_PERMISSION_KARKUNS, hrPermissionKarkunSource } from './paged-hr-permission-karkuns';
 export { default as ADD_HR_PERMISSION_GROUP } from './add-hr-permission-group';
 export { default as REMOVE_HR_PERMISSION_GROUP } from './remove-hr-permission-group';
+export { default as ADD_HR_PERMISSION_COMMITTEE } from './add-hr-permission-committee';
+export { default as REMOVE_HR_PERMISSION_COMMITTEE } from './remove-hr-permission-committee';

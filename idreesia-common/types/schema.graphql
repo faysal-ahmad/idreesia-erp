@@ -1754,12 +1754,20 @@ type HrPermissionGroupHolder {
   name: String!
 }
 
+type HrPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
 type HrPermissionAssignment {
   key: String!
   name: String!
   description: String
   users: [HrPermissionHolder]
   groups: [HrPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [HrPermissionCommitteeHolder]
 }
 
 type HrPermissionGroup {
@@ -1791,6 +1799,12 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 
   removeHrPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  addHrPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  removeHrPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 
   removeHrPermissionUser(permissionKey: String!, userId: String!): Boolean
@@ -3304,12 +3318,20 @@ type PurchasingPermissionGroupHolder {
   name: String!
 }
 
+type PurchasingPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
 type PurchasingPermissionAssignment {
   key: String!
   name: String!
   description: String
   users: [PurchasingPermissionHolder]
   groups: [PurchasingPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [PurchasingPermissionCommitteeHolder]
 }
 
 type PurchasingPermissionGroup {
@@ -3341,6 +3363,12 @@ extend type Mutation {
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 
   removePurchasingPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  addPurchasingPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  removePurchasingPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 
   removePurchasingPermissionUser(permissionKey: String!, userId: String!): Boolean
@@ -4184,6 +4212,14 @@ type ReferenceOrgLocationType {
   parentId: String
 }
 
+type ReferenceCommitteeType {
+  _id: String!
+  name: String!
+  color: String
+  # Members and coordinators: the people who hold its permissions.
+  memberCount: Int!
+}
+
 extend type Query {
   referenceCityMehfilLocations: [ReferenceOrgLocationType]
     @checkPermissions(
@@ -4194,7 +4230,24 @@ extend type Query {
   # empty) plus their ancestors, so the tree shows where they sit.
   referenceOrgLocations(types: [String!]): [ReferenceOrgLocationType]
     @checkPermissions(
-      permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES]
+      permissions: [
+        HR_MANAGE_KARKUNS
+        HR_MANAGE_EMPLOYEES
+        HR_MANAGE_PERMISSIONS
+        PURCHASING_MANAGE_PERMISSIONS
+        SECURITY_MANAGE_PERMISSIONS
+      ]
+    )
+
+  # The committees of a location, for giving one a module permission (on the
+  # HR, Purchasing and Security Permissions tabs).
+  referenceCommitteesByLocation(locationId: String!): [ReferenceCommitteeType]
+    @checkPermissions(
+      permissions: [
+        HR_MANAGE_PERMISSIONS
+        PURCHASING_MANAGE_PERMISSIONS
+        SECURITY_MANAGE_PERMISSIONS
+      ]
     )
 }
 
@@ -4427,12 +4480,20 @@ type SecurityPermissionGroupHolder {
   name: String!
 }
 
+type SecurityPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
 type SecurityPermissionAssignment {
   key: String!
   name: String!
   description: String
   users: [SecurityPermissionHolder]
   groups: [SecurityPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [SecurityPermissionCommitteeHolder]
 }
 
 type SecurityPermissionGroup {
@@ -4464,6 +4525,12 @@ extend type Mutation {
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 
   removeSecurityPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  addSecurityPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  removeSecurityPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 
   removeSecurityPermissionUser(permissionKey: String!, userId: String!): Boolean

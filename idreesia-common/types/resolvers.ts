@@ -137,6 +137,7 @@ export type ResolversTypes = ResolversObject<{
   FreeFormValueType: ResolverTypeWrapper<Types.FreeFormValueType>;
   HrGroupMember: ResolverTypeWrapper<Types.HrGroupMember>;
   HrPermissionAssignment: ResolverTypeWrapper<Types.HrPermissionAssignment>;
+  HrPermissionCommitteeHolder: ResolverTypeWrapper<Types.HrPermissionCommitteeHolder>;
   HrPermissionGroup: ResolverTypeWrapper<Types.HrPermissionGroup>;
   HrPermissionGroupHolder: ResolverTypeWrapper<Types.HrPermissionGroupHolder>;
   HrPermissionHolder: ResolverTypeWrapper<Types.HrPermissionHolder>;
@@ -273,6 +274,7 @@ export type ResolversTypes = ResolversObject<{
   PurchasingPaymentAllocation: ResolverTypeWrapper<Types.PurchasingPaymentAllocation>;
   PurchasingPaymentAllocationInput: Types.PurchasingPaymentAllocationInput;
   PurchasingPermissionAssignment: ResolverTypeWrapper<Types.PurchasingPermissionAssignment>;
+  PurchasingPermissionCommitteeHolder: ResolverTypeWrapper<Types.PurchasingPermissionCommitteeHolder>;
   PurchasingPermissionGroup: ResolverTypeWrapper<Types.PurchasingPermissionGroup>;
   PurchasingPermissionGroupHolder: ResolverTypeWrapper<Types.PurchasingPermissionGroupHolder>;
   PurchasingPermissionHolder: ResolverTypeWrapper<Types.PurchasingPermissionHolder>;
@@ -296,6 +298,7 @@ export type ResolversTypes = ResolversObject<{
   PurchasingVendorLedger: ResolverTypeWrapper<Types.PurchasingVendorLedger>;
   PurchasingVendorSpending: ResolverTypeWrapper<Types.PurchasingVendorSpending>;
   Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
+  ReferenceCommitteeType: ResolverTypeWrapper<Types.ReferenceCommitteeType>;
   ReferenceDutyShiftType: ResolverTypeWrapper<Types.ReferenceDutyShiftType>;
   ReferenceDutyType: ResolverTypeWrapper<Types.ReferenceDutyType>;
   ReferenceOrgLocationType: ResolverTypeWrapper<Types.ReferenceOrgLocationType>;
@@ -314,6 +317,7 @@ export type ResolversTypes = ResolversObject<{
   SecurityLogType: ResolverTypeWrapper<Types.SecurityLogType>;
   SecurityLogUserOption: ResolverTypeWrapper<Types.SecurityLogUserOption>;
   SecurityPermissionAssignment: ResolverTypeWrapper<Types.SecurityPermissionAssignment>;
+  SecurityPermissionCommitteeHolder: ResolverTypeWrapper<Types.SecurityPermissionCommitteeHolder>;
   SecurityPermissionGroup: ResolverTypeWrapper<Types.SecurityPermissionGroup>;
   SecurityPermissionGroupHolder: ResolverTypeWrapper<Types.SecurityPermissionGroupHolder>;
   SecurityPermissionHolder: ResolverTypeWrapper<Types.SecurityPermissionHolder>;
@@ -482,6 +486,7 @@ export type ResolversParentTypes = ResolversObject<{
   FreeFormValueType: Types.FreeFormValueType;
   HrGroupMember: Types.HrGroupMember;
   HrPermissionAssignment: Types.HrPermissionAssignment;
+  HrPermissionCommitteeHolder: Types.HrPermissionCommitteeHolder;
   HrPermissionGroup: Types.HrPermissionGroup;
   HrPermissionGroupHolder: Types.HrPermissionGroupHolder;
   HrPermissionHolder: Types.HrPermissionHolder;
@@ -614,6 +619,7 @@ export type ResolversParentTypes = ResolversObject<{
   PurchasingPaymentAllocation: Types.PurchasingPaymentAllocation;
   PurchasingPaymentAllocationInput: Types.PurchasingPaymentAllocationInput;
   PurchasingPermissionAssignment: Types.PurchasingPermissionAssignment;
+  PurchasingPermissionCommitteeHolder: Types.PurchasingPermissionCommitteeHolder;
   PurchasingPermissionGroup: Types.PurchasingPermissionGroup;
   PurchasingPermissionGroupHolder: Types.PurchasingPermissionGroupHolder;
   PurchasingPermissionHolder: Types.PurchasingPermissionHolder;
@@ -637,6 +643,7 @@ export type ResolversParentTypes = ResolversObject<{
   PurchasingVendorLedger: Types.PurchasingVendorLedger;
   PurchasingVendorSpending: Types.PurchasingVendorSpending;
   Query: Record<PropertyKey, never>;
+  ReferenceCommitteeType: Types.ReferenceCommitteeType;
   ReferenceDutyShiftType: Types.ReferenceDutyShiftType;
   ReferenceDutyType: Types.ReferenceDutyType;
   ReferenceOrgLocationType: Types.ReferenceOrgLocationType;
@@ -655,6 +662,7 @@ export type ResolversParentTypes = ResolversObject<{
   SecurityLogType: Types.SecurityLogType;
   SecurityLogUserOption: Types.SecurityLogUserOption;
   SecurityPermissionAssignment: Types.SecurityPermissionAssignment;
+  SecurityPermissionCommitteeHolder: Types.SecurityPermissionCommitteeHolder;
   SecurityPermissionGroup: Types.SecurityPermissionGroup;
   SecurityPermissionGroupHolder: Types.SecurityPermissionGroupHolder;
   SecurityPermissionHolder: Types.SecurityPermissionHolder;
@@ -1307,11 +1315,18 @@ export type HrGroupMemberResolvers<ContextType = any, ParentType extends Resolve
 }>;
 
 export type HrPermissionAssignmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['HrPermissionAssignment'] = ResolversParentTypes['HrPermissionAssignment']> = ResolversObject<{
+  committees?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['HrPermissionCommitteeHolder']>>>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   groups?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['HrPermissionGroupHolder']>>>, ParentType, ContextType>;
   key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   users?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['HrPermissionHolder']>>>, ParentType, ContextType>;
+}>;
+
+export type HrPermissionCommitteeHolderResolvers<ContextType = any, ParentType extends ResolversParentTypes['HrPermissionCommitteeHolder'] = ResolversParentTypes['HrPermissionCommitteeHolder']> = ResolversObject<{
+  committeeId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  locationName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type HrPermissionGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['HrPermissionGroup'] = ResolversParentTypes['HrPermissionGroup']> = ResolversObject<{
@@ -1541,6 +1556,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   addCommitteeMember?: Resolver<Types.Maybe<ResolversTypes['CommitteeType']>, ParentType, ContextType, RequireFields<Types.MutationAddCommitteeMemberArgs, 'committeeId' | 'karkunId'>>;
   addHrGroupMember?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddHrGroupMemberArgs, 'groupId' | 'karkunId'>>;
   addHrKarkunAttachment?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.MutationAddHrKarkunAttachmentArgs, '_id' | 'attachmentId'>>;
+  addHrPermissionCommittee?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddHrPermissionCommitteeArgs, 'committeeId' | 'permissionKey'>>;
   addHrPermissionGroup?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddHrPermissionGroupArgs, 'groupId' | 'permissionKey'>>;
   addHrPermissionUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddHrPermissionUserArgs, 'karkunId' | 'permissionKey'>>;
   addIssuanceFormAttachment?: Resolver<Types.Maybe<ResolversTypes['IssuanceForm']>, ParentType, ContextType, RequireFields<Types.MutationAddIssuanceFormAttachmentArgs, '_id' | 'attachmentId' | 'physicalStoreId'>>;
@@ -1550,10 +1566,12 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   addPhysicalStoreAccessUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddPhysicalStoreAccessUserArgs, 'karkunId' | 'permission' | 'physicalStoreId'>>;
   addPurchaseFormAttachment?: Resolver<Types.Maybe<ResolversTypes['PurchaseForm']>, ParentType, ContextType, RequireFields<Types.MutationAddPurchaseFormAttachmentArgs, '_id' | 'attachmentId' | 'physicalStoreId'>>;
   addPurchasingGroupMember?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddPurchasingGroupMemberArgs, 'groupId' | 'karkunId'>>;
+  addPurchasingPermissionCommittee?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddPurchasingPermissionCommitteeArgs, 'committeeId' | 'permissionKey'>>;
   addPurchasingPermissionGroup?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddPurchasingPermissionGroupArgs, 'groupId' | 'permissionKey'>>;
   addPurchasingPermissionUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddPurchasingPermissionUserArgs, 'karkunId' | 'permissionKey'>>;
   addSecurityEventKarkun?: Resolver<Types.Maybe<ResolversTypes['SecurityEventKarkunType']>, ParentType, ContextType, RequireFields<Types.MutationAddSecurityEventKarkunArgs, 'dutyId' | 'eventId' | 'karkunId'>>;
   addSecurityGroupMember?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddSecurityGroupMemberArgs, 'groupId' | 'karkunId'>>;
+  addSecurityPermissionCommittee?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddSecurityPermissionCommitteeArgs, 'committeeId' | 'permissionKey'>>;
   addSecurityPermissionGroup?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddSecurityPermissionGroupArgs, 'groupId' | 'permissionKey'>>;
   addSecurityPermissionUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationAddSecurityPermissionUserArgs, 'karkunId' | 'permissionKey'>>;
   addSecurityServerProfileImage?: Resolver<Types.Maybe<ResolversTypes['SecurityServerProfileType']>, ParentType, ContextType, RequireFields<Types.MutationAddSecurityServerProfileImageArgs, 'imageData' | 'profileId'>>;
@@ -1683,6 +1701,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeDutyShift?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveDutyShiftArgs, '_id'>>;
   removeHrGroupMember?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemoveHrGroupMemberArgs, 'groupId' | 'userId'>>;
   removeHrKarkunAttachment?: Resolver<Types.Maybe<ResolversTypes['PersonType']>, ParentType, ContextType, RequireFields<Types.MutationRemoveHrKarkunAttachmentArgs, '_id' | 'attachmentId'>>;
+  removeHrPermissionCommittee?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemoveHrPermissionCommitteeArgs, 'committeeId' | 'permissionKey'>>;
   removeHrPermissionGroup?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemoveHrPermissionGroupArgs, 'groupId' | 'permissionKey'>>;
   removeHrPermissionUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemoveHrPermissionUserArgs, 'permissionKey' | 'userId'>>;
   removeIssuanceFormAttachment?: Resolver<Types.Maybe<ResolversTypes['IssuanceForm']>, ParentType, ContextType, RequireFields<Types.MutationRemoveIssuanceFormAttachmentArgs, '_id' | 'attachmentId' | 'physicalStoreId'>>;
@@ -1699,6 +1718,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removePurchasingCatalogItem?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingCatalogItemArgs, '_id'>>;
   removePurchasingCatalogItemImage?: Resolver<Types.Maybe<ResolversTypes['PurchasingCatalogItem']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingCatalogItemImageArgs, '_id'>>;
   removePurchasingGroupMember?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingGroupMemberArgs, 'groupId' | 'userId'>>;
+  removePurchasingPermissionCommittee?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingPermissionCommitteeArgs, 'committeeId' | 'permissionKey'>>;
   removePurchasingPermissionGroup?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingPermissionGroupArgs, 'groupId' | 'permissionKey'>>;
   removePurchasingPermissionUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingPermissionUserArgs, 'permissionKey' | 'userId'>>;
   removePurchasingVendor?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemovePurchasingVendorArgs, '_id'>>;
@@ -1708,6 +1728,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeSecurityEventLangarDish?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveSecurityEventLangarDishArgs, '_id'>>;
   removeSecurityEventLangarLocation?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<Types.MutationRemoveSecurityEventLangarLocationArgs, '_id'>>;
   removeSecurityGroupMember?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemoveSecurityGroupMemberArgs, 'groupId' | 'userId'>>;
+  removeSecurityPermissionCommittee?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemoveSecurityPermissionCommitteeArgs, 'committeeId' | 'permissionKey'>>;
   removeSecurityPermissionGroup?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemoveSecurityPermissionGroupArgs, 'groupId' | 'permissionKey'>>;
   removeSecurityPermissionUser?: Resolver<Types.Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<Types.MutationRemoveSecurityPermissionUserArgs, 'permissionKey' | 'userId'>>;
   removeSecurityServerProfileImage?: Resolver<Types.Maybe<ResolversTypes['SecurityServerProfileType']>, ParentType, ContextType, RequireFields<Types.MutationRemoveSecurityServerProfileImageArgs, 'imageId' | 'profileId'>>;
@@ -2686,11 +2707,18 @@ export type PurchasingPaymentAllocationResolvers<ContextType = any, ParentType e
 }>;
 
 export type PurchasingPermissionAssignmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchasingPermissionAssignment'] = ResolversParentTypes['PurchasingPermissionAssignment']> = ResolversObject<{
+  committees?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchasingPermissionCommitteeHolder']>>>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   groups?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchasingPermissionGroupHolder']>>>, ParentType, ContextType>;
   key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   users?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchasingPermissionHolder']>>>, ParentType, ContextType>;
+}>;
+
+export type PurchasingPermissionCommitteeHolderResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchasingPermissionCommitteeHolder'] = ResolversParentTypes['PurchasingPermissionCommitteeHolder']> = ResolversObject<{
+  committeeId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  locationName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type PurchasingPermissionGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchasingPermissionGroup'] = ResolversParentTypes['PurchasingPermissionGroup']> = ResolversObject<{
@@ -3119,6 +3147,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   purchasingVendorById?: Resolver<Types.Maybe<ResolversTypes['PurchasingVendor']>, ParentType, ContextType, RequireFields<Types.QueryPurchasingVendorByIdArgs, '_id'>>;
   purchasingVendorLedger?: Resolver<Types.Maybe<ResolversTypes['PurchasingVendorLedger']>, ParentType, ContextType, RequireFields<Types.QueryPurchasingVendorLedgerArgs, 'vendorId'>>;
   referenceCityMehfilLocations?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['ReferenceOrgLocationType']>>>, ParentType, ContextType>;
+  referenceCommitteesByLocation?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['ReferenceCommitteeType']>>>, ParentType, ContextType, RequireFields<Types.QueryReferenceCommitteesByLocationArgs, 'locationId'>>;
   referenceDutyShifts?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['ReferenceDutyShiftType']>>>, ParentType, ContextType>;
   referenceMsDuties?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['ReferenceDutyType']>>>, ParentType, ContextType>;
   referenceOrgLocations?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['ReferenceOrgLocationType']>>>, ParentType, ContextType, Partial<Types.QueryReferenceOrgLocationsArgs>>;
@@ -3213,6 +3242,13 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   workspaceTaskById?: Resolver<Types.Maybe<ResolversTypes['WorkspaceTaskType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceTaskByIdArgs, 'committeeId' | 'taskId'>>;
   workspaceTaskComments?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceTaskCommentType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceTaskCommentsArgs, 'committeeId' | 'taskId'>>;
   workspaceTasks?: Resolver<Types.Maybe<ResolversTypes['PagedWorkspaceTaskType']>, ParentType, ContextType, RequireFields<Types.QueryWorkspaceTasksArgs, 'committeeId'>>;
+}>;
+
+export type ReferenceCommitteeTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReferenceCommitteeType'] = ResolversParentTypes['ReferenceCommitteeType']> = ResolversObject<{
+  _id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  color?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  memberCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ReferenceDutyShiftTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReferenceDutyShiftType'] = ResolversParentTypes['ReferenceDutyShiftType']> = ResolversObject<{
@@ -3378,11 +3414,18 @@ export type SecurityLogUserOptionResolvers<ContextType = any, ParentType extends
 }>;
 
 export type SecurityPermissionAssignmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityPermissionAssignment'] = ResolversParentTypes['SecurityPermissionAssignment']> = ResolversObject<{
+  committees?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['SecurityPermissionCommitteeHolder']>>>, ParentType, ContextType>;
   description?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   groups?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['SecurityPermissionGroupHolder']>>>, ParentType, ContextType>;
   key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   users?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['SecurityPermissionHolder']>>>, ParentType, ContextType>;
+}>;
+
+export type SecurityPermissionCommitteeHolderResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityPermissionCommitteeHolder'] = ResolversParentTypes['SecurityPermissionCommitteeHolder']> = ResolversObject<{
+  committeeId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  locationName?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type SecurityPermissionGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['SecurityPermissionGroup'] = ResolversParentTypes['SecurityPermissionGroup']> = ResolversObject<{
@@ -4361,6 +4404,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   FreeFormValueType?: FreeFormValueTypeResolvers<ContextType>;
   HrGroupMember?: HrGroupMemberResolvers<ContextType>;
   HrPermissionAssignment?: HrPermissionAssignmentResolvers<ContextType>;
+  HrPermissionCommitteeHolder?: HrPermissionCommitteeHolderResolvers<ContextType>;
   HrPermissionGroup?: HrPermissionGroupResolvers<ContextType>;
   HrPermissionGroupHolder?: HrPermissionGroupHolderResolvers<ContextType>;
   HrPermissionHolder?: HrPermissionHolderResolvers<ContextType>;
@@ -4483,6 +4527,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PurchasingPayment?: PurchasingPaymentResolvers<ContextType>;
   PurchasingPaymentAllocation?: PurchasingPaymentAllocationResolvers<ContextType>;
   PurchasingPermissionAssignment?: PurchasingPermissionAssignmentResolvers<ContextType>;
+  PurchasingPermissionCommitteeHolder?: PurchasingPermissionCommitteeHolderResolvers<ContextType>;
   PurchasingPermissionGroup?: PurchasingPermissionGroupResolvers<ContextType>;
   PurchasingPermissionGroupHolder?: PurchasingPermissionGroupHolderResolvers<ContextType>;
   PurchasingPermissionHolder?: PurchasingPermissionHolderResolvers<ContextType>;
@@ -4502,6 +4547,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PurchasingVendorLedger?: PurchasingVendorLedgerResolvers<ContextType>;
   PurchasingVendorSpending?: PurchasingVendorSpendingResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  ReferenceCommitteeType?: ReferenceCommitteeTypeResolvers<ContextType>;
   ReferenceDutyShiftType?: ReferenceDutyShiftTypeResolvers<ContextType>;
   ReferenceDutyType?: ReferenceDutyTypeResolvers<ContextType>;
   ReferenceOrgLocationType?: ReferenceOrgLocationTypeResolvers<ContextType>;
@@ -4518,6 +4564,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   SecurityLogType?: SecurityLogTypeResolvers<ContextType>;
   SecurityLogUserOption?: SecurityLogUserOptionResolvers<ContextType>;
   SecurityPermissionAssignment?: SecurityPermissionAssignmentResolvers<ContextType>;
+  SecurityPermissionCommitteeHolder?: SecurityPermissionCommitteeHolderResolvers<ContextType>;
   SecurityPermissionGroup?: SecurityPermissionGroupResolvers<ContextType>;
   SecurityPermissionGroupHolder?: SecurityPermissionGroupHolderResolvers<ContextType>;
   SecurityPermissionHolder?: SecurityPermissionHolderResolvers<ContextType>;

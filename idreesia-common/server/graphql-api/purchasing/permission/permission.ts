@@ -13,12 +13,20 @@ type PurchasingPermissionGroupHolder {
   name: String!
 }
 
+type PurchasingPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
 type PurchasingPermissionAssignment {
   key: String!
   name: String!
   description: String
   users: [PurchasingPermissionHolder]
   groups: [PurchasingPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [PurchasingPermissionCommitteeHolder]
 }
 
 type PurchasingPermissionGroup {
@@ -50,6 +58,12 @@ extend type Mutation {
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 
   removePurchasingPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  addPurchasingPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  removePurchasingPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 
   removePurchasingPermissionUser(permissionKey: String!, userId: String!): Boolean

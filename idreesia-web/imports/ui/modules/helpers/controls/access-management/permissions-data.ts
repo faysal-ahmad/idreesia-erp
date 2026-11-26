@@ -331,10 +331,16 @@ export const PurchasingPermissionsData: PermissionNode = {
       ],
     },
     {
+      title: 'Reports',
+      key: 'module-purchasing-reports',
+      children: [
+        purchasingLeaf('View Reports', PermissionConstants.PURCHASING_VIEW_REPORTS),
+      ],
+    },
+    {
       title: 'Administration',
       key: 'module-purchasing-administration',
       children: [
-        purchasingLeaf('View Reports', PermissionConstants.PURCHASING_VIEW_REPORTS),
         purchasingLeaf('View Audit Logs', PermissionConstants.PURCHASING_VIEW_AUDIT_LOGS),
         purchasingLeaf('Manage Purchasing Permissions', PermissionConstants.PURCHASING_MANAGE_PERMISSIONS),
       ],

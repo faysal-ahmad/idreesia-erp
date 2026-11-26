@@ -13,12 +13,20 @@ type SecurityPermissionGroupHolder {
   name: String!
 }
 
+type SecurityPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
 type SecurityPermissionAssignment {
   key: String!
   name: String!
   description: String
   users: [SecurityPermissionHolder]
   groups: [SecurityPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [SecurityPermissionCommitteeHolder]
 }
 
 type SecurityPermissionGroup {
@@ -50,6 +58,12 @@ extend type Mutation {
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 
   removeSecurityPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  addSecurityPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  removeSecurityPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 
   removeSecurityPermissionUser(permissionKey: String!, userId: String!): Boolean

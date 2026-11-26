@@ -10,3 +10,5 @@ export { default as REMOVE_SECURITY_GROUP_MEMBER } from './remove-security-group
 export { default as PAGED_SECURITY_PERMISSION_KARKUNS, securityPermissionKarkunSource } from './paged-security-permission-karkuns';
 export { default as ADD_SECURITY_PERMISSION_GROUP } from './add-security-permission-group';
 export { default as REMOVE_SECURITY_PERMISSION_GROUP } from './remove-security-permission-group';
+export { default as ADD_SECURITY_PERMISSION_COMMITTEE } from './add-security-permission-committee';
+export { default as REMOVE_SECURITY_PERMISSION_COMMITTEE } from './remove-security-permission-committee';

@@ -9,6 +9,7 @@ import {
   searchPickerPeople,
   type PickerPeopleParams,
 } from 'meteor/idreesia-common/server/business-logic/common/people/picker-people';
+import { committeeHolderKarkunIds } from 'meteor/idreesia-common/server/business-logic/admin/committee/committee-permissions';
 import { escapeRegExp } from 'meteor/idreesia-common/utilities/lodash';
 
 export type KarkunSearchParams = PickerPeopleParams;
@@ -68,7 +69,8 @@ const PURCHASING_PERMISSION_KEYS = PurchasingPermissionCatalog.flatMap((group) =
 
 /**
  * The karkuns who hold at least one Purchasing permission, given to their
- * user account or through a user group (any group that grants one). Locked
+ * user account, through a user group (any group that grants one) or through a
+ * committee they are a member or coordinator of. Locked
  * accounts and super admins are left out, as on the Permissions page.
  */
 export async function searchPurchasingPermissionHolders(params: KarkunSearchParams) {
@@ -76,6 +78,7 @@ export async function searchPurchasingPermissionHolders(params: KarkunSearchPara
     { permissions: { $in: PURCHASING_PERMISSION_KEYS } },
     { projection: { _id: 1 } }
   ).fetchAsync();
+  const committeeKarkunIds = await committeeHolderKarkunIds(PURCHASING_PERMISSION_KEYS);
   const holders = await Users.find({
     locked: { $ne: true },
     isSuperAdmin: { $ne: true },
@@ -83,6 +86,7 @@ export async function searchPurchasingPermissionHolders(params: KarkunSearchPara
     $or: [
       { permissions: { $in: PURCHASING_PERMISSION_KEYS } },
       { groups: { $in: grantingGroups.map((g) => g._id as string) } },
+      { personId: { $in: committeeKarkunIds } },
     ],
   }).fetchAsync();
   const personIds = [...new Set(holders.map((u) => u.personId).filter(Boolean))] as string[];

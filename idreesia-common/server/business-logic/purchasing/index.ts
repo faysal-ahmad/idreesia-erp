@@ -141,12 +141,15 @@ export {
   listPermissionAssignments,
   addPermissionUser,
   removePermissionUser,
+  addCommitteePermission,
+  removeCommitteePermission,
 } from './permissions';
 export type {
   PermissionAssignmentGroup,
   PermissionAssignment,
   PermissionHolder,
   PermissionGroupHolder,
+  PermissionCommitteeHolder,
 } from './permissions';
 
 export {

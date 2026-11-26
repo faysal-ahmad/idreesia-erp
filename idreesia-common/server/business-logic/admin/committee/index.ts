@@ -146,3 +146,13 @@ export {
   type NotificationUser,
 } from './notifications';
 export { searchCommitteeKarkuns } from './committee-karkuns';
+export {
+  changeCommitteePermission,
+  committeeHolderKarkunIds,
+  committeePermissionsOf,
+  listCommitteesHolding,
+  listLocationCommitteesForPicker,
+  PERMISSION_GRANTING_ROLES,
+  type CommitteePermissionHolder,
+  type CommitteePickerEntry,
+} from './committee-permissions';

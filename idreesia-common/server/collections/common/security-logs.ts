@@ -5,6 +5,7 @@ export interface SecurityLogDocument {
   _id?: string;
   userId?: string | null;
   groupId?: string | null;
+  committeeId?: string | null;
   operationType: string;
   operationDetails?: Record<string, unknown>;
   operationTime: Date;

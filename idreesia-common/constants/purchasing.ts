@@ -249,10 +249,16 @@ export const PurchasingPermissionCatalog: PurchasingPermissionGroup[] = [
     ],
   },
   {
+    featureKey: 'reports',
+    featureName: 'Reports',
+    permissions: [
+      { key: Permissions.PURCHASING_VIEW_REPORTS, name: 'View Reports', description: 'Dashboard figures, reports and Excel downloads' },
+    ],
+  },
+  {
     featureKey: 'administration',
     featureName: 'Administration',
     permissions: [
-      { key: Permissions.PURCHASING_VIEW_REPORTS, name: 'View Reports', description: 'Dashboard figures, reports and Excel downloads' },
       { key: Permissions.PURCHASING_VIEW_AUDIT_LOGS, name: 'View Audit Logs', description: 'The Audit Logs page and the History tab of documents' },
       { key: Permissions.PURCHASING_MANAGE_PERMISSIONS, name: 'Manage Purchasing Permissions', description: 'See who holds each Purchasing permission, and add or remove users' },
     ],

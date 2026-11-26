@@ -1,8 +1,10 @@
 import {
+  addCommitteePermission,
   addGroupPermission,
   addPermissionUser,
   listPermissionAssignments,
   searchHrPermissionKarkuns,
+  removeCommitteePermission,
   removeGroupPermission,
   removePermissionUser,
 } from 'meteor/idreesia-common/server/business-logic/hr';
@@ -19,6 +21,11 @@ interface AddArgs {
 interface GroupArgs {
   permissionKey: string;
   groupId: string;
+}
+
+interface CommitteeArgs {
+  permissionKey: string;
+  committeeId: string;
 }
 
 interface RemoveArgs {
@@ -43,6 +50,18 @@ export default {
   },
 
   Mutation: {
+    addHrPermissionCommittee: async (
+      _obj: unknown,
+      { permissionKey, committeeId }: CommitteeArgs,
+      { user }: ResolverContext
+    ) => addCommitteePermission(permissionKey, committeeId, user),
+
+    removeHrPermissionCommittee: async (
+      _obj: unknown,
+      { permissionKey, committeeId }: CommitteeArgs,
+      { user }: ResolverContext
+    ) => removeCommitteePermission(permissionKey, committeeId, user),
+
     addHrPermissionUser: async (
       _obj: unknown,
       { permissionKey, karkunId }: AddArgs,

@@ -38,6 +38,15 @@ export default new SimpleSchema({
     allowedValues: CommitteeMemberRoleValues,
     defaultValue: 'member',
   },
+  // Permissions given to the committee: every member and coordinator holds
+  // them (see resolveEffectiveAccess). Guests and observers do not.
+  permissions: {
+    type: Array,
+    optional: true,
+  },
+  'permissions.$': {
+    type: String,
+  },
   // Keys of the features enabled for this committee (see CommitteeFeatures).
   features: {
     type: Array,

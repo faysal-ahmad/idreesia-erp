@@ -3059,6 +3059,13 @@ export type UpdateAttachmentMutationVariables = Exact<{
 
 export type UpdateAttachmentMutation = { updateAttachment: { _id: string | null, name: string | null, description: string | null, mimeType: string | null } | null };
 
+export type ReferenceCommitteesByLocationQueryVariables = Exact<{
+  locationId: string;
+}>;
+
+
+export type ReferenceCommitteesByLocationQuery = { referenceCommitteesByLocation: Array<{ _id: string, name: string, color: string | null, memberCount: number } | null> | null };
+
 export type ReferenceOrgLocationsQueryVariables = Exact<{
   types?: Array<string> | string | null | undefined;
 }>;
@@ -3478,6 +3485,14 @@ export type AddHrGroupMemberMutationVariables = Exact<{
 
 export type AddHrGroupMemberMutation = { addHrGroupMember: boolean | null };
 
+export type AddHrPermissionCommitteeMutationVariables = Exact<{
+  permissionKey: string;
+  committeeId: string;
+}>;
+
+
+export type AddHrPermissionCommitteeMutation = { addHrPermissionCommittee: boolean | null };
+
 export type AddHrPermissionGroupMutationVariables = Exact<{
   permissionKey: string;
   groupId: string;
@@ -3512,7 +3527,7 @@ export type DeleteHrUserGroupMutation = { deleteHrUserGroup: boolean | null };
 export type HrPermissionAssignmentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type HrPermissionAssignmentsQuery = { hrPermissionAssignments: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> | null, groups: Array<{ groupId: string, name: string } | null> | null } | null> | null } | null> | null };
+export type HrPermissionAssignmentsQuery = { hrPermissionAssignments: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> | null, groups: Array<{ groupId: string, name: string } | null> | null, committees: Array<{ committeeId: string, name: string, locationName: string | null } | null> | null } | null> | null } | null> | null };
 
 export type HrUserGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3537,6 +3552,14 @@ export type RemoveHrGroupMemberMutationVariables = Exact<{
 
 
 export type RemoveHrGroupMemberMutation = { removeHrGroupMember: boolean | null };
+
+export type RemoveHrPermissionCommitteeMutationVariables = Exact<{
+  permissionKey: string;
+  committeeId: string;
+}>;
+
+
+export type RemoveHrPermissionCommitteeMutation = { removeHrPermissionCommittee: boolean | null };
 
 export type RemoveHrPermissionGroupMutationVariables = Exact<{
   permissionKey: string;
@@ -4064,6 +4087,14 @@ export type AddPurchasingGroupMemberMutationVariables = Exact<{
 
 export type AddPurchasingGroupMemberMutation = { addPurchasingGroupMember: boolean | null };
 
+export type AddPurchasingPermissionCommitteeMutationVariables = Exact<{
+  permissionKey: string;
+  committeeId: string;
+}>;
+
+
+export type AddPurchasingPermissionCommitteeMutation = { addPurchasingPermissionCommittee: boolean | null };
+
 export type AddPurchasingPermissionGroupMutationVariables = Exact<{
   permissionKey: string;
   groupId: string;
@@ -4109,7 +4140,7 @@ export type PagedPurchasingPermissionKarkunsQuery = { pagedPurchasingPermissionK
 export type PurchasingPermissionAssignmentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PurchasingPermissionAssignmentsQuery = { purchasingPermissionAssignments: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> | null, groups: Array<{ groupId: string, name: string } | null> | null } | null> | null } | null> | null };
+export type PurchasingPermissionAssignmentsQuery = { purchasingPermissionAssignments: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> | null, groups: Array<{ groupId: string, name: string } | null> | null, committees: Array<{ committeeId: string, name: string, locationName: string | null } | null> | null } | null> | null } | null> | null };
 
 export type PurchasingUserGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -4123,6 +4154,14 @@ export type RemovePurchasingGroupMemberMutationVariables = Exact<{
 
 
 export type RemovePurchasingGroupMemberMutation = { removePurchasingGroupMember: boolean | null };
+
+export type RemovePurchasingPermissionCommitteeMutationVariables = Exact<{
+  permissionKey: string;
+  committeeId: string;
+}>;
+
+
+export type RemovePurchasingPermissionCommitteeMutation = { removePurchasingPermissionCommittee: boolean | null };
 
 export type RemovePurchasingPermissionGroupMutationVariables = Exact<{
   permissionKey: string;
@@ -4814,6 +4853,14 @@ export type AddSecurityGroupMemberMutationVariables = Exact<{
 
 export type AddSecurityGroupMemberMutation = { addSecurityGroupMember: boolean | null };
 
+export type AddSecurityPermissionCommitteeMutationVariables = Exact<{
+  permissionKey: string;
+  committeeId: string;
+}>;
+
+
+export type AddSecurityPermissionCommitteeMutation = { addSecurityPermissionCommittee: boolean | null };
+
 export type AddSecurityPermissionGroupMutationVariables = Exact<{
   permissionKey: string;
   groupId: string;
@@ -4864,6 +4911,14 @@ export type RemoveSecurityGroupMemberMutationVariables = Exact<{
 
 export type RemoveSecurityGroupMemberMutation = { removeSecurityGroupMember: boolean | null };
 
+export type RemoveSecurityPermissionCommitteeMutationVariables = Exact<{
+  permissionKey: string;
+  committeeId: string;
+}>;
+
+
+export type RemoveSecurityPermissionCommitteeMutation = { removeSecurityPermissionCommittee: boolean | null };
+
 export type RemoveSecurityPermissionGroupMutationVariables = Exact<{
   permissionKey: string;
   groupId: string;
@@ -4883,7 +4938,7 @@ export type RemoveSecurityPermissionUserMutation = { removeSecurityPermissionUse
 export type SecurityPermissionAssignmentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SecurityPermissionAssignmentsQuery = { securityPermissionAssignments: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> | null, groups: Array<{ groupId: string, name: string } | null> | null } | null> | null } | null> | null };
+export type SecurityPermissionAssignmentsQuery = { securityPermissionAssignments: Array<{ featureKey: string, featureName: string, permissions: Array<{ key: string, name: string, description: string | null, users: Array<{ userId: string, personId: string | null, username: string | null, displayName: string | null } | null> | null, groups: Array<{ groupId: string, name: string } | null> | null, committees: Array<{ committeeId: string, name: string, locationName: string | null } | null> | null } | null> | null } | null> | null };
 
 export type SecurityUserGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 

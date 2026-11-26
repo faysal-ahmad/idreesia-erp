@@ -571,11 +571,19 @@ export type HrGroupMember = {
 
 export type HrPermissionAssignment = {
   __typename?: 'HrPermissionAssignment';
+  committees?: Maybe<Array<Maybe<HrPermissionCommitteeHolder>>>;
   description?: Maybe<Scalars['String']['output']>;
   groups?: Maybe<Array<Maybe<HrPermissionGroupHolder>>>;
   key: Scalars['String']['output'];
   name: Scalars['String']['output'];
   users?: Maybe<Array<Maybe<HrPermissionHolder>>>;
+};
+
+export type HrPermissionCommitteeHolder = {
+  __typename?: 'HrPermissionCommitteeHolder';
+  committeeId: Scalars['String']['output'];
+  locationName?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
 };
 
 export type HrPermissionGroup = {
@@ -887,6 +895,7 @@ export type Mutation = {
   addCommitteeMember?: Maybe<CommitteeType>;
   addHrGroupMember?: Maybe<Scalars['Boolean']['output']>;
   addHrKarkunAttachment?: Maybe<PersonType>;
+  addHrPermissionCommittee?: Maybe<Scalars['Boolean']['output']>;
   addHrPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   addHrPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   addIssuanceFormAttachment?: Maybe<IssuanceForm>;
@@ -896,10 +905,12 @@ export type Mutation = {
   addPhysicalStoreAccessUser?: Maybe<Scalars['Boolean']['output']>;
   addPurchaseFormAttachment?: Maybe<PurchaseForm>;
   addPurchasingGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  addPurchasingPermissionCommittee?: Maybe<Scalars['Boolean']['output']>;
   addPurchasingPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   addPurchasingPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   addSecurityEventKarkun?: Maybe<SecurityEventKarkunType>;
   addSecurityGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  addSecurityPermissionCommittee?: Maybe<Scalars['Boolean']['output']>;
   addSecurityPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   addSecurityPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   addSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
@@ -1029,6 +1040,7 @@ export type Mutation = {
   removeDutyShift?: Maybe<Scalars['Int']['output']>;
   removeHrGroupMember?: Maybe<Scalars['Boolean']['output']>;
   removeHrKarkunAttachment?: Maybe<PersonType>;
+  removeHrPermissionCommittee?: Maybe<Scalars['Boolean']['output']>;
   removeHrPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   removeHrPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   removeIssuanceFormAttachment?: Maybe<IssuanceForm>;
@@ -1045,6 +1057,7 @@ export type Mutation = {
   removePurchasingCatalogItem?: Maybe<Scalars['Boolean']['output']>;
   removePurchasingCatalogItemImage?: Maybe<PurchasingCatalogItem>;
   removePurchasingGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  removePurchasingPermissionCommittee?: Maybe<Scalars['Boolean']['output']>;
   removePurchasingPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   removePurchasingPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   removePurchasingVendor?: Maybe<Scalars['Boolean']['output']>;
@@ -1054,6 +1067,7 @@ export type Mutation = {
   removeSecurityEventLangarDish?: Maybe<Scalars['Int']['output']>;
   removeSecurityEventLangarLocation?: Maybe<Scalars['Int']['output']>;
   removeSecurityGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  removeSecurityPermissionCommittee?: Maybe<Scalars['Boolean']['output']>;
   removeSecurityPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
   removeSecurityPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   removeSecurityServerProfileImage?: Maybe<SecurityServerProfileType>;
@@ -1288,6 +1302,12 @@ export type MutationAddHrKarkunAttachmentArgs = {
 };
 
 
+export type MutationAddHrPermissionCommitteeArgs = {
+  committeeId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
 export type MutationAddHrPermissionGroupArgs = {
   groupId: Scalars['String']['input'];
   permissionKey: Scalars['String']['input'];
@@ -1348,6 +1368,12 @@ export type MutationAddPurchasingGroupMemberArgs = {
 };
 
 
+export type MutationAddPurchasingPermissionCommitteeArgs = {
+  committeeId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
 export type MutationAddPurchasingPermissionGroupArgs = {
   groupId: Scalars['String']['input'];
   permissionKey: Scalars['String']['input'];
@@ -1370,6 +1396,12 @@ export type MutationAddSecurityEventKarkunArgs = {
 export type MutationAddSecurityGroupMemberArgs = {
   groupId: Scalars['String']['input'];
   karkunId: Scalars['String']['input'];
+};
+
+
+export type MutationAddSecurityPermissionCommitteeArgs = {
+  committeeId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
 };
 
 
@@ -2241,6 +2273,12 @@ export type MutationRemoveHrKarkunAttachmentArgs = {
 };
 
 
+export type MutationRemoveHrPermissionCommitteeArgs = {
+  committeeId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
 export type MutationRemoveHrPermissionGroupArgs = {
   groupId: Scalars['String']['input'];
   permissionKey: Scalars['String']['input'];
@@ -2340,6 +2378,12 @@ export type MutationRemovePurchasingGroupMemberArgs = {
 };
 
 
+export type MutationRemovePurchasingPermissionCommitteeArgs = {
+  committeeId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
 export type MutationRemovePurchasingPermissionGroupArgs = {
   groupId: Scalars['String']['input'];
   permissionKey: Scalars['String']['input'];
@@ -2385,6 +2429,12 @@ export type MutationRemoveSecurityEventLangarLocationArgs = {
 export type MutationRemoveSecurityGroupMemberArgs = {
   groupId: Scalars['String']['input'];
   userId: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveSecurityPermissionCommitteeArgs = {
+  committeeId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
 };
 
 
@@ -4867,11 +4917,19 @@ export type PurchasingPaymentAllocationInput = {
 
 export type PurchasingPermissionAssignment = {
   __typename?: 'PurchasingPermissionAssignment';
+  committees?: Maybe<Array<Maybe<PurchasingPermissionCommitteeHolder>>>;
   description?: Maybe<Scalars['String']['output']>;
   groups?: Maybe<Array<Maybe<PurchasingPermissionGroupHolder>>>;
   key: Scalars['String']['output'];
   name: Scalars['String']['output'];
   users?: Maybe<Array<Maybe<PurchasingPermissionHolder>>>;
+};
+
+export type PurchasingPermissionCommitteeHolder = {
+  __typename?: 'PurchasingPermissionCommitteeHolder';
+  committeeId: Scalars['String']['output'];
+  locationName?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
 };
 
 export type PurchasingPermissionGroup = {
@@ -5358,6 +5416,7 @@ export type Query = {
   purchasingVendorById?: Maybe<PurchasingVendor>;
   purchasingVendorLedger?: Maybe<PurchasingVendorLedger>;
   referenceCityMehfilLocations?: Maybe<Array<Maybe<ReferenceOrgLocationType>>>;
+  referenceCommitteesByLocation?: Maybe<Array<Maybe<ReferenceCommitteeType>>>;
   referenceDutyShifts?: Maybe<Array<Maybe<ReferenceDutyShiftType>>>;
   referenceMsDuties?: Maybe<Array<Maybe<ReferenceDutyType>>>;
   referenceOrgLocations?: Maybe<Array<Maybe<ReferenceOrgLocationType>>>;
@@ -6221,6 +6280,11 @@ export type QueryPurchasingVendorLedgerArgs = {
 };
 
 
+export type QueryReferenceCommitteesByLocationArgs = {
+  locationId: Scalars['String']['input'];
+};
+
+
 export type QueryReferenceOrgLocationsArgs = {
   types?: InputMaybe<Array<Scalars['String']['input']>>;
 };
@@ -6755,6 +6819,14 @@ export type QueryWorkspaceTasksArgs = {
   view?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type ReferenceCommitteeType = {
+  __typename?: 'ReferenceCommitteeType';
+  _id: Scalars['String']['output'];
+  color?: Maybe<Scalars['String']['output']>;
+  memberCount: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type ReferenceDutyShiftType = {
   __typename?: 'ReferenceDutyShiftType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -6951,11 +7023,19 @@ export type SecurityLogUserOption = {
 
 export type SecurityPermissionAssignment = {
   __typename?: 'SecurityPermissionAssignment';
+  committees?: Maybe<Array<Maybe<SecurityPermissionCommitteeHolder>>>;
   description?: Maybe<Scalars['String']['output']>;
   groups?: Maybe<Array<Maybe<SecurityPermissionGroupHolder>>>;
   key: Scalars['String']['output'];
   name: Scalars['String']['output'];
   users?: Maybe<Array<Maybe<SecurityPermissionHolder>>>;
+};
+
+export type SecurityPermissionCommitteeHolder = {
+  __typename?: 'SecurityPermissionCommitteeHolder';
+  committeeId: Scalars['String']['output'];
+  locationName?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
 };
 
 export type SecurityPermissionGroup = {

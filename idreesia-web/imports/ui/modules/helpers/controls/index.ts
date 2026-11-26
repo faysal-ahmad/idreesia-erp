@@ -33,3 +33,4 @@ export {
   default as SortableColumnHeader,
 } from './sortable-column-header/header';
 export * from './location-picker';
+export * from './committee-picker';

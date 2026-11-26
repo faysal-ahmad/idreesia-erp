@@ -13,12 +13,20 @@ type HrPermissionGroupHolder {
   name: String!
 }
 
+type HrPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
 type HrPermissionAssignment {
   key: String!
   name: String!
   description: String
   users: [HrPermissionHolder]
   groups: [HrPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [HrPermissionCommitteeHolder]
 }
 
 type HrPermissionGroup {
@@ -50,6 +58,12 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 
   removeHrPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  addHrPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  removeHrPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 
   removeHrPermissionUser(permissionKey: String!, userId: String!): Boolean

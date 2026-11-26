@@ -24,6 +24,11 @@ const SECURITY_PERMISSION_ASSIGNMENTS: TypedDocumentNode<SecurityPermissionAssig
           groupId
           name
         }
+        committees {
+          committeeId
+          name
+          locationName
+        }
       }
     }
   }

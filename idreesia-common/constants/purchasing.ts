@@ -199,6 +199,7 @@ export const PurchasingPermissionCatalog: PurchasingPermissionGroup[] = [
       { key: Permissions.PURCHASING_VIEW_VENDORS, name: 'View Vendors', description: 'See the vendor list' },
       { key: Permissions.PURCHASING_MANAGE_VENDORS, name: 'Manage Vendors', description: 'Add, edit and deactivate vendors' },
       { key: Permissions.PURCHASING_MANAGE_CATALOG, name: 'Manage Catalog', description: 'Add, edit and deactivate catalog items' },
+      { key: Permissions.PURCHASING_MANAGE_PETTY_CASH_FUNDS, name: 'Manage Petty Cash Funds and Expense Heads', description: 'Create and edit funds and expense heads, and deactivate them' },
     ],
   },
   {
@@ -242,7 +243,6 @@ export const PurchasingPermissionCatalog: PurchasingPermissionGroup[] = [
     featureName: 'Petty Cash',
     permissions: [
       { key: Permissions.PURCHASING_VIEW_PETTY_CASH, name: 'View Petty Cash', description: 'See petty cash funds, vouchers and replenishments' },
-      { key: Permissions.PURCHASING_MANAGE_PETTY_CASH_FUNDS, name: 'Manage Petty Cash Funds and Expense Heads', description: 'Create and edit funds and expense heads, and deactivate them' },
       { key: Permissions.PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, name: 'Manage Petty Cash Vouchers', description: 'Create, edit and submit vouchers and request replenishments' },
       { key: Permissions.PURCHASING_APPROVE_PETTY_CASH_VOUCHERS, name: 'Approve Petty Cash Vouchers', description: 'Approve, reject and void vouchers' },
       { key: Permissions.PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS, name: 'Approve Petty Cash Replenishments', description: 'Approve and reject replenishment requests' },

@@ -281,6 +281,7 @@ export const PurchasingPermissionsData: PermissionNode = {
         purchasingLeaf('View Vendors', PermissionConstants.PURCHASING_VIEW_VENDORS),
         purchasingLeaf('Manage Vendors', PermissionConstants.PURCHASING_MANAGE_VENDORS),
         purchasingLeaf('Manage Catalog', PermissionConstants.PURCHASING_MANAGE_CATALOG),
+        purchasingLeaf('Manage Petty Cash Funds and Expense Heads', PermissionConstants.PURCHASING_MANAGE_PETTY_CASH_FUNDS),
       ],
     },
     {
@@ -324,7 +325,6 @@ export const PurchasingPermissionsData: PermissionNode = {
       key: 'module-purchasing-petty-cash',
       children: [
         purchasingLeaf('View Petty Cash', PermissionConstants.PURCHASING_VIEW_PETTY_CASH),
-        purchasingLeaf('Manage Petty Cash Funds', PermissionConstants.PURCHASING_MANAGE_PETTY_CASH_FUNDS),
         purchasingLeaf('Manage Petty Cash Vouchers', PermissionConstants.PURCHASING_MANAGE_PETTY_CASH_VOUCHERS),
         purchasingLeaf('Approve Petty Cash Vouchers', PermissionConstants.PURCHASING_APPROVE_PETTY_CASH_VOUCHERS),
         purchasingLeaf('Approve Petty Cash Replenishments', PermissionConstants.PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS),

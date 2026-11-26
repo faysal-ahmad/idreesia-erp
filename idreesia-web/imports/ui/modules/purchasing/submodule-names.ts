@@ -12,7 +12,11 @@ const SubModuleNames = {
   pettyCashExpenseHeads: 'Petty Cash Expense Heads',
   vendors: 'Vendors',
   catalog: 'Catalog',
-  reports: 'Reports',
+  reportSpendingByVendor: 'Spending by Vendor',
+  reportSpendingByMonth: 'Spending by Month',
+  reportOpenOrders: 'Open Orders',
+  reportPayablesAging: 'Payables Aging',
+  reportVendorLedger: 'Vendor Ledger',
   auditLogs: 'Audit Logs',
   permissions: 'Permissions',
 };

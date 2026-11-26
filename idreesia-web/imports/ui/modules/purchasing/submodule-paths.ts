@@ -77,7 +77,19 @@ export default class SubModulePaths {
   static pettyCashExpenseHeadsPath = `${ModulePaths.purchasing}/petty-cash/expense-heads`;
   static pettyCashFundsPath = `${ModulePaths.purchasing}/petty-cash/funds`;
 
+  // *************************************************************************************
+  // Report Routes
+  // *************************************************************************************
   static reportsPath = `${ModulePaths.purchasing}/reports`;
+  static reportSpendingByVendorPath = `${SubModulePaths.reportsPath}/spending-by-vendor`;
+  static reportSpendingByMonthPath = `${SubModulePaths.reportsPath}/spending-by-month`;
+  static reportOpenOrdersPath = `${SubModulePaths.reportsPath}/open-orders`;
+  static reportPayablesAgingPath = `${SubModulePaths.reportsPath}/payables-aging`;
+  static reportVendorLedgerPath = `${SubModulePaths.reportsPath}/vendor-ledger`;
+
+  // *************************************************************************************
+  // Administration Routes
+  // *************************************************************************************
   static permissionsPath = `${ModulePaths.purchasing}/permissions`;
   static auditLogsPath = `${ModulePaths.purchasing}/audit-logs`;
 }

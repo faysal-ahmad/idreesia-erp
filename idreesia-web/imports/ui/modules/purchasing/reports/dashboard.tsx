@@ -36,7 +36,7 @@ const Dashboard = (_props: RouteComponentProps) => {
     {
       title: 'Open orders',
       value: counts?.openOrders ?? 0,
-      to: `${paths.reportsPath}?tab=open-orders`,
+      to: paths.reportOpenOrdersPath,
     },
     {
       title: 'Overdue invoices',
@@ -47,12 +47,12 @@ const Dashboard = (_props: RouteComponentProps) => {
     {
       title: 'Total payable',
       value: formatMoney(counts?.totalPayable ?? 0),
-      to: `${paths.reportsPath}?tab=aging`,
+      to: paths.reportPayablesAgingPath,
     },
     {
       title: 'Overdue amount',
       value: formatMoney(counts?.overdueAmount ?? 0),
-      to: `${paths.reportsPath}?tab=aging`,
+      to: paths.reportPayablesAgingPath,
       alert: (counts?.overdueAmount ?? 0) > 0,
     },
   ];

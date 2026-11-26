@@ -280,6 +280,8 @@ export type ResolversTypes = ResolversObject<{
   PurchasingPermissionHolder: ResolverTypeWrapper<Types.PurchasingPermissionHolder>;
   PurchasingPettyCashExpenseHead: ResolverTypeWrapper<Types.PurchasingPettyCashExpenseHead>;
   PurchasingPettyCashFund: ResolverTypeWrapper<Types.PurchasingPettyCashFund>;
+  PurchasingPettyCashLedger: ResolverTypeWrapper<Types.PurchasingPettyCashLedger>;
+  PurchasingPettyCashLedgerHead: ResolverTypeWrapper<Types.PurchasingPettyCashLedgerHead>;
   PurchasingPettyCashReplenishment: ResolverTypeWrapper<Types.PurchasingPettyCashReplenishment>;
   PurchasingPettyCashVoucher: ResolverTypeWrapper<Types.PurchasingPettyCashVoucher>;
   PurchasingPettyCashVoucherLine: ResolverTypeWrapper<Types.PurchasingPettyCashVoucherLine>;
@@ -625,6 +627,8 @@ export type ResolversParentTypes = ResolversObject<{
   PurchasingPermissionHolder: Types.PurchasingPermissionHolder;
   PurchasingPettyCashExpenseHead: Types.PurchasingPettyCashExpenseHead;
   PurchasingPettyCashFund: Types.PurchasingPettyCashFund;
+  PurchasingPettyCashLedger: Types.PurchasingPettyCashLedger;
+  PurchasingPettyCashLedgerHead: Types.PurchasingPettyCashLedgerHead;
   PurchasingPettyCashReplenishment: Types.PurchasingPettyCashReplenishment;
   PurchasingPettyCashVoucher: Types.PurchasingPettyCashVoucher;
   PurchasingPettyCashVoucherLine: Types.PurchasingPettyCashVoucherLine;
@@ -2769,6 +2773,20 @@ export type PurchasingPettyCashFundResolvers<ContextType = any, ParentType exten
   version?: Resolver<Types.Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
+export type PurchasingPettyCashLedgerResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchasingPettyCashLedger'] = ResolversParentTypes['PurchasingPettyCashLedger']> = ResolversObject<{
+  closingBalance?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  heads?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchasingPettyCashLedgerHead']>>>, ParentType, ContextType>;
+  openingBalance?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  replenishmentTotal?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  voucherTotal?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+}>;
+
+export type PurchasingPettyCashLedgerHeadResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchasingPettyCashLedgerHead'] = ResolversParentTypes['PurchasingPettyCashLedgerHead']> = ResolversObject<{
+  _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  total?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+}>;
+
 export type PurchasingPettyCashReplenishmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchasingPettyCashReplenishment'] = ResolversParentTypes['PurchasingPettyCashReplenishment']> = ResolversObject<{
   _id?: Resolver<Types.Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   amount?: Resolver<Types.Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -3136,6 +3154,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   purchasingPermissionAssignments?: Resolver<Types.Maybe<Array<Types.Maybe<ResolversTypes['PurchasingPermissionGroup']>>>, ParentType, ContextType>;
   purchasingPettyCashExpenseHeadById?: Resolver<Types.Maybe<ResolversTypes['PurchasingPettyCashExpenseHead']>, ParentType, ContextType, RequireFields<Types.QueryPurchasingPettyCashExpenseHeadByIdArgs, '_id'>>;
   purchasingPettyCashFundById?: Resolver<Types.Maybe<ResolversTypes['PurchasingPettyCashFund']>, ParentType, ContextType, RequireFields<Types.QueryPurchasingPettyCashFundByIdArgs, '_id'>>;
+  purchasingPettyCashLedger?: Resolver<Types.Maybe<ResolversTypes['PurchasingPettyCashLedger']>, ParentType, ContextType, RequireFields<Types.QueryPurchasingPettyCashLedgerArgs, 'fundId'>>;
   purchasingPettyCashReplenishmentById?: Resolver<Types.Maybe<ResolversTypes['PurchasingPettyCashReplenishment']>, ParentType, ContextType, RequireFields<Types.QueryPurchasingPettyCashReplenishmentByIdArgs, '_id'>>;
   purchasingPettyCashVoucherById?: Resolver<Types.Maybe<ResolversTypes['PurchasingPettyCashVoucher']>, ParentType, ContextType, RequireFields<Types.QueryPurchasingPettyCashVoucherByIdArgs, '_id'>>;
   purchasingQuoteById?: Resolver<Types.Maybe<ResolversTypes['PurchasingQuote']>, ParentType, ContextType, RequireFields<Types.QueryPurchasingQuoteByIdArgs, '_id'>>;
@@ -4533,6 +4552,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PurchasingPermissionHolder?: PurchasingPermissionHolderResolvers<ContextType>;
   PurchasingPettyCashExpenseHead?: PurchasingPettyCashExpenseHeadResolvers<ContextType>;
   PurchasingPettyCashFund?: PurchasingPettyCashFundResolvers<ContextType>;
+  PurchasingPettyCashLedger?: PurchasingPettyCashLedgerResolvers<ContextType>;
+  PurchasingPettyCashLedgerHead?: PurchasingPettyCashLedgerHeadResolvers<ContextType>;
   PurchasingPettyCashReplenishment?: PurchasingPettyCashReplenishmentResolvers<ContextType>;
   PurchasingPettyCashVoucher?: PurchasingPettyCashVoucherResolvers<ContextType>;
   PurchasingPettyCashVoucherLine?: PurchasingPettyCashVoucherLineResolvers<ContextType>;

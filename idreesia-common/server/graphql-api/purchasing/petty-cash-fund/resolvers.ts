@@ -2,6 +2,8 @@ import { PurchasingPettyCashFunds } from 'meteor/idreesia-common/server/collecti
 import {
   createPettyCashFund,
   listPettyCashFunds,
+  parseDateInput,
+  pettyCashLedger,
   searchPurchasingPermissionHolders,
   setPettyCashFundActive,
   updatePettyCashFund,
@@ -39,6 +41,11 @@ export default {
       _obj: unknown,
       args: { search?: string; isActive?: boolean; pageIndex?: number; pageSize?: number }
     ) => listPettyCashFunds(args),
+
+    purchasingPettyCashLedger: async (
+      _obj: unknown,
+      { fundId, fromDate, toDate }: { fundId: string; fromDate?: string; toDate?: string }
+    ) => pettyCashLedger(fundId, { fromDate: parseDateInput(fromDate), toDate: parseDateInput(toDate) }),
   },
 
   Mutation: {

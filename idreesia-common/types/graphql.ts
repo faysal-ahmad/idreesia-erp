@@ -4985,6 +4985,22 @@ export type PurchasingPettyCashFund = {
   version?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PurchasingPettyCashLedger = {
+  __typename?: 'PurchasingPettyCashLedger';
+  closingBalance?: Maybe<Scalars['Float']['output']>;
+  heads?: Maybe<Array<Maybe<PurchasingPettyCashLedgerHead>>>;
+  openingBalance?: Maybe<Scalars['Float']['output']>;
+  replenishmentTotal?: Maybe<Scalars['Float']['output']>;
+  voucherTotal?: Maybe<Scalars['Float']['output']>;
+};
+
+export type PurchasingPettyCashLedgerHead = {
+  __typename?: 'PurchasingPettyCashLedgerHead';
+  _id?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  total?: Maybe<Scalars['Float']['output']>;
+};
+
 export type PurchasingPettyCashReplenishment = {
   __typename?: 'PurchasingPettyCashReplenishment';
   _id?: Maybe<Scalars['String']['output']>;
@@ -5405,6 +5421,7 @@ export type Query = {
   purchasingPermissionAssignments?: Maybe<Array<Maybe<PurchasingPermissionGroup>>>;
   purchasingPettyCashExpenseHeadById?: Maybe<PurchasingPettyCashExpenseHead>;
   purchasingPettyCashFundById?: Maybe<PurchasingPettyCashFund>;
+  purchasingPettyCashLedger?: Maybe<PurchasingPettyCashLedger>;
   purchasingPettyCashReplenishmentById?: Maybe<PurchasingPettyCashReplenishment>;
   purchasingPettyCashVoucherById?: Maybe<PurchasingPettyCashVoucher>;
   purchasingQuoteById?: Maybe<PurchasingQuote>;
@@ -6228,6 +6245,13 @@ export type QueryPurchasingPettyCashExpenseHeadByIdArgs = {
 
 export type QueryPurchasingPettyCashFundByIdArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type QueryPurchasingPettyCashLedgerArgs = {
+  fromDate?: InputMaybe<Scalars['String']['input']>;
+  fundId: Scalars['String']['input'];
+  toDate?: InputMaybe<Scalars['String']['input']>;
 };
 
 

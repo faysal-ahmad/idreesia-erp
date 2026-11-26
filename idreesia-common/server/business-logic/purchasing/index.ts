@@ -215,6 +215,9 @@ export type {
   ListPettyCashReplenishmentsOptions,
 } from './petty-cash-replenishments';
 
+export { pettyCashLedger } from './petty-cash-ledger';
+export type { PettyCashLedger, PettyCashLedgerHead } from './petty-cash-ledger';
+
 export {
   createPettyCashExpenseHead,
   updatePettyCashExpenseHead,

@@ -8,6 +8,7 @@ const SubModuleNames = {
   payments: 'Payments',
   pettyCashVouchers: 'Petty Cash Vouchers',
   pettyCashReplenishments: 'Petty Cash Replenishments',
+  pettyCashLedger: 'Petty Cash Ledger',
   pettyCashFunds: 'Petty Cash Funds',
   pettyCashExpenseHeads: 'Petty Cash Expense Heads',
   vendors: 'Vendors',

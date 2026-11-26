@@ -4282,6 +4282,15 @@ export type PagedPurchasingCustodianKarkunsQueryVariables = Exact<{
 
 export type PagedPurchasingCustodianKarkunsQuery = { pagedPurchasingCustodianKarkuns: { totalResults: number | null, data: Array<{ _id: string, name: string | null, parentName: string | null, cnicNumber: string | null, contactNumber1: string | null, imageUrl: string | null, imageThumbnailUrl: string | null } | null> | null } | null };
 
+export type PurchasingPettyCashLedgerQueryVariables = Exact<{
+  fundId: string;
+  fromDate?: string | null | undefined;
+  toDate?: string | null | undefined;
+}>;
+
+
+export type PurchasingPettyCashLedgerQuery = { purchasingPettyCashLedger: { openingBalance: number | null, replenishmentTotal: number | null, voucherTotal: number | null, closingBalance: number | null, heads: Array<{ _id: string | null, name: string | null, total: number | null } | null> | null } | null };
+
 export type PagedPurchasingPettyCashReplenishmentsQueryVariables = Exact<{
   search?: string | null | undefined;
   status?: string | null | undefined;

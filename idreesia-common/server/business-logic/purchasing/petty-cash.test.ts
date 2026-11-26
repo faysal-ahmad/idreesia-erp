@@ -17,6 +17,7 @@ import {
   getPettyCashFund,
   getPettyCashVoucher,
   listPettyCashVouchers,
+  pettyCashLedger,
   rejectPettyCashReplenishment,
   rejectPettyCashVoucher,
   requestPettyCashReplenishment,
@@ -350,5 +351,71 @@ describe('petty cash expense heads', () => {
     await expect(deletePettyCashExpenseHead(used._id, user)).rejects.toThrow(/Deactivate/);
     await expect(deletePettyCashExpenseHead(unused._id, user)).resolves.toBe(true);
     await expect(deletePettyCashExpenseHead(unused._id, user)).rejects.toThrow(/not found/);
+  });
+});
+
+describe('petty cash ledger', () => {
+  const spend = async (fundId: string, expenseHeadId: string, voucherDate: Date, unitPrice: number) => {
+    const v = await createPettyCashVoucher(
+      { fundId, expenseHeadId, voucherDate, payee: 'Shop', lines: [{ description: 'Tea', quantity: 1, unitPrice }] },
+      user
+    );
+    await submitPettyCashVoucher(v._id, user);
+    return approvePettyCashVoucher(v._id, user);
+  };
+
+  it('totals the replenishments and the vouchers (per head) of the period between opening and closing balances', async () => {
+    const fund = await newFund();
+    const kitchen = await newHead('Kitchen');
+    const sabzi = await newHead('Sabzi');
+    const retired = await newHead('Retired');
+    const idle = await newHead('Idle');
+    await spend(fund._id, kitchen._id, new Date(2030, 0, 5), 100);
+    await spend(fund._id, retired._id, new Date(2030, 0, 10), 200);
+    const voided = await spend(fund._id, sabzi._id, new Date(2030, 0, 12), 50);
+    await voidPettyCashVoucher(voided._id, 'Wrong', user);
+    const replenishment = await requestPettyCashReplenishment({ fundId: fund._id }, user);
+    await approvePettyCashReplenishment(replenishment._id, user);
+    await setPettyCashExpenseHeadActive(retired._id, false, user);
+    await setPettyCashExpenseHeadActive(idle._id, false, user);
+
+    const ledger = await pettyCashLedger(fund._id);
+    expect(ledger).toMatchObject({
+      openingBalance: 1000,
+      replenishmentTotal: 300,
+      voucherTotal: 300,
+      closingBalance: 1000,
+    });
+    expect(ledger.closingBalance).toBe((await getPettyCashFund(fund._id)).balance);
+    // Active heads, plus an inactive one that was spent against.
+    expect(ledger.heads.map((h) => [h.name, h.total])).toEqual([
+      ['Kitchen', 100],
+      ['Retired', 200],
+      ['Sabzi', 0],
+    ]);
+
+    // The replenishment was approved today, before the 2030 vouchers.
+    const later = await pettyCashLedger(fund._id, { fromDate: new Date(2030, 0, 7) });
+    expect(later).toMatchObject({
+      openingBalance: 1200,
+      replenishmentTotal: 0,
+      voucherTotal: 200,
+      closingBalance: 1000,
+    });
+    expect(later.heads.find((h) => h.name === 'Kitchen')?.total).toBe(0);
+    expect(later.heads.find((h) => h.name === 'Retired')?.total).toBe(200);
+  });
+
+  it('keeps the opening float when the fund float is changed later', async () => {
+    const fund = await newFund();
+    await spend(fund._id, await headId(), today, 100);
+    await updatePettyCashFund(
+      fund._id,
+      { name: fund.name, custodianPersonId: fund.custodianPersonId, floatAmount: 5000 },
+      user
+    );
+    const ledger = await pettyCashLedger(fund._id);
+    expect(ledger.openingBalance).toBe(1000);
+    expect(ledger.closingBalance).toBe(900);
   });
 });

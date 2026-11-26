@@ -94,3 +94,20 @@
 .purchasing-single-tab > .ant-tabs-nav {
   display: none;
 }
+
+/* Petty cash ledger: expense-head columns sit on a soft surface, apart from Dr/Cr/Balance. */
+.petty-cash-ledger .ant-table-thead > tr > th.petty-cash-ledger-head {
+  white-space: normal;
+}
+
+.petty-cash-ledger .ant-table-tbody > tr > td.petty-cash-ledger-head {
+  background: #f9fafb;
+}
+
+.petty-cash-ledger .petty-cash-ledger-totals > td {
+  background: #f3f4f6;
+}
+
+.petty-cash-ledger-negative {
+  color: #cf1322;
+}

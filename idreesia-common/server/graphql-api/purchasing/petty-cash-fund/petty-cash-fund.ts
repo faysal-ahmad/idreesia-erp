@@ -24,6 +24,22 @@ type PagedPurchasingPettyCashFunds {
   data: [PurchasingPettyCashFund]
 }
 
+type PurchasingPettyCashLedgerHead {
+  _id: String
+  name: String
+  total: Float
+}
+
+type PurchasingPettyCashLedger {
+  openingBalance: Float
+  # Approved replenishments in the period (debit: cash into the fund).
+  replenishmentTotal: Float
+  # Approved vouchers in the period (credit: cash out of the fund), split by head in heads.
+  voucherTotal: Float
+  closingBalance: Float
+  heads: [PurchasingPettyCashLedgerHead]
+}
+
 extend type Query {
   purchasingPettyCashFundById(_id: String!): PurchasingPettyCashFund
     @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
@@ -44,6 +60,10 @@ extend type Query {
     pageIndex: Int
     pageSize: Int
   ): PagedPurchasingPettyCashFunds
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  # A fund's cash book for a period in totals: opening, replenished, spent per head, closing.
+  purchasingPettyCashLedger(fundId: String!, fromDate: String, toDate: String): PurchasingPettyCashLedger
     @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
 }
 

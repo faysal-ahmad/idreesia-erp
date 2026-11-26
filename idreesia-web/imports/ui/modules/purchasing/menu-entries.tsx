@@ -1,5 +1,6 @@
 import React, { type CSSProperties } from 'react';
 import {
+  AccountBookOutlined,
   BarChartOutlined,
   BankOutlined,
   BookOutlined,
@@ -168,6 +169,19 @@ const entries: MenuEntry[] = [
       P.PURCHASING_VIEW_PETTY_CASH,
       P.PURCHASING_MANAGE_PETTY_CASH_VOUCHERS,
       P.PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS,
+    ],
+    group: 'petty-cash',
+  },
+  {
+    key: 'petty-cash-ledger',
+    label: 'Petty Cash Ledger',
+    subModuleName: SubModuleNames.pettyCashLedger,
+    basePath: paths.pettyCashLedgerPath,
+    icon: <AccountBookOutlined style={IconStyle} />,
+    permissions: [
+      P.PURCHASING_VIEW_PETTY_CASH,
+      P.PURCHASING_MANAGE_PETTY_CASH_FUNDS,
+      P.PURCHASING_MANAGE_PETTY_CASH_VOUCHERS,
     ],
     group: 'petty-cash',
   },

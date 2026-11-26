@@ -21,6 +21,7 @@ import { InvoicesList, NewInvoice, InvoicePage } from './invoices';
 import { PaymentsList, NewPayment, PaymentPage } from './payments';
 import { PettyCashExpenseHeadsList } from './petty-cash/expense-heads';
 import { PettyCashFundsList } from './petty-cash/funds';
+import { PettyCashLedger } from './petty-cash/ledger';
 import { PettyCashVouchersList, PettyCashVoucherForm, PettyCashVoucherPage } from './petty-cash/vouchers';
 import { PettyCashReplenishmentsList, PettyCashReplenishmentPage } from './petty-cash/replenishments';
 import { VendorsList, VendorsEditForm } from './vendors';
@@ -63,6 +64,7 @@ const Router = () => (
 
     <Route path={paths.pettyCashReplenishmentViewPath()} component={PettyCashReplenishmentPage} />
     <Route path={paths.pettyCashReplenishmentsPath} component={PettyCashReplenishmentsList} />
+    <Route path={paths.pettyCashLedgerPath} component={PettyCashLedger} />
     <Route path={paths.pettyCashFundsPath} component={PettyCashFundsList} />
     <Route path={paths.pettyCashExpenseHeadsPath} component={PettyCashExpenseHeadsList} />
 

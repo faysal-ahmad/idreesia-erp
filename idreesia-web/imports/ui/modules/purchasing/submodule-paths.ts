@@ -61,6 +61,8 @@ export default class SubModulePaths {
     return `${SubModulePaths.pettyCashReplenishmentsPath}/${id}`;
   }
 
+  static pettyCashLedgerPath = `${ModulePaths.purchasing}/petty-cash/ledger`;
+
   // *************************************************************************************
   // Setup Routes
   // *************************************************************************************

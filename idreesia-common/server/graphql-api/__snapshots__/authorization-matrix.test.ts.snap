@@ -47,6 +47,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.addHrPermissionCommittee": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.addHrPermissionGroup": [
     {
       "args": {
@@ -141,6 +151,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.addPurchasingPermissionCommittee": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.addPurchasingPermissionGroup": [
     {
       "args": {
@@ -172,6 +192,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Mutation.addSecurityGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addSecurityPermissionCommittee": [
     {
       "args": {
         "permissions": [
@@ -1441,6 +1471,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.removeHrPermissionCommittee": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.removeHrPermissionGroup": [
     {
       "args": {
@@ -1609,6 +1649,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.removePurchasingPermissionCommittee": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.removePurchasingPermissionGroup": [
     {
       "args": {
@@ -1690,6 +1740,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Mutation.removeSecurityGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeSecurityPermissionCommittee": [
     {
       "args": {
         "permissions": [
@@ -5236,6 +5296,18 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.purchasingPettyCashLedger": [
+    {
+      "args": {
+        "permissions": [
+          "PURCHASING_VIEW_PETTY_CASH",
+          "PURCHASING_MANAGE_PETTY_CASH_FUNDS",
+          "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.purchasingPettyCashReplenishmentById": [
     {
       "args": {
@@ -5364,6 +5436,18 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.referenceCommitteesByLocation": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_PERMISSIONS",
+          "PURCHASING_MANAGE_PERMISSIONS",
+          "SECURITY_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.referenceDutyShifts": [
     {
       "args": {
@@ -5394,6 +5478,9 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_MANAGE_KARKUNS",
           "HR_MANAGE_EMPLOYEES",
+          "HR_MANAGE_PERMISSIONS",
+          "PURCHASING_MANAGE_PERMISSIONS",
+          "SECURITY_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",

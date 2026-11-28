@@ -1,6 +1,6 @@
 {
   "name": "idreesia-apps-suite",
-  "version": "1.31.0",
+  "version": "1.32.0",
   "private": true,
   "devDependencies": {
     "@agendajs/mongo-backend": "^4.0.3",
@@ -81,6 +81,8 @@
     "docker:down": "yarn compose down",
     "fix:prod-backup": "node scripts/fix-prodction-db-backup.mjs --env-file idreesia-web/.env",
     "fix:prod-backup:apply": "node scripts/fix-prodction-db-backup.mjs --env-file idreesia-web/.env --apply",
+    "sample-data:purchasing": "node scripts/sample-data/generate-purchasing-data.mjs --env-file idreesia-web/.env",
+    "sample-data:stores": "node scripts/sample-data/generate-stores-data.mjs --env-file idreesia-web/.env",
     "lint": "eslint \"idreesia-common/**/*.{js,jsx,ts,tsx}\" \"idreesia-web/{client,imports,server}/**/*.{js,jsx,ts,tsx}\" \"idreesia-mobile/{client,imports,server}/**/*.{js,jsx,ts,tsx}\" \"types/**/*.d.ts\" \"*.config.{js,ts}\"",
     "lint:fix": "yarn lint --fix",
     "typecheck": "yarn typecheck:common && yarn typecheck:web && yarn typecheck:mobile",

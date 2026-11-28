@@ -3,7 +3,7 @@ import { Mongo } from 'meteor/mongo';
 // Devices a user has enrolled for PIN login
 // (business-logic/admin/users/trusted-devices.ts). Written only by that
 // module, so no schema is attached. Expired by a TTL index on removeAt
-// (migration 76), which keeps revoked devices around for a while for the
+// (migration 2), which keeps revoked devices around for a while for the
 // security log's sake.
 export interface TrustedDeviceDocument {
   /** The device id: random and unguessable, the client sends it to log in. */

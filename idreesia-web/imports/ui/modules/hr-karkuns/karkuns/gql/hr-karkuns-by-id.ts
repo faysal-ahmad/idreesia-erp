@@ -1,0 +1,38 @@
+import gql from 'graphql-tag';
+import type { TypedDocumentNode } from '@apollo/client';
+import type {
+  HrKarkunsByIdQuery,
+  HrKarkunsByIdQueryVariables,
+} from 'meteor/idreesia-common/types/client-operations';
+
+const HR_KARKUNS_BY_ID: TypedDocumentNode<
+  HrKarkunsByIdQuery,
+  HrKarkunsByIdQueryVariables
+> = gql`
+  query hrKarkunsById($_ids: String!) {
+    hrKarkunsById(_ids: $_ids) {
+      _id
+      sharedData {
+        name
+        parentName
+        cnicNumber
+        imageUrl
+        contactNumber1
+        contactNumber2
+        imageThumbnailUrl
+      }
+      karkunData {
+        teams {
+          _id
+          name
+          duty {
+            _id
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+export default HR_KARKUNS_BY_ID;

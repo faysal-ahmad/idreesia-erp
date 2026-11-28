@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Pagination, Space, Table } from 'antd';
 import { LinkOutlined, UserAddOutlined } from '@ant-design/icons';
 
-import ListFilter, { KarkunsFilterChips } from '/imports/ui/modules/hr/karkuns/list/list-filter';
+import ListFilter, { KarkunsFilterChips } from '/imports/ui/modules/hr-karkuns/karkuns/list/list-filter';
 
 import PersonName from '../person-name/person-name';
 import type { PersonSearch } from './use-person-search';

@@ -234,3 +234,34 @@ export async function updatePeopleSearchFaceSettings(
   await setSettingsGroup(PEOPLE_SEARCH_FACE_GROUP, clean, user);
   return getPeopleSearchFaceSettings();
 }
+
+// ---------------------------------------------------------------------------------------------
+// HR: employment defaults.
+// ---------------------------------------------------------------------------------------------
+const HR_EMPLOYMENT_GROUP = 'hr-employment';
+
+export interface HrEmploymentSettings {
+  /** Probation length pre-filled when an employee is hired or rejoins on probation. */
+  defaultProbationMonths: number;
+}
+
+export const HR_EMPLOYMENT_DEFAULTS: HrEmploymentSettings = {
+  defaultProbationMonths: 3,
+};
+
+const HR_EMPLOYMENT_RANGES: Record<keyof HrEmploymentSettings, Range> = {
+  defaultProbationMonths: { min: 1, max: 24, integer: true },
+};
+
+export async function getHrEmploymentSettings() {
+  return getSettingsGroup(HR_EMPLOYMENT_GROUP, HR_EMPLOYMENT_DEFAULTS);
+}
+
+export async function updateHrEmploymentSettings(
+  values: HrEmploymentSettings,
+  user: UserRef
+) {
+  const clean = validateRanges(values, HR_EMPLOYMENT_RANGES);
+  await setSettingsGroup(HR_EMPLOYMENT_GROUP, clean, user);
+  return getHrEmploymentSettings();
+}

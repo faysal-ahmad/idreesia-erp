@@ -108,7 +108,7 @@ describe('purchasing permission committees', () => {
 
   it('refuses a permission that is not a Purchasing one', async () => {
     const committeeId = (await Committees.insertAsync({ name: 'Buyers', locationId: 'loc' } as any)) as string;
-    await expect(addCommitteePermission(Permissions.HR_MANAGE_PERMISSIONS, committeeId, admin)).rejects.toThrow(
+    await expect(addCommitteePermission(Permissions.HR_KARKUNS_MANAGE_PERMISSIONS, committeeId, admin)).rejects.toThrow(
       'That is not a Purchasing permission.'
     );
   });

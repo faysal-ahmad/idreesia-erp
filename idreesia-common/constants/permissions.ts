@@ -21,18 +21,27 @@ const Permissions = {
   ADMIN_MANAGE_ORG_LOCATIONS: 'admin-manage-org-locations',
 
   // ****************************************************************************************
-  // HR Module
+  // HR - Karkuns Module
   // ****************************************************************************************
-  HR_MANAGE_KARKUNS_SETUP_DATA: 'hr-manage-karkuns-setup-data',
-  HR_VIEW_AUDIT_LOGS: 'hr-view-audit-logs',
-  HR_MANAGE_PERMISSIONS: 'hr-manage-permissions',
+  HR_VIEW_KARKUNS: 'hr-karkuns-view',
+  HR_MANAGE_KARKUNS: 'hr-karkuns-manage',
+  HR_MANAGE_KARKUNS_SETUP_DATA: 'hr-karkuns-manage-setup-data',
+  HR_KARKUNS_VIEW_AUDIT_LOGS: 'hr-karkuns-view-audit-logs',
+  HR_KARKUNS_MANAGE_PERMISSIONS: 'hr-karkuns-manage-permissions',
 
-  HR_VIEW_KARKUNS: 'hr-view-karkuns',
-  HR_MANAGE_KARKUNS: 'hr-manage-karkuns',
+  // ****************************************************************************************
+  // HR - Employees Module
+  // ****************************************************************************************
+  HR_VIEW_EMPLOYEES: 'hr-employees-view',
+  HR_MANAGE_EMPLOYEES: 'hr-employees-manage',
+  HR_MANAGE_EMPLOYEES_SETUP_DATA: 'hr-employees-manage-setup-data',
 
-  HR_VIEW_EMPLOYEES: 'hr-view-employees',
-  HR_MANAGE_EMPLOYEES: 'hr-manage-employees',
-  HR_MANAGE_EMPLOYEES_SETUP_DATA: 'hr-manage-employees-setup-data',
+  HR_VIEW_LEAVES: 'hr-employees-view-leaves',
+  HR_MANAGE_LEAVES: 'hr-employees-manage-leaves',
+  HR_APPROVE_LEAVES: 'hr-employees-approve-leaves',
+
+  HR_EMPLOYEES_VIEW_AUDIT_LOGS: 'hr-employees-view-audit-logs',
+  HR_EMPLOYEES_MANAGE_PERMISSIONS: 'hr-employees-manage-permissions',
 
   // ****************************************************************************************
   // Security Module

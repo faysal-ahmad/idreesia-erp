@@ -512,6 +512,21 @@ export type DutyType = {
   usedCount?: Maybe<Scalars['Int']['output']>;
 };
 
+export type EmploymentEventType = {
+  __typename?: 'EmploymentEventType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  details?: Maybe<Scalars['JSON']['output']>;
+  effectiveDate?: Maybe<Scalars['String']['output']>;
+  eventType?: Maybe<Scalars['String']['output']>;
+  exitReason?: Maybe<Scalars['String']['output']>;
+  personId?: Maybe<Scalars['String']['output']>;
+  remarks?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
 export type EnrolledTrustedDeviceType = {
   __typename?: 'EnrolledTrustedDeviceType';
   deviceId: Scalars['String']['output'];
@@ -559,6 +574,41 @@ export type FreeFormValueType = {
   __typename?: 'FreeFormValueType';
   count?: Maybe<Scalars['Int']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+};
+
+export type HrEmployeeFilter = {
+  bloodGroup?: InputMaybe<Scalars['String']['input']>;
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  employmentStatus?: InputMaybe<Scalars['String']['input']>;
+  jobId?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  probationEndingWithinDays?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type HrEmployeeType = {
+  __typename?: 'HrEmployeeType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  dataSource?: Maybe<Scalars['String']['output']>;
+  employeeData?: Maybe<PersonEmployeeDataType>;
+  isEmployee?: Maybe<Scalars['Boolean']['output']>;
+  isKarkun?: Maybe<Scalars['Boolean']['output']>;
+  isVisitor?: Maybe<Scalars['Boolean']['output']>;
+  karkunData?: Maybe<PersonKarkunDataType>;
+  sharedData?: Maybe<PersonSharedDataType>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type HrEmploymentSettingsType = {
+  __typename?: 'HrEmploymentSettingsType';
+  defaultProbationMonths?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
 };
 
 export type HrGroupMember = {
@@ -764,6 +814,20 @@ export type JobLogsFilterType = {
   pageSize?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type JobShiftType = {
+  __typename?: 'JobShiftType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  endTime?: Maybe<Scalars['String']['output']>;
+  jobId?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  startTime?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+  usedCount?: Maybe<Scalars['Int']['output']>;
+};
+
 export type JobType = {
   __typename?: 'JobType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -771,6 +835,7 @@ export type JobType = {
   createdBy?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  shifts?: Maybe<Array<Maybe<JobShiftType>>>;
   updatedAt?: Maybe<Scalars['String']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
   usedCount?: Maybe<Scalars['Int']['output']>;
@@ -784,21 +849,92 @@ export type KarkunFilter = {
   dutyId?: InputMaybe<Scalars['String']['input']>;
   dutyShiftId?: InputMaybe<Scalars['String']['input']>;
   ehadKarkun?: InputMaybe<Scalars['String']['input']>;
-  isEmployee?: InputMaybe<Scalars['Boolean']['input']>;
-  isKarkun?: InputMaybe<Scalars['Boolean']['input']>;
-  isVisitor?: InputMaybe<Scalars['Boolean']['input']>;
-  jobId?: InputMaybe<Scalars['String']['input']>;
   lastTarteeb?: InputMaybe<Scalars['String']['input']>;
   mehfilLocationId?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;
   pageSize?: InputMaybe<Scalars['String']['input']>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
-  predefinedFilterName?: InputMaybe<Scalars['String']['input']>;
-  predefinedFilterStoreId?: InputMaybe<Scalars['String']['input']>;
   region?: InputMaybe<Scalars['String']['input']>;
   updatedBetween?: InputMaybe<Scalars['String']['input']>;
   userAccount?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type LeaveAdjustmentType = {
+  __typename?: 'LeaveAdjustmentType';
+  _id?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  days?: Maybe<Scalars['Float']['output']>;
+  leaveType?: Maybe<LeaveTypeType>;
+  leaveTypeId?: Maybe<Scalars['String']['output']>;
+  personId?: Maybe<Scalars['String']['output']>;
+  reason?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+  year?: Maybe<Scalars['Int']['output']>;
+};
+
+export type LeaveBalanceType = {
+  __typename?: 'LeaveBalanceType';
+  adjustments?: Maybe<Scalars['Float']['output']>;
+  carriedForward?: Maybe<Scalars['Float']['output']>;
+  entitlement?: Maybe<Scalars['Float']['output']>;
+  isPaid?: Maybe<Scalars['Boolean']['output']>;
+  leaveTypeId?: Maybe<Scalars['String']['output']>;
+  leaveTypeName?: Maybe<Scalars['String']['output']>;
+  pending?: Maybe<Scalars['Float']['output']>;
+  remaining?: Maybe<Scalars['Float']['output']>;
+  used?: Maybe<Scalars['Float']['output']>;
+  year?: Maybe<Scalars['Int']['output']>;
+};
+
+export type LeaveRequestType = {
+  __typename?: 'LeaveRequestType';
+  _id?: Maybe<Scalars['String']['output']>;
+  approvedAt?: Maybe<Scalars['String']['output']>;
+  approvedBy?: Maybe<Scalars['String']['output']>;
+  balanceWarning?: Maybe<Scalars['String']['output']>;
+  cancelledAt?: Maybe<Scalars['String']['output']>;
+  cancelledBy?: Maybe<Scalars['String']['output']>;
+  confirmationRemarks?: Maybe<Scalars['String']['output']>;
+  confirmedOn?: Maybe<Scalars['String']['output']>;
+  confirmedWith?: Maybe<PersonType>;
+  confirmedWithPersonId?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  days?: Maybe<Scalars['Float']['output']>;
+  fromDate?: Maybe<Scalars['String']['output']>;
+  halfDay?: Maybe<Scalars['Boolean']['output']>;
+  leaveType?: Maybe<LeaveTypeType>;
+  leaveTypeId?: Maybe<Scalars['String']['output']>;
+  person?: Maybe<HrEmployeeType>;
+  personId?: Maybe<Scalars['String']['output']>;
+  reason?: Maybe<Scalars['String']['output']>;
+  rejectedAt?: Maybe<Scalars['String']['output']>;
+  rejectedBy?: Maybe<Scalars['String']['output']>;
+  rejectionReason?: Maybe<Scalars['String']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  toDate?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+  version?: Maybe<Scalars['Int']['output']>;
+};
+
+export type LeaveTypeType = {
+  __typename?: 'LeaveTypeType';
+  _id?: Maybe<Scalars['String']['output']>;
+  allowCarryForward?: Maybe<Scalars['Boolean']['output']>;
+  annualEntitlementDays?: Maybe<Scalars['Float']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  isPaid?: Maybe<Scalars['Boolean']['output']>;
+  maxCarryForwardDays?: Maybe<Scalars['Float']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+  usedCount?: Maybe<Scalars['Int']['output']>;
 };
 
 export type Location = {
@@ -893,11 +1029,16 @@ export type Mutation = {
   __typename?: 'Mutation';
   abortPurchasingAttachmentUpload?: Maybe<Scalars['Boolean']['output']>;
   addCommitteeMember?: Maybe<CommitteeType>;
-  addHrGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  addHrEmployeeAttachment?: Maybe<HrEmployeeType>;
+  addHrEmployeesGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  addHrEmployeesPermissionCommittee?: Maybe<Scalars['Boolean']['output']>;
+  addHrEmployeesPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
+  addHrEmployeesPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   addHrKarkunAttachment?: Maybe<PersonType>;
-  addHrPermissionCommittee?: Maybe<Scalars['Boolean']['output']>;
-  addHrPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
-  addHrPermissionUser?: Maybe<Scalars['Boolean']['output']>;
+  addHrKarkunsGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  addHrKarkunsPermissionCommittee?: Maybe<Scalars['Boolean']['output']>;
+  addHrKarkunsPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
+  addHrKarkunsPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   addIssuanceFormAttachment?: Maybe<IssuanceForm>;
   addOrgLocationFeatureUser?: Maybe<Scalars['Boolean']['output']>;
   addOrgLocationObserver?: Maybe<OrgLocationType>;
@@ -919,21 +1060,25 @@ export type Mutation = {
   addTeamMember?: Maybe<TeamType>;
   addWorkspaceMonitoringProfilePhoto?: Maybe<WorkspaceMonitoringProfileType>;
   approveIssuanceForms?: Maybe<Array<Maybe<IssuanceForm>>>;
+  approveLeaveRequest?: Maybe<LeaveRequestType>;
   approvePurchaseForms?: Maybe<Array<Maybe<PurchaseForm>>>;
   approvePurchasingOrder?: Maybe<PurchasingOrder>;
   approvePurchasingPettyCashReplenishment?: Maybe<PurchasingPettyCashReplenishment>;
   approvePurchasingPettyCashVoucher?: Maybe<PurchasingPettyCashVoucher>;
   approvePurchasingRequisition?: Maybe<PurchasingRequisition>;
   approveStockAdjustments?: Maybe<Array<Maybe<StockAdjustment>>>;
+  cancelLeaveRequest?: Maybe<LeaveRequestType>;
   cancelPurchasingOrder?: Maybe<PurchasingOrder>;
   cancelPurchasingRequisition?: Maybe<PurchasingRequisition>;
   cancelStoreRequisition?: Maybe<PurchasingRequisition>;
   cancelVisitorStay?: Maybe<VisitorStayType>;
+  changeEmployeeJob?: Maybe<HrEmployeeType>;
   clearJobDefinitionSchedule?: Maybe<JobDefinitionType>;
   clearLoginBlocks?: Maybe<UserType>;
   closePurchasingOrder?: Maybe<PurchasingOrder>;
   closePurchasingRequisition?: Maybe<PurchasingRequisition>;
   completePurchasingAttachmentUpload?: Maybe<PurchasingAttachment>;
+  confirmEmployee?: Maybe<HrEmployeeType>;
   createChatAccount?: Maybe<UserType>;
   createCity?: Maybe<CityType>;
   createCityMehfil?: Maybe<CityMehfilType>;
@@ -941,11 +1086,16 @@ export type Mutation = {
   createDuty?: Maybe<DutyType>;
   createDutyLocation?: Maybe<DutyLocationType>;
   createDutyShift?: Maybe<DutyShiftType>;
+  createHrEmployeesUserGroup?: Maybe<HrUserGroup>;
   createHrKarkun?: Maybe<PersonType>;
-  createHrUserGroup?: Maybe<HrUserGroup>;
+  createHrKarkunsUserGroup?: Maybe<HrUserGroup>;
   createIssuanceForm?: Maybe<IssuanceForm>;
   createItemCategory?: Maybe<ItemCategory>;
   createJob?: Maybe<JobType>;
+  createJobShift?: Maybe<JobShiftType>;
+  createLeaveAdjustment?: Maybe<LeaveAdjustmentType>;
+  createLeaveRequest?: Maybe<LeaveRequestType>;
+  createLeaveType?: Maybe<LeaveTypeType>;
   createLocation?: Maybe<Location>;
   createMehfilDuty?: Maybe<MehfilDutyType>;
   createMissingSecurityServerAlertThumbnails?: Maybe<Scalars['Int']['output']>;
@@ -988,8 +1138,9 @@ export type Mutation = {
   createVisitorStay?: Maybe<VisitorStayType>;
   deleteAllSalaries?: Maybe<Scalars['Int']['output']>;
   deleteDuplicatePeople?: Maybe<Scalars['Int']['output']>;
+  deleteHrEmployeesUserGroup?: Maybe<Scalars['Boolean']['output']>;
   deleteHrKarkun?: Maybe<Scalars['Int']['output']>;
-  deleteHrUserGroup?: Maybe<Scalars['Boolean']['output']>;
+  deleteHrKarkunsUserGroup?: Maybe<Scalars['Boolean']['output']>;
   deleteMehfilDuty?: Maybe<Scalars['Boolean']['output']>;
   deletePeopleTag?: Maybe<Scalars['Int']['output']>;
   deletePurchasingAttachment?: Maybe<Scalars['Boolean']['output']>;
@@ -1012,8 +1163,10 @@ export type Mutation = {
   enableCommitteeFeature: Scalars['Boolean']['output'];
   enableTwoFactor?: Maybe<UserType>;
   enrollTrustedDevice?: Maybe<EnrolledTrustedDeviceType>;
+  exitEmployee?: Maybe<HrEmployeeType>;
   fixNameSpelling?: Maybe<Scalars['Int']['output']>;
   hardDeletePeople?: Maybe<Scalars['Int']['output']>;
+  hireEmployee?: Maybe<HrEmployeeType>;
   importSecurityVisitorsCsvData?: Maybe<Scalars['String']['output']>;
   linkOrgLocationUser?: Maybe<UserType>;
   markNotificationsRead: Scalars['Boolean']['output'];
@@ -1025,12 +1178,15 @@ export type Mutation = {
   postStoreReceipt?: Maybe<StoreReceipt>;
   promoteHrKarkun?: Maybe<PersonType>;
   recalculateStockLevels?: Maybe<Array<Maybe<StockItem>>>;
+  recordLeaveConfirmation?: Maybe<LeaveRequestType>;
   registerUser?: Maybe<Scalars['Int']['output']>;
+  rejectLeaveRequest?: Maybe<LeaveRequestType>;
   rejectPurchasingOrder?: Maybe<PurchasingOrder>;
   rejectPurchasingPettyCashReplenishment?: Maybe<PurchasingPettyCashReplenishment>;
   rejectPurchasingPettyCashVoucher?: Maybe<PurchasingPettyCashVoucher>;
   rejectPurchasingQuote?: Maybe<PurchasingQuote>;
   rejectPurchasingRequisition?: Maybe<PurchasingRequisition>;
+  rejoinEmployee?: Maybe<HrEmployeeType>;
   removeCity?: Maybe<Scalars['Int']['output']>;
   removeCityMehfil?: Maybe<Scalars['Int']['output']>;
   removeCommittee?: Maybe<Scalars['Int']['output']>;
@@ -1038,15 +1194,23 @@ export type Mutation = {
   removeDuty?: Maybe<Scalars['Int']['output']>;
   removeDutyLocation?: Maybe<Scalars['Int']['output']>;
   removeDutyShift?: Maybe<Scalars['Int']['output']>;
-  removeHrGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  removeHrEmployeeAttachment?: Maybe<HrEmployeeType>;
+  removeHrEmployeesGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  removeHrEmployeesPermissionCommittee?: Maybe<Scalars['Boolean']['output']>;
+  removeHrEmployeesPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
+  removeHrEmployeesPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   removeHrKarkunAttachment?: Maybe<PersonType>;
-  removeHrPermissionCommittee?: Maybe<Scalars['Boolean']['output']>;
-  removeHrPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
-  removeHrPermissionUser?: Maybe<Scalars['Boolean']['output']>;
+  removeHrKarkunsGroupMember?: Maybe<Scalars['Boolean']['output']>;
+  removeHrKarkunsPermissionCommittee?: Maybe<Scalars['Boolean']['output']>;
+  removeHrKarkunsPermissionGroup?: Maybe<Scalars['Boolean']['output']>;
+  removeHrKarkunsPermissionUser?: Maybe<Scalars['Boolean']['output']>;
   removeIssuanceFormAttachment?: Maybe<IssuanceForm>;
   removeIssuanceForms?: Maybe<Scalars['Int']['output']>;
   removeItemCategory?: Maybe<Scalars['Int']['output']>;
   removeJob?: Maybe<Scalars['Int']['output']>;
+  removeJobShift?: Maybe<Scalars['Int']['output']>;
+  removeLeaveAdjustment?: Maybe<Scalars['Int']['output']>;
+  removeLeaveType?: Maybe<Scalars['Int']['output']>;
   removeLocation?: Maybe<Scalars['Int']['output']>;
   removeOrgLocationFeatureUser?: Maybe<Scalars['Boolean']['output']>;
   removeOrgLocationObserver?: Maybe<OrgLocationType>;
@@ -1101,7 +1265,8 @@ export type Mutation = {
   setDutyDayOverride?: Maybe<Scalars['Boolean']['output']>;
   setDutyDetail?: Maybe<Array<Maybe<SecurityEventKarkunType>>>;
   setDutyShiftTeam?: Maybe<Scalars['Boolean']['output']>;
-  setHrKarkunEmploymentInfo?: Maybe<PersonType>;
+  setHrEmployeeEmploymentInfo?: Maybe<HrEmployeeType>;
+  setHrEmployeeProfileImage?: Maybe<HrEmployeeType>;
   setHrKarkunProfileImage?: Maybe<PersonType>;
   setJobDefinitionEnabled?: Maybe<JobDefinitionType>;
   setOrgLocationUserLocked?: Maybe<UserType>;
@@ -1136,13 +1301,18 @@ export type Mutation = {
   updateDuty?: Maybe<DutyType>;
   updateDutyLocation?: Maybe<DutyLocationType>;
   updateDutyShift?: Maybe<DutyShiftType>;
+  updateHrEmployee?: Maybe<HrEmployeeType>;
+  updateHrEmployeesUserGroup?: Maybe<HrUserGroup>;
+  updateHrEmploymentSettings?: Maybe<HrEmploymentSettingsType>;
   updateHrKarkun?: Maybe<PersonType>;
-  updateHrUserGroup?: Maybe<HrUserGroup>;
+  updateHrKarkunsUserGroup?: Maybe<HrUserGroup>;
   updateIssuanceForm?: Maybe<IssuanceForm>;
   updateItemCategory?: Maybe<ItemCategory>;
   updateJob?: Maybe<JobType>;
   updateJobDefinitionSchedule?: Maybe<JobDefinitionType>;
+  updateJobShift?: Maybe<JobShiftType>;
   updateLastActiveTime?: Maybe<Scalars['Int']['output']>;
+  updateLeaveType?: Maybe<LeaveTypeType>;
   updateLocation?: Maybe<Location>;
   updateLoginTime?: Maybe<Scalars['Int']['output']>;
   updateMehfilDuty?: Maybe<MehfilDutyType>;
@@ -1290,9 +1460,33 @@ export type MutationAddCommitteeMemberArgs = {
 };
 
 
-export type MutationAddHrGroupMemberArgs = {
+export type MutationAddHrEmployeeAttachmentArgs = {
+  _id: Scalars['String']['input'];
+  attachmentId: Scalars['String']['input'];
+};
+
+
+export type MutationAddHrEmployeesGroupMemberArgs = {
   groupId: Scalars['String']['input'];
   karkunId: Scalars['String']['input'];
+};
+
+
+export type MutationAddHrEmployeesPermissionCommitteeArgs = {
+  committeeId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
+export type MutationAddHrEmployeesPermissionGroupArgs = {
+  groupId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
+export type MutationAddHrEmployeesPermissionUserArgs = {
+  karkunId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
 };
 
 
@@ -1302,19 +1496,25 @@ export type MutationAddHrKarkunAttachmentArgs = {
 };
 
 
-export type MutationAddHrPermissionCommitteeArgs = {
+export type MutationAddHrKarkunsGroupMemberArgs = {
+  groupId: Scalars['String']['input'];
+  karkunId: Scalars['String']['input'];
+};
+
+
+export type MutationAddHrKarkunsPermissionCommitteeArgs = {
   committeeId: Scalars['String']['input'];
   permissionKey: Scalars['String']['input'];
 };
 
 
-export type MutationAddHrPermissionGroupArgs = {
+export type MutationAddHrKarkunsPermissionGroupArgs = {
   groupId: Scalars['String']['input'];
   permissionKey: Scalars['String']['input'];
 };
 
 
-export type MutationAddHrPermissionUserArgs = {
+export type MutationAddHrKarkunsPermissionUserArgs = {
   karkunId: Scalars['String']['input'];
   permissionKey: Scalars['String']['input'];
 };
@@ -1455,6 +1655,11 @@ export type MutationApproveIssuanceFormsArgs = {
 };
 
 
+export type MutationApproveLeaveRequestArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
 export type MutationApprovePurchaseFormsArgs = {
   _ids: Array<InputMaybe<Scalars['String']['input']>>;
   physicalStoreId: Scalars['String']['input'];
@@ -1487,6 +1692,11 @@ export type MutationApproveStockAdjustmentsArgs = {
 };
 
 
+export type MutationCancelLeaveRequestArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
 export type MutationCancelPurchasingOrderArgs = {
   _id: Scalars['String']['input'];
 };
@@ -1505,6 +1715,15 @@ export type MutationCancelStoreRequisitionArgs = {
 
 export type MutationCancelVisitorStayArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type MutationChangeEmployeeJobArgs = {
+  effectiveDate: Scalars['String']['input'];
+  jobId: Scalars['String']['input'];
+  jobShiftId?: InputMaybe<Scalars['String']['input']>;
+  personId: Scalars['String']['input'];
+  remarks?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1530,6 +1749,13 @@ export type MutationClosePurchasingRequisitionArgs = {
 
 export type MutationCompletePurchasingAttachmentUploadArgs = {
   uploadId: Scalars['String']['input'];
+};
+
+
+export type MutationConfirmEmployeeArgs = {
+  confirmationDate: Scalars['String']['input'];
+  personId: Scalars['String']['input'];
+  remarks?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1588,6 +1814,12 @@ export type MutationCreateDutyShiftArgs = {
 };
 
 
+export type MutationCreateHrEmployeesUserGroupArgs = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationCreateHrKarkunArgs = {
   birthDate?: InputMaybe<Scalars['String']['input']>;
   bloodGroup?: InputMaybe<Scalars['String']['input']>;
@@ -1608,7 +1840,7 @@ export type MutationCreateHrKarkunArgs = {
 };
 
 
-export type MutationCreateHrUserGroupArgs = {
+export type MutationCreateHrKarkunsUserGroupArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
@@ -1634,6 +1866,43 @@ export type MutationCreateItemCategoryArgs = {
 
 export type MutationCreateJobArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationCreateJobShiftArgs = {
+  endTime?: InputMaybe<Scalars['String']['input']>;
+  jobId: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  startTime?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationCreateLeaveAdjustmentArgs = {
+  days: Scalars['Float']['input'];
+  leaveTypeId: Scalars['String']['input'];
+  personId: Scalars['String']['input'];
+  reason: Scalars['String']['input'];
+  year: Scalars['Int']['input'];
+};
+
+
+export type MutationCreateLeaveRequestArgs = {
+  fromDate: Scalars['String']['input'];
+  halfDay?: InputMaybe<Scalars['Boolean']['input']>;
+  leaveTypeId: Scalars['String']['input'];
+  personId: Scalars['String']['input'];
+  reason?: InputMaybe<Scalars['String']['input']>;
+  toDate: Scalars['String']['input'];
+};
+
+
+export type MutationCreateLeaveTypeArgs = {
+  allowCarryForward: Scalars['Boolean']['input'];
+  annualEntitlementDays: Scalars['Float']['input'];
+  isActive: Scalars['Boolean']['input'];
+  isPaid: Scalars['Boolean']['input'];
+  maxCarryForwardDays?: InputMaybe<Scalars['Float']['input']>;
   name: Scalars['String']['input'];
 };
 
@@ -1973,12 +2242,17 @@ export type MutationDeleteDuplicatePeopleArgs = {
 };
 
 
+export type MutationDeleteHrEmployeesUserGroupArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteHrKarkunArgs = {
   _id: Scalars['String']['input'];
 };
 
 
-export type MutationDeleteHrUserGroupArgs = {
+export type MutationDeleteHrKarkunsUserGroupArgs = {
   _id: Scalars['String']['input'];
 };
 
@@ -2100,6 +2374,14 @@ export type MutationEnrollTrustedDeviceArgs = {
 };
 
 
+export type MutationExitEmployeeArgs = {
+  endDate: Scalars['String']['input'];
+  exitReason: Scalars['String']['input'];
+  personId: Scalars['String']['input'];
+  remarks?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationFixNameSpellingArgs = {
   existingSpelling: Scalars['String']['input'];
   newSpelling: Scalars['String']['input'];
@@ -2108,6 +2390,17 @@ export type MutationFixNameSpellingArgs = {
 
 export type MutationHardDeletePeopleArgs = {
   _ids: Array<Scalars['String']['input']>;
+};
+
+
+export type MutationHireEmployeeArgs = {
+  jobId: Scalars['String']['input'];
+  jobShiftId?: InputMaybe<Scalars['String']['input']>;
+  onProbation: Scalars['Boolean']['input'];
+  personId: Scalars['String']['input'];
+  probationEndDate?: InputMaybe<Scalars['String']['input']>;
+  remarks?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['String']['input'];
 };
 
 
@@ -2190,9 +2483,24 @@ export type MutationRecalculateStockLevelsArgs = {
 };
 
 
+export type MutationRecordLeaveConfirmationArgs = {
+  _id: Scalars['String']['input'];
+  confirmationRemarks?: InputMaybe<Scalars['String']['input']>;
+  confirmedOn?: InputMaybe<Scalars['String']['input']>;
+  confirmedWithPersonId: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+};
+
+
 export type MutationRegisterUserArgs = {
   displayName: Scalars['String']['input'];
   email: Scalars['String']['input'];
+};
+
+
+export type MutationRejectLeaveRequestArgs = {
+  _id: Scalars['String']['input'];
+  rejectionReason?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2222,6 +2530,17 @@ export type MutationRejectPurchasingQuoteArgs = {
 export type MutationRejectPurchasingRequisitionArgs = {
   _id: Scalars['String']['input'];
   reason: Scalars['String']['input'];
+};
+
+
+export type MutationRejoinEmployeeArgs = {
+  jobId: Scalars['String']['input'];
+  jobShiftId?: InputMaybe<Scalars['String']['input']>;
+  onProbation: Scalars['Boolean']['input'];
+  personId: Scalars['String']['input'];
+  probationEndDate?: InputMaybe<Scalars['String']['input']>;
+  remarks?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['String']['input'];
 };
 
 
@@ -2261,8 +2580,32 @@ export type MutationRemoveDutyShiftArgs = {
 };
 
 
-export type MutationRemoveHrGroupMemberArgs = {
+export type MutationRemoveHrEmployeeAttachmentArgs = {
+  _id: Scalars['String']['input'];
+  attachmentId: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveHrEmployeesGroupMemberArgs = {
   groupId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveHrEmployeesPermissionCommitteeArgs = {
+  committeeId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveHrEmployeesPermissionGroupArgs = {
+  groupId: Scalars['String']['input'];
+  permissionKey: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveHrEmployeesPermissionUserArgs = {
+  permissionKey: Scalars['String']['input'];
   userId: Scalars['String']['input'];
 };
 
@@ -2273,19 +2616,25 @@ export type MutationRemoveHrKarkunAttachmentArgs = {
 };
 
 
-export type MutationRemoveHrPermissionCommitteeArgs = {
+export type MutationRemoveHrKarkunsGroupMemberArgs = {
+  groupId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveHrKarkunsPermissionCommitteeArgs = {
   committeeId: Scalars['String']['input'];
   permissionKey: Scalars['String']['input'];
 };
 
 
-export type MutationRemoveHrPermissionGroupArgs = {
+export type MutationRemoveHrKarkunsPermissionGroupArgs = {
   groupId: Scalars['String']['input'];
   permissionKey: Scalars['String']['input'];
 };
 
 
-export type MutationRemoveHrPermissionUserArgs = {
+export type MutationRemoveHrKarkunsPermissionUserArgs = {
   permissionKey: Scalars['String']['input'];
   userId: Scalars['String']['input'];
 };
@@ -2311,6 +2660,21 @@ export type MutationRemoveItemCategoryArgs = {
 
 
 export type MutationRemoveJobArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveJobShiftArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveLeaveAdjustmentArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveLeaveTypeArgs = {
   _id: Scalars['String']['input'];
 };
 
@@ -2642,13 +3006,22 @@ export type MutationSetDutyShiftTeamArgs = {
 };
 
 
-export type MutationSetHrKarkunEmploymentInfoArgs = {
+export type MutationSetHrEmployeeEmploymentInfoArgs = {
   _id: Scalars['String']['input'];
   bankAccountDetails?: InputMaybe<Scalars['String']['input']>;
+  confirmationDate?: InputMaybe<Scalars['String']['input']>;
   employmentEndDate?: InputMaybe<Scalars['String']['input']>;
   employmentStartDate?: InputMaybe<Scalars['String']['input']>;
-  isEmployee: Scalars['Boolean']['input'];
-  jobId?: InputMaybe<Scalars['String']['input']>;
+  jobShiftId?: InputMaybe<Scalars['String']['input']>;
+  probationEndDate?: InputMaybe<Scalars['String']['input']>;
+  reportsToPersonId?: InputMaybe<Scalars['String']['input']>;
+  workingDays?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type MutationSetHrEmployeeProfileImageArgs = {
+  _id: Scalars['String']['input'];
+  imageData: Scalars['String']['input'];
 };
 
 
@@ -2871,6 +3244,40 @@ export type MutationUpdateDutyShiftArgs = {
 };
 
 
+export type MutationUpdateHrEmployeeArgs = {
+  _id: Scalars['String']['input'];
+  birthDate?: InputMaybe<Scalars['String']['input']>;
+  bloodGroup?: InputMaybe<Scalars['String']['input']>;
+  cityLocationId?: InputMaybe<Scalars['String']['input']>;
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  contactNumber1?: InputMaybe<Scalars['String']['input']>;
+  contactNumber2?: InputMaybe<Scalars['String']['input']>;
+  currentAddress?: InputMaybe<Scalars['String']['input']>;
+  deathDate?: InputMaybe<Scalars['String']['input']>;
+  educationalQualification?: InputMaybe<Scalars['String']['input']>;
+  ehadDate?: InputMaybe<Scalars['String']['input']>;
+  emailAddress?: InputMaybe<Scalars['String']['input']>;
+  meansOfEarning?: InputMaybe<Scalars['String']['input']>;
+  mehfilLocationId?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  parentName?: InputMaybe<Scalars['String']['input']>;
+  permanentAddress?: InputMaybe<Scalars['String']['input']>;
+  referenceName?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationUpdateHrEmployeesUserGroupArgs = {
+  _id: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateHrEmploymentSettingsArgs = {
+  defaultProbationMonths: Scalars['Int']['input'];
+};
+
+
 export type MutationUpdateHrKarkunArgs = {
   _id: Scalars['String']['input'];
   birthDate?: InputMaybe<Scalars['String']['input']>;
@@ -2893,7 +3300,7 @@ export type MutationUpdateHrKarkunArgs = {
 };
 
 
-export type MutationUpdateHrUserGroupArgs = {
+export type MutationUpdateHrKarkunsUserGroupArgs = {
   _id: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -2930,6 +3337,25 @@ export type MutationUpdateJobArgs = {
 export type MutationUpdateJobDefinitionScheduleArgs = {
   _id: Scalars['String']['input'];
   schedule: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateJobShiftArgs = {
+  _id: Scalars['String']['input'];
+  endTime?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  startTime?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationUpdateLeaveTypeArgs = {
+  _id: Scalars['String']['input'];
+  allowCarryForward: Scalars['Boolean']['input'];
+  annualEntitlementDays: Scalars['Float']['input'];
+  isActive: Scalars['Boolean']['input'];
+  isPaid: Scalars['Boolean']['input'];
+  maxCarryForwardDays?: InputMaybe<Scalars['Float']['input']>;
+  name: Scalars['String']['input'];
 };
 
 
@@ -4097,6 +4523,12 @@ export type PagedFreeFormValue = {
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PagedHrEmployeeType = {
+  __typename?: 'PagedHrEmployeeType';
+  data?: Maybe<Array<Maybe<HrEmployeeType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
 export type PagedInboxConversationType = {
   __typename?: 'PagedInboxConversationType';
   data?: Maybe<Array<Maybe<InboxConversationType>>>;
@@ -4118,6 +4550,12 @@ export type PagedJobLogsType = {
 export type PagedKarkunType = {
   __typename?: 'PagedKarkunType';
   data?: Maybe<Array<Maybe<PersonType>>>;
+  totalResults?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PagedLeaveRequestType = {
+  __typename?: 'PagedLeaveRequestType';
+  data?: Maybe<Array<Maybe<LeaveRequestType>>>;
   totalResults?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -4428,14 +4866,19 @@ export enum Permission {
   AdminViewUsersAndGroups = 'ADMIN_VIEW_USERS_AND_GROUPS',
   CorrespondenceInboxReplyToMessages = 'CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES',
   CorrespondenceInboxViewMessages = 'CORRESPONDENCE_INBOX_VIEW_MESSAGES',
+  HrApproveLeaves = 'HR_APPROVE_LEAVES',
+  HrEmployeesManagePermissions = 'HR_EMPLOYEES_MANAGE_PERMISSIONS',
+  HrEmployeesViewAuditLogs = 'HR_EMPLOYEES_VIEW_AUDIT_LOGS',
+  HrKarkunsManagePermissions = 'HR_KARKUNS_MANAGE_PERMISSIONS',
+  HrKarkunsViewAuditLogs = 'HR_KARKUNS_VIEW_AUDIT_LOGS',
   HrManageEmployees = 'HR_MANAGE_EMPLOYEES',
   HrManageEmployeesSetupData = 'HR_MANAGE_EMPLOYEES_SETUP_DATA',
   HrManageKarkuns = 'HR_MANAGE_KARKUNS',
   HrManageKarkunsSetupData = 'HR_MANAGE_KARKUNS_SETUP_DATA',
-  HrManagePermissions = 'HR_MANAGE_PERMISSIONS',
-  HrViewAuditLogs = 'HR_VIEW_AUDIT_LOGS',
+  HrManageLeaves = 'HR_MANAGE_LEAVES',
   HrViewEmployees = 'HR_VIEW_EMPLOYEES',
   HrViewKarkuns = 'HR_VIEW_KARKUNS',
+  HrViewLeaves = 'HR_VIEW_LEAVES',
   InApproveIssuanceForms = 'IN_APPROVE_ISSUANCE_FORMS',
   InApprovePurchaseForms = 'IN_APPROVE_PURCHASE_FORMS',
   InApproveStockAdjustments = 'IN_APPROVE_STOCK_ADJUSTMENTS',
@@ -4507,10 +4950,18 @@ export type PersonBasicType = {
 export type PersonEmployeeDataType = {
   __typename?: 'PersonEmployeeDataType';
   bankAccountDetails?: Maybe<Scalars['String']['output']>;
+  confirmationDate?: Maybe<Scalars['String']['output']>;
   employmentEndDate?: Maybe<Scalars['String']['output']>;
   employmentStartDate?: Maybe<Scalars['String']['output']>;
+  employmentStatus?: Maybe<Scalars['String']['output']>;
   job?: Maybe<JobType>;
   jobId?: Maybe<Scalars['String']['output']>;
+  jobShift?: Maybe<JobShiftType>;
+  jobShiftId?: Maybe<Scalars['String']['output']>;
+  probationEndDate?: Maybe<Scalars['String']['output']>;
+  reportsTo?: Maybe<PersonType>;
+  reportsToPersonId?: Maybe<Scalars['String']['output']>;
+  workingDays?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
 };
 
 export type PersonFilter = {
@@ -4595,7 +5046,6 @@ export type PersonType = {
   dataSource?: Maybe<Scalars['String']['output']>;
   deletedAt?: Maybe<Scalars['String']['output']>;
   deletedBy?: Maybe<Scalars['String']['output']>;
-  employeeData?: Maybe<PersonEmployeeDataType>;
   isEmployee?: Maybe<Scalars['Boolean']['output']>;
   isKarkun?: Maybe<Scalars['Boolean']['output']>;
   isVisitor?: Maybe<Scalars['Boolean']['output']>;
@@ -5283,6 +5733,7 @@ export type Query = {
   allDutyShifts?: Maybe<Array<Maybe<DutyShiftType>>>;
   allJobDefinitions?: Maybe<Array<Maybe<JobDefinitionType>>>;
   allJobs?: Maybe<Array<Maybe<JobType>>>;
+  allLeaveTypes?: Maybe<Array<Maybe<LeaveTypeType>>>;
   allMSDuties?: Maybe<Array<Maybe<DutyType>>>;
   allMehfilDuties?: Maybe<Array<Maybe<MehfilDutyType>>>;
   allOrgLocations?: Maybe<Array<Maybe<OrgLocationType>>>;
@@ -5314,11 +5765,17 @@ export type Query = {
   dutyAttendanceSheet?: Maybe<Array<Maybe<DutyAttendanceSheetRowType>>>;
   dutyPlanDays?: Maybe<DutyPlanDaysType>;
   dutyPlanWeek?: Maybe<DutyPlanWeekType>;
+  employmentEventsByPersonId?: Maybe<Array<Maybe<EmploymentEventType>>>;
   hrCommitteeOptions?: Maybe<Array<Maybe<CommitteeType>>>;
+  hrEmployeeById?: Maybe<HrEmployeeType>;
+  hrEmployeesById?: Maybe<Array<Maybe<HrEmployeeType>>>;
+  hrEmployeesPermissionAssignments?: Maybe<Array<Maybe<HrPermissionGroup>>>;
+  hrEmployeesUserGroups?: Maybe<Array<Maybe<HrUserGroup>>>;
+  hrEmploymentSettings?: Maybe<HrEmploymentSettingsType>;
   hrKarkunById?: Maybe<PersonType>;
   hrKarkunsById?: Maybe<Array<Maybe<PersonType>>>;
-  hrPermissionAssignments?: Maybe<Array<Maybe<HrPermissionGroup>>>;
-  hrUserGroups?: Maybe<Array<Maybe<HrUserGroup>>>;
+  hrKarkunsPermissionAssignments?: Maybe<Array<Maybe<HrPermissionGroup>>>;
+  hrKarkunsUserGroups?: Maybe<Array<Maybe<HrUserGroup>>>;
   inboxConversation?: Maybe<InboxConversationDetailType>;
   isJobProcessorActive?: Maybe<Scalars['Boolean']['output']>;
   issuanceFormById?: Maybe<IssuanceForm>;
@@ -5328,6 +5785,11 @@ export type Query = {
   itemCategoryById?: Maybe<ItemCategory>;
   jobById?: Maybe<JobType>;
   karkunDutyAttendanceSheet?: Maybe<Array<Maybe<DutyAttendanceSheetRowType>>>;
+  leaveAdjustmentsByPersonId?: Maybe<Array<Maybe<LeaveAdjustmentType>>>;
+  leaveBalances?: Maybe<Array<Maybe<LeaveBalanceType>>>;
+  leaveDaysCount?: Maybe<Scalars['Float']['output']>;
+  leaveRequestById?: Maybe<LeaveRequestType>;
+  leaveTypeById?: Maybe<LeaveTypeType>;
   locationById?: Maybe<Location>;
   locationsByPhysicalStoreId?: Maybe<Array<Maybe<Location>>>;
   managedPhysicalStoreById?: Maybe<PhysicalStore>;
@@ -5349,15 +5811,22 @@ export type Query = {
   pagedDeletedPeople?: Maybe<PagedPeopleType>;
   pagedFreeFormCities?: Maybe<PagedFreeFormCity>;
   pagedFreeFormCountries?: Maybe<PagedFreeFormValue>;
-  pagedHrAuditLogs?: Maybe<PagedAuditLogType>;
   pagedHrEmployeeCandidateKarkuns?: Maybe<PagedPickerPersonType>;
+  pagedHrEmployees?: Maybe<PagedHrEmployeeType>;
+  pagedHrEmployeesAuditLogs?: Maybe<PagedAuditLogType>;
+  pagedHrEmployeesPermissionKarkuns?: Maybe<PagedPickerPersonType>;
   pagedHrKarkunCandidatePeople?: Maybe<PagedPickerPersonType>;
   pagedHrKarkuns?: Maybe<PagedKarkunType>;
-  pagedHrPermissionKarkuns?: Maybe<PagedPickerPersonType>;
+  pagedHrKarkunsAuditLogs?: Maybe<PagedAuditLogType>;
+  pagedHrKarkunsPermissionKarkuns?: Maybe<PagedPickerPersonType>;
+  pagedHrLeaveConfirmationKarkuns?: Maybe<PagedPickerPersonType>;
+  pagedHrLeaveEmployees?: Maybe<PagedPickerPersonType>;
   pagedHrPickerKarkuns?: Maybe<PagedPickerPersonType>;
+  pagedHrReportsToKarkuns?: Maybe<PagedPickerPersonType>;
   pagedInboxConversations?: Maybe<PagedInboxConversationType>;
   pagedIssuanceForms?: Maybe<PagedIssuanceForm>;
   pagedJobLogs?: Maybe<PagedJobLogsType>;
+  pagedLeaveRequests?: Maybe<PagedLeaveRequestType>;
   pagedLinkableUsers?: Maybe<PagedUserType>;
   pagedMehfilKarkuns: PagedMehfilLocationKarkunType;
   pagedOrgLocationKarkuns?: Maybe<PagedPickerPersonType>;
@@ -5619,6 +6088,21 @@ export type QueryDutyPlanWeekArgs = {
 };
 
 
+export type QueryEmploymentEventsByPersonIdArgs = {
+  personId: Scalars['String']['input'];
+};
+
+
+export type QueryHrEmployeeByIdArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type QueryHrEmployeesByIdArgs = {
+  _ids: Scalars['String']['input'];
+};
+
+
 export type QueryHrKarkunByIdArgs = {
   _id: Scalars['String']['input'];
 };
@@ -5670,6 +6154,36 @@ export type QueryJobByIdArgs = {
 
 export type QueryKarkunDutyAttendanceSheetArgs = {
   karkunId: Scalars['String']['input'];
+};
+
+
+export type QueryLeaveAdjustmentsByPersonIdArgs = {
+  personId: Scalars['String']['input'];
+  year?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryLeaveBalancesArgs = {
+  personId: Scalars['String']['input'];
+  year: Scalars['Int']['input'];
+};
+
+
+export type QueryLeaveDaysCountArgs = {
+  fromDate: Scalars['String']['input'];
+  halfDay?: InputMaybe<Scalars['Boolean']['input']>;
+  personId: Scalars['String']['input'];
+  toDate: Scalars['String']['input'];
+};
+
+
+export type QueryLeaveRequestByIdArgs = {
+  _id: Scalars['String']['input'];
+};
+
+
+export type QueryLeaveTypeByIdArgs = {
+  _id: Scalars['String']['input'];
 };
 
 
@@ -5743,12 +6257,26 @@ export type QueryPagedFreeFormCountriesArgs = {
 };
 
 
-export type QueryPagedHrAuditLogsArgs = {
+export type QueryPagedHrEmployeeCandidateKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedHrEmployeesArgs = {
+  filter?: InputMaybe<HrEmployeeFilter>;
+};
+
+
+export type QueryPagedHrEmployeesAuditLogsArgs = {
   filter?: InputMaybe<AuditLogFilter>;
 };
 
 
-export type QueryPagedHrEmployeeCandidateKarkunsArgs = {
+export type QueryPagedHrEmployeesPermissionKarkunsArgs = {
   cnicNumber?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;
@@ -5771,7 +6299,30 @@ export type QueryPagedHrKarkunsArgs = {
 };
 
 
-export type QueryPagedHrPermissionKarkunsArgs = {
+export type QueryPagedHrKarkunsAuditLogsArgs = {
+  filter?: InputMaybe<AuditLogFilter>;
+};
+
+
+export type QueryPagedHrKarkunsPermissionKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedHrLeaveConfirmationKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedHrLeaveEmployeesArgs = {
   cnicNumber?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;
@@ -5781,6 +6332,15 @@ export type QueryPagedHrPermissionKarkunsArgs = {
 
 
 export type QueryPagedHrPickerKarkunsArgs = {
+  cnicNumber?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPagedHrReportsToKarkunsArgs = {
   cnicNumber?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   pageIndex?: InputMaybe<Scalars['String']['input']>;
@@ -5802,6 +6362,17 @@ export type QueryPagedIssuanceFormsArgs = {
 
 export type QueryPagedJobLogsArgs = {
   filter?: InputMaybe<JobLogsFilterType>;
+};
+
+
+export type QueryPagedLeaveRequestsArgs = {
+  fromDate?: InputMaybe<Scalars['String']['input']>;
+  leaveTypeId?: InputMaybe<Scalars['String']['input']>;
+  pageIndex?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['String']['input']>;
+  personId?: InputMaybe<Scalars['String']['input']>;
+  statuses?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  toDate?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6899,7 +7470,7 @@ export type SalaryType = {
   createdBy?: Maybe<Scalars['String']['output']>;
   job?: Maybe<JobType>;
   jobId?: Maybe<Scalars['String']['output']>;
-  karkun?: Maybe<PersonType>;
+  karkun?: Maybe<HrEmployeeType>;
   karkunId?: Maybe<Scalars['String']['output']>;
   loanDeduction?: Maybe<Scalars['Int']['output']>;
   month?: Maybe<Scalars['String']['output']>;

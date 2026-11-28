@@ -24,7 +24,7 @@ const { stub } = vi.hoisted(() => ({
 vi.mock('meteor/idreesia-common/server/business-logic/common/compute-image-vector-data', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/common/stored-attachments', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/admin', stub);
-vi.mock('meteor/idreesia-common/server/business-logic/hr/karkuns-exporter', stub);
+vi.mock('meteor/idreesia-common/server/business-logic/hr-karkuns/karkuns-exporter', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/security/visitors-exporter', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/purchasing/exporters', stub);
 vi.mock('meteor/idreesia-common/server/business-logic/inventory', stub);

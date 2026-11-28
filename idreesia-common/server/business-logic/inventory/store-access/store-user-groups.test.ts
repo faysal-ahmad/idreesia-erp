@@ -67,7 +67,7 @@ describe('stores user groups', () => {
   });
 
   it('lists only the groups of the Stores module', async () => {
-    await UserGroups.insertAsync({ name: 'HR Viewers', moduleName: ModuleNames.hr } as any);
+    await UserGroups.insertAsync({ name: 'HR Viewers', moduleName: ModuleNames.hrKarkuns } as any);
     await createStoreUserGroup({ name: 'Store keepers' }, admin);
     expect((await listStoreUserGroups()).map(group => group.name)).toEqual([
       'Store keepers',
@@ -79,7 +79,7 @@ describe('stores user groups', () => {
       extensions: { code: 'BAD_USER_INPUT' },
     });
 
-    await UserGroups.insertAsync({ name: 'HR Viewers', moduleName: ModuleNames.hr } as any);
+    await UserGroups.insertAsync({ name: 'HR Viewers', moduleName: ModuleNames.hrKarkuns } as any);
     await expect(
       createStoreUserGroup({ name: 'hr viewers' }, admin)
     ).rejects.toMatchObject({ extensions: { code: 'CONFLICT' } });
@@ -98,7 +98,7 @@ describe('stores user groups', () => {
   it('will not touch a group of another module', async () => {
     const hrGroupId = await UserGroups.insertAsync({
       name: 'HR',
-      moduleName: ModuleNames.hr,
+      moduleName: ModuleNames.hrKarkuns,
     } as any);
     await Users.insertAsync({ _id: 'u1', personId: 'p1' } as any);
 

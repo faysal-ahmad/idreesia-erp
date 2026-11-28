@@ -8,7 +8,11 @@ import {
   peopleDataLoader,
   usersDataLoader,
 } from './common';
-import { jobsDataLoader, karkunTeamsDataLoader } from './hr';
+import {
+  jobShiftsDataLoader,
+  jobsDataLoader,
+  karkunTeamsDataLoader,
+} from './hr';
 import {
   itemCategoriesDataLoader,
   locationsDataLoader,
@@ -38,6 +42,7 @@ export function getDataLoaders() {
     },
     hr: {
       jobs: jobsDataLoader(),
+      jobShifts: jobShiftsDataLoader(),
       karkunTeams: karkunTeamsDataLoader(),
     },
     inventory: {

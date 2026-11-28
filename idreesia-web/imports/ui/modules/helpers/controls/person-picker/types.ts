@@ -1,6 +1,6 @@
 import type { TypedDocumentNode } from '@apollo/client';
 
-import type { PageParams } from '/imports/ui/modules/hr/karkuns/list/list-filter';
+import type { PageParams } from '/imports/ui/modules/hr-karkuns/karkuns/list/list-filter';
 
 /** A person as every picker search returns them (PickerPersonType). */
 export interface PickerPerson {

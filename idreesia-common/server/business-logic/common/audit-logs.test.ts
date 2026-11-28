@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
+import { EntityType } from 'meteor/idreesia-common/constants/audit';
+import { AuditLogs, People } from 'meteor/idreesia-common/server/collections/common';
 
 import { createAuditLog, getAuditValues, searchAuditLogs } from './audit-logs';
 
@@ -80,5 +81,46 @@ describe('searchAuditLogs', () => {
       at(3),
       at(2),
     ]);
+  });
+});
+
+describe('searchAuditLogs with a person selector', () => {
+  const log = (entityId: string, entityType: string, minute: number) =>
+    AuditLogs.insertAsync({
+      entityId,
+      entityType,
+      operationType: 'update',
+      operationBy: 'u1',
+      operationTime: new Date(2026, 0, 1, 0, minute),
+    } as any);
+
+  it("adds the person entries of the matching people to the module's own", async () => {
+    const raw = People.rawCollection() as any;
+    await raw.insertOne({ _id: 'karkun', isKarkun: true, sharedData: { name: 'K' } });
+    await raw.insertOne({ _id: 'visitor', isVisitor: true, sharedData: { name: 'V' } });
+    await log('karkun', EntityType.KARKUN, 1);
+    await log('karkun', EntityType.PERSON, 2);
+    await log('visitor', EntityType.PERSON, 3);
+    await log('karkun', EntityType.EMPLOYEE, 4);
+
+    const result = await searchAuditLogs({
+      entityTypes: [EntityType.KARKUN],
+      personEntitySelector: { isKarkun: true },
+    });
+
+    expect(result.totalResults).toBe(2);
+    expect(result.data.map(row => row.entityType)).toEqual([
+      EntityType.PERSON,
+      EntityType.KARKUN,
+    ]);
+    expect(result.data[0]).not.toHaveProperty('scopedPerson');
+  });
+
+  it('leaves person entries out without a selector', async () => {
+    await log('someone', EntityType.PERSON, 1);
+    await log('someone', EntityType.KARKUN, 2);
+
+    const result = await searchAuditLogs({ entityTypes: [EntityType.KARKUN] });
+    expect(result.data.map(row => row.entityType)).toEqual([EntityType.KARKUN]);
   });
 });

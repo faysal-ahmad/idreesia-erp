@@ -1,13 +1,13 @@
 import type { Job } from 'agenda';
 import { addMonths, format, startOfMonth } from 'date-fns';
 
-import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr/create-monthly-salaries';
+import { createMonthlySalaries } from 'meteor/idreesia-common/server/business-logic/hr-employees/create-monthly-salaries';
 import { backfillImageVectorData } from 'meteor/idreesia-common/server/business-logic/common/backfill-image-vector-data';
 import { publishExpiringLockNotifications } from 'meteor/idreesia-common/server/business-logic/dms';
 import { purgeNotifications } from 'meteor/idreesia-common/server/headless';
 import { createTodayDayRecords } from 'meteor/idreesia-common/server/business-logic/duties-attendance';
-import { createTodayDutyDayAttendances } from 'meteor/idreesia-common/server/business-logic/hr/duty-planning';
-import { markAttendanceFromCheckIns } from 'meteor/idreesia-common/server/business-logic/hr/duty-check-in-attendance';
+import { createTodayDutyDayAttendances } from 'meteor/idreesia-common/server/business-logic/hr-karkuns/duty-planning';
+import { markAttendanceFromCheckIns } from 'meteor/idreesia-common/server/business-logic/hr-karkuns/duty-check-in-attendance';
 import { getSystemUser } from './system-user';
 import { createProgressReporter } from './report-progress';
 

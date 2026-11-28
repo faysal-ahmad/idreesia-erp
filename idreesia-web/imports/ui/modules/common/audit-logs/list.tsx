@@ -4,7 +4,8 @@ import { Pagination, Table } from 'antd';
 
 import { Formats } from 'meteor/idreesia-common/constants';
 import { OperationType } from 'meteor/idreesia-common/constants/audit';
-import type { PagedHrAuditLogsQuery } from 'meteor/idreesia-common/types/client-operations';
+// Every module's audit log query selects the same fields; any one gives the row type.
+import type { PagedHrKarkunsAuditLogsQuery } from 'meteor/idreesia-common/types/client-operations';
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 
 import getFormattedValue, {
@@ -13,7 +14,7 @@ import getFormattedValue, {
 } from './get-formatted-value';
 
 type AuditLogRow = NonNullable<
-  NonNullable<NonNullable<PagedHrAuditLogsQuery['pagedHrAuditLogs']>['data']>[number]
+  NonNullable<NonNullable<PagedHrKarkunsAuditLogsQuery['pagedHrKarkunsAuditLogs']>['data']>[number]
 >;
 
 interface PagedData {

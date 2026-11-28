@@ -8,10 +8,6 @@ input KarkunFilter {
   bloodGroup: String
   lastTarteeb: String
   attendance: String
-  isKarkun: Boolean
-  isEmployee: Boolean
-  isVisitor: Boolean
-  jobId: String
   dutyId: String
   userAccount: String
   ehadKarkun: String
@@ -20,8 +16,6 @@ input KarkunFilter {
   mehfilLocationId: String
   region: String
   updatedBetween: String
-  predefinedFilterName: String
-  predefinedFilterStoreId: String
   pageIndex: String
   pageSize: String
 }

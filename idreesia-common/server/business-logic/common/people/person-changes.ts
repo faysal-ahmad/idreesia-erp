@@ -13,11 +13,16 @@ const DATE_FIELDS = [
   'lastTarteebDate',
   'employmentStartDate',
   'employmentEndDate',
+  'probationEndDate',
+  'confirmationDate',
 ];
+
+// Arrays compared as sets: their order is not meaningful.
+const UNORDERED_ARRAY_FIELDS = ['tagIds', 'workingDays'];
 
 /**
  * Whether a person field's value has changed. Dates compare by time, and
- * `tagIds` ignores order.
+ * `tagIds` and `workingDays` ignore order.
  */
 export function isPersonValueChanged(
   key: string,
@@ -33,7 +38,7 @@ export function isPersonValueChanged(
     );
   }
 
-  if (key === 'tagIds') {
+  if (UNORDERED_ARRAY_FIELDS.includes(key)) {
     return (
       [...((existingValue as string[]) ?? [])].sort().join(',') !==
       [...((newValue as string[]) ?? [])].sort().join(',')

@@ -5,7 +5,7 @@ import type { Request, Response } from 'express';
 import {
   findKarkunRecordByFaceImage,
   recordKarkunCheckIn,
-} from 'meteor/idreesia-common/server/business-logic/hr/attendance-kiosk';
+} from 'meteor/idreesia-common/server/business-logic/hr-karkuns/attendance-kiosk';
 
 import { sendError } from './rest-errors';
 import { limitRequests } from './rate-limits';

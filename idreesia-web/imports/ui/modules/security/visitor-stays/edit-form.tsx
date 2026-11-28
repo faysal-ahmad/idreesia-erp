@@ -23,7 +23,7 @@ import {
 } from '/imports/ui/modules/helpers/fields';
 
 import { StayReasons } from 'meteor/idreesia-common/constants/security';
-import { getDutyShiftCascaderData } from '/imports/ui/modules/hr/common/utilities';
+import { getDutyShiftCascaderData } from '/imports/ui/modules/helpers/duty-shift-data';
 
 import { EDIT_VISITOR_STAY_BY_ID, UPDATE_VISITOR_STAY } from './gql';
 

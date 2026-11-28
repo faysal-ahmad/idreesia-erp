@@ -78,6 +78,8 @@ export async function buildPeopleSearchPipeline(
     // employee related fields
     jobId,
     jobIds,
+    employmentStatus,
+    probationEndingWithinDays,
     // user account related fileds
     userAccount,
     personIds,
@@ -387,6 +389,25 @@ export async function buildPeopleSearchPipeline(
     pipeline.push({
       $match: {
         'employeeData.jobId': { $in: jobIds },
+      },
+    });
+  }
+
+  if (employmentStatus) {
+    pipeline.push({
+      $match: { 'employeeData.employmentStatus': { $eq: employmentStatus } },
+    });
+  }
+
+  // On probation, with the probation ending (or already past) within N days.
+  const probationDays = Number(probationEndingWithinDays);
+  if (probationEndingWithinDays && Number.isFinite(probationDays)) {
+    pipeline.push({
+      $match: {
+        'employeeData.employmentStatus': { $eq: 'probation' },
+        'employeeData.probationEndDate': {
+          $lte: new Date(Date.now() + probationDays * 86400000),
+        },
       },
     });
   }

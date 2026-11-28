@@ -6,7 +6,7 @@ import { type CSSProperties } from 'react';
 import { Divider, Form } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import type { InventoryPurchaseFormByIdQuery } from 'meteor/idreesia-common/types/client-operations';
-import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
+import PredefinedFilterNames from 'meteor/idreesia-common/constants/stores-predefined-filter-names';
 import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 import {
   DateField,

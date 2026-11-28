@@ -32,18 +32,20 @@ extend type Query {
       permissions: [
         HR_MANAGE_KARKUNS
         HR_MANAGE_EMPLOYEES
-        HR_MANAGE_PERMISSIONS
+        HR_KARKUNS_MANAGE_PERMISSIONS
+        HR_EMPLOYEES_MANAGE_PERMISSIONS
         PURCHASING_MANAGE_PERMISSIONS
         SECURITY_MANAGE_PERMISSIONS
       ]
     )
 
   # The committees of a location, for giving one a module permission (on the
-  # HR, Purchasing and Security Permissions tabs).
+  # HR - Karkuns, HR - Employees, Purchasing and Security Permissions tabs).
   referenceCommitteesByLocation(locationId: String!): [ReferenceCommitteeType]
     @checkPermissions(
       permissions: [
-        HR_MANAGE_PERMISSIONS
+        HR_KARKUNS_MANAGE_PERMISSIONS
+        HR_EMPLOYEES_MANAGE_PERMISSIONS
         PURCHASING_MANAGE_PERMISSIONS
         SECURITY_MANAGE_PERMISSIONS
       ]

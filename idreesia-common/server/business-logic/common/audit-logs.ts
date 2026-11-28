@@ -1,5 +1,7 @@
+import { EntityType } from 'meteor/idreesia-common/constants/audit';
 import {
   AuditLogs,
+  People,
   type AuditLogDocument,
 } from 'meteor/idreesia-common/server/collections/common';
 import { forOwn, get } from 'meteor/idreesia-common/utilities/lodash';
@@ -16,6 +18,11 @@ export interface CreateAuditLogValues {
 export interface SearchAuditLogsParams {
   entityId?: string;
   entityTypes?: string[];
+  /**
+   * Also include the person entries (changes to a person's shared data) of
+   * the people this selector matches, e.g. HR - Karkuns shows its karkuns'.
+   */
+  personEntitySelector?: Record<string, unknown>;
   fromTime?: Date;
   toTime?: Date;
   pageIndex?: string;
@@ -88,6 +95,7 @@ export function searchAuditLogs(params: SearchAuditLogsParams = {}) {
   const {
     entityId,
     entityTypes,
+    personEntitySelector,
     fromTime,
     toTime,
     pageIndex = '0',
@@ -102,14 +110,6 @@ export function searchAuditLogs(params: SearchAuditLogsParams = {}) {
     });
   }
 
-  if (entityTypes) {
-    pipeline.push({
-      $match: {
-        entityType: { $in: entityTypes },
-      },
-    });
-  }
-
   if (fromTime || toTime) {
     pipeline.push({
       $match: {
@@ -117,6 +117,35 @@ export function searchAuditLogs(params: SearchAuditLogsParams = {}) {
           ...(fromTime ? { $gte: fromTime } : {}),
           ...(toTime ? { $lte: toTime } : {}),
         },
+      },
+    });
+  }
+
+  if (entityTypes && personEntitySelector) {
+    // The given types, plus person entries of the people the selector
+    // matches (as they are now).
+    const ownTypes = { entityType: { $in: entityTypes } };
+    pipeline.push(
+      { $match: { $or: [ownTypes, { entityType: EntityType.PERSON }] } },
+      {
+        $lookup: {
+          from: People.rawCollection().collectionName,
+          let: { personId: '$entityId' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$personId'] } } },
+            { $match: personEntitySelector },
+            { $project: { _id: 1 } },
+          ],
+          as: 'scopedPerson',
+        },
+      },
+      { $match: { $or: [ownTypes, { 'scopedPerson.0': { $exists: true } }] } },
+      { $project: { scopedPerson: 0 } }
+    );
+  } else if (entityTypes) {
+    pipeline.push({
+      $match: {
+        entityType: { $in: entityTypes },
       },
     });
   }

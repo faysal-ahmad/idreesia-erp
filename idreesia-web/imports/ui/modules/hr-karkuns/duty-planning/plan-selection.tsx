@@ -1,0 +1,167 @@
+import React, { useMemo } from 'react';
+import dayjs from 'dayjs';
+import { SyncOutlined } from '@ant-design/icons';
+import { Button, Cascader, DatePicker, Segmented, Space, Spin } from 'antd';
+
+import {
+  useAllDutyLocations,
+  useAllMSDuties,
+} from '/imports/ui/modules/hr-karkuns/common/hooks';
+
+interface LocationOption {
+  _id: string;
+  dutyId: string;
+  name: string;
+}
+
+interface DutyOption {
+  _id: string;
+  name: string;
+}
+
+export interface SelectedPlan {
+  duty: { _id: string; name: string };
+  location: { _id: string; name: string };
+}
+
+interface PlanSelectionProps {
+  locationId: string;
+  onLocationIdChange: (locationId: string) => void;
+  daysStart: string;
+  onDaysStartChange: (value: string) => void;
+  view: 'days' | 'week';
+  onViewChange: (view: 'days' | 'week') => void;
+  refreshing: boolean;
+  onRefresh: (optionsRefresh: Promise<unknown>) => void;
+  children: (selection: SelectedPlan | null) => React.ReactNode;
+}
+
+const PlanSelection = ({
+  locationId,
+  onLocationIdChange,
+  daysStart,
+  onDaysStartChange,
+  view,
+  onViewChange,
+  refreshing,
+  onRefresh,
+  children,
+}: PlanSelectionProps) => {
+  const {
+    allMSDuties,
+    allMSDutiesLoading,
+    refetch: refetchMSDuties,
+  } = useAllMSDuties();
+  const {
+    allDutyLocations,
+    allDutyLocationsLoading,
+    refetch: refetchDutyLocations,
+  } = useAllDutyLocations();
+
+  const duties = (allMSDuties ?? []).filter(
+    (duty): duty is DutyOption => duty?._id != null && duty.name != null
+  );
+  const locations = (allDutyLocations ?? []).filter(
+    (item): item is LocationOption =>
+      item?._id != null && item.dutyId != null && item.name != null
+  );
+  const cascaderOptions = useMemo(
+    () =>
+      duties
+        .slice()
+        .sort((left, right) => left.name.localeCompare(right.name))
+        .flatMap(duty => {
+          const dutyChildren = locations
+            .filter(item => item.dutyId === duty._id)
+            .sort((left, right) => left.name.localeCompare(right.name))
+            .map(item => ({ label: item.name, value: item._id }));
+          if (dutyChildren.length === 0) return [];
+          return [
+            { label: duty.name, value: duty._id, children: dutyChildren },
+          ];
+        }),
+    [duties, locations]
+  );
+
+  const selectedLocation = locations.find(item => item._id === locationId);
+  const selectedDuty = duties.find(duty => duty._id === selectedLocation?.dutyId);
+  const selection =
+    selectedDuty && selectedLocation
+      ? {
+          duty: { _id: selectedDuty._id, name: selectedDuty.name },
+          location: { _id: selectedLocation._id, name: selectedLocation.name },
+        }
+      : null;
+
+  if (
+    (allMSDutiesLoading && !allMSDuties) ||
+    (allDutyLocationsLoading && !allDutyLocations)
+  ) {
+    return (
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="duty-roster-selection">
+        <div className="duty-roster-toolbar">
+          <Space size={12}>
+            <span className="duty-roster-select-label">Duty</span>
+            <Cascader
+              className="duty-roster-location-select"
+              placeholder="Select a duty"
+              showSearch
+              expandTrigger="hover"
+              options={cascaderOptions}
+              value={
+                selection
+                  ? [selection.duty._id, selection.location._id]
+                  : undefined
+              }
+              onChange={value =>
+                onLocationIdChange(
+                  value && value.length > 1 ? String(value[value.length - 1]) : ''
+                )
+              }
+            />
+          </Space>
+          <Space size={12}>
+            <DatePicker
+              className="duty-roster-start-date"
+              format="DD MMM, YYYY"
+              allowClear={false}
+              value={dayjs(daysStart)}
+              onChange={value => {
+                if (value) onDaysStartChange(value.format('YYYY-MM-DD'));
+              }}
+            />
+            <Segmented
+              value={view}
+              options={[
+                { label: '3 Days', value: 'days' },
+                { label: 'Week', value: 'week' },
+              ]}
+              onChange={value => onViewChange(value === 'days' ? 'days' : 'week')}
+            />
+            <Button
+              icon={<SyncOutlined />}
+              title="Reload Data"
+              loading={refreshing}
+              onClick={() =>
+                onRefresh(
+                  Promise.all([refetchMSDuties(), refetchDutyLocations()])
+                )
+              }
+            />
+          </Space>
+        </div>
+      </div>
+      {children(selection)}
+    </>
+  );
+};
+
+export default PlanSelection;

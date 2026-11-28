@@ -6,7 +6,7 @@ import {
   type DutiesAttendanceDayOverrideDocument,
   type DutiesAttendanceDayRecordDocument,
 } from 'meteor/idreesia-common/server/collections/duties-attendance';
-import { dayOfWeek } from 'meteor/idreesia-common/server/business-logic/hr/duty-planning-dates';
+import { dayOfWeek } from 'meteor/idreesia-common/server/business-logic/hr-common/duty-planning-dates';
 
 import { getDutyNames } from './internal';
 import { listMyDutiesAttendanceLocations } from './locations';

@@ -1,6 +1,9 @@
 const ModuleNames = {
   admin: 'Admin',
-  hr: 'HR',
+  // A module's permission strings start with kebabCase(name), e.g.
+  // 'hr-karkuns-...'; that is how the menu decides who sees the module.
+  hrKarkuns: 'HR - Karkuns',
+  hrEmployees: 'HR - Employees',
   stores: 'Stores',
   security: 'Security',
   correspondence: 'Correspondence',

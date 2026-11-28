@@ -9,9 +9,11 @@ type Loader = DataLoader<string, unknown>;
 interface Loaders {
   common: {
     attachments: Loader;
+    people: Loader;
   };
   hr: {
     jobs: Loader;
+    jobShifts: Loader;
     karkunTeams: DataLoader<string, unknown[]>;
   };
   admin: {
@@ -39,6 +41,8 @@ interface PersonKarkunDataType {
 
 interface PersonEmployeeDataType {
   jobId?: string;
+  jobShiftId?: string;
+  reportsToPersonId?: string;
 }
 
 interface ResolverContext {
@@ -132,6 +136,22 @@ export default {
     ) => {
       if (!personEmployeeDataType.jobId) return null;
       return loaders.hr.jobs.load(personEmployeeDataType.jobId);
+    },
+    jobShift: async (
+      personEmployeeDataType: PersonEmployeeDataType,
+      _args: unknown,
+      { loaders }: ResolverContext
+    ) => {
+      if (!personEmployeeDataType.jobShiftId) return null;
+      return loaders.hr.jobShifts.load(personEmployeeDataType.jobShiftId);
+    },
+    reportsTo: async (
+      personEmployeeDataType: PersonEmployeeDataType,
+      _args: unknown,
+      { loaders }: ResolverContext
+    ) => {
+      if (!personEmployeeDataType.reportsToPersonId) return null;
+      return loaders.common.people.load(personEmployeeDataType.reportsToPersonId);
     },
   },
 

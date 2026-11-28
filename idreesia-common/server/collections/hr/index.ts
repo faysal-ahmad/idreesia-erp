@@ -7,3 +7,8 @@ export { default as Teams } from './teams';
 export { default as DutyTeamAssignments } from './duty-team-assignments';
 export { default as DutyDayOverrides } from './duty-day-overrides';
 export { default as DutyDayAttendances } from './duty-day-attendances';
+export { default as JobShifts } from './job-shifts';
+export { default as EmploymentEvents } from './employment-events';
+export { default as LeaveTypes } from './leave-types';
+export { default as LeaveAdjustments } from './leave-adjustments';
+export { default as LeaveRequests } from './leave-requests';

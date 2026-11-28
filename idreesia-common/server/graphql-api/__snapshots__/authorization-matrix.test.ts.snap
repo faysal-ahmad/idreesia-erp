@@ -27,11 +27,51 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.addHrGroupMember": [
+  "Mutation.addHrEmployeeAttachment": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addHrEmployeesGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addHrEmployeesPermissionCommittee": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addHrEmployeesPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addHrEmployeesPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -47,31 +87,41 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.addHrPermissionCommittee": [
+  "Mutation.addHrKarkunsGroupMember": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.addHrPermissionGroup": [
+  "Mutation.addHrKarkunsPermissionCommittee": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.addHrPermissionUser": [
+  "Mutation.addHrKarkunsPermissionGroup": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.addHrKarkunsPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -294,6 +344,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkStoreAccess",
     },
   ],
+  "Mutation.approveLeaveRequest": [
+    {
+      "args": {
+        "permissions": [
+          "HR_APPROVE_LEAVES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.approvePurchaseForms": [
     {
       "args": {
@@ -356,6 +416,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkStoreAccess",
     },
   ],
+  "Mutation.cancelLeaveRequest": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_LEAVES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.cancelPurchasingOrder": [
     {
       "args": {
@@ -392,6 +462,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "SECURITY_MANAGE_VISITORS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.changeEmployeeJob": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
         ],
       },
       "directive": "checkPermissions",
@@ -447,6 +527,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
           "PURCHASING_MANAGE_INVOICES",
           "PURCHASING_MANAGE_PAYMENTS",
           "PURCHASING_MANAGE_PETTY_CASH_VOUCHERS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.confirmEmployee": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
         ],
       },
       "directive": "checkPermissions",
@@ -522,22 +612,31 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.createHrKarkun": [
+  "Mutation.createHrEmployeesUserGroup": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_KARKUNS",
-          "HR_MANAGE_EMPLOYEES",
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.createHrUserGroup": [
+  "Mutation.createHrKarkun": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createHrKarkunsUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -566,6 +665,46 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Mutation.createJob": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createJobShift": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createLeaveAdjustment": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_LEAVES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createLeaveRequest": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_LEAVES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.createLeaveType": [
     {
       "args": {
         "permissions": [
@@ -1003,17 +1142,27 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.deleteHrEmployeesUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.deleteHrKarkun": [
     {
       "args": {},
       "directive": "superAdminOnly",
     },
   ],
-  "Mutation.deleteHrUserGroup": [
+  "Mutation.deleteHrKarkunsUserGroup": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1208,6 +1357,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Mutation.exitEmployee": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.fixNameSpelling": [
     {
       "args": {
@@ -1223,6 +1382,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_MANAGE_DELETED_PEOPLE",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.hireEmployee": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
         ],
       },
       "directive": "checkPermissions",
@@ -1331,6 +1500,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkStoreAccess",
     },
   ],
+  "Mutation.recordLeaveConfirmation": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_LEAVES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.rejectLeaveRequest": [
+    {
+      "args": {
+        "permissions": [
+          "HR_APPROVE_LEAVES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Mutation.rejectPurchasingOrder": [
     {
       "args": {
@@ -1376,6 +1565,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "PURCHASING_APPROVE_REQUISITIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.rejoinEmployee": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
         ],
       },
       "directive": "checkPermissions",
@@ -1451,11 +1650,51 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.removeHrGroupMember": [
+  "Mutation.removeHrEmployeeAttachment": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeHrEmployeesGroupMember": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeHrEmployeesPermissionCommittee": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeHrEmployeesPermissionGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeHrEmployeesPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1471,31 +1710,41 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.removeHrPermissionCommittee": [
+  "Mutation.removeHrKarkunsGroupMember": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.removeHrPermissionGroup": [
+  "Mutation.removeHrKarkunsPermissionCommittee": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.removeHrPermissionUser": [
+  "Mutation.removeHrKarkunsPermissionGroup": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeHrKarkunsPermissionUser": [
+    {
+      "args": {
+        "permissions": [
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -1535,6 +1784,36 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     },
   ],
   "Mutation.removeJob": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeJobShift": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeLeaveAdjustment": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_LEAVES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.removeLeaveType": [
     {
       "args": {
         "permissions": [
@@ -2077,7 +2356,17 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.setHrKarkunEmploymentInfo": [
+  "Mutation.setHrEmployeeEmploymentInfo": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.setHrEmployeeProfileImage": [
     {
       "args": {
         "permissions": [
@@ -2393,22 +2682,51 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.updateHrKarkun": [
+  "Mutation.updateHrEmployee": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_KARKUNS",
           "HR_MANAGE_EMPLOYEES",
         ],
       },
       "directive": "checkPermissions",
     },
   ],
-  "Mutation.updateHrUserGroup": [
+  "Mutation.updateHrEmployeesUserGroup": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateHrEmploymentSettings": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateHrKarkun": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateHrKarkunsUserGroup": [
+    {
+      "args": {
+        "permissions": [
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -2451,6 +2769,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateJobShift": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Mutation.updateLeaveType": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -3863,6 +4201,19 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.allLeaveTypes": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_LEAVES",
+          "HR_MANAGE_LEAVES",
+          "HR_APPROVE_LEAVES",
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.allMSDuties": [
     {
       "args": {
@@ -4118,11 +4469,76 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
+  "Query.employmentEventsByPersonId": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
   "Query.hrCommitteeOptions": [
     {
       "args": {
         "permissions": [
           "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrEmployeeById": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrEmployeesById": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrEmployeesPermissionAssignments": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrEmployeesUserGroups": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.hrEmploymentSettings": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -4134,8 +4550,6 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_KARKUNS",
           "HR_MANAGE_KARKUNS",
-          "HR_VIEW_EMPLOYEES",
-          "HR_MANAGE_EMPLOYEES",
         ],
       },
       "directive": "checkPermissions",
@@ -4147,28 +4561,26 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_KARKUNS",
           "HR_MANAGE_KARKUNS",
-          "HR_VIEW_EMPLOYEES",
-          "HR_MANAGE_EMPLOYEES",
         ],
       },
       "directive": "checkPermissions",
     },
   ],
-  "Query.hrPermissionAssignments": [
+  "Query.hrKarkunsPermissionAssignments": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
     },
   ],
-  "Query.hrUserGroups": [
+  "Query.hrKarkunsUserGroups": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -4279,6 +4691,65 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_VIEW_KARKUNS",
           "HR_MANAGE_KARKUNS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.leaveAdjustmentsByPersonId": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_LEAVES",
+          "HR_MANAGE_LEAVES",
+          "HR_APPROVE_LEAVES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.leaveBalances": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_LEAVES",
+          "HR_MANAGE_LEAVES",
+          "HR_APPROVE_LEAVES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.leaveDaysCount": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_LEAVES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.leaveRequestById": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_LEAVES",
+          "HR_MANAGE_LEAVES",
+          "HR_APPROVE_LEAVES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.leaveTypeById": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_LEAVES",
+          "HR_MANAGE_LEAVES",
+          "HR_APPROVE_LEAVES",
+          "HR_MANAGE_EMPLOYEES_SETUP_DATA",
         ],
       },
       "directive": "checkPermissions",
@@ -4396,21 +4867,42 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "directive": "checkPermissions",
     },
   ],
-  "Query.pagedHrAuditLogs": [
-    {
-      "args": {
-        "permissions": [
-          "HR_VIEW_AUDIT_LOGS",
-        ],
-      },
-      "directive": "checkPermissions",
-    },
-  ],
   "Query.pagedHrEmployeeCandidateKarkuns": [
     {
       "args": {
         "permissions": [
           "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedHrEmployees": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedHrEmployeesAuditLogs": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_VIEW_AUDIT_LOGS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedHrEmployeesPermissionKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
         ],
       },
       "directive": "checkPermissions",
@@ -4429,29 +4921,49 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
   "Query.pagedHrKarkuns": [
     {
       "args": {
-        "anyStorePermissions": [
-          "IN_VIEW_ISSUANCE_FORMS",
-          "IN_MANAGE_ISSUANCE_FORMS",
-          "IN_VIEW_PURCHASE_FORMS",
-          "IN_MANAGE_PURCHASE_FORMS",
-          "IN_VIEW_STOCK_ADJUSTMENTS",
-          "IN_MANAGE_STOCK_ADJUSTMENTS",
-        ],
         "permissions": [
           "HR_VIEW_KARKUNS",
           "HR_MANAGE_KARKUNS",
-          "HR_VIEW_EMPLOYEES",
-          "HR_MANAGE_EMPLOYEES",
         ],
       },
       "directive": "checkPermissions",
     },
   ],
-  "Query.pagedHrPermissionKarkuns": [
+  "Query.pagedHrKarkunsAuditLogs": [
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_KARKUNS_VIEW_AUDIT_LOGS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedHrKarkunsPermissionKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedHrLeaveConfirmationKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_LEAVES",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedHrLeaveEmployees": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_LEAVES",
         ],
       },
       "directive": "checkPermissions",
@@ -4463,6 +4975,16 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_MANAGE_KARKUNS",
           "HR_MANAGE_KARKUNS_SETUP_DATA",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedHrReportsToKarkuns": [
+    {
+      "args": {
+        "permissions": [
+          "HR_MANAGE_EMPLOYEES",
         ],
       },
       "directive": "checkPermissions",
@@ -4497,6 +5019,18 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
       "args": {
         "permissions": [
           "ADMIN_MANAGE_SCHEDULED_JOBS",
+        ],
+      },
+      "directive": "checkPermissions",
+    },
+  ],
+  "Query.pagedLeaveRequests": [
+    {
+      "args": {
+        "permissions": [
+          "HR_VIEW_LEAVES",
+          "HR_MANAGE_LEAVES",
+          "HR_APPROVE_LEAVES",
         ],
       },
       "directive": "checkPermissions",
@@ -5440,7 +5974,8 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permissions": [
-          "HR_MANAGE_PERMISSIONS",
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
           "PURCHASING_MANAGE_PERMISSIONS",
           "SECURITY_MANAGE_PERMISSIONS",
         ],
@@ -5478,7 +6013,8 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
         "permissions": [
           "HR_MANAGE_KARKUNS",
           "HR_MANAGE_EMPLOYEES",
-          "HR_MANAGE_PERMISSIONS",
+          "HR_KARKUNS_MANAGE_PERMISSIONS",
+          "HR_EMPLOYEES_MANAGE_PERMISSIONS",
           "PURCHASING_MANAGE_PERMISSIONS",
           "SECURITY_MANAGE_PERMISSIONS",
         ],
@@ -5518,8 +6054,8 @@ exports[`authorization matrix > pins every field → access declaration 1`] = `
     {
       "args": {
         "permissions": [
-          "HR_VIEW_KARKUNS",
-          "HR_MANAGE_KARKUNS",
+          "HR_VIEW_EMPLOYEES",
+          "HR_MANAGE_EMPLOYEES",
         ],
       },
       "directive": "checkPermissions",

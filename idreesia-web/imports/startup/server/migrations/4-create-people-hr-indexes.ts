@@ -9,7 +9,7 @@ import {
 } from 'meteor/idreesia-common/server/collections/hr';
 import { PEOPLE_IMAGE_VECTOR_SEARCH_INDEX } from 'meteor/idreesia-common/server/business-logic/common';
 import { ensureDutiesAttendanceIndexes } from 'meteor/idreesia-common/server/business-logic/duties-attendance';
-import { ensureDutyPlanIndexes } from 'meteor/idreesia-common/server/business-logic/hr/duty-planning';
+import { ensureDutyPlanIndexes } from 'meteor/idreesia-common/server/business-logic/hr-karkuns/duty-planning';
 
 async function createPeopleIndexes() {
   const people = People.rawCollection();

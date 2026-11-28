@@ -103,4 +103,9 @@ describe('canDownloadReport', () => {
     expect(await canDownloadReport(makeUser({ permissions: [Permissions.SECURITY_VIEW_VISITORS] }), 'Visitors', '')).toBe(true);
     expect(await canDownloadReport(makeUser({ permissions: [Permissions.HR_VIEW_KARKUNS] }), 'Visitors', '')).toBe(false);
   });
+
+  it('the karkuns report is not open to the employee permissions', async () => {
+    expect(await canDownloadReport(makeUser({ permissions: [Permissions.HR_VIEW_EMPLOYEES] }), 'Karkuns', '')).toBe(false);
+    expect(await canDownloadReport(makeUser({ permissions: [Permissions.HR_MANAGE_EMPLOYEES] }), 'Karkuns', '')).toBe(false);
+  });
 });

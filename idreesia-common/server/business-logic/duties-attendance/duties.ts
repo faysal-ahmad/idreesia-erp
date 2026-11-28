@@ -8,8 +8,8 @@ import {
 } from 'meteor/idreesia-common/server/collections/duties-attendance';
 import {
   isDayOfWeek,
-} from 'meteor/idreesia-common/server/business-logic/hr/duty-planning-dates';
-import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
+} from 'meteor/idreesia-common/server/business-logic/hr-common/duty-planning-dates';
+import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr-karkuns/ensure-karkuns';
 import { requireMehfilDuty } from 'meteor/idreesia-common/server/business-logic/admin/mehfil-template-duties';
 
 import { dutiesAttendanceError } from './errors';

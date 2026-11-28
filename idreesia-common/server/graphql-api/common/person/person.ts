@@ -71,13 +71,24 @@ type PersonKarkunDataType {
   attachments: [Attachment]
 }
 
+# Employment details. Only HrEmployeeType exposes them, and only the employee
+# and leave queries return that type: no PersonType query, karkun management's
+# included, ever reaches them.
 type PersonEmployeeDataType {
   jobId: String
+  jobShiftId: String
+  workingDays: [String]
+  reportsToPersonId: String
+  employmentStatus: String
   employmentStartDate: String
   employmentEndDate: String
+  probationEndDate: String
+  confirmationDate: String
   bankAccountDetails: String
 
   job: JobType
+  jobShift: JobShiftType
+  reportsTo: PersonType
 }
 
 type PersonType {
@@ -90,7 +101,6 @@ type PersonType {
   sharedData: PersonSharedDataType
   visitorData: PersonVisitorDataType
   karkunData: PersonKarkunDataType
-  employeeData: PersonEmployeeDataType
   createdAt: String
   createdBy: String
   updatedAt: String

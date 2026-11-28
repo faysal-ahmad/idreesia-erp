@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type { DocumentNode, FieldDefinitionNode } from 'graphql';
 
-import DutyLocationSchema from './hr/duty-location/duty-location';
-import JobSchema from './hr/job/job';
-import KarkunSchema from './hr/karkun/karkun';
+import DutyLocationSchema from './hr-karkuns/duty-location/duty-location';
+import JobSchema from './hr-employees/job/job';
+import KarkunSchema from './hr-karkuns/karkun/karkun';
 import EventDutySchema from './security/event-duty/event-duty';
 import EventLangarDishSchema from './security/event-langar-dish/event-langar-dish';
 import EventLangarLocationSchema from './security/event-langar-location/event-langar-location';

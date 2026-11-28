@@ -7,7 +7,7 @@ import {
   type OrgLocationType,
 } from 'meteor/idreesia-common/constants/organization';
 import { runInTransaction } from 'meteor/idreesia-common/server/collections';
-import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
+import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr-karkuns/ensure-karkuns';
 import {
   OrgLocations,
   type OrgLocationDocument,

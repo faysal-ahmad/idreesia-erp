@@ -23,7 +23,12 @@ const routersMap: Record<
   [ModuleNames.stores]: React.lazy(
     () => import('/imports/ui/modules/stores/router')
   ),
-  [ModuleNames.hr]: React.lazy(() => import('/imports/ui/modules/hr/router')),
+  [ModuleNames.hrKarkuns]: React.lazy(
+    () => import('/imports/ui/modules/hr-karkuns/router')
+  ),
+  [ModuleNames.hrEmployees]: React.lazy(
+    () => import('/imports/ui/modules/hr-employees/router')
+  ),
   [ModuleNames.security]: React.lazy(
     () => import('/imports/ui/modules/security/router')
   ),

@@ -46,6 +46,55 @@ const toAuditValues = (values: LooseRecord): LooseRecord => {
   return auditValues;
 };
 
+/*
+ * A person's audit entries are split by whose data changed: the shared data
+ * (name, contacts, photo, attachments, ...) is logged against the person,
+ * karkun data against KARKUN, employee data against EMPLOYEE and visitor data
+ * against VISITOR. Each module's audit page then shows only its own changes.
+ */
+const ROLE_SECTIONS = [
+  { entityType: EntityType.KARKUN, subDocument: 'karkunData', flag: 'isKarkun' },
+  { entityType: EntityType.EMPLOYEE, subDocument: 'employeeData', flag: 'isEmployee' },
+  { entityType: EntityType.VISITOR, subDocument: 'visitorData', flag: 'isVisitor' },
+];
+
+// Kept under karkunData, but a person's attachments belong to the person.
+const PERSON_FIELDS_IN_ROLE_DATA = ['karkunData.attachmentIds'];
+
+/** The audit entity a changed person field (a dotted path) is logged against. */
+export function auditEntityTypeOfPersonField(key: string): string {
+  if (PERSON_FIELDS_IN_ROLE_DATA.includes(key)) return EntityType.PERSON;
+  const section = ROLE_SECTIONS.find(
+    ({ subDocument, flag }) => key === flag || key.startsWith(`${subDocument}.`)
+  );
+  return section ? section.entityType : EntityType.PERSON;
+}
+
+/** Changed values (dotted paths) grouped by the entity they are logged against. */
+const groupByAuditEntity = (values: LooseRecord) => {
+  const groups: Record<string, LooseRecord> = {};
+  Object.entries(values).forEach(([key, value]) => {
+    const entityType = auditEntityTypeOfPersonField(key);
+    groups[entityType] = { ...groups[entityType], [key]: value };
+  });
+  return groups;
+};
+
+/** A new person's values split into the person's own and each role's. */
+const splitNewPersonValues = (values: LooseRecord) => {
+  const personValues: LooseRecord = { ...values };
+  const roleValues: Record<string, LooseRecord> = {};
+  ROLE_SECTIONS.forEach(({ entityType, subDocument, flag }) => {
+    const section: LooseRecord = {};
+    if (values[flag] !== undefined) section[flag] = values[flag];
+    if (values[subDocument] !== undefined) section[subDocument] = values[subDocument];
+    delete personValues[flag];
+    delete personValues[subDocument];
+    if (keys(section).length > 0) roleValues[entityType] = section;
+  });
+  return { personValues, roleValues };
+};
+
 export async function createPerson(values: PersonInput, user: UserRef) {
   return runInTransaction(async () => {
     const { dataSource, sharedData = {} } = values;
@@ -66,14 +115,25 @@ export async function createPerson(values: PersonInput, user: UserRef) {
     });
 
     const personId = await People.insertAsync(valuesToInsert);
+    const { personValues, roleValues } = splitNewPersonValues(values);
     await createAuditLog({
       entityId: personId,
       entityType: EntityType.PERSON,
       operationType: OperationType.CREATE,
       operationBy: user._id,
       operationTime: date,
-      auditValues: values,
+      auditValues: personValues,
     });
+    for (const [entityType, auditValues] of Object.entries(roleValues)) {
+      await createAuditLog({
+        entityId: personId,
+        entityType,
+        operationType: OperationType.CREATE,
+        operationBy: user._id,
+        operationTime: date,
+        auditValues,
+      });
+    }
 
     return People.findOneAsync(personId);
   });
@@ -108,17 +168,20 @@ export async function updatePerson(values: PersonInput, user: UserRef) {
 
     await People.updateAsync(_id, { $set: valuesToUpdate });
 
-    await createAuditLog(
-      {
-        entityId: _id,
-        entityType: EntityType.PERSON,
-        operationType: OperationType.UPDATE,
-        operationBy: user._id,
-        operationTime: date,
-        auditValues: toAuditValues(changedValues),
-      },
-      existingPerson || null
-    );
+    const auditGroups = groupByAuditEntity(toAuditValues(changedValues));
+    for (const [entityType, auditValues] of Object.entries(auditGroups)) {
+      await createAuditLog(
+        {
+          entityId: _id,
+          entityType,
+          operationType: OperationType.UPDATE,
+          operationBy: user._id,
+          operationTime: date,
+          auditValues,
+        },
+        existingPerson || null
+      );
+    }
 
     return People.findOneAsync(_id);
   });

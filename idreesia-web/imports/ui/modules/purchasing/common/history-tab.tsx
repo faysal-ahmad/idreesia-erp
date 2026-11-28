@@ -57,6 +57,7 @@ const HistoryTab = ({ entityId }: HistoryTabProps) => {
     variables: {
       filter: { entityId, pageIndex: String(pageIndex), pageSize: String(pageSize) },
     },
+    fetchPolicy: 'cache-and-network',
   });
   const paged = data?.pagedPurchasingAuditLogs;
   const rows = (paged?.data ?? []).filter((row) => row?._id);

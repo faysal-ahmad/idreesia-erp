@@ -19,6 +19,7 @@ import {
   PurchasingInvoices,
   PurchasingOrders,
   PurchasingPayments,
+  PurchasingPettyCashVouchers,
   PurchasingQuotes,
   PurchasingReceipts,
   PurchasingRequisitions,
@@ -46,6 +47,7 @@ const OWNERS: Record<
   [AttachmentOwnerType.RECEIPT]: PurchasingReceipts,
   [AttachmentOwnerType.INVOICE]: PurchasingInvoices,
   [AttachmentOwnerType.PAYMENT]: PurchasingPayments,
+  [AttachmentOwnerType.PETTY_CASH_VOUCHER]: PurchasingPettyCashVouchers,
 };
 
 const MIME_TYPE_PATTERN = /^[a-z0-9][a-z0-9!#$&^_.+-]*\/[a-z0-9][a-z0-9!#$&^_.+-]*$/;

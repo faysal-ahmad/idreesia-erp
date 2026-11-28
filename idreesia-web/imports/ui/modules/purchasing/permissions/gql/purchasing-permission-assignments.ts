@@ -24,6 +24,11 @@ const PURCHASING_PERMISSION_ASSIGNMENTS: TypedDocumentNode<PurchasingPermissionA
           groupId
           name
         }
+        committees {
+          committeeId
+          name
+          locationName
+        }
       }
     }
   }

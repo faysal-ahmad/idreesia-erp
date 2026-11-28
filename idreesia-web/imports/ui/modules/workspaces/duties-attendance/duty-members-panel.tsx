@@ -12,7 +12,6 @@ import {
 import {
   Button,
   Checkbox,
-  Drawer,
   Form,
   Modal,
   Popconfirm,
@@ -24,7 +23,8 @@ import { message } from '/imports/ui/antd-feedback';
 
 import {
   PersonName,
-  type KarkunSelectionItem,
+  PersonPickerDrawer,
+  type PickerPerson,
 } from '/imports/ui/modules/helpers/controls';
 
 import { DAYS_OF_WEEK } from './dates';
@@ -32,9 +32,9 @@ import {
   WORKSPACE_DA_ADD_DUTY_MEMBER,
   WORKSPACE_DA_REMOVE_DUTY_MEMBER,
   WORKSPACE_DA_UPDATE_DUTY_MEMBER,
+  daKarkunSource,
 } from './gql';
 import type { Duty } from './hooks';
-import KarkunPicker from './karkun-picker';
 
 type Member = NonNullable<NonNullable<Duty['members']>[number]>;
 
@@ -79,7 +79,7 @@ const DutyMembersPanel = ({ locationId, duty, canManage, onChanged }: Props) => 
     message.error(error.message, 5);
   };
 
-  const handleAdd = (karkun: KarkunSelectionItem) => {
+  const handleAdd = (karkun: PickerPerson) => {
     setAddingId(karkun._id);
     addMember({ variables: { locationId, dutyId, karkunId: karkun._id } })
       .then(() => {
@@ -298,21 +298,16 @@ const DutyMembersPanel = ({ locationId, duty, canManage, onChanged }: Props) => 
         locale={{ emptyText: 'No members added yet' }}
       />
 
-      <Drawer
+      <PersonPickerDrawer
         title={`Add Member – ${duty.name}`}
-        width={900}
         open={adding}
         onClose={() => setAdding(false)}
-        destroyOnHidden
-      >
-        <KarkunPicker
-          locationId={locationId}
-          selectedIds={members.map(member => member.karkunId)}
-          selectedLabel="Member"
-          addingId={addingId}
-          onAdd={handleAdd}
-        />
-      </Drawer>
+        source={{ ...daKarkunSource, variables: { locationId } }}
+        selectedIds={members.map(member => member.karkunId)}
+        selectedLabel="Member"
+        addingId={addingId}
+        onPick={handleAdd}
+      />
 
       <Modal
         title={

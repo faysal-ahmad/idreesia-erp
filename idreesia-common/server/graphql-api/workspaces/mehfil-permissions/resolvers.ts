@@ -37,7 +37,7 @@ export default {
       groups: await listMehfilPermissions(locationId),
     }),
 
-    workspaceMehfilPermissionsKarkunSearch: async (
+    pagedWorkspaceMehfilPermissionsKarkuns: async (
       _obj: unknown,
       params: {
         locationId: string;

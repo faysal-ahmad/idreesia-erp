@@ -79,6 +79,8 @@ import './75-create-purchasing-indexes';
 import './76-create-trusted-device-indexes';
 import './77-per-store-access';
 import './78-purchasing-store-integration';
+import './79-create-petty-cash-indexes';
+import './80-rename-security-mehfils-to-events';
 
 Migrations.config({
   log: true,

@@ -23,6 +23,11 @@ const PURCHASING_INVOICE_BY_ID: TypedDocumentNode<
         _id
         number
         requisitionId
+        lines {
+          _id
+          unitPrice
+          taxRate
+        }
       }
       invoiceDate
       dueDate

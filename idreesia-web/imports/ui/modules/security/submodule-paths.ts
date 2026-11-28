@@ -2,44 +2,44 @@ import { ModulePaths } from 'meteor/idreesia-common/constants';
 
 export default class SubModulePaths {
   // *************************************************************************************
-  // Mehfil Routes
+  // Event Routes
   // *************************************************************************************
-  static mehfilsPath = `${ModulePaths.security}/mehfils`;
-  static mehfilsEditFormPath(mehfilId = ':mehfilId') {
-    return `${SubModulePaths.mehfilsPath}/${mehfilId}`;
+  static eventsPath = `${ModulePaths.security}/events`;
+  static eventsEditFormPath(eventId = ':eventId') {
+    return `${SubModulePaths.eventsPath}/${eventId}`;
   }
 
-  static mehfilsKarkunPrintCardsPath(mehfilId = ':mehfilId') {
-    return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkun-print-cards`;
+  static eventsKarkunPrintCardsPath(eventId = ':eventId') {
+    return `${SubModulePaths.eventsPath}/${eventId}/karkun-print-cards`;
   }
 
-  static mehfilsKarkunPrintListPath(mehfilId = ':mehfilId') {
-    return `${SubModulePaths.mehfilsPath}/${mehfilId}/karkun-print-list`;
+  static eventsKarkunPrintListPath(eventId = ':eventId') {
+    return `${SubModulePaths.eventsPath}/${eventId}/karkun-print-list`;
   }
 
-  static mehfilDutiesPath = `${ModulePaths.security}/mehfil-duties`;
-  static mehfilDutiesEditFormPath(mehfilDutyId = ':mehfilDutyId') {
-    return `${SubModulePaths.mehfilDutiesPath}/${mehfilDutyId}`;
+  static eventDutiesPath = `${ModulePaths.security}/event-duties`;
+  static eventDutiesEditFormPath(eventDutyId = ':eventDutyId') {
+    return `${SubModulePaths.eventDutiesPath}/${eventDutyId}`;
   }
 
-  static mehfilLangarDishesPath = `${ModulePaths.security}/mehfil-langar-dishes`;
-  static mehfilLangarDishesEditFormPath(
-    mehfilLangarDishId = ':mehfilLangarDishId'
+  static eventLangarDishesPath = `${ModulePaths.security}/event-langar-dishes`;
+  static eventLangarDishesEditFormPath(
+    eventLangarDishId = ':eventLangarDishId'
   ) {
-    return `${SubModulePaths.mehfilLangarDishesPath}/${mehfilLangarDishId}`;
+    return `${SubModulePaths.eventLangarDishesPath}/${eventLangarDishId}`;
   }
 
-  static mehfilLangarLocationsPath = `${ModulePaths.security}/mehfil-langar-locations`;
-  static mehfilLangarLocationsEditFormPath(
-    mehfilLangarLocationId = ':mehfilLangarLocationId'
+  static eventLangarLocationsPath = `${ModulePaths.security}/event-langar-locations`;
+  static eventLangarLocationsEditFormPath(
+    eventLangarLocationId = ':eventLangarLocationId'
   ) {
-    return `${SubModulePaths.mehfilLangarLocationsPath}/${mehfilLangarLocationId}`;
+    return `${SubModulePaths.eventLangarLocationsPath}/${eventLangarLocationId}`;
   }
 
   // *************************************************************************************
   // Card Verification Routes
   // *************************************************************************************
-  static mehfilCardVerificationPath = `${ModulePaths.security}/mehfil-card-verification`;
+  static eventCardVerificationPath = `${ModulePaths.security}/event-card-verification`;
   static visitorCardVerificationPath = `${ModulePaths.security}/visitor-card-verification`;
 
   // *************************************************************************************

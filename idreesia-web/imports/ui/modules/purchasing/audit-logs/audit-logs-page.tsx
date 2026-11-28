@@ -50,6 +50,7 @@ const AuditLogsPage = () => {
         pageSize: String(pageSize),
       },
     },
+    fetchPolicy: 'cache-and-network',
   });
   const { containerRef, scrollY } = useListScrollY();
   const paged = data?.pagedPurchasingAuditLogs;

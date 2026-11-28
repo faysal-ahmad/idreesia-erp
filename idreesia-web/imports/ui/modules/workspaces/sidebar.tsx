@@ -1,6 +1,12 @@
-import React, { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+} from 'react';
 import { type History } from 'history';
-import { Menu, Tag, Tooltip, TreeSelect } from 'antd';
+import { Menu, Tooltip } from 'antd';
 import {
   AlertOutlined,
   BarChartOutlined,
@@ -24,9 +30,10 @@ import {
 import { CommitteeFeatureKeys } from 'meteor/idreesia-common/constants/organization';
 import { useActiveModule } from 'meteor/idreesia-common/hooks/common';
 import {
-  ORG_LOCATION_TYPE_COLORS,
-  ORG_LOCATION_TYPE_LABELS,
-} from '/imports/ui/modules/admin/org-locations/org-location-types';
+  buildLocationTree,
+  LocationTreeSelect,
+  type PickerLocation,
+} from '/imports/ui/modules/helpers/controls';
 import { useMyDutiesAttendanceLocations } from './duties-attendance';
 import { useMyMehfilDetailsLocations } from './mehfil-details';
 import { useMyMehfilKarkunsLocations } from './mehfil-karkuns';
@@ -386,66 +393,45 @@ const Sidebar = ({ history }: SidebarProps) => {
     mehfilPermissionsLocations,
   ]);
 
+  // Only locations with a committee or a workspace the user can open can be
+  // picked; their ancestors stay in the tree for context.
+  const isLocationSelectable = useCallback(
+    (location: PickerLocation) =>
+      committeesByLocation.has(location._id) ||
+      workspaceLocationsById.has(location._id) ||
+      mehfilDetailsLocationIds.has(location._id) ||
+      mehfilKarkunsLocationIds.has(location._id) ||
+      mehfilPermissionsLocationIds.has(location._id),
+    [
+      committeesByLocation,
+      workspaceLocationsById,
+      mehfilDetailsLocationIds,
+      mehfilKarkunsLocationIds,
+      mehfilPermissionsLocationIds,
+    ]
+  );
+  const pickerLocations = useMemo(
+    () =>
+      locations.flatMap((location) =>
+        location._id ? [{ ...location, _id: location._id }] : []
+      ),
+    [locations]
+  );
+  const extraLocationOptions = useMemo(
+    () =>
+      committeesByLocation.has(NO_LOCATION)
+        ? [{ value: NO_LOCATION, title: 'No Location' }]
+        : [],
+    [committeesByLocation]
+  );
+
   // Location tree for the dropdown. The query returns the user's locations
-  // plus their ancestors; ancestors without committees or workspaces stay in
-  // the tree for context but can't be selected.
-  const locationTree = useMemo(() => {
-    type TreeNode = {
-      value: string;
-      title: string;
-      locationType?: string | null;
-      selectable: boolean;
-      children: TreeNode[];
-    };
-    const ids = new Set(locations.map((location) => location._id!));
-    const nodes = new Map<string, TreeNode>(
-      locations.map((location) => [
-        location._id!,
-        {
-          value: location._id!,
-          title: location.name ?? '',
-          locationType: location.type,
-          selectable:
-            committeesByLocation.has(location._id!) ||
-            workspaceLocationsById.has(location._id!) ||
-            mehfilDetailsLocationIds.has(location._id!) ||
-            mehfilKarkunsLocationIds.has(location._id!) ||
-            mehfilPermissionsLocationIds.has(location._id!),
-          children: [],
-        },
-      ])
-    );
-    const roots: TreeNode[] = [];
-    locations.forEach((location) => {
-      const node = nodes.get(location._id!)!;
-      if (location.parentId && ids.has(location.parentId)) {
-        nodes.get(location.parentId)!.children.push(node);
-      } else {
-        roots.push(node);
-      }
-    });
-    const sortTree = (list: TreeNode[]) => {
-      list.sort((a, b) => a.title.localeCompare(b.title));
-      list.forEach((node) => sortTree(node.children));
-    };
-    sortTree(roots);
-    if (committeesByLocation.has(NO_LOCATION)) {
-      roots.push({
-        value: NO_LOCATION,
-        title: 'No Location',
-        selectable: true,
-        children: [],
-      });
-    }
-    return roots;
-  }, [
-    locations,
-    committeesByLocation,
-    workspaceLocationsById,
-    mehfilDetailsLocationIds,
-    mehfilKarkunsLocationIds,
-    mehfilPermissionsLocationIds,
-  ]);
+  // plus their ancestors.
+  const locationTree = useMemo(
+    () =>
+      buildLocationTree(pickerLocations, isLocationSelectable, extraLocationOptions),
+    [pickerLocations, isLocationSelectable, extraLocationOptions]
+  );
 
   // Selectable locations in tree order, used for the default selection.
   const selectableLocationIds = useMemo(() => {
@@ -741,49 +727,12 @@ const Sidebar = ({ history }: SidebarProps) => {
           borderBottom: '2px solid var(--ant-color-border, #d9d9d9)',
         }}
       >
-        <TreeSelect
-          style={{ width: '100%' }}
-          placeholder="Select location"
+        <LocationTreeSelect
+          locations={pickerLocations}
+          isSelectable={isLocationSelectable}
+          extraOptions={extraLocationOptions}
           value={selectableLocationIds.length ? effectiveLocationId : undefined}
-          treeData={locationTree}
           onChange={handleLocationChange}
-          treeDefaultExpandAll
-          // The dropdown is wider than the sidebar, so deep locations fit.
-          popupMatchSelectWidth={false}
-          // antd caps the list at 256px by default; use the screen space the
-          // dropdown has below the selector instead.
-          listHeight={Math.max(256, window.innerHeight - 220)}
-          styles={{ popup: { root: { minWidth: 360, maxWidth: '90vw' } } }}
-          showSearch
-          treeNodeFilterProp="title"
-          // The type pill sits at the right of each row; the title stays
-          // plain text for the search and the selected value.
-          treeTitleRender={(treeNode) => {
-            const node = treeNode as { title?: unknown; locationType?: string };
-            const type = node.locationType as
-              | keyof typeof ORG_LOCATION_TYPE_LABELS
-              | undefined;
-            return (
-              <span
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 12,
-                }}
-              >
-                <span>{node.title as string}</span>
-                {type && ORG_LOCATION_TYPE_LABELS[type] ? (
-                  <Tag
-                    color={ORG_LOCATION_TYPE_COLORS[type]}
-                    style={{ marginInlineEnd: 0 }}
-                  >
-                    {ORG_LOCATION_TYPE_LABELS[type]}
-                  </Tag>
-                ) : null}
-              </span>
-            );
-          }}
         />
       </div>
       <Menu

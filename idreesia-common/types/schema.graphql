@@ -76,7 +76,6 @@ directive @checkStoreAccess(
 enum Permission {
   ADMIN_VIEW_USERS_AND_GROUPS
   ADMIN_MANAGE_USERS_AND_GROUPS
-  ADMIN_MANAGE_PHYSICAL_STORES
   ADMIN_MANAGE_CITIES
   ADMIN_MANAGE_PEOPLE_TAGS
   ADMIN_MANAGE_FREE_FORM_DATA
@@ -98,6 +97,8 @@ enum Permission {
   HR_MANAGE_EMPLOYEES
   HR_MANAGE_EMPLOYEES_SETUP_DATA
 
+  IN_MANAGE_PHYSICAL_STORES
+  IN_MANAGE_PHYSICAL_STORE_PERMISSIONS
   IN_MANAGE_SETUP_DATA
   IN_MANAGE_STOCK_ITEMS
   IN_VIEW_ISSUANCE_FORMS
@@ -119,8 +120,8 @@ enum Permission {
   SECURITY_MANAGE_PERMISSIONS
   SECURITY_VIEW_VISITORS
   SECURITY_MANAGE_VISITORS
-  SECURITY_VIEW_MEHFILS
-  SECURITY_MANAGE_MEHFILS
+  SECURITY_VIEW_EVENTS
+  SECURITY_MANAGE_EVENTS
   SECURITY_VIEW_SECURITY_SERVER_DATA
   SECURITY_MANAGE_SECURITY_SERVER_DATA
   SECURITY_SYNC_SECURITY_SERVER_DATA
@@ -143,6 +144,11 @@ enum Permission {
   PURCHASING_MANAGE_INVOICES
   PURCHASING_VIEW_PAYMENTS
   PURCHASING_MANAGE_PAYMENTS
+  PURCHASING_VIEW_PETTY_CASH
+  PURCHASING_MANAGE_PETTY_CASH_FUNDS
+  PURCHASING_MANAGE_PETTY_CASH_VOUCHERS
+  PURCHASING_APPROVE_PETTY_CASH_VOUCHERS
+  PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS
   PURCHASING_VIEW_REPORTS
   PURCHASING_VIEW_AUDIT_LOGS
   PURCHASING_MANAGE_PERMISSIONS
@@ -367,24 +373,6 @@ type OrgLocationType {
   updatedBy: String
 }
 
-# A karkun of a mehfil, and whether they already have a user account.
-type OrgLocationKarkunType {
-  _id: String!
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  contactNumber2: String
-  imageUrl: String
-  imageThumbnailUrl: String
-  hasUserAccount: Boolean!
-}
-
-type PagedOrgLocationKarkunType {
-  data: [OrgLocationKarkunType!]!
-  totalResults: Int!
-}
-
 type OrgLocationObserverStatType {
   karkunId: String
   observedCommitteeCount: Int
@@ -442,6 +430,16 @@ extend type Query {
 
   # The karkuns of the mehfil, or with includeChildLocations of the location
   # and every location below it.
+  # Karkuns who can be made observers of a location.
+  pagedOrgLocationObserverKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
   pagedOrgLocationKarkuns(
     locationId: String!
     name: String
@@ -452,7 +450,7 @@ extend type Query {
     includeChildLocations: Boolean
     pageIndex: String
     pageSize: String
-  ): PagedOrgLocationKarkunType!
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
 
   # The user accounts of the karkuns of the mehfil.
@@ -865,16 +863,6 @@ extend type Mutation {
   ): UserGroupType @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 }
 
-input AdminKarkunFilter {
-  name: String
-  cnicNumber: String
-  phoneNumber: String
-  cityLocationId: String
-  mehfilLocationId: String
-  pageIndex: String
-  pageSize: String
-}
-
 type AdminKarkunLocationType {
   _id: String
   name: String
@@ -884,7 +872,13 @@ type AdminKarkunLocationType {
 
 extend type Query {
   # Karkuns and employees (from any city) that a user account can be linked to.
-  pagedAdminKarkuns(filter: AdminKarkunFilter): PagedKarkunType
+  pagedAdminUserKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [ADMIN_MANAGE_USERS_AND_GROUPS])
 
   # The whole organization location tree, to filter karkuns and users by location.
@@ -1107,6 +1101,24 @@ input KarkunFilter {
 type PagedKarkunType {
   totalResults: Int
   data: [PersonType]
+}
+
+# A person as a person picker shows them; every picker search returns these.
+type PickerPersonType {
+  _id: String!
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageUrl: String
+  imageThumbnailUrl: String
+  # Only filled by the searches that mark who already has a user account.
+  hasUserAccount: Boolean
+}
+
+type PagedPickerPersonType {
+  totalResults: Int
+  data: [PickerPersonType]
 }
 
 type PersonImageVectorDataType {
@@ -1619,6 +1631,36 @@ extend type Query {
   hrKarkunsById(_ids: String!): [PersonType]
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 
+  # Karkuns of Multan, to add to a team or to a day's duty.
+  pagedHrPickerKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_KARKUNS_SETUP_DATA])
+
+  # Karkuns of Multan who are not employees yet, to make an employee.
+  pagedHrEmployeeCandidateKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  # People who are not karkuns yet, to make a karkun.
+  pagedHrKarkunCandidatePeople(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+
   pagedHrKarkuns(filter: KarkunFilter): PagedKarkunType
   @checkPermissions(
     permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES]
@@ -1651,7 +1693,8 @@ extend type Mutation {
   ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
-  promoteHrKarkun(_id: String!): PersonType
+  # Makes a visitor or employee a karkun of the city and (optionally) mehfil.
+  promoteHrKarkun(_id: String!, cityLocationId: String!, mehfilLocationId: String): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   updateHrKarkun(
@@ -1711,12 +1754,20 @@ type HrPermissionGroupHolder {
   name: String!
 }
 
+type HrPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
 type HrPermissionAssignment {
   key: String!
   name: String!
   description: String
   users: [HrPermissionHolder]
   groups: [HrPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [HrPermissionCommitteeHolder]
 }
 
 type HrPermissionGroup {
@@ -1725,33 +1776,18 @@ type HrPermissionGroup {
   permissions: [HrPermissionAssignment]
 }
 
-type HrPermissionKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedHrPermissionKarkunType {
-  data: [HrPermissionKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   hrPermissionAssignments: [HrPermissionGroup]
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 
   # Karkuns to choose from when giving a permission or adding to a group.
-  hrPermissionKarkunSearch(
+  pagedHrPermissionKarkuns(
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedHrPermissionKarkunType
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 }
 
@@ -1763,6 +1799,12 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 
   removeHrPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  addHrPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  removeHrPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 
   removeHrPermissionUser(permissionKey: String!, userId: String!): Boolean
@@ -2086,6 +2128,28 @@ extend type Mutation {
   @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA], physicalStoreIdArgName: "physicalStoreId")
 }
 
+extend type Query {
+  # People to name on a store form (who purchased, received, issued, ...).
+  # predefinedFilterName lists the people used on the store's forms before.
+  pagedStoreKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    predefinedFilterName: String
+    predefinedFilterStoreId: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(
+      anyStorePermissions: [
+        IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS,
+        IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS,
+        IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS,
+        IN_MANAGE_REQUISITIONS, IN_MANAGE_RECEIPTS
+      ]
+    )
+}
+
 type Location {
   _id: String
   name: String
@@ -2164,65 +2228,38 @@ type StorePermissionHolders {
   groups: [StorePermissionGroupHolder]
 }
 
-type StoreAccessKarkun {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedStoreAccessKarkun {
-  data: [StoreAccessKarkun]
-  totalResults: Int
-}
-
-type StoreAccessUserGroup {
-  _id: String
-  name: String
-  description: String
-}
-
 extend type Query {
   allAccessiblePhysicalStores: [PhysicalStore]
   physicalStoreAccess(physicalStoreId: String!): [StorePermissionHolders]
-    @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+    @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
 
-  # Karkuns (with a user account) and user groups to give store permissions to.
-  storeAccessKarkunSearch(
-    name: String
-    cnicNumber: String
-    phoneNumber: String
-    pageIndex: String
-    pageSize: String
-  ): PagedStoreAccessKarkun
-    @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
-  storeAccessUserGroups: [StoreAccessUserGroup]
-    @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+  # Every store, for Stores / Administration / Manage Stores.
+  managedPhysicalStores: [PhysicalStore]
+    @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
+  managedPhysicalStoreById(id: String!): PhysicalStore
+    @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
   physicalStoreById(id: String!): PhysicalStore
     @checkStoreAccess(permissions: [IN_MANAGE_SETUP_DATA, IN_MANAGE_STOCK_ITEMS, IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS, IN_APPROVE_ISSUANCE_FORMS, IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS, IN_APPROVE_PURCHASE_FORMS, IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS, IN_APPROVE_STOCK_ADJUSTMENTS], physicalStoreIdArgName: "id", returnType: "object")
 }
 
 extend type Mutation {
   createPhysicalStore(name: String!, address: String): PhysicalStore
-  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+  @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES])
 
   updatePhysicalStore(id: String!, name: String!, address: String): PhysicalStore
-  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+  @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES])
 
   addPhysicalStoreAccessUser(physicalStoreId: String!, permission: String!, karkunId: String!): Boolean
-  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+  @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
 
   removePhysicalStoreAccessUser(physicalStoreId: String!, permission: String!, userId: String!): Boolean
-  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+  @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
 
   addPhysicalStoreAccessGroup(physicalStoreId: String!, permission: String!, groupId: String!): Boolean
-  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+  @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
 
   removePhysicalStoreAccessGroup(physicalStoreId: String!, permission: String!, groupId: String!): Boolean
-  @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+  @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
 }
 
 type PurchaseForm {
@@ -2488,6 +2525,58 @@ extend type Mutation {
 
   recalculateStockLevels(_ids: [String]!, physicalStoreId: String!): [StockItem]
   @checkStoreAccess(permissions: [IN_MANAGE_STOCK_ITEMS], physicalStoreIdArgName: "physicalStoreId")
+}
+
+type StoreUserGroupMember {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type StoreUserGroup {
+  _id: String!
+  name: String!
+  description: String
+  users: [StoreUserGroupMember]
+}
+
+extend type Query {
+  # The Stores user groups (shared by all stores), with their members.
+  storeUserGroups: [StoreUserGroup]
+    @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
+
+  # Karkuns of Multan (with an unlocked user account) to give a store
+  # permission to or to add to a Stores group.
+  pagedStorePermissionKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
+}
+
+extend type Mutation {
+  createStoreUserGroup(name: String!, description: String): StoreUserGroup
+    @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
+
+  updateStoreUserGroup(
+    _id: String!
+    name: String!
+    description: String
+  ): StoreUserGroup
+    @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
+
+  deleteStoreUserGroup(_id: String!): Boolean
+    @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
+
+  addStoreUserGroupMember(groupId: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
+
+  removeStoreUserGroupMember(groupId: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [IN_MANAGE_PHYSICAL_STORES, IN_MANAGE_PHYSICAL_STORE_PERMISSIONS])
 }
 
 type Vendor {
@@ -2783,10 +2872,10 @@ extend type Query {
   # ownerType is requisition, quote, order, receipt, invoice or payment. The
   # permission of that kind of document is checked in the resolver.
   purchasingAttachments(ownerType: String!, ownerId: String!): [PurchasingAttachment]
-    @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS])
+    @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS, PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
 
   purchasingAttachmentDownload(_id: String!, inline: Boolean): PurchasingAttachmentDownload
-    @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS])
+    @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_VIEW_ORDERS, PURCHASING_MANAGE_ORDERS, PURCHASING_APPROVE_ORDERS, PURCHASING_VIEW_RECEIPTS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_VIEW_INVOICES, PURCHASING_MANAGE_INVOICES, PURCHASING_VIEW_PAYMENTS, PURCHASING_MANAGE_PAYMENTS, PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
 }
 
 extend type Mutation {
@@ -2799,16 +2888,16 @@ extend type Mutation {
     size: Int!
     name: String
   ): PurchasingAttachmentUpload
-    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
 
   completePurchasingAttachmentUpload(uploadId: String!): PurchasingAttachment
-    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
 
   abortPurchasingAttachmentUpload(uploadId: String!): Boolean
-    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
 
   deletePurchasingAttachment(_id: String!): Boolean
-    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS])
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_ORDERS, PURCHASING_MANAGE_RECEIPTS, PURCHASING_MANAGE_INVOICES, PURCHASING_MANAGE_PAYMENTS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
 }
 
 input PurchasingAuditLogFilter {
@@ -3000,6 +3089,22 @@ extend type Mutation {
 
   voidPurchasingInvoice(_id: String!): PurchasingInvoice
     @checkPermissions(permissions: [PURCHASING_MANAGE_INVOICES])
+}
+
+extend type Query {
+  # Karkuns of the Purchasing city, to name who requested or received goods.
+  # withUserAccount limits them to karkuns with an unlocked user account.
+  pagedPurchasingKarkuns(
+    withUserAccount: Boolean
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(
+      permissions: [PURCHASING_MANAGE_REQUISITIONS, PURCHASING_MANAGE_RECEIPTS]
+    )
 }
 
 type PurchasingOrderLine {
@@ -3213,12 +3318,20 @@ type PurchasingPermissionGroupHolder {
   name: String!
 }
 
+type PurchasingPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
 type PurchasingPermissionAssignment {
   key: String!
   name: String!
   description: String
   users: [PurchasingPermissionHolder]
   groups: [PurchasingPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [PurchasingPermissionCommitteeHolder]
 }
 
 type PurchasingPermissionGroup {
@@ -3227,33 +3340,18 @@ type PurchasingPermissionGroup {
   permissions: [PurchasingPermissionAssignment]
 }
 
-type PurchasingKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedPurchasingKarkunType {
-  data: [PurchasingKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   purchasingPermissionAssignments: [PurchasingPermissionGroup]
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 
   # Karkuns to choose from when giving a permission or adding to a group.
-  purchasingKarkunSearch(
+  pagedPurchasingPermissionKarkuns(
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedPurchasingKarkunType
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 }
 
@@ -3267,8 +3365,328 @@ extend type Mutation {
   removePurchasingPermissionGroup(permissionKey: String!, groupId: String!): Boolean
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 
+  addPurchasingPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  removePurchasingPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
   removePurchasingPermissionUser(permissionKey: String!, userId: String!): Boolean
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+}
+
+type PurchasingPettyCashExpenseHead {
+  _id: String
+  name: String
+  description: String
+  isActive: Boolean
+  # Whether any voucher is booked to it; a head in use can only be deactivated.
+  inUse: Boolean
+  version: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingPettyCashExpenseHeads {
+  totalResults: Int
+  data: [PurchasingPettyCashExpenseHead]
+}
+
+extend type Query {
+  purchasingPettyCashExpenseHeadById(_id: String!): PurchasingPettyCashExpenseHead
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
+
+  pagedPurchasingPettyCashExpenseHeads(
+    search: String
+    isActive: Boolean
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingPettyCashExpenseHeads
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
+}
+
+extend type Mutation {
+  createPurchasingPettyCashExpenseHead(name: String!, description: String): PurchasingPettyCashExpenseHead
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+
+  updatePurchasingPettyCashExpenseHead(_id: String!, name: String!, description: String): PurchasingPettyCashExpenseHead
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+
+  setPurchasingPettyCashExpenseHeadActive(_id: String!, isActive: Boolean!): PurchasingPettyCashExpenseHead
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+
+  deletePurchasingPettyCashExpenseHead(_id: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+}
+
+type PurchasingPettyCashFund {
+  _id: String
+  name: String
+  custodianPersonId: String
+  custodian: PersonBasicType
+  floatAmount: Float
+  perTransactionLimit: Float
+  balance: Float
+  isActive: Boolean
+  notes: String
+  version: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingPettyCashFunds {
+  totalResults: Int
+  data: [PurchasingPettyCashFund]
+}
+
+type PurchasingPettyCashLedgerHead {
+  _id: String
+  name: String
+  total: Float
+}
+
+type PurchasingPettyCashLedger {
+  openingBalance: Float
+  # Approved replenishments in the period (debit: cash into the fund).
+  replenishmentTotal: Float
+  # Approved vouchers in the period (credit: cash out of the fund), split by head in heads.
+  voucherTotal: Float
+  closingBalance: Float
+  heads: [PurchasingPettyCashLedgerHead]
+}
+
+extend type Query {
+  purchasingPettyCashFundById(_id: String!): PurchasingPettyCashFund
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  # People to choose from as a fund's custodian: those who hold a Purchasing permission.
+  pagedPurchasingCustodianKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+
+  pagedPurchasingPettyCashFunds(
+    search: String
+    isActive: Boolean
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingPettyCashFunds
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  # A fund's cash book for a period in totals: opening, replenished, spent per head, closing.
+  purchasingPettyCashLedger(fundId: String!, fromDate: String, toDate: String): PurchasingPettyCashLedger
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_FUNDS, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+}
+
+extend type Mutation {
+  createPurchasingPettyCashFund(
+    name: String!
+    custodianPersonId: String!
+    floatAmount: Float!
+    perTransactionLimit: Float
+    notes: String
+  ): PurchasingPettyCashFund
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+
+  updatePurchasingPettyCashFund(
+    _id: String!
+    name: String!
+    custodianPersonId: String!
+    floatAmount: Float!
+    perTransactionLimit: Float
+    notes: String
+  ): PurchasingPettyCashFund
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+
+  setPurchasingPettyCashFundActive(_id: String!, isActive: Boolean!): PurchasingPettyCashFund
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+}
+
+type PurchasingPettyCashReplenishment {
+  _id: String
+  number: String
+  fundId: String
+  fund: PurchasingPettyCashFund
+  voucherIds: [String]
+  amount: Float
+  countedCash: Float
+  variance: Float
+  notes: String
+  status: String
+  version: Int
+  approvedAt: String
+  approvedBy: String
+  rejectedAt: String
+  rejectedBy: String
+  rejectionReason: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingPettyCashReplenishments {
+  totalResults: Int
+  data: [PurchasingPettyCashReplenishment]
+}
+
+extend type Query {
+  purchasingPettyCashReplenishmentById(_id: String!): PurchasingPettyCashReplenishment
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS])
+
+  pagedPurchasingPettyCashReplenishments(
+    search: String
+    status: String
+    fundId: String
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingPettyCashReplenishments
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS])
+}
+
+extend type Mutation {
+  requestPurchasingPettyCashReplenishment(
+    fundId: String!
+    voucherIds: [String]
+    countedCash: Float
+    notes: String
+  ): PurchasingPettyCashReplenishment
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  approvePurchasingPettyCashReplenishment(_id: String!): PurchasingPettyCashReplenishment
+    @checkPermissions(permissions: [PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS])
+
+  rejectPurchasingPettyCashReplenishment(_id: String!, reason: String!): PurchasingPettyCashReplenishment
+    @checkPermissions(permissions: [PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS])
+}
+
+type PurchasingPettyCashVoucherLine {
+  _id: String
+  description: String
+  unit: String
+  quantity: Float
+  unitPrice: Float
+  amount: Float
+  physicalStoreId: String
+  physicalStoreName: String
+  externalCatalogId: String
+  stockItemName: String
+}
+
+input PurchasingPettyCashVoucherLineInput {
+  _id: String
+  description: String!
+  unit: String
+  quantity: Float!
+  unitPrice: Float!
+  physicalStoreId: String
+  externalCatalogId: String
+}
+
+type PurchasingPettyCashVoucher {
+  _id: String
+  number: String
+  fundId: String
+  fund: PurchasingPettyCashFund
+  expenseHeadId: String
+  expenseHead: PurchasingPettyCashExpenseHead
+  voucherDate: String
+  payee: String
+  vendorId: String
+  vendor: PurchasingVendor
+  purpose: String
+  lines: [PurchasingPettyCashVoucherLine]
+  total: Float
+  status: String
+  version: Int
+  submittedAt: String
+  submittedBy: String
+  approvedAt: String
+  approvedBy: String
+  rejectedAt: String
+  rejectedBy: String
+  rejectionReason: String
+  voidedAt: String
+  voidedBy: String
+  voidReason: String
+  replenishmentId: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedPurchasingPettyCashVouchers {
+  totalResults: Int
+  data: [PurchasingPettyCashVoucher]
+}
+
+extend type Query {
+  purchasingPettyCashVoucherById(_id: String!): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
+
+  pagedPurchasingPettyCashVouchers(
+    search: String
+    status: String
+    fundId: String
+    expenseHeadId: String
+    replenishmentId: String
+    unreplenishedOnly: Boolean
+    pageIndex: Int
+    pageSize: Int
+  ): PagedPurchasingPettyCashVouchers
+    @checkPermissions(permissions: [PURCHASING_VIEW_PETTY_CASH, PURCHASING_MANAGE_PETTY_CASH_VOUCHERS, PURCHASING_APPROVE_PETTY_CASH_VOUCHERS, PURCHASING_MANAGE_PETTY_CASH_FUNDS])
+}
+
+extend type Mutation {
+  createPurchasingPettyCashVoucher(
+    fundId: String!
+    expenseHeadId: String!
+    voucherDate: String!
+    payee: String
+    vendorId: String
+    purpose: String
+    lines: [PurchasingPettyCashVoucherLineInput!]!
+  ): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  updatePurchasingPettyCashVoucher(
+    _id: String!
+    expenseHeadId: String!
+    voucherDate: String!
+    payee: String
+    vendorId: String
+    purpose: String
+    lines: [PurchasingPettyCashVoucherLineInput!]!
+  ): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  submitPurchasingPettyCashVoucher(_id: String!): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  deletePurchasingPettyCashVoucher(_id: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
+
+  approvePurchasingPettyCashVoucher(_id: String!): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
+
+  rejectPurchasingPettyCashVoucher(_id: String!, reason: String!): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
+
+  voidPurchasingPettyCashVoucher(_id: String!, reason: String!): PurchasingPettyCashVoucher
+    @checkPermissions(permissions: [PURCHASING_APPROVE_PETTY_CASH_VOUCHERS])
 }
 
 # A line of a quote, order or invoice that has a price.
@@ -3564,6 +3982,8 @@ type PurchasingRequisition {
   purpose: String
   requestedBy: String
   requestedByPerson: PersonBasicType
+  # Free text: who or what the goods are for.
+  requestedFor: String
   neededBy: String
   # 'purchasing' or 'store'. For a store, externalSourceId is its physical store id.
   source: String
@@ -3607,6 +4027,10 @@ extend type Query {
     pageSize: Int
   ): PagedPurchasingRequisitions
     @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_MANAGE_ORDERS])
+
+  # The Requested For values entered before, to suggest on the requisition form.
+  distinctPurchasingRequisitionRequestedFor: [String]
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
 }
 
 extend type Mutation {
@@ -3614,6 +4038,7 @@ extend type Mutation {
     title: String!
     purpose: String
     requestedBy: String
+    requestedFor: String
     neededBy: String
     lines: [PurchasingRequisitionLineInput!]!
   ): PurchasingRequisition
@@ -3626,6 +4051,7 @@ extend type Mutation {
     title: String!
     purpose: String
     requestedBy: String
+    requestedFor: String
     neededBy: String
     lines: [PurchasingRequisitionLineInput!]!
   ): PurchasingRequisition
@@ -3806,10 +4232,42 @@ type ReferenceOrgLocationType {
   parentId: String
 }
 
+type ReferenceCommitteeType {
+  _id: String!
+  name: String!
+  color: String
+  # Members and coordinators: the people who hold its permissions.
+  memberCount: Int!
+}
+
 extend type Query {
   referenceCityMehfilLocations: [ReferenceOrgLocationType]
     @checkPermissions(
       permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES]
+    )
+
+  # Locations for a location picker: those of the given types (all when
+  # empty) plus their ancestors, so the tree shows where they sit.
+  referenceOrgLocations(types: [String!]): [ReferenceOrgLocationType]
+    @checkPermissions(
+      permissions: [
+        HR_MANAGE_KARKUNS
+        HR_MANAGE_EMPLOYEES
+        HR_MANAGE_PERMISSIONS
+        PURCHASING_MANAGE_PERMISSIONS
+        SECURITY_MANAGE_PERMISSIONS
+      ]
+    )
+
+  # The committees of a location, for giving one a module permission (on the
+  # HR, Purchasing and Security Permissions tabs).
+  referenceCommitteesByLocation(locationId: String!): [ReferenceCommitteeType]
+    @checkPermissions(
+      permissions: [
+        HR_MANAGE_PERMISSIONS
+        PURCHASING_MANAGE_PERMISSIONS
+        SECURITY_MANAGE_PERMISSIONS
+      ]
     )
 }
 
@@ -3825,16 +4283,28 @@ extend type Query {
       permissions: [
         ADMIN_VIEW_USERS_AND_GROUPS
         ADMIN_MANAGE_USERS_AND_GROUPS
-        ADMIN_MANAGE_PHYSICAL_STORES
         PURCHASING_VIEW_REQUISITIONS
         PURCHASING_MANAGE_REQUISITIONS
         PURCHASING_APPROVE_REQUISITIONS
         PURCHASING_VIEW_ORDERS
         PURCHASING_MANAGE_ORDERS
+        PURCHASING_VIEW_PETTY_CASH
+        PURCHASING_MANAGE_PETTY_CASH_VOUCHERS
       ]
     )
-  referencePhysicalStoreById(id: String!): ReferencePhysicalStoreType
-    @checkPermissions(permissions: [ADMIN_MANAGE_PHYSICAL_STORES])
+}
+
+type ReferenceStockItemType {
+  _id: String
+  name: String
+  unitOfMeasurement: String
+  physicalStoreId: String
+}
+
+extend type Query {
+  # Consumers: Purchasing petty cash vouchers.
+  referenceStockItems(physicalStoreId: String!, name: String): [ReferenceStockItemType]
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PETTY_CASH_VOUCHERS])
 }
 
 extend type Query {
@@ -3842,12 +4312,12 @@ extend type Query {
   @checkPermissions(permissions: [SECURITY_VIEW_AUDIT_LOGS])
 }
 
-type MehfilDutyType {	
+type SecurityEventDutyType {	
   _id: String	
   name: String	
   urduName: String	
   overallUsedCount: Int	
-  mehfilUsedCount: Int	
+  eventUsedCount: Int	
 
   createdAt: String	
   createdBy: String	
@@ -3856,34 +4326,34 @@ type MehfilDutyType {
 }	
 
 extend type Query {	
-  allSecurityMehfilDuties(mehfilId: String): [MehfilDutyType]	
-    @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS, SECURITY_MANAGE_SETUP_DATA])	
-  securityMehfilDutyById(id: String!): MehfilDutyType	
-    @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS, SECURITY_MANAGE_SETUP_DATA])	
+  allSecurityEventDuties(eventId: String): [SecurityEventDutyType]	
+    @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS, SECURITY_MANAGE_SETUP_DATA])	
+  securityEventDutyById(id: String!): SecurityEventDutyType	
+    @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS, SECURITY_MANAGE_SETUP_DATA])	
 }	
 
 extend type Mutation {	
-  createSecurityMehfilDuty(name: String!, urduName: String!): MehfilDutyType	
+  createSecurityEventDuty(name: String!, urduName: String!): SecurityEventDutyType	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  updateSecurityMehfilDuty(id: String!, name: String!, urduName: String!): MehfilDutyType	
+  updateSecurityEventDuty(id: String!, name: String!, urduName: String!): SecurityEventDutyType	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  removeSecurityMehfilDuty(_id: String!): Int	
+  removeSecurityEventDuty(_id: String!): Int	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 }
 
-type MehfilKarkunType {
+type SecurityEventKarkunType {
   _id: String
-  mehfilId: String
+  eventId: String
   karkunId: String
   dutyId: String
   dutyDetail: String
   dutyCardBarcodeId: String
 
   karkun: PersonType
-  mehfil: MehfilType
-  duty: MehfilDutyType
+  event: SecurityEventType
+  duty: SecurityEventDutyType
 
   createdAt: String
   createdBy: String
@@ -3892,33 +4362,40 @@ type MehfilKarkunType {
 }
 
 extend type Query {
-  mehfilKarkunsByMehfilId(mehfilId: String!, dutyId: String): [MehfilKarkunType]
-  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+  securityEventKarkunsByEventId(eventId: String!, dutyId: String): [SecurityEventKarkunType]
+  @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS])
 
-  mehfilKarkunsByIds(ids: String!): [MehfilKarkunType]
-  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+  securityEventKarkunsByIds(ids: String!): [SecurityEventKarkunType]
+  @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS])
 
-  mehfilKarkunByBarcodeId(barcode: String!): MehfilKarkunType
-  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+  securityEventKarkunByBarcodeId(barcode: String!): SecurityEventKarkunType
+  @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS])
 
-  # People search behind the "Add Karkuns" picker on the mehfil karkuns page.
+  # People search behind the "Add Karkuns" picker on the event karkuns page.
   # Searches visitors, karkuns and employees.
-  pagedSecurityPeople(filter: PersonFilter): PagedPeopleType
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  # Anyone who can be put on an event's duty.
+  pagedSecurityEventPeople(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+  @checkPermissions(permissions: [SECURITY_MANAGE_EVENTS])
 }
 
 extend type Mutation {
-  addMehfilKarkun(mehfilId: String!, karkunId: String!, dutyId: String!): MehfilKarkunType
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  addSecurityEventKarkun(eventId: String!, karkunId: String!, dutyId: String!): SecurityEventKarkunType
+  @checkPermissions(permissions: [SECURITY_MANAGE_EVENTS])
 
-  setDutyDetail(ids: [String]!, dutyDetail: String): [MehfilKarkunType]
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  setDutyDetail(ids: [String]!, dutyDetail: String): [SecurityEventKarkunType]
+  @checkPermissions(permissions: [SECURITY_MANAGE_EVENTS])
 
-  removeMehfilKarkun(_id: String!): Int
-  @checkPermissions(permissions: [SECURITY_MANAGE_MEHFILS])
+  removeSecurityEventKarkun(_id: String!): Int
+  @checkPermissions(permissions: [SECURITY_MANAGE_EVENTS])
 }
 
-type MehfilLangarDishType {	
+type SecurityEventLangarDishType {	
   _id: String	
   name: String	
   urduName: String	
@@ -3931,24 +4408,24 @@ type MehfilLangarDishType {
 }	
 
 extend type Query {	
-  allSecurityMehfilLangarDishes: [MehfilLangarDishType]	
+  allSecurityEventLangarDishes: [SecurityEventLangarDishType]	
     @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
-  securityMehfilLangarDishById(id: String!): MehfilLangarDishType	
+  securityEventLangarDishById(id: String!): SecurityEventLangarDishType	
     @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
 }	
 
 extend type Mutation {	
-  createSecurityMehfilLangarDish(name: String!, urduName: String!): MehfilLangarDishType	
+  createSecurityEventLangarDish(name: String!, urduName: String!): SecurityEventLangarDishType	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  updateSecurityMehfilLangarDish(id: String!, name: String!, urduName: String!): MehfilLangarDishType	
+  updateSecurityEventLangarDish(id: String!, name: String!, urduName: String!): SecurityEventLangarDishType	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  removeSecurityMehfilLangarDish(_id: String!): Int	
+  removeSecurityEventLangarDish(_id: String!): Int	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 }
 
-type MehfilLangarLocationType {	
+type SecurityEventLangarLocationType {	
   _id: String	
   name: String	
   urduName: String	
@@ -3961,30 +4438,30 @@ type MehfilLangarLocationType {
 }	
 
 extend type Query {	
-  allSecurityMehfilLangarLocations: [MehfilLangarLocationType]	
+  allSecurityEventLangarLocations: [SecurityEventLangarLocationType]	
     @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
-  securityMehfilLangarLocationById(id: String!): MehfilLangarLocationType	
+  securityEventLangarLocationById(id: String!): SecurityEventLangarLocationType	
     @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])	
 }	
 
 extend type Mutation {	
-  createSecurityMehfilLangarLocation(name: String!, urduName: String!): MehfilLangarLocationType	
+  createSecurityEventLangarLocation(name: String!, urduName: String!): SecurityEventLangarLocationType	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  updateSecurityMehfilLangarLocation(id: String!, name: String!, urduName: String!): MehfilLangarLocationType	
+  updateSecurityEventLangarLocation(id: String!, name: String!, urduName: String!): SecurityEventLangarLocationType	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  removeSecurityMehfilLangarLocation(_id: String!): Int	
+  removeSecurityEventLangarLocation(_id: String!): Int	
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 }
 
-type MehfilType {
+type SecurityEventType {
   _id: String
   name: String
-  mehfilDate: String
+  eventDate: String
 
   karkunCount: Int
-  mehfilKarkuns: MehfilKarkunType
+  eventKarkuns: SecurityEventKarkunType
 
   createdAt: String
   createdBy: String
@@ -3993,21 +4470,21 @@ type MehfilType {
 }
 
 extend type Query {
-  allMehfils: [MehfilType]
-  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+  allSecurityEvents: [SecurityEventType]
+  @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS])
 
-  mehfilById(_id: String!): MehfilType
-  @checkPermissions(permissions: [SECURITY_VIEW_MEHFILS, SECURITY_MANAGE_MEHFILS])
+  securityEventById(_id: String!): SecurityEventType
+  @checkPermissions(permissions: [SECURITY_VIEW_EVENTS, SECURITY_MANAGE_EVENTS])
 }
 
 extend type Mutation {
-  createMehfil(name: String!, mehfilDate: String!): MehfilType
+  createSecurityEvent(name: String!, eventDate: String!): SecurityEventType
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  updateMehfil(_id: String!, name: String!, mehfilDate: String): MehfilType
+  updateSecurityEvent(_id: String!, name: String!, eventDate: String): SecurityEventType
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 
-  removeMehfil(_id: String!): Int
+  removeSecurityEvent(_id: String!): Int
   @checkPermissions(permissions: [SECURITY_MANAGE_SETUP_DATA])
 }
 
@@ -4023,12 +4500,20 @@ type SecurityPermissionGroupHolder {
   name: String!
 }
 
+type SecurityPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
 type SecurityPermissionAssignment {
   key: String!
   name: String!
   description: String
   users: [SecurityPermissionHolder]
   groups: [SecurityPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [SecurityPermissionCommitteeHolder]
 }
 
 type SecurityPermissionGroup {
@@ -4037,33 +4522,18 @@ type SecurityPermissionGroup {
   permissions: [SecurityPermissionAssignment]
 }
 
-type SecurityPermissionKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedSecurityPermissionKarkunType {
-  data: [SecurityPermissionKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   securityPermissionAssignments: [SecurityPermissionGroup]
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 
-  # Karkuns to choose from when giving a permission or adding to a group.
-  securityPermissionKarkunSearch(
+  # Karkuns of Multan (with an unlocked user account) to choose from when giving a permission or adding to a group.
+  pagedSecurityPermissionKarkuns(
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedSecurityPermissionKarkunType
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 }
 
@@ -4075,6 +4545,12 @@ extend type Mutation {
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 
   removeSecurityPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  addSecurityPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  removeSecurityPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 
   removeSecurityPermissionUser(permissionKey: String!, userId: String!): Boolean
@@ -4830,21 +5306,6 @@ type WorkspaceLocationType {
   parentId: String
 }
 
-type WorkspaceKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedWorkspaceKarkunType {
-  data: [WorkspaceKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   # Committees the logged-in user is currently a member of.
   myCommittees: [WorkspaceCommitteeType]
@@ -4858,14 +5319,14 @@ extend type Query {
     @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
 
   # Karkuns that a coordinator can add to their committee.
-  workspaceCommitteeKarkunSearch(
+  pagedWorkspaceCommitteeKarkuns(
     committeeId: String!
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedWorkspaceKarkunType
+  ): PagedPickerPersonType
     @checkCommitteeAccess(roles: [COORDINATOR])
 }
 
@@ -5475,14 +5936,14 @@ extend type Query {
   ): DaPlanDaysType @checkDutiesAttendanceAccess(permission: VIEW)
 
   # Karkuns to choose from when building a duty roster.
-  workspaceDaKarkunSearch(
+  pagedWorkspaceDaKarkuns(
     locationId: String!
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedWorkspaceKarkunType
+  ): PagedPickerPersonType
     @checkDutiesAttendanceAccess(permission: MANAGE_AND_PLAN_DUTIES)
 
   # month is MM-yyyy; without dutyId, every duty of the workspace.
@@ -6095,21 +6556,6 @@ type MehfilPermissionsType {
   groups: [MpGroupType]!
 }
 
-type MpKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedMpKarkunType {
-  data: [MpKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   myMehfilPermissionsLocations: [MyMehfilPermissionsLocationType]!
 
@@ -6117,14 +6563,14 @@ extend type Query {
     @checkMehfilPermissionsAccess(permission: VIEW)
 
   # Karkuns to choose from when giving a permission.
-  workspaceMehfilPermissionsKarkunSearch(
+  pagedWorkspaceMehfilPermissionsKarkuns(
     locationId: String!
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedMpKarkunType @checkMehfilPermissionsAccess(permission: MANAGE)
+  ): PagedPickerPersonType @checkMehfilPermissionsAccess(permission: MANAGE)
 }
 
 extend type Mutation {

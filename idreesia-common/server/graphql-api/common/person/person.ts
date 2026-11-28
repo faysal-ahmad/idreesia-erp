@@ -1,6 +1,24 @@
 import gql from 'graphql-tag';
 
 export default gql`
+# A person as a person picker shows them; every picker search returns these.
+type PickerPersonType {
+  _id: String!
+  name: String
+  parentName: String
+  cnicNumber: String
+  contactNumber1: String
+  imageUrl: String
+  imageThumbnailUrl: String
+  # Only filled by the searches that mark who already has a user account.
+  hasUserAccount: Boolean
+}
+
+type PagedPickerPersonType {
+  totalResults: Int
+  data: [PickerPersonType]
+}
+
 type PersonImageVectorDataType {
   status: String
 }

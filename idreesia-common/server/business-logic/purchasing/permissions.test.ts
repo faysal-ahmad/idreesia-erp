@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
-import { UserGroups, Users } from 'meteor/idreesia-common/server/collections/admin';
+import { Committees, UserGroups, Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People, SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
 
 import {
+  addCommitteePermission,
   addPermissionUser,
   listPermissionAssignments,
+  removeCommitteePermission,
   removePermissionUser,
 } from './index';
 
@@ -85,5 +87,29 @@ describe('purchasing permission assignments', () => {
   it('skips locked users', async () => {
     await Users.insertAsync({ _id: 'g3', personId: 'pg3', username: 'fay', permissions: [KEY], locked: true } as any);
     expect(await holdersOf(KEY)).toEqual([]);
+  });
+});
+
+describe('purchasing permission committees', () => {
+  const committeesOf = async (key: string) => {
+    const groups = await listPermissionAssignments();
+    return groups.flatMap((g) => g.permissions).find((p) => p.key === key)!.committees;
+  };
+
+  it('adds and removes a committee and lists it on the permission', async () => {
+    const committeeId = (await Committees.insertAsync({ name: 'Buyers', locationId: 'loc' } as any)) as string;
+
+    await addCommitteePermission(KEY, committeeId, admin);
+    expect(await committeesOf(KEY)).toEqual([{ committeeId, name: 'Buyers', locationName: undefined }]);
+
+    await removeCommitteePermission(KEY, committeeId, admin);
+    expect(await committeesOf(KEY)).toEqual([]);
+  });
+
+  it('refuses a permission that is not a Purchasing one', async () => {
+    const committeeId = (await Committees.insertAsync({ name: 'Buyers', locationId: 'loc' } as any)) as string;
+    await expect(addCommitteePermission(Permissions.HR_MANAGE_PERMISSIONS, committeeId, admin)).rejects.toThrow(
+      'That is not a Purchasing permission.'
+    );
   });
 });

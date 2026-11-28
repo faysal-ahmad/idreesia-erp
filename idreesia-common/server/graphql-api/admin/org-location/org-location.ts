@@ -35,24 +35,6 @@ type OrgLocationType {
   updatedBy: String
 }
 
-# A karkun of a mehfil, and whether they already have a user account.
-type OrgLocationKarkunType {
-  _id: String!
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  contactNumber2: String
-  imageUrl: String
-  imageThumbnailUrl: String
-  hasUserAccount: Boolean!
-}
-
-type PagedOrgLocationKarkunType {
-  data: [OrgLocationKarkunType!]!
-  totalResults: Int!
-}
-
 type OrgLocationObserverStatType {
   karkunId: String
   observedCommitteeCount: Int
@@ -110,6 +92,16 @@ extend type Query {
 
   # The karkuns of the mehfil, or with includeChildLocations of the location
   # and every location below it.
+  # Karkuns who can be made observers of a location.
+  pagedOrgLocationObserverKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [ADMIN_MANAGE_ORG_LOCATIONS])
+
   pagedOrgLocationKarkuns(
     locationId: String!
     name: String
@@ -120,7 +112,7 @@ extend type Query {
     includeChildLocations: Boolean
     pageIndex: String
     pageSize: String
-  ): PagedOrgLocationKarkunType!
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [ADMIN_VIEW_ORG_LOCATIONS])
 
   # The user accounts of the karkuns of the mehfil.

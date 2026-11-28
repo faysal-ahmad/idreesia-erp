@@ -8,7 +8,7 @@ import DutiesAttendanceSchema from './duties-attendance';
 const schema = makeExecutableSchema({
   typeDefs: [
     CheckDutiesAttendanceAccessSchema,
-    'type PersonBasicType { _id: String } type PagedWorkspaceKarkunType { totalResults: Int } type Query { _placeholder: Boolean } type Mutation { _placeholder: Boolean }',
+    'type PersonBasicType { _id: String } type PagedPickerPersonType { totalResults: Int } type Query { _placeholder: Boolean } type Mutation { _placeholder: Boolean }',
     DutiesAttendanceSchema,
   ],
 });
@@ -30,7 +30,7 @@ const expected: Array<['Query' | 'Mutation', string, string]> = [
   ['Query', 'workspaceDaDutyById', VIEW],
   ['Query', 'workspaceDaPlanDays', VIEW],
   ['Query', 'workspaceDaAttendanceSheet', VIEW],
-  ['Query', 'workspaceDaKarkunSearch', MANAGE],
+  ['Query', 'pagedWorkspaceDaKarkuns', MANAGE],
   ['Query', 'workspaceDaMehfilDuties', MANAGE],
   ['Mutation', 'workspaceDaAddDuties', MANAGE],
   ['Mutation', 'workspaceDaUpdateDuty', MANAGE],
@@ -53,7 +53,7 @@ describe('duties and attendance permission rules', () => {
     const declared = (['Query', 'Mutation'] as const).flatMap(root => {
       const type = root === 'Query' ? schema.getQueryType() : schema.getMutationType();
       return Object.entries(type!.getFields())
-        .filter(([name]) => name.startsWith('workspaceDa'))
+        .filter(([name]) => name.startsWith('workspaceDa') || name.startsWith('pagedWorkspaceDa'))
         .map(([name, field]) => {
           expect(
             field.args.some(arg => arg.name === 'locationId'),

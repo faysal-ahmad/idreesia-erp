@@ -7,6 +7,10 @@ import {
 import { runInTransaction } from 'meteor/idreesia-common/server/collections';
 import { UserGroups, Users } from 'meteor/idreesia-common/server/collections/admin';
 import { SecurityLogs } from 'meteor/idreesia-common/server/collections/common';
+import {
+  changeCommitteePermission,
+  listCommitteesHolding,
+} from 'meteor/idreesia-common/server/business-logic/admin/committee/committee-permissions';
 
 import { securityError } from './errors';
 import { type ActingUser } from './internal';
@@ -28,6 +32,12 @@ export interface PermissionGroupHolder {
   name: string;
 }
 
+export interface PermissionCommitteeHolder {
+  committeeId: string;
+  name: string;
+  locationName?: string;
+}
+
 export interface PermissionAssignment {
   key: string;
   name: string;
@@ -35,6 +45,8 @@ export interface PermissionAssignment {
   users: PermissionHolder[];
   /** Security user groups that hold the permission. */
   groups: PermissionGroupHolder[];
+  /** Committees that hold the permission (their members and coordinators do). */
+  committees: PermissionCommitteeHolder[];
 }
 
 export interface PermissionAssignmentGroup {
@@ -80,6 +92,7 @@ export async function listPermissionAssignments(): Promise<PermissionAssignmentG
   }).fetchAsync();
 
   const nameOf = await userNameResolver(holders);
+  const committees = await listCommitteesHolding(ALL_KEYS);
   const securityGroups = grantingGroups.filter(
     (g) => g.moduleName === ModuleNames.security
   );
@@ -101,6 +114,9 @@ export async function listPermissionAssignments(): Promise<PermissionAssignmentG
         groups: securityGroups
           .filter((g) => (g.permissions ?? []).includes(permission.key))
           .map((g) => ({ groupId: g._id as string, name: g.name })),
+        committees: committees
+          .filter((c) => c.permissions.includes(permission.key))
+          .map(({ committeeId, name, locationName }) => ({ committeeId, name, locationName })),
       };
     }),
   }));
@@ -176,3 +192,22 @@ export const removePermissionUser = (
   userId: string,
   actingUser: ActingUser
 ) => changePermission(permissionKey, { userId }, false, actingUser);
+
+/** Gives a Security permission to a committee: its members and coordinators hold it. */
+export const addCommitteePermission = async (
+  permissionKey: string,
+  committeeId: string,
+  actingUser: ActingUser
+) => {
+  assertSecurityPermission(permissionKey);
+  return changeCommitteePermission(committeeId, permissionKey, true, actingUser);
+};
+
+export const removeCommitteePermission = async (
+  permissionKey: string,
+  committeeId: string,
+  actingUser: ActingUser
+) => {
+  assertSecurityPermission(permissionKey);
+  return changeCommitteePermission(committeeId, permissionKey, false, actingUser);
+};

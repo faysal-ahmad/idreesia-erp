@@ -48,6 +48,7 @@ export {
   closeRequisition,
   deleteRequisition,
   getRequisition,
+  listRequestedForValues,
   listRequisitions,
 } from './requisitions';
 export type {
@@ -140,12 +141,15 @@ export {
   listPermissionAssignments,
   addPermissionUser,
   removePermissionUser,
+  addCommitteePermission,
+  removeCommitteePermission,
 } from './permissions';
 export type {
   PermissionAssignmentGroup,
   PermissionAssignment,
   PermissionHolder,
   PermissionGroupHolder,
+  PermissionCommitteeHolder,
 } from './permissions';
 
 export {
@@ -160,11 +164,69 @@ export {
 } from './user-groups';
 export type { PurchasingUserGroup, GroupMember } from './user-groups';
 
-export { searchPurchasingKarkuns } from './karkuns';
-export type { KarkunSearchParams } from './karkuns';
+export {
+  searchPurchasingFormKarkuns,
+  searchPurchasingKarkuns,
+  searchPurchasingPermissionHolders,
+} from './karkuns';
+export type { FormKarkunSearchParams, KarkunSearchParams } from './karkuns';
 
 export {
   getCatalogItemImageUrl,
   setCatalogItemImage,
   removeCatalogItemImage,
 } from './catalog-item-images';
+
+export {
+  createPettyCashFund,
+  updatePettyCashFund,
+  setPettyCashFundActive,
+  getPettyCashFund,
+  listPettyCashFunds,
+} from './petty-cash-funds';
+export type { PettyCashFundValues, ListPettyCashFundsOptions } from './petty-cash-funds';
+
+export {
+  createPettyCashVoucher,
+  updatePettyCashVoucher,
+  submitPettyCashVoucher,
+  approvePettyCashVoucher,
+  rejectPettyCashVoucher,
+  voidPettyCashVoucher,
+  deletePettyCashVoucher,
+  getPettyCashVoucher,
+  listPettyCashVouchers,
+} from './petty-cash-vouchers';
+export type {
+  PettyCashVoucherValues,
+  PettyCashVoucherLineInput,
+  ListPettyCashVouchersOptions,
+} from './petty-cash-vouchers';
+
+export {
+  requestPettyCashReplenishment,
+  approvePettyCashReplenishment,
+  rejectPettyCashReplenishment,
+  getPettyCashReplenishment,
+  listPettyCashReplenishments,
+} from './petty-cash-replenishments';
+export type {
+  PettyCashReplenishmentValues,
+  ListPettyCashReplenishmentsOptions,
+} from './petty-cash-replenishments';
+
+export { pettyCashLedger } from './petty-cash-ledger';
+export type { PettyCashLedger, PettyCashLedgerHead } from './petty-cash-ledger';
+
+export {
+  createPettyCashExpenseHead,
+  updatePettyCashExpenseHead,
+  setPettyCashExpenseHeadActive,
+  deletePettyCashExpenseHead,
+  getPettyCashExpenseHead,
+  listPettyCashExpenseHeads,
+} from './petty-cash-expense-heads';
+export type {
+  PettyCashExpenseHeadValues,
+  ListPettyCashExpenseHeadsOptions,
+} from './petty-cash-expense-heads';

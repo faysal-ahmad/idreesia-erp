@@ -15,7 +15,7 @@ const cell: React.CSSProperties = { border: '1px solid #999', padding: '4px 8px'
 const OrderPrint = ({ match, history }: RouteComponentProps<{ orderId: string }>) => {
   const printRef = useRef<HTMLDivElement>(null);
   const { orderId } = match.params;
-  const { data, loading } = useQuery(PURCHASING_ORDER_BY_ID, { variables: { _id: orderId } });
+  const { data, loading } = useQuery(PURCHASING_ORDER_BY_ID, { variables: { _id: orderId }, fetchPolicy: 'cache-and-network' });
   const order = data?.purchasingOrderById;
 
   useDynamicBreadcrumbs(['Purchasing', 'Purchase Orders', order?.number || '', 'Print']);

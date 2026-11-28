@@ -62,6 +62,7 @@ const useChips = (
   const { data } = useQuery(PURCHASING_VENDOR_BY_ID, {
     variables: { _id: values.vendorId },
     skip: !showVendorFilter || !values.vendorId,
+    fetchPolicy: 'cache-and-network',
   });
 
   const chips: Chip[] = [];

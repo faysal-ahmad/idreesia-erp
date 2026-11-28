@@ -13,7 +13,7 @@ import {
 import { Committees } from 'meteor/idreesia-common/server/collections/admin';
 import { DutyDayAttendances, Salaries, Teams } from 'meteor/idreesia-common/server/collections/hr';
 import {
-  MehfilKarkuns,
+  SecurityEventKarkuns,
   VisitorStays,
 } from 'meteor/idreesia-common/server/collections/security';
 
@@ -124,7 +124,7 @@ describe('hardDeletePerson', () => {
     await raw(Committees, { _id: 'c1', members: [{ karkunId: 'p1' }, { karkunId: 'p2' }] });
     await raw(VisitorStays, { _id: 'v1', visitorId: 'p1' });
     await raw(VisitorStays, { _id: 'v2', visitorId: 'p2' });
-    await raw(MehfilKarkuns, { _id: 'm1', karkunId: 'p1' });
+    await raw(SecurityEventKarkuns, { _id: 'm1', karkunId: 'p1' });
     await raw(AuditLogs, { _id: 'old', entityId: 'p1' });
 
     expect(await hardDeletePerson('p1', user)).toBe(1);
@@ -138,7 +138,7 @@ describe('hardDeletePerson', () => {
     expect((await Committees.findOneAsync('c1'))?.members).toEqual([{ karkunId: 'p2' }]);
     expect(await VisitorStays.findOneAsync('v1')).toBeUndefined();
     expect(await VisitorStays.findOneAsync('v2')).toBeDefined();
-    expect(await MehfilKarkuns.findOneAsync('m1')).toBeUndefined();
+    expect(await SecurityEventKarkuns.findOneAsync('m1')).toBeUndefined();
 
     // Earlier audit logs go; the delete itself is the one left.
     const logs = await AuditLogs.find({ entityId: 'p1' }).fetchAsync();

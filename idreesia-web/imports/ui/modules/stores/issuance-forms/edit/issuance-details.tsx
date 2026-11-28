@@ -16,7 +16,7 @@ import {
   InputTextAreaField,
   TreeSelectField,
 } from '/imports/ui/modules/helpers/fields';
-import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+import { StoreKarkunField } from '/imports/ui/modules/stores/common/controls';
 import { UPDATE_ISSUANCE_FORM } from '../gql';
 import { ItemsList } from '../../common/items-list';
 import type { usePhysicalStoreLocations } from '/imports/ui/modules/stores/common/hooks';
@@ -142,7 +142,7 @@ const IssuanceDetails = ({
           required
           requiredMessage="Please input an issue date."
         />
-        <KarkunField
+        <StoreKarkunField
           required
           requiredMessage="Please select a name for Issued By / Received By."
           fieldName="issuedBy"
@@ -154,7 +154,7 @@ const IssuanceDetails = ({
             PredefinedFilterNames.ISSUANCE_FORMS_ISSUED_BY_RECEIVED_BY
           }
         />
-        <KarkunField
+        <StoreKarkunField
           required
           requiredMessage="Please select a name for Issued To / Returned By."
           fieldName="issuedTo"

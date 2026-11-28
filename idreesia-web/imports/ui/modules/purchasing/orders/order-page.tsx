@@ -73,15 +73,18 @@ const OrderPage = ({ match, history }: RouteComponentProps<{ orderId?: string }>
 
   const { data, loading } = useQuery(PURCHASING_ORDER_BY_ID, {
     variables: { _id: id },
+    fetchPolicy: 'cache-and-network',
   });
   const order = data?.purchasingOrderById;
   const receipts = useQuery(PAGED_PURCHASING_RECEIPTS, {
     variables: { orderId: id, pageIndex: 0, pageSize: 50 },
     skip: !can(P.PURCHASING_VIEW_RECEIPTS, P.PURCHASING_MANAGE_RECEIPTS),
+    fetchPolicy: 'cache-and-network',
   });
   const invoices = useQuery(PAGED_PURCHASING_INVOICES, {
     variables: { orderId: id, pageIndex: 0, pageSize: 50 },
     skip: !can(P.PURCHASING_VIEW_INVOICES, P.PURCHASING_MANAGE_INVOICES),
+    fetchPolicy: 'cache-and-network',
   });
 
   const [updateOrder] = useMutation(UPDATE_PURCHASING_ORDER, { refetchQueries: REFETCH });

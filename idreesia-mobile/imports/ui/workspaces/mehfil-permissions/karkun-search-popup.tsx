@@ -36,7 +36,7 @@ const SearchList = ({ locationId, selectedIds, selectedLabel, onPick }: Omit<Pro
   const paged = usePagedQuery(MOBILE_MEHFIL_PERMISSIONS_KARKUN_SEARCH, {
     filter: { locationId, name: isPhone ? undefined : query || undefined, phoneNumber: isPhone ? query : undefined },
     toVariables: (filter, paging) => ({ ...filter, ...paging }),
-    getPage: data => data.workspaceMehfilPermissionsKarkunSearch,
+    getPage: data => data.pagedWorkspaceMehfilPermissionsKarkuns,
     getKey: karkun => karkun._id,
   });
 

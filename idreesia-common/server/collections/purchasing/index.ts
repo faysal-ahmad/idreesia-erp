@@ -8,6 +8,10 @@ export { default as PurchasingReceipts } from './receipts';
 export { default as PurchasingInvoices } from './invoices';
 export { default as PurchasingPayments } from './payments';
 export { default as PurchasingAttachments } from './attachments';
+export { default as PurchasingPettyCashExpenseHeads } from './petty-cash-expense-heads';
+export { default as PurchasingPettyCashFunds } from './petty-cash-funds';
+export { default as PurchasingPettyCashVouchers } from './petty-cash-vouchers';
+export { default as PurchasingPettyCashReplenishments } from './petty-cash-replenishments';
 export type {
   PurchasingVendorDocument,
   PurchasingCatalogItemDocument,
@@ -25,4 +29,9 @@ export type {
   PurchasingPaymentDocument,
   PaymentAllocation,
   PurchasingAttachmentDocument,
+  PurchasingPettyCashExpenseHeadDocument,
+  PurchasingPettyCashFundDocument,
+  PettyCashVoucherLine,
+  PurchasingPettyCashVoucherDocument,
+  PurchasingPettyCashReplenishmentDocument,
 } from './types';

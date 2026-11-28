@@ -5,7 +5,6 @@ const Permissions = {
   ADMIN_VIEW_USERS_AND_GROUPS: 'admin-view-users-and-groups',
   ADMIN_MANAGE_USERS_AND_GROUPS: 'admin-manage-users-and-groups',
 
-  ADMIN_MANAGE_PHYSICAL_STORES: 'admin-manage-physical-stores',
   ADMIN_MANAGE_CITIES: 'admin-manage-cities',
   ADMIN_MANAGE_PEOPLE_TAGS: 'admin-manage-people-tags',
   ADMIN_MANAGE_FREE_FORM_DATA: 'admin-manage-free-form-data',
@@ -45,8 +44,8 @@ const Permissions = {
   SECURITY_VIEW_VISITORS: 'security-view-visitors',
   SECURITY_MANAGE_VISITORS: 'security-manage-visitors',
 
-  SECURITY_VIEW_MEHFILS: 'security-view-mehfils',
-  SECURITY_MANAGE_MEHFILS: 'security-manage-mehfils',
+  SECURITY_VIEW_EVENTS: 'security-view-events',
+  SECURITY_MANAGE_EVENTS: 'security-manage-events',
 
   SECURITY_VIEW_SECURITY_SERVER_DATA: 'security-view-security-server-data',
   SECURITY_MANAGE_SECURITY_SERVER_DATA: 'security-manage-security-server-data',
@@ -83,6 +82,12 @@ const Permissions = {
   PURCHASING_VIEW_PAYMENTS: 'purchasing-view-payments',
   PURCHASING_MANAGE_PAYMENTS: 'purchasing-manage-payments',
 
+  PURCHASING_VIEW_PETTY_CASH: 'purchasing-view-petty-cash',
+  PURCHASING_MANAGE_PETTY_CASH_FUNDS: 'purchasing-manage-petty-cash-funds',
+  PURCHASING_MANAGE_PETTY_CASH_VOUCHERS: 'purchasing-manage-petty-cash-vouchers',
+  PURCHASING_APPROVE_PETTY_CASH_VOUCHERS: 'purchasing-approve-petty-cash-vouchers',
+  PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS: 'purchasing-approve-petty-cash-replenishments',
+
   PURCHASING_VIEW_REPORTS: 'purchasing-view-reports',
   PURCHASING_VIEW_AUDIT_LOGS: 'purchasing-view-audit-logs',
   PURCHASING_MANAGE_PERMISSIONS: 'purchasing-manage-permissions',
@@ -90,6 +95,11 @@ const Permissions = {
   // ****************************************************************************************
   // Stores Module
   // ****************************************************************************************
+  // Held on the user (or a group), not per store.
+  IN_MANAGE_PHYSICAL_STORES: 'stores-manage-physical-stores',
+  IN_MANAGE_PHYSICAL_STORE_PERMISSIONS: 'stores-manage-physical-store-permissions',
+
+  // Held per store (see stores-permissions.ts).
   IN_MANAGE_SETUP_DATA: 'stores-manage-setup-data',
   IN_MANAGE_STOCK_ITEMS: 'stores-manage-stock-items',
 

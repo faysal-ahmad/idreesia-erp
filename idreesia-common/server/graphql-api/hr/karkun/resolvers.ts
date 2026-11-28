@@ -17,6 +17,12 @@ import {
 } from 'meteor/idreesia-common/server/business-logic/common';
 
 import { getKarkunsByPredefinedFilter } from 'meteor/idreesia-common/server/business-logic/hr/karkun-search';
+import { promoteToKarkun } from 'meteor/idreesia-common/server/business-logic/hr/promote-karkun';
+import {
+  searchHrEmployeeCandidateKarkuns,
+  searchHrKarkunCandidatePeople,
+  searchHrPickerKarkuns,
+} from 'meteor/idreesia-common/server/business-logic/hr/picker-karkuns';
 
 // HR karkuns all belong to Multan.
 const getMultanCity = async () => {
@@ -48,6 +54,14 @@ const resolvers: ResolverMap = {
       const idsArray = _ids.split(',');
       return People.find({ _id: { $in: idsArray } }).fetchAsync();
     },
+
+    pagedHrPickerKarkuns: async (obj, args) => searchHrPickerKarkuns(args),
+
+    pagedHrEmployeeCandidateKarkuns: async (obj, args) =>
+      searchHrEmployeeCandidateKarkuns(args),
+
+    pagedHrKarkunCandidatePeople: async (obj, args) =>
+      searchHrKarkunCandidatePeople(args),
 
     pagedHrKarkuns: async (obj, { filter }) => {
       const multanCity = await getMultanCity();
@@ -104,30 +118,11 @@ const resolvers: ResolverMap = {
       return createPerson(personValues, user);
     },
 
-    promoteHrKarkun: async (obj, { _id }, { user }) => {
-      const existingPerson = await People.findOneAsync(_id);
-      if (!existingPerson || existingPerson.deletedAt) {
-        throw new Error('Person not found.');
-      }
-      if (existingPerson.isKarkun) {
-        throw new Error('This person is already a karkun.');
-      }
-
-      const multanCity = await getMultanCity();
-      if (!multanCity) throw new Error('Multan city is not configured.');
-
-      const personValues = await karkunToPerson({
-        _id,
-        cityLocationId:
-          existingPerson.karkunData?.cityLocationId || multanCity._id,
-      });
-      // Keep the visitor city the person already has. karkunToPerson would
-      // replace it with the karkun city name.
-      if (existingPerson.visitorData?.city) {
-        delete personValues.visitorData;
-      }
-      return updatePerson(personValues, user);
-    },
+    promoteHrKarkun: async (
+      obj,
+      { _id, cityLocationId, mehfilLocationId },
+      { user }
+    ) => promoteToKarkun(_id, { cityLocationId, mehfilLocationId }, user),
 
     updateHrKarkun: async (obj, values, { user }) => {
       const personValues = await karkunToPerson(values);

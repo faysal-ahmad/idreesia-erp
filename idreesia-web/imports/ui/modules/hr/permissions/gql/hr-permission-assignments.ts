@@ -24,6 +24,11 @@ const HR_PERMISSION_ASSIGNMENTS: TypedDocumentNode<HrPermissionAssignmentsQuery,
           groupId
           name
         }
+        committees {
+          committeeId
+          name
+          locationName
+        }
       }
     }
   }

@@ -11,9 +11,6 @@ export {
   default as EhadDurationFilterField,
 } from './ehad-duration-filter/field';
 export { default as LastTarteebFilterField } from './last-tarteeb-filter/field';
-export {
-  default as KarkunSelectionInputField,
-} from './karkun-selection-input/field';
 
 export { default as AutoCompleteField } from './auto-complete-field';
 export { default as BarcodeField } from './barcode-field';

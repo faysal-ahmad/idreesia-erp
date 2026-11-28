@@ -40,6 +40,7 @@ const EditForm = ({
 
   const { data, loading } = useQuery(PURCHASING_CATALOG_ITEM_BY_ID, {
     variables: { _id: itemId },
+    fetchPolicy: 'cache-and-network',
   });
   const [updateItem] = useMutation(UPDATE_PURCHASING_CATALOG_ITEM, {
     refetchQueries: ['pagedPurchasingCatalogItems'],

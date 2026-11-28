@@ -15,7 +15,7 @@ import {
   InputTextAreaField,
   TreeSelectField,
 } from '/imports/ui/modules/helpers/fields';
-import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+import { StoreKarkunField } from '/imports/ui/modules/stores/common/controls';
 import { ItemsList } from '../../common/items-list';
 import { UPDATE_PURCHASE_FORM } from '../gql';
 
@@ -81,8 +81,8 @@ const PurchaseDetails = ({
     <>
       <Form ref={formRef as React.RefObject<never>} layout="horizontal" style={FormStyle} onFinish={handleFinish} onFieldsChange={() => setIsFieldsTouched(true)}>
         <DateField fieldName="purchaseDate" fieldLabel="Purchase Date" initialValue={dayjs(Number(purchaseFormById.purchaseDate))} required requiredMessage="Please input a purchase date." />
-        <KarkunField required requiredMessage="Please select a name for Received By / Returned By." fieldName="receivedBy" fieldLabel="Received By / Returned By" placeholder="Received By / Returned By" initialValue={purchaseFormById.refReceivedBy ?? undefined} predefinedFilterStoreId={physicalStoreId} predefinedFilterName={PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY} />
-        <KarkunField required requiredMessage="Please select a name for Purchased By / Returned To." fieldName="purchasedBy" fieldLabel="Purchased By / Returned To" placeholder="Purchased By / Returned To" initialValue={purchaseFormById.refPurchasedBy ?? undefined} predefinedFilterStoreId={physicalStoreId} predefinedFilterName={PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO} />
+        <StoreKarkunField required requiredMessage="Please select a name for Received By / Returned By." fieldName="receivedBy" fieldLabel="Received By / Returned By" placeholder="Received By / Returned By" initialValue={purchaseFormById.refReceivedBy ?? undefined} predefinedFilterStoreId={physicalStoreId} predefinedFilterName={PredefinedFilterNames.PURCHASE_FORMS_RECEIVED_BY_RETURNED_BY} />
+        <StoreKarkunField required requiredMessage="Please select a name for Purchased By / Returned To." fieldName="purchasedBy" fieldLabel="Purchased By / Returned To" placeholder="Purchased By / Returned To" initialValue={purchaseFormById.refPurchasedBy ?? undefined} predefinedFilterStoreId={physicalStoreId} predefinedFilterName={PredefinedFilterNames.PURCHASE_FORMS_PURCHASED_BY_RETURNED_TO} />
         <SelectField<VendorOption> data={vendorsByPhysicalStoreId as VendorOption[]} getDataValue={({ _id }) => _id ?? ''} getDataText={({ name }) => name ?? ''} fieldName="vendorId" fieldLabel="Vendor" initialValue={purchaseFormById.vendorId ?? undefined} />
         <TreeSelectField data={locationsByPhysicalStoreId as LocationOption[]} showSearch fieldName="locationId" fieldLabel="For Location" placeholder="Select a Location" initialValue={purchaseFormById.locationId ?? undefined} />
         <InputTextAreaField fieldName="notes" fieldLabel="Notes" required={false} initialValue={purchaseFormById.notes ?? undefined} />

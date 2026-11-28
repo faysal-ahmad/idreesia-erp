@@ -17,6 +17,7 @@ import {
   linkOrgLocationUser,
   listLinkableUsers,
   listOrgLocationKarkuns,
+  searchOrgLocationObserverKarkuns,
   listOrgLocationUsers,
   listOrgLocationFeaturePermissions,
   removeOrgLocationFeatureUser,
@@ -88,6 +89,17 @@ export default {
       _obj: unknown,
       { locationId }: { locationId: string }
     ) => listOrgLocationFeaturePermissions(locationId),
+
+    pagedOrgLocationObserverKarkuns: async (
+      _obj: unknown,
+      params: {
+        name?: string | null;
+        cnicNumber?: string | null;
+        phoneNumber?: string | null;
+        pageIndex?: string | null;
+        pageSize?: string | null;
+      }
+    ) => searchOrgLocationObserverKarkuns(params),
 
     pagedOrgLocationKarkuns: async (
       _obj: unknown,

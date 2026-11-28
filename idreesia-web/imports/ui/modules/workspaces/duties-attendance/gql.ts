@@ -16,8 +16,8 @@ import type {
   WorkspaceDaDutiesQueryVariables,
   WorkspaceDaMehfilDutiesQuery,
   WorkspaceDaMehfilDutiesQueryVariables,
-  WorkspaceDaKarkunSearchQuery,
-  WorkspaceDaKarkunSearchQueryVariables,
+  PagedWorkspaceDaKarkunsQuery,
+  PagedWorkspaceDaKarkunsQueryVariables,
   WorkspaceDaPlanDaysQuery,
   WorkspaceDaPlanDaysQueryVariables,
   WorkspaceDaRemoveDutyMutation,
@@ -33,6 +33,11 @@ import type {
   WorkspaceDaUpdateDutyMemberMutation,
   WorkspaceDaUpdateDutyMemberMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
+
+import {
+  PICKER_PERSON_FIELDS,
+  type PersonSearchSource,
+} from '/imports/ui/modules/helpers/controls/person-picker';
 
 export const MY_DUTIES_ATTENDANCE_LOCATIONS: TypedDocumentNode<
   MyDutiesAttendanceLocationsQuery,
@@ -175,11 +180,11 @@ export const WORKSPACE_DA_ATTENDANCE_SHEET: TypedDocumentNode<
   }
 `;
 
-export const WORKSPACE_DA_KARKUN_SEARCH: TypedDocumentNode<
-  WorkspaceDaKarkunSearchQuery,
-  WorkspaceDaKarkunSearchQueryVariables
+export const PAGED_WORKSPACE_DA_KARKUNS: TypedDocumentNode<
+  PagedWorkspaceDaKarkunsQuery,
+  PagedWorkspaceDaKarkunsQueryVariables
 > = gql`
-  query workspaceDaKarkunSearch(
+  query pagedWorkspaceDaKarkuns(
     $locationId: String!
     $name: String
     $cnicNumber: String
@@ -187,7 +192,7 @@ export const WORKSPACE_DA_KARKUN_SEARCH: TypedDocumentNode<
     $pageIndex: String
     $pageSize: String
   ) {
-    workspaceDaKarkunSearch(
+    pagedWorkspaceDaKarkuns(
       locationId: $locationId
       name: $name
       cnicNumber: $cnicNumber
@@ -197,17 +202,19 @@ export const WORKSPACE_DA_KARKUN_SEARCH: TypedDocumentNode<
     ) {
       totalResults
       data {
-        _id
-        name
-        parentName
-        cnicNumber
-        contactNumber1
-        imageUrl
-        imageThumbnailUrl
+        ...PickerPersonFields
       }
     }
   }
+  ${PICKER_PERSON_FIELDS}
 `;
+
+/** Karkuns of the mehfil, for duty rosters; pass the mehfil as variables.locationId. */
+export const daKarkunSource: PersonSearchSource<PagedWorkspaceDaKarkunsQuery> = {
+  query: PAGED_WORKSPACE_DA_KARKUNS,
+  select: data => data.pagedWorkspaceDaKarkuns,
+  description: 'Showing karkuns whose mehfil is this location.',
+};
 
 export const WORKSPACE_DA_ADD_DUTIES: TypedDocumentNode<
   WorkspaceDaAddDutiesMutation,

@@ -21,9 +21,8 @@ import type { PagedUsersQuery } from 'meteor/idreesia-common/types/client-operat
 import { PersonName } from '/imports/ui/modules/helpers/controls';
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
 
-import { ADMIN_KARKUN_LOCATIONS } from '/imports/ui/modules/helpers/fields/karkun-selection-input/gql';
 import ListFilter, { UserFilterChips } from './list-filter';
-import { PAGED_USERS } from '../gql';
+import { ADMIN_KARKUN_LOCATIONS, PAGED_USERS } from '../gql';
 
 const TABLE_HEADER_ROW_HEIGHT = 55;
 const VIEWPORT_BOTTOM_GAP = 16;

@@ -25,13 +25,6 @@ export default class SubModulePaths {
   static securityLogsPath = `${ModulePaths.admin}/security-logs`;
 
   // *************************************************************************************
-  // Instance Routes
-  // *************************************************************************************
-  static physicalStoresPath = `${ModulePaths.admin}/physical-stores`;
-  static physicalStoresNewFormPath = `${SubModulePaths.physicalStoresPath}/new`;
-  static physicalStoresEditFormPath = `${SubModulePaths.physicalStoresPath}/:physicalStoreId`;
-
-  // *************************************************************************************
   // Cities & Mehfils Routes
   // *************************************************************************************
   static citiesPath = `${ModulePaths.admin}/cities`;

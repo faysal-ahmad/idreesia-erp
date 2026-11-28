@@ -48,21 +48,6 @@ type WorkspaceLocationType {
   parentId: String
 }
 
-type WorkspaceKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedWorkspaceKarkunType {
-  data: [WorkspaceKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   # Committees the logged-in user is currently a member of.
   myCommittees: [WorkspaceCommitteeType]
@@ -76,14 +61,14 @@ extend type Query {
     @checkCommitteeAccess(roles: [COORDINATOR, MEMBER, OBSERVER, GUEST])
 
   # Karkuns that a coordinator can add to their committee.
-  workspaceCommitteeKarkunSearch(
+  pagedWorkspaceCommitteeKarkuns(
     committeeId: String!
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedWorkspaceKarkunType
+  ): PagedPickerPersonType
     @checkCommitteeAccess(roles: [COORDINATOR])
 }
 

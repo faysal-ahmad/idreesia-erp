@@ -1,60 +1,58 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client/react';
 import { PlusCircleOutlined } from '@ant-design/icons';
-import { Button, Drawer } from 'antd';
+import { Button, Form, Modal } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
-import type { HrKarkunsPagedHrKarkunsQuery } from 'meteor/idreesia-common/types/client-operations';
 
-import { PROMOTE_HR_KARKUN } from '../gql';
-import List from './list';
-import { type PageParams } from './list-filter';
+import { OrgLocationTypes } from 'meteor/idreesia-common/constants/organization';
+import {
+  CITY_MEHFIL_TYPES,
+  LocationPickerField,
+  PersonPickerDrawer,
+  toCityMehfilIds,
+  useReferenceLocations,
+  type PickerPerson,
+} from '/imports/ui/modules/helpers/controls';
 
-type KarkunRow = NonNullable<
-  NonNullable<
-    NonNullable<HrKarkunsPagedHrKarkunsQuery['pagedHrKarkuns']>['data']
-  >[number]
->;
+import { PROMOTE_HR_KARKUN, hrKarkunCandidateSource } from '../gql';
 
-interface FilterState {
-  pageIndex: number;
-  pageSize: number;
-  name: string | null;
-  cnicNumber: string | null;
-  phoneNumber: string | null;
-  bloodGroup: string | null;
+interface LocationFormValues {
+  /** The picked city or mehfil. */
+  locationId?: string;
 }
 
 const AddKarkunButton = () => {
   const [showDrawer, setShowDrawer] = useState(false);
-  const [filterState, setFilterState] = useState<FilterState>({
-    pageIndex: 0,
-    pageSize: 20,
-    name: null,
-    cnicNumber: null,
-    phoneNumber: null,
-    bloodGroup: null,
-  });
-  const [promoteHrKarkun] = useMutation(PROMOTE_HR_KARKUN, {
+  // The person picked, whose city (and mehfil) is asked for before adding.
+  const [picked, setPicked] = useState<PickerPerson | null>(null);
+  const [form] = Form.useForm<LocationFormValues>();
+  const { locations } = useReferenceLocations(CITY_MEHFIL_TYPES);
+  // HR karkuns belong to Multan, so it is picked unless changed.
+  const multanCityId = locations.find(
+    location => location.type === OrgLocationTypes.CITY && location.name === 'Multan'
+  )?._id;
+  const [promoteHrKarkun, { loading: promoting }] = useMutation(PROMOTE_HR_KARKUN, {
     refetchQueries: ['hrKarkunsPagedHrKarkuns'],
   });
 
-  const setPageParams = (params: Partial<FilterState>) => {
-    setFilterState(prevState => ({
-      ...prevState,
-      ...params,
-    }));
+  const handlePick = (person: PickerPerson) => {
+    form.resetFields();
+    setPicked(person);
   };
 
-  const handleItemSelected = (record: KarkunRow) => {
-    if (!record._id) return;
+  const handleAdd = ({ locationId }: LocationFormValues) => {
+    const { cityLocationId, mehfilLocationId } = toCityMehfilIds(locationId, locations);
+    if (!picked || !cityLocationId) return;
 
     promoteHrKarkun({
       variables: {
-        _id: record._id,
+        _id: picked._id,
+        cityLocationId,
+        mehfilLocationId: mehfilLocationId ?? null,
       },
     })
       .then(() => {
-        setShowDrawer(false);
+        setPicked(null);
         message.success('Karkun added', 2);
       })
       .catch((error: Error) => {
@@ -62,31 +60,47 @@ const AddKarkunButton = () => {
       });
   };
 
-  const { pageIndex, pageSize, name, cnicNumber, phoneNumber, bloodGroup } =
-    filterState;
-
   return (
     <>
-      <Drawer
+      <PersonPickerDrawer
         title="Add Karkun"
-        size={720}
-        onClose={() => setShowDrawer(false)}
         open={showDrawer}
+        onClose={() => setShowDrawer(false)}
+        source={hrKarkunCandidateSource}
+        itemsLabel="people"
+        mode="single"
+        addLabel="Select"
+        onPick={handlePick}
+      />
+      <Modal
+        title={`Add ${picked?.name ?? ''} as a Karkun`}
+        open={picked != null}
+        okText="Add Karkun"
+        confirmLoading={promoting}
+        onOk={() => form.submit()}
+        onCancel={() => setPicked(null)}
+        destroyOnHidden
       >
-        <List
-          mode="candidates"
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-          name={name ?? undefined}
-          cnicNumber={cnicNumber ?? undefined}
-          phoneNumber={phoneNumber ?? undefined}
-          bloodGroup={bloodGroup ?? undefined}
-          setPageParams={setPageParams as (params: PageParams) => void}
-          handleItemSelected={handleItemSelected}
-          showPhoneNumbersColumn
-          showActionsColumn={false}
-        />
-      </Drawer>
+        <Form
+          form={form}
+          layout="vertical"
+          style={{ width: '100%', maxWidth: '100%' }}
+          onFinish={handleAdd}
+          preserve={false}
+          key={multanCityId ?? 'loading'}
+        >
+          <LocationPickerField
+            types={CITY_MEHFIL_TYPES}
+            fieldName="locationId"
+            fieldLabel="City/Mehfil"
+            fieldLayout={{}}
+            initialValue={multanCityId}
+            placeholder="Select the city, or its mehfil if known"
+            required
+            requiredMessage="Please select a city or a mehfil."
+          />
+        </Form>
+      </Modal>
       <Button
         type="primary"
         icon={<PlusCircleOutlined />}

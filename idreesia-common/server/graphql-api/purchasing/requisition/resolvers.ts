@@ -5,6 +5,7 @@ import {
   closeRequisition,
   createRequisition,
   deleteRequisition,
+  listRequestedForValues,
   listRequisitions,
   parseDateInput,
   rejectRequisition,
@@ -24,6 +25,7 @@ interface RequisitionArgs {
   title: string;
   purpose?: string;
   requestedBy?: string;
+  requestedFor?: string;
   neededBy?: string;
   lines: RequisitionLineInput[];
 }
@@ -61,6 +63,8 @@ export default {
         pageSize?: number;
       }
     ) => listRequisitions(args),
+
+    distinctPurchasingRequisitionRequestedFor: async () => listRequestedForValues(),
   },
 
   Mutation: {

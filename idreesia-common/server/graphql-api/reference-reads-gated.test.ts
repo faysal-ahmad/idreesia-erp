@@ -4,9 +4,9 @@ import type { DocumentNode, FieldDefinitionNode } from 'graphql';
 import DutyLocationSchema from './hr/duty-location/duty-location';
 import JobSchema from './hr/job/job';
 import KarkunSchema from './hr/karkun/karkun';
-import MehfilDutySchema from './security/mehfil-duty/mehfil-duty';
-import MehfilLangarDishSchema from './security/mehfil-langar-dish/mehfil-langar-dish';
-import MehfilLangarLocationSchema from './security/mehfil-langar-location/mehfil-langar-location';
+import EventDutySchema from './security/event-duty/event-duty';
+import EventLangarDishSchema from './security/event-langar-dish/event-langar-dish';
+import EventLangarLocationSchema from './security/event-langar-location/event-langar-location';
 import VisitorStaySchema from './security/visitor-stay/visitor-stay';
 
 // Reference and lookup reads that one module owns and only that module's
@@ -24,9 +24,9 @@ const HR_KARKUNS = [
   'HR_MANAGE_KARKUNS',
   'HR_MANAGE_KARKUNS_SETUP_DATA',
 ];
-const MEHFIL_DUTIES = [
-  'SECURITY_VIEW_MEHFILS',
-  'SECURITY_MANAGE_MEHFILS',
+const EVENT_DUTIES = [
+  'SECURITY_VIEW_EVENTS',
+  'SECURITY_MANAGE_EVENTS',
   'SECURITY_MANAGE_SETUP_DATA',
 ];
 const SETUP = ['SECURITY_MANAGE_SETUP_DATA'];
@@ -37,12 +37,12 @@ const expected: Array<[DocumentNode, string, string[]]> = [
   [JobSchema, 'jobById', HR_EMPLOYEES],
   [DutyLocationSchema, 'allDutyLocations', HR_KARKUNS],
   [KarkunSchema, 'hrCommitteeOptions', ['HR_MANAGE_KARKUNS_SETUP_DATA']],
-  [MehfilDutySchema, 'allSecurityMehfilDuties', MEHFIL_DUTIES],
-  [MehfilDutySchema, 'securityMehfilDutyById', MEHFIL_DUTIES],
-  [MehfilLangarDishSchema, 'allSecurityMehfilLangarDishes', SETUP],
-  [MehfilLangarDishSchema, 'securityMehfilLangarDishById', SETUP],
-  [MehfilLangarLocationSchema, 'allSecurityMehfilLangarLocations', SETUP],
-  [MehfilLangarLocationSchema, 'securityMehfilLangarLocationById', SETUP],
+  [EventDutySchema, 'allSecurityEventDuties', EVENT_DUTIES],
+  [EventDutySchema, 'securityEventDutyById', EVENT_DUTIES],
+  [EventLangarDishSchema, 'allSecurityEventLangarDishes', SETUP],
+  [EventLangarDishSchema, 'securityEventLangarDishById', SETUP],
+  [EventLangarLocationSchema, 'allSecurityEventLangarLocations', SETUP],
+  [EventLangarLocationSchema, 'securityEventLangarLocationById', SETUP],
   [VisitorStaySchema, 'distinctStayAllowedBy', VISITORS],
 ];
 

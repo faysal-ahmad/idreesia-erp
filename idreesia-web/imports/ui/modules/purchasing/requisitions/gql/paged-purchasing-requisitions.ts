@@ -17,8 +17,6 @@ const PAGED_PURCHASING_REQUISITIONS: TypedDocumentNode<
         number
         title
         status
-        source
-        externalSourceId
         estimatedTotal
         neededBy
         requestedBy

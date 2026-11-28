@@ -28,6 +28,8 @@ type PurchasingRequisition {
   purpose: String
   requestedBy: String
   requestedByPerson: PersonBasicType
+  # Free text: who or what the goods are for.
+  requestedFor: String
   neededBy: String
   # 'purchasing' or 'store'. For a store, externalSourceId is its physical store id.
   source: String
@@ -71,6 +73,10 @@ extend type Query {
     pageSize: Int
   ): PagedPurchasingRequisitions
     @checkPermissions(permissions: [PURCHASING_VIEW_REQUISITIONS, PURCHASING_MANAGE_REQUISITIONS, PURCHASING_APPROVE_REQUISITIONS, PURCHASING_MANAGE_ORDERS])
+
+  # The Requested For values entered before, to suggest on the requisition form.
+  distinctPurchasingRequisitionRequestedFor: [String]
+    @checkPermissions(permissions: [PURCHASING_MANAGE_REQUISITIONS])
 }
 
 extend type Mutation {
@@ -78,6 +84,7 @@ extend type Mutation {
     title: String!
     purpose: String
     requestedBy: String
+    requestedFor: String
     neededBy: String
     lines: [PurchasingRequisitionLineInput!]!
   ): PurchasingRequisition
@@ -90,6 +97,7 @@ extend type Mutation {
     title: String!
     purpose: String
     requestedBy: String
+    requestedFor: String
     neededBy: String
     lines: [PurchasingRequisitionLineInput!]!
   ): PurchasingRequisition

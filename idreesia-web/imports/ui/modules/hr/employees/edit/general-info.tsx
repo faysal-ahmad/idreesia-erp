@@ -11,13 +11,9 @@ import {
 } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
-import {
-  useAllCityMehfilLocations,
-} from 'meteor/idreesia-common/hooks/common';
 import type { HrKarkunByIdForPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
 import {
   AgeField,
-  CascaderField,
   DateField,
   EhadDurationField,
   InputCnicField,
@@ -28,7 +24,12 @@ import {
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
 import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
-import { getCityMehfilCascaderData } from '/imports/ui/modules/common/utilities';
+import {
+  CITY_MEHFIL_TYPES,
+  LocationPickerField,
+  toCityMehfilIds,
+  useReferenceLocations,
+} from '/imports/ui/modules/helpers/controls';
 import { HRSubModulePaths as paths } from '/imports/ui/modules/hr';
 
 import Picture from './picture';
@@ -50,7 +51,8 @@ export interface EmployeeGeneralInfoFormValues {
   emailAddress?: string;
   currentAddress?: string;
   permanentAddress?: string;
-  cityMehfilLocationIds?: Array<string | undefined>;
+  /** The picked city or mehfil. */
+  cityMehfilLocationId?: string;
   bloodGroup?: string;
   educationalQualification?: string;
   meansOfEarning?: string;
@@ -80,8 +82,8 @@ const BLOOD_GROUP_OPTIONS: LabelValue[] = [
 const GeneralInfo = ({ history, employeeId, employee }: Props) => {
   const [form] = Form.useForm();
   const [isFieldsTouched, setIsFieldsTouched] = useState(false);
-  const { cityLocations, mehfilLocations, cityMehfilLocationsLoading } =
-    useAllCityMehfilLocations();
+  const { locations, loading: cityMehfilLocationsLoading } =
+    useReferenceLocations(CITY_MEHFIL_TYPES);
   const [updateHrKarkun] = useMutation(UPDATE_HR_KARKUN, {
     refetchQueries: ['hrPeoplePagedHrKarkuns', 'hrKarkunByIdForPeople'],
   });
@@ -122,8 +124,7 @@ const GeneralInfo = ({ history, employeeId, employee }: Props) => {
           emailAddress: values.emailAddress,
           currentAddress: values.currentAddress,
           permanentAddress: values.permanentAddress,
-          cityLocationId: values.cityMehfilLocationIds?.[0],
-          mehfilLocationId: values.cityMehfilLocationIds?.[1],
+          ...toCityMehfilIds(values.cityMehfilLocationId, locations),
           bloodGroup: values.bloodGroup || null,
           educationalQualification: values.educationalQualification,
           meansOfEarning: values.meansOfEarning,
@@ -229,16 +230,17 @@ const GeneralInfo = ({ history, employeeId, employee }: Props) => {
             initialValue={employee.sharedData?.emailAddress}
             required={false}
           />
-          <CascaderField
-            data={getCityMehfilCascaderData(cityLocations, mehfilLocations) ?? []}
-            fieldName="cityMehfilLocationIds"
+          <LocationPickerField
+            types={CITY_MEHFIL_TYPES}
+            fieldName="cityMehfilLocationId"
             fieldLabel="City/Mehfil"
-            initialValue={[
-              employee.karkunData?.cityLocationId,
-              employee.karkunData?.mehfilLocationId,
-            ]}
+            initialValue={
+              employee.karkunData?.mehfilLocationId ??
+              employee.karkunData?.cityLocationId
+            }
+            placeholder="Select the city, or its mehfil"
             required
-            requiredMessage="Please select a city/mehfil from the list."
+            requiredMessage="Please select a city or a mehfil."
           />
           <InputTextAreaField
             fieldName="currentAddress"

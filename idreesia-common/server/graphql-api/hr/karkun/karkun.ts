@@ -11,6 +11,36 @@ extend type Query {
   hrKarkunsById(_ids: String!): [PersonType]
   @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
 
+  # Karkuns of Multan, to add to a team or to a day's duty.
+  pagedHrPickerKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_KARKUNS_SETUP_DATA])
+
+  # Karkuns of Multan who are not employees yet, to make an employee.
+  pagedHrEmployeeCandidateKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  # People who are not karkuns yet, to make a karkun.
+  pagedHrKarkunCandidatePeople(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
+
   pagedHrKarkuns(filter: KarkunFilter): PagedKarkunType
   @checkPermissions(
     permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES]
@@ -43,7 +73,8 @@ extend type Mutation {
   ): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
 
-  promoteHrKarkun(_id: String!): PersonType
+  # Makes a visitor or employee a karkun of the city and (optionally) mehfil.
+  promoteHrKarkun(_id: String!, cityLocationId: String!, mehfilLocationId: String): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   updateHrKarkun(

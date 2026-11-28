@@ -47,9 +47,16 @@ import {
   GoodsReceiptsNewForm,
   GoodsReceiptsView,
 } from './receipts';
+import { ManageStoresEditForm, ManageStoresList } from './manage-stores';
 
 const Router = () => (
   <Switch>
+    <Route
+      path={paths.manageStoresEditFormPath()}
+      component={ManageStoresEditForm}
+    />
+    <Route path={paths.manageStoresPath()} component={ManageStoresList} />
+
     <Route path={paths.issuanceReportPath()} component={IssuanceReport} />
     <Route path={paths.purchasingReportPath()} component={PurchasingReport} />
 

@@ -344,6 +344,33 @@ export async function addPhysicalStoreAccessGroup(
   );
 }
 
+/**
+ * Takes every store permission from a user group, on every store, for a group
+ * that is being deleted. Runs in the caller's transaction.
+ */
+export async function removeAllPhysicalStoreAccessOfGroup(
+  groupId: string,
+  actingUser: ActingUser,
+  dataSource: string,
+  dataSourceDetail: string | null = null
+): Promise<void> {
+  const entries = await PhysicalStoreAccess.find({
+    subjectType: 'group',
+    subjectId: groupId,
+  }).fetchAsync();
+  for (const entry of entries) {
+    await PhysicalStoreAccess.removeAsync({ _id: entry._id });
+    await securityLog(
+      { type: 'group', id: groupId },
+      entry.physicalStoreId,
+      { permissionsRemoved: entry.permissions },
+      actingUser._id,
+      dataSource,
+      dataSourceDetail
+    );
+  }
+}
+
 /** Takes a permission on the store from a user group. */
 export async function removePhysicalStoreAccessGroup(
   { physicalStoreId, permission, groupId }: {

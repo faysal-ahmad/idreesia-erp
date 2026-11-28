@@ -44,21 +44,6 @@ type MehfilPermissionsType {
   groups: [MpGroupType]!
 }
 
-type MpKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedMpKarkunType {
-  data: [MpKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   myMehfilPermissionsLocations: [MyMehfilPermissionsLocationType]!
 
@@ -66,14 +51,14 @@ extend type Query {
     @checkMehfilPermissionsAccess(permission: VIEW)
 
   # Karkuns to choose from when giving a permission.
-  workspaceMehfilPermissionsKarkunSearch(
+  pagedWorkspaceMehfilPermissionsKarkuns(
     locationId: String!
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedMpKarkunType @checkMehfilPermissionsAccess(permission: MANAGE)
+  ): PagedPickerPersonType @checkMehfilPermissionsAccess(permission: MANAGE)
 }
 
 extend type Mutation {

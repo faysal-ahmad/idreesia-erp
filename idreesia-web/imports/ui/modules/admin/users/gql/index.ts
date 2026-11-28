@@ -11,3 +11,5 @@ export { default as RESET_USER_PASSWORD } from './reset-user-password';
 export { default as CREATE_SERVICE_ACCOUNT } from './create-service-account';
 export { default as USER_TRUSTED_DEVICES } from './user-trusted-devices';
 export { default as REVOKE_USER_TRUSTED_DEVICES } from './revoke-user-trusted-devices';
+export { default as ADMIN_KARKUN_LOCATIONS } from './admin-karkun-locations';
+export { default as PAGED_ADMIN_USER_KARKUNS, adminUserKarkunSource } from './paged-admin-user-karkuns';

@@ -18,6 +18,7 @@ interface MeteorUser {
   locked?: boolean;
   permissions?: string[];
   groups?: string[];
+  personId?: string;
   services?: {
     resume?: {
       loginTokens?: Array<{ hashedToken: string; when: Date }>;
@@ -45,10 +46,11 @@ export const getUser = async (
   // A token issued before the account was locked stops working too.
   if (isExpired || isAccountLocked(user)) return undefined;
 
-  // Permissions include those granted by the user's groups, so every
-  // authorization check downstream sees the effective access. (Store access is
-  // looked up per store, from the user and their groups: see PhysicalStoreAccess.)
-  if (!user.groups?.length) return user;
+  // Permissions include those granted by the user's groups and committees, so
+  // every authorization check downstream sees the effective access. (Store
+  // access is looked up per store, from the user and their groups: see
+  // PhysicalStoreAccess.)
+  if (!user.groups?.length && !user.personId) return user;
   const { permissions } = await resolveEffectiveAccess(user);
   return { ...user, permissions };
 };

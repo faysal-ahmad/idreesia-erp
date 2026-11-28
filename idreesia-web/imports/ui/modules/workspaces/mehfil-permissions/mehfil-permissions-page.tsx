@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { SyncOutlined, UserAddOutlined } from '@ant-design/icons';
-import { Button, Drawer, Modal, Space, Table, Tag, Tooltip } from 'antd';
+import { Button, Modal, Space, Table, Tag, Tooltip } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
 import { MehfilPermissionsPermissions } from 'meteor/idreesia-common/constants/mehfil-permissions';
-import type { KarkunSelectionItem } from '/imports/ui/modules/helpers/controls';
+import { PersonPickerDrawer, type PickerPerson } from '/imports/ui/modules/helpers/controls';
 
-import KarkunPicker from './karkun-picker';
 import {
   WORKSPACE_ADD_MEHFIL_PERMISSION_USER,
   WORKSPACE_MEHFIL_PERMISSIONS,
   WORKSPACE_REMOVE_MEHFIL_PERMISSION_USER,
+  mehfilPermissionsKarkunSource,
 } from './gql';
 
 // Changing permissions can change what the caller themselves can open, so the
@@ -123,7 +123,7 @@ const MehfilPermissionsPage = () => {
     .flatMap(feature => feature.children)
     .find(row => row.key === adding?.key);
 
-  const handleAdd = (karkun: KarkunSelectionItem) => {
+  const handleAdd = (karkun: PickerPerson) => {
     if (!adding) return;
     setAddingId(karkun._id);
     addUser({
@@ -261,22 +261,18 @@ const MehfilPermissionsPage = () => {
         />
       </div>
 
-      <Drawer
+      <PersonPickerDrawer
         title={adding ? `Add User to "${adding.name}"` : 'Add User'}
-        width={900}
         open={adding != null}
         onClose={() => setAdding(null)}
-        destroyOnHidden
-      >
-        <KarkunPicker
-          locationId={locationId}
-          selectedIds={(addingRow?.users ?? []).flatMap(user =>
-            user.personId ? [user.personId] : []
-          )}
-          addingId={addingId}
-          onAdd={handleAdd}
-        />
-      </Drawer>
+        source={{ ...mehfilPermissionsKarkunSource, variables: { locationId } }}
+        selectedIds={(addingRow?.users ?? []).flatMap(user =>
+          user.personId ? [user.personId] : []
+        )}
+        addingId={addingId}
+        onPick={handleAdd}
+        selectedLabel="Added"
+      />
     </>
   );
 };

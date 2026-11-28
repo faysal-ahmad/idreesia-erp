@@ -15,6 +15,7 @@ import {
   ShoppingCartOutlined,
   ShopOutlined,
   TagsOutlined,
+  ToolOutlined,
 } from '@ant-design/icons';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
@@ -26,6 +27,7 @@ import type {
 import { Menu } from 'antd';
 import SubModuleNames from './submodule-names';
 import { default as paths } from './submodule-paths';
+import useManageStoresAccess from './manage-stores/use-manage-stores-access';
 
 const IconStyle: CSSProperties = {
   fontSize: '20px',
@@ -115,11 +117,22 @@ const KeyPrefixHandlers: KeyPrefixHandler[] = [
   ['locations', SubModuleNames.locations, paths.locationsPath],
 ];
 
+// Module-level entries (not about one store).
+const MANAGE_STORES_KEY = 'manage-stores';
+
 const Sidebar = ({ history }: SidebarProps) => {
   const { setActiveSubModuleName } = useActiveModule();
   const { data, loading } = useQuery(ALL_ACCESSIBLE_PHYSICAL_STORES);
+  // Manage Stores is open to those who manage the stores or their permissions.
+  const { canManagePermissions: canOpenManageStores } = useManageStoresAccess();
 
   const handleMenuItemSelected = ({ key }: { key: string }) => {
+    if (key === MANAGE_STORES_KEY) {
+      setActiveSubModuleName(SubModuleNames.manageStores);
+      history.push(paths.manageStoresPath());
+      return;
+    }
+
     const handler = KeyPrefixHandlers.find(([prefix]) =>
       key.startsWith(`${prefix}-`)
     );
@@ -274,7 +287,25 @@ const Sidebar = ({ history }: SidebarProps) => {
       mode="inline"
       style={{ height: '100%', borderRight: 0 }}
       onClick={handleMenuItemSelected}
-      items={menuItems}
+      items={[
+        ...menuItems,
+        ...(canOpenManageStores
+          ? [
+              {
+                key: 'administration',
+                icon: <ToolOutlined style={IconStyle} />,
+                label: 'Administration',
+                children: [
+                  {
+                    key: MANAGE_STORES_KEY,
+                    icon: <ShopOutlined style={IconStyle} />,
+                    label: 'Manage Stores',
+                  },
+                ],
+              },
+            ]
+          : []),
+      ]}
     />
   );
 };

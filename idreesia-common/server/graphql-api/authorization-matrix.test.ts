@@ -175,14 +175,18 @@ describe('authorization matrix', () => {
     expect(pinned).toMatchSnapshot();
   });
 
-  it('every @checkPermissions list is non-empty and uses known permissions', () => {
+  it('every @checkPermissions names at least one known permission', () => {
     for (const f of permissionFields) {
       for (const d of f.declarations.filter(x =>
         PERMISSION_DIRECTIVES.includes(x.directive)
       )) {
-        const list = d.args.permissions as string[] | undefined;
-        expect(list?.length, f.field).toBeGreaterThan(0);
-        for (const p of list!) expect(perm(p), `${f.field}: ${p}`).toBeTruthy();
+        // A field may be opened only by permissions held on any store.
+        const list = [
+          ...((d.args.permissions as string[] | undefined) ?? []),
+          ...((d.args.anyStorePermissions as string[] | undefined) ?? []),
+        ];
+        expect(list.length, f.field).toBeGreaterThan(0);
+        for (const p of list) expect(perm(p), `${f.field}: ${p}`).toBeTruthy();
       }
     }
   });

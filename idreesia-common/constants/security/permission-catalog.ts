@@ -27,11 +27,11 @@ const SecurityPermissionCatalog: SecurityPermissionGroup[] = [
     ],
   },
   {
-    featureKey: 'mehfils',
-    featureName: 'Mehfils',
+    featureKey: 'events',
+    featureName: 'Events',
     permissions: [
-      { key: Permissions.SECURITY_VIEW_MEHFILS, name: 'View Mehfils', description: 'See mehfils' },
-      { key: Permissions.SECURITY_MANAGE_MEHFILS, name: 'Manage Mehfils', description: 'Add and manage mehfils, their karkuns and duties' },
+      { key: Permissions.SECURITY_VIEW_EVENTS, name: 'View Events', description: 'See events' },
+      { key: Permissions.SECURITY_MANAGE_EVENTS, name: 'Manage Events', description: 'Add and manage events, their karkuns and duties' },
     ],
   },
   {

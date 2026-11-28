@@ -157,6 +157,16 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
+  // Administration Routes
+  // *************************************************************************************
+  static manageStoresPath() {
+    return `${ModulePaths.stores}/manage-stores`;
+  }
+  static manageStoresEditFormPath(physicalStoreId = ':physicalStoreId') {
+    return `${SubModulePaths.manageStoresPath()}/${physicalStoreId}`;
+  }
+
+  // *************************************************************************************
   // Purchasing Routes (requisitions, incoming orders and goods receipts)
   // *************************************************************************************
   static requisitionsPath(physicalStoreId = ':physicalStoreId') {

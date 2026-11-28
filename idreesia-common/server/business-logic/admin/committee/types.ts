@@ -4,6 +4,7 @@ export interface CommitteeDoc {
   name: string;
   members?: Array<{ karkunId: string; role?: string }>;
   features?: string[];
+  permissions?: string[];
   discussionsWorkspaceId?: string;
   dmsWorkspaceId?: string;
   meetingsWorkspaceId?: string;

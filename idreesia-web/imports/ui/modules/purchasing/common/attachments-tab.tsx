@@ -35,7 +35,7 @@ const formatSize = (bytes?: number | null) => {
 const AttachmentsTab = ({ ownerType, ownerId, canManage }: AttachmentsTabProps) => {
   const client = useApolloClient();
   const [busy, setBusy] = useState(false);
-  const { data, loading } = useQuery(PURCHASING_ATTACHMENTS, { variables: { ownerType, ownerId } });
+  const { data, loading } = useQuery(PURCHASING_ATTACHMENTS, { variables: { ownerType, ownerId }, fetchPolicy: 'cache-and-network' });
   const refetchQueries = ['purchasingAttachments'];
   const [createUpload] = useMutation(CREATE_PURCHASING_ATTACHMENT_UPLOAD);
   const [completeUpload] = useMutation(COMPLETE_PURCHASING_ATTACHMENT_UPLOAD, { refetchQueries });

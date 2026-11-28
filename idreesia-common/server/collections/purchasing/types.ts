@@ -5,6 +5,8 @@ import type {
   OrderStatusValue,
   PaymentMethodValue,
   PaymentStatusValue,
+  PettyCashReplenishmentStatusValue,
+  PettyCashVoucherStatusValue,
   QuoteStatusValue,
   ReceiptStatusValue,
   RequisitionSourceValue,
@@ -71,6 +73,8 @@ export interface PurchasingRequisitionDocument extends Timestamps {
   title: string;
   purpose?: string;
   requestedBy?: string;
+  /** Free text: who or what the goods are for. */
+  requestedFor?: string;
   neededBy?: Date;
   /** Only set for store-raised documents; absent means purchasing. */
   source?: RequisitionSourceValue;
@@ -269,4 +273,80 @@ export interface PurchasingAttachmentDocument extends Timestamps {
   fileKey: string;
   status: AttachmentStatusValue;
   uploadExpiresAt?: Date;
+}
+
+export interface PurchasingPettyCashExpenseHeadDocument extends Timestamps {
+  _id: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+  version: number;
+}
+
+export interface PurchasingPettyCashFundDocument extends Timestamps {
+  _id: string;
+  name: string;
+  custodianPersonId: string;
+  floatAmount: number;
+  perTransactionLimit?: number;
+  balance: number;
+  isActive: boolean;
+  notes?: string;
+  version: number;
+}
+
+export interface PettyCashVoucherLine {
+  _id: string;
+  description: string;
+  unit: string;
+  quantity: number;
+  unitPrice: number;
+  amount: number;
+  /** Set when the item goes into a store's stock. */
+  physicalStoreId?: string;
+  externalCatalogId?: string;
+}
+
+export interface PurchasingPettyCashVoucherDocument extends Timestamps {
+  _id: string;
+  number: string;
+  fundId: string;
+  expenseHeadId: string;
+  voucherDate: Date;
+  payee?: string;
+  vendorId?: string;
+  purpose?: string;
+  lines: PettyCashVoucherLine[];
+  total: number;
+  status: PettyCashVoucherStatusValue;
+  version: number;
+  submittedAt?: Date;
+  submittedBy?: string;
+  approvedAt?: Date;
+  approvedBy?: string;
+  rejectedAt?: Date;
+  rejectedBy?: string;
+  rejectionReason?: string;
+  voidedAt?: Date;
+  voidedBy?: string;
+  voidReason?: string;
+  replenishmentId?: string;
+}
+
+export interface PurchasingPettyCashReplenishmentDocument extends Timestamps {
+  _id: string;
+  number: string;
+  fundId: string;
+  voucherIds: string[];
+  amount: number;
+  countedCash?: number;
+  variance?: number;
+  notes?: string;
+  status: PettyCashReplenishmentStatusValue;
+  version: number;
+  approvedAt?: Date;
+  approvedBy?: string;
+  rejectedAt?: Date;
+  rejectedBy?: string;
+  rejectionReason?: string;
 }

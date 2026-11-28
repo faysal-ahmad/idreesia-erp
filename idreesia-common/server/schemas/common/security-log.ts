@@ -14,6 +14,11 @@ export default new SimpleSchema({
     type: String,
     optional: true,
   },
+  // Set when the operation changed what a committee grants (see Committees).
+  committeeId: {
+    type: String,
+    optional: true,
+  },
   operationType: {
     type: String,
     allowedValues: values(SecurityOperationType),

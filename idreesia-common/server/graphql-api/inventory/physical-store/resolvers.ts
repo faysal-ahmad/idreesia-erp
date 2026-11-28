@@ -1,4 +1,3 @@
-import { UserGroups } from 'meteor/idreesia-common/server/collections/admin';
 import { PhysicalStores } from 'meteor/idreesia-common/server/collections/inventory';
 import { DataSource } from 'meteor/idreesia-common/constants';
 import {
@@ -8,7 +7,6 @@ import {
   listPhysicalStoreAccess,
   removePhysicalStoreAccessGroup,
   removePhysicalStoreAccessUser,
-  searchStoreAccessKarkuns,
 } from 'meteor/idreesia-common/server/business-logic/inventory/store-access';
 
 interface PhysicalStore {
@@ -48,19 +46,11 @@ export default {
       { physicalStoreId }: { physicalStoreId: string }
     ) => listPhysicalStoreAccess(physicalStoreId),
 
-    storeAccessKarkunSearch: async (
-      _obj: unknown,
-      args: {
-        name?: string;
-        cnicNumber?: string;
-        phoneNumber?: string;
-        pageIndex?: string;
-        pageSize?: string;
-      }
-    ) => searchStoreAccessKarkuns(args),
+    managedPhysicalStores: async () =>
+      PhysicalStores.find({}, { sort: { name: 1 } }).fetchAsync(),
 
-    storeAccessUserGroups: async () =>
-      UserGroups.find({}, { sort: { name: 1 } }).fetchAsync(),
+    managedPhysicalStoreById: async (_obj: unknown, { id }: { id: string }) =>
+      PhysicalStores.findOneAsync(id),
 
     physicalStoreById: async (
       _obj: unknown,

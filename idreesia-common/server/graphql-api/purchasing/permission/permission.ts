@@ -13,12 +13,20 @@ type PurchasingPermissionGroupHolder {
   name: String!
 }
 
+type PurchasingPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
 type PurchasingPermissionAssignment {
   key: String!
   name: String!
   description: String
   users: [PurchasingPermissionHolder]
   groups: [PurchasingPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [PurchasingPermissionCommitteeHolder]
 }
 
 type PurchasingPermissionGroup {
@@ -27,33 +35,18 @@ type PurchasingPermissionGroup {
   permissions: [PurchasingPermissionAssignment]
 }
 
-type PurchasingKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedPurchasingKarkunType {
-  data: [PurchasingKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   purchasingPermissionAssignments: [PurchasingPermissionGroup]
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 
   # Karkuns to choose from when giving a permission or adding to a group.
-  purchasingKarkunSearch(
+  pagedPurchasingPermissionKarkuns(
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedPurchasingKarkunType
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 }
 
@@ -65,6 +58,12 @@ extend type Mutation {
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 
   removePurchasingPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  addPurchasingPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
+
+  removePurchasingPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
     @checkPermissions(permissions: [PURCHASING_MANAGE_PERMISSIONS])
 
   removePurchasingPermissionUser(permissionKey: String!, userId: String!): Boolean

@@ -23,7 +23,7 @@ const ReceiptPage = ({ match }: RouteComponentProps<{ receiptId: string }>) => {
   const { receiptId } = match.params;
   const { can } = usePurchasingAccess();
   const [voiding, setVoiding] = useState(false);
-  const { data, loading } = useQuery(PURCHASING_RECEIPT_BY_ID, { variables: { _id: receiptId } });
+  const { data, loading } = useQuery(PURCHASING_RECEIPT_BY_ID, { variables: { _id: receiptId }, fetchPolicy: 'cache-and-network' });
   const receipt = data?.purchasingReceiptById;
   const [voidReceipt] = useMutation(VOID_PURCHASING_RECEIPT, {
     refetchQueries: ['purchasingReceiptById', 'pagedPurchasingReceipts', 'purchasingOrderById', 'pagedPurchasingOrders'],

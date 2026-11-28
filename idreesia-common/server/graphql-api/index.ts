@@ -83,20 +83,20 @@ import SecurityUserGroupResolvers from './security/user-group/resolvers';
 import SecurityAuditLogSchema from './security/audit-log/audit-log';
 import SecurityAuditLogResolvers from './security/audit-log/resolvers';
 
-import SecurityMehfilSchema from './security/mehfil/mehfil';
-import SecurityMehfilResolvers from './security/mehfil/resolvers';
+import SecurityEventSchema from './security/event/event';
+import SecurityEventResolvers from './security/event/resolvers';
 
-import SecurityMehfilDutySchema from './security/mehfil-duty/mehfil-duty';
-import SecurityMehfilDutyResolvers from './security/mehfil-duty/resolvers';
+import SecurityEventDutySchema from './security/event-duty/event-duty';
+import SecurityEventDutyResolvers from './security/event-duty/resolvers';
 
-import SecurityMehfilKarkunSchema from './security/mehfil-karkun/mehfil-karkun';
-import SecurityMehfilKarkunResolvers from './security/mehfil-karkun/resolvers';
+import SecurityEventKarkunSchema from './security/event-karkun/event-karkun';
+import SecurityEventKarkunResolvers from './security/event-karkun/resolvers';
 
-import SecurityMehfilLangarDishSchema from './security/mehfil-langar-dish/mehfil-langar-dish';
-import SecurityMehfilLangarDishResolvers from './security/mehfil-langar-dish/resolvers';
+import SecurityEventLangarDishSchema from './security/event-langar-dish/event-langar-dish';
+import SecurityEventLangarDishResolvers from './security/event-langar-dish/resolvers';
 
-import SecurityMehfilLangarLocationSchema from './security/mehfil-langar-location/mehfil-langar-location';
-import SecurityMehfilLangarLocationResolvers from './security/mehfil-langar-location/resolvers';
+import SecurityEventLangarLocationSchema from './security/event-langar-location/event-langar-location';
+import SecurityEventLangarLocationResolvers from './security/event-langar-location/resolvers';
 
 import SecurityVisitorSchema from './security/visitor/visitor';
 import SecurityVisitorResolvers from './security/visitor/resolvers';
@@ -129,6 +129,14 @@ import PurchasingInvoiceSchema from './purchasing/invoice/invoice';
 import PurchasingInvoiceResolvers from './purchasing/invoice/resolvers';
 import PurchasingPaymentSchema from './purchasing/payment/payment';
 import PurchasingPaymentResolvers from './purchasing/payment/resolvers';
+import PurchasingPettyCashExpenseHeadSchema from './purchasing/petty-cash-expense-head/petty-cash-expense-head';
+import PurchasingPettyCashExpenseHeadResolvers from './purchasing/petty-cash-expense-head/resolvers';
+import PurchasingPettyCashFundSchema from './purchasing/petty-cash-fund/petty-cash-fund';
+import PurchasingPettyCashFundResolvers from './purchasing/petty-cash-fund/resolvers';
+import PurchasingPettyCashVoucherSchema from './purchasing/petty-cash-voucher/petty-cash-voucher';
+import PurchasingPettyCashVoucherResolvers from './purchasing/petty-cash-voucher/resolvers';
+import PurchasingPettyCashReplenishmentSchema from './purchasing/petty-cash-replenishment/petty-cash-replenishment';
+import PurchasingPettyCashReplenishmentResolvers from './purchasing/petty-cash-replenishment/resolvers';
 import PurchasingReportSchema from './purchasing/report/report';
 import PurchasingReportResolvers from './purchasing/report/resolvers';
 import PurchasingAttachmentSchema from './purchasing/attachment/attachment';
@@ -136,6 +144,8 @@ import PurchasingAttachmentResolvers from './purchasing/attachment/resolvers';
 import PurchasingAuditLogSchema from './purchasing/audit-log/audit-log';
 import PurchasingAuditLogResolvers from './purchasing/audit-log/resolvers';
 import PurchasingPermissionSchema from './purchasing/permission/permission';
+import PurchasingKarkunSchema from './purchasing/karkun/karkun';
+import PurchasingKarkunResolvers from './purchasing/karkun/resolvers';
 import PurchasingPermissionResolvers from './purchasing/permission/resolvers';
 import PurchasingUserGroupSchema from './purchasing/user-group/user-group';
 import PurchasingUserGroupResolvers from './purchasing/user-group/resolvers';
@@ -239,6 +249,8 @@ import CityMehfilResolvers from './outstation/city-mehfil/resolvers';
  * Schema and Resolvers for the Inventory module
  */
 import CommonSchema from './inventory/common/common';
+import StoreKarkunSchema from './inventory/karkun/karkun';
+import StoreKarkunResolvers from './inventory/karkun/resolvers';
 import CommonResolvers from './inventory/common/resolvers';
 
 import ItemCategorySchema from './inventory/item-category/item-category';
@@ -252,6 +264,8 @@ import VendorResolvers from './inventory/vendor/resolvers';
 
 import PhysicalStoreSchema from './inventory/physical-store/physical-store';
 import PhysicalStoreResolvers from './inventory/physical-store/resolvers';
+import StoreUserGroupSchema from './inventory/store-user-group/store-user-group';
+import StoreUserGroupResolvers from './inventory/store-user-group/resolvers';
 
 /**
  * Reference data: cross-module reads of data owned by another module
@@ -264,6 +278,8 @@ import ReferenceOrgLocationResolvers from './reference-data/org-location/resolve
 
 import ReferencePhysicalStoreSchema from './reference-data/physical-store/physical-store';
 import ReferencePhysicalStoreResolvers from './reference-data/physical-store/resolvers';
+import ReferenceStockItemSchema from './reference-data/stock-item/stock-item';
+import ReferenceStockItemResolvers from './reference-data/stock-item/resolvers';
 
 import StockItemSchema from './inventory/stock-item/stock-item';
 import StockItemResolvers from './inventory/stock-item/resolvers';
@@ -311,11 +327,11 @@ const typeDefs = [
   AdminSecurityLogSchema,
 
   SecurityAuditLogSchema,
-  SecurityMehfilSchema,
-  SecurityMehfilDutySchema,
-  SecurityMehfilKarkunSchema,
-  SecurityMehfilLangarDishSchema,
-  SecurityMehfilLangarLocationSchema,
+  SecurityEventSchema,
+  SecurityEventDutySchema,
+  SecurityEventKarkunSchema,
+  SecurityEventLangarDishSchema,
+  SecurityEventLangarLocationSchema,
   SecurityPermissionSchema,
   SecurityUserGroupSchema,
   SecurityVisitorSchema,
@@ -359,6 +375,7 @@ const typeDefs = [
   CityMehfilSchema,
 
   CommonSchema,
+  StoreKarkunSchema,
   ItemCategorySchema,
   LocationSchema,
   VendorSchema,
@@ -370,18 +387,25 @@ const typeDefs = [
   PurchasingReceiptSchema,
   PurchasingInvoiceSchema,
   PurchasingPaymentSchema,
+  PurchasingPettyCashExpenseHeadSchema,
+  PurchasingPettyCashFundSchema,
+  PurchasingPettyCashVoucherSchema,
+  PurchasingPettyCashReplenishmentSchema,
   PurchasingReportSchema,
   PurchasingAuditLogSchema,
   PurchasingPermissionSchema,
+  PurchasingKarkunSchema,
   PurchasingUserGroupSchema,
   StoreRequisitionSchema,
   StoreOrderSchema,
   StoreReceiptSchema,
   PurchasingAttachmentSchema,
   PhysicalStoreSchema,
+  StoreUserGroupSchema,
   ReferenceDutySchema,
   ReferenceOrgLocationSchema,
   ReferencePhysicalStoreSchema,
+  ReferenceStockItemSchema,
   StockItemSchema,
   IssuanceFormSchema,
   PurchaseFormSchema,
@@ -411,11 +435,11 @@ const resolvers = merge(
   AdminSecurityLogResolvers,
 
   SecurityAuditLogResolvers,
-  SecurityMehfilResolvers,
-  SecurityMehfilDutyResolvers,
-  SecurityMehfilKarkunResolvers,
-  SecurityMehfilLangarDishResolvers,
-  SecurityMehfilLangarLocationResolvers,
+  SecurityEventResolvers,
+  SecurityEventDutyResolvers,
+  SecurityEventKarkunResolvers,
+  SecurityEventLangarDishResolvers,
+  SecurityEventLangarLocationResolvers,
   SecurityPermissionResolvers,
   SecurityUserGroupResolvers,
   SecurityVisitorResolvers,
@@ -459,6 +483,7 @@ const resolvers = merge(
   CityMehfilResolvers,
 
   CommonResolvers,
+  StoreKarkunResolvers,
   ItemCategoryResolvers,
   LocationResolvers,
   VendorResolvers,
@@ -470,18 +495,25 @@ const resolvers = merge(
   PurchasingReceiptResolvers,
   PurchasingInvoiceResolvers,
   PurchasingPaymentResolvers,
+  PurchasingPettyCashExpenseHeadResolvers,
+  PurchasingPettyCashFundResolvers,
+  PurchasingPettyCashVoucherResolvers,
+  PurchasingPettyCashReplenishmentResolvers,
   PurchasingReportResolvers,
   PurchasingAuditLogResolvers,
   PurchasingPermissionResolvers,
+  PurchasingKarkunResolvers,
   PurchasingUserGroupResolvers,
   StoreRequisitionResolvers,
   StoreOrderResolvers,
   StoreReceiptResolvers,
   PurchasingAttachmentResolvers,
   PhysicalStoreResolvers,
+  StoreUserGroupResolvers,
   ReferenceDutyResolvers,
   ReferenceOrgLocationResolvers,
   ReferencePhysicalStoreResolvers,
+  ReferenceStockItemResolvers,
   StockItemResolvers,
   IssuanceFormResolvers,
   PurchaseFormResolvers,

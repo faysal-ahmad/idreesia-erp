@@ -23,8 +23,10 @@ import {
   OrgLocationUsers,
   Users,
 } from 'meteor/idreesia-common/server/collections/admin';
-import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
-import { searchPeople } from 'meteor/idreesia-common/server/business-logic/common/people/search-people';
+import {
+  searchPickerPeople,
+  type PickerPeopleParams,
+} from 'meteor/idreesia-common/server/business-logic/common/people/picker-people';
 import { isSuperAdmin } from 'meteor/idreesia-common/server/business-logic/admin/users/super-admin';
 
 interface MehfilPermissionsUser {
@@ -416,56 +418,20 @@ export async function removeMehfilPermissionUser(
 // Karkuns to give permissions to
 // ---------------------------------------------------------------------------
 
-interface PersonDocument {
-  _id: string;
-  sharedData?: {
-    name?: string;
-    parentName?: string;
-    cnicNumber?: string;
-    contactNumber1?: string;
-    imageKey?: string;
-    imageThumbnailKey?: string;
-  };
-}
-
-export interface MehfilPermissionsKarkunSearchParams {
+export interface MehfilPermissionsKarkunSearchParams extends PickerPeopleParams {
   locationId: string;
-  name?: string | null;
-  cnicNumber?: string | null;
-  phoneNumber?: string | null;
-  pageIndex?: string | null;
-  pageSize?: string | null;
 }
 
 /**
  * Karkuns to choose from: those of the mehfil who have a user account (a
  * permission is held by a user), with only the fields needed to pick a person.
  */
-export async function searchMehfilPermissionsKarkuns(
-  params: MehfilPermissionsKarkunSearchParams
-) {
-  const result = (await searchPeople(
-    {
-      name: params.name ?? undefined,
-      cnicNumber: params.cnicNumber ?? undefined,
-      phoneNumber: params.phoneNumber ?? undefined,
-      pageIndex: params.pageIndex ?? undefined,
-      pageSize: params.pageSize ?? undefined,
-      mehfilLocationId: params.locationId,
-      userAccount: 'true',
-    },
-    { includeKarkuns: true }
-  )) as { data: PersonDocument[]; totalResults: number };
-
-  return {
-    data: result.data.map(person => ({
-      _id: person._id,
-      name: person.sharedData?.name,
-      parentName: person.sharedData?.parentName,
-      cnicNumber: person.sharedData?.cnicNumber,
-      contactNumber1: person.sharedData?.contactNumber1,
-      ...getPersonImageUrls(person.sharedData),
-    })),
-    totalResults: result.totalResults,
-  };
+export async function searchMehfilPermissionsKarkuns({
+  locationId,
+  ...params
+}: MehfilPermissionsKarkunSearchParams) {
+  return searchPickerPeople(params, {
+    filter: { mehfilLocationId: locationId, userAccount: 'true' },
+    flags: { includeKarkuns: true },
+  });
 }

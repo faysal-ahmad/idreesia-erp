@@ -2,20 +2,17 @@ import {
   Committees,
   OrgLocations,
 } from 'meteor/idreesia-common/server/collections/admin';
-import { Cities } from 'meteor/idreesia-common/server/collections/outstation';
 import { getPersonImageUrls } from 'meteor/idreesia-common/server/business-logic/common/person-images';
 import {
   addCommitteeMember,
   getCommitteeMemberAccess,
   getCommitteeMemberCounts,
   removeCommitteeMember,
+  searchCommitteeKarkuns,
   setCommitteeMemberCoordinator,
   setCommitteeMemberDiscussionAccess,
   type CommitteeDoc,
 } from 'meteor/idreesia-common/server/business-logic/admin/committee';
-import {
-  searchPeople,
-} from 'meteor/idreesia-common/server/business-logic/common';
 
 import {
   type CommitteeDocument,
@@ -43,15 +40,6 @@ interface PersonDocument {
     imageThumbnailKey?: string;
   };
 }
-
-const toWorkspaceKarkun = (person: PersonDocument) => ({
-  _id: person._id,
-  name: person.sharedData?.name,
-  parentName: person.sharedData?.parentName,
-  cnicNumber: person.sharedData?.cnicNumber,
-  contactNumber1: person.sharedData?.contactNumber1,
-  ...getPersonImageUrls(person.sharedData),
-});
 
 const resolvers: ResolverMap = {
   WorkspaceCommitteeType: {
@@ -142,38 +130,14 @@ const resolvers: ResolverMap = {
     workspaceCommitteeById: async (obj, { committeeId }, context) =>
       getCommitteeAccess(context, committeeId).committee,
 
-    // Mirrors the HR karkun search (karkuns of Multan), limited to
-    // coordinators of the committee and to the fields needed to pick a person.
-    workspaceCommitteeKarkunSearch: async (
+    pagedWorkspaceCommitteeKarkuns: async (
       obj,
       { committeeId, name, cnicNumber, phoneNumber, pageIndex, pageSize },
       context
     ) => {
       const { committee } = getCommitteeAccess(context, committeeId);
       assertMembersEnabled(committee);
-
-      const multanCity = await Cities.findOneAsync({
-        name: 'Multan',
-        country: 'Pakistan',
-      });
-      if (!multanCity) return { data: [], totalResults: 0 };
-
-      const result = (await searchPeople(
-        {
-          name,
-          cnicNumber,
-          phoneNumber,
-          pageIndex,
-          pageSize,
-          cityId: multanCity._id,
-        },
-        { includeKarkuns: true }
-      )) as { data: PersonDocument[]; totalResults: number };
-
-      return {
-        data: result.data.map(toWorkspaceKarkun),
-        totalResults: result.totalResults,
-      };
+      return searchCommitteeKarkuns({ name, cnicNumber, phoneNumber, pageIndex, pageSize });
     },
   },
 

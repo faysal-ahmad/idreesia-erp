@@ -80,12 +80,17 @@ export async function buildPeopleSearchPipeline(
     jobIds,
     // user account related fileds
     userAccount,
+    personIds,
   } = params;
 
   // ************************************
   // Add criteria for shared data fields
   // (name is matched in the first stage above)
   // ************************************
+  if (Array.isArray(personIds)) {
+    pipeline.push({ $match: { _id: { $in: personIds } } });
+  }
+
   if (cnicNumber) {
     pipeline.push({
       $match: {

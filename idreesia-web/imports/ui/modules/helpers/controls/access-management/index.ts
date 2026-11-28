@@ -6,4 +6,5 @@ export {
   SecurityPermissionsData,
   CorrespondencePermissionsData,
   PurchasingPermissionsData,
+  StoresPermissionsData,
 } from './permissions-data';

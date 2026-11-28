@@ -27,6 +27,10 @@ export interface LineFormValue {
   // Invoices: the order, and its line, being billed.
   orderId?: string | null;
   orderLineId?: string | null;
+  // Invoices: the order line's price and tax rate, to flag a line billed
+  // differently. For comparison only; never sent.
+  orderUnitPrice?: number | null;
+  orderTaxRate?: number | null;
   description?: string | null;
   unit?: string | null;
   quantity?: number | null;
@@ -34,6 +38,22 @@ export interface LineFormValue {
   estimatedUnitPrice?: number | null;
   taxRate?: number | null;
 }
+
+const round2 = (value: number | null | undefined) => Math.round((value ?? 0) * 100) / 100;
+
+/** Whether an invoice line's price or tax rate differs from its order line's. */
+export const differsFromOrder = (
+  value: number | null | undefined,
+  orderValue: number | null | undefined
+) => orderValue != null && round2(value) !== round2(orderValue);
+
+/** Whether any invoice line is priced or taxed differently from its order line. */
+export const anyDiffersFromOrder = (lines: LineFormValue[] | undefined) =>
+  (lines ?? []).some(
+    (l) =>
+      l != null &&
+      (differsFromOrder(l.unitPrice, l.orderUnitPrice) || differsFromOrder(l.taxRate, l.orderTaxRate))
+  );
 
 interface ServerLine {
   _id?: string | null;
@@ -131,6 +151,7 @@ const ItemCell = ({ value, onChange, rowIndex, priceField, disabled }: ItemCellP
   const { data } = useQuery(PAGED_PURCHASING_CATALOG_ITEMS, {
     variables: { search: text, isActive: true, pageIndex: 0, pageSize: 10 },
     skip: text.length === 0,
+    fetchPolicy: 'cache-and-network',
   });
 
   const items = (data?.pagedPurchasingCatalogItems?.data ?? []).filter(
@@ -198,6 +219,41 @@ const QuantityCell = ({ value, onChange, rowIndex, requisitionLines, disabled }:
       disabled={disabled}
       style={{ width: '100%' }}
     />
+  );
+};
+
+interface OrderComparedCellProps {
+  value?: number | null;
+  onChange?: (value: number | null) => void;
+  rowIndex: number;
+  /** The order line's value this one is compared with. */
+  orderField: 'orderUnitPrice' | 'orderTaxRate';
+  max?: number;
+  disabled?: boolean;
+}
+
+/**
+ * A price or tax rate. On an invoice line it is highlighted when it differs
+ * from the order line's; this is only a warning, the line can still be saved.
+ */
+const OrderComparedCell = ({ value, onChange, rowIndex, orderField, max, disabled }: OrderComparedCellProps) => {
+  const form = Form.useFormInstance();
+  const orderValue = Form.useWatch(['lines', rowIndex, orderField], form) as number | null | undefined;
+  const differs = differsFromOrder(value, orderValue);
+  const shown = orderField === 'orderUnitPrice' ? formatMoney(orderValue) : `${orderValue ?? 0}%`;
+  return (
+    <Tooltip title={differs ? `Differs from the purchase order (${shown})` : undefined}>
+      <InputNumber
+        value={value}
+        onChange={onChange}
+        min={0}
+        max={max}
+        precision={2}
+        disabled={disabled}
+        status={differs ? 'warning' : undefined}
+        style={{ width: '100%' }}
+      />
+    </Tooltip>
   );
 };
 
@@ -301,6 +357,8 @@ const LineItemsEditor = ({
               <Form.Item name={[name, 'requisitionLineId']} hidden noStyle><Input /></Form.Item>
               <Form.Item name={[name, 'orderId']} hidden noStyle><Input /></Form.Item>
               <Form.Item name={[name, 'orderLineId']} hidden noStyle><Input /></Form.Item>
+              <Form.Item name={[name, 'orderUnitPrice']} hidden noStyle><InputNumber /></Form.Item>
+              <Form.Item name={[name, 'orderTaxRate']} hidden noStyle><InputNumber /></Form.Item>
 
               <Form.Item
                 name={[name, 'description']}
@@ -322,11 +380,11 @@ const LineItemsEditor = ({
                 <QuantityCell rowIndex={name} requisitionLines={requisitionLines} disabled={disabled} />
               </Form.Item>
               <Form.Item name={[name, priceField]}>
-                <InputNumber min={0} precision={2} disabled={disabled} style={{ width: '100%' }} />
+                <OrderComparedCell rowIndex={name} orderField="orderUnitPrice" disabled={disabled} />
               </Form.Item>
               {showTax ? (
                 <Form.Item name={[name, 'taxRate']}>
-                  <InputNumber min={0} max={100} precision={2} disabled={disabled} style={{ width: '100%' }} />
+                  <OrderComparedCell rowIndex={name} orderField="orderTaxRate" max={100} disabled={disabled} />
                 </Form.Item>
               ) : null}
               <Form.Item noStyle shouldUpdate>

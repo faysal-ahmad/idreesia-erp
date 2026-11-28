@@ -29,22 +29,6 @@ export const AdminPermissionsData: PermissionNode = {
       ],
     },
     {
-      title: 'Instance Management',
-      key: 'module-admin-instance-management',
-      children: [
-        {
-          title: 'Physical Stores',
-          key: 'module-admin-physical-stores',
-          children: [
-            {
-              title: 'Manage Physical Stores',
-              key: PermissionConstants.ADMIN_MANAGE_PHYSICAL_STORES,
-            },
-          ],
-        },
-      ],
-    },
-    {
       title: 'Reference Data',
       key: 'module-admin-locations-management',
       children: [
@@ -173,16 +157,16 @@ export const SecurityPermissionsData: PermissionNode = {
   key: 'module-security',
   children: [
     {
-      title: 'Mehfils',
-      key: 'module-security-mehfils',
+      title: 'Events',
+      key: 'module-security-events',
       children: [
         {
-          title: 'View Mehfils',
-          key: PermissionConstants.SECURITY_VIEW_MEHFILS,
+          title: 'View Events',
+          key: PermissionConstants.SECURITY_VIEW_EVENTS,
         },
         {
-          title: 'Manage Mehfils',
-          key: PermissionConstants.SECURITY_MANAGE_MEHFILS,
+          title: 'Manage Events',
+          key: PermissionConstants.SECURITY_MANAGE_EVENTS,
         },
       ],
     },
@@ -266,6 +250,21 @@ export const CorrespondencePermissionsData: PermissionNode = {
   ],
 };
 
+export const StoresPermissionsData: PermissionNode = {
+  title: 'Stores',
+  key: 'module-stores',
+  children: [
+    {
+      title: 'Manage Physical Stores',
+      key: PermissionConstants.IN_MANAGE_PHYSICAL_STORES,
+    },
+    {
+      title: 'Manage Physical Store Permissions',
+      key: PermissionConstants.IN_MANAGE_PHYSICAL_STORE_PERMISSIONS,
+    },
+  ],
+};
+
 const purchasingLeaf = (title: string, key: string): PermissionNode => ({
   title,
   key,
@@ -282,6 +281,7 @@ export const PurchasingPermissionsData: PermissionNode = {
         purchasingLeaf('View Vendors', PermissionConstants.PURCHASING_VIEW_VENDORS),
         purchasingLeaf('Manage Vendors', PermissionConstants.PURCHASING_MANAGE_VENDORS),
         purchasingLeaf('Manage Catalog', PermissionConstants.PURCHASING_MANAGE_CATALOG),
+        purchasingLeaf('Manage Petty Cash Funds and Expense Heads', PermissionConstants.PURCHASING_MANAGE_PETTY_CASH_FUNDS),
       ],
     },
     {
@@ -321,10 +321,26 @@ export const PurchasingPermissionsData: PermissionNode = {
       ],
     },
     {
+      title: 'Petty Cash',
+      key: 'module-purchasing-petty-cash',
+      children: [
+        purchasingLeaf('View Petty Cash', PermissionConstants.PURCHASING_VIEW_PETTY_CASH),
+        purchasingLeaf('Manage Petty Cash Vouchers', PermissionConstants.PURCHASING_MANAGE_PETTY_CASH_VOUCHERS),
+        purchasingLeaf('Approve Petty Cash Vouchers', PermissionConstants.PURCHASING_APPROVE_PETTY_CASH_VOUCHERS),
+        purchasingLeaf('Approve Petty Cash Replenishments', PermissionConstants.PURCHASING_APPROVE_PETTY_CASH_REPLENISHMENTS),
+      ],
+    },
+    {
+      title: 'Reports',
+      key: 'module-purchasing-reports',
+      children: [
+        purchasingLeaf('View Reports', PermissionConstants.PURCHASING_VIEW_REPORTS),
+      ],
+    },
+    {
       title: 'Administration',
       key: 'module-purchasing-administration',
       children: [
-        purchasingLeaf('View Reports', PermissionConstants.PURCHASING_VIEW_REPORTS),
         purchasingLeaf('View Audit Logs', PermissionConstants.PURCHASING_VIEW_AUDIT_LOGS),
         purchasingLeaf('Manage Purchasing Permissions', PermissionConstants.PURCHASING_MANAGE_PERMISSIONS),
       ],

@@ -4,8 +4,8 @@ import type { TypedDocumentNode } from '@apollo/client';
 import type {
   WorkspaceCommitteeMembersQuery,
   WorkspaceCommitteeMembersQueryVariables,
-  WorkspaceCommitteeKarkunSearchQuery,
-  WorkspaceCommitteeKarkunSearchQueryVariables,
+  PagedWorkspaceCommitteeKarkunsQuery,
+  PagedWorkspaceCommitteeKarkunsQueryVariables,
   WorkspaceAddCommitteeMemberMutation,
   WorkspaceAddCommitteeMemberMutationVariables,
   WorkspaceRemoveCommitteeMemberMutation,
@@ -15,6 +15,11 @@ import type {
   WorkspaceSetCommitteeMemberCoordinatorMutation,
   WorkspaceSetCommitteeMemberCoordinatorMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
+
+import {
+  PICKER_PERSON_FIELDS,
+  type PersonSearchSource,
+} from '/imports/ui/modules/helpers/controls/person-picker';
 
 export const WORKSPACE_COMMITTEE_MEMBERS: TypedDocumentNode<
   WorkspaceCommitteeMembersQuery,
@@ -44,11 +49,11 @@ export const WORKSPACE_COMMITTEE_MEMBERS: TypedDocumentNode<
   }
 `;
 
-export const WORKSPACE_COMMITTEE_KARKUN_SEARCH: TypedDocumentNode<
-  WorkspaceCommitteeKarkunSearchQuery,
-  WorkspaceCommitteeKarkunSearchQueryVariables
+export const PAGED_WORKSPACE_COMMITTEE_KARKUNS: TypedDocumentNode<
+  PagedWorkspaceCommitteeKarkunsQuery,
+  PagedWorkspaceCommitteeKarkunsQueryVariables
 > = gql`
-  query workspaceCommitteeKarkunSearch(
+  query pagedWorkspaceCommitteeKarkuns(
     $committeeId: String!
     $name: String
     $cnicNumber: String
@@ -56,7 +61,7 @@ export const WORKSPACE_COMMITTEE_KARKUN_SEARCH: TypedDocumentNode<
     $pageIndex: String
     $pageSize: String
   ) {
-    workspaceCommitteeKarkunSearch(
+    pagedWorkspaceCommitteeKarkuns(
       committeeId: $committeeId
       name: $name
       cnicNumber: $cnicNumber
@@ -66,17 +71,19 @@ export const WORKSPACE_COMMITTEE_KARKUN_SEARCH: TypedDocumentNode<
     ) {
       totalResults
       data {
-        _id
-        name
-        parentName
-        cnicNumber
-        contactNumber1
-        imageUrl
-        imageThumbnailUrl
+        ...PickerPersonFields
       }
     }
   }
+  ${PICKER_PERSON_FIELDS}
 `;
+
+/** Karkuns a coordinator can add to the committee; pass variables.committeeId. */
+export const committeeKarkunSource: PersonSearchSource<PagedWorkspaceCommitteeKarkunsQuery> = {
+  query: PAGED_WORKSPACE_COMMITTEE_KARKUNS,
+  select: data => data.pagedWorkspaceCommitteeKarkuns,
+  description: 'Showing karkuns of Multan.',
+};
 
 export const WORKSPACE_ADD_COMMITTEE_MEMBER: TypedDocumentNode<
   WorkspaceAddCommitteeMemberMutation,

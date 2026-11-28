@@ -1,7 +1,9 @@
 import { searchSecurityPermissionKarkuns } from 'meteor/idreesia-common/server/business-logic/security/permission-karkuns';
 import {
+  addCommitteePermission,
   addPermissionUser,
   listPermissionAssignments,
+  removeCommitteePermission,
   removePermissionUser,
 } from 'meteor/idreesia-common/server/business-logic/security/permissions';
 import {
@@ -23,6 +25,11 @@ interface GroupArgs {
   groupId: string;
 }
 
+interface CommitteeArgs {
+  permissionKey: string;
+  committeeId: string;
+}
+
 interface RemoveArgs {
   permissionKey: string;
   userId: string;
@@ -32,7 +39,7 @@ export default {
   Query: {
     securityPermissionAssignments: async () => listPermissionAssignments(),
 
-    securityPermissionKarkunSearch: async (
+    pagedSecurityPermissionKarkuns: async (
       _obj: unknown,
       args: {
         name?: string;
@@ -45,6 +52,18 @@ export default {
   },
 
   Mutation: {
+    addSecurityPermissionCommittee: async (
+      _obj: unknown,
+      { permissionKey, committeeId }: CommitteeArgs,
+      { user }: ResolverContext
+    ) => addCommitteePermission(permissionKey, committeeId, user),
+
+    removeSecurityPermissionCommittee: async (
+      _obj: unknown,
+      { permissionKey, committeeId }: CommitteeArgs,
+      { user }: ResolverContext
+    ) => removeCommitteePermission(permissionKey, committeeId, user),
+
     addSecurityPermissionUser: async (
       _obj: unknown,
       { permissionKey, karkunId }: AddArgs,

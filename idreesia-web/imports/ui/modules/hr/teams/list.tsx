@@ -10,7 +10,6 @@ import {
 } from '@ant-design/icons';
 import {
   Button,
-  Drawer,
   Form,
   Modal,
   Pagination,
@@ -36,7 +35,8 @@ import type {
   UpdateTeamMutation,
   UpdateTeamMutationVariables,
 } from 'meteor/idreesia-common/types/client-operations';
-import KarkunsSelectionList from '/imports/ui/modules/hr/karkuns/field/list-container';
+import { PersonPickerDrawer, type PickerPerson } from '/imports/ui/modules/helpers/controls';
+import { hrPickerKarkunSource } from '/imports/ui/modules/hr/karkuns/gql';
 
 import MemberDaysModal, { TEAM_DAYS } from './member-days-modal';
 import TeamForm, { type TeamFormValues } from './team-form';
@@ -329,10 +329,7 @@ const List = () => {
     setAddMemberTeamId(null);
   };
 
-  const handleSelectKarkunForTeam = (karkun: {
-    _id?: string;
-    name?: string;
-  }) => {
+  const handleSelectKarkunForTeam = (karkun: PickerPerson) => {
     const teamId = addMemberTeamId;
     const karkunId = karkun._id;
     handleCloseAddMemberDrawer();
@@ -583,15 +580,15 @@ const List = () => {
         <TeamForm form={editForm} />
       </Modal>
 
-      <Drawer
+      <PersonPickerDrawer
         title="Select a Karkun"
-        width={800}
-        onClose={handleCloseAddMemberDrawer}
         open={addMemberTeamId != null}
-        destroyOnHidden
-      >
-        <KarkunsSelectionList setSelectedValue={handleSelectKarkunForTeam} />
-      </Drawer>
+        onClose={handleCloseAddMemberDrawer}
+        source={hrPickerKarkunSource}
+        mode="single"
+        addLabel="Select"
+        onPick={handleSelectKarkunForTeam}
+      />
 
       <MemberDaysModal
         open={pendingMember != null}

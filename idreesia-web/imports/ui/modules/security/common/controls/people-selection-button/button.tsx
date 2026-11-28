@@ -1,83 +1,46 @@
-import React, { Component } from 'react';
-import { type CSSProperties } from 'react';
+import React, { useState } from 'react';
+import { Button } from 'antd';
 
-import { Button, Drawer } from 'antd';
-import type { PagedSecurityPeopleQuery } from 'meteor/idreesia-common/types/client-operations';
-import PeopleList from './people-list';
+import { PersonPickerDrawer, type PickerPerson } from '/imports/ui/modules/helpers/controls';
 
-const ContainerStyle: CSSProperties = {
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-  width: '100%',
-};
-
-type PersonRow = NonNullable<
-  NonNullable<NonNullable<PagedSecurityPeopleQuery['pagedSecurityPeople']>['data']>[number]
->;
-
-interface SelectedPerson {
-  _id: string;
-}
+import { securityEventPeopleSource } from './paged-security-event-people';
 
 interface Props {
   icon?: React.ReactNode;
   label?: string;
   disabled?: boolean;
-  onSelection?(value: SelectedPerson): void;
+  onSelection?(value: { _id: string }): void;
 }
 
-interface State {
-  showSelectionForm: boolean;
-}
+/**
+ * A button that opens a person picker drawer of the karkuns (from any city)
+ * who can be put on an event's duty; each person picked is passed to
+ * onSelection, and the drawer stays open to pick more.
+ */
+const PeopleSelectionButton = ({
+  icon,
+  label = 'Select Karkuns',
+  disabled = false,
+  onSelection,
+}: Props) => {
+  const [open, setOpen] = useState(false);
 
-export default class SelectionButton extends Component<Props, State> {
-  state = {
-    showSelectionForm: false,
-  };
+  return (
+    <>
+      <PersonPickerDrawer
+        title="Select Karkuns"
+        open={open}
+        onClose={() => setOpen(false)}
+        source={securityEventPeopleSource}
+        showParentName={false}
+        itemsLabel="karkuns"
+        onPick={(person: PickerPerson) => onSelection?.({ _id: person._id })}
+      />
+      <Button onClick={() => setOpen(true)} disabled={disabled} icon={icon}>
+        {label}
+      </Button>
+    </>
+  );
+};
 
-  handleClick = () => {
-    this.setState({
-      showSelectionForm: true,
-    });
-  };
-
-  handleClose = () => {
-    this.setState({
-      showSelectionForm: false,
-    });
-  };
-
-  setSelectedValue = (item: PersonRow) => {
-    const { onSelection } = this.props;
-    if (!item._id) return;
-    onSelection?.({ _id: item._id });
-  };
-
-  render() {
-    const { icon = 'plus-circle', label = 'Select Karkuns', disabled = false } = this.props;
-
-    return (
-      <>
-        <Drawer
-          title="Select Karkuns"
-          size={720}
-          onClose={this.handleClose}
-          open={this.state.showSelectionForm}
-        >
-          <PeopleList handleSelectItem={this.setSelectedValue} />
-        </Drawer>
-        <div style={ContainerStyle}>
-          <Button
-            onClick={this.handleClick}
-            disabled={disabled}
-            icon={icon}
-          >
-            {label}
-          </Button>
-        </div>
-      </>
-    );
-  }
-}
+export default PeopleSelectionButton;

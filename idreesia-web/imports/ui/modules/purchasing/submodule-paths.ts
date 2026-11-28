@@ -45,6 +45,25 @@ export default class SubModulePaths {
   }
 
   // *************************************************************************************
+  // Petty Cash Routes
+  // *************************************************************************************
+  static pettyCashVouchersPath = `${ModulePaths.purchasing}/petty-cash/vouchers`;
+  static pettyCashVoucherNewPath = `${SubModulePaths.pettyCashVouchersPath}/new`;
+  static pettyCashVoucherViewPath(id = ':voucherId') {
+    return `${SubModulePaths.pettyCashVouchersPath}/${id}`;
+  }
+  static pettyCashVoucherEditPath(id = ':voucherId') {
+    return `${SubModulePaths.pettyCashVouchersPath}/${id}/edit`;
+  }
+
+  static pettyCashReplenishmentsPath = `${ModulePaths.purchasing}/petty-cash/replenishments`;
+  static pettyCashReplenishmentViewPath(id = ':replenishmentId') {
+    return `${SubModulePaths.pettyCashReplenishmentsPath}/${id}`;
+  }
+
+  static pettyCashLedgerPath = `${ModulePaths.purchasing}/petty-cash/ledger`;
+
+  // *************************************************************************************
   // Setup Routes
   // *************************************************************************************
   static vendorsPath = `${ModulePaths.purchasing}/vendors`;
@@ -57,7 +76,22 @@ export default class SubModulePaths {
     return `${SubModulePaths.catalogPath}/${itemId}`;
   }
 
+  static pettyCashExpenseHeadsPath = `${ModulePaths.purchasing}/petty-cash/expense-heads`;
+  static pettyCashFundsPath = `${ModulePaths.purchasing}/petty-cash/funds`;
+
+  // *************************************************************************************
+  // Report Routes
+  // *************************************************************************************
   static reportsPath = `${ModulePaths.purchasing}/reports`;
+  static reportSpendingByVendorPath = `${SubModulePaths.reportsPath}/spending-by-vendor`;
+  static reportSpendingByMonthPath = `${SubModulePaths.reportsPath}/spending-by-month`;
+  static reportOpenOrdersPath = `${SubModulePaths.reportsPath}/open-orders`;
+  static reportPayablesAgingPath = `${SubModulePaths.reportsPath}/payables-aging`;
+  static reportVendorLedgerPath = `${SubModulePaths.reportsPath}/vendor-ledger`;
+
+  // *************************************************************************************
+  // Administration Routes
+  // *************************************************************************************
   static permissionsPath = `${ModulePaths.purchasing}/permissions`;
   static auditLogsPath = `${ModulePaths.purchasing}/audit-logs`;
 }

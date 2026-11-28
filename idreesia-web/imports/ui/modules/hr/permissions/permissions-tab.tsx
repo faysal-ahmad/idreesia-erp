@@ -1,20 +1,27 @@
 import React, { useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { SyncOutlined, TeamOutlined, UserAddOutlined } from '@ant-design/icons';
+import { ApartmentOutlined, SyncOutlined, TeamOutlined, UserAddOutlined } from '@ant-design/icons';
 import { Button, Drawer, Modal, Space, Table, Tag, Tooltip } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 
-import type { KarkunSelectionItem } from '/imports/ui/modules/helpers/controls';
+import {
+  CommitteePickerDrawer,
+  PersonPickerDrawer,
+  type PickerCommittee,
+  type PickerPerson,
+} from '/imports/ui/modules/helpers/controls';
 
 import {
+  ADD_HR_PERMISSION_COMMITTEE,
   ADD_HR_PERMISSION_GROUP,
   ADD_HR_PERMISSION_USER,
   HR_USER_GROUPS,
+  REMOVE_HR_PERMISSION_COMMITTEE,
   REMOVE_HR_PERMISSION_GROUP,
   HR_PERMISSION_ASSIGNMENTS,
   REMOVE_HR_PERMISSION_USER,
+  hrPermissionKarkunSource,
 } from './gql';
-import KarkunPicker from './karkun-picker';
 
 const REFETCH = ['hrPermissionAssignments', 'hrUserGroups'];
 
@@ -29,6 +36,11 @@ interface GroupEntry {
   name: string;
 }
 
+interface CommitteeEntry {
+  committeeId: string;
+  label: string;
+}
+
 interface PermissionRow {
   key: string;
   permissionKey: string;
@@ -36,6 +48,7 @@ interface PermissionRow {
   description: string;
   users: HolderEntry[];
   groups: GroupEntry[];
+  committees: CommitteeEntry[];
 }
 
 interface FeatureRow {
@@ -61,6 +74,8 @@ const PermissionsTab = () => {
   const [addingId, setAddingId] = useState<string | null>(null);
   const [addingGroup, setAddingGroup] = useState<PermissionRow | null>(null);
   const [addingGroupId, setAddingGroupId] = useState<string | null>(null);
+  const [addingCommittee, setAddingCommittee] = useState<PermissionRow | null>(null);
+  const [addingCommitteeId, setAddingCommitteeId] = useState<string | null>(null);
 
   const { data, loading, refetch } = useQuery(HR_PERMISSION_ASSIGNMENTS, {
     fetchPolicy: 'cache-and-network',
@@ -69,6 +84,8 @@ const PermissionsTab = () => {
   const [removeUser] = useMutation(REMOVE_HR_PERMISSION_USER, { refetchQueries: REFETCH });
   const [addGroup] = useMutation(ADD_HR_PERMISSION_GROUP, { refetchQueries: REFETCH });
   const [removeGroup] = useMutation(REMOVE_HR_PERMISSION_GROUP, { refetchQueries: REFETCH });
+  const [addCommittee] = useMutation(ADD_HR_PERMISSION_COMMITTEE, { refetchQueries: REFETCH });
+  const [removeCommittee] = useMutation(REMOVE_HR_PERMISSION_COMMITTEE, { refetchQueries: REFETCH });
   const { data: groupsData, loading: groupsLoading } = useQuery(HR_USER_GROUPS, {
     skip: addingGroup == null,
     fetchPolicy: 'cache-and-network',
@@ -96,6 +113,18 @@ const PermissionsTab = () => {
                       groups: (permission.groups ?? []).flatMap((group) =>
                         group?.groupId ? [{ groupId: group.groupId, name: group.name }] : []
                       ),
+                      committees: (permission.committees ?? []).flatMap((committee) =>
+                        committee?.committeeId
+                          ? [
+                              {
+                                committeeId: committee.committeeId,
+                                label: committee.locationName
+                                  ? `${committee.name} · ${committee.locationName}`
+                                  : committee.name,
+                              },
+                            ]
+                          : []
+                      ),
                     },
                   ]
                 : []
@@ -108,7 +137,7 @@ const PermissionsTab = () => {
   // The permission being added to, as of the latest data.
   const addingRow = rows.flatMap((feature) => feature.children).find((row) => row.key === adding?.key);
 
-  const handleAdd = (karkun: KarkunSelectionItem) => {
+  const handleAdd = (karkun: PickerPerson) => {
     if (!adding) return;
     setAddingId(karkun._id);
     addUser({ variables: { permissionKey: adding.permissionKey, karkunId: karkun._id } })
@@ -142,6 +171,31 @@ const PermissionsTab = () => {
     });
   };
 
+  const addingCommitteeRow = rows
+    .flatMap((feature) => feature.children)
+    .find((row) => row.key === addingCommittee?.key);
+
+  const handleAddCommittee = (committee: PickerCommittee) => {
+    if (!addingCommittee) return;
+    setAddingCommitteeId(committee._id);
+    addCommittee({ variables: { permissionKey: addingCommittee.permissionKey, committeeId: committee._id } })
+      .then(() => message.success(`${committee.name} added to "${addingCommittee.name}".`, 3))
+      .catch(reportError)
+      .finally(() => setAddingCommitteeId(null));
+  };
+
+  const confirmRemoveCommittee = (record: PermissionRow, committee: CommitteeEntry) => {
+    Modal.confirm({
+      title: `Remove the committee ${committee.label} from "${record.name}"?`,
+      okText: 'Yes',
+      cancelText: 'No',
+      onOk: () =>
+        removeCommittee({
+          variables: { permissionKey: record.permissionKey, committeeId: committee.committeeId },
+        }).catch(reportError),
+    });
+  };
+
   const confirmRemove = (record: PermissionRow, user: HolderEntry) => {
     Modal.confirm({
       title: `Remove ${user.label} from "${record.name}"?`,
@@ -167,7 +221,7 @@ const PermissionsTab = () => {
         ),
     },
     {
-      title: 'Users & Groups',
+      title: 'Users, Groups & Committees',
       key: 'users',
       render: (_text: unknown, record: FeatureRow | PermissionRow) =>
         isPermission(record) ? (
@@ -197,12 +251,25 @@ const PermissionsTab = () => {
                 {group.name}
               </Tag>
             ))}
+            {record.committees.map((committee) => (
+              <Tag
+                key={`committee-${committee.committeeId}`}
+                color="purple"
+                closable
+                onClose={(event) => {
+                  event.preventDefault();
+                  confirmRemoveCommittee(record, committee);
+                }}
+              >
+                {committee.label}
+              </Tag>
+            ))}
           </Space>
         ) : null,
     },
     {
       key: 'action',
-      width: 96,
+      width: 120,
       render: (_text: unknown, record: FeatureRow | PermissionRow) =>
         isPermission(record) ? (
           <div className="list-actions-column">
@@ -211,6 +278,9 @@ const PermissionsTab = () => {
             </Tooltip>
             <Tooltip title="Add group">
               <TeamOutlined className="list-actions-icon" onClick={() => setAddingGroup(record)} />
+            </Tooltip>
+            <Tooltip title="Add committee">
+              <ApartmentOutlined className="list-actions-icon" onClick={() => setAddingCommittee(record)} />
             </Tooltip>
           </div>
         ) : null,
@@ -251,19 +321,16 @@ const PermissionsTab = () => {
         />
       </div>
 
-      <Drawer
+      <PersonPickerDrawer
         title={adding ? `Add User to "${adding.name}"` : 'Add User'}
-        width={900}
         open={adding != null}
         onClose={() => setAdding(null)}
-        destroyOnHidden
-      >
-        <KarkunPicker
-          selectedIds={(addingRow?.users ?? []).flatMap((user) => (user.personId ? [user.personId] : []))}
-          addingId={addingId}
-          onAdd={handleAdd}
-        />
-      </Drawer>
+        source={hrPermissionKarkunSource}
+        selectedIds={(addingRow?.users ?? []).flatMap((user) => (user.personId ? [user.personId] : []))}
+        addingId={addingId}
+        onPick={handleAdd}
+        selectedLabel="Added"
+      />
 
       <Drawer
         title={addingGroup ? `Add Group to "${addingGroup.name}"` : 'Add Group'}
@@ -311,6 +378,15 @@ const PermissionsTab = () => {
           ]}
         />
       </Drawer>
+
+      <CommitteePickerDrawer
+        title={addingCommittee ? `Add Committee to "${addingCommittee.name}"` : 'Add Committee'}
+        open={addingCommittee != null}
+        onClose={() => setAddingCommittee(null)}
+        selectedIds={(addingCommitteeRow?.committees ?? []).map((committee) => committee.committeeId)}
+        addingId={addingCommitteeId}
+        onPick={handleAddCommittee}
+      />
     </>
   );
 };

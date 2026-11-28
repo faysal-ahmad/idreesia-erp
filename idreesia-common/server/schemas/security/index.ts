@@ -1,9 +1,9 @@
-export { default as Mehfil } from './mehfil';
-export { default as MehfilDuty } from './mehfil-duty';
-export { default as MehfilKarkun } from './mehfil-karkun';
-export { default as MehfilLangarDetail } from './mehfil-langar-detail';
-export { default as MehfilLangarDish } from './mehfil-langar-dish';
-export { default as MehfilLangarLocation } from './mehfil-langar-location';
+export { default as SecurityEvent } from './event';
+export { default as SecurityEventDuty } from './event-duty';
+export { default as SecurityEventKarkun } from './event-karkun';
+export { default as SecurityEventLangarDetail } from './event-langar-detail';
+export { default as SecurityEventLangarDish } from './event-langar-dish';
+export { default as SecurityEventLangarLocation } from './event-langar-location';
 export { default as VisitorStay } from './visitor-stay';
 export { default as SecurityServerChannel } from './security-server-channel';
 export { default as SecurityServerProfile } from './security-server-profile';

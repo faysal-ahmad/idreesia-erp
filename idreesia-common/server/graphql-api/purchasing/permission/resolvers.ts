@@ -1,8 +1,10 @@
 import {
+  addCommitteePermission,
   addGroupPermission,
   addPermissionUser,
   listPermissionAssignments,
   searchPurchasingKarkuns,
+  removeCommitteePermission,
   removeGroupPermission,
   removePermissionUser,
 } from 'meteor/idreesia-common/server/business-logic/purchasing';
@@ -21,6 +23,11 @@ interface GroupArgs {
   groupId: string;
 }
 
+interface CommitteeArgs {
+  permissionKey: string;
+  committeeId: string;
+}
+
 interface RemoveArgs {
   permissionKey: string;
   userId: string;
@@ -30,7 +37,7 @@ export default {
   Query: {
     purchasingPermissionAssignments: async () => listPermissionAssignments(),
 
-    purchasingKarkunSearch: async (
+    pagedPurchasingPermissionKarkuns: async (
       _obj: unknown,
       args: {
         name?: string;
@@ -43,6 +50,18 @@ export default {
   },
 
   Mutation: {
+    addPurchasingPermissionCommittee: async (
+      _obj: unknown,
+      { permissionKey, committeeId }: CommitteeArgs,
+      { user }: ResolverContext
+    ) => addCommitteePermission(permissionKey, committeeId, user),
+
+    removePurchasingPermissionCommittee: async (
+      _obj: unknown,
+      { permissionKey, committeeId }: CommitteeArgs,
+      { user }: ResolverContext
+    ) => removeCommitteePermission(permissionKey, committeeId, user),
+
     addPurchasingPermissionUser: async (
       _obj: unknown,
       { permissionKey, karkunId }: AddArgs,

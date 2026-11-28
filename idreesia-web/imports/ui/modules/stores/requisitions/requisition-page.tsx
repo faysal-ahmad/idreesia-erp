@@ -15,7 +15,7 @@ import {
   InputTextAreaField,
   InputTextField,
 } from '/imports/ui/modules/helpers/fields';
-import { KarkunField } from '/imports/ui/modules/hr/karkuns/field';
+import { StoreKarkunField } from '/imports/ui/modules/stores/common/controls';
 import { StoresSubModulePaths as paths } from '/imports/ui/modules/stores';
 import {
   usePhysicalStore,
@@ -250,7 +250,7 @@ const RequisitionPage = ({ history }: RouteComponentProps<RouteParams>) => {
                   fieldLabel="Needed By"
                   initialValue={toDayjs(requisition?.neededBy)}
                 />
-                <KarkunField
+                <StoreKarkunField
                   fieldName="requestedBy"
                   fieldLabel="Raised By"
                   placeholder="Raised By"

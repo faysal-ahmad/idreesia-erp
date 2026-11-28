@@ -13,12 +13,20 @@ type SecurityPermissionGroupHolder {
   name: String!
 }
 
+type SecurityPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
 type SecurityPermissionAssignment {
   key: String!
   name: String!
   description: String
   users: [SecurityPermissionHolder]
   groups: [SecurityPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [SecurityPermissionCommitteeHolder]
 }
 
 type SecurityPermissionGroup {
@@ -27,33 +35,18 @@ type SecurityPermissionGroup {
   permissions: [SecurityPermissionAssignment]
 }
 
-type SecurityPermissionKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedSecurityPermissionKarkunType {
-  data: [SecurityPermissionKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   securityPermissionAssignments: [SecurityPermissionGroup]
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 
-  # Karkuns to choose from when giving a permission or adding to a group.
-  securityPermissionKarkunSearch(
+  # Karkuns of Multan (with an unlocked user account) to choose from when giving a permission or adding to a group.
+  pagedSecurityPermissionKarkuns(
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedSecurityPermissionKarkunType
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 }
 
@@ -65,6 +58,12 @@ extend type Mutation {
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 
   removeSecurityPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  addSecurityPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
+
+  removeSecurityPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
     @checkPermissions(permissions: [SECURITY_MANAGE_PERMISSIONS])
 
   removeSecurityPermissionUser(permissionKey: String!, userId: String!): Boolean

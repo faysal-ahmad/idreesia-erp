@@ -103,7 +103,7 @@ Workspace GraphQL (all take `locationId`):
 | Operation | Permission |
 |-----------|------------|
 | `workspaceDaAccess`, `workspaceDaDuties`, `workspaceDaDutyById`, `workspaceDaPlanDays`, `workspaceDaAttendanceSheet` | `VIEW` |
-| `workspaceDaMehfilDuties` (the template list to choose from), `workspaceDaKarkunSearch`, `workspaceDaAddDuties`, `workspaceDaUpdateDuty`, `workspaceDaRemoveDuty`, `workspaceDaAddDutyMember`, `workspaceDaUpdateDutyMember`, `workspaceDaRemoveDutyMember`, `workspaceDaSetDayOverride` | `MANAGE_AND_PLAN_DUTIES` |
+| `workspaceDaMehfilDuties` (the template list to choose from), `pagedWorkspaceDaKarkuns`, `workspaceDaAddDuties`, `workspaceDaUpdateDuty`, `workspaceDaRemoveDuty`, `workspaceDaAddDutyMember`, `workspaceDaUpdateDutyMember`, `workspaceDaRemoveDutyMember`, `workspaceDaSetDayOverride` | `MANAGE_AND_PLAN_DUTIES` |
 | `workspaceDaSetAttendance` | `MARK_ATTENDANCE` |
 | `myDutiesAttendanceLocations` | caller's own (listed in `unprotected-fields.test.ts`) |
 

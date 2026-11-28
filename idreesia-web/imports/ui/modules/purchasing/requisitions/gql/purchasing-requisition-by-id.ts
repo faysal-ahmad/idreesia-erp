@@ -21,6 +21,7 @@ const PURCHASING_REQUISITION_BY_ID: TypedDocumentNode<
       estimatedTotal
       neededBy
       requestedBy
+      requestedFor
       requestedByPerson {
         _id
         sharedData {

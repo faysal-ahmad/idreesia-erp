@@ -51,7 +51,7 @@ export const MOBILE_MEHFIL_PERMISSIONS_KARKUN_SEARCH: TypedDocumentNode<
     $pageIndex: String
     $pageSize: String
   ) {
-    workspaceMehfilPermissionsKarkunSearch(
+    pagedWorkspaceMehfilPermissionsKarkuns(
       locationId: $locationId
       name: $name
       phoneNumber: $phoneNumber

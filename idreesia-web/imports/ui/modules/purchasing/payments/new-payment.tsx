@@ -41,6 +41,7 @@ const NewPayment = ({ history, location }: RouteComponentProps) => {
   const preset = useQuery(PURCHASING_INVOICE_BY_ID, {
     variables: { _id: presetInvoiceId ?? '' },
     skip: !presetInvoiceId,
+    fetchPolicy: 'cache-and-network',
   });
   const presetInvoice = preset.data?.purchasingInvoiceById;
   useEffect(() => {
@@ -52,6 +53,7 @@ const NewPayment = ({ history, location }: RouteComponentProps) => {
   const { data, loading } = useQuery(PAGED_PURCHASING_INVOICES, {
     variables: { vendorId, pageIndex: 0, pageSize: 200 },
     skip: !vendorId,
+    fetchPolicy: 'cache-and-network',
   });
   const owed = (data?.pagedPurchasingInvoices?.data ?? []).filter(
     (i): i is NonNullable<typeof i> =>

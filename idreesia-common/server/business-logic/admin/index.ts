@@ -34,6 +34,7 @@ export {
 } from './org-locations';
 export {
   listOrgLocationKarkuns,
+  searchOrgLocationObserverKarkuns,
   type OrgLocationKarkunsParams,
 } from './org-location-karkuns';
 export {
@@ -95,3 +96,5 @@ export {
   PEOPLE_SEARCH_FACE_DEFAULTS,
   type PeopleSearchFaceSettings,
 } from './system-settings';
+export { searchAdminUserKarkuns } from './user-karkuns';
+export { listReferenceLocations, type ReferenceLocation } from './reference-locations';

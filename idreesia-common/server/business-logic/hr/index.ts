@@ -1,4 +1,5 @@
 export { ensureKarkuns } from './ensure-karkuns';
+export { promoteToKarkun, type PromoteKarkunLocation } from './promote-karkun';
 export { createMonthlySalaries } from './create-monthly-salaries';
 export { exportKarkuns } from './karkuns-exporter';
 export {
@@ -27,12 +28,15 @@ export {
   listPermissionAssignments,
   addPermissionUser,
   removePermissionUser,
+  addCommitteePermission,
+  removeCommitteePermission,
 } from './permissions';
 export type {
   PermissionAssignmentGroup,
   PermissionAssignment,
   PermissionHolder,
   PermissionGroupHolder,
+  PermissionCommitteeHolder,
 } from './permissions';
 export {
   listUserGroups,
@@ -46,3 +50,8 @@ export {
 } from './user-groups';
 export type { HrUserGroup, GroupMember } from './user-groups';
 export { searchHrPermissionKarkuns } from './permission-karkuns';
+export {
+  searchHrEmployeeCandidateKarkuns,
+  searchHrKarkunCandidatePeople,
+  searchHrPickerKarkuns,
+} from './picker-karkuns';

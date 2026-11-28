@@ -3,12 +3,11 @@ import dayjs from 'dayjs';
 import { Button, Dropdown, Spin } from 'antd';
 import { CheckOutlined, CloseOutlined, SettingOutlined } from '@ant-design/icons';
 
-import { PersonName } from '/imports/ui/modules/helpers/controls';
-
 import type { DutyPlanDaysQuery } from 'meteor/idreesia-common/types/client-operations';
 
 import { AttendanceMark, asStatus } from '../attendance-board';
 import { todayInKarachi } from '../dates';
+import RosterPersonName from '../roster-person-name';
 
 type DaysResult = NonNullable<DutyPlanDaysQuery['dutyPlanDays']>;
 type DayCard = NonNullable<NonNullable<DaysResult['days']>[number]> & {
@@ -85,23 +84,14 @@ const PersonRow = ({
       member ? ' duty-roster-calendar-team-member' : ''
     }${off ? ' is-off' : ''}${showImage ? ' has-photo' : ''}`}
   >
-    <span className="duty-roster-calendar-person-name">
-      {member && off ? (
-        <CloseOutlined className="duty-roster-off-mark" aria-hidden />
-      ) : null}
-      {showImage ? (
-        <PersonName
-          person={{
-            _id: karkunId,
-            name,
-            imageUrl,
-            imageThumbnailUrl,
-          }}
-        />
-      ) : (
-        name
-      )}
-    </span>
+    <RosterPersonName
+      karkunId={karkunId}
+      name={name}
+      imageUrl={imageUrl}
+      imageThumbnailUrl={imageThumbnailUrl}
+      showImage={showImage}
+      showOffMark={member && off}
+    />
     {showAttendance ? (
       <AttendanceMark status={attendance} editable={false} />
     ) : (

@@ -137,7 +137,7 @@ export default {
       return getDutyPlanDays({ locationId, dutyId, startDate });
     },
 
-    workspaceDaKarkunSearch: async (
+    pagedWorkspaceDaKarkuns: async (
       obj: unknown,
       {
         locationId,

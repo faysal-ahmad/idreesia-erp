@@ -78,6 +78,7 @@ const List = ({ history, location }: RouteComponentProps) => {
       pageIndex,
       pageSize,
     },
+    fetchPolicy: 'cache-and-network',
   });
   const refetchQueries = ['pagedPurchasingVendors'];
   const [createVendor, { loading: creating }] = useMutation(

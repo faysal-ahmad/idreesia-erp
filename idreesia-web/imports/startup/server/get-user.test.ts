@@ -88,4 +88,17 @@ describe('getUser', () => {
     // Store access is not merged in: it is looked up per store.
     expect(user).not.toHaveProperty('instances');
   });
+
+  it('adds the access granted by the committees of a user without groups', async () => {
+    const { Committees } = await import('meteor/idreesia-common/server/collections/admin');
+    await Committees.insertAsync({
+      name: 'c',
+      locationId: 'loc',
+      permissions: ['c'],
+      members: [{ karkunId: 'p1', role: 'member' }],
+    } as never);
+    returning(userWithToken('t', new Date(), { permissions: ['a'], personId: 'p1' }));
+    const user = await getUser('t');
+    expect(user?.permissions?.sort()).toEqual(['a', 'c']);
+  });
 });

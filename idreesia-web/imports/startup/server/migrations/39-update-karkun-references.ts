@@ -2,7 +2,7 @@ import { Migrations } from 'meteor/quave:migrations';
 import { Users } from 'meteor/idreesia-common/server/collections/admin';
 import { People } from 'meteor/idreesia-common/server/collections/common';
 import { Salaries } from 'meteor/idreesia-common/server/collections/hr';
-import { MehfilKarkuns } from 'meteor/idreesia-common/server/collections/security';
+import { SecurityEventKarkuns } from 'meteor/idreesia-common/server/collections/security';
 import {
   IssuanceForms,
   PurchaseForms,
@@ -48,7 +48,7 @@ Migrations.add({
     // await convertCollection(Attendances);
     // await convertCollection(KarkunDuties);
     await convertCollection(Salaries);
-    await convertCollection(MehfilKarkuns);
+    await convertCollection(SecurityEventKarkuns);
 
     // Update references in the IssuanceForms collection
     const issuanceForms = await IssuanceForms.find({}).fetchAsync();

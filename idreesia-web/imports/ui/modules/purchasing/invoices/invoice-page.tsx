@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, type RouteComponentProps } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Button, Descriptions, Empty, Form, Modal, Popconfirm, Space, Spin, Tabs, Tag } from 'antd';
+import { Alert, Button, Descriptions, Empty, Form, Modal, Popconfirm, Space, Spin, Tabs, Tag } from 'antd';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
 import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
@@ -10,7 +10,8 @@ import AuditInfo from '/imports/ui/modules/common/audit-info/audit-info';
 
 import AttachmentsTab from '../common/attachments-tab';
 import HistoryTab from '../common/history-tab';
-import LinesTable from '../common/lines-table';
+import { differsFromOrder } from '../common/line-items-editor';
+import LinesTable, { type OrderLinePrice } from '../common/lines-table';
 import { formatDate, formatMoney, toDateInput, toDayjs } from '../common/format';
 import { runAction } from '../common/run-action';
 import StatusTag from '../common/status-tag';
@@ -33,7 +34,7 @@ const InvoicePage = ({ match, history }: RouteComponentProps<{ invoiceId: string
   const [editing, setEditing] = useState(false);
   const [editForm] = Form.useForm();
 
-  const { data, loading } = useQuery(PURCHASING_INVOICE_BY_ID, { variables: { _id: invoiceId } });
+  const { data, loading } = useQuery(PURCHASING_INVOICE_BY_ID, { variables: { _id: invoiceId }, fetchPolicy: 'cache-and-network' });
   const invoice = data?.purchasingInvoiceById;
   const [updateInvoice, { loading: updating }] = useMutation(UPDATE_PURCHASING_INVOICE, { refetchQueries: REFETCH });
   const [setDisputed] = useMutation(SET_PURCHASING_INVOICE_DISPUTED, { refetchQueries: REFETCH });
@@ -53,6 +54,21 @@ const InvoicePage = ({ match, history }: RouteComponentProps<{ invoiceId: string
   const status = invoice.status ?? '';
   const open = status !== 'voided';
   const canManage = can(P.PURCHASING_MANAGE_INVOICES);
+
+  // The order lines billed, to flag lines billed at a different price or tax rate.
+  const orderLines = new Map<string, OrderLinePrice>();
+  (invoice.orders ?? []).forEach((o) =>
+    (o?.lines ?? []).forEach((l) => {
+      if (l?._id) orderLines.set(l._id, l);
+    })
+  );
+  const pricedDifferently = (invoice.lines ?? []).some((l) => {
+    const orderLine = l?.orderLineId ? orderLines.get(l.orderLineId) : undefined;
+    return (
+      orderLine != null &&
+      (differsFromOrder(l?.unitPrice, orderLine.unitPrice) || differsFromOrder(l?.taxRate, orderLine.taxRate))
+    );
+  });
 
   const items = [
     {
@@ -78,7 +94,19 @@ const InvoicePage = ({ match, history }: RouteComponentProps<{ invoiceId: string
             </Descriptions.Item>
             <Descriptions.Item label="Notes" span={2}>{invoice.notes}</Descriptions.Item>
           </Descriptions>
-          <LinesTable lines={invoice.lines} price="unitPrice" showTax />
+          {pricedDifferently ? (
+            <Alert
+              type="warning"
+              showIcon
+              style={{ marginBottom: 12 }}
+              message={
+                invoice.isDisputed
+                  ? 'Some prices or tax rates differ from the purchase order (highlighted).'
+                  : 'Some prices or tax rates differ from the purchase order (highlighted). Mark the invoice as disputed if the difference isn\'t agreed.'
+              }
+            />
+          ) : null}
+          <LinesTable lines={invoice.lines} price="unitPrice" showTax orderLines={orderLines} />
           <div style={{ height: 8 }} />
           <TotalsSummary subtotal={invoice.subtotal ?? 0} taxTotal={invoice.taxTotal ?? 0} total={invoice.total ?? 0} />
           <div style={{ height: 12 }} />

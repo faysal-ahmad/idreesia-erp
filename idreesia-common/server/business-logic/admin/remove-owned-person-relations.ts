@@ -1,6 +1,6 @@
 import { DutyDayAttendances, Teams } from 'meteor/idreesia-common/server/collections/hr';
 import { removePersonFromCommittees } from 'meteor/idreesia-common/server/business-logic/admin/committee';
-import { MehfilKarkuns, VisitorStays } from 'meteor/idreesia-common/server/collections/security';
+import { SecurityEventKarkuns, VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 import { AuditLogs } from 'meteor/idreesia-common/server/collections/common';
 
 // Removes the relation records owned by a person (the categories a person
@@ -30,7 +30,7 @@ export async function removeOwnedPersonRelations(personId: string): Promise<void
       { multi: true }
     ),
     VisitorStays.removeAsync({ visitorId: personId }),
-    MehfilKarkuns.removeAsync({ karkunId: personId }),
+    SecurityEventKarkuns.removeAsync({ karkunId: personId }),
     AuditLogs.removeAsync({ entityId: personId }),
   ]);
 }

@@ -298,6 +298,16 @@ button.duty-attendance-mark-button:hover .duty-attendance-mark {
   min-width: 0;
 }
 
+/* A name longer than the column is cut short with "..." (full name in a tooltip). */
+.duty-roster-person-name-text,
+.duty-roster-calendar-person.has-photo .duty-roster-calendar-person-name > div > div:last-child {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .duty-roster-calendar-person.has-photo .duty-roster-calendar-person-name > div {
   width: 100%;
   color: inherit !important;

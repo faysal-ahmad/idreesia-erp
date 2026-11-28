@@ -9,3 +9,4 @@ export { default as REOPEN_PURCHASING_REQUISITION } from './reopen-purchasing-re
 export { default as CANCEL_PURCHASING_REQUISITION } from './cancel-purchasing-requisition';
 export { default as CLOSE_PURCHASING_REQUISITION } from './close-purchasing-requisition';
 export { default as DELETE_PURCHASING_REQUISITION } from './delete-purchasing-requisition';
+export { default as DISTINCT_PURCHASING_REQUISITION_REQUESTED_FOR } from './distinct-purchasing-requisition-requested-for';

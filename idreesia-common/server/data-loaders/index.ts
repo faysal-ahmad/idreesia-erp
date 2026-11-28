@@ -19,6 +19,8 @@ import {
 import { citiesDataLoader, cityMehfilsDataLoader } from './outstation';
 import {
   purchasingOrdersDataLoader,
+  purchasingPettyCashExpenseHeadsDataLoader,
+  purchasingPettyCashFundsDataLoader,
   purchasingVendorsDataLoader,
 } from './purchasing';
 
@@ -47,6 +49,8 @@ export function getDataLoaders() {
     },
     purchasing: {
       orders: purchasingOrdersDataLoader(),
+      pettyCashExpenseHeads: purchasingPettyCashExpenseHeadsDataLoader(),
+      pettyCashFunds: purchasingPettyCashFundsDataLoader(),
       vendors: purchasingVendorsDataLoader(),
     },
     outstation: {

@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import { Committees } from 'meteor/idreesia-common/server/collections/admin';
 import { DutyDayAttendances, Salaries, Teams } from 'meteor/idreesia-common/server/collections/hr';
-import { MehfilKarkuns, VisitorStays } from 'meteor/idreesia-common/server/collections/security';
+import { SecurityEventKarkuns, VisitorStays } from 'meteor/idreesia-common/server/collections/security';
 import {
   IssuanceForms,
   PurchaseForms,
@@ -141,7 +141,7 @@ export async function getPersonRelationCounts(
     teamMembershipCounts,
     dutyDayAttendanceCounts,
     visitorStayCounts,
-    mehfilKarkunCounts,
+    eventKarkunCounts,
     issuanceFormCounts,
     purchaseFormCounts,
     stockAdjustmentCounts,
@@ -153,7 +153,7 @@ export async function getPersonRelationCounts(
     countByArrayField(Teams, 'members', 'karkunId', personIds),
     countByArrayField(DutyDayAttendances, 'karkuns', 'karkunId', personIds),
     countBySingleField(VisitorStays, 'visitorId', personIds),
-    countBySingleField(MehfilKarkuns, 'karkunId', personIds),
+    countBySingleField(SecurityEventKarkuns, 'karkunId', personIds),
     countByAnyField(IssuanceForms, ['issuedBy', 'issuedTo'], personIds),
     countByAnyField(PurchaseForms, ['receivedBy', 'purchasedBy'], personIds),
     countBySingleField(StockAdjustments, 'adjustedBy', personIds),
@@ -167,7 +167,7 @@ export async function getPersonRelationCounts(
     { name: 'Team Memberships', countsById: teamMembershipCounts },
     { name: 'Duty Day Attendances', countsById: dutyDayAttendanceCounts },
     { name: 'Stay History', countsById: visitorStayCounts },
-    { name: 'Mehfil Assignments', countsById: mehfilKarkunCounts },
+    { name: 'Event Assignments', countsById: eventKarkunCounts },
     { name: 'Issuance Forms', countsById: issuanceFormCounts },
     { name: 'Purchase Forms', countsById: purchaseFormCounts },
     { name: 'Stock Adjustments', countsById: stockAdjustmentCounts },

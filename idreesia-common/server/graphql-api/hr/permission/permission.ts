@@ -13,12 +13,20 @@ type HrPermissionGroupHolder {
   name: String!
 }
 
+type HrPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
 type HrPermissionAssignment {
   key: String!
   name: String!
   description: String
   users: [HrPermissionHolder]
   groups: [HrPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [HrPermissionCommitteeHolder]
 }
 
 type HrPermissionGroup {
@@ -27,33 +35,18 @@ type HrPermissionGroup {
   permissions: [HrPermissionAssignment]
 }
 
-type HrPermissionKarkunType {
-  _id: String
-  name: String
-  parentName: String
-  cnicNumber: String
-  contactNumber1: String
-  imageUrl: String
-  imageThumbnailUrl: String
-}
-
-type PagedHrPermissionKarkunType {
-  data: [HrPermissionKarkunType]
-  totalResults: Int
-}
-
 extend type Query {
   hrPermissionAssignments: [HrPermissionGroup]
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 
   # Karkuns to choose from when giving a permission or adding to a group.
-  hrPermissionKarkunSearch(
+  pagedHrPermissionKarkuns(
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
-  ): PagedHrPermissionKarkunType
+  ): PagedPickerPersonType
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 }
 
@@ -65,6 +58,12 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 
   removeHrPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  addHrPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+
+  removeHrPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
     @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
 
   removeHrPermissionUser(permissionKey: String!, userId: String!): Boolean

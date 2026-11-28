@@ -6,7 +6,7 @@ import {
   type RequisitionStatusValue,
 } from 'meteor/idreesia-common/constants/purchasing';
 import { runInTransaction } from 'meteor/idreesia-common/server/collections';
-import { StockItems } from 'meteor/idreesia-common/server/collections/inventory';
+import { PhysicalStores, StockItems } from 'meteor/idreesia-common/server/collections/inventory';
 import {
   PurchasingOrders,
   PurchasingRequisitions,
@@ -45,6 +45,7 @@ export interface RequisitionValues {
   title: string;
   purpose?: string | null;
   requestedBy?: string | null;
+  requestedFor?: string | null;
   neededBy?: Date | null;
   lines: RequisitionLineInput[];
 }
@@ -101,6 +102,14 @@ async function storeLineInput(input: RequisitionLineInput, position: number, ori
   } as RequisitionLineInput;
 }
 
+async function storeName(origin: RequisitionOrigin) {
+  const store = await PhysicalStores.findOneAsync(
+    { _id: { $eq: origin.physicalStoreId } },
+    { fields: { name: 1 } }
+  );
+  return cleanText(store?.name as string | undefined);
+}
+
 async function normalize(values: RequisitionValues, origin?: RequisitionOrigin) {
   assertLineCount(values.lines);
   const lines: RequisitionLine[] = [];
@@ -127,6 +136,8 @@ async function normalize(values: RequisitionValues, origin?: RequisitionOrigin) 
     title: requireText(values.title, 'The title'),
     purpose: cleanText(values.purpose),
     requestedBy: cleanText(values.requestedBy),
+    // A store's requisition is always for that store; the store doesn't enter it.
+    requestedFor: origin ? await storeName(origin) : cleanText(values.requestedFor),
     neededBy: values.neededBy ?? undefined,
     lines,
     estimatedTotal,
@@ -161,7 +172,7 @@ function assertDraftOwner(doc: PurchasingRequisitionDocument, origin?: Requisiti
   }
 }
 
-const optionalFields = ['purpose', 'requestedBy', 'neededBy'] as const;
+const optionalFields = ['purpose', 'requestedBy', 'requestedFor', 'neededBy'] as const;
 
 export async function createRequisition(
   values: RequisitionValues,
@@ -208,8 +219,8 @@ export async function updateRequisition(
       throw purchasingError('CONFLICT', 'Only a draft requisition can be edited.');
     }
     const data = await normalize(values, origin);
-    const { purpose, requestedBy, neededBy, ...always } = data;
-    const optional = { purpose, requestedBy, neededBy };
+    const { purpose, requestedBy, requestedFor, neededBy, ...always } = data;
+    const optional = { purpose, requestedBy, requestedFor, neededBy };
     const set: Record<string, unknown> = { ...always };
     const unset: string[] = [];
     optionalFields.forEach((field) => {
@@ -323,6 +334,14 @@ export async function deleteRequisition(_id: string, user: ActingUser, origin?: 
     await deleteOwnerAttachments('requisition', _id);
     await audit(EntityType.PURCHASING_REQUISITION, _id, OperationType.DELETE, { number: existing.number }, user);
   });
+}
+
+/** The Requested For values entered before, sorted, to suggest on the form. */
+export async function listRequestedForValues(): Promise<string[]> {
+  const values = (await PurchasingRequisitions.rawCollection().distinct('requestedFor')) as unknown[];
+  return values
+    .filter((value): value is string => typeof value === 'string' && value !== '')
+    .sort((a, b) => a.localeCompare(b));
 }
 
 export async function listRequisitions({

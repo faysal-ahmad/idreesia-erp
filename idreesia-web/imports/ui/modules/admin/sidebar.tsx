@@ -18,11 +18,6 @@ const menuItems = [
     ],
   },
   {
-    key: 'instances',
-    label: 'Instance Management',
-    children: [{ key: 'physical-stores', label: 'Physical Stores' }],
-  },
-  {
     key: 'organization',
     label: 'Organization Management',
     children: [
@@ -104,12 +99,6 @@ const menuRouteMatches: MenuRouteMatch[] = [
     openKeys: ['access'],
     subModuleName: SubModuleNames.securityLogs,
     matches: (pathname) => isPath(pathname, paths.securityLogsPath),
-  },
-  {
-    key: 'physical-stores',
-    openKeys: ['instances'],
-    subModuleName: SubModuleNames.physicalStores,
-    matches: (pathname) => isPath(pathname, paths.physicalStoresPath),
   },
   {
     key: 'org-locations',
@@ -238,10 +227,6 @@ const Sidebar = ({ history }: SidebarProps) => {
 
       case 'security-logs':
         history.push(paths.securityLogsPath);
-        break;
-
-      case 'physical-stores':
-        history.push(paths.physicalStoresPath);
         break;
 
       case 'org-locations':

@@ -8,7 +8,7 @@ import CommitteeSchema from './committee';
 const schema = makeExecutableSchema({
   typeDefs: [
     CheckCommitteeAccessSchema,
-    'type Query { _placeholder: Boolean } type Mutation { _placeholder: Boolean }',
+    'type PagedPickerPersonType { totalResults: Int } type Query { _placeholder: Boolean } type Mutation { _placeholder: Boolean }',
     CommitteeSchema,
   ],
 });
@@ -34,7 +34,7 @@ const expected: Array<[Root, string, string[] | undefined]> = [
   ['Query', 'myCommittees', undefined],
   ['Query', 'myCommitteeLocations', undefined],
   ['Query', 'workspaceCommitteeById', ANY],
-  ['Query', 'workspaceCommitteeKarkunSearch', C],
+  ['Query', 'pagedWorkspaceCommitteeKarkuns', C],
   ['Mutation', 'workspaceAddCommitteeMember', C],
   ['Mutation', 'workspaceRemoveCommitteeMember', C],
   ['Mutation', 'workspaceSetCommitteeMemberDiscussionAccess', C],

@@ -14,6 +14,8 @@ const SubModuleNames = {
   vendors: 'Vendors',
   itemCategories: 'Item Categories',
   locations: 'Locations',
+
+  manageStores: 'Manage Stores',
 };
 
 export default SubModuleNames;

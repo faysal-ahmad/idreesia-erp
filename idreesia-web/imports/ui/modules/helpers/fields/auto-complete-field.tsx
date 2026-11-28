@@ -13,6 +13,7 @@ interface FieldProps {
   requiredMessage?: string;
   initialValue?: string | null;
   filterOption?: AutoCompleteProps['filterOption'];
+  disabled?: boolean;
 }
 
 const formItemLayout = {
@@ -34,6 +35,7 @@ const filterOptionFunc: NonNullable<AutoCompleteProps['filterOption']> = (_input
  * fieldLayout: Layout settings for the form field.
  * required: Whether a value is required for this field.
  * requiredMessage: Message to show if the value is not entered.
+ * disabled: Whether the field is read-only.
  */
 const AutoCompleteField = ({
   options = [],
@@ -45,6 +47,7 @@ const AutoCompleteField = ({
   requiredMessage,
   initialValue = null,
   filterOption = filterOptionFunc,
+  disabled,
 }: FieldProps) => {
   const rules = required
     ? [
@@ -62,6 +65,7 @@ const AutoCompleteField = ({
         options={options.map((value) => ({ value }))}
         backfill
         filterOption={filterOption}
+        disabled={disabled}
       />
     </Form.Item>
   );

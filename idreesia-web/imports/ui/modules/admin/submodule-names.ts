@@ -3,7 +3,6 @@ const SubModuleNames = {
   serviceAccounts: 'Service Accounts',
   userGroups: 'User Groups',
   securityLogs: 'Security Logs',
-  physicalStores: 'Physical Stores',
   cities: 'Cities & Mehfils',
   jobs: 'Jobs Dashboard',
   jobLogs: 'Job Logs',

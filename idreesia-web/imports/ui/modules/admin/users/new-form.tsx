@@ -7,12 +7,12 @@ import { message } from '/imports/ui/antd-feedback';
 import { useBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
 import {
   InputTextField,
-  KarkunSelectionInputField,
   FormButtonsSaveCancel,
 } from '/imports/ui/modules/helpers/fields';
+import { PersonPickerField } from '/imports/ui/modules/helpers/controls';
 
 import { AdminSubModulePaths as paths } from '/imports/ui/modules/admin';
-import { CREATE_USER, PAGED_USERS } from './gql';
+import { CREATE_USER, PAGED_USERS, adminUserKarkunSource } from './gql';
 
 interface KarkunValue {
   _id?: string;
@@ -113,7 +113,8 @@ const NewForm = ({ history }: Props) => {
 
         <InputTextField fieldName="displayName" fieldLabel="Display name" />
 
-        <KarkunSelectionInputField
+        <PersonPickerField
+          source={adminUserKarkunSource}
           fieldName="karkun"
           fieldLabel="Karkun Name"
         />

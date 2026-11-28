@@ -10,11 +10,6 @@ import {
   UserGroupsList,
 } from './user-groups';
 import { SecurityLogsList } from './security-logs';
-import {
-  PhysicalStoresNewForm,
-  PhysicalStoresEditForm,
-  PhysicalStoresList,
-} from './physical-stores';
 import { CitiesNewForm, CitiesEditForm, CitiesList } from './cities';
 import { JobsList, JobLogsList, JobDefinitionsList } from './jobs';
 import { PeopleTagsList } from './people-tags';
@@ -47,16 +42,6 @@ const Router = () => (
     <Route path={paths.userGroupsPath} component={UserGroupsList} />
 
     <Route path={paths.securityLogsPath} component={SecurityLogsList} />
-
-    <Route
-      path={paths.physicalStoresNewFormPath}
-      component={PhysicalStoresNewForm}
-    />
-    <Route
-      path={paths.physicalStoresEditFormPath}
-      component={PhysicalStoresEditForm}
-    />
-    <Route path={paths.physicalStoresPath} component={PhysicalStoresList} />
 
     <Route path={paths.citiesNewFormPath} component={CitiesNewForm} />
     <Route path={paths.citiesEditFormPath()} component={CitiesEditForm} />

@@ -1,10 +1,28 @@
 import React from 'react';
-import { Table } from 'antd';
+import { Table, Tooltip, Typography } from 'antd';
 
 import { formatMoney, formatQuantity } from './format';
+import { differsFromOrder } from './line-items-editor';
+
+/** The order line an invoice line bills: its price and tax rate. */
+export interface OrderLinePrice {
+  unitPrice?: number | null;
+  taxRate?: number | null;
+}
+
+/** A value shown in amber, with the order's value, when it differs from it. */
+const compared = (text: React.ReactNode, differs: boolean, orderText: string) =>
+  differs ? (
+    <Tooltip title={`Differs from the purchase order (${orderText})`}>
+      <Typography.Text type="warning">{text}</Typography.Text>
+    </Tooltip>
+  ) : (
+    text
+  );
 
 interface Line {
   _id?: string | null;
+  orderLineId?: string | null;
   description?: string | null;
   unit?: string | null;
   quantity?: number | null;
@@ -22,10 +40,13 @@ interface LinesTableProps {
   showTax?: boolean;
   /** Order lines: show how much was received and invoiced. */
   showProgress?: boolean;
+  /** Invoice lines: the order lines they bill, by id, to flag a different price or tax rate. */
+  orderLines?: Map<string, OrderLinePrice>;
 }
 
 /** The lines of a document, read-only. */
-const LinesTable = ({ lines, price, showTax, showProgress }: LinesTableProps) => {
+const LinesTable = ({ lines, price, showTax, showProgress, orderLines }: LinesTableProps) => {
+  const orderLineOf = (line: Line) => (line.orderLineId ? orderLines?.get(line.orderLineId) : undefined);
   const rows = (lines ?? []).filter((l): l is Line => l != null);
   const columns: any[] = [
     { title: 'Item', dataIndex: 'description', key: 'description' },
@@ -66,7 +87,10 @@ const LinesTable = ({ lines, price, showTax, showProgress }: LinesTableProps) =>
       key: price,
       width: 130,
       align: 'right',
-      render: formatMoney,
+      render: (value: number | null | undefined, line: Line) => {
+        const orderPrice = orderLineOf(line)?.unitPrice;
+        return compared(formatMoney(value), differsFromOrder(value, orderPrice), formatMoney(orderPrice));
+      },
     });
   }
   if (showTax) {
@@ -76,7 +100,10 @@ const LinesTable = ({ lines, price, showTax, showProgress }: LinesTableProps) =>
       key: 'taxRate',
       width: 80,
       align: 'right',
-      render: (rate: number | null | undefined) => rate ?? 0,
+      render: (rate: number | null | undefined, line: Line) => {
+        const orderRate = orderLineOf(line)?.taxRate;
+        return compared(rate ?? 0, differsFromOrder(rate, orderRate), `${orderRate ?? 0}%`);
+      },
     });
   }
   if (price) {

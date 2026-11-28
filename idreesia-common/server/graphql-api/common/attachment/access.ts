@@ -6,7 +6,14 @@ import {
   type AttachmentCategoryValue,
 } from 'meteor/idreesia-common/constants';
 import { attachmentCategoryOf } from 'meteor/idreesia-common/server/business-logic/common/stored-attachments';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
+import {
+  Attachments,
+  People,
+} from 'meteor/idreesia-common/server/collections/common';
+import {
+  isHrEmployee,
+  isHrKarkun,
+} from 'meteor/idreesia-common/server/business-logic/hr-common/hr-person-roles';
 import {
   IssuanceForms,
   PurchaseForms,
@@ -35,11 +42,14 @@ export interface AttachmentUser {
  * uploaded under (read from its file key), and these are the permissions of
  * the feature behind each category. The permissions of a purchase or issuance
  * form's attachment are store permissions: they are held on the form's
- * physical store (`store: true`), not globally.
+ * physical store (`store: true`), not globally. A profile attachment belongs
+ * to a person (`person: true`): who may use it depends on whether that person
+ * is a karkun or an employee (PROFILE_ROLE_PERMISSIONS); the lists here are
+ * only for uploading one, before it is on anybody.
  */
 const CATEGORY_PERMISSIONS: Record<
   AttachmentCategoryValue,
-  { view: string[]; manage: string[]; store?: boolean }
+  { view: string[]; manage: string[]; store?: boolean; person?: boolean }
 > = {
   [AttachmentCategory.PURCHASE_FORM]: {
     store: true,
@@ -60,6 +70,7 @@ const CATEGORY_PERMISSIONS: Record<
     manage: [Permissions.IN_MANAGE_ISSUANCE_FORMS],
   },
   [AttachmentCategory.PROFILE]: {
+    person: true,
     view: [
       Permissions.HR_VIEW_KARKUNS,
       Permissions.HR_MANAGE_KARKUNS,
@@ -67,6 +78,22 @@ const CATEGORY_PERMISSIONS: Record<
       Permissions.HR_MANAGE_EMPLOYEES,
     ],
     manage: [Permissions.HR_MANAGE_KARKUNS, Permissions.HR_MANAGE_EMPLOYEES],
+  },
+};
+
+/**
+ * Who may use a profile attachment that is on a person: the karkun
+ * permissions when the person is a karkun, the employee permissions when they
+ * are an employee (either, for someone who is both).
+ */
+const PROFILE_ROLE_PERMISSIONS = {
+  karkun: {
+    view: [Permissions.HR_VIEW_KARKUNS, Permissions.HR_MANAGE_KARKUNS],
+    manage: [Permissions.HR_MANAGE_KARKUNS],
+  },
+  employee: {
+    view: [Permissions.HR_VIEW_EMPLOYEES, Permissions.HR_MANAGE_EMPLOYEES],
+    manage: [Permissions.HR_MANAGE_EMPLOYEES],
   },
 };
 
@@ -105,6 +132,25 @@ const findHoldingFormStore = async (
   return form ? { physicalStoreId: form.physicalStoreId as string } : null;
 };
 
+/**
+ * The permissions that open a profile attachment, from the person holding it;
+ * undefined when it is on nobody yet.
+ */
+const findProfileAttachmentPermissions = async (
+  attachmentId: string,
+  action: 'view' | 'manage'
+) => {
+  const person = await People.findOneAsync(
+    { 'karkunData.attachmentIds': attachmentId },
+    { fields: { isKarkun: 1, isEmployee: 1, employeeData: 1 } }
+  );
+  if (!person) return undefined;
+  return [
+    ...(isHrKarkun(person) ? PROFILE_ROLE_PERMISSIONS.karkun[action] : []),
+    ...(isHrEmployee(person) ? PROFILE_ROLE_PERMISSIONS.employee[action] : []),
+  ];
+};
+
 const assertCanUse = async (
   user: AttachmentUser | null | undefined,
   attachmentId: string,
@@ -120,6 +166,25 @@ const assertCanUse = async (
   const category = attachmentCategoryOf(attachment.fileKey);
   if (!category) throw forbidden();
   const permissions = CATEGORY_PERMISSIONS[category][action];
+  const uploaded = !!user?._id && attachment.createdBy === user._id;
+
+  if (CATEGORY_PERMISSIONS[category].person) {
+    const personPermissions = await findProfileAttachmentPermissions(
+      attachmentId,
+      action
+    );
+    if (personPermissions) {
+      // On a person: whoever holds that person's karkun or employee permission.
+      if (!hasOnePermission(user, personPermissions)) throw forbidden();
+    } else if (
+      // On nobody yet: only the uploader (and a super-admin).
+      !hasOnePermission(user, CATEGORY_PERMISSIONS[category].manage) ||
+      (!uploaded && !isSuperAdmin(user))
+    ) {
+      throw forbidden();
+    }
+    return attachment;
+  }
 
   if (!CATEGORY_PERMISSIONS[category].store) {
     if (!hasOnePermission(user, permissions)) throw forbidden();
@@ -132,16 +197,13 @@ const assertCanUse = async (
     if (!(await hasStorePermission(user, store.physicalStoreId, permissions))) {
       throw forbidden();
     }
-  } else {
+  } else if (
     // Not attached to any form yet: only the uploader (and a super-admin),
     // who must hold the permission on some store.
-    const uploaded = !!user?._id && attachment.createdBy === user._id;
-    if (
-      !(await hasAnyStorePermission(user, permissions)) ||
-      (!uploaded && !isSuperAdmin(user))
-    ) {
-      throw forbidden();
-    }
+    !(await hasAnyStorePermission(user, permissions)) ||
+    (!uploaded && !isSuperAdmin(user))
+  ) {
+    throw forbidden();
   }
 
   return attachment;

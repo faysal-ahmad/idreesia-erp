@@ -51,13 +51,9 @@ export const REPORT_ACCESS = {
     permissions: [Permissions.IN_MANAGE_STOCK_ITEMS],
     argIsPhysicalStoreId: true,
   },
+  // Karkun management's export: karkuns only (the exporter skips anyone else).
   Karkuns: {
-    permissions: [
-      Permissions.HR_VIEW_KARKUNS,
-      Permissions.HR_MANAGE_KARKUNS,
-      Permissions.HR_VIEW_EMPLOYEES,
-      Permissions.HR_MANAGE_EMPLOYEES,
-    ],
+    permissions: [Permissions.HR_VIEW_KARKUNS, Permissions.HR_MANAGE_KARKUNS],
   },
   Visitors: {
     permissions: [

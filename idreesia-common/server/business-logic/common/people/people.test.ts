@@ -115,11 +115,32 @@ describe('createPerson', () => {
     const person = await newPerson();
     expect(person).toMatchObject({ createdBy: 'u1', updatedBy: 'u1' });
     const logs = await auditLogsFor(person!._id);
-    expect(logs).toHaveLength(1);
-    expect(logs[0]).toMatchObject({
-      entityType: EntityType.PERSON,
+    const personLog = logs.find(log => log.entityType === EntityType.PERSON);
+    expect(personLog).toMatchObject({
       operationType: OperationType.CREATE,
       operationBy: 'u1',
+      auditValues: { dataSource: 'test', sharedData: { name: 'Ali' } },
+    });
+  });
+
+  it("logs a role's data against that role, apart from the person's own", async () => {
+    const person = await createPerson(
+      {
+        dataSource: 'test',
+        isKarkun: true,
+        sharedData: { name: 'Ali' },
+        karkunData: { cityLocationId: 'mul' },
+        employeeData: { jobId: 'j1' },
+      },
+      user
+    );
+    const logs = await auditLogsFor(person!._id);
+    const byType = Object.fromEntries(logs.map(log => [log.entityType, log.auditValues]));
+
+    expect(byType).toEqual({
+      [EntityType.PERSON]: { dataSource: 'test', sharedData: { name: 'Ali' } },
+      [EntityType.KARKUN]: { isKarkun: true, karkunData: { cityLocationId: 'mul' } },
+      [EntityType.EMPLOYEE]: { employeeData: { jobId: 'j1' } },
     });
   });
 });
@@ -131,7 +152,8 @@ describe('updatePerson', () => {
       { _id: person!._id, sharedData: { name: 'Ali', tagIds: ['b', 'a'] } },
       user
     );
-    expect(await auditLogsFor(person!._id)).toHaveLength(1);
+    const logs = await auditLogsFor(person!._id);
+    expect(logs.filter(log => log.operationType === OperationType.UPDATE)).toEqual([]);
   });
 
   it('saves the changes and audits them as from/to pairs', async () => {
@@ -172,6 +194,55 @@ describe('updatePerson', () => {
         changedTo: 'updated',
       }),
     ]);
+  });
+
+  it('logs shared, karkun and employee changes as separate entries', async () => {
+    const person = await createPerson(
+      {
+        dataSource: 'test',
+        isKarkun: true,
+        sharedData: { name: 'Ali' },
+        karkunData: { mehfilRaabta: 'a', attachmentIds: [] },
+        employeeData: { bankAccountDetails: 'x' },
+      },
+      user
+    );
+    await updatePerson(
+      {
+        _id: person!._id,
+        isEmployee: true,
+        sharedData: { name: 'Ahmed' },
+        karkunData: { mehfilRaabta: 'b' },
+        employeeData: { bankAccountDetails: 'y' },
+      },
+      user
+    );
+
+    const updates = (await auditLogsFor(person!._id)).filter(
+      log => log.operationType === OperationType.UPDATE
+    );
+    const fieldsOf = (entityType: string) =>
+      (updates.find(log => log.entityType === entityType)?.auditValues as string[]).map(
+        value => JSON.parse(value).fieldName
+      );
+
+    expect(updates).toHaveLength(3);
+    expect(fieldsOf(EntityType.PERSON)).toEqual(['sharedData.name']);
+    expect(fieldsOf(EntityType.KARKUN)).toEqual(['karkunData.mehfilRaabta']);
+    expect(fieldsOf(EntityType.EMPLOYEE)).toEqual(['isEmployee', 'employeeData.bankAccountDetails']);
+  });
+
+  it('writes only the entry whose data changed', async () => {
+    const person = await createPerson(
+      { dataSource: 'test', isKarkun: true, sharedData: { name: 'Ali' }, karkunData: { msRaabta: 'a' } },
+      user
+    );
+    await updatePerson({ _id: person!._id, karkunData: { msRaabta: 'b' } }, user);
+
+    const updates = (await auditLogsFor(person!._id)).filter(
+      log => log.operationType === OperationType.UPDATE
+    );
+    expect(updates.map(log => log.entityType)).toEqual([EntityType.KARKUN]);
   });
 
   it('allows a person to keep their own CNIC number', async () => {

@@ -101,21 +101,21 @@ export const AdminPermissionsData: PermissionNode = {
   ],
 };
 
-export const HrPermissionsData: PermissionNode = {
-  title: 'HR',
-  key: 'module-hr',
+export const HrKarkunsPermissionsData: PermissionNode = {
+  title: 'HR - Karkuns',
+  key: 'module-hr-karkuns',
   children: [
     {
       title: 'View Audit Logs',
-      key: PermissionConstants.HR_VIEW_AUDIT_LOGS,
+      key: PermissionConstants.HR_KARKUNS_VIEW_AUDIT_LOGS,
     },
     {
-      title: 'Manage HR Permissions',
-      key: PermissionConstants.HR_MANAGE_PERMISSIONS,
+      title: 'Manage HR - Karkuns Permissions',
+      key: PermissionConstants.HR_KARKUNS_MANAGE_PERMISSIONS,
     },
     {
       title: 'Karkuns',
-      key: 'module-hr-karkuns',
+      key: 'module-hr-karkuns-karkuns',
       children: [
         {
           title: 'View Karkuns Data',
@@ -131,9 +131,24 @@ export const HrPermissionsData: PermissionNode = {
         },
       ],
     },
+  ],
+};
+
+export const HrEmployeesPermissionsData: PermissionNode = {
+  title: 'HR - Employees',
+  key: 'module-hr-employees',
+  children: [
+    {
+      title: 'View Audit Logs',
+      key: PermissionConstants.HR_EMPLOYEES_VIEW_AUDIT_LOGS,
+    },
+    {
+      title: 'Manage HR - Employees Permissions',
+      key: PermissionConstants.HR_EMPLOYEES_MANAGE_PERMISSIONS,
+    },
     {
       title: 'Employees',
-      key: 'module-hr-employees',
+      key: 'module-hr-employees-employees',
       children: [
         {
           title: 'View Employees Data',
@@ -146,6 +161,24 @@ export const HrPermissionsData: PermissionNode = {
         {
           title: 'Manage Employees Setup Data',
           key: PermissionConstants.HR_MANAGE_EMPLOYEES_SETUP_DATA,
+        },
+      ],
+    },
+    {
+      title: 'Leaves',
+      key: 'module-hr-employees-leaves',
+      children: [
+        {
+          title: 'View Leaves',
+          key: PermissionConstants.HR_VIEW_LEAVES,
+        },
+        {
+          title: 'Manage Leaves',
+          key: PermissionConstants.HR_MANAGE_LEAVES,
+        },
+        {
+          title: 'Approve Leaves',
+          key: PermissionConstants.HR_APPROVE_LEAVES,
         },
       ],
     },

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Permissions } from 'meteor/idreesia-common/constants';
-import { Attachments } from 'meteor/idreesia-common/server/collections/common';
+import { Attachments, People } from 'meteor/idreesia-common/server/collections/common';
 import {
   IssuanceForms,
   PhysicalStoreAccess,
@@ -246,26 +246,77 @@ describe('attachments not yet on a form', () => {
 });
 
 describe('profile attachments', () => {
-  it('follow the HR permissions, with no store involved', async () => {
-    const id = await upload('profile');
+  // Raw insert: the people schema needs fields these tests do not use.
+  const holdBy = async (
+    attachmentId: string,
+    flags: { isKarkun?: boolean; isEmployee?: boolean; employmentStatus?: string }
+  ) => {
+    await raw(People).insertOne({
+      _id: `p-${attachmentId}`,
+      isKarkun: flags.isKarkun ?? false,
+      isEmployee: flags.isEmployee ?? false,
+      sharedData: { name: 'Someone' },
+      karkunData: { attachmentIds: [attachmentId] },
+      ...(flags.employmentStatus
+        ? { employeeData: { employmentStatus: flags.employmentStatus } }
+        : {}),
+    });
+  };
+  const withPermission = (permission: string, _id = 'u1') =>
+    user({ _id, permissions: [permission] });
 
-    expect(
-      await code(assertCanViewAttachment(user({ permissions: [Permissions.HR_VIEW_KARKUNS] }), id))
-    ).toBe('ok');
-    expect(
-      await code(assertCanViewAttachment(user({ permissions: [Permissions.HR_VIEW_EMPLOYEES] }), id))
-    ).toBe('ok');
+  it("of a karkun follow only the karkun permissions", async () => {
+    const id = await upload('profile');
+    await holdBy(id, { isKarkun: true });
+
+    expect(await code(assertCanViewAttachment(withPermission(Permissions.HR_VIEW_KARKUNS), id))).toBe('ok');
+    expect(await code(assertCanViewAttachment(withPermission(Permissions.HR_VIEW_EMPLOYEES), id))).toBe('FORBIDDEN');
+    expect(await code(assertCanViewAttachment(withPermission(Permissions.HR_MANAGE_EMPLOYEES), id))).toBe('FORBIDDEN');
+    expect(await code(assertCanManageAttachment(withPermission(Permissions.HR_MANAGE_EMPLOYEES), id))).toBe('FORBIDDEN');
     expect(await code(assertCanViewAttachment(user(), id))).toBe('FORBIDDEN');
   });
 
-  it('can be renamed only with a manage permission', async () => {
+  it("of an employee who is not a karkun follow only the employee permissions", async () => {
     const id = await upload('profile');
+    await holdBy(id, { isEmployee: true });
 
+    expect(await code(assertCanViewAttachment(withPermission(Permissions.HR_VIEW_EMPLOYEES), id))).toBe('ok');
+    expect(await code(assertCanViewAttachment(withPermission(Permissions.HR_VIEW_KARKUNS), id))).toBe('FORBIDDEN');
+    expect(await code(assertCanManageAttachment(withPermission(Permissions.HR_MANAGE_KARKUNS), id))).toBe('FORBIDDEN');
+  });
+
+  it("of a former employee still follow the employee permissions", async () => {
+    const id = await upload('profile');
+    await holdBy(id, { employmentStatus: 'exited' });
+
+    expect(await code(assertCanViewAttachment(withPermission(Permissions.HR_VIEW_EMPLOYEES), id))).toBe('ok');
+  });
+
+  it('of someone who is both are open to either side', async () => {
+    const id = await upload('profile');
+    await holdBy(id, { isKarkun: true, isEmployee: true });
+
+    expect(await code(assertCanViewAttachment(withPermission(Permissions.HR_VIEW_KARKUNS), id))).toBe('ok');
+    expect(await code(assertCanViewAttachment(withPermission(Permissions.HR_VIEW_EMPLOYEES), id))).toBe('ok');
+  });
+
+  it('can be renamed only with that side\'s manage permission', async () => {
+    const id = await upload('profile');
+    await holdBy(id, { isKarkun: true });
+
+    expect(await code(assertCanManageAttachment(withPermission(Permissions.HR_VIEW_KARKUNS), id))).toBe('FORBIDDEN');
+    expect(await code(assertCanManageAttachment(withPermission(Permissions.HR_MANAGE_KARKUNS), id))).toBe('ok');
+  });
+
+  it('not yet on anybody are open only to their uploader (and a super-admin)', async () => {
+    const id = await upload('profile', 'u1');
+
+    expect(await code(assertCanViewAttachment(withPermission(Permissions.HR_MANAGE_EMPLOYEES, 'u1'), id))).toBe('ok');
+    expect(await code(assertCanViewAttachment(withPermission(Permissions.HR_MANAGE_KARKUNS, 'u2'), id))).toBe('FORBIDDEN');
+    // The uploader needs a manage permission too.
+    expect(await code(assertCanViewAttachment(withPermission(Permissions.HR_VIEW_KARKUNS, 'u1'), id))).toBe('FORBIDDEN');
     expect(
-      await code(assertCanManageAttachment(user({ permissions: [Permissions.HR_VIEW_KARKUNS] }), id))
-    ).toBe('FORBIDDEN');
-    expect(
-      await code(assertCanManageAttachment(user({ permissions: [Permissions.HR_MANAGE_KARKUNS] }), id))
+      await code(assertCanViewAttachment({ _id: 'a', isSuperAdmin: true, permissions: [Permissions.HR_MANAGE_KARKUNS] }, id))
     ).toBe('ok');
   });
 });

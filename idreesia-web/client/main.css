@@ -308,7 +308,7 @@ form {
   .pagebreak { page-break-before: always; }
 
   /* 
-    modules/hr/karkuns/print/karkun-formdetailed-form uses checkbox and 
+    The detailed print forms (hr-karkuns and hr-employees) use checkbox and
     input number controls. overriding the styles here to make their border
     prominent when printing the form.
   */

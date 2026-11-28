@@ -29,7 +29,7 @@ import {
   isTwoFactorEnabled,
   reserveLoginAttempt,
 } from 'meteor/idreesia-common/server/business-logic/admin';
-import { exportKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/karkuns-exporter';
+import { exportKarkuns } from 'meteor/idreesia-common/server/business-logic/hr-karkuns/karkuns-exporter';
 import { exportVisitors } from 'meteor/idreesia-common/server/business-logic/security/visitors-exporter';
 import {
   exportPurchasingOpenOrders,

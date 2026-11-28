@@ -167,40 +167,55 @@ import SecurityServerUsageResolvers from './security/security-server-usage/resol
 /**
  * Schema and Resolvers for the HR module
  */
-import HRAuditLogSchema from './hr/audit-log/audit-log';
-import HRAuditLogResolvers from './hr/audit-log/resolvers';
+import HrKarkunsAuditLogSchema from './hr-karkuns/audit-log/audit-log';
+import HrKarkunsAuditLogResolvers from './hr-karkuns/audit-log/resolvers';
+import HrEmployeesAuditLogSchema from './hr-employees/audit-log/audit-log';
+import HrEmployeesAuditLogResolvers from './hr-employees/audit-log/resolvers';
 
-import DutyShiftSchema from './hr/duty-shift/duty-shift';
-import DutyShiftResolvers from './hr/duty-shift/resolvers';
+import DutyShiftSchema from './hr-karkuns/duty-shift/duty-shift';
+import DutyShiftResolvers from './hr-karkuns/duty-shift/resolvers';
 
-import DutySchema from './hr/duty/duty';
-import DutyResolvers from './hr/duty/resolvers';
+import DutySchema from './hr-karkuns/duty/duty';
+import DutyResolvers from './hr-karkuns/duty/resolvers';
 
-import DutyLocationSchema from './hr/duty-location/duty-location';
-import DutyLocationResolvers from './hr/duty-location/resolvers';
+import DutyLocationSchema from './hr-karkuns/duty-location/duty-location';
+import DutyLocationResolvers from './hr-karkuns/duty-location/resolvers';
 
-import TeamSchema from './hr/team/team';
-import TeamResolvers from './hr/team/resolvers';
+import TeamSchema from './hr-karkuns/team/team';
+import TeamResolvers from './hr-karkuns/team/resolvers';
 
-import DutyPlanSchema from './hr/duty-plan/duty-plan';
-import DutyPlanResolvers from './hr/duty-plan/resolvers';
+import DutyPlanSchema from './hr-karkuns/duty-plan/duty-plan';
+import DutyPlanResolvers from './hr-karkuns/duty-plan/resolvers';
 
 import CommitteeSchema from './organization/committee/committee';
 import CommitteeResolvers from './organization/committee/resolvers';
 
-import JobSchema from './hr/job/job';
-import JobResolvers from './hr/job/resolvers';
+import JobSchema from './hr-employees/job/job';
+import JobResolvers from './hr-employees/job/resolvers';
+import JobShiftSchema from './hr-employees/job-shift/job-shift';
+import JobShiftResolvers from './hr-employees/job-shift/resolvers';
+import EmploymentSchema from './hr-employees/employment/employment';
+import EmploymentResolvers from './hr-employees/employment/resolvers';
+import LeaveSchema from './hr-employees/leave/leave';
+import LeaveResolvers from './hr-employees/leave/resolvers';
 
-import HrPermissionSchema from './hr/permission/permission';
-import HrPermissionResolvers from './hr/permission/resolvers';
-import HrUserGroupSchema from './hr/user-group/user-group';
-import HrUserGroupResolvers from './hr/user-group/resolvers';
+import HrPermissionTypesSchema from './hr-common/permission-types';
+import HrKarkunsPermissionSchema from './hr-karkuns/permission/permission';
+import HrKarkunsPermissionResolvers from './hr-karkuns/permission/resolvers';
+import HrKarkunsUserGroupSchema from './hr-karkuns/user-group/user-group';
+import HrKarkunsUserGroupResolvers from './hr-karkuns/user-group/resolvers';
+import HrEmployeesPermissionSchema from './hr-employees/permission/permission';
+import HrEmployeesPermissionResolvers from './hr-employees/permission/resolvers';
+import HrEmployeesUserGroupSchema from './hr-employees/user-group/user-group';
+import HrEmployeesUserGroupResolvers from './hr-employees/user-group/resolvers';
 
-import HRKarkunSchema from './hr/karkun/karkun';
-import HRKarkunResolvers from './hr/karkun/resolvers';
+import HRKarkunSchema from './hr-karkuns/karkun/karkun';
+import HRKarkunResolvers from './hr-karkuns/karkun/resolvers';
+import HrEmployeeSchema from './hr-employees/employee/employee';
+import HrEmployeeResolvers from './hr-employees/employee/resolvers';
 
-import SalarySchema from './hr/salary/salary';
-import SalaryResolvers from './hr/salary/resolvers';
+import SalarySchema from './hr-employees/salary/salary';
+import SalaryResolvers from './hr-employees/salary/resolvers';
 
 /**
  * Workspaces Schema and Resolvers
@@ -343,7 +358,8 @@ const typeDefs = [
 
   InboxSchema,
 
-  HRAuditLogSchema,
+  HrKarkunsAuditLogSchema,
+  HrEmployeesAuditLogSchema,
   DutyShiftSchema,
   DutySchema,
   DutyLocationSchema,
@@ -351,9 +367,16 @@ const typeDefs = [
   DutyPlanSchema,
   CommitteeSchema,
   JobSchema,
+  JobShiftSchema,
+  EmploymentSchema,
+  LeaveSchema,
   HRKarkunSchema,
-  HrPermissionSchema,
-  HrUserGroupSchema,
+  HrEmployeeSchema,
+  HrPermissionTypesSchema,
+  HrKarkunsPermissionSchema,
+  HrKarkunsUserGroupSchema,
+  HrEmployeesPermissionSchema,
+  HrEmployeesUserGroupSchema,
   SalarySchema,
 
   WorkspaceCommitteeSchema,
@@ -451,7 +474,8 @@ const resolvers = merge(
 
   InboxResolvers,
 
-  HRAuditLogResolvers,
+  HrKarkunsAuditLogResolvers,
+  HrEmployeesAuditLogResolvers,
   DutyShiftResolvers,
   DutyResolvers,
   DutyLocationResolvers,
@@ -459,9 +483,15 @@ const resolvers = merge(
   DutyPlanResolvers,
   CommitteeResolvers,
   JobResolvers,
+  JobShiftResolvers,
+  EmploymentResolvers,
+  LeaveResolvers,
   HRKarkunResolvers,
-  HrPermissionResolvers,
-  HrUserGroupResolvers,
+  HrEmployeeResolvers,
+  HrKarkunsPermissionResolvers,
+  HrKarkunsUserGroupResolvers,
+  HrEmployeesPermissionResolvers,
+  HrEmployeesUserGroupResolvers,
   SalaryResolvers,
 
   WorkspaceCommitteeResolvers,

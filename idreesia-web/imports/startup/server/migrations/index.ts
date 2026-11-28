@@ -9,6 +9,8 @@ import './5-create-security';
 import './6-create-stores-indexes';
 import './7-create-purchasing-indexes';
 import './8-create-workspaces-indexes';
+import './9-create-employment-history';
+import './10-create-leaves';
 
 Migrations.config({
   log: true,

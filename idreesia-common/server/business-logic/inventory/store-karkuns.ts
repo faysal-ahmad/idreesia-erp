@@ -4,7 +4,7 @@ import {
   searchPickerPeople,
   type PickerPeopleParams,
 } from 'meteor/idreesia-common/server/business-logic/common/people/picker-people';
-import { getPredefinedFilterKarkunIds } from 'meteor/idreesia-common/server/business-logic/hr/karkun-search';
+import { getPredefinedFilterKarkunIds } from './store-predefined-filters';
 
 export interface StoreKarkunSearchParams extends PickerPeopleParams {
   /** A "recently used" list, e.g. who received goods on the store's forms. */

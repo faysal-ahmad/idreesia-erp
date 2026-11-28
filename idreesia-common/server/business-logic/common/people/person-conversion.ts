@@ -90,8 +90,14 @@ export async function karkunToPerson(karkun: LooseRecord) {
     },
     employeeData: {
       jobId: karkun.jobId,
+      jobShiftId: karkun.jobShiftId,
+      workingDays: karkun.workingDays,
+      reportsToPersonId: karkun.reportsToPersonId,
+      employmentStatus: karkun.employmentStatus,
       employmentStartDate: karkun.employmentStartDate,
       employmentEndDate: karkun.employmentEndDate,
+      probationEndDate: karkun.probationEndDate,
+      confirmationDate: karkun.confirmationDate,
       bankAccountDetails: karkun.bankAccountDetails,
     },
     visitorData: cityLocation

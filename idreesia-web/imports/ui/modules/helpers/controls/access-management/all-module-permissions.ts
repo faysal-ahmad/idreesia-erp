@@ -1,6 +1,7 @@
 import {
   AdminPermissionsData,
-  HrPermissionsData,
+  HrKarkunsPermissionsData,
+  HrEmployeesPermissionsData,
   SecurityPermissionsData,
   CorrespondencePermissionsData,
   PurchasingPermissionsData,
@@ -9,7 +10,8 @@ import {
 
 export const AllModulePermissions = [
   AdminPermissionsData,
-  HrPermissionsData,
+  HrKarkunsPermissionsData,
+  HrEmployeesPermissionsData,
   SecurityPermissionsData,
   CorrespondencePermissionsData,
   PurchasingPermissionsData,

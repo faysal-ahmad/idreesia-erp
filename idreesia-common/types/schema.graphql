@@ -88,14 +88,20 @@ enum Permission {
   ADMIN_VIEW_ORG_LOCATIONS
   ADMIN_MANAGE_ORG_LOCATIONS
 
-  HR_MANAGE_KARKUNS_SETUP_DATA
-  HR_VIEW_AUDIT_LOGS
-  HR_MANAGE_PERMISSIONS
   HR_VIEW_KARKUNS
   HR_MANAGE_KARKUNS
+  HR_MANAGE_KARKUNS_SETUP_DATA
+  HR_KARKUNS_VIEW_AUDIT_LOGS
+  HR_KARKUNS_MANAGE_PERMISSIONS
+
   HR_VIEW_EMPLOYEES
   HR_MANAGE_EMPLOYEES
   HR_MANAGE_EMPLOYEES_SETUP_DATA
+  HR_VIEW_LEAVES
+  HR_MANAGE_LEAVES
+  HR_APPROVE_LEAVES
+  HR_EMPLOYEES_VIEW_AUDIT_LOGS
+  HR_EMPLOYEES_MANAGE_PERMISSIONS
 
   IN_MANAGE_PHYSICAL_STORES
   IN_MANAGE_PHYSICAL_STORE_PERMISSIONS
@@ -1080,10 +1086,6 @@ input KarkunFilter {
   bloodGroup: String
   lastTarteeb: String
   attendance: String
-  isKarkun: Boolean
-  isEmployee: Boolean
-  isVisitor: Boolean
-  jobId: String
   dutyId: String
   userAccount: String
   ehadKarkun: String
@@ -1092,8 +1094,6 @@ input KarkunFilter {
   mehfilLocationId: String
   region: String
   updatedBetween: String
-  predefinedFilterName: String
-  predefinedFilterStoreId: String
   pageIndex: String
   pageSize: String
 }
@@ -1173,13 +1173,24 @@ type PersonKarkunDataType {
   attachments: [Attachment]
 }
 
+# Employment details. Only HrEmployeeType exposes them, and only the employee
+# and leave queries return that type: no PersonType query, karkun management's
+# included, ever reaches them.
 type PersonEmployeeDataType {
   jobId: String
+  jobShiftId: String
+  workingDays: [String]
+  reportsToPersonId: String
+  employmentStatus: String
   employmentStartDate: String
   employmentEndDate: String
+  probationEndDate: String
+  confirmationDate: String
   bankAccountDetails: String
 
   job: JobType
+  jobShift: JobShiftType
+  reportsTo: PersonType
 }
 
 type PersonType {
@@ -1192,7 +1203,6 @@ type PersonType {
   sharedData: PersonSharedDataType
   visitorData: PersonVisitorDataType
   karkunData: PersonKarkunDataType
-  employeeData: PersonEmployeeDataType
   createdAt: String
   createdBy: String
   updatedAt: String
@@ -1344,9 +1354,648 @@ type InboxAttachmentType {
       @checkPermissions(permissions: [CORRESPONDENCE_INBOX_REPLY_TO_MESSAGES])
   }
 
+type HrPermissionHolder {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type HrPermissionGroupHolder {
+  groupId: String!
+  name: String!
+}
+
+type HrPermissionCommitteeHolder {
+  committeeId: String!
+  name: String!
+  locationName: String
+}
+
+type HrPermissionAssignment {
+  key: String!
+  name: String!
+  description: String
+  users: [HrPermissionHolder]
+  groups: [HrPermissionGroupHolder]
+  # Committees whose members and coordinators hold the permission.
+  committees: [HrPermissionCommitteeHolder]
+}
+
+type HrPermissionGroup {
+  featureKey: String!
+  featureName: String!
+  permissions: [HrPermissionAssignment]
+}
+
+type HrGroupMember {
+  userId: String!
+  personId: String
+  username: String
+  displayName: String
+}
+
+type HrUserGroup {
+  _id: String!
+  name: String!
+  description: String
+  users: [HrGroupMember]
+}
+
 extend type Query {
-  pagedHrAuditLogs(filter: AuditLogFilter): PagedAuditLogType
-    @checkPermissions(permissions: [HR_VIEW_AUDIT_LOGS])
+  pagedHrEmployeesAuditLogs(filter: AuditLogFilter): PagedAuditLogType
+    @checkPermissions(permissions: [HR_EMPLOYEES_VIEW_AUDIT_LOGS])
+}
+
+# An employee: the person, with their employment details. This is the only
+# type that exposes employeeData, and only employee management (and the leave
+# screens, which are about employees) return it. Karkun management returns
+# PersonType, which has no employment details.
+type HrEmployeeType {
+  _id: String
+  isEmployee: Boolean
+  isKarkun: Boolean
+  isVisitor: Boolean
+  dataSource: String
+  sharedData: PersonSharedDataType
+  karkunData: PersonKarkunDataType
+  employeeData: PersonEmployeeDataType
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedHrEmployeeType {
+  totalResults: Int
+  data: [HrEmployeeType]
+}
+
+input HrEmployeeFilter {
+  name: String
+  cnicNumber: String
+  phoneNumber: String
+  bloodGroup: String
+  jobId: String
+  employmentStatus: String
+  probationEndingWithinDays: String
+  pageIndex: String
+  pageSize: String
+}
+
+# Employee management. Gated by the employee permissions only, and each
+# operation reaches employees only (current or former).
+extend type Query {
+  hrEmployeeById(_id: String!): HrEmployeeType
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
+
+  hrEmployeesById(_ids: String!): [HrEmployeeType]
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
+
+  # Current employees of Multan.
+  pagedHrEmployees(filter: HrEmployeeFilter): PagedHrEmployeeType
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
+
+  # Karkuns of Multan who are not employees yet, to make an employee.
+  pagedHrEmployeeCandidateKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+}
+
+extend type Mutation {
+  updateHrEmployee(
+    _id: String!
+    name: String!
+    parentName: String
+    cnicNumber: String
+    contactNumber1: String
+    contactNumber2: String
+    emailAddress: String
+    currentAddress: String
+    permanentAddress: String
+    cityLocationId: String
+    mehfilLocationId: String
+    bloodGroup: String
+    educationalQualification: String
+    meansOfEarning: String
+    ehadDate: String
+    birthDate: String
+    deathDate: String
+    referenceName: String
+  ): HrEmployeeType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  # The employment fields HR edits directly. Status and job change only
+  # through the lifecycle mutations (hireEmployee, exitEmployee, ...).
+  setHrEmployeeEmploymentInfo(
+    _id: String!
+    employmentStartDate: String
+    employmentEndDate: String
+    probationEndDate: String
+    confirmationDate: String
+    bankAccountDetails: String
+    jobShiftId: String
+    workingDays: [String]
+    reportsToPersonId: String
+  ): HrEmployeeType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  setHrEmployeeProfileImage(_id: String!, imageData: String!): HrEmployeeType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  addHrEmployeeAttachment(_id: String!, attachmentId: String!): HrEmployeeType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  removeHrEmployeeAttachment(_id: String!, attachmentId: String!): HrEmployeeType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+}
+
+type EmploymentEventType {
+  _id: String
+  personId: String
+  eventType: String
+  effectiveDate: String
+  exitReason: String
+  details: JSON
+  remarks: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type HrEmploymentSettingsType {
+  defaultProbationMonths: Int
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  employmentEventsByPersonId(personId: String!): [EmploymentEventType]
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
+
+  # Karkuns of Multan, to pick whom an employee reports to.
+  pagedHrReportsToKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  hrEmploymentSettings: HrEmploymentSettingsType
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA])
+}
+
+extend type Mutation {
+  hireEmployee(
+    personId: String!
+    jobId: String!
+    jobShiftId: String
+    startDate: String!
+    onProbation: Boolean!
+    probationEndDate: String
+    remarks: String
+  ): HrEmployeeType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  rejoinEmployee(
+    personId: String!
+    jobId: String!
+    jobShiftId: String
+    startDate: String!
+    onProbation: Boolean!
+    probationEndDate: String
+    remarks: String
+  ): HrEmployeeType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  confirmEmployee(
+    personId: String!
+    confirmationDate: String!
+    remarks: String
+  ): HrEmployeeType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  changeEmployeeJob(
+    personId: String!
+    jobId: String!
+    jobShiftId: String
+    effectiveDate: String!
+    remarks: String
+  ): HrEmployeeType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  exitEmployee(
+    personId: String!
+    endDate: String!
+    exitReason: String!
+    remarks: String
+  ): HrEmployeeType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  updateHrEmploymentSettings(defaultProbationMonths: Int!): HrEmploymentSettingsType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
+}
+
+type JobShiftType {
+  _id: String
+  jobId: String
+  name: String
+  startTime: String
+  endTime: String
+
+  # Employees currently on this shift; a shift in use can't be deleted.
+  usedCount: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Mutation {
+  createJobShift(
+    jobId: String!
+    name: String!
+    startTime: String
+    endTime: String
+  ): JobShiftType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
+  updateJobShift(
+    _id: String!
+    name: String!
+    startTime: String
+    endTime: String
+  ): JobShiftType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
+  removeJobShift(_id: String!): Int
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
+}
+
+type JobType {
+  _id: String
+  name: String
+  description: String
+
+  usedCount: Int
+  shifts: [JobShiftType]
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+extend type Query {
+  allJobs: [JobType]
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA])
+  jobById(id: String!): JobType
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA])
+}
+
+extend type Mutation {
+  createJob(name: String!, description: String): JobType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
+  updateJob(id: String!, name: String!, description: String): JobType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
+  removeJob(_id: String!): Int
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
+}
+
+type LeaveTypeType {
+  _id: String
+  name: String
+  annualEntitlementDays: Float
+  isPaid: Boolean
+  allowCarryForward: Boolean
+  maxCarryForwardDays: Float
+  isActive: Boolean
+
+  # Requests and adjustments using it; a used type can't be deleted.
+  usedCount: Int
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type LeaveRequestType {
+  _id: String
+  personId: String
+  leaveTypeId: String
+  fromDate: String
+  toDate: String
+  halfDay: Boolean
+  days: Float
+  reason: String
+  status: String
+  confirmedWithPersonId: String
+  confirmedOn: String
+  confirmationRemarks: String
+  approvedAt: String
+  approvedBy: String
+  rejectedAt: String
+  rejectedBy: String
+  rejectionReason: String
+  cancelledAt: String
+  cancelledBy: String
+  version: Int
+
+  # The employee on leave, with their job and whom they report to.
+  person: HrEmployeeType
+  leaveType: LeaveTypeType
+  confirmedWith: PersonType
+  # Set when the request takes a paid type past the balance. Never blocks.
+  balanceWarning: String
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type PagedLeaveRequestType {
+  totalResults: Int
+  data: [LeaveRequestType]
+}
+
+type LeaveAdjustmentType {
+  _id: String
+  personId: String
+  leaveTypeId: String
+  year: Int
+  days: Float
+  reason: String
+
+  leaveType: LeaveTypeType
+
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+
+type LeaveBalanceType {
+  leaveTypeId: String
+  leaveTypeName: String
+  isPaid: Boolean
+  year: Int
+  entitlement: Float
+  carriedForward: Float
+  adjustments: Float
+  used: Float
+  pending: Float
+  remaining: Float
+}
+
+extend type Query {
+  allLeaveTypes: [LeaveTypeType]
+    @checkPermissions(permissions: [HR_VIEW_LEAVES, HR_MANAGE_LEAVES, HR_APPROVE_LEAVES, HR_MANAGE_EMPLOYEES_SETUP_DATA])
+  leaveTypeById(_id: String!): LeaveTypeType
+    @checkPermissions(permissions: [HR_VIEW_LEAVES, HR_MANAGE_LEAVES, HR_APPROVE_LEAVES, HR_MANAGE_EMPLOYEES_SETUP_DATA])
+
+  pagedLeaveRequests(
+    personId: String
+    leaveTypeId: String
+    statuses: [String]
+    fromDate: String
+    toDate: String
+    pageIndex: String
+    pageSize: String
+  ): PagedLeaveRequestType
+    @checkPermissions(permissions: [HR_VIEW_LEAVES, HR_MANAGE_LEAVES, HR_APPROVE_LEAVES])
+  leaveRequestById(_id: String!): LeaveRequestType
+    @checkPermissions(permissions: [HR_VIEW_LEAVES, HR_MANAGE_LEAVES, HR_APPROVE_LEAVES])
+
+  leaveAdjustmentsByPersonId(personId: String!, year: Int): [LeaveAdjustmentType]
+    @checkPermissions(permissions: [HR_VIEW_LEAVES, HR_MANAGE_LEAVES, HR_APPROVE_LEAVES])
+
+  leaveBalances(personId: String!, year: Int!): [LeaveBalanceType]
+    @checkPermissions(permissions: [HR_VIEW_LEAVES, HR_MANAGE_LEAVES, HR_APPROVE_LEAVES])
+
+  # Leave days the dates would count for the employee, for the request form.
+  leaveDaysCount(personId: String!, fromDate: String!, toDate: String!, halfDay: Boolean): Float
+    @checkPermissions(permissions: [HR_MANAGE_LEAVES])
+
+  # Current employees, to enter a leave request for.
+  pagedHrLeaveEmployees(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [HR_MANAGE_LEAVES])
+
+  # Karkuns of Multan, to record whom HR checked with about a leave.
+  pagedHrLeaveConfirmationKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [HR_MANAGE_LEAVES])
+}
+
+extend type Mutation {
+  createLeaveType(
+    name: String!
+    annualEntitlementDays: Float!
+    isPaid: Boolean!
+    allowCarryForward: Boolean!
+    maxCarryForwardDays: Float
+    isActive: Boolean!
+  ): LeaveTypeType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
+  updateLeaveType(
+    _id: String!
+    name: String!
+    annualEntitlementDays: Float!
+    isPaid: Boolean!
+    allowCarryForward: Boolean!
+    maxCarryForwardDays: Float
+    isActive: Boolean!
+  ): LeaveTypeType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
+  removeLeaveType(_id: String!): Int
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
+
+  createLeaveRequest(
+    personId: String!
+    leaveTypeId: String!
+    fromDate: String!
+    toDate: String!
+    halfDay: Boolean
+    reason: String
+  ): LeaveRequestType
+    @checkPermissions(permissions: [HR_MANAGE_LEAVES])
+  recordLeaveConfirmation(
+    _id: String!
+    version: Int!
+    confirmedWithPersonId: String!
+    confirmedOn: String
+    confirmationRemarks: String
+  ): LeaveRequestType
+    @checkPermissions(permissions: [HR_MANAGE_LEAVES])
+  cancelLeaveRequest(_id: String!): LeaveRequestType
+    @checkPermissions(permissions: [HR_MANAGE_LEAVES])
+  approveLeaveRequest(_id: String!): LeaveRequestType
+    @checkPermissions(permissions: [HR_APPROVE_LEAVES])
+  rejectLeaveRequest(_id: String!, rejectionReason: String): LeaveRequestType
+    @checkPermissions(permissions: [HR_APPROVE_LEAVES])
+
+  createLeaveAdjustment(
+    personId: String!
+    leaveTypeId: String!
+    year: Int!
+    days: Float!
+    reason: String!
+  ): LeaveAdjustmentType
+    @checkPermissions(permissions: [HR_MANAGE_LEAVES])
+  removeLeaveAdjustment(_id: String!): Int
+    @checkPermissions(permissions: [HR_MANAGE_LEAVES])
+}
+
+extend type Query {
+  hrEmployeesPermissionAssignments: [HrPermissionGroup]
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+
+  # Karkuns to choose from when giving a permission or adding to a group.
+  pagedHrEmployeesPermissionKarkuns(
+    name: String
+    cnicNumber: String
+    phoneNumber: String
+    pageIndex: String
+    pageSize: String
+  ): PagedPickerPersonType
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+}
+
+extend type Mutation {
+  addHrEmployeesPermissionUser(permissionKey: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+
+  removeHrEmployeesPermissionUser(permissionKey: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+
+  addHrEmployeesPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+
+  removeHrEmployeesPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+
+  addHrEmployeesPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+
+  removeHrEmployeesPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+}
+
+type SalaryType {
+  _id: String
+  karkunId: String
+  jobId: String
+  month: String
+  salary: Int
+  openingLoan: Int
+  loanDeduction: Int
+  newLoan: Int
+  closingLoan: Int
+  otherDeduction: Int
+  arrears: Int
+  netPayment: Int
+  rashanMadad: Int
+
+  # The employee the salary is for.
+  karkun: HrEmployeeType
+  job: JobType
+  approver: PersonType
+
+  approvedOn: String
+  approvedBy: String
+  createdAt: String
+  createdBy: String
+  updatedAt: String
+  updatedBy: String
+}
+type PagedSalaryType {
+  totalResults: Int
+  salaries: [SalaryType]
+}
+extend type Query {
+  pagedSalariesByKarkun(queryString: String): PagedSalaryType
+    @checkPermissions(
+      permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES]
+      dataFieldName: "salaries"
+    )
+  salariesByMonth(
+    month: String!
+    jobId: String
+  ): [SalaryType]
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
+  salariesByIds(ids: String!): [SalaryType]
+    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
+}
+
+extend type Mutation {
+  createSalaries(
+    month: String!
+  ): Int
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  updateSalary(
+    _id: String!
+    salary: Int
+    openingLoan: Int
+    loanDeduction: Int
+    otherDeduction: Int
+    newLoan: Int
+    arrears: Int
+    rashanMadad: Int
+  ): SalaryType
+    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
+
+  deleteSalaries(month: String!, ids: [String]!): Int
+    @superAdminOnly
+  deleteAllSalaries(month: String!): Int
+    @superAdminOnly
+}
+
+extend type Query {
+  hrEmployeesUserGroups: [HrUserGroup]
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+}
+
+extend type Mutation {
+  createHrEmployeesUserGroup(name: String!, description: String): HrUserGroup
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+
+  updateHrEmployeesUserGroup(_id: String!, name: String!, description: String): HrUserGroup
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+
+  deleteHrEmployeesUserGroup(_id: String!): Boolean
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+
+  addHrEmployeesGroupMember(groupId: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+
+  removeHrEmployeesGroupMember(groupId: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [HR_EMPLOYEES_MANAGE_PERMISSIONS])
+}
+
+extend type Query {
+  pagedHrKarkunsAuditLogs(filter: AuditLogFilter): PagedAuditLogType
+    @checkPermissions(permissions: [HR_KARKUNS_VIEW_AUDIT_LOGS])
 }
 
 type DutyLocationType {
@@ -1592,44 +2241,18 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
-type JobType {
-  _id: String
-  name: String
-  description: String
-
-  usedCount: Int
-
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-
-extend type Query {
-  allJobs: [JobType]
-    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA])
-  jobById(id: String!): JobType
-    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES, HR_MANAGE_EMPLOYEES_SETUP_DATA])
-}
-
-extend type Mutation {
-  createJob(name: String!, description: String): JobType
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
-  updateJob(id: String!, name: String!, description: String): JobType
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
-  removeJob(_id: String!): Int
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES_SETUP_DATA])
-}
-
+# Karkun management. Gated by the karkun permissions only, and each operation
+# reaches karkuns only (isKarkun). Employment details are not part of
+# PersonType; employee management has its own operations in hr/employee.
 extend type Query {
   hrCommitteeOptions: [CommitteeType]
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 
   hrKarkunById(_id: String!): PersonType
-  @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
+  @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
 
   hrKarkunsById(_ids: String!): [PersonType]
-  @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
+  @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
 
   # Karkuns of Multan, to add to a team or to a day's duty.
   pagedHrPickerKarkuns(
@@ -1640,16 +2263,6 @@ extend type Query {
     pageSize: String
   ): PagedPickerPersonType
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_KARKUNS_SETUP_DATA])
-
-  # Karkuns of Multan who are not employees yet, to make an employee.
-  pagedHrEmployeeCandidateKarkuns(
-    name: String
-    cnicNumber: String
-    phoneNumber: String
-    pageIndex: String
-    pageSize: String
-  ): PagedPickerPersonType
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
   # People who are not karkuns yet, to make a karkun.
   pagedHrKarkunCandidatePeople(
@@ -1662,14 +2275,7 @@ extend type Query {
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   pagedHrKarkuns(filter: KarkunFilter): PagedKarkunType
-  @checkPermissions(
-    permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS, HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES]
-    anyStorePermissions: [
-      IN_VIEW_ISSUANCE_FORMS, IN_MANAGE_ISSUANCE_FORMS,
-      IN_VIEW_PURCHASE_FORMS, IN_MANAGE_PURCHASE_FORMS,
-      IN_VIEW_STOCK_ADJUSTMENTS, IN_MANAGE_STOCK_ADJUSTMENTS
-    ]
-  )
+  @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
 }
 
 extend type Mutation {
@@ -1691,7 +2297,7 @@ extend type Mutation {
     birthDate: String
     referenceName: String
   ): PersonType
-  @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   # Makes a visitor or employee a karkun of the city and (optionally) mehfil.
   promoteHrKarkun(_id: String!, cityLocationId: String!, mehfilLocationId: String): PersonType
@@ -1717,20 +2323,10 @@ extend type Mutation {
     deathDate: String
     referenceName: String
   ): PersonType
-  @checkPermissions(permissions: [HR_MANAGE_KARKUNS, HR_MANAGE_EMPLOYEES])
+  @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 
   deleteHrKarkun(_id: String!): Int
   @superAdminOnly
-
-  setHrKarkunEmploymentInfo(
-    _id: String!
-    isEmployee: Boolean!
-    jobId: String
-    employmentStartDate: String
-    employmentEndDate: String
-    bankAccountDetails: String
-  ): PersonType
-  @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
 
   setHrKarkunProfileImage(_id: String!, imageData: String!): PersonType
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
@@ -1742,142 +2338,39 @@ extend type Mutation {
   @checkPermissions(permissions: [HR_MANAGE_KARKUNS])
 }
 
-type HrPermissionHolder {
-  userId: String!
-  personId: String
-  username: String
-  displayName: String
-}
-
-type HrPermissionGroupHolder {
-  groupId: String!
-  name: String!
-}
-
-type HrPermissionCommitteeHolder {
-  committeeId: String!
-  name: String!
-  locationName: String
-}
-
-type HrPermissionAssignment {
-  key: String!
-  name: String!
-  description: String
-  users: [HrPermissionHolder]
-  groups: [HrPermissionGroupHolder]
-  # Committees whose members and coordinators hold the permission.
-  committees: [HrPermissionCommitteeHolder]
-}
-
-type HrPermissionGroup {
-  featureKey: String!
-  featureName: String!
-  permissions: [HrPermissionAssignment]
-}
-
 extend type Query {
-  hrPermissionAssignments: [HrPermissionGroup]
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+  hrKarkunsPermissionAssignments: [HrPermissionGroup]
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 
   # Karkuns to choose from when giving a permission or adding to a group.
-  pagedHrPermissionKarkuns(
+  pagedHrKarkunsPermissionKarkuns(
     name: String
     cnicNumber: String
     phoneNumber: String
     pageIndex: String
     pageSize: String
   ): PagedPickerPersonType
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 }
 
 extend type Mutation {
-  addHrPermissionUser(permissionKey: String!, karkunId: String!): Boolean
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+  addHrKarkunsPermissionUser(permissionKey: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 
-  addHrPermissionGroup(permissionKey: String!, groupId: String!): Boolean
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+  removeHrKarkunsPermissionUser(permissionKey: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 
-  removeHrPermissionGroup(permissionKey: String!, groupId: String!): Boolean
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+  addHrKarkunsPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 
-  addHrPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+  removeHrKarkunsPermissionGroup(permissionKey: String!, groupId: String!): Boolean
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 
-  removeHrPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+  addHrKarkunsPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 
-  removeHrPermissionUser(permissionKey: String!, userId: String!): Boolean
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
-}
-
-type SalaryType {
-  _id: String
-  karkunId: String
-  jobId: String
-  month: String
-  salary: Int
-  openingLoan: Int
-  loanDeduction: Int
-  newLoan: Int
-  closingLoan: Int
-  otherDeduction: Int
-  arrears: Int
-  netPayment: Int
-  rashanMadad: Int
-
-  karkun: PersonType
-  job: JobType
-  approver: PersonType
-
-  approvedOn: String
-  approvedBy: String
-  createdAt: String
-  createdBy: String
-  updatedAt: String
-  updatedBy: String
-}
-type PagedSalaryType {
-  totalResults: Int
-  salaries: [SalaryType]
-}
-extend type Query {
-  pagedSalariesByKarkun(queryString: String): PagedSalaryType
-    @checkPermissions(
-      permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES]
-      dataFieldName: "salaries"
-    )
-  salariesByMonth(
-    month: String!
-    jobId: String
-  ): [SalaryType]
-    @checkPermissions(permissions: [HR_VIEW_EMPLOYEES, HR_MANAGE_EMPLOYEES])
-  salariesByIds(ids: String!): [SalaryType]
-    @checkPermissions(permissions: [HR_VIEW_KARKUNS, HR_MANAGE_KARKUNS])
-}
-
-extend type Mutation {
-  createSalaries(
-    month: String!
-  ): Int
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
-
-  updateSalary(
-    _id: String!
-    salary: Int
-    openingLoan: Int
-    loanDeduction: Int
-    otherDeduction: Int
-    newLoan: Int
-    arrears: Int
-    rashanMadad: Int
-  ): SalaryType
-    @checkPermissions(permissions: [HR_MANAGE_EMPLOYEES])
-
-  deleteSalaries(month: String!, ids: [String]!): Int
-    @superAdminOnly
-  deleteAllSalaries(month: String!): Int
-    @superAdminOnly
+  removeHrKarkunsPermissionCommittee(permissionKey: String!, committeeId: String!): Boolean
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 }
 
 type TeamMemberType {
@@ -1927,40 +2420,26 @@ extend type Mutation {
     @checkPermissions(permissions: [HR_MANAGE_KARKUNS_SETUP_DATA])
 }
 
-type HrGroupMember {
-  userId: String!
-  personId: String
-  username: String
-  displayName: String
-}
-
-type HrUserGroup {
-  _id: String!
-  name: String!
-  description: String
-  users: [HrGroupMember]
-}
-
 extend type Query {
-  hrUserGroups: [HrUserGroup]
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+  hrKarkunsUserGroups: [HrUserGroup]
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 }
 
 extend type Mutation {
-  createHrUserGroup(name: String!, description: String): HrUserGroup
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+  createHrKarkunsUserGroup(name: String!, description: String): HrUserGroup
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 
-  updateHrUserGroup(_id: String!, name: String!, description: String): HrUserGroup
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+  updateHrKarkunsUserGroup(_id: String!, name: String!, description: String): HrUserGroup
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 
-  deleteHrUserGroup(_id: String!): Boolean
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+  deleteHrKarkunsUserGroup(_id: String!): Boolean
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 
-  addHrGroupMember(groupId: String!, karkunId: String!): Boolean
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+  addHrKarkunsGroupMember(groupId: String!, karkunId: String!): Boolean
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 
-  removeHrGroupMember(groupId: String!, userId: String!): Boolean
-    @checkPermissions(permissions: [HR_MANAGE_PERMISSIONS])
+  removeHrKarkunsGroupMember(groupId: String!, userId: String!): Boolean
+    @checkPermissions(permissions: [HR_KARKUNS_MANAGE_PERMISSIONS])
 }
 
 type ItemWithQuantity {
@@ -4253,18 +4732,20 @@ extend type Query {
       permissions: [
         HR_MANAGE_KARKUNS
         HR_MANAGE_EMPLOYEES
-        HR_MANAGE_PERMISSIONS
+        HR_KARKUNS_MANAGE_PERMISSIONS
+        HR_EMPLOYEES_MANAGE_PERMISSIONS
         PURCHASING_MANAGE_PERMISSIONS
         SECURITY_MANAGE_PERMISSIONS
       ]
     )
 
   # The committees of a location, for giving one a module permission (on the
-  # HR, Purchasing and Security Permissions tabs).
+  # HR - Karkuns, HR - Employees, Purchasing and Security Permissions tabs).
   referenceCommitteesByLocation(locationId: String!): [ReferenceCommitteeType]
     @checkPermissions(
       permissions: [
-        HR_MANAGE_PERMISSIONS
+        HR_KARKUNS_MANAGE_PERMISSIONS
+        HR_EMPLOYEES_MANAGE_PERMISSIONS
         PURCHASING_MANAGE_PERMISSIONS
         SECURITY_MANAGE_PERMISSIONS
       ]

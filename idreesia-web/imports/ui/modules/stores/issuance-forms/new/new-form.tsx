@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import { Divider, Form } from 'antd';
 import { message } from '/imports/ui/antd-feedback';
 import { useDynamicBreadcrumbs } from 'meteor/idreesia-common/hooks/common';
-import { PredefinedFilterNames } from 'meteor/idreesia-common/constants/hr';
+import PredefinedFilterNames from 'meteor/idreesia-common/constants/stores-predefined-filter-names';
 import { ModuleNames } from 'meteor/idreesia-common/constants';
 
 import {

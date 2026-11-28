@@ -71,7 +71,8 @@ const modulePathsMapping: Record<string, string> = {
   // ***********************************************
   // Items within this section would be grouped under
   // the node '381-A Operations'
-  [ModuleNames.hr]: ModulePaths.hr,
+  [ModuleNames.hrKarkuns]: ModulePaths.hrKarkuns,
+  [ModuleNames.hrEmployees]: ModulePaths.hrEmployees,
   [ModuleNames.stores]: ModulePaths.stores,
   [ModuleNames.security]: ModulePaths.security,
   [ModuleNames.correspondence]: ModulePaths.correspondence,

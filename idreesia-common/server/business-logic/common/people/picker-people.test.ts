@@ -6,7 +6,7 @@ import { searchCommitteeKarkuns } from 'meteor/idreesia-common/server/business-l
 import {
   searchHrEmployeeCandidateKarkuns,
   searchHrKarkunCandidatePeople,
-} from 'meteor/idreesia-common/server/business-logic/hr/picker-karkuns';
+} from 'meteor/idreesia-common/server/business-logic/hr-common/picker-karkuns';
 import { searchStorePermissionKarkuns } from 'meteor/idreesia-common/server/business-logic/inventory/store-access/store-access-karkuns';
 
 import { findMultanCityLocation, searchPickerPeople } from './picker-people';

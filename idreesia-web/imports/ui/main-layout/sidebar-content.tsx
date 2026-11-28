@@ -30,7 +30,12 @@ const sidebarsMap: Record<
   [ModuleNames.stores]: React.lazy(
     () => import('/imports/ui/modules/stores/sidebar')
   ),
-  [ModuleNames.hr]: React.lazy(() => import('/imports/ui/modules/hr/sidebar')),
+  [ModuleNames.hrKarkuns]: React.lazy(
+    () => import('/imports/ui/modules/hr-karkuns/sidebar')
+  ),
+  [ModuleNames.hrEmployees]: React.lazy(
+    () => import('/imports/ui/modules/hr-employees/sidebar')
+  ),
   [ModuleNames.security]: React.lazy(
     () => import('/imports/ui/modules/security/sidebar')
   ),

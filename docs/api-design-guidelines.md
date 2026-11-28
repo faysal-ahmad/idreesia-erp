@@ -2,7 +2,7 @@
 
 Conventions for the ERP's server code in `idreesia-common/server`: collections, business logic, the GraphQL API and REST endpoints. Follow them so every module is layered the same way and each piece of logic has one obvious home.
 
-The Workspaces modules (committees, meetings, documents, polls, projects, discussions) are the reference. Some older core modules (inventory, security, outstation, much of HR) still keep logic in their resolvers; don't copy that.
+The Workspaces modules (committees, meetings, documents, polls, projects, discussions) are the reference. Some older core modules (inventory, security, outstation, much of HR - Karkuns and HR - Employees) still keep logic in their resolvers; don't copy that.
 
 ---
 
@@ -201,9 +201,9 @@ The UI's person pickers (see the UI design guidelines, Part B §8) all read the 
 
 ### Reference data
 
-Data that one module owns but other modules also read (e.g. HR duties and shifts read by Security and Admin, physical stores read by Purchasing) is not open. Put it in `graphql-api/reference-data/<entity>/`:
+Data that one module owns but other modules also read (e.g. HR - Karkuns duties and shifts read by Security and Admin, physical stores read by Purchasing) is not open. Put it in `graphql-api/reference-data/<entity>/`:
 
-- **The owner doesn't use it.** The owning module uses the queries in its own folder, and those carry the owner's permissions (e.g. `allMSDuties` needs the HR permissions). Duplicating the find in `reference-data` is fine.
+- **The owner doesn't use it.** The owning module uses the queries in its own folder, and those carry the owner's permissions (e.g. `allMSDuties` needs the HR - Karkuns permissions). Duplicating the find in `reference-data` is fine.
 - **Name it `reference<Entity>`** (`referenceMsDuties`, `referencePhysicalStores`).
 - **Gate it with the consumers' permissions.** The `@checkPermissions` list holds the permissions of each use case that reads it, and nothing else. A module that starts using a reference query adds its use-case permission to the directive.
 - **Slim types.** Return a dedicated `Reference<Entity>Type` with only what the dropdown or picker needs. No people, committees, contact details or audit fields, and no nested fields that lead to them (see how `DutyType.committee` reached people records).

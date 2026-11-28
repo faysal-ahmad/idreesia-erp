@@ -7,7 +7,7 @@ import {
   Users,
   type UserGroupDocument,
 } from 'meteor/idreesia-common/server/collections/admin';
-import { userNameResolver } from 'meteor/idreesia-common/server/business-logic/hr/user-names';
+import { userNameResolver } from 'meteor/idreesia-common/server/business-logic/hr-common/user-names';
 import { escapeRegExp } from 'meteor/idreesia-common/utilities/lodash';
 
 import { removeAllPhysicalStoreAccessOfGroup } from './store-access-admin';

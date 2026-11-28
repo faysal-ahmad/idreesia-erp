@@ -31,8 +31,8 @@ import {
   isCalendarDate,
   todayInKarachi,
   type DayOfWeek,
-} from 'meteor/idreesia-common/server/business-logic/hr/duty-planning-dates';
-import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr/ensure-karkuns';
+} from 'meteor/idreesia-common/server/business-logic/hr-common/duty-planning-dates';
+import { ensureKarkuns } from 'meteor/idreesia-common/server/business-logic/hr-karkuns/ensure-karkuns';
 
 import { dutiesAttendanceError } from './errors';
 import { assertWithinGeofence } from './geofence';

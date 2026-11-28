@@ -14,7 +14,7 @@ vi.mock('meteor/idreesia-common/server/file-storage', async () =>
 
 let workspaceId: string;
 
-// The text index is created by migration 60, not by the collection.
+// The text index is created by migration 8, not by the collection.
 const createTextIndex = () =>
   DmsDocuments.rawCollection().createIndex(
     { workspaceId: 1, name: 'text', description: 'text', tags: 'text' },

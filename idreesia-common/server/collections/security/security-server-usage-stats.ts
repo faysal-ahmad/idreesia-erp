@@ -3,7 +3,7 @@ import { Mongo } from 'meteor/mongo';
 // Usage stats pushed by the security server in 5-minute rollups of its
 // per-minute windows, for the Usage page. Machine-written through bulk
 // upserts on bucketStart (and channelId), so no schema is attached. Expired
-// by a TTL index on bucketStart (migration 56).
+// by a TTL index on bucketStart (migration 5).
 
 // Averages are over the bucket's windows (re-averaged weighted by
 // windowCount); "latest" values are from its last window.

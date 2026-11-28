@@ -9,7 +9,7 @@ import {
   type SecurityServerUsageServerStatsDocument,
 } from 'meteor/idreesia-common/server/collections/security';
 
-// How long the rollups are kept; the TTL index in migration 56 must match.
+// How long the rollups are kept; the TTL index in migration 5 must match.
 export const USAGE_STATS_RETENTION_DAYS = 30;
 
 const MS_PER_MINUTE = 60 * 1000;

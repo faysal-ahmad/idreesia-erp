@@ -36,7 +36,7 @@ vi.mock('meteor/idreesia-common/server/file-storage', async () =>
 
 let workspaceId: string;
 
-// The unique-name indexes are created by migration 60, not by the collections.
+// The unique-name indexes are created by migration 8, not by the collections.
 const createNameIndexes = async () => {
   await DmsFolders.rawCollection().createIndex(
     { workspaceId: 1, parentId: 1, nameLower: 1 },

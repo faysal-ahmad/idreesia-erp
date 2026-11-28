@@ -17,7 +17,7 @@ export default new SimpleSchema({
     optional: true,
   },
   // The location (see OrgLocations) this committee belongs to. Committees that
-  // predate locations were moved under the root location by migration 70.
+  // predate locations were moved under the root location.
   locationId: {
     type: String,
   },
